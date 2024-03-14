@@ -1,8 +1,16 @@
 import { login } from "./lib/login-handler";
+import { getHaut } from "./lib/kouta";
 
-export default function Home() {
+import { cookies } from 'next/headers';
+import { configuration } from "./lib/configuration";
+//import LoginComponent from "./components/login-component";
 
-  login();
+export default async function Home() {
+
+  await login();
+
+  //const haut = await getHaut();
+  //console.log(haut);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
