@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test:ui": "playwright test"
+    "test:ui": "playwright test",
+    "mocks": "mocks-server"
   },
   "dependencies": {
     "axios": "^1.6.7",
@@ -18,6 +19,7 @@
     "xml2js": "^0.6.2"
   },
   "devDependencies": {
+    "@mocks-server/main": "^4.1.0",
     "@playwright/test": "^1.42.0",
     "@types/cookie": "^0.6.0",
     "@types/node": "^20",
