@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
     'Caller-id': 'valintojen-toteuttaminen',
     'redirect-strategy': 'none',
     'throw-exception': false,
-    cookie: cookie.serialize('session', 'InGhVP1zBIjI-u3SjO-x5PzrycA' || '', {httpOnly: true, path: '/'})
+    cookie: cookie.serialize('session', 'session' || '', {httpOnly: true, path: '/'})
   };
   //const login = await axios.get('https://virkailija.untuvaopintopolku.fi/kouta-internal/auth/login');
   //console.log(login.headers);
