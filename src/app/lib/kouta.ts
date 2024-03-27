@@ -2,15 +2,10 @@ import { cookies } from "next/headers";
 import { configuration } from "./configuration";
 import axios from "axios";
 import cookie from 'cookie';
+import { TranslatedName } from "./common";
 
 const KOUTA_COOKIE_NAME = 'session';
 const KOUTA_COOKIE_PATH = 'kouta-internal'
-
-type TranslatedName = {
-  fi?: string,
-  en?: string,
-  sv?: string
-}
 
 //TODO: check whether any values are optional
 export type Haku = {
