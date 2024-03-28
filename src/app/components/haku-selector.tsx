@@ -1,73 +1,69 @@
 'use client'
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 
-import { SearchDropdown } from "./search-dropdown";
-import { Haku, Tila } from "../lib/kouta";
+import { Haku, HaunAlkaminen, Tila, getHakuAlkamisKaudet } from "../lib/kouta";
 import { Koodi } from "../lib/koodisto";
-
-//TODO: move HaunAlkaminen getHakuAlkamisKaudet to some util for example
-const STARTING_YEAR = 2019; // check earliest kouta haku
-
-type HaunAlkaminen = {
-  alkamisVuosi: number,
-  alkamisKausiKoodiUri: string,
-  alkamisKausiNimi: string,
-}
-
-const getHakuAlkamisKaudet = (): HaunAlkaminen[] => {
-  const nowYear = new Date().getFullYear();
-  const alkamiset: HaunAlkaminen[] = [];
-  for (let i = nowYear; i >= STARTING_YEAR; i--) {
-    alkamiset.push({alkamisVuosi: i, alkamisKausiKoodiUri: 'kausi_s', alkamisKausiNimi: 'SYKSY'})
-    alkamiset.push({alkamisVuosi: i, alkamisKausiKoodiUri: 'kausi_k', alkamisKausiNimi: 'KEVÄT'})
-  }
-  return alkamiset;
-}
+import { HakuList } from "./haku-list";
 
 const alkamisKausiMatchesSelected = (haku: Haku, selectedAlkamisKausi: HaunAlkaminen): boolean =>
   haku.alkamisVuosi === selectedAlkamisKausi.alkamisVuosi && haku.alkamisKausiKoodiUri.startsWith(selectedAlkamisKausi.alkamisKausiKoodiUri);
 
 export const HakuSelector = ({haut, hakutavat}: {haut : Haku[], hakutavat: Koodi[]}) =>{
 
-  const [results, setResults] = useState<Haku[]>();
-  const [searchTila, setSearchTila] = useState<Tila>(Tila.JULKAISTU);
-  const [selectedHaku, setSelectedHaku] = useState<Haku>();
+  const [results, setResults] = useState<Haku[]>(haut.filter(h => h.tila === Tila.JULKAISTU));
+  const [search, setSearch] = useState<string>('');
+  const [selectedTila, setSelectedTila] = useState<Tila>(Tila.JULKAISTU);
   const [selectedAlkamisKausi, setSelectedAlkamisKausi] = useState<HaunAlkaminen | undefined>();
   const [selectedHakutapa, setSelectedHakutapa] = useState<Koodi | undefined>();
 
   const alkamisKaudet = getHakuAlkamisKaudet();
 
-  type changeHandler = React.ChangeEventHandler<HTMLInputElement>;
-
-  const handleChange: changeHandler = (e) => {
-    const { target } = e;
-    if (!target.value.trim()) return setResults([]);
-
+  const filterHaut = (search: string, tila: Tila, kausi: HaunAlkaminen | undefined, tapa : Koodi | undefined) => {
     const filteredValue = haut.filter((haku: Haku) =>
-      haku.tila == searchTila && haku.nimi.fi?.toLowerCase().includes(target.value.toLowerCase())
-       && (!selectedAlkamisKausi || alkamisKausiMatchesSelected(haku, selectedAlkamisKausi))
-       && (!selectedHakutapa || haku.hakutapaKoodiUri.startsWith(selectedHakutapa.koodiUri))
+      haku.tila == tila && haku.nimi.fi?.toLowerCase().includes(search)
+       && (!kausi || alkamisKausiMatchesSelected(haku, kausi))
+       && (!tapa || haku.hakutapaKoodiUri.startsWith(tapa.koodiUri))
     );
     setResults(filteredValue);
+  }
+
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { target } = e;
+
+    const searchStr = target.value.trim().toLowerCase();
+    setSearch(searchStr);
+    filterHaut(searchStr, selectedTila, selectedAlkamisKausi, selectedHakutapa);
   };
 
   const toggleSearchActive = () => {
-    setSearchTila(searchTila == Tila.ARKISTOITU ? Tila.JULKAISTU : Tila.ARKISTOITU);
+    const toggledTila = selectedTila == Tila.ARKISTOITU ? Tila.JULKAISTU : Tila.ARKISTOITU
+    setSelectedTila(toggledTila);
+    filterHaut(search, toggledTila, selectedAlkamisKausi, selectedHakutapa);
+  }
+
+  const changeHakutapa = (e: ChangeEvent<HTMLSelectElement>) => {
+    const tapa = e.target.value? hakutavat[parseInt(e.target.value)]: undefined;
+    setSelectedHakutapa(tapa);
+    filterHaut(search, selectedTila, selectedAlkamisKausi, tapa);
+  }
+
+  const changeAlkamisKausi = (e: ChangeEvent<HTMLSelectElement>) => {
+    const kausi = e.target.value? alkamisKaudet[parseInt(e.target.value)]: undefined;
+    setSelectedAlkamisKausi(kausi);
+    filterHaut(search, selectedTila, kausi, selectedHakutapa);
   }
 
   return (
     <div>
-      <button data-testid="haku-tila-toggle" onClick={toggleSearchActive}>{searchTila === Tila.JULKAISTU ? 'Aktiiviset' : 'Passiiviset'}</button>
-      <SearchDropdown
-        results={results}
-        value={selectedHaku?.nimi.fi}
-        renderItem={(h: Haku) => <p>{h.nimi.fi}</p>}
-        onChange={handleChange}
-        onSelect={(h: Haku) => setSelectedHaku(h)}
+      <button data-testid="haku-tila-toggle" onClick={toggleSearchActive}>{selectedTila === Tila.JULKAISTU ? 'Julkaistut' : 'Arkistoidut'}</button>
+      <input
+        onChange={handleSearchChange}
+        type="text"
+        placeholder="Hae hakuja"
       />
       <div>
         <label htmlFor="hakutapa-select">Hakutapa</label>
-        <select name="hakutapa-select" onChange={(e) => setSelectedHakutapa(e.target.value? hakutavat[parseInt(e.target.value)]: undefined)}>
+        <select name="hakutapa-select" onChange={changeHakutapa}>
           <option value={undefined}>Valitse...</option>
           {hakutavat.map((tapa, index) => {
             return <option value={index} key={tapa.koodiUri}>{tapa.nimi.fi}</option> //TODO: translate
@@ -76,13 +72,14 @@ export const HakuSelector = ({haut, hakutavat}: {haut : Haku[], hakutavat: Koodi
       </div>
       <div>
         <label htmlFor="alkamiskausi-select">Koulutuksen alkamiskausi</label>
-        <select name="alkamiskausi-select" onChange={(e) => setSelectedAlkamisKausi(e.target.value? alkamisKaudet[parseInt(e.target.value)]: undefined)}>
+        <select name="alkamiskausi-select" onChange={changeAlkamisKausi}>
           <option value={undefined}>Valitse...</option>
           {alkamisKaudet.map((kausi, index) => {
             return <option value={index} key={kausi.alkamisVuosi + kausi.alkamisKausiKoodiUri}>{kausi.alkamisVuosi} {kausi.alkamisKausiNimi}</option> //TODO: translate
           })}
         </select>
       </div>
+      {results && <HakuList haut={results} hakutavat={hakutavat}></HakuList>}
     </div>
   );
 }
