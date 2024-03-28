@@ -1,5 +1,5 @@
 'use client'
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Link as MuiLink, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { Haku, Tila, getAlkamisKausi } from "../lib/kouta";
 import { Koodi } from '../lib/koodisto';
 
@@ -27,7 +27,9 @@ export const HakuList = ({haut, hakutavat}: {haut : Haku[], hakutavat: Koodi[]})
           {haut
             .map((haku: Haku) => (
               <TableRow key={haku.oid}>
-                <TableCell>{haku.nimi.fi}</TableCell>
+                <TableCell>
+                  <MuiLink href={`haku/${haku.oid}`}>{haku.nimi.fi}</MuiLink>
+                </TableCell>
                 <TableCell>{Tila[haku.tila]}</TableCell>
                 <TableCell>{getMatchingHakutapa(haku.hakutapaKoodiUri)}</TableCell>
                 <TableCell>{haku.alkamisKausiKoodiUri ? `${haku.alkamisVuosi} ${getAlkamisKausi(haku.alkamisKausiKoodiUri)}` : ''}</TableCell>

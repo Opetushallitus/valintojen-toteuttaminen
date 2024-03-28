@@ -1,7 +1,7 @@
 [
   {
     "id": "base",
-    "routes": ["add-headers:enabled", "get-users:success", "get-user:success", "get-haut:success"]
+    "routes": ["add-headers:enabled", "get-users:success", "get-user:success", "get-haut:success", "get-haku:real"]
   },
   {
     "id": "no-headers",

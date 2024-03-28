@@ -5,6 +5,7 @@ interface Configuration  {
     loginUrl: string,
     sessionCookie: string,
     hautUrl: string,
+    hakuUrl: string,
     kooditUrl: string
 };
 
@@ -13,5 +14,6 @@ export const configuration: Configuration = {
     loginUrl: process.env.LOGIN_URL || 'https://virkailija.untuvaopintopolku.fi/cas/login?service=http://localhost:3404/api/login',
     sessionCookie: process.env.SESSION_COOKIE || 'JSESSIONID',
     hautUrl: `${DOMAIN}/kouta-internal/haku/search`,
+    hakuUrl: `${DOMAIN}/kouta-internal/haku`,
     kooditUrl: 'https://virkailija.untuvaopintopolku.fi/koodisto-service/rest/codeelement/codes/'
 };

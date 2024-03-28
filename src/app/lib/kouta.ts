@@ -8,6 +8,11 @@ const KOUTA_COOKIE_NAME = 'session';
 const KOUTA_COOKIE_PATH = 'kouta-internal'
 const STARTING_YEAR = 2019; // check earliest kouta haku
 
+const headers = {
+  accept: 'application/json', 
+  'Caller-id': 'valintojen-toteuttaminen'
+};
+
 export type HaunAlkaminen = {
   alkamisVuosi: number,
   alkamisKausiKoodiUri: string,
@@ -54,10 +59,6 @@ export async function getHaut(active: boolean = true) {
   //const login = await axios.get('https://virkailija.untuvaopintopolku.fi/kouta-internal/auth/login');
   //console.log(login.headers);
 
-  const headers = {
-    accept: 'application/json', 
-    'Caller-id': 'valintojen-toteuttaminen'
-  };
   
   const response = await axios.get(configuration.hautUrl, {
     headers,
@@ -68,4 +69,11 @@ export async function getHaut(active: boolean = true) {
       alkamisVuosi: parseInt(h.hakuvuosi), alkamisKausiKoodiUri: h.hakukausi};
   });
   return haut;
+}
+
+export async function getHaku(oid: string): Promise<string> {
+  const response = await axios.get(`${configuration.hakuUrl}/${oid}`, {
+    headers,
+    })
+  return response.data.nimi.fi;
 }

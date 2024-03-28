@@ -302,5 +302,31 @@ module.exports = [
       },
     ],
   },
+  {
+    id: "get-haku",
+    url: "/kouta-internal/haku/:id",
+    method: "GET",
+    variants: [
+      {
+        id: "real",
+        type: "middleware",
+        options: {
+          // Express middleware to execute
+          middleware: (req, res) => {
+            const hakuId = req.params.id;
+            const haku = HAUT.find((hakuData) => hakuData.oid === hakuId);
+            if (haku) {
+              res.status(200);
+              res.send(haku);
+            } else {
+              res.status(404);
+              res.send({
+                message: "Haku not found",
+              });
+            }
+          },
+        },
+      }
+    ],
+  },
 ];
-
