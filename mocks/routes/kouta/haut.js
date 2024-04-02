@@ -274,6 +274,56 @@ const HAUT = [
     ],
     "modified": "2023-11-14T13:23:41"
   },
+  {
+    "oid": "1.2.246.562.29.00000000000000045102",
+    "hakukohdeOids": [
+      "1.2.246.562.20.00000000000000045103",
+      "1.2.246.562.20.00000000000000045104",
+      "1.2.246.562.20.00000000000000045105"
+    ],
+    "tila": "julkaistu",
+    "nimi": {
+      "en": "Tampere University Separate Admission/ Finnish MAOL Competition Route 2024"
+    },
+    "hakutapaKoodiUri": "hakutapa_02",
+    "alkamiskausiKoodiUri": "kausi_s",
+    "alkamisvuosi": "2024",
+    "kohdejoukkoKoodiUri": "haunkohdejoukko_12#1",
+    "hakulomaketyyppi": "ataru",
+    "hakulomakeAtaruId": "8cbb5397-3199-4e6f-933c-4065627dc3f3",
+    "hakulomakeKuvaus": {},
+    "hakulomakeLinkki": {
+      "fi": "https://untuvaopintopolku.fi/hakemus/haku/1.2.246.562.29.00000000000000045102?lang=fi",
+      "sv": "https://untuvaopintopolku.fi/hakemus/haku/1.2.246.562.29.00000000000000045102?lang=sv",
+      "en": "https://untuvaopintopolku.fi/hakemus/haku/1.2.246.562.29.00000000000000045102?lang=en"
+    },
+    "hakuvuosi": 2024,
+    "hakukausi": "kausi_k#1",
+    "metadata": {
+      "yhteyshenkilot": [],
+      "tulevaisuudenAikataulu": [],
+      "koulutuksenAlkamiskausi": {
+        "alkamiskausityyppi": "alkamiskausi ja -vuosi",
+        "koulutuksenAlkamiskausi": {
+          "koodiUri": "kausi_s"
+        },
+        "koulutuksenAlkamisvuosi": "2024"
+      }
+    },
+    "organisaatioOid": "1.2.246.562.10.79559059674",
+    "hakuajat": [
+      {
+        "alkaa": "2024-03-13T08:00:00",
+        "paattyy": "2024-03-27T15:00:00"
+      }
+    ],
+    "valintakokeet": [],
+    "muokkaaja": "1.2.246.562.24.57549617509",
+    "kielivalinta": [
+      "en"
+    ],
+    "modified": "2023-10-30T10:34:31"
+  }
 ];
 
 module.exports = [

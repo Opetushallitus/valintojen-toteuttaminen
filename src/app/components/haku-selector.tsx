@@ -4,6 +4,7 @@ import { ChangeEvent, useState } from "react";
 import { Haku, HaunAlkaminen, Tila, getHakuAlkamisKaudet } from "../lib/kouta";
 import { Koodi } from "../lib/koodisto";
 import { HakuList } from "./haku-list";
+import { getTranslation } from "../lib/common";
 
 const alkamisKausiMatchesSelected = (haku: Haku, selectedAlkamisKausi: HaunAlkaminen): boolean =>
   haku.alkamisVuosi === selectedAlkamisKausi.alkamisVuosi && haku.alkamisKausiKoodiUri.startsWith(selectedAlkamisKausi.alkamisKausiKoodiUri);
@@ -20,7 +21,7 @@ export const HakuSelector = ({haut, hakutavat}: {haut : Haku[], hakutavat: Koodi
 
   const filterHaut = (search: string, tila: Tila, kausi: HaunAlkaminen | undefined, tapa : Koodi | undefined) => {
     const filteredValue = haut.filter((haku: Haku) =>
-      haku.tila == tila && haku.nimi.fi?.toLowerCase().includes(search)
+      haku.tila == tila && getTranslation(haku.nimi).toLowerCase().includes(search)
        && (!kausi || alkamisKausiMatchesSelected(haku, kausi))
        && (!tapa || haku.hakutapaKoodiUri.startsWith(tapa.koodiUri))
     );

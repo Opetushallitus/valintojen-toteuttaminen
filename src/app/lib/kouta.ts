@@ -42,6 +42,11 @@ export type Haku = {
   hakutapaKoodiUri: string
 }
 
+export type Hakukohde = {
+  oid: string,
+  nimi: TranslatedName
+}
+
 export enum Tila {
   JULKAISTU, ARKISTOITU
 }
@@ -63,7 +68,7 @@ export async function getHaut(active: boolean = true) {
   const response = await axios.get(configuration.hautUrl, {
     headers,
     });
-  const haut: Haku[] = response.data.map((h: { oid: string; nimi: TranslatedName; tila: string, hakutapaKoodiUri: string, hakuvuosi: string, hakukausi: string}) => {
+  const haut: Haku[] = response.data.map((h: { oid: string, nimi: TranslatedName, tila: string, hakutapaKoodiUri: string, hakuvuosi: string, hakukausi: string}) => {
     const haunTila: Tila = Tila[h.tila.toUpperCase() as keyof typeof Tila];
     return {oid: h.oid, nimi: h.nimi, tila: haunTila, hakutapaKoodiUri: h.hakutapaKoodiUri, 
       alkamisVuosi: parseInt(h.hakuvuosi), alkamisKausiKoodiUri: h.hakukausi};
@@ -71,9 +76,15 @@ export async function getHaut(active: boolean = true) {
   return haut;
 }
 
-export async function getHaku(oid: string): Promise<string> {
-  const response = await axios.get(`${configuration.hakuUrl}/${oid}`, {
-    headers,
-    })
-  return response.data.nimi.fi;
+export async function getHaku(oid: string): Promise<TranslatedName> {
+  const response = await axios.get(`${configuration.hakuUrl}/${oid}`, {headers})
+  return response.data.nimi;
+}
+
+export async function getHakukohteet(hakuOid: string): Promise<Hakukohde[]> {
+  const response = await axios.get(`${configuration.hakukohteetUrl}?haku=${hakuOid}`);
+  const hakukohteet: Hakukohde[] = response.data.map((h: { oid: string; nimi: TranslatedName}) => {
+    return {oid: h.oid, nimi: h.nimi};
+  });
+  return hakukohteet;
 }

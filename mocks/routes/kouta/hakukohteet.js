@@ -1,0 +1,292 @@
+const HAKUKOHTEET = 
+[
+  {
+    "oid": "1.2.246.562.20.00000000000000045105",
+    "toteutusOid": "1.2.246.562.17.00000000000000019343",
+    "hakuOid": "1.2.246.562.29.00000000000000045102",
+    "tila": "julkaistu",
+    "nimi": {
+      "en": "Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs)"
+    },
+    "kaytetaanHaunAlkamiskautta": true,
+    "hakulomakeKuvaus": {},
+    "hakulomakeLinkki": {
+      "fi": "https://untuvaopintopolku.fi/hakemus/hakukohde/1.2.246.562.20.00000000000000045105?lang=fi",
+      "sv": "https://untuvaopintopolku.fi/hakemus/hakukohde/1.2.246.562.20.00000000000000045105?lang=sv",
+      "en": "https://untuvaopintopolku.fi/hakemus/hakukohde/1.2.246.562.20.00000000000000045105?lang=en"
+    },
+    "kaytetaanHaunHakulomaketta": true,
+    "aloituspaikat": 0,
+    "painotetutArvosanat": [],
+    "pohjakoulutusvaatimusKoodiUrit": [
+      "pohjakoulutusvaatimuskouta_123#1"
+    ],
+    "muuPohjakoulutusvaatimus": {},
+    "toinenAsteOnkoKaksoistutkinto": false,
+    "kaytetaanHaunAikataulua": true,
+    "valintaperusteId": "09ab50f3-fea7-45c5-a58f-5c9352553a6e",
+    "valintaperusteValintakokeet": [],
+    "yhdenPaikanSaanto": {
+      "voimassa": true,
+      "syy": "Hakukohde on yhden paikan säännön piirissä"
+    },
+    "koulutustyyppikoodi": "koulutustyyppi_3",
+    "salliikoHakukohdeHarkinnanvaraisuudenKysymisen": false,
+    "voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita": false,
+    "liitteetOnkoSamaToimitusaika": false,
+    "liitteetOnkoSamaToimitusosoite": false,
+    "liitteet": [
+      {
+        "id": "91ce7bda-3356-4136-aca3-6fbd1490bcd5",
+        "tyyppi": {
+          "koodiUri": "liitetyypitamm_3#1",
+          "nimi": {
+            "en": "Certificates",
+            "fi": "Todistukset",
+            "sv": "Betyg"
+          }
+        },
+        "nimi": {
+          "en": "Attachments"
+        },
+        "kuvaus": {
+          "en": "<p>You must attach the following documents to your application:</p><ul><li value=\"1\"><strong>The Competition certificate</strong> which demonstrates that you have been ranked in      the top 10 in the nationwide MAOL competition in mathematics, physics,      chemistry and informatics. Please name the attachment as follows:      lastname_firstname_kilp.pdf </li><li value=\"2\"><strong>Proof of English language proficiency</strong>, please see detailed instructions and additional      information on the&nbsp;<a href=\"https://www.tuni.fi/en/study-with-us/apply-to-tampere-university/applying-to-university-bachelors-programmes/language-requirements\" rel=\"noopener noreferrer\" target=\"_blank\">language requirements&nbsp;webpage</a></li></ul><p>You might also be required to attach a document that demonstrates that you are exempted from paying the tuition fees. Should you be considered a fee-paying student, you will also be asked whether you wish to apply for a scholarship offered within the Tampere University Scholarships Programme and further instructed on the attachments required for the application.</p>"
+        },
+        "toimitusaika": "2024-04-03T15:00:00",
+        "toimitustapa": "lomake"
+      }
+    ],
+    "valintakokeet": [],
+    "hakuajat": [],
+    "muokkaaja": "1.2.246.562.24.57549617509",
+    "tarjoaja": "1.2.246.562.10.82941251389",
+    "organisaatioOid": "1.2.246.562.10.82941251389",
+    "organisaatioNimi": {
+      "sv": "Rakennetun ympäristön tiedekunta",
+      "fi": "Rakennetun ympäristön tiedekunta",
+      "en": "Faculty of Built Environment"
+    },
+    "kielivalinta": [
+      "en"
+    ],
+    "modified": "2023-10-30T10:26:15",
+    "jarjestaaUrheilijanAmmKoulutusta": false,
+    "uudenOpiskelijanUrl": {
+      "en": "https://www.tuni.fi/en/students-guide/tampere-university-students-guide/welcome-new-university-students"
+    },
+    "paateltyAlkamiskausi": {
+      "alkamiskausityyppi": "alkamiskausi ja -vuosi",
+      "source": "1.2.246.562.29.00000000000000045102",
+      "kausiUri": "kausi_s#1",
+      "vuosi": "2024"
+    },
+    "odwKkTasot": {
+      "alempiKkAste": true,
+      "ylempiKkAste": true,
+      "kkTutkinnonTaso": 3,
+      "kkTutkinnonTasoSykli": 1
+    }
+  },
+  {
+    "oid": "1.2.246.562.20.00000000000000045103",
+    "toteutusOid": "1.2.246.562.17.00000000000000019346",
+    "hakuOid": "1.2.246.562.29.00000000000000045102",
+    "tila": "julkaistu",
+    "nimi": {
+      "en": "Finnish MAOL competition route, Natural Sciences and Mathematics, Science and Engineering, Bachelor and Master of Science (Technology) (3 + 2 yrs)"
+    },
+    "kaytetaanHaunAlkamiskautta": true,
+    "hakulomakeKuvaus": {},
+    "hakulomakeLinkki": {
+      "fi": "https://untuvaopintopolku.fi/hakemus/hakukohde/1.2.246.562.20.00000000000000045103?lang=fi",
+      "sv": "https://untuvaopintopolku.fi/hakemus/hakukohde/1.2.246.562.20.00000000000000045103?lang=sv",
+      "en": "https://untuvaopintopolku.fi/hakemus/hakukohde/1.2.246.562.20.00000000000000045103?lang=en"
+    },
+    "kaytetaanHaunHakulomaketta": true,
+    "aloituspaikat": 0,
+    "painotetutArvosanat": [],
+    "pohjakoulutusvaatimusKoodiUrit": [
+      "pohjakoulutusvaatimuskouta_123#1"
+    ],
+    "muuPohjakoulutusvaatimus": {},
+    "toinenAsteOnkoKaksoistutkinto": false,
+    "kaytetaanHaunAikataulua": true,
+    "valintaperusteId": "f9a52f7f-9b43-4686-bb5d-14436dca96c0",
+    "valintaperusteValintakokeet": [],
+    "yhdenPaikanSaanto": {
+      "voimassa": true,
+      "syy": "Hakukohde on yhden paikan säännön piirissä"
+    },
+    "koulutustyyppikoodi": "koulutustyyppi_3",
+    "salliikoHakukohdeHarkinnanvaraisuudenKysymisen": false,
+    "voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita": false,
+    "liitteetOnkoSamaToimitusaika": false,
+    "liitteetOnkoSamaToimitusosoite": false,
+    "liitteet": [
+      {
+        "id": "68d9eec4-44be-44cd-9da3-cbf924d5d6b9",
+        "tyyppi": {
+          "koodiUri": "liitetyypitamm_3#1",
+          "nimi": {
+            "en": "Certificates",
+            "fi": "Todistukset",
+            "sv": "Betyg"
+          }
+        },
+        "nimi": {
+          "en": "Attachments"
+        },
+        "kuvaus": {
+          "en": "<p>You must attach the following documents to your application:</p><ul><li value=\"1\"><strong>The Competition certificate</strong> which demonstrates that you have been ranked in      the top 10 in the nationwide MAOL competition in mathematics, physics,      chemistry and informatics. Please name the attachment as follows:      lastname_firstname_kilp.pdf </li><li value=\"2\"><strong>Proof of English language proficiency</strong>, please see detailed instructions and additional      information on the&nbsp;<a href=\"https://www.tuni.fi/en/study-with-us/apply-to-tampere-university/applying-to-university-bachelors-programmes/language-requirements\" rel=\"noopener noreferrer\" target=\"_blank\">language requirements&nbsp;webpage</a></li></ul><p>You might also be required to attach a document that demonstrates that you are exempted from paying the tuition fees. Should you be considered a fee-paying student, you will also be asked whether you wish to apply for a scholarship offered within the Tampere University Scholarships Programme and further instructed on the attachments required for the application.</p>"
+        },
+        "toimitusaika": "2024-04-03T15:00:00",
+        "toimitustapa": "lomake"
+      }
+    ],
+    "valintakokeet": [],
+    "hakuajat": [],
+    "muokkaaja": "1.2.246.562.24.57549617509",
+    "tarjoaja": "1.2.246.562.10.61176371294",
+    "organisaatioOid": "1.2.246.562.10.61176371294",
+    "organisaatioNimi": {
+      "fi": "Tekniikan ja luonnontieteiden tiedekunta",
+      "sv": "Tekniikan ja luonnontieteiden tiedekunta",
+      "en": "Faculty of Engineering and Natural Sciences"
+    },
+    "kielivalinta": [
+      "en"
+    ],
+    "modified": "2023-10-30T10:26:25",
+    "jarjestaaUrheilijanAmmKoulutusta": false,
+    "uudenOpiskelijanUrl": {
+      "en": "https://www.tuni.fi/en/students-guide/tampere-university-students-guide/welcome-new-university-students"
+    },
+    "paateltyAlkamiskausi": {
+      "alkamiskausityyppi": "alkamiskausi ja -vuosi",
+      "source": "1.2.246.562.29.00000000000000045102",
+      "kausiUri": "kausi_s#1",
+      "vuosi": "2024"
+    },
+    "odwKkTasot": {
+      "alempiKkAste": true,
+      "ylempiKkAste": true,
+      "kkTutkinnonTaso": 3,
+      "kkTutkinnonTasoSykli": 1
+    }
+  },
+  {
+    "oid": "1.2.246.562.20.00000000000000045104",
+    "toteutusOid": "1.2.246.562.17.00000000000000019347",
+    "hakuOid": "1.2.246.562.29.00000000000000045102",
+    "tila": "julkaistu",
+    "nimi": {
+      "en": "Finnish MAOL competition route, Computing and Electrical Engineering, Science and Engineering, Bachelor and Master of Science (Technology) (3 + 2 yrs)"
+    },
+    "kaytetaanHaunAlkamiskautta": true,
+    "hakulomakeKuvaus": {},
+    "hakulomakeLinkki": {
+      "fi": "https://untuvaopintopolku.fi/hakemus/hakukohde/1.2.246.562.20.00000000000000045104?lang=fi",
+      "sv": "https://untuvaopintopolku.fi/hakemus/hakukohde/1.2.246.562.20.00000000000000045104?lang=sv",
+      "en": "https://untuvaopintopolku.fi/hakemus/hakukohde/1.2.246.562.20.00000000000000045104?lang=en"
+    },
+    "kaytetaanHaunHakulomaketta": true,
+    "aloituspaikat": 0,
+    "painotetutArvosanat": [],
+    "pohjakoulutusvaatimusKoodiUrit": [
+      "pohjakoulutusvaatimuskouta_123#1"
+    ],
+    "muuPohjakoulutusvaatimus": {},
+    "toinenAsteOnkoKaksoistutkinto": false,
+    "kaytetaanHaunAikataulua": true,
+    "valintaperusteId": "bd1335bc-c70f-4af3-b238-3e49b973fdc3",
+    "valintaperusteValintakokeet": [],
+    "yhdenPaikanSaanto": {
+      "voimassa": true,
+      "syy": "Hakukohde on yhden paikan säännön piirissä"
+    },
+    "koulutustyyppikoodi": "koulutustyyppi_3",
+    "salliikoHakukohdeHarkinnanvaraisuudenKysymisen": false,
+    "voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita": false,
+    "liitteetOnkoSamaToimitusaika": false,
+    "liitteetOnkoSamaToimitusosoite": false,
+    "liitteet": [
+      {
+        "id": "c332a71c-56d9-4d22-b2fe-5dda56cd7f83",
+        "tyyppi": {
+          "koodiUri": "liitetyypitamm_3#1",
+          "nimi": {
+            "en": "Certificates",
+            "fi": "Todistukset",
+            "sv": "Betyg"
+          }
+        },
+        "nimi": {
+          "en": "Attachments"
+        },
+        "kuvaus": {
+          "en": "<p>You must attach the following documents to your application:</p><ul><li value=\"1\"><strong>The Competition certificate</strong> which demonstrates that you have been ranked in      the top 10 in the nationwide MAOL competition in mathematics, physics,      chemistry and informatics. Please name the attachment as follows:      lastname_firstname_kilp.pdf </li><li value=\"2\"><strong>Proof of English language proficiency</strong>, please see detailed instructions and additional      information on the&nbsp;<a href=\"https://www.tuni.fi/en/study-with-us/apply-to-tampere-university/applying-to-university-bachelors-programmes/language-requirements\" rel=\"noopener noreferrer\" target=\"_blank\">language requirements&nbsp;webpage</a></li></ul><p>You might also be required to attach a document that demonstrates that you are exempted from paying the tuition fees. Should you be considered a fee-paying student, you will also be asked whether you wish to apply for a scholarship offered within the Tampere University Scholarships Programme and further instructed on the attachments required for the application.</p>"
+        },
+        "toimitusaika": "2024-04-03T15:00:00",
+        "toimitustapa": "lomake"
+      }
+    ],
+    "valintakokeet": [],
+    "hakuajat": [],
+    "muokkaaja": "1.2.246.562.24.57549617509",
+    "tarjoaja": "1.2.246.562.10.61176371294",
+    "organisaatioOid": "1.2.246.562.10.61176371294",
+    "organisaatioNimi": {
+      "fi": "Tekniikan ja luonnontieteiden tiedekunta",
+      "sv": "Tekniikan ja luonnontieteiden tiedekunta",
+      "en": "Faculty of Engineering and Natural Sciences"
+    },
+    "kielivalinta": [
+      "en"
+    ],
+    "modified": "2023-10-30T10:26:20",
+    "jarjestaaUrheilijanAmmKoulutusta": false,
+    "uudenOpiskelijanUrl": {
+      "en": "https://www.tuni.fi/en/students-guide/tampere-university-students-guide/welcome-new-university-students"
+    },
+    "paateltyAlkamiskausi": {
+      "alkamiskausityyppi": "alkamiskausi ja -vuosi",
+      "source": "1.2.246.562.29.00000000000000045102",
+      "kausiUri": "kausi_s#1",
+      "vuosi": "2024"
+    },
+    "odwKkTasot": {
+      "alempiKkAste": true,
+      "ylempiKkAste": true,
+      "kkTutkinnonTaso": 3,
+      "kkTutkinnonTasoSykli": 1
+    }
+  }
+]
+
+module.exports = [
+  {
+    id: "get-hakukohteet",
+    url: "/kouta-internal/hakukohde/search",
+    method: "GET",
+    variants: [
+      {
+        id: "success",
+        type: "json",
+        options: {
+          status: 200,
+          body: HAKUKOHTEET,
+        },
+      },
+      {
+        id: "error",
+        type: "json",
+        options: {
+          status: 400,
+          body: {
+            message: "Error",
+          },
+        },
+      },
+    ],
+  }];
+  
