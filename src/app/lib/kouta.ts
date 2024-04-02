@@ -44,8 +44,10 @@ export type Haku = {
 
 export type Hakukohde = {
   oid: string,
-  nimi: TranslatedName
-}
+  nimi: TranslatedName,
+  organisaatioOid: string,
+  organisaatioNimi: TranslatedName
+};
 
 export enum Tila {
   JULKAISTU, ARKISTOITU
@@ -83,8 +85,9 @@ export async function getHaku(oid: string): Promise<TranslatedName> {
 
 export async function getHakukohteet(hakuOid: string): Promise<Hakukohde[]> {
   const response = await axios.get(`${configuration.hakukohteetUrl}?haku=${hakuOid}`);
-  const hakukohteet: Hakukohde[] = response.data.map((h: { oid: string; nimi: TranslatedName}) => {
-    return {oid: h.oid, nimi: h.nimi};
+  const hakukohteet: Hakukohde[] = response.data.map((h: { oid: string; nimi: TranslatedName, organisaatioOid: string, 
+      organisaatioNimi: TranslatedName}) => {
+    return {oid: h.oid, nimi: h.nimi, organisaatioNimi: h.organisaatioNimi, organisaatioOid: h.organisaatioOid};
   });
   return hakukohteet;
 }

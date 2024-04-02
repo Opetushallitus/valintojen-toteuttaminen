@@ -1,24 +1,26 @@
 import { test, expect } from '@playwright/test';
 
-test('selects haku', async ({ page }) => {
+test('filters active haku', async ({ page }) => {
   await page.goto('http://localhost:3404');
+
+  await expect(page.locator('tbody tr')).toHaveCount(3);
 
   const hakuInput = await page.locator('input[type=text]');
   hakuInput.fill('Luk');
-  await expect(page.getByTestId('haku-results').locator('.cursor-pointer')).toHaveCount(1);
-  await page.getByTestId('haku-results').locator('.cursor-pointer').first().click();
-  await expect(page.locator('input[type=text]')).toHaveValue('Hausjärven lukio jatkuva haku');
+  await expect(page.locator('tbody tr')).toHaveCount(1);
+  await expect(page.locator('tbody tr')).toContainText('Hausjärven lukio jatkuva haku');
 });
 
 test('selects passive haku', async ({ page }) => {
   await page.goto('http://localhost:3404');
   await page.getByTestId('haku-tila-toggle').click();
 
+  await expect(page.locator('tbody tr')).toHaveCount(3);
+
   const hakuInput = await page.locator('input[type=text]');
   hakuInput.fill('hak');
-  await expect(page.getByTestId('haku-results').locator('.cursor-pointer')).toHaveCount(3);
+  await expect(page.locator('tbody tr')).toHaveCount(3);
   hakuInput.fill('Leppä');
-  await expect(page.getByTestId('haku-results').locator('.cursor-pointer')).toHaveCount(1);
-  await page.getByTestId('haku-results').locator('.cursor-pointer').first().click();
-  await expect(page.locator('input[type=text]')).toHaveValue('Leppävirran lukio - Jatkuva haku');
+  await expect(page.locator('tbody tr')).toHaveCount(1);
+  await expect(page.locator('tbody tr')).toContainText('Leppävirran lukio - Jatkuva haku');
 });

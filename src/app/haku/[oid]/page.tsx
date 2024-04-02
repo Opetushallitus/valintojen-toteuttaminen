@@ -17,10 +17,13 @@ export default async function HakuPage({
       <div>
         <h1>Valintojen Toteuttaminen</h1>
         <h2>{getTranslation(hakuNimi)}</h2>
-        <ul>
+        <div>
           {hakukohteet.map((hk: Hakukohde) => 
-            <li key={hk.oid}>{getTranslation(hk.nimi)}</li>)}
-        </ul>
+            <div key={hk.oid}>
+              <p title={hk.organisaatioOid}>{getTranslation(hk.organisaatioNimi)}</p>
+              <p title={hk.oid}>{getTranslation(hk.nimi)}</p>
+            </div>)}
+        </div>
       </div>
     </main>
   );
