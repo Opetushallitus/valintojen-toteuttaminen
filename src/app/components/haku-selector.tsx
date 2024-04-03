@@ -64,7 +64,7 @@ export const HakuSelector = ({haut, hakutavat}: {haut : Haku[], hakutavat: Koodi
       />
       <div>
         <label htmlFor="hakutapa-select">Hakutapa</label>
-        <select name="hakutapa-select" onChange={changeHakutapa}>
+        <select data-testid="haku-hakutapa-select" name="hakutapa-select" onChange={changeHakutapa}>
           <option value={undefined}>Valitse...</option>
           {hakutavat.map((tapa, index) => {
             return <option value={index} key={tapa.koodiUri}>{tapa.nimi.fi}</option> //TODO: translate
@@ -73,7 +73,7 @@ export const HakuSelector = ({haut, hakutavat}: {haut : Haku[], hakutavat: Koodi
       </div>
       <div>
         <label htmlFor="alkamiskausi-select">Koulutuksen alkamiskausi</label>
-        <select name="alkamiskausi-select" onChange={changeAlkamisKausi}>
+        <select data-testid="haku-kausi-select" name="alkamiskausi-select" onChange={changeAlkamisKausi}>
           <option value={undefined}>Valitse...</option>
           {alkamisKaudet.map((kausi, index) => {
             return <option value={index} key={kausi.alkamisVuosi + kausi.alkamisKausiKoodiUri}>{kausi.alkamisVuosi} {kausi.alkamisKausiNimi}</option> //TODO: translate
