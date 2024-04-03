@@ -34,7 +34,7 @@ export const HakuList = ({haut, hakutavat}: {haut : Haku[], hakutavat: Koodi[]})
                 <TableCell>{Tila[haku.tila]}</TableCell>
                 <TableCell>{getMatchingHakutapa(haku.hakutapaKoodiUri)}</TableCell>
                 <TableCell>{haku.alkamisKausiKoodiUri ? `${haku.alkamisVuosi} ${getAlkamisKausi(haku.alkamisKausiKoodiUri)}` : ''}</TableCell>
-                <TableCell>0</TableCell>
+                <TableCell>{haku.hakukohteita}</TableCell>
               </TableRow>
             ))}
         </TableBody>

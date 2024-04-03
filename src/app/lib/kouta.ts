@@ -39,7 +39,8 @@ export type Haku = {
   tila: Tila,
   alkamisVuosi: number,
   alkamisKausiKoodiUri: string,
-  hakutapaKoodiUri: string
+  hakutapaKoodiUri: string,
+  hakukohteita: number
 }
 
 export type Hakukohde = {
@@ -70,10 +71,10 @@ export async function getHaut(active: boolean = true) {
   const response = await axios.get(configuration.hautUrl, {
     headers,
     });
-  const haut: Haku[] = response.data.map((h: { oid: string, nimi: TranslatedName, tila: string, hakutapaKoodiUri: string, hakuvuosi: string, hakukausi: string}) => {
+  const haut: Haku[] = response.data.map((h: { oid: string, nimi: TranslatedName, tila: string, hakutapaKoodiUri: string, hakuvuosi: string, hakukausi: string, hakukohdeOids: string[]}) => {
     const haunTila: Tila = Tila[h.tila.toUpperCase() as keyof typeof Tila];
     return {oid: h.oid, nimi: h.nimi, tila: haunTila, hakutapaKoodiUri: h.hakutapaKoodiUri, 
-      alkamisVuosi: parseInt(h.hakuvuosi), alkamisKausiKoodiUri: h.hakukausi};
+      alkamisVuosi: parseInt(h.hakuvuosi), alkamisKausiKoodiUri: h.hakukausi, hakukohteita: h.hakukohdeOids.length};
   });
   return haut;
 }

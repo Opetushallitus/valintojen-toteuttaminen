@@ -63,6 +63,7 @@ const HAUT = [
         "paattyy": "2024-10-31T00:00:00"
       }
     ],
+    "hakukohdeOids": [],
     "valintakokeet": [],
     "muokkaaja": "1.2.246.562.24.10327979532",
     "kielivalinta": [
@@ -138,6 +139,7 @@ const HAUT = [
         "paattyy": "2022-08-14T00:00:00"
       }
     ],
+    "hakukohdeOids": [],
     "valintakokeet": [],
     "muokkaaja": "1.2.246.562.24.61168703071",
     "kielivalinta": [
@@ -166,6 +168,7 @@ const HAUT = [
     },
     "organisaatioOid": "1.2.246.562.10.135945357610",
     "hakuajat": [],
+    "hakukohdeOids": [],
     "valintakokeet": [],
     "muokkaaja": "1.2.246.562.24.78053256082",
     "kielivalinta": [
@@ -232,6 +235,7 @@ const HAUT = [
         "paattyy": "2023-08-07T00:00:00"
       }
     ],
+    "hakukohdeOids": [],
     "valintakokeet": [],
     "muokkaaja": "1.2.246.562.24.65467286208",
     "kielivalinta": [
@@ -267,6 +271,7 @@ const HAUT = [
         "alkaa": "2023-11-14T08:00:00"
       }
     ],
+    "hakukohdeOids": [],
     "valintakokeet": [],
     "muokkaaja": "1.2.246.562.24.80913193985",
     "kielivalinta": [
