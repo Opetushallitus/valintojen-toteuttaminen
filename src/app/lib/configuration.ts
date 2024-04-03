@@ -17,5 +17,5 @@ export const configuration: Configuration = {
     hautUrl: `${DOMAIN}/kouta-internal/haku/search`,
     hakuUrl: `${DOMAIN}/kouta-internal/haku`,
     hakukohteetUrl: `${DOMAIN}/kouta-internal/hakukohde/search?all=false`,
-    kooditUrl: 'https://virkailija.untuvaopintopolku.fi/koodisto-service/rest/codeelement/codes/'
+    kooditUrl: `${DOMAIN}/koodisto-service/rest/codeelement/codes/`
 };
