@@ -15,9 +15,9 @@ export function getTranslation(translated: TranslatedName, userLanguage: Languag
     return translated[prop] || '';
   } else if (translated.fi && translated.fi.trim().length > 0) {
     return translated.fi;
-  } else if (translated.sv && translated.sv.trim().length > 0) {
-    return translated.sv;
+  } else if (translated.en && translated.en.trim().length > 0) {
+    return translated.en;
   }
-  return translated.en || '';
+  return translated.sv || '';
 }
 
