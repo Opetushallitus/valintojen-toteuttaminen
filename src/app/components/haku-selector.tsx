@@ -1,6 +1,9 @@
 'use client'
 import { ChangeEvent, useState } from "react";
 
+import { styled } from '@mui/material';
+import Grid from '@mui/material/Unstable_Grid2';
+
 import { Haku, HaunAlkaminen, Tila, getHakuAlkamisKaudet } from "../lib/kouta";
 import { Koodi } from "../lib/koodisto";
 import { HakuList } from "./haku-list";
@@ -8,6 +11,33 @@ import { getTranslation } from "../lib/common";
 
 const alkamisKausiMatchesSelected = (haku: Haku, selectedAlkamisKausi: HaunAlkaminen): boolean =>
   haku.alkamisVuosi === selectedAlkamisKausi.alkamisVuosi && haku.alkamisKausiKoodiUri.startsWith(selectedAlkamisKausi.alkamisKausiKoodiUri);
+
+const StyledGridContainer = styled(Grid)(
+  {
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    flexWrap: 'nowrap',
+    marginBottom: '2rem'
+  }
+)
+
+const StyledGrid = styled(Grid)(
+  {
+    alignSelf: 'flex-start',
+    alignItems: 'flex-start',
+    alignContent: 'flex-start',
+    justifyContent: 'flex-start',
+    input: {
+      width: '100%'
+    },
+    label: {
+      fontWeight: 500,
+      fontSize: '1rem'
+    },
+    flexWrap: 'nowrap',
+    rowGap: '0.7rem'
+  }
+)
 
 export const HakuSelector = ({haut, hakutavat}: {haut : Haku[], hakutavat: Koodi[]}) =>{
 
@@ -56,30 +86,36 @@ export const HakuSelector = ({haut, hakutavat}: {haut : Haku[], hakutavat: Koodi
 
   return (
     <div>
-      <button data-testid="haku-tila-toggle" onClick={toggleSearchActive}>{selectedTila === Tila.JULKAISTU ? 'Julkaistut' : 'Arkistoidut'}</button>
-      <input
-        onChange={handleSearchChange}
-        type="text"
-        placeholder="Hae hakuja"
-      />
-      <div>
-        <label htmlFor="hakutapa-select">Hakutapa</label>
-        <select data-testid="haku-hakutapa-select" name="hakutapa-select" onChange={changeHakutapa}>
-          <option value={undefined}>Valitse...</option>
-          {hakutavat.map((tapa, index) => {
-            return <option value={index} key={tapa.koodiUri}>{tapa.nimi.fi}</option> //TODO: translate
-          })}
-        </select>
-      </div>
-      <div>
-        <label htmlFor="alkamiskausi-select">Koulutuksen alkamiskausi</label>
-        <select data-testid="haku-kausi-select" name="alkamiskausi-select" onChange={changeAlkamisKausi}>
-          <option value={undefined}>Valitse...</option>
-          {alkamisKaudet.map((kausi, index) => {
-            return <option value={index} key={kausi.alkamisVuosi + kausi.alkamisKausiKoodiUri}>{kausi.alkamisVuosi} {kausi.alkamisKausiNimi}</option> //TODO: translate
-          })}
-        </select>
-      </div>
+      <StyledGridContainer container spacing={2} direction="row">
+        <StyledGrid container xs={6} direction="column">
+          <label htmlFor="haku-select">Hae hakuja</label>
+          <input
+            name="haku-select"
+            onChange={handleSearchChange}
+            type="text"
+            placeholder="Hae hakuja"
+          />
+          <button data-testid="haku-tila-toggle" onClick={toggleSearchActive}>{selectedTila === Tila.JULKAISTU ? 'Julkaistut' : 'Arkistoidut'}</button>
+        </StyledGrid>
+        <StyledGrid container item xs={2} direction="column">
+          <label htmlFor="hakutapa-select">Hakutapa</label>
+          <select data-testid="haku-hakutapa-select" name="hakutapa-select" onChange={changeHakutapa}>
+            <option value={undefined}>Valitse...</option>
+            {hakutavat.map((tapa, index) => {
+              return <option value={index} key={tapa.koodiUri}>{tapa.nimi.fi}</option> //TODO: translate
+            })}
+          </select>
+        </StyledGrid>
+        <StyledGrid container xs={2} direction="column">
+          <label htmlFor="alkamiskausi-select">Koulutuksen alkamiskausi</label>
+          <select data-testid="haku-kausi-select" name="alkamiskausi-select" onChange={changeAlkamisKausi}>
+            <option value={undefined}>Valitse...</option>
+            {alkamisKaudet.map((kausi, index) => {
+              return <option value={index} key={kausi.alkamisVuosi + kausi.alkamisKausiKoodiUri}>{kausi.alkamisVuosi} {kausi.alkamisKausiNimi}</option> //TODO: translate
+            })}
+          </select>
+        </StyledGrid>
+      </StyledGridContainer>
       {results && <HakuList haut={results} hakutavat={hakutavat}></HakuList>}
     </div>
   );
