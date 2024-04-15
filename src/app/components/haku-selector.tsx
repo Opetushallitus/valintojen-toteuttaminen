@@ -1,7 +1,7 @@
 'use client'
 import { ChangeEvent, useState } from "react";
 
-import { styled } from '@mui/material';
+import { styled, FormControl, Button, Select, MenuItem, SelectChangeEvent, FormLabel, Input } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 
 import { Haku, HaunAlkaminen, Tila, getHakuAlkamisKaudet } from "../lib/kouta";
@@ -44,8 +44,8 @@ export const HakuSelector = ({haut, hakutavat}: {haut : Haku[], hakutavat: Koodi
   const [results, setResults] = useState<Haku[]>(haut.filter(h => h.tila === Tila.JULKAISTU));
   const [search, setSearch] = useState<string>('');
   const [selectedTila, setSelectedTila] = useState<Tila>(Tila.JULKAISTU);
-  const [selectedAlkamisKausi, setSelectedAlkamisKausi] = useState<HaunAlkaminen | undefined>();
-  const [selectedHakutapa, setSelectedHakutapa] = useState<Koodi | undefined>();
+  const [selectedAlkamisKausi, setSelectedAlkamisKausi] = useState<HaunAlkaminen>();
+  const [selectedHakutapa, setSelectedHakutapa] = useState<Koodi>();
 
   const alkamisKaudet = getHakuAlkamisKaudet();
 
@@ -72,14 +72,16 @@ export const HakuSelector = ({haut, hakutavat}: {haut : Haku[], hakutavat: Koodi
     filterHaut(search, toggledTila, selectedAlkamisKausi, selectedHakutapa);
   }
 
-  const changeHakutapa = (e: ChangeEvent<HTMLSelectElement>) => {
-    const tapa = e.target.value? hakutavat[parseInt(e.target.value)]: undefined;
+  const changeHakutapa = (e: SelectChangeEvent) => {
+    const idx = parseInt(e.target.value);
+    const tapa = idx > -1? hakutavat[idx]: undefined;
     setSelectedHakutapa(tapa);
     filterHaut(search, selectedTila, selectedAlkamisKausi, tapa);
   }
 
-  const changeAlkamisKausi = (e: ChangeEvent<HTMLSelectElement>) => {
-    const kausi = e.target.value? alkamisKaudet[parseInt(e.target.value)]: undefined;
+  const changeAlkamisKausi = (e: SelectChangeEvent) => {
+    const idx = parseInt(e.target.value);
+    const kausi = idx > -1? alkamisKaudet[idx]: undefined;
     setSelectedAlkamisKausi(kausi);
     filterHaut(search, selectedTila, kausi, selectedHakutapa);
   }
@@ -88,32 +90,38 @@ export const HakuSelector = ({haut, hakutavat}: {haut : Haku[], hakutavat: Koodi
     <div>
       <StyledGridContainer container spacing={2} direction="row">
         <StyledGrid container xs={6} direction="column">
-          <label htmlFor="haku-select">Hae hakuja</label>
-          <input
-            name="haku-select"
-            onChange={handleSearchChange}
-            type="text"
-            placeholder="Hae hakuja"
-          />
-          <button data-testid="haku-tila-toggle" onClick={toggleSearchActive}>{selectedTila === Tila.JULKAISTU ? 'Julkaistut' : 'Arkistoidut'}</button>
-        </StyledGrid>
-        <StyledGrid container item xs={2} direction="column">
-          <label htmlFor="hakutapa-select">Hakutapa</label>
-          <select data-testid="haku-hakutapa-select" name="hakutapa-select" onChange={changeHakutapa}>
-            <option value={undefined}>Valitse...</option>
-            {hakutavat.map((tapa, index) => {
-              return <option value={index} key={tapa.koodiUri}>{tapa.nimi.fi}</option> //TODO: translate
-            })}
-          </select>
+          <FormControl size="small" sx={{ m: 1, minWidth: 180, textAlign: 'left'}}>
+            <FormLabel htmlFor="haku-select">Hae hakuja</FormLabel>
+            <Input
+              name="haku-select"
+              onChange={handleSearchChange}
+              type="text"
+              placeholder="Hae hakuja"
+            />
+            <Button data-testid="haku-tila-toggle" onClick={toggleSearchActive}>{selectedTila === Tila.JULKAISTU ? 'Julkaistut' : 'Arkistoidut'}</Button>
+          </FormControl>
         </StyledGrid>
         <StyledGrid container xs={2} direction="column">
-          <label htmlFor="alkamiskausi-select">Koulutuksen alkamiskausi</label>
-          <select data-testid="haku-kausi-select" name="alkamiskausi-select" onChange={changeAlkamisKausi}>
-            <option value={undefined}>Valitse...</option>
-            {alkamisKaudet.map((kausi, index) => {
-              return <option value={index} key={kausi.alkamisVuosi + kausi.alkamisKausiKoodiUri}>{kausi.alkamisVuosi} {kausi.alkamisKausiNimi}</option> //TODO: translate
-            })}
-          </select>
+          <FormControl size="small" sx={{ m: 1, minWidth: 180, textAlign: 'left'}}>
+            <FormLabel htmlFor="hakutapa-select">Hakutapa</FormLabel>
+            <Select data-testid="haku-hakutapa-select" name="hakutapa-select" onChange={changeHakutapa} defaultValue="-1">
+              <MenuItem value={-1}>Valitse...</MenuItem>
+              {hakutavat.map((tapa, index) => {
+                return <MenuItem value={index} key={tapa.koodiUri}>{tapa.nimi.fi}</MenuItem> //TODO: translate
+              })}
+            </Select>
+          </FormControl>
+        </StyledGrid>
+        <StyledGrid container xs={2} direction="column">
+          <FormControl size="small" sx={{ m: 1, minWidth: 180, textAlign: 'left'}}>
+            <FormLabel htmlFor="alkamiskausi-select">Koulutuksen alkamiskausi</FormLabel>
+            <Select data-testid="haku-kausi-select" name="alkamiskausi-select" onChange={changeAlkamisKausi} defaultValue="-1">
+              <MenuItem value={-1}>Valitse...</MenuItem>
+              {alkamisKaudet.map((kausi, index) => {
+                return <MenuItem value={index} key={kausi.alkamisVuosi + kausi.alkamisKausiKoodiUri}>{kausi.alkamisVuosi} {kausi.alkamisKausiNimi}</MenuItem> //TODO: translate
+              })}
+            </Select>
+          </FormControl>
         </StyledGrid>
       </StyledGridContainer>
       {results && <HakuList haut={results} hakutavat={hakutavat}></HakuList>}
