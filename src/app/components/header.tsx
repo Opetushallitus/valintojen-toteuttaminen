@@ -14,7 +14,7 @@ export default async function Header({title = 'Valintojen toteuttaminen', isHome
   const headerStyle: CSSProperties = {
     borderBottom: '1px solid rgba(0, 0, 0, 0.15)', 
     backgroundColor: 'white',
-    padding: '0.5rem 5vw',
+    padding: '0.5rem 3vw',
     width: '100svw',
     left: 0,
     position: 'absolute',
