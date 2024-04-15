@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import { configuration } from "./lib/configuration";
 import { HakuSelector } from "./components/haku-selector";
 import { getHakutavat } from "./lib/koodisto";
+import Header from "./components/header";
 
 export default async function Home() {
 
@@ -12,19 +13,12 @@ export default async function Home() {
   const haut = await getHaut();
   const hakutavat = await getHakutavat();
 
-  const mainContainerStyle = {
-    border: '1px solid rgba(0, 0, 0, 0.15)', 
-    backgroundColor: 'white',
-    padding: '2rem',
-  };
-
   return (
     <main>
-      <div>
-        <h1 style={{textAlign: 'left'}}>Valintojen Toteuttaminen</h1>
-        <div style={mainContainerStyle}>
-          <HakuSelector haut={haut} hakutavat={hakutavat}/>
-        </div>
+      <Header isHome={true} />
+      <div className="mainContainer">
+        <h2 style={{textAlign: 'left'}}>Haut</h2>
+        <HakuSelector haut={haut} hakutavat={hakutavat}/>
       </div>
     </main>
   );
