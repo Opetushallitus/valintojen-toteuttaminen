@@ -1,18 +1,9 @@
 "use client";
 
 import { configuration } from "./configuration";
-import axios from "axios";
 import { TranslatedName } from "./common";
 import { Haku, Hakukohde, Tila } from "./kouta-types";
-
-const client = axios.create({
-  headers: {
-    Accept: "application/json",
-    "Caller-id": "1.2.246.562.10.00000000001.valintojen-toteuttaminen",
-    "Content-type": "Application/x-www-form-urlencoded",
-    CSRF: "1.2.246.562.10.00000000001.valintojen-toteuttaminen",
-  },
-});
+import { client } from "./http-client";
 
 export async function getHaut(active: boolean = true) {
   console.log("LOGIN TO KOUTA");
@@ -37,7 +28,7 @@ export async function getHaut(active: boolean = true) {
         hakutapaKoodiUri: h.hakutapaKoodiUri,
         alkamisVuosi: parseInt(h.hakuvuosi),
         alkamisKausiKoodiUri: h.hakukausi,
-        hakukohteita: h.hakukohdeOids.length,
+        //hakukohteita: h.hakukohdeOids?.length,
       };
     }
   );
@@ -50,8 +41,9 @@ export async function getHaku(oid: string): Promise<TranslatedName> {
 }
 
 export async function getHakukohteet(hakuOid: string): Promise<Hakukohde[]> {
+  const login = await client.get("/kouta-internal/auth/login");
   const response = await client.get(
-    `${configuration.hakukohteetUrl}?haku=${hakuOid}`
+    `${configuration.hakukohteetUrl}&haku=${hakuOid}`
   );
   const hakukohteet: Hakukohde[] = response.data.map(
     (h: {

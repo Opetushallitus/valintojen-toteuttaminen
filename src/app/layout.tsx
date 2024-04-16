@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import QueryProvider from "./query-provider";
 import { login } from "./lib/login-handler";
+import { Suspense } from "react";
+import { CircularProgress } from "@mui/material";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,7 +22,9 @@ export default async function RootLayout({
   return (
     <html lang="fi">
       <body className={inter.className}>
-        <QueryProvider>{children}</QueryProvider>
+        <Suspense fallback={<CircularProgress />}>
+          <QueryProvider>{children}</QueryProvider>
+        </Suspense>
       </body>
     </html>
   );

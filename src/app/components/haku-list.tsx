@@ -1,7 +1,7 @@
 'use client'
 import { Koodi } from '../lib/koodisto';
-import { Haku } from '../lib/kouta-types';
 import ListTable, { makeCountColumn, makeHakuColumn, makeHakutapaColumn, makeKoulutuksenAlkamiskausiColumn, makeTilaColumn } from './table/ListTable';
+import { Haku } from '../lib/kouta-types';
 
 export const HakuList = ({haut, hakutavat}: {haut : Haku[], hakutavat: Koodi[]}) =>{
 

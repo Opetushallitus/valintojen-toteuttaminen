@@ -1,18 +1,21 @@
-'use server';
+"use client";
 
 import { getTranslation } from "@/app/lib/common";
 import Header from "@/app/components/header";
 import { HakukohdeList } from "./hakukohde-list";
 import { getHaku, getHakukohteet } from "@/app/lib/kouta";
+import { useSuspenseQuery } from "@tanstack/react-query";
 
-export default async function HakuPage({
-  params
-}: {
-  params: { oid: string}
-}) {
+export default function HakuPage({ params }: { params: { oid: string } }) {
+  const { data: hakuNimi } = useSuspenseQuery({
+    queryKey: ["getHaku", params.oid],
+    queryFn: () => getHaku(params.oid),
+  });
 
-  const hakuNimi = await getHaku(params.oid);
-  const hakukohteet = await getHakukohteet(params.oid);
+  const { data: hakukohteet } = useSuspenseQuery({
+    queryKey: ["getHakukohteet", params.oid],
+    queryFn: () => getHakukohteet(params.oid),
+  });
 
   return (
     <main>

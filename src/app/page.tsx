@@ -3,7 +3,6 @@ import { HakuSelector } from "./components/haku-selector";
 import Header from "./components/header";
 
 export default async function Home() {
-
   return (
     <main>
       <Header isHome={true} />

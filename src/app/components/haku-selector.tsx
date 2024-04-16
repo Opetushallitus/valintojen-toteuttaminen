@@ -8,7 +8,7 @@ import { Haku, HaunAlkaminen, Tila, getHakuAlkamisKaudet } from "../lib/kouta-ty
 import { Koodi, getHakutavat } from "../lib/koodisto";
 import { HakuList } from "./haku-list";
 import { getTranslation } from "../lib/common";
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { getHaut } from "../lib/kouta";
 
 const alkamisKausiMatchesSelected = (haku: Haku, selectedAlkamisKausi: HaunAlkaminen): boolean =>
@@ -42,21 +42,17 @@ const StyledGrid = styled(Grid)(
 )
 
 export const HakuSelector = () => {
-  const {data: haut, isLoading: isHautLoading} = useQuery({
+  const {data: haut} = useSuspenseQuery({
     queryKey: ['getHaut'],
     queryFn: () => getHaut(),
   })
 
-  console.log({haut})
-
-  const {data: hakutavat, isLoading: isHakutavatLoading} = useQuery({
+  const {data: hakutavat} = useSuspenseQuery({
     queryKey: ['getHakutavat'],
     queryFn: () => getHakutavat(),
   })
 
-  console.log({hakutavat})
-
-  return haut && hakutavat && <HakuSelectorInternal haut={haut} hakutavat={hakutavat}/>
+  return <HakuSelectorInternal haut={haut} hakutavat={hakutavat}/>
 }
 
 const HakuSelectorInternal = ({haut, hakutavat}: {haut : Haku[], hakutavat: Koodi[]}) => {
