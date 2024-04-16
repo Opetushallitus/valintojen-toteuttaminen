@@ -3,18 +3,20 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3404 --experimental-https",
+    "dev": "touch .env.development.local && NODE_EXTRA_CA_CERTS=\"$(mkcert -CAROOT)/rootCA.pem\" node --env-file=.env --env-file=.env.development.local dev-server.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "test:ui": "playwright test",
     "test": "vitest",
-    "mocks": "mocks-server"
+    "mocks": "mocks-server",
+    "create-dev-certs": "mkdir -p certificates && cd certificates && mkcert localhost"
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
     "@mui/material": "^5.15.14",
+    "@tanstack/react-query": "^5.29.2",
     "axios": "^1.6.7",
     "cookie": "^0.6.0",
     "next": "^14.1.4",
@@ -35,6 +37,7 @@
     "autoprefixer": "^10.0.1",
     "eslint": "^8",
     "eslint-config-next": "14.1.0",
+    "http-proxy-middleware": "^3.0.0",
     "jsdom": "^24.0.0",
     "playwright": "^1.42.0",
     "postcss": "^8",

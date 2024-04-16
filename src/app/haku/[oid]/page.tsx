@@ -1,9 +1,9 @@
 'use server';
 
 import { getTranslation } from "@/app/lib/common";
-import {  getHaku, getHakukohteet } from "../../lib/kouta";
 import Header from "@/app/components/header";
 import { HakukohdeList } from "./hakukohde-list";
+import { getHaku, getHakukohteet } from "@/app/lib/kouta";
 
 export default async function HakuPage({
   params

@@ -5,31 +5,30 @@ import { configuration } from "@/app/lib/configuration";
 import { validateService } from "@/app/lib/cas/client";
 import axios from "axios";
 
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic";
+
+const basePath = process.env.basePath ?? "/";
 
 export async function GET(req: NextRequest) {
   console.log("LOGIN ROUTE GET");
-  console.log("req cookies", req.cookies.getAll());
-  console.log("cookies", cookies().getAll());
-  //console.log(req.cookies);
-  // if(res) {
-  //   console.log(res.getHeaders())
-  // }
   //console.log(req.credentials);
   //console.log(req.url);
-  const requestURL = new URL(req.url, configuration.serviceUrl);
-  const ticket = requestURL.searchParams.get("ticket") || "";
+  const nextRequestURL = new URL(req.url);
+  const ticket = nextRequestURL.searchParams.get("ticket") || "";
+  const requestURL = new URL(
+    configuration.serviceUrl + nextRequestURL.pathname
+  );
   requestURL.searchParams.delete("ticket");
   //SHOULD NOT BE NECESSARY TO VALIDATE?
-  //const resp = await validateService(ticket, requestURL);
+  await validateService(ticket, requestURL);
   //console.log(cookies().getAll());
   //console.log(resp);
   //cookies().set('TEMP', ticket);
   //cookies().set(configuration.sessionCookie, 'value', { secure: true });
   cookies().set(configuration.sessionCookie, ticket, {
     httpOnly: true,
-    path: "/",
+    path: basePath,
   });
 
-  return NextResponse.redirect("https://localhost:3404");
+  return NextResponse.redirect(new URL(basePath, req.url));
 }
