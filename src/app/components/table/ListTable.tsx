@@ -1,6 +1,6 @@
 'use client';
 
-import { Table, TableBody, TableCell, TableHead, TableRow, styled } from '@mui/material';
+import { Link as MuiLink, Table, TableBody, TableCell, TableHead, TableRow, styled } from '@mui/material';
 import { getTranslation } from '@/app/lib/common';
 import { Haku, getAlkamisKausi, Tila } from '@/app/lib/kouta-types';
 import Link from 'next/link';
@@ -16,7 +16,7 @@ export const makeHakuColumn = (
 ): Column => ({
   title: 'Nimi',
   key: 'hakuNimi',
-  render: (haku: Haku) => <Link href={`haku/${haku.oid}`}>{getTranslation(haku.nimi)}</Link>,
+  render: (haku: Haku) => <Link href={`/haku/${haku.oid}`}>{getTranslation(haku.nimi)}</Link>,
   style: {
     width: 'auto',
   },
@@ -28,7 +28,6 @@ export const makeCountColumn = ({title, key, amountProp}: {title: string, key: s
   render: (props: any) => <span>{props[amountProp] ?? 0}</span>,
   style: { width: 0 },
 });
-
 
 export const makeTilaColumn = (): Column => ({
   title: 'Tila',

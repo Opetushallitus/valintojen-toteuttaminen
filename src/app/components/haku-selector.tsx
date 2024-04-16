@@ -144,3 +144,5 @@ const HakuSelectorInternal = ({haut, hakutavat}: {haut : Haku[], hakutavat: Kood
     </div>
   );
 }
+
+export default HakuSelector

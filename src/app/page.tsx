@@ -1,6 +1,19 @@
 'use server'
-import { HakuSelector } from "./components/haku-selector";
+
+import { CircularProgress } from "@mui/material";
+import dynamic from "next/dynamic";
 import Header from "./components/header";
+
+const HakuSelector = dynamic(() => import("./components/haku-selector"), {
+  ssr: false,
+  loading: () => <CircularProgress />
+});
+
+const mainContainerStyle = {
+  border: '1px solid rgba(0, 0, 0, 0.15)', 
+  backgroundColor: 'white',
+  padding: '2rem',
+};
 
 export default async function Home() {
   return (

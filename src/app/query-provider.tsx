@@ -6,7 +6,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 1,
-      throwOnError: true
+      throwOnError: true,
     },
   },
 });
@@ -17,6 +17,6 @@ export default function QueryProvider({
   children: React.ReactNode;
 }) {
   return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 }
