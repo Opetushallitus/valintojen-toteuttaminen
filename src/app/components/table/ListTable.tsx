@@ -74,7 +74,7 @@ const StyledCell = styled(TableCell)(
 const StyledRow = styled(TableRow)(
   {
     borderSpacing: '0px',
-    '&:nth-child(even)': {
+    '&:nth-of-type(even)': {
       backgroundColor: '#f5f5f5'
     },
     '&:hover': {

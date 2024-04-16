@@ -14,7 +14,7 @@ const StyledItem = styled('div')({
     fontWeight: 500
   },
 
-  '&:nth-child(even)': {
+  '&:nth-of-type(even)': {
     backgroundColor: '#f5f5f5'
   },
   '&:hover': {
