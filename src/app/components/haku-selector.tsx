@@ -4,10 +4,12 @@ import { ChangeEvent, useState } from "react";
 import { styled, FormControl, Button, Select, MenuItem, SelectChangeEvent, FormLabel, Input } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 
-import { Haku, HaunAlkaminen, Tila, getHakuAlkamisKaudet } from "../lib/kouta";
-import { Koodi } from "../lib/koodisto";
+import { Haku, HaunAlkaminen, Tila, getHakuAlkamisKaudet } from "../lib/kouta-types";
+import { Koodi, getHakutavat } from "../lib/koodisto";
 import { HakuList } from "./haku-list";
 import { getTranslation } from "../lib/common";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { getHaut } from "../lib/kouta";
 
 const alkamisKausiMatchesSelected = (haku: Haku, selectedAlkamisKausi: HaunAlkaminen): boolean =>
   haku.alkamisVuosi === selectedAlkamisKausi.alkamisVuosi && haku.alkamisKausiKoodiUri.startsWith(selectedAlkamisKausi.alkamisKausiKoodiUri);
@@ -39,8 +41,16 @@ const StyledGrid = styled(Grid)(
   }
 )
 
-export const HakuSelector = ({haut, hakutavat}: {haut : Haku[], hakutavat: Koodi[]}) =>{
+export const HakuSelector = ({hakutavat}: {hakutavat: Array<Koodi>}) => {
+  const {data: haut} = useSuspenseQuery({
+    queryKey: ['getHaut'],
+    queryFn: () => getHaut(),
+  })
 
+  return <HakuSelectorInternal haut={haut} hakutavat={hakutavat}/>
+}
+
+const HakuSelectorInternal = ({haut, hakutavat}: {haut : Haku[], hakutavat: Koodi[]}) => {
   const [results, setResults] = useState<Haku[]>(haut.filter(h => h.tila === Tila.JULKAISTU));
   const [search, setSearch] = useState<string>('');
   const [selectedTila, setSelectedTila] = useState<Tila>(Tila.JULKAISTU);
@@ -129,3 +139,5 @@ export const HakuSelector = ({haut, hakutavat}: {haut : Haku[], hakutavat: Koodi
     </div>
   );
 }
+
+export default HakuSelector

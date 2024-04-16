@@ -1,16 +1,16 @@
-import { login } from "./lib/login-handler";
-import { getHaut, Haku } from "./lib/kouta";
-import { cookies } from 'next/headers';
-import { configuration } from "./lib/configuration";
-import { HakuSelector } from "./components/haku-selector";
-import { getHakutavat } from "./lib/koodisto";
+'use server'
+
+import { CircularProgress } from "@mui/material";
+import dynamic from "next/dynamic";
 import Header from "./components/header";
+import { getHakutavat } from "./lib/koodisto";
+
+const HakuSelector = dynamic(() => import("./components/haku-selector"), {
+  ssr: false,
+  loading: () => <CircularProgress />
+});
 
 export default async function Home() {
-
-  //await login();
-
-  const haut = await getHaut();
   const hakutavat = await getHakutavat();
 
   return (
@@ -18,7 +18,7 @@ export default async function Home() {
       <Header isHome={true} />
       <div className="mainContainer">
         <h2 style={{textAlign: 'left'}}>Haut</h2>
-        <HakuSelector haut={haut} hakutavat={hakutavat}/>
+        <HakuSelector hakutavat={hakutavat}/>
       </div>
     </main>
   );

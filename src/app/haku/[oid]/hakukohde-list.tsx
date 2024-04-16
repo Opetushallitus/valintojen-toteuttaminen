@@ -1,8 +1,10 @@
 'use client'
 
 import { getTranslation } from "@/app/lib/common";
-import { Hakukohde } from "@/app/lib/kouta";
+import { getHakukohteet } from "@/app/lib/kouta";
+import { Hakukohde } from "@/app/lib/kouta-types";
 import { styled } from "@mui/material";
+import { useSuspenseQuery } from "@tanstack/react-query";
 
 const StyledList = styled('div')({
   maxWidth: '20vw',
@@ -22,7 +24,12 @@ const StyledItem = styled('div')({
   }
 });
 
-export const HakukohdeList = ({hakukohteet}: {hakukohteet : Hakukohde[]}) =>{
+export const HakukohdeList = ({oid}: {oid: string}) =>{
+
+  const { data: hakukohteet } = useSuspenseQuery({
+    queryKey: ["getHakukohteet", oid],
+    queryFn: () => getHakukohteet(oid),
+  });
 
     return (
       <StyledList>
@@ -34,3 +41,5 @@ export const HakukohdeList = ({hakukohteet}: {hakukohteet : Hakukohde[]}) =>{
       </StyledList>
     );
 }
+
+export default HakukohdeList

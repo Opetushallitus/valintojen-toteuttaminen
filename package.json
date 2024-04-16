@@ -3,24 +3,27 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3404",
+    "dev": "touch .env.development.local && NODE_EXTRA_CA_CERTS=\"$(mkcert -CAROOT)/rootCA.pem\" node --env-file=.env --env-file=.env.development.local dev-server.mjs",
+    "dev-test": "VIRKAILIJA_URL=http://localhost:3104 npm run dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "test:ui": "playwright test",
     "test": "vitest",
-    "mocks": "mocks-server"
+    "mocks": "mocks-server",
+    "create-dev-certs": "mkdir -p certificates && cd certificates && mkcert localhost && mkcert -install"
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
     "@mui/material": "^5.15.14",
-    "axios": "^1.6.7",
+    "@tanstack/react-query": "^5.29.2",
+    "@tanstack/react-query-devtools": "^5.29.2",
     "cookie": "^0.6.0",
-    "next": "14.1.0",
+    "next": "^14.2.0",
     "react": "^18",
     "react-dom": "^18",
-    "xml2js": "^0.6.2"
+    "xior": "^0.3.11"
   },
   "devDependencies": {
     "@mocks-server/main": "^4.1.0",
@@ -35,6 +38,7 @@
     "autoprefixer": "^10.0.1",
     "eslint": "^8",
     "eslint-config-next": "14.1.0",
+    "http-proxy-middleware": "^3.0.0",
     "jsdom": "^24.0.0",
     "playwright": "^1.42.0",
     "postcss": "^8",

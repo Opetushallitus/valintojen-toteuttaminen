@@ -1,21 +1,29 @@
-const DOMAIN = 'http://localhost:3104';
+const DOMAIN = "https://localhost:3404"; //http://localhost:3104';
 
-interface Configuration  {
-    serviceUrl: string,
-    loginUrl: string,
-    sessionCookie: string,
-    hautUrl: string,
-    hakuUrl: string,
-    hakukohteetUrl: string,
-    kooditUrl: string
-};
+interface Configuration {
+  serviceUrl: string;
+  loginUrl: string;
+  sessionCookie: string;
+  hautUrl: string;
+  hakuUrl: string;
+  hakukohteetUrl: string;
+  kooditUrl: string;
+  koutaInternalLogin: string;
+  asiointiKieliUrl: string;
+}
+
+const serviceUrl = process.env.SERVICE_URL ?? `${DOMAIN}${process.env.basePath}`
 
 export const configuration: Configuration = {
-    serviceUrl: process.env.SERVICE_URL || 'http://localhost:3404',
-    loginUrl: process.env.LOGIN_URL || 'https://virkailija.untuvaopintopolku.fi/cas/login?service=http://ataru-virkailija.kehittajan-oma-kone.untuvaopintopolku.fi:3404/api/login',
-    sessionCookie: process.env.SESSION_COOKIE || 'JSESSIONID',
-    hautUrl: `${DOMAIN}/kouta-internal/haku/search`,
-    hakuUrl: `${DOMAIN}/kouta-internal/haku`,
-    hakukohteetUrl: `${DOMAIN}/kouta-internal/hakukohde/search?all=false`,
-    kooditUrl: `${DOMAIN}/koodisto-service/rest/codeelement/codes/`
+  serviceUrl,
+  loginUrl:
+    process.env.LOGIN_URL ||
+    `${DOMAIN}/cas/login`,
+  sessionCookie: process.env.SESSION_COOKIE || "JSESSIONID",
+  hautUrl: `${DOMAIN}/kouta-internal/haku/search`,
+  hakuUrl: `${DOMAIN}/kouta-internal/haku`,
+  hakukohteetUrl: `${DOMAIN}/kouta-internal/hakukohde/search?all=false`,
+  kooditUrl: `${DOMAIN}/koodisto-service/rest/codeelement/codes/`,
+  koutaInternalLogin: `${DOMAIN}/kouta-internal/auth/login`,
+  asiointiKieliUrl: `${DOMAIN}/oppijanumerorekisteri-service/henkilo/current/asiointiKieli`
 };

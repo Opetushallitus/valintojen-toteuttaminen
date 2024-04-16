@@ -1,6 +1,6 @@
 import { configuration } from "./configuration";
-import axios from "axios";
 import { TranslatedName, Language } from "./common";
+import { client } from "./http-client";
 
 export type Koodi = {
   koodiUri: string,
@@ -8,18 +8,13 @@ export type Koodi = {
 }
 
 async function getKoodit(koodisto: string): Promise<Koodi[]> {
-  const headers = {
-    accept: 'application/json', 
-    'Caller-id': 'valintojen-toteuttaminen'
-  };
-
   const getTranslatedNimi = (language: Language, metadata: [{nimi: string, kieli: string}]): string => {
     const matchingData= metadata.find((m: {nimi: string, kieli: string}) => 
       Language[m.kieli.toUpperCase() as keyof typeof Language] === language);
     return matchingData ? matchingData.nimi : '';
   }
 
-  const response = await axios.get(configuration.kooditUrl + koodisto, {headers});
+  const response = await client.get(configuration.kooditUrl + koodisto);
   return response.data.map((k: { koodiUri: string, metadata: [{nimi: string, kieli: string}]}) => {
     const translated = {
       fi: getTranslatedNimi(Language.FI, k.metadata),
@@ -31,7 +26,7 @@ async function getKoodit(koodisto: string): Promise<Koodi[]> {
 }
 
 export async function getHakutavat(): Promise<Koodi[]> {
-  return await getKoodit('hakutapa');
+  return getKoodit('hakutapa');
 }
 
 
