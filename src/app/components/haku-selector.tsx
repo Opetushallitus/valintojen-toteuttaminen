@@ -41,15 +41,10 @@ const StyledGrid = styled(Grid)(
   }
 )
 
-export const HakuSelector = () => {
+export const HakuSelector = ({hakutavat}: {hakutavat: Array<Koodi>}) => {
   const {data: haut} = useSuspenseQuery({
     queryKey: ['getHaut'],
     queryFn: () => getHaut(),
-  })
-
-  const {data: hakutavat} = useSuspenseQuery({
-    queryKey: ['getHakutavat'],
-    queryFn: () => getHakutavat(),
   })
 
   return <HakuSelectorInternal haut={haut} hakutavat={hakutavat}/>
