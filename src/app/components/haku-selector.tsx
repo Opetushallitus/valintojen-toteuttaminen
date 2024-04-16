@@ -4,7 +4,7 @@ import { ChangeEvent, useState } from "react";
 import { styled, FormControl, Button, Select, MenuItem, SelectChangeEvent, FormLabel, Input } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 
-import { Haku, HaunAlkaminen, Tila, getHakuAlkamisKaudet } from "../lib/kouta";
+import { Haku, HaunAlkaminen, Tila, getHakuAlkamisKaudet } from "../lib/kouta-types";
 import { Koodi } from "../lib/koodisto";
 import { HakuList } from "./haku-list";
 import { getTranslation } from "../lib/common";

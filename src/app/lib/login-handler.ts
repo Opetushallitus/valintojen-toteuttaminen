@@ -5,7 +5,8 @@ import { configuration } from './configuration';
 import { redirect, RedirectType } from 'next/navigation';
 
 export async function login() {
-  if (cookies().get(configuration.sessionCookie) === undefined) {
+  if (cookies().getAll().length < 1 && cookies().get(configuration.sessionCookie) === undefined) {
+    cookies().set('test', 'test');
     redirect(configuration.loginUrl, RedirectType.replace);
   }
 }

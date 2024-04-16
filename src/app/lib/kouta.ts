@@ -1,60 +1,63 @@
+'use server';
+
 import { cookies } from "next/headers";
 import { configuration } from "./configuration";
 import axios from "axios";
 import cookie from 'cookie';
 import { TranslatedName } from "./common";
+import { Haku, Hakukohde, Tila } from "./kouta-types";
 
 const KOUTA_COOKIE_NAME = 'session';
 const KOUTA_COOKIE_PATH = 'kouta-internal'
-const STARTING_YEAR = 2019; // check earliest kouta haku
 
 const headers = {
   accept: 'application/json', 
   'Caller-id': 'valintojen-toteuttaminen'
 };
 
-export type HaunAlkaminen = {
-  alkamisVuosi: number,
-  alkamisKausiKoodiUri: string,
-  alkamisKausiNimi: string,
-}
-
-//TODO: localization
-export const getAlkamisKausi = (alkamisKausiKoodiUri: string) => alkamisKausiKoodiUri.startsWith('kausi_s') ? 'SYKSY' : 'KEVÄT';
-
-export const getHakuAlkamisKaudet = (): HaunAlkaminen[] => {
-  const nowYear = new Date().getFullYear();
-  const alkamiset: HaunAlkaminen[] = [];
-  for (let i = nowYear; i >= STARTING_YEAR; i--) {
-    alkamiset.push({alkamisVuosi: i, alkamisKausiKoodiUri: 'kausi_s', alkamisKausiNimi: 'SYKSY'})
-    alkamiset.push({alkamisVuosi: i, alkamisKausiKoodiUri: 'kausi_k', alkamisKausiNimi: 'KEVÄT'})
-  }
-  return alkamiset;
-}
-
-//TODO: check whether any values are optional
-export type Haku = {
-  oid: string,
-  nimi:  TranslatedName,
-  tila: Tila,
-  alkamisVuosi: number,
-  alkamisKausiKoodiUri: string,
-  hakutapaKoodiUri: string,
-  hakukohteita: number
-}
-
-export type Hakukohde = {
-  oid: string,
-  nimi: TranslatedName,
-  organisaatioOid: string,
-  organisaatioNimi: TranslatedName
-};
-
-export enum Tila {
-  JULKAISTU, ARKISTOITU
-}
-
 export async function getHaut(active: boolean = true) {
+
+  const cook = cookies().get(configuration.sessionCookie);
+  //TODO: WRONG COOKIE, SHOULD BE (CAS)TGC
+  console.log('COOOKKKKKKIEEEEE')
+  console.log(`${cookie.serialize('session', cook?.value || '')};${cookie.serialize('CSRF', '1.2.246.562.10.00000000001.valintojen-toteuttaminen')}`);
+  
+
+  const client = axios.create({
+    //withCredentials: true,
+    headers: {
+      'Accept': 'application/json,text/plain,*/*',
+      'Caller-id': '1.2.246.562.10.00000000001.valintojen-toteuttaminen',
+      'Connection': 'keep-alive', 
+      'Content-type': 'Application/x-www-form-urlencoded',
+      'CSRF': '1.2.246.562.10.00000000001.valintojen-toteuttaminen',
+      'Cookie': `${cookie.serialize('session', cook?.value || '')};${cookie.serialize('CSRF', '1.2.246.562.10.00000000001.valintojen-toteuttaminen')}`,
+      'Host': 'virkailija.untuvaopintopolku.fi'
+    },
+  });
+  client.defaults.maxRedirects = 0;
+  client.interceptors.response.use(
+    response => response,
+    error => {
+      if (error.response && [301, 302].includes(error.response.status)) {
+        const redirectUrl = error.response.headers.location;
+        console.log('REDIRECTING');
+        console.log(redirectUrl);
+        return client.get(redirectUrl);
+      }
+      return Promise.reject(error);
+    }
+  );
+  console.log(client.options('headers'));
+  console.log("LOGIN TO KOUTA");
+  const login = await client.get('https://virkailija.untuvaopintopolku.fi/kouta-internal/auth/login');
+  console.log(login);
+
+
+  //console.log(headers);
+  console.log("FETCHING HAUT")
+  const resp = await client.get(configuration.hautUrl);
+  console.log(resp);
   /*console.log('here');
   const ticket = cookies().get(configuration.sessionCookie)?.value;
   const headers = {
@@ -92,3 +95,4 @@ export async function getHakukohteet(hakuOid: string): Promise<Hakukohde[]> {
   });
   return hakukohteet;
 }
+

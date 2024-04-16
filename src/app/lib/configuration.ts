@@ -1,4 +1,4 @@
-const DOMAIN = 'http://localhost:3104';
+const DOMAIN = 'https://virkailija.untuvaopintopolku.fi'; //http://localhost:3104';
 
 interface Configuration  {
     serviceUrl: string,

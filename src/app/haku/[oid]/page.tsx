@@ -1,7 +1,7 @@
 'use server';
 
 import { getTranslation } from "@/app/lib/common";
-import { Hakukohde, getHaku, getHakukohteet } from "../../lib/kouta";
+import {  getHaku, getHakukohteet } from "../../lib/kouta";
 import Header from "@/app/components/header";
 import { HakukohdeList } from "./hakukohde-list";
 
