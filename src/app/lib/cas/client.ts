@@ -40,7 +40,7 @@ async function parsePrincipal(data: string): Promise<Principal> {
 
 
 export async function validateService(ticket: string, serviceUrl: URL): Promise<Principal> {
-  const validateUrl = new URL('https://virkailija.untuvaopintopolku.fi/cas/p3/serviceValidate');
+  const validateUrl = new URL('https://localhost:3404/cas/p3/serviceValidate');
   validateUrl.searchParams.set('service', serviceUrl.toString());
   validateUrl.searchParams.set('renew', 'false');
 

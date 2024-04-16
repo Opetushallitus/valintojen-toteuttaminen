@@ -1,4 +1,4 @@
-const DOMAIN = 'https://virkailija.untuvaopintopolku.fi'; //http://localhost:3104';
+const DOMAIN = 'https://localhost:3404'; //http://localhost:3104';
 
 interface Configuration  {
     serviceUrl: string,
@@ -11,8 +11,8 @@ interface Configuration  {
 };
 
 export const configuration: Configuration = {
-    serviceUrl: process.env.SERVICE_URL || 'http://localhost:3404',
-    loginUrl: process.env.LOGIN_URL || 'https://virkailija.untuvaopintopolku.fi/cas/login?service=http://ataru-virkailija.kehittajan-oma-kone.untuvaopintopolku.fi:3404/api/login',
+    serviceUrl: process.env.SERVICE_URL || 'https://localhost:3404',
+    loginUrl: process.env.LOGIN_URL || `${DOMAIN}/cas/login?service=https://localhost:3404/api/login`,
     sessionCookie: process.env.SESSION_COOKIE || 'JSESSIONID',
     hautUrl: `${DOMAIN}/kouta-internal/haku/search`,
     hakuUrl: `${DOMAIN}/kouta-internal/haku`,
