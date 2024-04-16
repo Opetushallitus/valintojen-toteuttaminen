@@ -10,5 +10,5 @@ test('not found page', async ({ page }) => {
   await page.goto('http://localhost:3404/mimic-treasure-chest');
   await expect(page.locator('h1')).toContainText('404');
   await page.locator('a').click();
-  await expect(page.locator('h1')).toContainText(/Valintojen Toteuttaminen/);
+  await expect(page.locator('h1')).toContainText(/Valintojen toteuttaminen/);
 });

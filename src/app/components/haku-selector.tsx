@@ -91,9 +91,10 @@ export const HakuSelector = ({haut, hakutavat}: {haut : Haku[], hakutavat: Koodi
       <StyledGridContainer container spacing={2} direction="row">
         <StyledGrid container xs={6} direction="column">
           <FormControl size="small" sx={{ m: 1, minWidth: 180, textAlign: 'left'}}>
-            <FormLabel htmlFor="haku-select">Hae hakuja</FormLabel>
+            <FormLabel htmlFor="haku-search">Hae hakuja</FormLabel>
             <Input
-              name="haku-select"
+              data-test-id="haku-search"
+              name="haku-search"
               onChange={handleSearchChange}
               type="text"
               placeholder="Hae hakuja"
