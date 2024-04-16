@@ -10,12 +10,6 @@ const HakuSelector = dynamic(() => import("./components/haku-selector"), {
   loading: () => <CircularProgress />
 });
 
-const mainContainerStyle = {
-  border: '1px solid rgba(0, 0, 0, 0.15)', 
-  backgroundColor: 'white',
-  padding: '2rem',
-};
-
 export default async function Home() {
   const hakutavat = await getHakutavat();
 
