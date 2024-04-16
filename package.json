@@ -11,7 +11,7 @@
     "test:ui": "playwright test",
     "test": "vitest",
     "mocks": "mocks-server",
-    "create-dev-certs": "mkdir -p certificates && cd certificates && mkcert localhost"
+    "create-dev-certs": "mkdir -p certificates && cd certificates && mkcert localhost && mkcert -install"
   },
   "dependencies": {
     "@emotion/react": "^11.11.4",
