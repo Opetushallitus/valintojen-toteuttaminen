@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "touch .env.development.local && NODE_EXTRA_CA_CERTS=\"$(mkcert -CAROOT)/rootCA.pem\" node --env-file=.env --env-file=.env.development.local dev-server.mjs",
+    "dev-test": "VIRKAILIJA_URL=http://localhost:3104 npm run dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

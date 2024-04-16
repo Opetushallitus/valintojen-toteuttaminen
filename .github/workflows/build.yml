@@ -41,8 +41,15 @@ jobs:
       run: npm ci
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
+    - name: install mkcert
+      run: |
+        curl -JLO "https://dl.filippo.io/mkcert/latest?for=linux/amd64"
+        chmod +x mkcert-v*-linux-amd64
+        sudo cp mkcert-v*-linux-amd64 /usr/local/bin/mkcert
+    - name: Create dev certificates
+      run: npm run create-dev-certs
     - name: Start the app
-      run: npm run dev &
+      run: npm run dev-test &
     - name: Run Playwright tests
       run: npx playwright test
     - uses: actions/upload-artifact@v3
