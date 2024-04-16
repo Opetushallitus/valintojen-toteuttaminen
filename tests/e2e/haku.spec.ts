@@ -62,5 +62,5 @@ test('filters by hakutapa and start period', async ({page}) => {
 test('navigates to haku page', async ({page}) => {
   await page.locator('tbody tr:last-child td:first-child a').click();
   await expect(page).toHaveURL('/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102');
-  await expect(page.locator('h1')).toHaveText('Tampere University Separate Admission/ Finnish MAOL Competition Route 2024');
+  await expect(page.locator('h1')).toHaveText('> Tampere University Separate Admission/ Finnish MAOL Competition Route 2024');
 });

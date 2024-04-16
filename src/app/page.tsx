@@ -1,9 +1,21 @@
 'use server'
-
 import { CircularProgress } from "@mui/material";
 import dynamic from "next/dynamic";
 import Header from "./components/header";
 import { getHakutavat } from "./lib/koodisto";
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import { CSSProperties } from "react";
+
+
+const titleSectionStyle: CSSProperties = {
+  borderBottom: '1px solid rgba(0, 0, 0, 0.15)',
+  display: 'flex',
+  flexDirection: 'row',
+  width: '100%',
+  justifyContent: 'flex-start',
+  marginBottom: '2rem',
+  padding: 0
+}
 
 const HakuSelector = dynamic(() => import("./components/haku-selector"), {
   ssr: false,
@@ -17,7 +29,9 @@ export default async function Home() {
     <main>
       <Header isHome={true} />
       <div className="mainContainer">
-        <h2 style={{textAlign: 'left'}}>Haut</h2>
+        <div style={titleSectionStyle}>
+          <h2 style={{textAlign: 'left', margin: '0 0 1rem'}}><AccessTimeIcon /> Haut</h2>
+        </div>
         <HakuSelector hakutavat={hakutavat}/>
       </div>
     </main>

@@ -1,4 +1,6 @@
 import { CSSProperties } from "react";
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import { Link as MuiLink } from "@mui/material";
 
 export type HeaderProps = 
 {
@@ -22,7 +24,8 @@ export default async function Header({title = 'Valintojen toteuttaminen', isHome
     display: 'flex',
     textAlign: 'left',
     justifyContent: 'flex-start',
-    alignContent: 'center'
+    alignContent: 'center',
+    columnGap: '0.8rem'
   };
 
   const titleStyle: CSSProperties = {
@@ -33,7 +36,11 @@ export default async function Header({title = 'Valintojen toteuttaminen', isHome
   return (
     <header>
       <div style={headerStyle}>
-        <h1 style={titleStyle}>{title}</h1>
+        {!isHome &&
+          <MuiLink href={`/`} sx={titleStyle}>
+            <HomeOutlinedIcon sx={{border: '1px solid', padding: '3px', borderRadius: '2px'}}/>
+          </MuiLink>}
+        <h1 style={titleStyle}>{!isHome ? '> ' : '' }{title}</h1>
       </div>
       <div style={{height: HEADER_HEIGHT, marginBottom: '4rem'}} />
     </header>

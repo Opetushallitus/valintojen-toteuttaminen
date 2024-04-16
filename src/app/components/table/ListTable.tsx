@@ -1,6 +1,6 @@
 'use client';
 
-import { Link as MuiLink, Table, TableBody, TableCell, TableHead, TableRow, styled } from '@mui/material';
+import { Table, TableBody, TableCell, TableHead, TableRow, styled } from '@mui/material';
 import { getTranslation } from '@/app/lib/common';
 import { Haku, getAlkamisKausi, Tila } from '@/app/lib/kouta-types';
 import Link from 'next/link';
@@ -16,7 +16,7 @@ export const makeHakuColumn = (
 ): Column => ({
   title: 'Nimi',
   key: 'hakuNimi',
-  render: (haku: Haku) => <Link href={`/haku/${haku.oid}`}>{getTranslation(haku.nimi)}</Link>,
+  render: (haku: Haku) => <Link href={`/haku/${haku.oid}`} sx={{textDecoration: 'none'}}>{getTranslation(haku.nimi)}</Link>,
   style: {
     width: 'auto',
   },
@@ -65,7 +65,7 @@ const StyledTable = styled(Table)(
 const StyledCell = styled(TableCell)(
   {
     borderSpacing: '0px',
-    padding: '1px',
+    padding: '1rem',
     textAlign: 'left',
     whiteSpace: 'pre-wrap',
   }
