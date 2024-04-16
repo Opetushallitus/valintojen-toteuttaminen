@@ -26,7 +26,7 @@ async function getKoodit(koodisto: string): Promise<Koodi[]> {
 }
 
 export async function getHakutavat(): Promise<Koodi[]> {
-  return await getKoodit('hakutapa');
+  return getKoodit('hakutapa');
 }
 
 

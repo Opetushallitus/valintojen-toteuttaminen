@@ -1,14 +1,12 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-export function middleware(request: NextRequest) {
-  if (request.nextUrl.pathname.includes("/cas/login")) {
-    console.log("middleware");
-    console.log(request.nextUrl)
-    const allCookies = request.cookies.getAll();
-    console.log(allCookies);
-    const res = NextResponse.next();
-    console.log(res.headers)
-    //console.log({ res_cookies: res.cookies.getAll() });
+export async function middleware(req: NextRequest) {
+  const requestURL = new URL(req.url);
+  const ticket = requestURL.searchParams.get("ticket") ?? "";
+
+  if (ticket !== "") {
+    requestURL.searchParams.delete("ticket");
+    return NextResponse.redirect(requestURL)
   }
 }

@@ -6,9 +6,6 @@ import { Haku, Hakukohde, Tila } from "./kouta-types";
 import { client } from "./http-client";
 
 export async function getHaut(active: boolean = true) {
-  console.log("LOGIN TO KOUTA");
-  const login = await client.get("/kouta-internal/auth/login");
-
   const response = await client.get(configuration.hautUrl);
   const haut: Haku[] = response.data.map(
     (h: {
@@ -41,7 +38,6 @@ export async function getHaku(oid: string): Promise<TranslatedName> {
 }
 
 export async function getHakukohteet(hakuOid: string): Promise<Hakukohde[]> {
-  const login = await client.get("/kouta-internal/auth/login");
   const response = await client.get(
     `${configuration.hakukohteetUrl}&haku=${hakuOid}`
   );
