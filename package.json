@@ -10,7 +10,6 @@
     "lint": "next lint",
     "test:ui": "playwright test",
     "test": "vitest",
-    "mocks": "mocks-server",
     "create-dev-certs": "mkdir -p certificates && cd certificates && mkcert localhost && mkcert -install"
   },
   "dependencies": {
@@ -27,7 +26,6 @@
     "xior": "^0.3.11"
   },
   "devDependencies": {
-    "@mocks-server/main": "^4.1.0",
     "@playwright/test": "^1.42.0",
     "@testing-library/react": "^14.2.2",
     "@types/cookie": "^0.6.0",
