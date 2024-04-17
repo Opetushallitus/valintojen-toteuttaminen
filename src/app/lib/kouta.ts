@@ -25,7 +25,7 @@ export async function getHaut(active: boolean = true) {
         hakutapaKoodiUri: h.hakutapaKoodiUri,
         alkamisVuosi: parseInt(h.hakuvuosi),
         alkamisKausiKoodiUri: h.hakukausi,
-        //hakukohteita: h.hakukohdeOids?.length,
+        hakukohteita: h?.hakukohdeOids?.length ?? 0,
       };
     },
   );
