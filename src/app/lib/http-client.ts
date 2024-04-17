@@ -1,27 +1,27 @@
-import xior, { XiorError, XiorInterceptorRequestConfig } from "xior";
-import { getCookies } from "./cookie";
-import { redirect } from "next/navigation";
-import { configuration } from "./configuration";
+import xior, { XiorError, XiorInterceptorRequestConfig } from 'xior';
+import { getCookies } from './cookie';
+import { redirect } from 'next/navigation';
+import { configuration } from './configuration';
 
 const createClient = () => {
   const client_ = xior.create({
     headers: {
-      Accept: "application/json",
-      "Caller-id": "1.2.246.562.10.00000000001.valintojen-toteuttaminen",
+      Accept: 'application/json',
+      'Caller-id': '1.2.246.562.10.00000000001.valintojen-toteuttaminen',
     },
   });
 
   client_.interceptors.request.use(
     (request: XiorInterceptorRequestConfig<any>) => {
       const { method } = request;
-      if (["post", "put", "patch", "delete"].includes(method)) {
-        const csrfCookie = getCookies()["CSRF"];
+      if (['post', 'put', 'patch', 'delete'].includes(method)) {
+        const csrfCookie = getCookies()['CSRF'];
         if (csrfCookie) {
           request.headers.CSRF = csrfCookie;
         }
       }
       return request;
-    }
+    },
   );
   return client_;
 };
@@ -46,9 +46,9 @@ const retryWithLogin = async (request: any, loginUrl: string) => {
 client.interceptors.response.use(
   (data) => {
     if (isRedirected(data.response)) {
-      if (data.response.url.includes("/cas/login")) {
+      if (data.response.url.includes('/cas/login')) {
         const loginUrl = new URL(configuration.loginUrl);
-        loginUrl.searchParams.set("service", window.location.href);
+        loginUrl.searchParams.set('service', window.location.href);
         redirect(loginUrl.toString());
       }
     }
@@ -60,10 +60,10 @@ client.interceptors.response.use(
     if (isUnauthorized(error)) {
       const request = error.request;
       try {
-        if (request?.url?.includes("/kouta-internal")) {
+        if (request?.url?.includes('/kouta-internal')) {
           return await retryWithLogin(
             request,
-            configuration.koutaInternalLogin
+            configuration.koutaInternalLogin,
           );
         }
       } catch (e) {
@@ -73,7 +73,7 @@ client.interceptors.response.use(
 
     // Ei autentikaatiota, ohjataan login-sivulle!
     const loginUrl = new URL(configuration.loginUrl);
-    loginUrl.searchParams.set("service", window.location.href);
+    loginUrl.searchParams.set('service', window.location.href);
     redirect(loginUrl.toString());
-  }
+  },
 );
