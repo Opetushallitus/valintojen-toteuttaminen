@@ -37,7 +37,7 @@ export default function Header({title = 'Valintojen toteuttaminen', isHome = fal
     <header>
       <div style={headerStyle}>
         {!isHome &&
-          <MuiLink href={`/`} sx={titleStyle}>
+          <MuiLink href="/" sx={titleStyle}>
             <HomeOutlinedIcon sx={{border: '1px solid', padding: '3px', borderRadius: '2px'}}/>
           </MuiLink>}
         <h1 style={titleStyle}>{!isHome ? '> ' : '' }{title}</h1>

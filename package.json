@@ -13,10 +13,12 @@
     "create-dev-certs": "mkdir -p certificates && cd certificates && mkcert localhost && mkcert -install"
   },
   "dependencies": {
+    "@emotion/cache": "^11.11.0",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.15.15",
     "@mui/material": "^5.15.14",
+    "@mui/material-nextjs": "^5.15.11",
     "@tanstack/react-query": "^5.29.2",
     "@tanstack/react-query-devtools": "^5.29.2",
     "cookie": "^0.6.0",

@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Providers from "./providers";
+import ReactQueryClientProvider from "./components/react-query-client-provider";
 import Wrapper from "./wrapper";
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter";
+import { ThemeProvider } from "@mui/material/styles";
+import theme from "@/app/theme";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,9 +22,13 @@ export default async function RootLayout({
   return (
     <html lang="fi">
       <body className={inter.className}>
-        <Providers>
-          <Wrapper>{children}</Wrapper>
-        </Providers>
+        <AppRouterCacheProvider>
+          <ReactQueryClientProvider>
+            <ThemeProvider theme={theme}>
+              <Wrapper>{children}</Wrapper>
+            </ThemeProvider>
+          </ReactQueryClientProvider>
+        </AppRouterCacheProvider>
       </body>
     </html>
   );
