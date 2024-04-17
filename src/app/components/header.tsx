@@ -8,7 +8,7 @@ export type HeaderProps =
   isHome?: boolean,
 }
 
-export default async function Header({title = 'Valintojen toteuttaminen', isHome = false} : HeaderProps) {
+export default function Header({title = 'Valintojen toteuttaminen', isHome = false} : HeaderProps) {
 
   const HEADER_HEIGHT = '4rem';
   const TITLE_SIZE = isHome? '2rem' : '1.5rem';

@@ -17,7 +17,7 @@ const titleSectionStyle: CSSProperties = {
   padding: 0
 }
 
-const HakuSelector = dynamic(() => import("./components/haku-selector"), {
+const HakuFilters = dynamic(() => import("./components/haku-filters"), {
   ssr: false,
   loading: () => <CircularProgress />
 });
@@ -32,7 +32,7 @@ export default async function Home() {
         <div style={titleSectionStyle}>
           <h2 style={{textAlign: 'left', margin: '0 0 1rem'}}><AccessTimeIcon /> Haut</h2>
         </div>
-        <HakuSelector hakutavat={hakutavat}/>
+        <HakuFilters hakutavat={hakutavat}/>
       </div>
     </main>
   );
