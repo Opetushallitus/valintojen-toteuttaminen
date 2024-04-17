@@ -8,15 +8,19 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "prettier-eslint:fix": "prettier-eslint \"**/*.{js,ts,mjs,cjs,jsx,tsx}\" --write",
     "test:ui": "playwright test",
     "test": "vitest",
-    "create-dev-certs": "mkdir -p certificates && cd certificates && mkcert localhost && mkcert -install"
+    "create-dev-certs": "mkdir -p certificates && cd certificates && mkcert localhost && mkcert -install",
+    "prepare": "husky"
   },
   "dependencies": {
+    "@emotion/cache": "^11.11.0",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.15.15",
     "@mui/material": "^5.15.14",
+    "@mui/material-nextjs": "^5.15.11",
     "@tanstack/react-query": "^5.29.2",
     "@tanstack/react-query-devtools": "^5.29.2",
     "cookie": "^0.6.0",
@@ -37,11 +41,22 @@
     "autoprefixer": "^10.0.1",
     "eslint": "^8",
     "eslint-config-next": "14.1.0",
+    "eslint-config-prettier": "^9.1.0",
     "http-proxy-middleware": "^3.0.0",
+    "husky": "^9.0.11",
     "jsdom": "^24.0.0",
-    "playwright": "^1.42.0",
     "postcss": "^8",
+    "lint-staged": "^15.2.2",
+    "prettier": "^3.2.5",
+    "prettier-eslint-cli": "^8.0.1",
     "typescript": "^5",
     "vitest": "^1.4.0"
+  },
+  "lint-staged": {
+    "**/*.{js,ts,mjs,cjs,jsx,tsx}": [
+      "eslint --fix",
+      "prettier --write -u"
+    ],
+    "!**/*.{js,ts,mjs,cjs,jsx,tsx}": "prettier --write -u"
   }
 }

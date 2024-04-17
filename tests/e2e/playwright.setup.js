@@ -1,7 +1,7 @@
-import { createServer } from "http";
-import HAUT from "./fixtures/haut.json";
-import HAKUKOHTEET from "./fixtures/hakukohteet.json";
-import HAKUTAPA_CODES from "./fixtures/hakutapa.json";
+import { createServer } from 'http';
+import HAUT from './fixtures/haut.json';
+import HAKUKOHTEET from './fixtures/hakukohteet.json';
+import HAKUTAPA_CODES from './fixtures/hakutapa.json';
 
 const port = 3104;
 
@@ -12,7 +12,7 @@ export default async function playwrightSetup() {
       response.end();
       return;
     } else if (request.url.includes(`henkilo/current/asiointiKieli`)) {
-      response.write("fi");
+      response.write('fi');
       response.end();
       return;
     } else if (request.url.includes(`kouta-internal/haku/search`)) {
@@ -25,18 +25,18 @@ export default async function playwrightSetup() {
       response.write(JSON.stringify(HAKUTAPA_CODES));
       response.end();
       return;
-    } else if (request.url.includes("kouta-internal/hakukohde/search")) {
+    } else if (request.url.includes('kouta-internal/hakukohde/search')) {
       response.write(JSON.stringify(HAKUKOHTEET));
       response.end();
       return;
     } else if (request.url.includes(`kouta-internal/haku/`)) {
-      const hakuId = request.url.split("haku/")[1];
+      const hakuId = request.url.split('haku/')[1];
       const haku = HAUT.find((hakuData) => hakuData.oid === hakuId);
       response.write(JSON.stringify(haku));
       response.end();
       return;
     } else {
-      console.log("(Backend) mock not implementeded", request.url);
+      console.log('(Backend) mock not implementeded', request.url);
       return;
     }
   });

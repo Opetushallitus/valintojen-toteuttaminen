@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 
-const basePath = "/valintojen-toteuttaminen"
+const basePath = '/valintojen-toteuttaminen';
 
 const nextConfig = {
   basePath,

@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { configuration } from "./configuration";
-import { TranslatedName } from "./common";
-import { Haku, Hakukohde, Tila } from "./kouta-types";
-import { client } from "./http-client";
+import { configuration } from './configuration';
+import { TranslatedName } from './common';
+import { Haku, Hakukohde, Tila } from './kouta-types';
+import { client } from './http-client';
 
 export async function getHaut(active: boolean = true) {
   const response = await client.get(configuration.hautUrl);
@@ -27,7 +27,7 @@ export async function getHaut(active: boolean = true) {
         alkamisKausiKoodiUri: h.hakukausi,
         //hakukohteita: h.hakukohdeOids?.length,
       };
-    }
+    },
   );
   return haut;
 }
@@ -39,7 +39,7 @@ export async function getHaku(oid: string): Promise<TranslatedName> {
 
 export async function getHakukohteet(hakuOid: string): Promise<Hakukohde[]> {
   const response = await client.get(
-    `${configuration.hakukohteetUrl}&haku=${hakuOid}`
+    `${configuration.hakukohteetUrl}&haku=${hakuOid}`,
   );
   const hakukohteet: Hakukohde[] = response.data.map(
     (h: {
@@ -54,7 +54,7 @@ export async function getHakukohteet(hakuOid: string): Promise<Hakukohde[]> {
         organisaatioNimi: h.organisaatioNimi,
         organisaatioOid: h.organisaatioOid,
       };
-    }
+    },
   );
   return hakukohteet;
 }

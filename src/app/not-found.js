@@ -3,12 +3,13 @@ import { Grid, Button, Typography } from '@mui/material';
 export default function Custom404() {
   return (
     <Grid
-    container
-    direction="column"
-    justifyContent="center"
-    alignItems="center"
-    spacing={5}
-    sx={{textAlign: 'center', paddingTop: '132px', paddingBottom: '132px'}}>
+      container
+      direction="column"
+      justifyContent="center"
+      alignItems="center"
+      spacing={5}
+      sx={{ textAlign: 'center', paddingTop: '132px', paddingBottom: '132px' }}
+    >
       <Grid item>
         <Typography variant="h1" component="h1" color="secondary">
           404
@@ -28,18 +29,20 @@ export default function Custom404() {
           direction="row"
           justifyContent="center"
           alignItems="center"
-          spacing={2}>
+          spacing={2}
+        >
           <Grid item>
             <Button
               variant="contained"
               aria-label="Palaa etusivulle"
               color="primary"
-              href="/">
+              href="/"
+            >
               Palaa etusivulle
             </Button>
           </Grid>
         </Grid>
       </Grid>
     </Grid>
-    )
+  );
 }

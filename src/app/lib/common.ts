@@ -1,15 +1,20 @@
 export type TranslatedName = {
-  fi?: string,
-  en?: string,
-  sv?: string
-}
+  fi?: string;
+  en?: string;
+  sv?: string;
+};
 
 export enum Language {
-  FI, EN, SV
+  FI,
+  EN,
+  SV,
 }
 
 //TODO: match user's language
-export function getTranslation(translated: TranslatedName, userLanguage: Language = Language.FI): string {
+export function getTranslation(
+  translated: TranslatedName,
+  userLanguage: Language = Language.FI,
+): string {
   const prop = Language[userLanguage].toLowerCase() as keyof TranslatedName;
   const translation = translated[prop];
   if (translation && translation?.trim().length > 0) {
@@ -21,4 +26,3 @@ export function getTranslation(translated: TranslatedName, userLanguage: Languag
   }
   return translated.sv || '';
 }
-

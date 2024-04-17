@@ -1,5 +1,5 @@
-import { defineConfig, devices } from "@playwright/test";
-import nextConfig from "./next.config.mjs";
+import { defineConfig, devices } from '@playwright/test';
+import nextConfig from './next.config.mjs';
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -11,8 +11,8 @@ import nextConfig from "./next.config.mjs";
  */
 
 export default defineConfig({
-  testDir: "./tests/e2e",
-  globalSetup: "./tests/e2e/playwright.setup.js",
+  testDir: './tests/e2e',
+  globalSetup: './tests/e2e/playwright.setup.js',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -22,27 +22,27 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: "list",
+  reporter: 'list',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     // baseURL: 'http://127.0.0.1:3000',
     baseURL: `https://localhost:3404${nextConfig.basePath}`,
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: "on-first-retry",
+    trace: 'on-first-retry',
     ignoreHTTPSErrors: true,
   },
 
   /* Configure projects for major browsers */
   projects: [
     {
-      name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
     },
 
     {
-      name: "firefox",
-      use: { ...devices["Desktop Firefox"] },
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
     },
 
     {
