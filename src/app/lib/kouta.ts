@@ -15,7 +15,7 @@ export async function getHaut(active: boolean = true) {
       hakutapaKoodiUri: string;
       hakuvuosi: string;
       hakukausi: string;
-      hakukohdeOids: string[];
+      totalHakukohteet: number;
     }) => {
       const haunTila: Tila = Tila[h.tila.toUpperCase() as keyof typeof Tila];
       return {
@@ -25,7 +25,7 @@ export async function getHaut(active: boolean = true) {
         hakutapaKoodiUri: h.hakutapaKoodiUri,
         alkamisVuosi: parseInt(h.hakuvuosi),
         alkamisKausiKoodiUri: h.hakukausi,
-        hakukohteita: h?.hakukohdeOids?.length ?? 0,
+        hakukohteita: h?.totalHakukohteet ?? 0,
       };
     },
   );
@@ -47,12 +47,14 @@ export async function getHakukohteet(hakuOid: string): Promise<Hakukohde[]> {
       nimi: TranslatedName;
       organisaatioOid: string;
       organisaatioNimi: TranslatedName;
+      jarjestyspaikkaHierarkiaNimi: TranslatedName;
     }) => {
       return {
         oid: h.oid,
         nimi: h.nimi,
         organisaatioNimi: h.organisaatioNimi,
         organisaatioOid: h.organisaatioOid,
+        jarjestyspaikkaHierarkiaNimi: h.jarjestyspaikkaHierarkiaNimi,
       };
     },
   );
