@@ -79,4 +79,16 @@ test('navigates to haku page', async ({ page }) => {
   await expect(page.locator('h1')).toHaveText(
     '> Tampere University Separate Admission/ Finnish MAOL Competition Route 2024',
   );
+  await expect(page.locator('.organizationLabel')).toHaveCount(3);
+});
+
+test('navigates to haku page with no hakukohde', async ({ page }) => {
+  await page.locator('tbody tr:first-child td:first-child a').click();
+  await expect(page).toHaveURL(
+    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000046872',
+  );
+  await expect(page.locator('h1')).toHaveText(
+    '> Hausjärven lukio jatkuva haku',
+  );
+  await expect(page.locator('.organizationLabel')).toHaveCount(0);
 });

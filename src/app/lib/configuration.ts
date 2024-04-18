@@ -19,7 +19,7 @@ export const configuration: Configuration = {
   serviceUrl,
   loginUrl: process.env.LOGIN_URL || `${DOMAIN}/cas/login`,
   sessionCookie: process.env.SESSION_COOKIE || 'JSESSIONID',
-  hautUrl: `${DOMAIN}/kouta-internal/haku/search?includeHakukohdeOids=true`,
+  hautUrl: `${DOMAIN}/kouta-internal/haku/search?includeHakukohdeOids=false`,
   hakuUrl: `${DOMAIN}/kouta-internal/haku`,
   hakukohteetUrl: `${DOMAIN}/kouta-internal/hakukohde/search?all=false`,
   kooditUrl: `${DOMAIN}/koodisto-service/rest/codeelement/codes/`,

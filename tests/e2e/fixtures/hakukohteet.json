@@ -17,9 +17,7 @@
     "kaytetaanHaunHakulomaketta": true,
     "aloituspaikat": 0,
     "painotetutArvosanat": [],
-    "pohjakoulutusvaatimusKoodiUrit": [
-      "pohjakoulutusvaatimuskouta_123#1"
-    ],
+    "pohjakoulutusvaatimusKoodiUrit": ["pohjakoulutusvaatimuskouta_123#1"],
     "muuPohjakoulutusvaatimus": {},
     "toinenAsteOnkoKaksoistutkinto": false,
     "kaytetaanHaunAikataulua": true,
@@ -65,9 +63,7 @@
       "fi": "Rakennetun ympäristön tiedekunta",
       "en": "Faculty of Built Environment"
     },
-    "kielivalinta": [
-      "en"
-    ],
+    "kielivalinta": ["en"],
     "modified": "2023-10-30T10:26:15",
     "jarjestaaUrheilijanAmmKoulutusta": false,
     "uudenOpiskelijanUrl": {
@@ -84,6 +80,11 @@
       "ylempiKkAste": true,
       "kkTutkinnonTaso": 3,
       "kkTutkinnonTasoSykli": 1
+    },
+    "jarjestyspaikkaHierarkiaNimi": {
+      "fi": "Tampereen yliopisto, Rakennetun ympäristön tiedekunta",
+      "sv": "Tammerfors universitet, Rakennetun ympäristön tiedekunta",
+      "en": "Tampere University, Faculty of Built Environment"
     }
   },
   {
@@ -104,9 +105,7 @@
     "kaytetaanHaunHakulomaketta": true,
     "aloituspaikat": 0,
     "painotetutArvosanat": [],
-    "pohjakoulutusvaatimusKoodiUrit": [
-      "pohjakoulutusvaatimuskouta_123#1"
-    ],
+    "pohjakoulutusvaatimusKoodiUrit": ["pohjakoulutusvaatimuskouta_123#1"],
     "muuPohjakoulutusvaatimus": {},
     "toinenAsteOnkoKaksoistutkinto": false,
     "kaytetaanHaunAikataulua": true,
@@ -152,9 +151,7 @@
       "sv": "Tekniikan ja luonnontieteiden tiedekunta",
       "en": "Faculty of Engineering and Natural Sciences"
     },
-    "kielivalinta": [
-      "en"
-    ],
+    "kielivalinta": ["en"],
     "modified": "2023-10-30T10:26:25",
     "jarjestaaUrheilijanAmmKoulutusta": false,
     "uudenOpiskelijanUrl": {
@@ -171,6 +168,11 @@
       "ylempiKkAste": true,
       "kkTutkinnonTaso": 3,
       "kkTutkinnonTasoSykli": 1
+    },
+    "jarjestyspaikkaHierarkiaNimi": {
+      "sv": "Tammerfors universitet, Tekniikan ja luonnontieteiden tiedekunta",
+      "fi": "Tampereen yliopisto, Tekniikan ja luonnontieteiden tiedekunta",
+      "en": "Tampere University, Faculty of Engineering and Natural Sciences"
     }
   },
   {
@@ -191,9 +193,7 @@
     "kaytetaanHaunHakulomaketta": true,
     "aloituspaikat": 0,
     "painotetutArvosanat": [],
-    "pohjakoulutusvaatimusKoodiUrit": [
-      "pohjakoulutusvaatimuskouta_123#1"
-    ],
+    "pohjakoulutusvaatimusKoodiUrit": ["pohjakoulutusvaatimuskouta_123#1"],
     "muuPohjakoulutusvaatimus": {},
     "toinenAsteOnkoKaksoistutkinto": false,
     "kaytetaanHaunAikataulua": true,
@@ -239,9 +239,7 @@
       "sv": "Tekniikan ja luonnontieteiden tiedekunta",
       "en": "Faculty of Engineering and Natural Sciences"
     },
-    "kielivalinta": [
-      "en"
-    ],
+    "kielivalinta": ["en"],
     "modified": "2023-10-30T10:26:20",
     "jarjestaaUrheilijanAmmKoulutusta": false,
     "uudenOpiskelijanUrl": {
@@ -258,6 +256,11 @@
       "ylempiKkAste": true,
       "kkTutkinnonTaso": 3,
       "kkTutkinnonTasoSykli": 1
+    },
+    "jarjestyspaikkaHierarkiaNimi": {
+      "sv": "Tammerfors universitet, Tekniikan ja luonnontieteiden tiedekunta",
+      "fi": "Tampereen yliopisto, Tekniikan ja luonnontieteiden tiedekunta",
+      "en": "Tampere University, Faculty of Engineering and Natural Sciences"
     }
   }
 ]
