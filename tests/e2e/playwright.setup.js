@@ -12,6 +12,7 @@ export default async function playwrightSetup() {
       response.end();
       return;
     } else if (request.url.includes(`henkilo/current/asiointiKieli`)) {
+      response.setHeader('Content-Type', 'text/plain');
       response.write('fi');
       response.end();
       return;
