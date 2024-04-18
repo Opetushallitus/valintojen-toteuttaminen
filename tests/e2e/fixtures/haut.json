@@ -64,11 +64,10 @@
       }
     ],
     "hakukohdeOids": [],
+    "totalHakukohteet": 0,
     "valintakokeet": [],
     "muokkaaja": "1.2.246.562.24.10327979532",
-    "kielivalinta": [
-      "fi"
-    ],
+    "kielivalinta": ["fi"],
     "modified": "2023-11-02T12:27:41"
   },
   {
@@ -140,11 +139,10 @@
       }
     ],
     "hakukohdeOids": [],
+    "totalHakukohteet": 0,
     "valintakokeet": [],
     "muokkaaja": "1.2.246.562.24.61168703071",
-    "kielivalinta": [
-      "fi"
-    ],
+    "kielivalinta": ["fi"],
     "modified": "2022-01-05T16:32:06"
   },
   {
@@ -169,11 +167,10 @@
     "organisaatioOid": "1.2.246.562.10.135945357610",
     "hakuajat": [],
     "hakukohdeOids": [],
+    "totalHakukohteet": 0,
     "valintakokeet": [],
     "muokkaaja": "1.2.246.562.24.78053256082",
-    "kielivalinta": [
-      "fi"
-    ],
+    "kielivalinta": ["fi"],
     "modified": "2022-06-27T13:47:36"
   },
   {
@@ -236,11 +233,10 @@
       }
     ],
     "hakukohdeOids": [],
+    "totalHakukohteet": 0,
     "valintakokeet": [],
     "muokkaaja": "1.2.246.562.24.65467286208",
-    "kielivalinta": [
-      "fi"
-    ],
+    "kielivalinta": ["fi"],
     "modified": "2023-01-07T12:56:02"
   },
   {
@@ -274,9 +270,7 @@
     "hakukohdeOids": [],
     "valintakokeet": [],
     "muokkaaja": "1.2.246.562.24.80913193985",
-    "kielivalinta": [
-      "fi"
-    ],
+    "kielivalinta": ["fi"],
     "modified": "2023-11-14T13:23:41"
   },
   {
@@ -286,6 +280,7 @@
       "1.2.246.562.20.00000000000000045104",
       "1.2.246.562.20.00000000000000045105"
     ],
+    "totalHakukohteet": 3,
     "tila": "julkaistu",
     "nimi": {
       "en": "Tampere University Separate Admission/ Finnish MAOL Competition Route 2024"
@@ -324,9 +319,7 @@
     ],
     "valintakokeet": [],
     "muokkaaja": "1.2.246.562.24.57549617509",
-    "kielivalinta": [
-      "en"
-    ],
+    "kielivalinta": ["en"],
     "modified": "2023-10-30T10:34:31"
   }
 ]

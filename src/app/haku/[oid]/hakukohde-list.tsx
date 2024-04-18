@@ -35,7 +35,7 @@ export const HakukohdeList = ({ oid }: { oid: string }) => {
       {hakukohteet.map((hk: Hakukohde) => (
         <StyledItem key={hk.oid}>
           <p title={hk.organisaatioOid} className="organizationLabel">
-            {getTranslation(hk.organisaatioNimi)}
+            {getTranslation(hk.jarjestyspaikkaHierarkiaNimi)}
           </p>
           <p title={hk.oid}>{getTranslation(hk.nimi)}</p>
         </StyledItem>
