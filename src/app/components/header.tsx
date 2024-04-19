@@ -38,7 +38,7 @@ export default function Header({
     <header>
       <div style={headerStyle}>
         {!isHome && (
-          <MuiLink href="/" sx={titleStyle}>
+          <MuiLink href="/" sx={titleStyle} aria-label="Palaa etusivulle">
             <HomeOutlinedIcon
               sx={{ border: '1px solid', padding: '3px', borderRadius: '2px' }}
             />

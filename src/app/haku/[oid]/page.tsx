@@ -1,15 +1,14 @@
 'use client';
 
+import { FullSpinner } from '@/app/components/full-spinner';
 import Header from '@/app/components/header';
 import { getTranslation } from '@/app/lib/common';
 import { getHaku } from '@/app/lib/kouta';
-import { CircularProgress } from '@mui/material';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import dynamic from 'next/dynamic';
 
 const HakukohdeList = dynamic(() => import('./hakukohde-list'), {
-  ssr: false,
-  loading: () => <CircularProgress />,
+  loading: () => <FullSpinner />,
 });
 
 export default function HakuPage({ params }: { params: { oid: string } }) {
@@ -19,9 +18,9 @@ export default function HakuPage({ params }: { params: { oid: string } }) {
   });
 
   return (
-    <main>
+    <>
       <Header title={getTranslation(hakuNimi)} />
-      <div
+      <main
         className="mainContainer"
         style={{ display: 'flex', flexDirection: 'row' }}
       >
@@ -30,7 +29,7 @@ export default function HakuPage({ params }: { params: { oid: string } }) {
           <h2>Valitse hakukohde</h2>
           <p>Kesken...</p>
         </div>
-      </div>
-    </main>
+      </main>
+    </>
   );
 }

@@ -10,6 +10,12 @@ const LinkBehaviour = React.forwardRef<HTMLAnchorElement, LinkProps>(
 );
 
 const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#0a789c',
+      contrastText: '#fff',
+    },
+  },
   components: {
     MuiLink: {
       defaultProps: {

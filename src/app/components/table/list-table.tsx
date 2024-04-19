@@ -99,7 +99,7 @@ const StyledRow = styled(TableRow)({
     backgroundColor: '#f5f5f5',
   },
   '&:hover': {
-    backgroundColor: '#e0f2fd',
+    backgroundColor: '#e5f5ff',
   },
 });
 
