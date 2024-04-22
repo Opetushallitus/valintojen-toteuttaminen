@@ -16,7 +16,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Run lint
-        run: npm run lint
+        run: |
+          npm run typecheck
+          npm run lint
   test:
     timeout-minutes: 10
     runs-on: ubuntu-latest
