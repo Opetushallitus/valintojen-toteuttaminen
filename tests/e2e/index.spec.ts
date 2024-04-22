@@ -1,9 +1,12 @@
 import { test, expect } from '@playwright/test';
-import { expectPageAccessibilityOk } from './playwright-utils';
+import {
+  expectAllSpinnersHidden,
+  expectPageAccessibilityOk,
+} from './playwright-utils';
 
 test('index accessibility', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('progressbar')).toBeHidden();
+  await expectAllSpinnersHidden(page);
   await page.locator('tr').nth(1).hover();
   await expectPageAccessibilityOk(page);
 });
@@ -15,7 +18,7 @@ test('has title', async ({ page }) => {
 
 test('not found page accessibility', async ({ page }) => {
   await page.goto('/valintojen-toteuttaminen/mimic-treasure-chest');
-  await expect(page.getByRole('progressbar')).toBeHidden();
+  await expectAllSpinnersHidden(page);
   await expectPageAccessibilityOk(page);
 });
 

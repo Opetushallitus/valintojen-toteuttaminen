@@ -1,5 +1,8 @@
 import { test, expect, Page } from '@playwright/test';
-import { expectPageAccessibilityOk } from './playwright-utils';
+import {
+  expectAllSpinnersHidden,
+  expectPageAccessibilityOk,
+} from './playwright-utils';
 
 async function selectHakutapa(page: Page, idx: number, expectedOption: string) {
   await page.getByTestId('haku-hakutapa-select').click();
@@ -26,7 +29,7 @@ test('Haku-page accessibility', async ({ page }) => {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000046872',
   );
-  await expect(page.getByRole('progressbar')).toBeHidden();
+  await expectAllSpinnersHidden(page);
   await expectPageAccessibilityOk(page);
 });
 
