@@ -1,5 +1,5 @@
 'use client';
-import { useEffect } from 'react';
+import ErrorBoundary from './components/error-boundary';
 
 export default function GlobalError({
   error,
@@ -8,14 +8,10 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  useEffect(() => {
-    console.error(error);
-  });
   return (
     <html>
       <body>
-        <h1>Jokin meni vikaan</h1>
-        <button onClick={() => reset()}>Yritä uudelleen</button>
+        <ErrorBoundary error={error} reset={reset} />
       </body>
     </html>
   );

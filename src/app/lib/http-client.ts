@@ -1,12 +1,13 @@
 import { getCookies } from './cookie';
 import { redirect } from 'next/navigation';
 import { configuration } from './configuration';
+import { FetchError } from './common';
 
 const doFetch = async (request: Request) => {
   try {
     const response = await fetch(request);
     return response.status >= 400
-      ? Promise.reject(response)
+      ? Promise.reject(new FetchError(response))
       : Promise.resolve(response);
   } catch (e) {
     return Promise.reject(e);
@@ -79,8 +80,8 @@ const makeRequest = async (request: Request) => {
 
     return responseToData(response);
   } catch (error: unknown) {
-    if (error instanceof Response) {
-      if (isUnauthenticated(error)) {
+    if (error instanceof FetchError) {
+      if (isUnauthenticated(error.response)) {
         try {
           if (request?.url?.includes('/kouta-internal')) {
             const resp = await retryWithLogin(
@@ -91,6 +92,9 @@ const makeRequest = async (request: Request) => {
             return responseToData(resp);
           }
         } catch (e) {
+          if (e instanceof FetchError && isUnauthenticated(e.response)) {
+            redirectToLogin();
+          }
           return Promise.reject(e);
         }
       }
