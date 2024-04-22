@@ -29,7 +29,7 @@ const redirectToLogin = () => {
 
 const makeBareRequest = (request: Request) => {
   const { method } = request;
-  let modifiedOptions: RequestInit = {
+  const modifiedOptions: RequestInit = {
     headers: {
       'Caller-id': '1.2.246.562.10.00000000001.valintojen-toteuttaminen',
     },
@@ -46,7 +46,7 @@ const makeBareRequest = (request: Request) => {
   return doFetch(new Request(request, modifiedOptions));
 };
 
-const retryWithLogin = async (request: any, loginUrl: string) => {
+const retryWithLogin = async (request: Request, loginUrl: string) => {
   await makeBareRequest(new Request(loginUrl));
   return await makeBareRequest(request);
 };
@@ -67,7 +67,7 @@ const responseToData = async (res: Response) => {
   }
 };
 
-const makeRequest = async <T>(request: Request) => {
+const makeRequest = async (request: Request) => {
   try {
     const response = await makeBareRequest(request);
 

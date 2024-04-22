@@ -1,5 +1,4 @@
 'use server';
-import { CircularProgress } from '@mui/material';
 import dynamic from 'next/dynamic';
 import Header from './components/header';
 import { getHakutavat } from './lib/koodisto';

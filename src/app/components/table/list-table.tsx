@@ -9,20 +9,26 @@ import {
   TableRow,
   styled,
 } from '@mui/material';
-import { getTranslation } from '@/app/lib/common';
+import { TranslatedName, getTranslation } from '@/app/lib/common';
 import { Haku, getAlkamisKausi, Tila } from '@/app/lib/kouta-types';
 
-type Column = {
+type Column<P> = {
   title?: string;
   key: string;
-  render: (obj: any) => React.ReactNode;
+  render: (props: P) => React.ReactNode;
   style?: Record<string, string | number>;
 };
 
-export const makeHakuColumn = (): Column => ({
+type Entity = { oid: string; nimi: TranslatedName; tila: Tila };
+
+type KeysMatching<O, T> = {
+  [K in keyof O]: O[K] extends T ? K : never;
+}[keyof O & string];
+
+export const makeHakuColumn = <T extends Entity = Entity>(): Column<T> => ({
   title: 'Nimi',
   key: 'hakuNimi',
-  render: (haku: Haku) => (
+  render: (haku) => (
     <MuiLink href={`/haku/${haku.oid}`} sx={{ textDecoration: 'none' }}>
       {getTranslation(haku.nimi)}
     </MuiLink>
@@ -39,35 +45,35 @@ export const makeCountColumn = ({
 }: {
   title: string;
   key: string;
-  amountProp: string;
-}): Column => ({
+  amountProp: KeysMatching<Haku, number>;
+}): Column<Haku> => ({
   title,
   key,
-  render: (props: any) => <span>{props[amountProp] ?? 0}</span>,
+  render: (props) => <span>{props[amountProp] ?? 0}</span>,
   style: { width: 0 },
 });
 
-export const makeTilaColumn = (): Column => ({
+export const makeTilaColumn = <T extends Entity = Entity>(): Column<T> => ({
   title: 'Tila',
   key: 'tila',
-  render: (haku: Haku) => <span>{Tila[haku.tila]}</span>,
+  render: (haku) => <span>{Tila[haku.tila]}</span>,
   style: {
     width: 0,
   },
 });
 
-export const makeHakutapaColumn = (getMatchingHakutapa: Function): Column => ({
+export const makeHakutapaColumn = (
+  getMatchingHakutapa: (koodiUri: string) => string | undefined,
+): Column<Haku> => ({
   title: 'Hakutapa',
   key: 'hakutapa',
-  render: (haku: Haku) => (
-    <span>{getMatchingHakutapa(haku.hakutapaKoodiUri)}</span>
-  ),
+  render: (haku) => <span>{getMatchingHakutapa(haku.hakutapaKoodiUri)}</span>,
 });
 
-export const makeKoulutuksenAlkamiskausiColumn = (): Column => ({
+export const makeKoulutuksenAlkamiskausiColumn = (): Column<Haku> => ({
   title: 'Koulutuksen alkamiskausi',
   key: 'koulutuksenAlkamiskausi',
-  render: (haku: Haku) => (
+  render: (haku) => (
     <span>
       {haku.alkamisKausiKoodiUri
         ? `${haku.alkamisVuosi} ${getAlkamisKausi(haku.alkamisKausiKoodiUri)}`
@@ -75,11 +81,6 @@ export const makeKoulutuksenAlkamiskausiColumn = (): Column => ({
     </span>
   ),
 });
-
-type ListTableProps = {
-  columns?: Array<Column>;
-  rows?: Array<any>;
-};
 
 const StyledTable = styled(Table)({
   width: '100%',
@@ -103,11 +104,16 @@ const StyledRow = styled(TableRow)({
   },
 });
 
-export const ListTable = ({
+interface ListTableProps<T> extends React.ComponentProps<typeof StyledTable> {
+  columns?: Array<Column<T>>;
+  rows?: Array<T>;
+}
+
+export const ListTable = <T extends Entity>({
   columns = [],
   rows = [],
   ...props
-}: ListTableProps) => {
+}: ListTableProps<T>) => {
   return (
     <StyledTable {...props}>
       <TableHead>
