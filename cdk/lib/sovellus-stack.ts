@@ -97,15 +97,11 @@ export class SovellusStack extends cdk.Stack {
         authType: FunctionUrlAuthType.NONE,
       });
 
-    const nextJsS3Deployment = new s3deploy.BucketDeployment(
-      this,
-      'NextJsStaticDeployment',
-      {
-        sources: [s3deploy.Source.asset('../.next/static')],
-        destinationBucket: staticBucket,
-        destinationKeyPrefix: 'static/_next/static',
-      },
-    );
+    new s3deploy.BucketDeployment(this, 'NextJsStaticDeployment', {
+      sources: [s3deploy.Source.asset('../.next/static')],
+      destinationBucket: staticBucket,
+      destinationKeyPrefix: '_next/static',
+    });
 
     const cloudfrontOAI = new cloudfront.OriginAccessIdentity(
       this,
@@ -166,7 +162,6 @@ export class SovellusStack extends cdk.Stack {
       domainNames: [
         `valintojen-toteuttaminen.${publicHostedZones[props.environmentName]}`,
       ],
-      defaultRootObject: 'index.html',
       webAclId: webAclIds[props.environmentName],
       defaultBehavior: {
         origin: new cloudfront_origins.HttpOrigin(
@@ -179,18 +174,7 @@ export class SovellusStack extends cdk.Stack {
         originRequestPolicy,
       },
       additionalBehaviors: {
-        '/valintojen-toteuttaminen/*': {
-          origin: new cloudfront_origins.HttpOrigin(
-            Fn.select(2, Fn.split('/', valintojenToteuttaminenFunctionUrl.url)),
-            {},
-          ),
-          cachePolicy: noCachePolicy,
-          viewerProtocolPolicy:
-            cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-          allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
-          originRequestPolicy,
-        },
-        '/static/*': {
+        '/_next/static/*': {
           origin: new cloudfront_origins.S3Origin(staticBucket, {
             originAccessIdentity: cloudfrontOAI,
           }),

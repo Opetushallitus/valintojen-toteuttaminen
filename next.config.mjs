@@ -14,9 +14,9 @@ const cspHeader = `
     upgrade-insecure-requests;
 `;
 
-const basePath = '/valintojen-toteuttaminen';
-
 const isProd = process.env.NODE_ENV === 'production';
+
+const basePath = '/valintojen-toteuttaminen';
 
 const nextConfig = {
   basePath,
@@ -36,13 +36,9 @@ const nextConfig = {
   env: {
     basePath,
     VIRKAILIJA_URL: process.env.VIRKAILIJA_URL,
+    APP_URL: process.env.APP_URL,
   },
-  ...(isProd
-    ? {
-        assetPrefix: '/static',
-        output: 'standalone',
-      }
-    : {}),
+  output: isProd ? 'standalone' : undefined,
 };
 
 export default nextConfig;

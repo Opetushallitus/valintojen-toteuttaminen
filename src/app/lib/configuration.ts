@@ -1,4 +1,9 @@
-const DOMAIN = process.env.APP_URL ?? 'https://localhost:3404';
+const DOMAIN =
+  process.env.APP_URL ?? process.env.VIRKAILIJA_URL ?? 'https://localhost:3404';
+
+export const isLocalhost = DOMAIN.includes('localhost');
+
+export const isProd = process.env.NODE_ENV === 'production';
 
 interface Configuration {
   loginUrl: string;
