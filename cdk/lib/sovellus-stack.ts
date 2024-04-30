@@ -11,7 +11,7 @@ import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as cloudfront_origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as route53targets from 'aws-cdk-lib/aws-route53-targets';
 import * as shield from 'aws-cdk-lib/aws-shield';
-import path = require('path');
+import path from 'path';
 
 interface ValintojenToteuttaminenStackProps extends cdk.StackProps {
   environmentName: string;
@@ -34,13 +34,13 @@ export class SovellusStack extends cdk.Stack {
     const publicHostedZoneIds: { [p: string]: string } = {
       hahtuva: 'Z20VS6J64SGAG9',
       pallero: 'Z175BBXSKVCV3B',
-      untuva: '',
+      untuva: 'Z1399RU36FG2N9',
     };
 
     const webAclIds: { [p: string]: string } = {
       hahtuva: `arn:aws:wafv2:us-east-1:${this.account}:global/webacl/dev-manual-web-acl/d65d35e9-a67b-478a-a7ca-48af3a5e8479`,
       pallero: `arn:aws:wafv2:us-east-1:${this.account}:global/webacl/dev-manual-web-acl/d65d35e9-a67b-478a-a7ca-48af3a5e8479`,
-      untuva: '',
+      untuva: `arn:aws:wafv2:us-east-1:${this.account}:global/webacl/dev-manual-web-acl/d65d35e9-a67b-478a-a7ca-48af3a5e8479`,
     };
 
     /**const vpc = ec2.Vpc.fromVpcAttributes(this, "VPC", {
@@ -75,7 +75,7 @@ export class SovellusStack extends cdk.Stack {
       'NextCdkFunction',
       {
         functionName: `${props.environmentName}-valintojen-toteuttaminen`,
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         handler: 'run.sh',
         memorySize: 1024,
         timeout: Duration.seconds(60),
@@ -101,7 +101,7 @@ export class SovellusStack extends cdk.Stack {
       this,
       'NextJsStaticDeployment',
       {
-        sources: [s3deploy.Source.asset('../../.next/static')],
+        sources: [s3deploy.Source.asset('../.next/static')],
         destinationBucket: staticBucket,
         destinationKeyPrefix: 'static/_next/static',
       },

@@ -1,7 +1,6 @@
-const DOMAIN = 'https://localhost:3404'; //http://localhost:3104';
+const DOMAIN = process.env.VIRKAILIJA_URL ?? 'https://localhost:3404';
 
 interface Configuration {
-  serviceUrl: string;
   loginUrl: string;
   sessionCookie: string;
   hautUrl: string;
@@ -12,11 +11,7 @@ interface Configuration {
   asiointiKieliUrl: string;
 }
 
-const serviceUrl =
-  process.env.SERVICE_URL ?? `${DOMAIN}${process.env.basePath}`;
-
 export const configuration: Configuration = {
-  serviceUrl,
   loginUrl: process.env.LOGIN_URL || `${DOMAIN}/cas/login`,
   sessionCookie: process.env.SESSION_COOKIE || 'JSESSIONID',
   hautUrl: `${DOMAIN}/kouta-internal/haku/search?includeHakukohdeOids=false`,

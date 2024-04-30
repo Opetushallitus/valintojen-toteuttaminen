@@ -7,7 +7,7 @@ const app = new cdk.App();
 const environmentName = app.node.tryGetContext('environment');
 
 new SovellusStack(app, 'SovellusStack', {
-  stackName: `${environmentName}-viestinvalitys-sovellus`,
+  stackName: `${environmentName}-valintojen-toteuttaminen`,
   environmentName: environmentName,
   env: {
     account: process.env.CDK_DEFAULT_ACCOUNT,
