@@ -1,4 +1,4 @@
-const DOMAIN = process.env.VIRKAILIJA_URL ?? 'https://localhost:3404';
+const DOMAIN = process.env.APP_URL ?? 'https://localhost:3404';
 
 interface Configuration {
   loginUrl: string;
