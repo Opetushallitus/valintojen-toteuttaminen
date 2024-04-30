@@ -1,9 +1,9 @@
-import { CSSProperties } from 'react';
+import React, { CSSProperties } from 'react';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import { Link as MuiLink } from '@mui/material';
 
 export type HeaderProps = {
-  title?: string;
+  title?: React.ReactNode;
   isHome?: boolean;
 };
 
@@ -38,7 +38,7 @@ export default function Header({
     <header>
       <div style={headerStyle}>
         {!isHome && (
-          <MuiLink href="/" sx={titleStyle}>
+          <MuiLink href="/" sx={titleStyle} aria-label="Palaa etusivulle">
             <HomeOutlinedIcon
               sx={{ border: '1px solid', padding: '3px', borderRadius: '2px' }}
             />

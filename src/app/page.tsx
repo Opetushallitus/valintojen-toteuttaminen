@@ -1,10 +1,8 @@
 'use server';
-import { CircularProgress } from '@mui/material';
-import dynamic from 'next/dynamic';
-import Header from './components/header';
 import { getHakutavat } from './lib/koodisto';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { CSSProperties } from 'react';
+import HakuFilters from './components/haku-filters';
 
 const titleSectionStyle: CSSProperties = {
   borderBottom: '1px solid rgba(0, 0, 0, 0.15)',
@@ -16,25 +14,17 @@ const titleSectionStyle: CSSProperties = {
   padding: 0,
 };
 
-const HakuFilters = dynamic(() => import('./components/haku-filters'), {
-  ssr: false,
-  loading: () => <CircularProgress />,
-});
-
 export default async function Home() {
   const hakutavat = await getHakutavat();
 
   return (
-    <main>
-      <Header isHome={true} />
-      <div className="mainContainer">
-        <div style={titleSectionStyle}>
-          <h2 style={{ textAlign: 'left', margin: '0 0 1rem' }}>
-            <AccessTimeIcon /> Haut
-          </h2>
-        </div>
-        <HakuFilters hakutavat={hakutavat} />
+    <main className="mainContainer">
+      <div style={titleSectionStyle}>
+        <h2 style={{ textAlign: 'left', margin: '0 0 1rem' }}>
+          <AccessTimeIcon /> Haut
+        </h2>
       </div>
+      <HakuFilters hakutavat={hakutavat} />
     </main>
   );
 }

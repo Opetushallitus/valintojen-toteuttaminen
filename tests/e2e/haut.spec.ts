@@ -1,4 +1,8 @@
 import { test, expect, Page } from '@playwright/test';
+import {
+  expectAllSpinnersHidden,
+  expectPageAccessibilityOk,
+} from './playwright-utils';
 
 async function selectHakutapa(page: Page, idx: number, expectedOption: string) {
   await page.getByTestId('haku-hakutapa-select').click();
@@ -19,6 +23,14 @@ async function selectKausi(page: Page, idx: number, expectedOption: string) {
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
   await expect(page).toHaveTitle(/Valintojen Toteuttaminen/);
+});
+
+test('Haku-page accessibility', async ({ page }) => {
+  await page.goto(
+    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000046872',
+  );
+  await expectAllSpinnersHidden(page);
+  await expectPageAccessibilityOk(page);
 });
 
 test('filters haku by published state', async ({ page }) => {

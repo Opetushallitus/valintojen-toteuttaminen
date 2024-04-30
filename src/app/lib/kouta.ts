@@ -5,7 +5,7 @@ import { TranslatedName } from './common';
 import { Haku, Hakukohde, Tila } from './kouta-types';
 import { client } from './http-client';
 
-export async function getHaut(active: boolean = true) {
+export async function getHaut() {
   const response = await client.get(configuration.hautUrl);
   const haut: Haku[] = response.data.map(
     (h: {

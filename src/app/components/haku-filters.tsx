@@ -140,6 +140,7 @@ const HakuFiltersInternal = ({
             <FormLabel htmlFor="haku-search">Hae hakuja</FormLabel>
             <Input
               data-test-id="haku-search"
+              id="haku-search"
               name="haku-search"
               onChange={handleSearchChange}
               type="text"
@@ -155,9 +156,10 @@ const HakuFiltersInternal = ({
             size="small"
             sx={{ m: 1, minWidth: 180, textAlign: 'left' }}
           >
-            <FormLabel htmlFor="hakutapa-select">Hakutapa</FormLabel>
+            <FormLabel id="hakutapa-select-label">Hakutapa</FormLabel>
             <Select
               data-testid="haku-hakutapa-select"
+              labelId="hakutapa-select-label"
               name="hakutapa-select"
               onChange={changeHakutapa}
               defaultValue="-1"
@@ -178,11 +180,12 @@ const HakuFiltersInternal = ({
             size="small"
             sx={{ m: 1, minWidth: 180, textAlign: 'left' }}
           >
-            <FormLabel htmlFor="alkamiskausi-select">
+            <FormLabel id="alkamiskausi-select-label">
               Koulutuksen alkamiskausi
             </FormLabel>
             <Select
               data-testid="haku-kausi-select"
+              labelId="alkamiskausi-select-label"
               name="alkamiskausi-select"
               onChange={changeAlkamisKausi}
               defaultValue="-1"

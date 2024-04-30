@@ -9,10 +9,11 @@ const basePath = nextConfig.basePath;
 const port = parseInt(process.env.PORT, 10) || 3404;
 
 const virkailijaOrigin = process.env.VIRKAILIJA_URL;
+const isProd = process.env.NODE_ENV === 'production';
 
 const app = next({
   conf: nextConfig,
-  dev: true,
+  dev: !isProd,
   hostname: 'localhost',
   port: port,
   env: process.env,
