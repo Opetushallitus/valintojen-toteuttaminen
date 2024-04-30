@@ -79,4 +79,4 @@ jobs:
         run: |
           npm run build
           zip -r GA-${{github.run_number}}.zip .next/standalone
-          aws s3 cp GA-${{github.run_number}} s3://${{secrets.BUCKET_NAME}}/GA-${{github.run_number}}
+          aws s3 cp GA-${{github.run_number}}.zip s3://${{secrets.BUCKET_NAME}}/GA-${{github.run_number}}
