@@ -1,0 +1,37 @@
+name: Valintojen toteuttaminen deploy
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        description: Environment where to deploy
+        options:
+          - untuva
+          - hahtuva
+          - pallero
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+      - name: Install NPM dependencies
+        run: |
+          npm ci
+          cd cdk
+          npm ci
+      - name: Temp build
+        run: npm run build
+      - name: Configure AWS credentials
+        if: ${{ inputs.environment == 'hahtuva' || inputs.environment == 'untuva' || inputs.environment == 'pallero' }}
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
+        with:
+          role-to-assume: ${{ secrets.AWS_OPINTOPOLKU_DEV_ROLE_ARN }}
+          role-session-name: valintojen-toteuttaminen-deploy
+          aws-region: eu-west-1
+      - name: Deploy Next.js app
+        run: |
+          cd cdk
+          ./deploy.sh ${{ inputs.environment }}untuva deploy
