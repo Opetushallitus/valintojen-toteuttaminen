@@ -24,7 +24,13 @@ const StyledItem = styled('div')({
   },
 });
 
-export const HakukohdeList = ({ oid }: { oid: string }) => {
+export const HakukohdeList = ({
+  oid,
+  selectFn,
+}: {
+  oid: string;
+  selectFn: (hakukohde: Hakukohde) => void;
+}) => {
   const { data: hakukohteet } = useSuspenseQuery({
     queryKey: ['getHakukohteet', oid],
     queryFn: () => getHakukohteet(oid),
@@ -33,7 +39,7 @@ export const HakukohdeList = ({ oid }: { oid: string }) => {
   return (
     <StyledList>
       {hakukohteet.map((hk: Hakukohde) => (
-        <StyledItem key={hk.oid}>
+        <StyledItem key={hk.oid} onClick={() => selectFn(hk)}>
           <p title={hk.organisaatioOid} className="organizationLabel">
             {getTranslation(hk.jarjestyspaikkaHierarkiaNimi)}
           </p>
