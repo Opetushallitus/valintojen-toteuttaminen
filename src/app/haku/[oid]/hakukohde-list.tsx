@@ -5,6 +5,7 @@ import { getHakukohteet } from '@/app/lib/kouta';
 import { Hakukohde } from '@/app/lib/kouta-types';
 import { styled } from '@mui/material';
 import { useSuspenseQuery } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 
 const StyledList = styled('div')({
   maxWidth: '20vw',
@@ -24,13 +25,13 @@ const StyledItem = styled('div')({
   },
 });
 
-export const HakukohdeList = ({
-  oid,
-  selectFn,
-}: {
-  oid: string;
-  selectFn: (hakukohde: Hakukohde) => void;
-}) => {
+export const HakukohdeList = ({ oid }: { oid: string }) => {
+  const router = useRouter();
+
+  const selectHakukohde = (hakukohde: Hakukohde) => {
+    router.push(`/haku/${oid}/hakukohde/${hakukohde.oid}`);
+  };
+
   const { data: hakukohteet } = useSuspenseQuery({
     queryKey: ['getHakukohteet', oid],
     queryFn: () => getHakukohteet(oid),
@@ -39,7 +40,7 @@ export const HakukohdeList = ({
   return (
     <StyledList>
       {hakukohteet.map((hk: Hakukohde) => (
-        <StyledItem key={hk.oid} onClick={() => selectFn(hk)}>
+        <StyledItem key={hk.oid} onClick={() => selectHakukohde(hk)}>
           <p title={hk.organisaatioOid} className="organizationLabel">
             {getTranslation(hk.jarjestyspaikkaHierarkiaNimi)}
           </p>
