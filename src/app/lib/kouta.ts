@@ -60,3 +60,16 @@ export async function getHakukohteet(hakuOid: string): Promise<Hakukohde[]> {
   );
   return hakukohteet;
 }
+
+export async function getHakukohde(hakukohdeOid: string): Promise<Hakukohde> {
+  const response = await client.get(
+    `${configuration.hakukohdeUrl}/${hakukohdeOid}`,
+  );
+  return {
+    oid: response.data.oid,
+    nimi: response.data.nimi,
+    organisaatioNimi: response.data.organisaatioNimi,
+    organisaatioOid: response.data.organisaatioOid,
+    jarjestyspaikkaHierarkiaNimi: response.data.jarjestyspaikkaHierarkiaNimi,
+  };
+}
