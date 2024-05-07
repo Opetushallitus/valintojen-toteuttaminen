@@ -1,12 +1,8 @@
 'use client';
 
 import { getHakukohde } from '@/app/lib/kouta';
-import { styled } from '@mui/material';
+import { TabContainer } from '../TabContainer';
 import { useSuspenseQuery } from '@tanstack/react-query';
-
-const StyledContainer = styled('div')({
-  width: '70%',
-});
 
 export default function HakeneetPage({
   params,
@@ -19,9 +15,9 @@ export default function HakeneetPage({
   });
 
   return (
-    <StyledContainer>
+    <TabContainer>
       <p>Hakeneet</p>
       <p>Hakukohde oid: {hakukohde.oid}</p>
-    </StyledContainer>
+    </TabContainer>
   );
 }

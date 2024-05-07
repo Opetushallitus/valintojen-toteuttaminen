@@ -8,14 +8,21 @@ import { getHakukohde } from '@/app/lib/kouta';
 import { usePathname, useRouter } from 'next/navigation';
 
 const StyledContainer = styled('div')({
-  padding: '0.5rem 1.5rem',
-  width: '70%',
+  padding: '0.5rem 1.5rem 0',
+  width: '100%',
+  border: '1px solid lightgray',
 });
 
 const StyledHeader = styled('div')({
   textAlign: 'left',
+  h2: {
+    lineHeight: '1rem',
+  },
   '.hakukohdeLabel': {
     fontWeight: 500,
+  },
+  '.organisaatioLabel': {
+    fontWeight: 'normal',
   },
 });
 
@@ -26,7 +33,7 @@ const StyledTabs = styled('div')({
   '.hakukohde-tab': {
     cursor: 'pointer',
     '&--active': {
-      borderBottom: '2px solid #0a789c',
+      borderBottom: '3px solid #0a789c',
     },
   },
 });
@@ -76,12 +83,12 @@ export const HakukohdeTabs = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
   return (
     <StyledContainer>
       <StyledHeader>
-        <p title={hakukohde.organisaatioOid}>
+        <h2 className="organisaatioLabel" title={hakukohde.organisaatioOid}>
           {getTranslation(hakukohde.jarjestyspaikkaHierarkiaNimi)}
-        </p>
-        <p className="hakukohdeLabel" title={hakukohde.oid}>
+        </h2>
+        <h2 className="hakukohdeLabel" title={hakukohde.oid}>
           {getTranslation(hakukohde.nimi)}
-        </p>
+        </h2>
       </StyledHeader>
       <StyledTabs>
         {ToinenAsteTabs.map((tab, index) => (
