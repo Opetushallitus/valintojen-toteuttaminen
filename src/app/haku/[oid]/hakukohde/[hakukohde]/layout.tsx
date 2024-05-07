@@ -12,7 +12,12 @@ export default function HakuLayout({
     <>
       <main
         className="mainContainer"
-        style={{ display: 'flex', flexDirection: 'row' }}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          padding: 0,
+          width: '100%',
+        }}
       >
         <HakukohdeTabs hakukohdeOid={params.hakukohde} />
         {children}

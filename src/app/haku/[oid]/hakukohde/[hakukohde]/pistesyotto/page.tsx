@@ -1,12 +1,8 @@
 'use client';
 
 import { getHakukohde } from '@/app/lib/kouta';
-import { styled } from '@mui/material';
 import { useSuspenseQuery } from '@tanstack/react-query';
-
-const StyledContainer = styled('div')({
-  width: '70%',
-});
+import { TabContainer } from '../TabContainer';
 
 export default function PisteSyottoPage({
   params,
@@ -19,9 +15,9 @@ export default function PisteSyottoPage({
   });
 
   return (
-    <StyledContainer>
+    <TabContainer>
       <p>Pistesyöttö</p>
       <p>Hakukohde oid: {hakukohde.oid}</p>
-    </StyledContainer>
+    </TabContainer>
   );
 }

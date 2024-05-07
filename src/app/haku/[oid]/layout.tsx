@@ -14,7 +14,7 @@ export default function HakuLayout({
       {header}
       <main
         className="mainContainer"
-        style={{ display: 'flex', flexDirection: 'row' }}
+        style={{ display: 'flex', flexDirection: 'row', textAlign: 'left' }}
       >
         <HakukohdeList oid={params.oid} />
         {children}

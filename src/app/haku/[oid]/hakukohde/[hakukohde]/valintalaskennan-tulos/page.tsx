@@ -1,12 +1,8 @@
 'use client';
 
 import { getHakukohde } from '@/app/lib/kouta';
-import { styled } from '@mui/material';
 import { useSuspenseQuery } from '@tanstack/react-query';
-
-const StyledContainer = styled('div')({
-  width: '70%',
-});
+import { TabContainer } from '../TabContainer';
 
 export default function ValintalaskennanTulosPage({
   params,
@@ -19,9 +15,9 @@ export default function ValintalaskennanTulosPage({
   });
 
   return (
-    <StyledContainer>
+    <TabContainer>
       <p>Valintalaskennan Tulos</p>
       <p>Hakukohde oid: {hakukohde.oid}</p>
-    </StyledContainer>
+    </TabContainer>
   );
 }
