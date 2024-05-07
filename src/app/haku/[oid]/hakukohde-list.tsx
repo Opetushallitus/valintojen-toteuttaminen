@@ -29,7 +29,7 @@ export const HakukohdeList = ({ oid }: { oid: string }) => {
   const router = useRouter();
 
   const selectHakukohde = (hakukohde: Hakukohde) => {
-    router.push(`/haku/${oid}/hakukohde/${hakukohde.oid}`);
+    router.push(`/haku/${oid}/hakukohde/${hakukohde.oid}/perustiedot`);
   };
 
   const { data: hakukohteet } = useSuspenseQuery({

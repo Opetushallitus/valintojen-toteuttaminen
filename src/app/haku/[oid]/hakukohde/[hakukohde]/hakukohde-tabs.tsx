@@ -1,17 +1,11 @@
 'use client';
 
 import { getTranslation } from '@/app/lib/common';
-import { Hakukohde } from '@/app/lib/kouta-types';
 import { styled } from '@mui/material';
 import { useState } from 'react';
-import PerustiedotTab from './perustiedot-tab';
-import HakeneetTab from './hakeneet-tab';
-import ValinnanHallintaTab from './valinnan-hallinta-tab';
-import KoekutsutTab from './koekutsut-tab';
-import PistesyottoTab from './pistesyotto-tab';
-import HarkinnanvaraisetTab from './harkinnanvaraiset-tab';
-import LaskennanTulosTab from './laskennan-tulos-tab';
-import SijoittelunTulosTab from './sijoittelun-tulos-tab';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { getHakukohde } from '@/app/lib/kouta';
+import { useRouter } from 'next/navigation';
 
 const StyledContainer = styled('div')({
   padding: '0.5rem 1.5rem',
@@ -38,23 +32,35 @@ const StyledTabs = styled('div')({
 });
 
 type BasicTab = {
-  tab: ({ hakukohde }: { hakukohde: Hakukohde }) => JSX.Element;
   title: string;
+  route: string;
 };
 
 const ToinenAsteTabs: BasicTab[] = [
-  { tab: PerustiedotTab, title: 'Perustiedot' },
-  { tab: HakeneetTab, title: 'Hakeneet' },
-  { tab: ValinnanHallintaTab, title: 'Valinnan hallinta' },
-  { tab: KoekutsutTab, title: 'Valintakoekutsut' },
-  { tab: PistesyottoTab, title: 'Pistesyöttö' },
-  { tab: HarkinnanvaraisetTab, title: 'Harkinnanvaraiset' },
-  { tab: LaskennanTulosTab, title: 'Valintalaskennan tulos' },
-  { tab: SijoittelunTulosTab, title: 'Sijoittelun tulokset' },
+  { title: 'Perustiedot', route: 'perustiedot' },
+  { title: 'Hakeneet', route: 'hakeneet' },
+  { title: 'Valinnan hallinta', route: 'valinnan-hallinta' },
+  { title: 'Valintakoekutsut', route: 'valintakoekutsut' },
+  { title: 'Pistesyöttö', route: 'pistesyotto' },
+  { title: 'Harkinnanvaraiset', route: 'harkinnanvaraiset' },
+  { title: 'Valintalaskennan tulos', route: 'valintalaskennan-tulos' },
+  { title: 'Sijoittelun tulokset', route: 'sijoittelun-tulokset' },
 ];
 
-export const HakukohdeTabs = ({ hakukohde }: { hakukohde: Hakukohde }) => {
+export const HakukohdeTabs = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
   const [activeTab, setActiveTab] = useState<BasicTab>(ToinenAsteTabs[0]);
+
+  const router = useRouter();
+
+  const { data: hakukohde } = useSuspenseQuery({
+    queryKey: ['getHakukohde', hakukohdeOid],
+    queryFn: () => getHakukohde(hakukohdeOid),
+  });
+
+  const selectActiveTab = (tab: BasicTab) => {
+    setActiveTab(tab);
+    router.push(`${tab.route}`);
+  };
 
   return (
     <StyledContainer>
@@ -75,13 +81,12 @@ export const HakukohdeTabs = ({ hakukohde }: { hakukohde: Hakukohde }) => {
                 ? 'hakukohde-tab hakukohde-tab--active'
                 : 'hakukohde-tab'
             }
-            onClick={() => setActiveTab(tab)}
+            onClick={() => selectActiveTab(tab)}
           >
             {tab.title}
           </div>
         ))}
       </StyledTabs>
-      {activeTab.tab({ hakukohde: hakukohde })}
     </StyledContainer>
   );
 };

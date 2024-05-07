@@ -1,22 +1,20 @@
-import HakukohdeList from './hakukohde-list';
+import HakukohdeTabs from './hakukohde-tabs';
 
 export default function HakuLayout({
   children,
-  header,
   params,
 }: {
   children: React.ReactNode;
   header: React.ReactNode;
-  params: { oid: string };
+  params: { oid: string; hakukohde: string };
 }) {
   return (
     <>
-      {header}
       <main
         className="mainContainer"
         style={{ display: 'flex', flexDirection: 'row' }}
       >
-        <HakukohdeList oid={params.oid} />
+        <HakukohdeTabs hakukohdeOid={params.hakukohde} />
         {children}
       </main>
     </>
