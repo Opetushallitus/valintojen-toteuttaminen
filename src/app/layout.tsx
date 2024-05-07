@@ -16,10 +16,8 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
-  header,
 }: Readonly<{
   children: React.ReactNode;
-  header: React.ReactNode;
 }>) {
   return (
     <html lang="fi">
@@ -27,12 +25,7 @@ export default async function RootLayout({
         <AppRouterCacheProvider>
           <ReactQueryClientProvider>
             <ThemeProvider theme={theme}>
-              <Wrapper>
-                <>
-                  {header}
-                  {children}
-                </>
-              </Wrapper>
+              <Wrapper>{children}</Wrapper>
             </ThemeProvider>
           </ReactQueryClientProvider>
         </AppRouterCacheProvider>
