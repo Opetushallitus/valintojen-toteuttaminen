@@ -5,7 +5,7 @@ import { styled } from '@mui/material';
 import { useState } from 'react';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getHakukohde } from '@/app/lib/kouta';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 const StyledContainer = styled('div')({
   padding: '0.5rem 1.5rem',
@@ -47,8 +47,19 @@ const ToinenAsteTabs: BasicTab[] = [
   { title: 'Sijoittelun tulokset', route: 'sijoittelun-tulokset' },
 ];
 
+function getPathMatchingTab(pathName: string) {
+  const lastPath = pathName.split('/').reverse()[0];
+  return (
+    ToinenAsteTabs.find((tab) => tab.route.startsWith(lastPath)) ||
+    ToinenAsteTabs[0]
+  );
+}
+
 export const HakukohdeTabs = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
-  const [activeTab, setActiveTab] = useState<BasicTab>(ToinenAsteTabs[0]);
+  const pathName = usePathname();
+  const [activeTab, setActiveTab] = useState<BasicTab>(
+    getPathMatchingTab(pathName),
+  );
 
   const router = useRouter();
 
