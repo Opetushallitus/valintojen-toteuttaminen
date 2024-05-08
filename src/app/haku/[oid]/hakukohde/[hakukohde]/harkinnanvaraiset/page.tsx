@@ -16,7 +16,7 @@ export default function HarkinnanvaraisetPage({
 
   return (
     <TabContainer>
-      <p>Harkinnanvaraiset</p>
+      <h3>Harkinnanvaraiset</h3>
       <p>Hakukohde oid: {hakukohde.oid}</p>
     </TabContainer>
   );

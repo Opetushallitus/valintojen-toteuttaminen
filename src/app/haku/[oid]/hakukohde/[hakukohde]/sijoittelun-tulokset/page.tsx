@@ -16,7 +16,7 @@ export default function SijoittelunTuloksetPage({
 
   return (
     <TabContainer>
-      <p>Sijoittelun Tulokset</p>
+      <h3>Sijoittelun tulokset</h3>
       <p>Hakukohde oid: {hakukohde.oid}</p>
     </TabContainer>
   );

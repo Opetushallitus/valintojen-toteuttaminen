@@ -16,7 +16,7 @@ export default function ValintakoekutsutPage({
 
   return (
     <TabContainer>
-      <p>Valintakoekutsut</p>
+      <h3>Valintakoekutsut</h3>
       <p>Hakukohde oid: {hakukohde.oid}</p>
     </TabContainer>
   );

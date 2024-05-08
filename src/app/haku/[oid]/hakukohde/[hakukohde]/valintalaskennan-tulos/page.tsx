@@ -16,7 +16,7 @@ export default function ValintalaskennanTulosPage({
 
   return (
     <TabContainer>
-      <p>Valintalaskennan Tulos</p>
+      <h3>Valintalaskennan tulos</h3>
       <p>Hakukohde oid: {hakukohde.oid}</p>
     </TabContainer>
   );
