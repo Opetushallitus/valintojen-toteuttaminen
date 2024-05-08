@@ -1,0 +1,45 @@
+name: Valintojen toteuttaminen deploy
+permissions:
+  id-token: write
+  contents: read
+on:
+  workflow_dispatch:
+    inputs:
+      build-number:
+        type: number
+        description: Github Actions build number
+      environment:
+        type: choice
+        description: Environment where to deploy
+        options:
+          - untuva
+          - hahtuva
+          - pallero
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+      - name: Install NPM dependencies
+        run: |
+          npm ci
+          cd cdk
+          npm ci
+      - name: Configure AWS credentials
+        if: ${{ inputs.environment == 'hahtuva' || inputs.environment == 'untuva' || inputs.environment == 'pallero' }}
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
+        with:
+          role-to-assume: ${{ secrets.AWS_OPINTOPOLKU_DEV_ROLE_ARN }}
+          role-session-name: valintojen-toteuttaminen-deploy
+          aws-region: eu-west-1
+      - name: Download build from s3
+        run: |
+          aws s3 cp s3://${{secrets.BUCKET_NAME}}//GA-${{inputs.build-number}} build.zip
+          unzip build.zip
+      - name: Deploy Next.js app
+        run: |
+          cd cdk
+          ./deploy.sh ${{ inputs.environment }}untuva deploy
