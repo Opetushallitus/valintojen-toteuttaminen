@@ -11,6 +11,7 @@ const ToinenAsteTabs: BasicTab[] = [
   { title: 'Valintakoekutsut', route: 'valintakoekutsut' },
   { title: 'Pistesyöttö', route: 'pistesyotto' },
   { title: 'Harkinnanvaraiset', route: 'harkinnanvaraiset' },
+  { title: 'Hakijaryhmät', route: 'hakijaryhmat' },
   { title: 'Valintalaskennan tulos', route: 'valintalaskennan-tulos' },
   { title: 'Sijoittelun tulokset', route: 'sijoittelun-tulokset' },
 ];
