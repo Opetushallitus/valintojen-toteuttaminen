@@ -16,7 +16,7 @@ export default function HakijaryhmatPage({
 
   return (
     <TabContainer>
-      <p>Hakijaryhmat</p>
+      <h3>Hakijaryhmat</h3>
       <p>Hakukohde oid: {hakukohde.oid}</p>
     </TabContainer>
   );

@@ -16,7 +16,7 @@ export default function PisteSyottoPage({
 
   return (
     <TabContainer>
-      <p>Pistesyöttö</p>
+      <h3>Pistesyöttö</h3>
       <p>Hakukohde oid: {hakukohde.oid}</p>
     </TabContainer>
   );

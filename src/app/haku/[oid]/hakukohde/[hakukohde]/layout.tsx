@@ -10,7 +10,7 @@ export default function HakuLayout({
 }) {
   return (
     <>
-      <main
+      <div
         className="mainContainer"
         style={{
           display: 'flex',
@@ -21,7 +21,7 @@ export default function HakuLayout({
       >
         <HakukohdeTabs hakukohdeOid={params.hakukohde} />
         {children}
-      </main>
+      </div>
     </>
   );
 }

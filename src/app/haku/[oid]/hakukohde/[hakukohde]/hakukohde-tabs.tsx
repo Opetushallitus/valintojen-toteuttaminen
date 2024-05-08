@@ -38,7 +38,7 @@ const StyledTabs = styled('div')({
   },
 });
 
-type BasicTab = {
+export type BasicTab = {
   title: string;
   route: string;
 };

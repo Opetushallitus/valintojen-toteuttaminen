@@ -16,6 +16,7 @@ export default function PerustiedotTab({
 
   return (
     <TabContainer>
+      <h3>Perustiedot</h3>
       <p>Hakukohde oid: {hakukohde.oid}</p>
     </TabContainer>
   );

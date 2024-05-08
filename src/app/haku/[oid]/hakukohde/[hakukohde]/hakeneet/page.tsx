@@ -16,7 +16,7 @@ export default function HakeneetPage({
 
   return (
     <TabContainer>
-      <p>Hakeneet</p>
+      <h3>Hakeneet</h3>
       <p>Hakukohde oid: {hakukohde.oid}</p>
     </TabContainer>
   );

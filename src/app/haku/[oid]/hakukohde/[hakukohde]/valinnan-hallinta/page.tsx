@@ -16,7 +16,7 @@ export default function ValinnanHallintaPage({
 
   return (
     <TabContainer>
-      <p>Valinnan Hallinta</p>
+      <h3>Valinnan hallinta</h3>
       <p>Hakukohde oid: {hakukohde.oid}</p>
     </TabContainer>
   );
