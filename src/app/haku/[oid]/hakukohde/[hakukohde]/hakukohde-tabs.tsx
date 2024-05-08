@@ -43,23 +43,21 @@ export type BasicTab = {
   route: string;
 };
 
-const ToinenAsteTabs: BasicTab[] = [
+const Tabs: BasicTab[] = [
   { title: 'Perustiedot', route: 'perustiedot' },
   { title: 'Hakeneet', route: 'hakeneet' },
   { title: 'Valinnan hallinta', route: 'valinnan-hallinta' },
   { title: 'Valintakoekutsut', route: 'valintakoekutsut' },
   { title: 'Pistesyöttö', route: 'pistesyotto' },
   { title: 'Harkinnanvaraiset', route: 'harkinnanvaraiset' },
+  { title: 'Hakijaryhmät', route: 'hakijaryhmat' },
   { title: 'Valintalaskennan tulos', route: 'valintalaskennan-tulos' },
   { title: 'Sijoittelun tulokset', route: 'sijoittelun-tulokset' },
 ];
 
 function getPathMatchingTab(pathName: string) {
   const lastPath = pathName.split('/').reverse()[0];
-  return (
-    ToinenAsteTabs.find((tab) => tab.route.startsWith(lastPath)) ||
-    ToinenAsteTabs[0]
-  );
+  return Tabs.find((tab) => tab.route.startsWith(lastPath)) || Tabs[0];
 }
 
 export const HakukohdeTabs = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
@@ -91,7 +89,7 @@ export const HakukohdeTabs = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
         </h2>
       </StyledHeader>
       <StyledTabs>
-        {ToinenAsteTabs.map((tab, index) => (
+        {Tabs.map((tab, index) => (
           <div
             key={'hakukohde-tab-' + index}
             className={
