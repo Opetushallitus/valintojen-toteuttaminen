@@ -125,6 +125,7 @@ const DEFAULT_PAGE_SIZE = 30;
 const DEFAULT_NUQS_OPTIONS = {
   history: 'push',
   clearOnDefault: true,
+  defaultValue: '',
 } as const;
 
 const useHakuSearch = (
@@ -140,7 +141,7 @@ const useHakuSearch = (
 
   const [myosArkistoidut, setMyosArkistoidut] = useQueryState(
     'arkistoidut',
-    parseAsBoolean.withDefault(false).withOptions(DEFAULT_NUQS_OPTIONS),
+    parseAsBoolean.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(false),
   );
 
   const [selectedHakutapa, setSelectedHakutapa] = useQueryState(
@@ -155,14 +156,14 @@ const useHakuSearch = (
 
   const [page, setPage] = useQueryState<number>(
     'page',
-    parseAsInteger.withDefault(1).withOptions(DEFAULT_NUQS_OPTIONS),
+    parseAsInteger.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(1),
   );
 
   const [pageSize, setPageSize] = useQueryState(
     'page_size',
     parseAsInteger
-      .withDefault(DEFAULT_PAGE_SIZE)
-      .withOptions(DEFAULT_NUQS_OPTIONS),
+      .withOptions(DEFAULT_NUQS_OPTIONS)
+      .withDefault(DEFAULT_PAGE_SIZE),
   );
 
   const [sort, setSort] = useQueryState('sort', DEFAULT_NUQS_OPTIONS);
