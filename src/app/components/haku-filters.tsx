@@ -182,7 +182,6 @@ const HakuFiltersInternal = ({
           >
             <FormLabel htmlFor="haku-search">Hae hakuja</FormLabel>
             <OutlinedInput
-              data-test-id="haku-search"
               id="haku-search"
               name="haku-search"
               key={search}
@@ -211,7 +210,6 @@ const HakuFiltersInternal = ({
           >
             <FormLabel id="hakutapa-select-label">Hakutapa</FormLabel>
             <Select
-              data-testid="haku-hakutapa-select"
               labelId="hakutapa-select-label"
               name="hakutapa-select"
               value={selectedHakutapa}
@@ -238,7 +236,6 @@ const HakuFiltersInternal = ({
               Koulutuksen alkamiskausi
             </FormLabel>
             <Select
-              data-testid="haku-kausi-select"
               labelId="alkamiskausi-select-label"
               name="alkamiskausi-select"
               displayEmpty={true}
@@ -247,9 +244,10 @@ const HakuFiltersInternal = ({
             >
               <MenuItem value="">Valitse...</MenuItem>
               {alkamiskaudet.map((kausi) => {
+                const vuosiKausi = `${kausi.alkamisVuosi} ${kausi.alkamisKausiNimi}`;
                 return (
                   <MenuItem value={kausi.value} key={kausi.value}>
-                    {kausi.alkamisKausiNimi} {kausi.alkamisVuosi}
+                    {vuosiKausi}
                   </MenuItem>
                 ); //TODO: translate
               })}
@@ -263,6 +261,7 @@ const HakuFiltersInternal = ({
         <>
           <p style={{ textAlign: 'left' }}>Hakuja: {results.length}</p>
           <Pagination
+            aria-label="top pagination"
             count={Math.ceil(results.length / pageSizeNum)}
             page={pageNum}
             onChange={(_e: unknown, value: number) => {
@@ -271,6 +270,7 @@ const HakuFiltersInternal = ({
           />
           <HakuList haut={pageResults} hakutavat={hakutavat} />
           <Pagination
+            aria-label="bottom pagination"
             count={Math.ceil(results.length / pageSizeNum)}
             page={pageNum}
             onChange={(_e: unknown, value: number) => {

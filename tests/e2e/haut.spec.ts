@@ -4,20 +4,24 @@ import {
   expectPageAccessibilityOk,
 } from './playwright-utils';
 
-async function selectHakutapa(page: Page, idx: number, expectedOption: string) {
-  await page.getByTestId('haku-hakutapa-select').click();
-  await page.locator(`#menu-hakutapa-select li:nth-child(${idx})`).click();
-  await expect(
-    page.locator('#mui-component-select-hakutapa-select'),
-  ).toContainText(expectedOption);
+async function selectHakutapa(page: Page, expectedOption: string) {
+  const combobox = page.getByRole('combobox', { name: 'Hakutapa' });
+  await combobox.click();
+  const listbox = page.getByRole('listbox', { name: 'Hakutapa' });
+  await listbox.getByRole('option', { name: expectedOption }).click();
+  await expect(combobox).toContainText(expectedOption);
 }
 
-async function selectKausi(page: Page, idx: number, expectedOption: string) {
-  await page.getByTestId('haku-kausi-select').click();
-  await page.locator(`#menu-alkamiskausi-select li:nth-child(${idx})`).click();
-  await expect(
-    page.locator('#mui-component-select-alkamiskausi-select'),
-  ).toContainText(expectedOption);
+async function selectKausi(page: Page, expectedOption: string) {
+  const combobox = page.getByRole('combobox', {
+    name: 'Koulutuksen alkamiskausi',
+  });
+  await combobox.click();
+  const listbox = page.getByRole('listbox', {
+    name: 'Koulutuksen alkamiskausi',
+  });
+  await listbox.getByRole('option', { name: expectedOption }).click();
+  await expect(combobox).toContainText(expectedOption);
 }
 
 test.beforeEach(async ({ page }) => {
@@ -33,12 +37,13 @@ test('Haku-page accessibility', async ({ page }) => {
   await expectPageAccessibilityOk(page);
 });
 
+const getMyosArkistoidut = (page: Page) =>
+  page.getByRole('checkbox', { name: 'Myös arkistoidut' });
+
 test('filters haku by published state', async ({ page }) => {
-  await expect(page.getByTestId('haku-tila-toggle')).toContainText(
-    'Julkaistut',
-  );
+  await expect(getMyosArkistoidut(page)).not.toBeChecked();
   await expect(page.locator('tbody tr')).toHaveCount(3);
-  const hakuInput = await page.locator('input[name=haku-search]');
+  const hakuInput = await page.getByRole('textbox', { name: 'Hae hakuja' });
   hakuInput.fill('Luk');
   await expect(page.locator('tbody tr')).toHaveCount(1);
   await expect(page.locator('tbody tr')).toContainText(
@@ -47,14 +52,13 @@ test('filters haku by published state', async ({ page }) => {
 });
 
 test('filters haku by archived state', async ({ page }) => {
-  await page.getByTestId('haku-tila-toggle').click();
-  await expect(page.getByTestId('haku-tila-toggle')).toContainText(
-    'Arkistoidut',
-  );
-  await expect(page.locator('tbody tr')).toHaveCount(3);
-  const hakuInput = await page.locator('input[name=haku-search]');
+  const myosArkistoidut = getMyosArkistoidut(page);
+  await myosArkistoidut.click();
+  await expect(myosArkistoidut).toBeChecked();
+  await expect(page.locator('tbody tr')).toHaveCount(6);
+  const hakuInput = await page.getByRole('textbox', { name: 'Hae hakuja' });
   hakuInput.fill('hak');
-  await expect(page.locator('tbody tr')).toHaveCount(3);
+  await expect(page.locator('tbody tr')).toHaveCount(5);
   hakuInput.fill('Leppä');
   await expect(page.locator('tbody tr')).toHaveCount(1);
   await expect(page.locator('tbody tr')).toContainText(
@@ -63,23 +67,23 @@ test('filters haku by archived state', async ({ page }) => {
 });
 
 test('filters by hakutapa', async ({ page }) => {
-  await selectHakutapa(page, 5, 'Erillishaku');
+  await selectHakutapa(page, 'Erillishaku');
   await expect(page.locator('tbody tr')).toHaveCount(1);
-  await selectHakutapa(page, 6, 'Jatkuva haku');
+  await selectHakutapa(page, 'Jatkuva haku');
   await expect(page.locator('tbody tr')).toHaveCount(2);
 });
 
 test('filters by start period', async ({ page }) => {
-  await selectKausi(page, 2, '2024 SYKSY');
+  await selectKausi(page, '2024 SYKSY');
   await expect(page.locator('tbody tr')).toHaveCount(1);
-  await selectKausi(page, 10, '2020 SYKSY');
+  await selectKausi(page, '2020 SYKSY');
   await expect(page.locator('tbody tr')).toHaveCount(0);
 });
 
 test('filters by hakutapa and start period', async ({ page }) => {
-  await selectHakutapa(page, 6, 'Jatkuva haku');
+  await selectHakutapa(page, 'Jatkuva haku');
   await expect(page.locator('tbody tr')).toHaveCount(2);
-  await selectKausi(page, 4, '2023 SYKSY');
+  await selectKausi(page, '2023 SYKSY');
   await expect(page.locator('tbody tr')).toHaveCount(1);
 });
 
