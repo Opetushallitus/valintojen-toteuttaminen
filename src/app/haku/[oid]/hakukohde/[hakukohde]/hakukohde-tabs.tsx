@@ -5,7 +5,8 @@ import { styled } from '@mui/material';
 import { useState } from 'react';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getHakukohde } from '@/app/lib/kouta';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
+import { Link as MuiLink } from '@mui/material';
 
 const StyledContainer = styled('div')({
   padding: '0.5rem 1.5rem 0',
@@ -15,11 +16,9 @@ const StyledContainer = styled('div')({
 
 const StyledHeader = styled('div')({
   textAlign: 'left',
-  h2: {
-    lineHeight: '1rem',
-  },
+  h2: {},
   '.hakukohdeLabel': {
-    fontWeight: 500,
+    fontWeight: 600,
   },
   '.organisaatioLabel': {
     fontWeight: 'normal',
@@ -43,7 +42,7 @@ export type BasicTab = {
   route: string;
 };
 
-const Tabs: BasicTab[] = [
+const TABS: BasicTab[] = [
   { title: 'Perustiedot', route: 'perustiedot' },
   { title: 'Hakeneet', route: 'hakeneet' },
   { title: 'Valinnan hallinta', route: 'valinnan-hallinta' },
@@ -53,11 +52,11 @@ const Tabs: BasicTab[] = [
   { title: 'Hakijaryhmät', route: 'hakijaryhmat' },
   { title: 'Valintalaskennan tulos', route: 'valintalaskennan-tulos' },
   { title: 'Sijoittelun tulokset', route: 'sijoittelun-tulokset' },
-];
+] as const;
 
 function getPathMatchingTab(pathName: string) {
   const lastPath = pathName.split('/').reverse()[0];
-  return Tabs.find((tab) => tab.route.startsWith(lastPath)) || Tabs[0];
+  return TABS.find((tab) => tab.route.startsWith(lastPath)) || TABS[0];
 }
 
 export const HakukohdeTabs = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
@@ -66,8 +65,6 @@ export const HakukohdeTabs = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
     getPathMatchingTab(pathName),
   );
 
-  const router = useRouter();
-
   const { data: hakukohde } = useSuspenseQuery({
     queryKey: ['getHakukohde', hakukohdeOid],
     queryFn: () => getHakukohde(hakukohdeOid),
@@ -75,23 +72,26 @@ export const HakukohdeTabs = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
 
   const selectActiveTab = (tab: BasicTab) => {
     setActiveTab(tab);
-    router.push(`${tab.route}`);
   };
 
   return (
     <StyledContainer>
       <StyledHeader>
-        <h2 className="organisaatioLabel" title={hakukohde.organisaatioOid}>
-          {getTranslation(hakukohde.jarjestyspaikkaHierarkiaNimi)}
-        </h2>
-        <h2 className="hakukohdeLabel" title={hakukohde.oid}>
-          {getTranslation(hakukohde.nimi)}
+        <h2>
+          <span className="organisaatioLabel">
+            {getTranslation(hakukohde.jarjestyspaikkaHierarkiaNimi)}
+          </span>
+          <br />
+          <span className="hakukohdeLabel">
+            {getTranslation(hakukohde.nimi)}
+          </span>
         </h2>
       </StyledHeader>
       <StyledTabs>
-        {Tabs.map((tab, index) => (
-          <div
-            key={'hakukohde-tab-' + index}
+        {TABS.map((tab) => (
+          <MuiLink
+            href={tab.route}
+            key={'hakukohde-tab-' + tab.route}
             className={
               tab.title === activeTab.title
                 ? 'hakukohde-tab hakukohde-tab--active'
@@ -100,7 +100,7 @@ export const HakukohdeTabs = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
             onClick={() => selectActiveTab(tab)}
           >
             {tab.title}
-          </div>
+          </MuiLink>
         ))}
       </StyledTabs>
     </StyledContainer>

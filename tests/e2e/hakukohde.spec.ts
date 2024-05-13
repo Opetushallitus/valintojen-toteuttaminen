@@ -5,7 +5,7 @@ import {
 } from './playwright-utils';
 import { BasicTab } from '@/app/haku/[oid]/hakukohde/[hakukohde]/hakukohde-tabs';
 
-const ToinenAsteTabs: BasicTab[] = [
+const TABS_TO_TEST: BasicTab[] = [
   { title: 'Hakeneet', route: 'hakeneet' },
   { title: 'Valinnan hallinta', route: 'valinnan-hallinta' },
   { title: 'Valintakoekutsut', route: 'valintakoekutsut' },
@@ -14,7 +14,7 @@ const ToinenAsteTabs: BasicTab[] = [
   { title: 'Hakijaryhmät', route: 'hakijaryhmat' },
   { title: 'Valintalaskennan tulos', route: 'valintalaskennan-tulos' },
   { title: 'Sijoittelun tulokset', route: 'sijoittelun-tulokset' },
-];
+] as const;
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
@@ -48,7 +48,7 @@ test('Hakukohde-page accessibility', async ({ page }) => {
 });
 
 test.describe('Hakukohde tabs', () => {
-  for (const tab of ToinenAsteTabs) {
+  for (const tab of TABS_TO_TEST) {
     test(`Navigates to ${tab.title}`, async ({ page }) => {
       await page.goto(
         '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102',
