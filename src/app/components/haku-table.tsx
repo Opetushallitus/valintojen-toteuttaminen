@@ -9,7 +9,7 @@ import ListTable, {
 } from './table/list-table';
 import { Haku } from '../lib/kouta-types';
 
-export const HakuList = ({
+export const HakuTable = ({
   haut,
   hakutavat,
   setSort,
