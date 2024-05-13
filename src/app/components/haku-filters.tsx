@@ -14,8 +14,9 @@ import {
   Pagination,
   Typography,
   Box,
+  InputAdornment,
+  IconButton,
 } from '@mui/material';
-import Grid from '@mui/material/Unstable_Grid2';
 
 import {
   Haku,
@@ -32,6 +33,7 @@ import { useDebounce } from '@/app/hooks/useDebounce';
 import { parseAsBoolean, parseAsInteger, useQueryState } from 'nuqs';
 import { useHasChanged } from '@/app/hooks/useHasChanged';
 import { getSortParts } from './table/list-table';
+import { Search } from '@mui/icons-material';
 
 function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
@@ -72,29 +74,6 @@ const alkamisKausiMatchesSelected = (
     haku.alkamisKausiKoodiUri.startsWith(
       selectedAlkamisKausi.alkamisKausiKoodiUri,
     ));
-
-const StyledGridContainer = styled(Grid)({
-  justifyContent: 'space-between',
-  alignItems: 'flex-start',
-  flexWrap: 'nowrap',
-  marginBottom: '2rem',
-});
-
-const StyledGrid = styled(Grid)({
-  alignSelf: 'flex-start',
-  alignItems: 'flex-start',
-  alignContent: 'flex-start',
-  justifyContent: 'flex-start',
-  input: {
-    width: '100%',
-  },
-  label: {
-    fontWeight: 500,
-    fontSize: '1rem',
-  },
-  flexWrap: 'nowrap',
-  rowGap: '0.7rem',
-});
 
 const KAUSI_MAPPING = Object.freeze({
   kausi_s: {
@@ -389,79 +368,92 @@ const HakuFiltersInternal = ({
   };
 
   return (
-    <div>
-      <StyledGridContainer container spacing={2} direction="row">
-        <StyledGrid container xs={6} direction="column">
-          <FormControl sx={{ m: 1, minWidth: 180, textAlign: 'left' }}>
-            <FormLabel htmlFor="haku-search">Hae hakuja</FormLabel>
-            <OutlinedInput
-              id="haku-search"
-              name="haku-search"
-              key={searchPhrase}
-              defaultValue={searchPhrase}
-              onChange={handleSearchChange}
-              autoFocus={true}
-              type="text"
-              placeholder="Hae hakuja"
-            />
-            <FormControlLabel
-              label="Myös arkistoidut"
-              control={
-                <Checkbox
-                  data-testid="haku-tila-toggle"
-                  checked={myosArkistoidut ?? false}
-                  onChange={toggleMyosArkistoidut}
-                />
-              }
-            />
-          </FormControl>
-        </StyledGrid>
-        <StyledGrid container xs={2} direction="column">
-          <FormControl sx={{ m: 1, minWidth: 180, textAlign: 'left' }}>
-            <FormLabel id="hakutapa-select-label">Hakutapa</FormLabel>
-            <Select
-              labelId="hakutapa-select-label"
-              name="hakutapa-select"
-              value={selectedHakutapa ?? ''}
-              onChange={changeHakutapa}
-              displayEmpty={true}
-            >
-              <MenuItem value="">Valitse...</MenuItem>
-              {hakutavat.map((tapa) => {
-                return (
-                  <MenuItem value={tapa.koodiUri} key={tapa.koodiUri}>
-                    {tapa.nimi.fi}
-                  </MenuItem>
-                ); //TODO: translate
-              })}
-            </Select>
-          </FormControl>
-        </StyledGrid>
-        <StyledGrid container xs={2} direction="column">
-          <FormControl sx={{ m: 1, minWidth: 180, textAlign: 'left' }}>
-            <FormLabel id="alkamiskausi-select-label">
-              Koulutuksen alkamiskausi
-            </FormLabel>
-            <Select
-              labelId="alkamiskausi-select-label"
-              name="alkamiskausi-select"
-              value={selectedAlkamisKausi ?? ''}
-              onChange={changeAlkamisKausi}
-              displayEmpty={true}
-            >
-              <MenuItem value="">Valitse...</MenuItem>
-              {alkamiskaudet.map((kausi) => {
-                const vuosiKausi = `${kausi.alkamisVuosi} ${kausi.alkamisKausiNimi}`;
-                return (
-                  <MenuItem value={kausi.value} key={kausi.value}>
-                    {vuosiKausi}
-                  </MenuItem>
-                ); //TODO: translate
-              })}
-            </Select>
-          </FormControl>
-        </StyledGrid>
-      </StyledGridContainer>
+    <>
+      <Box
+        display="flex"
+        flexDirection="row"
+        justifyContent="space-between"
+        gap={2}
+        flexWrap="wrap"
+      >
+        <FormControl
+          sx={{
+            flexGrow: 2,
+            minWidth: '180px',
+            textAlign: 'left',
+          }}
+        >
+          <FormLabel htmlFor="haku-search">Hae hakuja</FormLabel>
+          <OutlinedInput
+            id="haku-search"
+            name="haku-search"
+            key={searchPhrase}
+            defaultValue={searchPhrase}
+            onChange={handleSearchChange}
+            autoFocus={true}
+            type="text"
+            placeholder="Hae hakuja"
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton>
+                  <Search />
+                </IconButton>
+              </InputAdornment>
+            }
+          />
+          <FormControlLabel
+            label="Myös arkistoidut"
+            control={
+              <Checkbox
+                data-testid="haku-tila-toggle"
+                checked={myosArkistoidut ?? false}
+                onChange={toggleMyosArkistoidut}
+              />
+            }
+          />
+        </FormControl>
+        <FormControl sx={{ minWidth: '180px', textAlign: 'left' }}>
+          <FormLabel id="hakutapa-select-label">Hakutapa</FormLabel>
+          <Select
+            labelId="hakutapa-select-label"
+            name="hakutapa-select"
+            value={selectedHakutapa ?? ''}
+            onChange={changeHakutapa}
+            displayEmpty={true}
+          >
+            <MenuItem value="">Valitse...</MenuItem>
+            {hakutavat.map((tapa) => {
+              return (
+                <MenuItem value={tapa.koodiUri} key={tapa.koodiUri}>
+                  {tapa.nimi.fi}
+                </MenuItem>
+              ); //TODO: translate
+            })}
+          </Select>
+        </FormControl>
+        <FormControl sx={{ minWidth: '180px', textAlign: 'left' }}>
+          <FormLabel id="alkamiskausi-select-label">
+            Koulutuksen alkamiskausi
+          </FormLabel>
+          <Select
+            labelId="alkamiskausi-select-label"
+            name="alkamiskausi-select"
+            value={selectedAlkamisKausi ?? ''}
+            onChange={changeAlkamisKausi}
+            displayEmpty={true}
+          >
+            <MenuItem value="">Valitse...</MenuItem>
+            {alkamiskaudet.map((kausi) => {
+              const vuosiKausi = `${kausi.alkamisVuosi} ${kausi.alkamisKausiNimi}`;
+              return (
+                <MenuItem value={kausi.value} key={kausi.value}>
+                  {vuosiKausi}
+                </MenuItem>
+              ); //TODO: translate
+            })}
+          </Select>
+        </FormControl>
+      </Box>
       <HakuListFrame
         totalCount={results?.length ?? 0}
         pageNumber={page}
@@ -476,7 +468,7 @@ const HakuFiltersInternal = ({
           sort={sort ?? ''}
         />
       </HakuListFrame>
-    </div>
+    </>
   );
 };
 
