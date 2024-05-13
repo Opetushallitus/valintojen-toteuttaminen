@@ -26,6 +26,7 @@
     "@tanstack/react-query-devtools": "^5.29.2",
     "cookie": "^0.6.0",
     "next": "^14.2.2",
+    "nuqs": "^1.17.2",
     "react": "^18",
     "react-dom": "^18"
   },

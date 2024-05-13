@@ -1,5 +1,5 @@
 'use client';
-import React, { ChangeEvent, useCallback, useEffect, useMemo } from 'react';
+import React, { ChangeEvent, useEffect, useMemo } from 'react';
 
 import {
   styled,
@@ -28,9 +28,9 @@ import { HakuList } from './haku-table';
 import { getTranslation } from '../lib/common';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getHaut } from '../lib/kouta';
-import useQueryParams from '@/app/hooks/useQueryParams';
-import { useDebounce } from '@/app//hooks/useDebounce';
-import { usePrevious } from '@/app/hooks/usePrevious';
+import { useDebounce } from '@/app/hooks/useDebounce';
+import { parseAsBoolean, parseAsInteger, useQueryState } from 'nuqs';
+import { useHasChanged } from '@/app/hooks/useHasChanged';
 
 const alkamisKausiMatchesSelected = (
   haku: Haku,
@@ -74,24 +74,6 @@ export const HakuFilters = ({ hakutavat }: { hakutavat: Array<Koodi> }) => {
   return <HakuFiltersInternal haut={haut} hakutavat={hakutavat} />;
 };
 
-const useQueryParamState = <T extends string>(name: string, emptyValue?: T) => {
-  const defaultValue = emptyValue ?? '';
-  const { queryParams, setQueryParam, removeQueryParam } = useQueryParams();
-  const value = queryParams.get(name) ?? defaultValue;
-
-  const previousValue = usePrevious(value);
-
-  const setValue = (value?: string) => {
-    if (!value || value === defaultValue) {
-      removeQueryParam(name);
-    } else {
-      setQueryParam(name, value);
-    }
-  };
-
-  return [value, setValue, value !== previousValue] as const;
-};
-
 const PAGE_SIZES = [10, 20, 30, 50, 100];
 
 const DEFAULT_PAGE_SIZE = 30;
@@ -100,115 +82,95 @@ const useHakuSearch = (
   haut: Array<Haku>,
   alkamiskaudet: Array<HaunAlkaminen>,
 ) => {
-  const [searchPhrase, setSearchPhrase, searchPhraseChanged] =
-    useQueryParamState('search', '');
+  const [searchPhrase, setSearchPhrase] = useQueryState('search');
 
   const setSearchDebounce = useDebounce(setSearchPhrase, 500);
 
-  const [myosArkistoidut, setMyosArkistoidut, myosArkistuidutChanged] =
-    useQueryParamState('arkistoidut', 'false');
-
-  const setMyosArkistoidutBoolean = useCallback(
-    (value: boolean) => {
-      setMyosArkistoidut(value ? 'true' : 'false');
-    },
-    [setMyosArkistoidut],
+  const [myosArkistoidut, setMyosArkistoidut] = useQueryState(
+    'arkistoidut',
+    parseAsBoolean,
   );
 
-  const [selectedHakutapa, setSelectedHakutapa, selectedHakutapaChanged] =
-    useQueryParamState('hakutapa', '');
+  const [selectedHakutapa, setSelectedHakutapa] = useQueryState('hakutapa');
 
-  const [
-    selectedAlkamisKausi,
-    setSelectedAlkamisKausi,
-    selectedAlkamisKausiChanged,
-  ] = useQueryParamState('alkamiskausi', '');
+  const [selectedAlkamisKausi, setSelectedAlkamisKausi] =
+    useQueryState('alkamiskausi');
 
-  const [page, setPage] = useQueryParamState('page', '1');
-
-  const setPageNum = useCallback(
-    (pageNum: number) => {
-      setPage(pageNum.toString());
-    },
-    [setPage],
+  const [page, setPage] = useQueryState<number>(
+    'page',
+    parseAsInteger.withDefault(1),
   );
 
-  const pageNum = parseInt(page, 10);
-
-  const [pageSize, setPageSize] = useQueryParamState(
+  const [pageSize, setPageSize] = useQueryState(
     'page_size',
-    DEFAULT_PAGE_SIZE.toString(),
+    parseAsInteger.withDefault(DEFAULT_PAGE_SIZE),
   );
 
-  const setPageSizeNum = useCallback(
-    (pageSize: number) => {
-      setPageSize(pageSize.toString());
-    },
-    [setPageSize],
-  );
+  const myosArkistoidutChanged = useHasChanged(myosArkistoidut);
+  const searchPhraseChanged = useHasChanged(searchPhrase);
+  const selectedAlkamisKausiChanged = useHasChanged(selectedAlkamisKausi);
+  const selectedHakutapaChanged = useHasChanged(selectedHakutapa);
 
   useEffect(() => {
     if (
       searchPhraseChanged ||
-      myosArkistuidutChanged ||
+      myosArkistoidutChanged ||
       selectedHakutapaChanged ||
       selectedAlkamisKausiChanged
     ) {
-      setPageNum(1);
+      setPage(1);
     }
   }, [
     searchPhraseChanged,
-    myosArkistuidutChanged,
+    myosArkistoidutChanged,
     selectedHakutapaChanged,
     selectedAlkamisKausiChanged,
-    setPageNum,
+    setPage,
   ]);
 
-  const myosArkistoidutBoolean = myosArkistoidut === 'true';
-
   const results = useMemo(() => {
-    const tilat = myosArkistoidutBoolean
+    const tilat = myosArkistoidut
       ? [Tila.JULKAISTU, Tila.ARKISTOITU]
       : [Tila.JULKAISTU];
     return haut.filter(
       (haku: Haku) =>
         tilat.includes(haku.tila) &&
-        getTranslation(haku.nimi).toLowerCase().includes(searchPhrase) &&
+        getTranslation(haku.nimi)
+          .toLowerCase()
+          .includes(searchPhrase ?? '') &&
         alkamisKausiMatchesSelected(
           haku,
           alkamiskaudet.find((k) => k.value === selectedAlkamisKausi),
         ) &&
-        haku.hakutapaKoodiUri.startsWith(selectedHakutapa),
+        haku.hakutapaKoodiUri.startsWith(selectedHakutapa ?? ''),
     );
   }, [
     haut,
     searchPhrase,
-    myosArkistoidutBoolean,
+    myosArkistoidut,
     selectedAlkamisKausi,
     selectedHakutapa,
     alkamiskaudet,
   ]);
 
-  const pageSizeNum = parseInt(pageSize, 10);
-
   const pageResults = useMemo(() => {
-    const start = pageSizeNum * (pageNum - 1);
-    return results.slice(start, start + pageSizeNum);
-  }, [results, pageNum, pageSizeNum]);
+    const start = pageSize * (page - 1);
+    return results.slice(start, start + pageSize);
+  }, [results, page, pageSize]);
 
   return {
     searchPhrase,
     setSearchPhrase: setSearchDebounce,
     myosArkistoidut,
-    setMyosArkistoidut: setMyosArkistoidutBoolean,
+    setMyosArkistoidut: setMyosArkistoidut,
     selectedHakutapa,
     setSelectedHakutapa,
     selectedAlkamisKausi,
     setSelectedAlkamisKausi,
-    page: pageNum,
-    setPage: setPageNum,
-    pageSize: pageSizeNum,
-    setPageSize: setPageSizeNum,
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
     pageResults,
     results,
   };
