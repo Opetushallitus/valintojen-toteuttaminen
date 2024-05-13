@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "touch .env.development.local && NODE_EXTRA_CA_CERTS=\"$(mkcert -CAROOT)/rootCA.pem\" node --env-file=.env --env-file=.env.development.local dev-server.mjs",
-    "dev-test": "APP_URL=https://localhost:3404 VIRKAILIJA_URL=http://localhost:3104 npm run dev",
+    "dev-test": "TEST=true APP_URL=https://localhost:3404 VIRKAILIJA_URL=http://localhost:3104 npm run dev",
     "build": "next build; cp run.sh .next/standalone",
     "start": "NODE_ENV=production npm run dev",
     "lint": "next lint",
@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.9.0",
+    "@axe-core/react": "^4.9.0",
     "@playwright/test": "^1.42.0",
     "@testing-library/react": "^14.2.2",
     "@types/cookie": "^0.6.0",
