@@ -13,6 +13,7 @@ import {
   FormControlLabel,
   Pagination,
   Typography,
+  Box,
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 
@@ -91,6 +92,10 @@ const useQueryParamState = <T extends string>(name: string, emptyValue?: T) => {
   return [value, setValue, value !== previousValue] as const;
 };
 
+const PAGE_SIZES = [10, 20, 30, 50, 100];
+
+const DEFAULT_PAGE_SIZE = 30;
+
 const useHakuSearch = (
   haut: Array<Haku>,
   alkamiskaudet: Array<HaunAlkaminen>,
@@ -130,7 +135,10 @@ const useHakuSearch = (
 
   const pageNum = parseInt(page, 10);
 
-  const [pageSize, setPageSize] = useQueryParamState('page_size', '50');
+  const [pageSize, setPageSize] = useQueryParamState(
+    'page_size',
+    DEFAULT_PAGE_SIZE.toString(),
+  );
 
   const setPageSizeNum = useCallback(
     (pageSize: number) => {
@@ -156,7 +164,7 @@ const useHakuSearch = (
     setPageNum,
   ]);
 
-  const myosArkistoidutBoolean = myosArkistoidut === ' true';
+  const myosArkistoidutBoolean = myosArkistoidut === 'true';
 
   const results = useMemo(() => {
     const tilat = myosArkistoidutBoolean
@@ -199,12 +207,83 @@ const useHakuSearch = (
     setSelectedAlkamisKausi,
     page: pageNum,
     setPage: setPageNum,
-    pageSize,
+    pageSize: pageSizeNum,
     setPageSize: setPageSizeNum,
-    pageCount: Math.ceil(results.length / pageSizeNum),
     pageResults,
     results,
   };
+};
+
+type HakuListFrameProps = {
+  totalCount: number;
+  pageNumber: number;
+  setPageNumber: (page: number) => void;
+  pageSize: number;
+  setPageSize: (page: number) => void;
+  children: React.ReactNode;
+};
+
+const StyledPagination = styled(Pagination)({
+  display: 'flex',
+});
+
+const HakuListFrame = ({
+  totalCount,
+  pageNumber,
+  pageSize,
+  setPageNumber,
+  setPageSize,
+  children,
+}: HakuListFrameProps) => {
+  const pageCount = Math.ceil(totalCount / pageSize);
+  return totalCount === 0 ? (
+    <p>Ei hakutuloksia</p>
+  ) : (
+    <>
+      <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Typography sx={{ textAlign: 'left' }}>Hakuja: {totalCount}</Typography>
+        <FormControl>
+          <FormLabel id="page-size-select-label">Näytä per sivu:</FormLabel>
+          <Select
+            labelId="page-size-select-label"
+            name="page-size-select"
+            value={pageSize.toString()}
+            onChange={(e) => {
+              const newValue = parseInt(e.target.value, 10);
+              setPageSize(isNaN(newValue) ? DEFAULT_PAGE_SIZE : newValue);
+            }}
+          >
+            {PAGE_SIZES.map((size) => {
+              return (
+                <MenuItem value={size} key={size}>
+                  {size}
+                </MenuItem>
+              );
+            })}
+          </Select>
+        </FormControl>
+      </Box>
+      <Box display="flex" flexDirection="column" rowGap={1} alignItems="center">
+        <StyledPagination
+          aria-label="top pagination"
+          count={pageCount}
+          page={pageNumber}
+          onChange={(_e: unknown, value: number) => {
+            setPageNumber(value);
+          }}
+        />
+        {children}
+        <StyledPagination
+          aria-label="bottom pagination"
+          count={pageCount}
+          page={pageNumber}
+          onChange={(_e: unknown, value: number) => {
+            setPageNumber(value);
+          }}
+        />
+      </Box>
+    </>
+  );
 };
 
 const HakuFiltersInternal = ({
@@ -227,7 +306,8 @@ const HakuFiltersInternal = ({
     setMyosArkistoidut,
     page,
     setPage,
-    pageCount,
+    pageSize,
+    setPageSize,
     results,
     pageResults,
   } = useHakuSearch(haut, alkamiskaudet);
@@ -254,10 +334,7 @@ const HakuFiltersInternal = ({
     <div>
       <StyledGridContainer container spacing={2} direction="row">
         <StyledGrid container xs={6} direction="column">
-          <FormControl
-            size="small"
-            sx={{ m: 1, minWidth: 180, textAlign: 'left' }}
-          >
+          <FormControl sx={{ m: 1, minWidth: 180, textAlign: 'left' }}>
             <FormLabel htmlFor="haku-search">Hae hakuja</FormLabel>
             <OutlinedInput
               id="haku-search"
@@ -282,10 +359,7 @@ const HakuFiltersInternal = ({
           </FormControl>
         </StyledGrid>
         <StyledGrid container xs={2} direction="column">
-          <FormControl
-            size="small"
-            sx={{ m: 1, minWidth: 180, textAlign: 'left' }}
-          >
+          <FormControl sx={{ m: 1, minWidth: 180, textAlign: 'left' }}>
             <FormLabel id="hakutapa-select-label">Hakutapa</FormLabel>
             <Select
               labelId="hakutapa-select-label"
@@ -306,10 +380,7 @@ const HakuFiltersInternal = ({
           </FormControl>
         </StyledGrid>
         <StyledGrid container xs={2} direction="column">
-          <FormControl
-            size="small"
-            sx={{ m: 1, minWidth: 180, textAlign: 'left' }}
-          >
+          <FormControl sx={{ m: 1, minWidth: 180, textAlign: 'left' }}>
             <FormLabel id="alkamiskausi-select-label">
               Koulutuksen alkamiskausi
             </FormLabel>
@@ -333,32 +404,15 @@ const HakuFiltersInternal = ({
           </FormControl>
         </StyledGrid>
       </StyledGridContainer>
-      {results && results.length === 0 ? (
-        <p>Ei hakutuloksia</p>
-      ) : (
-        <>
-          <Typography component="p" sx={{ textAlign: 'left' }}>
-            Hakuja: {results.length}
-          </Typography>
-          <Pagination
-            aria-label="top pagination"
-            count={pageCount}
-            page={page}
-            onChange={(_e: unknown, value: number) => {
-              setPage(value);
-            }}
-          />
-          <HakuList haut={pageResults} hakutavat={hakutavat} />
-          <Pagination
-            aria-label="bottom pagination"
-            count={pageCount}
-            page={page}
-            onChange={(_e: unknown, value: number) => {
-              setPage(value);
-            }}
-          />
-        </>
-      )}
+      <HakuListFrame
+        totalCount={results?.length ?? 0}
+        pageNumber={page}
+        setPageNumber={setPage}
+        pageSize={pageSize}
+        setPageSize={setPageSize}
+      >
+        <HakuList haut={pageResults} hakutavat={hakutavat} />
+      </HakuListFrame>
     </div>
   );
 };
