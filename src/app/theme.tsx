@@ -11,7 +11,7 @@ const LinkBehaviour = React.forwardRef<HTMLAnchorElement, LinkProps>(
   },
 );
 
-const colors = {
+export const colors = {
   grey900: '#1D1D1D',
   grey800: '#454545',
   grey700: '#4C4C4C',
@@ -33,7 +33,7 @@ const colors = {
   cyan2: '#66CCCC',
   cyan3: '#99FFFF',
   lightBlue1: '#82D4FF',
-  lightBlue2: '#C1EaFF',
+  lightBlue2: '#C1EAFF',
 };
 
 const openSans = Open_Sans({
@@ -162,6 +162,25 @@ const theme = createTheme({
     MuiFormControl: {
       defaultProps: {
         size: 'small',
+      },
+    },
+    MuiMenuItem: {
+      styleOverrides: {
+        root: ({ theme }) => {
+          return {
+            '&.Mui-selected': {
+              backgroundColor: colors.grey50,
+              color: theme.palette.primary.main,
+              '&:hover': {
+                backgroundColor: colors.grey50,
+              },
+            },
+            '&.Mui-selected.Mui-focusVisible': {
+              backgroundColor: colors.grey50,
+              color: theme.palette.primary.main,
+            },
+          };
+        },
       },
     },
   },
