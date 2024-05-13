@@ -16,6 +16,11 @@ export const expectUrlParamToEqual = async (
   paramName: string,
   value: string,
 ) => {
+  await page.waitForURL(
+    new RegExp(
+      `(&|\\?)${paramName}=${value}|${encodeURIComponent(value)}(&|$)`,
+    ),
+  );
   const pageURL = await page.url();
   const urlObj = new URL(pageURL);
   const param = urlObj.searchParams.get(paramName);
