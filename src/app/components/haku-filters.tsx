@@ -15,7 +15,6 @@ import {
   Typography,
   Box,
   InputAdornment,
-  IconButton,
 } from '@mui/material';
 
 import {
@@ -227,8 +226,6 @@ const useHakuSearch = (
     return results.slice(start, start + pageSize);
   }, [results, page, pageSize]);
 
-  console.log({ results, pageResults, pageSize, page });
-
   return {
     searchPhrase,
     setSearchPhrase: setSearchDebounce,
@@ -299,14 +296,6 @@ const HakuListFrame = ({
         </FormControl>
       </Box>
       <Box display="flex" flexDirection="column" rowGap={1} alignItems="center">
-        <StyledPagination
-          aria-label="top pagination"
-          count={pageCount}
-          page={pageNumber}
-          onChange={(_e: unknown, value: number) => {
-            setPageNumber(value);
-          }}
-        />
         {children}
         <StyledPagination
           aria-label="bottom pagination"
@@ -395,9 +384,7 @@ const HakuFiltersInternal = ({
             placeholder="Hae hakuja"
             endAdornment={
               <InputAdornment position="end">
-                <IconButton>
-                  <Search />
-                </IconButton>
+                <Search />
               </InputAdornment>
             }
           />
