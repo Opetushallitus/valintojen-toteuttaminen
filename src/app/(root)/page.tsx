@@ -1,35 +1,41 @@
-import { getHakutavat } from '../lib/koodisto';
-import { AccessTime as AccessTimeIcon } from '@mui/icons-material';
-import { CSSProperties } from 'react';
-import HakuFilters from '../components/haku-filters';
-import Header from '../components/header';
+'use client';
+import React from 'react';
 
-const titleSectionStyle: CSSProperties = {
-  borderBottom: '1px solid rgba(0, 0, 0, 0.15)',
-  display: 'flex',
-  flexDirection: 'row',
-  width: '100%',
-  justifyContent: 'flex-start',
-  marginBottom: '2rem',
-  padding: 0,
-};
+import { HakuTable } from '@/app/components/haku-table';
+import { useHakutavat } from '@/app/hooks/useHakutavat';
+import { useHakuSearchResults } from '@/app/hooks/useHakuSearch';
+import { HakuTablePaginationWrapper } from '../components/haku-table-pagination-wrapper';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Home() {
-  const hakutavat = await getHakutavat();
+export default function Home() {
+  const {
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    results,
+    pageResults,
+    sort,
+    setSort,
+  } = useHakuSearchResults();
+
+  const { data: hakutavat } = useHakutavat();
 
   return (
-    <>
-      <Header isHome={true} />
-      <main className="mainContainer">
-        <div style={titleSectionStyle}>
-          <h2 style={{ textAlign: 'left', margin: '0 0 1rem' }}>
-            <AccessTimeIcon /> Haut
-          </h2>
-        </div>
-        <HakuFilters hakutavat={hakutavat} />
-      </main>
-    </>
+    <HakuTablePaginationWrapper
+      totalCount={results?.length ?? 0}
+      pageNumber={page}
+      setPageNumber={setPage}
+      pageSize={pageSize}
+      setPageSize={setPageSize}
+    >
+      <HakuTable
+        haut={pageResults}
+        hakutavat={hakutavat}
+        setSort={setSort}
+        sort={sort ?? ''}
+      />
+    </HakuTablePaginationWrapper>
   );
 }

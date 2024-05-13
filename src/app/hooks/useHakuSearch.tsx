@@ -1,11 +1,19 @@
 'use client';
 import { useEffect, useMemo } from 'react';
-import { Haku, HaunAlkaminen, Tila } from '../lib/kouta-types';
+import {
+  Haku,
+  HaunAlkaminen,
+  Tila,
+  getHakuAlkamisKaudet,
+} from '../lib/kouta-types';
 import { Language, byProp, getTranslation } from '../lib/common';
 import { useDebounce } from '@/app/hooks/useDebounce';
 import { parseAsBoolean, parseAsInteger, useQueryState } from 'nuqs';
 import { useHasChanged } from '@/app/hooks/useHasChanged';
 import { getSortParts } from '../components/table/list-table';
+import { getHaut } from '../lib/kouta';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { useHakutavat } from './useHakutavat';
 
 export const DEFAULT_PAGE_SIZE = 30;
 
@@ -25,10 +33,31 @@ export const alkamisKausiMatchesSelected = (
       selectedAlkamisKausi.alkamisKausiKoodiUri,
     ));
 
-export const useHakuSearch = (
-  haut: Array<Haku>,
-  alkamiskaudet: Array<HaunAlkaminen>,
-) => {
+const KAUSI_MAPPING = Object.freeze({
+  kausi_s: {
+    fi: 'Syksy',
+    sv: 'Höst',
+    en: 'Autumn',
+  },
+  kausi_k: {
+    fi: 'Kevät',
+    sv: 'Vår',
+    en: 'Spring',
+  },
+});
+
+const getKausiVuosiTranslation = (kausiUri: string, vuosi: number) => {
+  if (kausiUri === 'kausi_s' || kausiUri === 'kausi_k') {
+    const kausiName = KAUSI_MAPPING?.[kausiUri];
+    return {
+      fi: `${vuosi} ${kausiName.fi}`,
+      sv: `${vuosi} ${kausiName.sv}`,
+      en: `${vuosi} ${kausiName.en}`,
+    };
+  }
+};
+
+export const useHakuSearchParams = () => {
   const [searchPhrase, setSearchPhrase] = useQueryState(
     'search',
     DEFAULT_NUQS_OPTIONS,
@@ -87,12 +116,63 @@ export const useHakuSearch = (
     setPage,
   ]);
 
+  return {
+    searchPhrase,
+    setSearchPhrase: setSearchDebounce,
+    myosArkistoidut,
+    setMyosArkistoidut: setMyosArkistoidut,
+    selectedHakutapa,
+    setSelectedHakutapa,
+    selectedAlkamisKausi,
+    setSelectedAlkamisKausi,
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    sort,
+    setSort,
+  };
+};
+
+export const useHakuSearchResults = () => {
+  const alkamiskaudet = useMemo(getHakuAlkamisKaudet, []);
+  const { data: hakutavat } = useHakutavat();
+
+  const { data: haut } = useSuspenseQuery({
+    queryKey: ['getHaut'],
+    queryFn: () => getHaut(),
+    select: (haut) =>
+      haut.map((haku) => ({
+        ...haku,
+        hakutapaNimi: hakutavat.find(
+          (hakutapa) => hakutapa.koodiUri === haku.hakutapaKoodiUri,
+        )?.nimi,
+        alkamiskausiNimi: getKausiVuosiTranslation(
+          haku.alkamisKausiKoodiUri?.split('#')?.[0],
+          haku.alkamisVuosi,
+        ),
+      })),
+  });
+
+  const {
+    searchPhrase,
+    myosArkistoidut,
+    selectedHakutapa,
+    selectedAlkamisKausi,
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    sort,
+    setSort,
+  } = useHakuSearchParams();
+
   const results = useMemo(() => {
     const tilat = myosArkistoidut
       ? [Tila.JULKAISTU, Tila.ARKISTOITU]
       : [Tila.JULKAISTU];
 
-    const { orderBy, direction } = getSortParts(sort ?? '');
+    const { orderBy, direction } = getSortParts(sort);
 
     const filtered = haut.filter(
       (haku: Haku) =>
@@ -125,14 +205,6 @@ export const useHakuSearch = (
   }, [results, page, pageSize]);
 
   return {
-    searchPhrase,
-    setSearchPhrase: setSearchDebounce,
-    myosArkistoidut,
-    setMyosArkistoidut: setMyosArkistoidut,
-    selectedHakutapa,
-    setSelectedHakutapa,
-    selectedAlkamisKausi,
-    setSelectedAlkamisKausi,
     page,
     setPage,
     pageSize,

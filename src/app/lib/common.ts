@@ -51,7 +51,7 @@ function isTranslatedName(value: unknown): value is TranslatedName {
 }
 
 export const byProp = <
-  T extends Record<string, string | number | TranslatedName>,
+  T extends Record<string, string | number | TranslatedName | undefined>,
 >(
   key: string,
   direction: 'asc' | 'desc' = 'asc',
@@ -59,10 +59,10 @@ export const byProp = <
 ) => {
   const asc = direction === 'asc';
   return (a: T, b: T) => {
-    const aKey = a[key];
+    const aKey = a[key] ?? '';
     const aProp = isTranslatedName(aKey) ? getTranslation(aKey, lng) : aKey;
 
-    const bKey = b[key];
+    const bKey = b[key] ?? '';
     const bProp = isTranslatedName(bKey) ? getTranslation(bKey, lng) : bKey;
 
     return aProp > bProp ? (asc ? 1 : -1) : bProp > aProp ? (asc ? -1 : 1) : 0;
