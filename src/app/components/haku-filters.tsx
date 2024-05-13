@@ -1,5 +1,5 @@
 'use client';
-import React, { ChangeEvent, useMemo } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useMemo } from 'react';
 
 import {
   styled,
@@ -12,6 +12,7 @@ import {
   Checkbox,
   FormControlLabel,
   Pagination,
+  Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 
@@ -27,7 +28,8 @@ import { getTranslation } from '../lib/common';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getHaut } from '../lib/kouta';
 import useQueryParams from '@/app/hooks/useQueryParams';
-import { useDebounce } from '../hooks/useDebounce';
+import { useDebounce } from '@/app//hooks/useDebounce';
+import { usePrevious } from '@/app/hooks/usePrevious';
 
 const alkamisKausiMatchesSelected = (
   haku: Haku,
@@ -76,6 +78,8 @@ const useQueryParamState = <T extends string>(name: string, emptyValue?: T) => {
   const { queryParams, setQueryParam, removeQueryParam } = useQueryParams();
   const value = queryParams.get(name) ?? defaultValue;
 
+  const previousValue = usePrevious(value);
+
   const setValue = (value?: string) => {
     if (!value || value === defaultValue) {
       removeQueryParam(name);
@@ -84,52 +88,84 @@ const useQueryParamState = <T extends string>(name: string, emptyValue?: T) => {
     }
   };
 
-  return [value, setValue] as const;
+  return [value, setValue, value !== previousValue] as const;
 };
 
-const HakuFiltersInternal = ({
-  haut,
-  hakutavat,
-}: {
-  haut: Haku[];
-  hakutavat: Koodi[];
-}) => {
-  const [search, setSearch] = useQueryParamState('search', '');
+const useHakuSearch = (
+  haut: Array<Haku>,
+  alkamiskaudet: Array<HaunAlkaminen>,
+) => {
+  const [searchPhrase, setSearchPhrase, searchPhraseChanged] =
+    useQueryParamState('search', '');
 
-  const setSearchDebounce = useDebounce(setSearch, 500);
+  const setSearchDebounce = useDebounce(setSearchPhrase, 500);
 
-  const [myosArkistoidut, setMyosArkistoidut] = useQueryParamState(
-    'arkistoidut',
-    'false',
+  const [myosArkistoidut, setMyosArkistoidut, myosArkistuidutChanged] =
+    useQueryParamState('arkistoidut', 'false');
+
+  const setMyosArkistoidutBoolean = useCallback(
+    (value: boolean) => {
+      setMyosArkistoidut(value ? 'true' : 'false');
+    },
+    [setMyosArkistoidut],
   );
 
-  const [selectedHakutapa, setSelectedHakutapa] = useQueryParamState(
-    'hakutapa',
-    '',
-  );
+  const [selectedHakutapa, setSelectedHakutapa, selectedHakutapaChanged] =
+    useQueryParamState('hakutapa', '');
 
-  const [selectedAlkamisKausi, setSelectedAlkamisKausi] = useQueryParamState(
-    'alkamiskausi',
-    '',
-  );
+  const [
+    selectedAlkamisKausi,
+    setSelectedAlkamisKausi,
+    selectedAlkamisKausiChanged,
+  ] = useQueryParamState('alkamiskausi', '');
 
   const [page, setPage] = useQueryParamState('page', '1');
 
+  const setPageNum = useCallback(
+    (pageNum: number) => {
+      setPage(pageNum.toString());
+    },
+    [setPage],
+  );
+
   const pageNum = parseInt(page, 10);
 
-  const [pageSize] = useQueryParamState('page_size', '50');
+  const [pageSize, setPageSize] = useQueryParamState('page_size', '50');
 
-  const alkamiskaudet = useMemo(getHakuAlkamisKaudet, []);
+  const setPageSizeNum = useCallback(
+    (pageSize: number) => {
+      setPageSize(pageSize.toString());
+    },
+    [setPageSize],
+  );
+
+  useEffect(() => {
+    if (
+      searchPhraseChanged ||
+      myosArkistuidutChanged ||
+      selectedHakutapaChanged ||
+      selectedAlkamisKausiChanged
+    ) {
+      setPageNum(1);
+    }
+  }, [
+    searchPhraseChanged,
+    myosArkistuidutChanged,
+    selectedHakutapaChanged,
+    selectedAlkamisKausiChanged,
+    setPageNum,
+  ]);
+
+  const myosArkistoidutBoolean = myosArkistoidut === ' true';
 
   const results = useMemo(() => {
-    const tilat =
-      myosArkistoidut === 'true'
-        ? [Tila.JULKAISTU, Tila.ARKISTOITU]
-        : [Tila.JULKAISTU];
+    const tilat = myosArkistoidutBoolean
+      ? [Tila.JULKAISTU, Tila.ARKISTOITU]
+      : [Tila.JULKAISTU];
     return haut.filter(
       (haku: Haku) =>
         tilat.includes(haku.tila) &&
-        getTranslation(haku.nimi).toLowerCase().includes(search) &&
+        getTranslation(haku.nimi).toLowerCase().includes(searchPhrase) &&
         alkamisKausiMatchesSelected(
           haku,
           alkamiskaudet.find((k) => k.value === selectedAlkamisKausi),
@@ -138,8 +174,8 @@ const HakuFiltersInternal = ({
     );
   }, [
     haut,
-    search,
-    myosArkistoidut,
+    searchPhrase,
+    myosArkistoidutBoolean,
     selectedAlkamisKausi,
     selectedHakutapa,
     alkamiskaudet,
@@ -152,15 +188,57 @@ const HakuFiltersInternal = ({
     return results.slice(start, start + pageSizeNum);
   }, [results, pageNum, pageSizeNum]);
 
-  console.log({ pageResults, pageSizeNum, pageNum });
+  return {
+    searchPhrase,
+    setSearchPhrase: setSearchDebounce,
+    myosArkistoidut,
+    setMyosArkistoidut: setMyosArkistoidutBoolean,
+    selectedHakutapa,
+    setSelectedHakutapa,
+    selectedAlkamisKausi,
+    setSelectedAlkamisKausi,
+    page: pageNum,
+    setPage: setPageNum,
+    pageSize,
+    setPageSize: setPageSizeNum,
+    pageCount: Math.ceil(results.length / pageSizeNum),
+    pageResults,
+    results,
+  };
+};
+
+const HakuFiltersInternal = ({
+  haut,
+  hakutavat,
+}: {
+  haut: Haku[];
+  hakutavat: Koodi[];
+}) => {
+  const alkamiskaudet = useMemo(getHakuAlkamisKaudet, []);
+
+  const {
+    searchPhrase,
+    setSearchPhrase,
+    selectedAlkamisKausi,
+    setSelectedAlkamisKausi,
+    selectedHakutapa,
+    setSelectedHakutapa,
+    myosArkistoidut,
+    setMyosArkistoidut,
+    page,
+    setPage,
+    pageCount,
+    results,
+    pageResults,
+  } = useHakuSearch(haut, alkamiskaudet);
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     const searchStr = e.target.value.trim().toLowerCase();
-    setSearchDebounce(searchStr);
+    setSearchPhrase(searchStr);
   };
 
   const toggleMyosArkistoidut = (_e: unknown, checked: boolean) => {
-    setMyosArkistoidut(checked ? 'true' : 'false');
+    setMyosArkistoidut(checked);
   };
 
   const changeHakutapa = (e: SelectChangeEvent) => {
@@ -184,8 +262,8 @@ const HakuFiltersInternal = ({
             <OutlinedInput
               id="haku-search"
               name="haku-search"
-              key={search}
-              defaultValue={search}
+              key={searchPhrase}
+              defaultValue={searchPhrase}
               onChange={handleSearchChange}
               autoFocus={true}
               type="text"
@@ -238,9 +316,9 @@ const HakuFiltersInternal = ({
             <Select
               labelId="alkamiskausi-select-label"
               name="alkamiskausi-select"
-              displayEmpty={true}
+              value={selectedAlkamisKausi}
               onChange={changeAlkamisKausi}
-              defaultValue=""
+              displayEmpty={true}
             >
               <MenuItem value="">Valitse...</MenuItem>
               {alkamiskaudet.map((kausi) => {
@@ -259,22 +337,24 @@ const HakuFiltersInternal = ({
         <p>Ei hakutuloksia</p>
       ) : (
         <>
-          <p style={{ textAlign: 'left' }}>Hakuja: {results.length}</p>
+          <Typography component="p" sx={{ textAlign: 'left' }}>
+            Hakuja: {results.length}
+          </Typography>
           <Pagination
             aria-label="top pagination"
-            count={Math.ceil(results.length / pageSizeNum)}
-            page={pageNum}
+            count={pageCount}
+            page={page}
             onChange={(_e: unknown, value: number) => {
-              setPage(value.toString());
+              setPage(value);
             }}
           />
           <HakuList haut={pageResults} hakutavat={hakutavat} />
           <Pagination
             aria-label="bottom pagination"
-            count={Math.ceil(results.length / pageSizeNum)}
-            page={pageNum}
+            count={pageCount}
+            page={page}
             onChange={(_e: unknown, value: number) => {
-              setPage(value.toString());
+              setPage(value);
             }}
           />
         </>
