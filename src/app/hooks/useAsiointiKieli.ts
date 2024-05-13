@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { client } from '../http-client';
-import { configuration } from '../configuration';
+import { client } from '../lib/http-client';
+import { configuration } from '../lib/configuration';
 
 export const getAsiointiKieli = () => {
   return client.get(configuration.asiointiKieliUrl);

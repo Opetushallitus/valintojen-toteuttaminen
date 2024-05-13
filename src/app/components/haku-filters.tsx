@@ -1,15 +1,16 @@
 'use client';
-import { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useMemo } from 'react';
 
 import {
   styled,
   FormControl,
-  Button,
   Select,
   MenuItem,
   SelectChangeEvent,
   FormLabel,
-  Input,
+  OutlinedInput,
+  Checkbox,
+  FormControlLabel,
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 
@@ -24,15 +25,18 @@ import { HakuList } from './haku-table';
 import { getTranslation } from '../lib/common';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getHaut } from '../lib/kouta';
+import useQueryParams from '@/app/hooks/useQueryParams';
+import { useDebounce } from '../hooks/useDebounce';
 
 const alkamisKausiMatchesSelected = (
   haku: Haku,
-  selectedAlkamisKausi: HaunAlkaminen,
+  selectedAlkamisKausi?: HaunAlkaminen,
 ): boolean =>
-  haku.alkamisVuosi === selectedAlkamisKausi.alkamisVuosi &&
-  haku.alkamisKausiKoodiUri.startsWith(
-    selectedAlkamisKausi.alkamisKausiKoodiUri,
-  );
+  !selectedAlkamisKausi ||
+  (haku.alkamisVuosi === selectedAlkamisKausi.alkamisVuosi &&
+    haku.alkamisKausiKoodiUri.startsWith(
+      selectedAlkamisKausi.alkamisKausiKoodiUri,
+    ));
 
 const StyledGridContainer = styled(Grid)({
   justifyContent: 'space-between',
@@ -66,6 +70,22 @@ export const HakuFilters = ({ hakutavat }: { hakutavat: Array<Koodi> }) => {
   return <HakuFiltersInternal haut={haut} hakutavat={hakutavat} />;
 };
 
+const useQueryParamState = <T extends string>(name: string, emptyValue?: T) => {
+  const defaultValue = emptyValue ?? '';
+  const { queryParams, setQueryParam, removeQueryParam } = useQueryParams();
+  const value = queryParams.get(name) ?? defaultValue;
+
+  const setValue = (value?: string) => {
+    if (!value || value === defaultValue) {
+      removeQueryParam(name);
+    } else {
+      setQueryParam(name, value);
+    }
+  };
+
+  return [value, setValue] as const;
+};
+
 const HakuFiltersInternal = ({
   haut,
   hakutavat,
@@ -73,60 +93,67 @@ const HakuFiltersInternal = ({
   haut: Haku[];
   hakutavat: Koodi[];
 }) => {
-  const [results, setResults] = useState<Haku[]>(
-    haut.filter((h) => h.tila === Tila.JULKAISTU),
+  const [search, setSearch] = useQueryParamState('search', '');
+
+  const setSearchDebounce = useDebounce(setSearch, 500);
+
+  const [myosArkistoidut, setMyosArkistoidut] = useQueryParamState(
+    'arkistoidut',
+    'false',
   );
-  const [search, setSearch] = useState<string>('');
-  const [selectedTila, setSelectedTila] = useState<Tila>(Tila.JULKAISTU);
-  const [selectedAlkamisKausi, setSelectedAlkamisKausi] =
-    useState<HaunAlkaminen>();
-  const [selectedHakutapa, setSelectedHakutapa] = useState<Koodi>();
 
-  const alkamisKaudet = getHakuAlkamisKaudet();
+  const [selectedHakutapa, setSelectedHakutapa] = useQueryParamState(
+    'hakutapa',
+    '',
+  );
 
-  const filterHaut = (
-    search: string,
-    tila: Tila,
-    kausi: HaunAlkaminen | undefined,
-    tapa: Koodi | undefined,
-  ) => {
-    const filteredValue = haut.filter(
+  const [selectedAlkamisKausi, setSelectedAlkamisKausi] = useQueryParamState(
+    'alkamiskausi',
+    '',
+  );
+
+  const alkamiskaudet = useMemo(getHakuAlkamisKaudet, []);
+
+  const results = useMemo(() => {
+    const tilat =
+      myosArkistoidut === 'true'
+        ? [Tila.JULKAISTU, Tila.ARKISTOITU]
+        : [Tila.JULKAISTU];
+    return haut.filter(
       (haku: Haku) =>
-        haku.tila == tila &&
+        tilat.includes(haku.tila) &&
         getTranslation(haku.nimi).toLowerCase().includes(search) &&
-        (!kausi || alkamisKausiMatchesSelected(haku, kausi)) &&
-        (!tapa || haku.hakutapaKoodiUri.startsWith(tapa.koodiUri)),
+        alkamisKausiMatchesSelected(
+          haku,
+          alkamiskaudet.find((k) => k.value === selectedAlkamisKausi),
+        ) &&
+        haku.hakutapaKoodiUri.startsWith(selectedHakutapa),
     );
-    setResults(filteredValue);
-  };
+  }, [
+    haut,
+    search,
+    myosArkistoidut,
+    selectedAlkamisKausi,
+    selectedHakutapa,
+    alkamiskaudet,
+  ]);
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { target } = e;
-
-    const searchStr = target.value.trim().toLowerCase();
-    setSearch(searchStr);
-    filterHaut(searchStr, selectedTila, selectedAlkamisKausi, selectedHakutapa);
+    const searchStr = e.target.value.trim().toLowerCase();
+    setSearchDebounce(searchStr);
   };
 
-  const toggleSearchActive = () => {
-    const toggledTila =
-      selectedTila == Tila.ARKISTOITU ? Tila.JULKAISTU : Tila.ARKISTOITU;
-    setSelectedTila(toggledTila);
-    filterHaut(search, toggledTila, selectedAlkamisKausi, selectedHakutapa);
+  const toggleMyosArkistoidut = (_e: unknown, checked: boolean) => {
+    setMyosArkistoidut(checked ? 'true' : 'false');
   };
 
   const changeHakutapa = (e: SelectChangeEvent) => {
-    const idx = parseInt(e.target.value);
-    const tapa = idx > -1 ? hakutavat[idx] : undefined;
-    setSelectedHakutapa(tapa);
-    filterHaut(search, selectedTila, selectedAlkamisKausi, tapa);
+    const tapaKoodiUri = e.target.value;
+    setSelectedHakutapa(tapaKoodiUri);
   };
 
   const changeAlkamisKausi = (e: SelectChangeEvent) => {
-    const idx = parseInt(e.target.value);
-    const kausi = idx > -1 ? alkamisKaudet[idx] : undefined;
-    setSelectedAlkamisKausi(kausi);
-    filterHaut(search, selectedTila, kausi, selectedHakutapa);
+    setSelectedAlkamisKausi(e.target.value);
   };
 
   return (
@@ -138,17 +165,27 @@ const HakuFiltersInternal = ({
             sx={{ m: 1, minWidth: 180, textAlign: 'left' }}
           >
             <FormLabel htmlFor="haku-search">Hae hakuja</FormLabel>
-            <Input
+            <OutlinedInput
               data-test-id="haku-search"
               id="haku-search"
               name="haku-search"
+              key={search}
+              defaultValue={search}
               onChange={handleSearchChange}
+              autoFocus={true}
               type="text"
               placeholder="Hae hakuja"
             />
-            <Button data-testid="haku-tila-toggle" onClick={toggleSearchActive}>
-              {selectedTila === Tila.JULKAISTU ? 'Julkaistut' : 'Arkistoidut'}
-            </Button>
+            <FormControlLabel
+              label="Myös arkistoidut"
+              control={
+                <Checkbox
+                  data-testid="haku-tila-toggle"
+                  checked={myosArkistoidut === 'true'}
+                  onChange={toggleMyosArkistoidut}
+                />
+              }
+            />
           </FormControl>
         </StyledGrid>
         <StyledGrid container xs={2} direction="column">
@@ -161,13 +198,14 @@ const HakuFiltersInternal = ({
               data-testid="haku-hakutapa-select"
               labelId="hakutapa-select-label"
               name="hakutapa-select"
+              value={selectedHakutapa}
               onChange={changeHakutapa}
-              defaultValue="-1"
+              displayEmpty={true}
             >
-              <MenuItem value={-1}>Valitse...</MenuItem>
-              {hakutavat.map((tapa, index) => {
+              <MenuItem value="">Valitse...</MenuItem>
+              {hakutavat.map((tapa) => {
                 return (
-                  <MenuItem value={index} key={tapa.koodiUri}>
+                  <MenuItem value={tapa.koodiUri} key={tapa.koodiUri}>
                     {tapa.nimi.fi}
                   </MenuItem>
                 ); //TODO: translate
@@ -187,17 +225,15 @@ const HakuFiltersInternal = ({
               data-testid="haku-kausi-select"
               labelId="alkamiskausi-select-label"
               name="alkamiskausi-select"
+              displayEmpty={true}
               onChange={changeAlkamisKausi}
-              defaultValue="-1"
+              defaultValue=""
             >
-              <MenuItem value={-1}>Valitse...</MenuItem>
-              {alkamisKaudet.map((kausi, index) => {
+              <MenuItem value="">Valitse...</MenuItem>
+              {alkamiskaudet.map((kausi) => {
                 return (
-                  <MenuItem
-                    value={index}
-                    key={kausi.alkamisVuosi + kausi.alkamisKausiKoodiUri}
-                  >
-                    {kausi.alkamisVuosi} {kausi.alkamisKausiNimi}
+                  <MenuItem value={kausi.value} key={kausi.value}>
+                    {kausi.alkamisKausiNimi} {kausi.alkamisVuosi}
                   </MenuItem>
                 ); //TODO: translate
               })}
@@ -205,7 +241,11 @@ const HakuFiltersInternal = ({
           </FormControl>
         </StyledGrid>
       </StyledGridContainer>
-      {results && <HakuList haut={results} hakutavat={hakutavat}></HakuList>}
+      {results && results.length === 0 ? (
+        <p>Ei hakutuloksia</p>
+      ) : (
+        <HakuList haut={results} hakutavat={hakutavat}></HakuList>
+      )}
     </div>
   );
 };

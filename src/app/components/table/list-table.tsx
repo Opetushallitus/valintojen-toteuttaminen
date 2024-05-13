@@ -56,7 +56,7 @@ export const makeCountColumn = ({
 export const makeTilaColumn = <T extends Entity = Entity>(): Column<T> => ({
   title: 'Tila',
   key: 'tila',
-  render: (haku) => <span>{Tila[haku.tila]}</span>,
+  render: (haku) => <span>{haku.tila}</span>,
   style: {
     width: 0,
   },
