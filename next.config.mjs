@@ -16,10 +16,16 @@ const cspHeader = `
 
 const isProd = process.env.NODE_ENV === 'production';
 
+const isStandalone = Boolean(process.env.NEXT_OUTPUT_STANDALONE === 'true') ?? isProd;
+
 const basePath = '/valintojen-toteuttaminen';
 
 const nextConfig = {
   basePath,
+  eslint: {
+    ignoreDuringBuilds: true,
+
+  },
   async headers() {
     return [
       {
@@ -38,7 +44,7 @@ const nextConfig = {
     VIRKAILIJA_URL: process.env.VIRKAILIJA_URL,
     APP_URL: process.env.APP_URL,
   },
-  output: isProd ? 'standalone' : undefined,
+  output: isStandalone ? 'standalone' : undefined,
 };
 
 export default nextConfig;

@@ -50,8 +50,10 @@ jobs:
           sudo cp mkcert-v*-linux-amd64 /usr/local/bin/mkcert
       - name: Create dev certificates
         run: npm run create-dev-certs
+      - name: Build app
+        run: npm run build-test
       - name: Start the app
-        run: npm run dev-test &
+        run: npm run start-test &
       - name: Run Playwright tests
         run: npx playwright test
       - uses: actions/upload-artifact@v4
