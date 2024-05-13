@@ -1,8 +1,8 @@
-import { getHakutavat } from './lib/koodisto';
+import { getHakutavat } from '../lib/koodisto';
 import { AccessTime as AccessTimeIcon } from '@mui/icons-material';
 import { CSSProperties } from 'react';
-import HakuFilters from './components/haku-filters';
-import Header from './components/header';
+import HakuFilters from '../components/haku-filters';
+import Header from '../components/header';
 
 const titleSectionStyle: CSSProperties = {
   borderBottom: '1px solid rgba(0, 0, 0, 0.15)',
