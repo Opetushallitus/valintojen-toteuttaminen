@@ -61,6 +61,9 @@ const theme = createTheme({
       },
     },
     MuiButton: {
+      defaultProps: {
+        disableRipple: true,
+      },
       styleOverrides: {
         root: {
           boxShadow: 'none',
@@ -100,11 +103,14 @@ const theme = createTheme({
         text: ({ ownerState, theme }) => {
           return {
             color: getColorByName(ownerState.color, theme, 'main'),
+            background: 'none',
             '&:hover': {
               color: getColorByName(ownerState.color, theme, 'light'),
+              background: 'none',
             },
             '&:active': {
               color: getColorByName(ownerState.color, theme, 'dark'),
+              background: 'none',
             },
           };
         },
