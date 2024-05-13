@@ -21,13 +21,13 @@ export const getHakuAlkamisKaudet = (): HaunAlkaminen[] => {
       alkamisVuosi: i,
       alkamisKausiKoodiUri: 'kausi_s',
       alkamisKausiNimi: 'SYKSY',
-      value: `syksy_${i}`,
+      value: `${i}_syksy`,
     });
     alkamiset.push({
       alkamisVuosi: i,
       alkamisKausiKoodiUri: 'kausi_k',
       alkamisKausiNimi: 'KEVÄT',
-      value: `kevat_${i}`,
+      value: `${i}_kevat`,
     });
   }
   return alkamiset;
