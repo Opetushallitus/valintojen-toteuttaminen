@@ -11,6 +11,7 @@ import {
   OutlinedInput,
   Checkbox,
   FormControlLabel,
+  Pagination,
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 
@@ -112,6 +113,12 @@ const HakuFiltersInternal = ({
     '',
   );
 
+  const [page, setPage] = useQueryParamState('page', '1');
+
+  const pageNum = parseInt(page, 10);
+
+  const [pageSize] = useQueryParamState('page_size', '50');
+
   const alkamiskaudet = useMemo(getHakuAlkamisKaudet, []);
 
   const results = useMemo(() => {
@@ -137,6 +144,15 @@ const HakuFiltersInternal = ({
     selectedHakutapa,
     alkamiskaudet,
   ]);
+
+  const pageSizeNum = parseInt(pageSize, 10);
+
+  const pageResults = useMemo(() => {
+    const start = pageSizeNum * (pageNum - 1);
+    return results.slice(start, start + pageSizeNum);
+  }, [results, pageNum, pageSizeNum]);
+
+  console.log({ pageResults, pageSizeNum, pageNum });
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     const searchStr = e.target.value.trim().toLowerCase();
@@ -244,7 +260,24 @@ const HakuFiltersInternal = ({
       {results && results.length === 0 ? (
         <p>Ei hakutuloksia</p>
       ) : (
-        <HakuList haut={results} hakutavat={hakutavat}></HakuList>
+        <>
+          <p style={{ textAlign: 'left' }}>Hakuja: {results.length}</p>
+          <Pagination
+            count={Math.ceil(results.length / pageSizeNum)}
+            page={pageNum}
+            onChange={(_e: unknown, value: number) => {
+              setPage(value.toString());
+            }}
+          />
+          <HakuList haut={pageResults} hakutavat={hakutavat} />
+          <Pagination
+            count={Math.ceil(results.length / pageSizeNum)}
+            page={pageNum}
+            onChange={(_e: unknown, value: number) => {
+              setPage(value.toString());
+            }}
+          />
+        </>
       )}
     </div>
   );

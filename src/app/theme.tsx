@@ -13,12 +13,15 @@ const LinkBehaviour = React.forwardRef<HTMLAnchorElement, LinkProps>(
 
 const colors = {
   grey900: '#1D1D1D',
+  grey800: '#454545',
   grey700: '#4C4C4C',
   grey600: '#5D5D5D',
-  grey500: '#B2B2B2',
-  grey400: '#CCCCCC',
-  grey200: '#E6E6E6',
-  grey50: '#F5F7F9',
+  grey500: '#6D6D6D',
+  grey400: '#B2B2B2',
+  grey300: '#C8C8C8',
+  grey200: '#DFDFDF',
+  grey100: '#EDEDED',
+  grey50: '#F6F6F6',
 
   white: '#FFFFFF',
   black: '#000000',
@@ -107,10 +110,52 @@ const theme = createTheme({
         },
       },
     },
-    MuiOutlinedInput: {
+    MuiFormLabel: {
+      styleOverrides: {
+        root: {
+          color: colors.black,
+          '&.Mui-focused': {
+            color: colors.black,
+          },
+        },
+      },
+    },
+    MuiInputLabel: {
+      styleOverrides: {
+        root: {
+          color: colors.black,
+          '&.Mui-focused': {
+            color: colors.black,
+          },
+        },
+      },
+    },
+    MuiPagination: {
+      defaultProps: {
+        variant: 'text',
+        shape: 'rounded',
+      },
+    },
+    MuiPaginationItem: {
       styleOverrides: {
         root: {
           borderRadius: '2px',
+        },
+      },
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: ({ theme }) => {
+          return {
+            '.MuiOutlinedInput-notchedOutline': {
+              borderRadius: '2px',
+              borderWidth: '1px',
+            },
+            '&:hover .MuiOutlinedInput-notchedOutline': {
+              borderWidth: '2px',
+              borderColor: theme.palette.primary.main,
+            },
+          };
         },
       },
     },
