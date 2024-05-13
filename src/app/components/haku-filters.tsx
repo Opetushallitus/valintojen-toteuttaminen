@@ -374,7 +374,6 @@ const HakuFiltersInternal = ({
           <OutlinedInput
             id="haku-search"
             name="haku-search"
-            key={searchPhrase}
             defaultValue={searchPhrase}
             onChange={handleSearchChange}
             autoFocus={true}
