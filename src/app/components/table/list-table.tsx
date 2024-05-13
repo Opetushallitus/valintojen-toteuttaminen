@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import { TranslatedName, getTranslation } from '@/app/lib/common';
 import { Haku, getAlkamisKausi, Tila } from '@/app/lib/kouta-types';
+import { colors } from '@/app/theme';
 
 type Column<P> = {
   title?: string;
@@ -94,13 +95,14 @@ const StyledCell = styled(TableCell)({
   whiteSpace: 'pre-wrap',
 });
 
-const StyledRow = styled(TableRow)({
-  borderSpacing: '0px',
-  '&:nth-of-type(even)': {
-    backgroundColor: '#f5f5f5',
-  },
-  '&:hover': {
-    backgroundColor: '#e5f5ff',
+const StyledTableBody = styled(TableBody)({
+  '& .MuiTableRow-root': {
+    '&:nth-of-type(even)': {
+      backgroundColor: colors.grey50,
+    },
+    '&:hover': {
+      backgroundColor: colors.lightBlue2,
+    },
   },
 });
 
@@ -117,7 +119,7 @@ export const ListTable = <T extends Entity>({
   return (
     <StyledTable {...props}>
       <TableHead>
-        <StyledRow>
+        <TableRow>
           {columns.map((columnProps) => {
             const { key, title, style } = columnProps;
             return (
@@ -126,14 +128,14 @@ export const ListTable = <T extends Entity>({
               </StyledCell>
             );
           })}
-        </StyledRow>
+        </TableRow>
       </TableHead>
-      <TableBody>
+      <StyledTableBody>
         {rows.map((rowProps) => {
           const { oid } = rowProps;
 
           return (
-            <StyledRow key={oid}>
+            <TableRow key={oid}>
               {columns.map(({ key: columnKey, render, style }) => {
                 return (
                   <StyledCell key={columnKey} style={style}>
@@ -141,10 +143,10 @@ export const ListTable = <T extends Entity>({
                   </StyledCell>
                 );
               })}
-            </StyledRow>
+            </TableRow>
           );
         })}
-      </TableBody>
+      </StyledTableBody>
     </StyledTable>
   );
 };
