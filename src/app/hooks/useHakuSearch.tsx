@@ -6,16 +6,19 @@ import {
   Tila,
   getHakuAlkamisKaudet,
 } from '../lib/kouta-types';
-import { Language, byProp, getTranslation } from '../lib/common';
+import {
+  DEFAULT_PAGE_SIZE,
+  Language,
+  byProp,
+  getTranslation,
+} from '../lib/common';
 import { useDebounce } from '@/app/hooks/useDebounce';
 import { parseAsBoolean, parseAsInteger, useQueryState } from 'nuqs';
 import { useHasChanged } from '@/app/hooks/useHasChanged';
-import { getSortParts } from '../components/table/list-table';
+import { getSortParts } from '../components/table/getSortParts';
 import { getHaut } from '../lib/kouta';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { useHakutavat } from './useHakutavat';
-
-export const DEFAULT_PAGE_SIZE = 30;
 
 const DEFAULT_NUQS_OPTIONS = {
   history: 'push',
@@ -23,7 +26,7 @@ const DEFAULT_NUQS_OPTIONS = {
   defaultValue: '',
 } as const;
 
-export const alkamisKausiMatchesSelected = (
+const alkamisKausiMatchesSelected = (
   haku: Haku,
   selectedAlkamisKausi?: HaunAlkaminen,
 ): boolean =>

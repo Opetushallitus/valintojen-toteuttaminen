@@ -10,9 +10,7 @@ import {
   styled,
   Pagination,
 } from '@mui/material';
-import { DEFAULT_PAGE_SIZE } from '../hooks/useHakuSearch';
-
-export const PAGE_SIZES = [10, 20, 30, 50, 100];
+import { DEFAULT_PAGE_SIZE, PAGE_SIZES } from '@/app/lib/common';
 
 export const StyledPagination = styled(Pagination)({
   display: 'flex',
