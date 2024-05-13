@@ -6,5 +6,10 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     dir: './tests/unit',
+    coverage: {
+      provider: 'istanbul',
+      include: ['src/**'],
+    },
+    exclude: ['./cdk'],
   },
 });

@@ -13,6 +13,7 @@
     "prettier-eslint:fix": "prettier-eslint \"**/*.{js,ts,mjs,cjs,jsx,tsx}\" --write",
     "test:ui": "playwright test",
     "test": "vitest",
+    "coverage": "vitest run --coverage",
     "create-dev-certs": "mkdir -p certificates && cd certificates && mkcert localhost && mkcert -install",
     "prepare": "husky",
     "typecheck": "tsc"
@@ -44,6 +45,7 @@
     "@typescript-eslint/eslint-plugin": "^7.7.0",
     "@typescript-eslint/parser": "^7.7.0",
     "@vitejs/plugin-react": "^4.2.1",
+    "@vitest/coverage-istanbul": "^1.6.0",
     "autoprefixer": "^10.0.1",
     "eslint": "^8",
     "eslint-config-next": "14.1.0",
