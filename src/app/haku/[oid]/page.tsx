@@ -1,18 +1,9 @@
 'use client';
 
-import HakukohdeList from './hakukohde-list';
-
-export default function HakuPage({ params }: { params: { oid: string } }) {
+export default function HakuPage() {
   return (
-    <main
-      className="mainContainer"
-      style={{ display: 'flex', flexDirection: 'row' }}
-    >
-      <HakukohdeList oid={params.oid} />
-      <div style={{ alignSelf: 'center', width: '70%' }}>
-        <h2>Valitse hakukohde</h2>
-        <p>Kesken...</p>
-      </div>
-    </main>
+    <div style={{ alignSelf: 'center', width: '70%', padding: '1rem 2rem' }}>
+      <h2>Valitse hakukohde</h2>
+    </div>
   );
 }

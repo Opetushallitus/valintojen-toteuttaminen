@@ -33,6 +33,13 @@ export default async function playwrightSetup() {
       );
       response.end();
       return;
+    } else if (request.url.includes('kouta-internal/hakukohde/')) {
+      const hakukohdeOid = request.url.split('/').reverse()[0];
+      response.write(
+        JSON.stringify(HAKUKOHTEET.find((hk) => hk.oid === hakukohdeOid)),
+      );
+      response.end();
+      return;
     } else if (request.url.includes(`kouta-internal/haku/`)) {
       const hakuId = request.url.split('haku/')[1];
       const haku = HAUT.find((hakuData) => hakuData.oid === hakuId);
