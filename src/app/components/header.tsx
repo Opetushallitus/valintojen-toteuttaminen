@@ -1,5 +1,5 @@
 import React, { CSSProperties } from 'react';
-import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import { HomeOutlined as HomeOutlinedIcon } from '@mui/icons-material';
 import { Link as MuiLink } from '@mui/material';
 
 export type HeaderProps = {

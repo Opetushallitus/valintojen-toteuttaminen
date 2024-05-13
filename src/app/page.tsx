@@ -1,5 +1,5 @@
 import { getHakutavat } from './lib/koodisto';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import { AccessTime as AccessTimeIcon } from '@mui/icons-material';
 import { CSSProperties } from 'react';
 import HakuFilters from './components/haku-filters';
 import Header from './components/header';
