@@ -1,4 +1,3 @@
-'use server';
 import { getHakutavat } from './lib/koodisto';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { CSSProperties } from 'react';
@@ -14,6 +13,8 @@ const titleSectionStyle: CSSProperties = {
   marginBottom: '2rem',
   padding: 0,
 };
+
+export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   const hakutavat = await getHakutavat();
