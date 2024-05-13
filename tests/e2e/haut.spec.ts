@@ -1,7 +1,8 @@
-import { test, expect, Page } from '@playwright/test';
+import { test, expect, Page, Locator } from '@playwright/test';
 import {
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
+  expectUrlParamToEqual,
 } from './playwright-utils';
 
 async function selectHakutapa(page: Page, expectedOption: string) {
@@ -40,51 +41,79 @@ test('Haku-page accessibility', async ({ page }) => {
 const getMyosArkistoidut = (page: Page) =>
   page.getByRole('checkbox', { name: 'Myös arkistoidut' });
 
+const getTableRows = (loc: Page | Locator) => loc.locator('tbody tr');
+
 test('filters haku by published state', async ({ page }) => {
   await expect(getMyosArkistoidut(page)).not.toBeChecked();
-  await expect(page.locator('tbody tr')).toHaveCount(3);
+  const tableRows = getTableRows(page);
+  await expect(tableRows).toHaveCount(3);
   const hakuInput = await page.getByRole('textbox', { name: 'Hae hakuja' });
   hakuInput.fill('Luk');
-  await expect(page.locator('tbody tr')).toHaveCount(1);
-  await expect(page.locator('tbody tr')).toContainText(
-    'Hausjärven lukio jatkuva haku',
-  );
+  await expect(tableRows).toHaveCount(1);
+  await expect(tableRows).toContainText('Hausjärven lukio jatkuva haku');
 });
 
 test('filters haku by archived state', async ({ page }) => {
+  const tableRows = getTableRows(page);
   const myosArkistoidut = getMyosArkistoidut(page);
   await myosArkistoidut.click();
+
   await expect(myosArkistoidut).toBeChecked();
-  await expect(page.locator('tbody tr')).toHaveCount(6);
+  await expect(tableRows).toHaveCount(6);
   const hakuInput = await page.getByRole('textbox', { name: 'Hae hakuja' });
   hakuInput.fill('hak');
-  await expect(page.locator('tbody tr')).toHaveCount(5);
+  await expect(tableRows).toHaveCount(5);
   hakuInput.fill('Leppä');
-  await expect(page.locator('tbody tr')).toHaveCount(1);
-  await expect(page.locator('tbody tr')).toContainText(
-    'Leppävirran lukio - Jatkuva haku',
-  );
+  await expect(tableRows).toHaveCount(1);
+  await expect(tableRows).toContainText('Leppävirran lukio - Jatkuva haku');
+  await expectUrlParamToEqual(page, 'search', 'Leppä');
 });
 
 test('filters by hakutapa', async ({ page }) => {
+  const tableRows = getTableRows(page);
   await selectHakutapa(page, 'Erillishaku');
-  await expect(page.locator('tbody tr')).toHaveCount(1);
+  await expect(tableRows).toHaveCount(1);
+  await expectUrlParamToEqual(page, 'hakutapa', 'hakutapa_02');
   await selectHakutapa(page, 'Jatkuva haku');
-  await expect(page.locator('tbody tr')).toHaveCount(2);
+  await expect(tableRows).toHaveCount(2);
+  await expectUrlParamToEqual(page, 'hakutapa', 'hakutapa_03');
 });
 
 test('filters by start period', async ({ page }) => {
+  const tableRows = getTableRows(page);
   await selectKausi(page, '2024 SYKSY');
-  await expect(page.locator('tbody tr')).toHaveCount(1);
+  await expect(tableRows).toHaveCount(1);
   await selectKausi(page, '2020 SYKSY');
-  await expect(page.locator('tbody tr')).toHaveCount(0);
+  await expect(tableRows).toHaveCount(0);
+  await expectUrlParamToEqual(page, 'alkamiskausi', '2020_syksy');
 });
 
 test('filters by hakutapa and start period', async ({ page }) => {
+  const tableRows = getTableRows(page);
   await selectHakutapa(page, 'Jatkuva haku');
-  await expect(page.locator('tbody tr')).toHaveCount(2);
+  await expect(tableRows).toHaveCount(2);
   await selectKausi(page, '2023 SYKSY');
-  await expect(page.locator('tbody tr')).toHaveCount(1);
+  await expect(tableRows).toHaveCount(1);
+});
+
+test('sorts list by nimi when header clicked', async ({ page }) => {
+  const nimiHeader = page.getByRole('columnheader', { name: 'Nimi' });
+  await nimiHeader.getByRole('button').click();
+  await expect(nimiHeader).toHaveAttribute('aria-sort', 'ascending');
+  await expectUrlParamToEqual(page, 'sort', 'nimi:asc');
+
+  await nimiHeader.getByRole('button').click();
+
+  await expect(nimiHeader).toHaveAttribute('aria-sort', 'descending');
+  await expectUrlParamToEqual(page, 'sort', 'nimi:desc');
+
+  const tableRows = getTableRows(page);
+
+  await expect(
+    tableRows.first().getByRole('cell', {
+      name: 'Tampere University Separate Admission/ Finnish MAOL Competition Route 2024',
+    }),
+  ).toBeVisible();
 });
 
 test('navigates to haku page', async ({ page }) => {

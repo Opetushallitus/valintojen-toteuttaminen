@@ -201,7 +201,7 @@ const useHakuSearch = (
         tilat.includes(haku.tila) &&
         getTranslation(haku.nimi)
           .toLowerCase()
-          .includes(searchPhrase ?? '') &&
+          .includes(searchPhrase?.toLowerCase() ?? '') &&
         alkamisKausiMatchesSelected(
           haku,
           alkamiskaudet.find((k) => k.value === selectedAlkamisKausi),
@@ -298,7 +298,7 @@ const HakuListFrame = ({
       <Box display="flex" flexDirection="column" rowGap={1} alignItems="center">
         {children}
         <StyledPagination
-          aria-label="bottom pagination"
+          aria-label="Sivutus"
           count={pageCount}
           page={pageNumber}
           onChange={(_e: unknown, value: number) => {
@@ -339,8 +339,7 @@ const HakuFiltersInternal = ({
   } = useHakuSearch(haut, alkamiskaudet);
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const searchStr = e.target.value.trim().toLowerCase();
-    setSearchPhrase(searchStr);
+    setSearchPhrase(e.target.value);
   };
 
   const toggleMyosArkistoidut = (_e: unknown, checked: boolean) => {
@@ -348,8 +347,7 @@ const HakuFiltersInternal = ({
   };
 
   const changeHakutapa = (e: SelectChangeEvent) => {
-    const tapaKoodiUri = e.target.value;
-    setSelectedHakutapa(tapaKoodiUri);
+    setSelectedHakutapa(e.target.value);
   };
 
   const changeAlkamisKausi = (e: SelectChangeEvent) => {
