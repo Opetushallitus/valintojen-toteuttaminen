@@ -30,10 +30,10 @@ test('navigates to hakukohde tabs', async ({ page }) => {
   );
   await expect(page.locator('.organizationLabel')).toHaveCount(3);
   await page.locator('.organizationLabel').first().click();
-  await expect(page.locator('h2.organisaatioLabel')).toHaveText(
+  await expect(page.locator('span.organisaatioLabel')).toHaveText(
     'Tampereen yliopisto, Rakennetun ympäristön tiedekunta',
   );
-  await expect(page.locator('h2.hakukohdeLabel')).toHaveText(
+  await expect(page.locator('span.hakukohdeLabel')).toHaveText(
     'Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs)',
   );
   await expect(page.locator('h3')).toHaveText('Perustiedot');
