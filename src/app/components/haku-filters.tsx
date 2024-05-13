@@ -25,12 +25,43 @@ import {
 } from '../lib/kouta-types';
 import { Koodi } from '../lib/koodisto';
 import { HakuList } from './haku-table';
-import { getTranslation } from '../lib/common';
+import { Language, TranslatedName, getTranslation } from '../lib/common';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getHaut } from '../lib/kouta';
 import { useDebounce } from '@/app/hooks/useDebounce';
 import { parseAsBoolean, parseAsInteger, useQueryState } from 'nuqs';
 import { useHasChanged } from '@/app/hooks/useHasChanged';
+import { getSortParts } from './table/list-table';
+
+function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function isTranslatedName(value: unknown): value is TranslatedName {
+  return (
+    isObject(value) &&
+    (typeof value?.fi === 'string' ||
+      typeof value?.sv === 'string' ||
+      typeof value?.en === 'string')
+  );
+}
+
+const byProp = <T extends Record<string, string | number | TranslatedName>>(
+  key: string,
+  direction: 'asc' | 'desc' = 'asc',
+  lng: Language,
+) => {
+  const asc = direction === 'asc';
+  return (a: T, b: T) => {
+    const aKey = a[key];
+    const aProp = isTranslatedName(aKey) ? getTranslation(aKey, lng) : aKey;
+
+    const bKey = b[key];
+    const bProp = isTranslatedName(bKey) ? getTranslation(bKey, lng) : bKey;
+
+    return aProp > bProp ? (asc ? 1 : -1) : bProp > aProp ? (asc ? -1 : 1) : 0;
+  };
+};
 
 const alkamisKausiMatchesSelected = (
   haku: Haku,
@@ -65,10 +96,45 @@ const StyledGrid = styled(Grid)({
   rowGap: '0.7rem',
 });
 
+const KAUSI_MAPPING = Object.freeze({
+  kausi_s: {
+    fi: 'Syksy',
+    sv: 'Höst',
+    en: 'Autumn',
+  },
+  kausi_k: {
+    fi: 'Kevät',
+    sv: 'Vår',
+    en: 'Spring',
+  },
+});
+
+const getKausiVuosiTranslation = (kausiUri: string, vuosi: number) => {
+  if (kausiUri === 'kausi_s' || kausiUri === 'kausi_k') {
+    const kausiName = KAUSI_MAPPING?.[kausiUri];
+    return {
+      fi: `${vuosi} ${kausiName.fi}`,
+      sv: `${vuosi} ${kausiName.sv}`,
+      en: `${vuosi} ${kausiName.en}`,
+    };
+  }
+};
+
 export const HakuFilters = ({ hakutavat }: { hakutavat: Array<Koodi> }) => {
   const { data: haut } = useSuspenseQuery({
     queryKey: ['getHaut'],
     queryFn: () => getHaut(),
+    select: (haut) =>
+      haut.map((haku) => ({
+        ...haku,
+        hakutapaNimi: hakutavat.find(
+          (hakutapa) => hakutapa.koodiUri === haku.hakutapaKoodiUri,
+        )?.nimi,
+        alkamiskausiNimi: getKausiVuosiTranslation(
+          haku.alkamisKausiKoodiUri?.split('#')?.[0],
+          haku.alkamisVuosi,
+        ),
+      })),
   });
 
   return <HakuFiltersInternal haut={haut} hakutavat={hakutavat} />;
@@ -78,33 +144,50 @@ const PAGE_SIZES = [10, 20, 30, 50, 100];
 
 const DEFAULT_PAGE_SIZE = 30;
 
+const DEFAULT_NUQS_OPTIONS = {
+  history: 'push',
+  clearOnDefault: true,
+} as const;
+
 const useHakuSearch = (
   haut: Array<Haku>,
   alkamiskaudet: Array<HaunAlkaminen>,
 ) => {
-  const [searchPhrase, setSearchPhrase] = useQueryState('search');
+  const [searchPhrase, setSearchPhrase] = useQueryState(
+    'search',
+    DEFAULT_NUQS_OPTIONS,
+  );
 
   const setSearchDebounce = useDebounce(setSearchPhrase, 500);
 
   const [myosArkistoidut, setMyosArkistoidut] = useQueryState(
     'arkistoidut',
-    parseAsBoolean,
+    parseAsBoolean.withDefault(false).withOptions(DEFAULT_NUQS_OPTIONS),
   );
 
-  const [selectedHakutapa, setSelectedHakutapa] = useQueryState('hakutapa');
+  const [selectedHakutapa, setSelectedHakutapa] = useQueryState(
+    'hakutapa',
+    DEFAULT_NUQS_OPTIONS,
+  );
 
-  const [selectedAlkamisKausi, setSelectedAlkamisKausi] =
-    useQueryState('alkamiskausi');
+  const [selectedAlkamisKausi, setSelectedAlkamisKausi] = useQueryState(
+    'alkamiskausi',
+    DEFAULT_NUQS_OPTIONS,
+  );
 
   const [page, setPage] = useQueryState<number>(
     'page',
-    parseAsInteger.withDefault(1),
+    parseAsInteger.withDefault(1).withOptions(DEFAULT_NUQS_OPTIONS),
   );
 
   const [pageSize, setPageSize] = useQueryState(
     'page_size',
-    parseAsInteger.withDefault(DEFAULT_PAGE_SIZE),
+    parseAsInteger
+      .withDefault(DEFAULT_PAGE_SIZE)
+      .withOptions(DEFAULT_NUQS_OPTIONS),
   );
+
+  const [sort, setSort] = useQueryState('sort', DEFAULT_NUQS_OPTIONS);
 
   const myosArkistoidutChanged = useHasChanged(myosArkistoidut);
   const searchPhraseChanged = useHasChanged(searchPhrase);
@@ -132,7 +215,10 @@ const useHakuSearch = (
     const tilat = myosArkistoidut
       ? [Tila.JULKAISTU, Tila.ARKISTOITU]
       : [Tila.JULKAISTU];
-    return haut.filter(
+
+    const { orderBy, direction } = getSortParts(sort ?? '');
+
+    const filtered = haut.filter(
       (haku: Haku) =>
         tilat.includes(haku.tila) &&
         getTranslation(haku.nimi)
@@ -144,6 +230,9 @@ const useHakuSearch = (
         ) &&
         haku.hakutapaKoodiUri.startsWith(selectedHakutapa ?? ''),
     );
+    return orderBy && direction
+      ? filtered.sort(byProp(orderBy, direction, Language.FI))
+      : filtered;
   }, [
     haut,
     searchPhrase,
@@ -151,12 +240,15 @@ const useHakuSearch = (
     selectedAlkamisKausi,
     selectedHakutapa,
     alkamiskaudet,
+    sort,
   ]);
 
   const pageResults = useMemo(() => {
     const start = pageSize * (page - 1);
     return results.slice(start, start + pageSize);
   }, [results, page, pageSize]);
+
+  console.log({ results, pageResults, pageSize, page });
 
   return {
     searchPhrase,
@@ -173,6 +265,8 @@ const useHakuSearch = (
     setPageSize,
     pageResults,
     results,
+    sort,
+    setSort,
   };
 };
 
@@ -272,6 +366,8 @@ const HakuFiltersInternal = ({
     setPageSize,
     results,
     pageResults,
+    sort,
+    setSort,
   } = useHakuSearch(haut, alkamiskaudet);
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -313,7 +409,7 @@ const HakuFiltersInternal = ({
               control={
                 <Checkbox
                   data-testid="haku-tila-toggle"
-                  checked={myosArkistoidut === 'true'}
+                  checked={myosArkistoidut ?? false}
                   onChange={toggleMyosArkistoidut}
                 />
               }
@@ -326,7 +422,7 @@ const HakuFiltersInternal = ({
             <Select
               labelId="hakutapa-select-label"
               name="hakutapa-select"
-              value={selectedHakutapa}
+              value={selectedHakutapa ?? ''}
               onChange={changeHakutapa}
               displayEmpty={true}
             >
@@ -349,7 +445,7 @@ const HakuFiltersInternal = ({
             <Select
               labelId="alkamiskausi-select-label"
               name="alkamiskausi-select"
-              value={selectedAlkamisKausi}
+              value={selectedAlkamisKausi ?? ''}
               onChange={changeAlkamisKausi}
               displayEmpty={true}
             >
@@ -373,7 +469,12 @@ const HakuFiltersInternal = ({
         pageSize={pageSize}
         setPageSize={setPageSize}
       >
-        <HakuList haut={pageResults} hakutavat={hakutavat} />
+        <HakuList
+          haut={pageResults}
+          hakutavat={hakutavat}
+          setSort={setSort}
+          sort={sort ?? ''}
+        />
       </HakuListFrame>
     </div>
   );
