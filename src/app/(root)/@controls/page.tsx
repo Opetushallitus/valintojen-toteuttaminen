@@ -1,5 +1,5 @@
 'use client';
-import React, { ChangeEvent, useMemo } from 'react';
+import React, { ChangeEvent, Suspense, useMemo } from 'react';
 
 import {
   FormControl,
@@ -10,6 +10,7 @@ import {
   OutlinedInput,
   Box,
   InputAdornment,
+  CircularProgress,
 } from '@mui/material';
 
 import { Tila, getHakuAlkamisKaudet } from '../../lib/kouta-types';
@@ -17,9 +18,65 @@ import { Search } from '@mui/icons-material';
 import { useHakuSearchParams } from '../../hooks/useHakuSearch';
 import { useHakutavat } from '@/app/hooks/useHakutavat';
 
-export default function HakuControls() {
+const HakutapaSelect = ({
+  value: selectedHakutapa,
+  onChange,
+}: {
+  value: string;
+  onChange: (e: SelectChangeEvent) => void;
+}) => {
   const { data: hakutavat } = useHakutavat();
+  return (
+    <Select
+      labelId="hakutapa-select-label"
+      name="hakutapa-select"
+      value={selectedHakutapa ?? ''}
+      onChange={onChange}
+      displayEmpty={true}
+    >
+      <MenuItem value="">Valitse...</MenuItem>
+      {hakutavat.map((tapa) => {
+        return (
+          <MenuItem value={tapa.koodiUri} key={tapa.koodiUri}>
+            {tapa.nimi.fi}
+          </MenuItem>
+        ); //TODO: translate
+      })}
+    </Select>
+  );
+};
 
+const SelectFallback = () => (
+  <Select
+    disabled={true}
+    startAdornment={
+      <InputAdornment position="start">
+        <CircularProgress
+          sx={{ height: '24px !important', width: '24px !important' }}
+        />
+      </InputAdornment>
+    }
+  />
+);
+
+const HakutapaInput = ({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (e: SelectChangeEvent) => void;
+}) => {
+  return (
+    <FormControl sx={{ minWidth: '180px', textAlign: 'left' }}>
+      <FormLabel id="hakutapa-select-label">Hakutapa</FormLabel>
+      <Suspense fallback={<SelectFallback />}>
+        <HakutapaSelect value={value} onChange={onChange} />
+      </Suspense>
+    </FormControl>
+  );
+};
+
+export default function HakuControls() {
   const alkamiskaudet = useMemo(getHakuAlkamisKaudet, []);
 
   const {
@@ -108,25 +165,7 @@ export default function HakuControls() {
           </Select>
         </FormControl>
       </Box>
-      <FormControl sx={{ minWidth: '180px', textAlign: 'left' }}>
-        <FormLabel id="hakutapa-select-label">Hakutapa</FormLabel>
-        <Select
-          labelId="hakutapa-select-label"
-          name="hakutapa-select"
-          value={selectedHakutapa ?? ''}
-          onChange={changeHakutapa}
-          displayEmpty={true}
-        >
-          <MenuItem value="">Valitse...</MenuItem>
-          {hakutavat.map((tapa) => {
-            return (
-              <MenuItem value={tapa.koodiUri} key={tapa.koodiUri}>
-                {tapa.nimi.fi}
-              </MenuItem>
-            ); //TODO: translate
-          })}
-        </Select>
-      </FormControl>
+      <HakutapaInput value={selectedHakutapa} onChange={changeHakutapa} />
       <FormControl sx={{ minWidth: '180px', textAlign: 'left' }}>
         <FormLabel id="alkamiskausi-select-label">
           Koulutuksen alkamiskausi
