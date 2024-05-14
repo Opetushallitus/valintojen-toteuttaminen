@@ -13,7 +13,7 @@ import {
   getTranslation,
 } from '../lib/common';
 import { useDebounce } from '@/app/hooks/useDebounce';
-import { parseAsBoolean, parseAsInteger, useQueryState } from 'nuqs';
+import { parseAsInteger, useQueryState } from 'nuqs';
 import { useHasChanged } from '@/app/hooks/useHasChanged';
 import { getSortParts } from '../components/table/getSortParts';
 import { getHaut } from '../lib/kouta';
@@ -68,10 +68,18 @@ export const useHakuSearchParams = () => {
 
   const setSearchDebounce = useDebounce(setSearchPhrase, 500);
 
-  const [myosArkistoidut, setMyosArkistoidut] = useQueryState(
-    'arkistoidut',
-    parseAsBoolean.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(false),
-  );
+  const [tila, setTila] = useQueryState('tila', {
+    history: 'push',
+    clearOnDefault: false,
+  });
+
+  // Näytetään oletuksena vain julkaistut. Huom! Jos käyttäjä tyhjentää tila-kentän itse, URL-parametriksi tulee "tila=",
+  // jolloin tämä ei aseta kentän arvoa tilaan "julkaistu"
+  useEffect(() => {
+    if (tila === null) {
+      setTila('julkaistu');
+    }
+  }, [tila, setTila]);
 
   const [selectedHakutapa, setSelectedHakutapa] = useQueryState(
     'hakutapa',
@@ -97,7 +105,7 @@ export const useHakuSearchParams = () => {
 
   const [sort, setSort] = useQueryState('sort', DEFAULT_NUQS_OPTIONS);
 
-  const myosArkistoidutChanged = useHasChanged(myosArkistoidut);
+  const tilachanged = useHasChanged(tila);
   const searchPhraseChanged = useHasChanged(searchPhrase);
   const selectedAlkamisKausiChanged = useHasChanged(selectedAlkamisKausi);
   const selectedHakutapaChanged = useHasChanged(selectedHakutapa);
@@ -105,7 +113,7 @@ export const useHakuSearchParams = () => {
   useEffect(() => {
     if (
       searchPhraseChanged ||
-      myosArkistoidutChanged ||
+      tilachanged ||
       selectedHakutapaChanged ||
       selectedAlkamisKausiChanged
     ) {
@@ -113,7 +121,7 @@ export const useHakuSearchParams = () => {
     }
   }, [
     searchPhraseChanged,
-    myosArkistoidutChanged,
+    tilachanged,
     selectedHakutapaChanged,
     selectedAlkamisKausiChanged,
     setPage,
@@ -122,8 +130,8 @@ export const useHakuSearchParams = () => {
   return {
     searchPhrase,
     setSearchPhrase: setSearchDebounce,
-    myosArkistoidut,
-    setMyosArkistoidut: setMyosArkistoidut,
+    tila,
+    setTila,
     selectedHakutapa,
     setSelectedHakutapa,
     selectedAlkamisKausi,
@@ -159,7 +167,7 @@ export const useHakuSearchResults = () => {
 
   const {
     searchPhrase,
-    myosArkistoidut,
+    tila,
     selectedHakutapa,
     selectedAlkamisKausi,
     page,
@@ -171,9 +179,7 @@ export const useHakuSearchResults = () => {
   } = useHakuSearchParams();
 
   const results = useMemo(() => {
-    const tilat = myosArkistoidut
-      ? [Tila.JULKAISTU, Tila.ARKISTOITU]
-      : [Tila.JULKAISTU];
+    const tilat = tila ? [tila] : [Tila.JULKAISTU, Tila.ARKISTOITU];
 
     const { orderBy, direction } = getSortParts(sort);
 
@@ -195,7 +201,7 @@ export const useHakuSearchResults = () => {
   }, [
     haut,
     searchPhrase,
-    myosArkistoidut,
+    tila,
     selectedAlkamisKausi,
     selectedHakutapa,
     alkamiskaudet,

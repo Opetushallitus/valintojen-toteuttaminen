@@ -25,6 +25,18 @@ async function selectKausi(page: Page, expectedOption: string) {
   await expect(combobox).toContainText(expectedOption);
 }
 
+async function selectTila(page: Page, expectedOption: string) {
+  const combobox = page.getByRole('combobox', {
+    name: 'Tila',
+  });
+  await combobox.click();
+  const listbox = page.getByRole('listbox', {
+    name: 'Tila',
+  });
+  await listbox.getByRole('option', { name: expectedOption }).click();
+  await expect(combobox).toContainText(expectedOption);
+}
+
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
   await expect(page).toHaveTitle(/Valintojen Toteuttaminen/);
@@ -38,13 +50,10 @@ test('Haku-page accessibility', async ({ page }) => {
   await expectPageAccessibilityOk(page);
 });
 
-const getMyosArkistoidut = (page: Page) =>
-  page.getByRole('checkbox', { name: 'Myös arkistoidut' });
-
 const getTableRows = (loc: Page | Locator) => loc.locator('tbody tr');
 
 test('filters haku by published state', async ({ page }) => {
-  await expect(getMyosArkistoidut(page)).not.toBeChecked();
+  await selectTila(page, 'julkaistu');
   const tableRows = getTableRows(page);
   await expect(tableRows).toHaveCount(3);
   const hakuInput = await page.getByRole('textbox', { name: 'Hae hakuja' });
@@ -53,16 +62,21 @@ test('filters haku by published state', async ({ page }) => {
   await expect(tableRows).toContainText('Hausjärven lukio jatkuva haku');
 });
 
+test('Set tila filter to julkaistu by default', async ({ page }) => {
+  await expectUrlParamToEqual(page, 'tila', 'julkaistu');
+  await expect(page.getByRole('combobox', { name: 'Tila' })).toContainText(
+    'julkaistu',
+  );
+});
+
 test('filters haku by archived state', async ({ page }) => {
   const tableRows = getTableRows(page);
-  const myosArkistoidut = getMyosArkistoidut(page);
-  await myosArkistoidut.click();
+  await selectTila(page, 'arkistoitu');
 
-  await expect(myosArkistoidut).toBeChecked();
-  await expect(tableRows).toHaveCount(6);
+  await expect(tableRows).toHaveCount(3);
   const hakuInput = await page.getByRole('textbox', { name: 'Hae hakuja' });
   hakuInput.fill('hak');
-  await expect(tableRows).toHaveCount(5);
+  await expect(tableRows).toHaveCount(3);
   hakuInput.fill('Leppä');
   await expect(tableRows).toHaveCount(1);
   await expect(tableRows).toContainText('Leppävirran lukio - Jatkuva haku');

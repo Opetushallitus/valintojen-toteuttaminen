@@ -8,21 +8,19 @@ import {
   SelectChangeEvent,
   FormLabel,
   OutlinedInput,
-  Checkbox,
-  FormControlLabel,
   Box,
   InputAdornment,
 } from '@mui/material';
 
-import { getHakuAlkamisKaudet } from '../../lib/kouta-types';
+import { Tila, getHakuAlkamisKaudet } from '../../lib/kouta-types';
 import { Search } from '@mui/icons-material';
 import { useHakuSearchParams } from '../../hooks/useHakuSearch';
 import { useHakutavat } from '@/app/hooks/useHakutavat';
 
 export default function HakuControls() {
-  const alkamiskaudet = useMemo(getHakuAlkamisKaudet, []);
-
   const { data: hakutavat } = useHakutavat();
+
+  const alkamiskaudet = useMemo(getHakuAlkamisKaudet, []);
 
   const {
     searchPhrase,
@@ -31,16 +29,16 @@ export default function HakuControls() {
     setSelectedAlkamisKausi,
     selectedHakutapa,
     setSelectedHakutapa,
-    myosArkistoidut,
-    setMyosArkistoidut,
+    tila,
+    setTila,
   } = useHakuSearchParams();
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchPhrase(e.target.value);
   };
 
-  const toggleMyosArkistoidut = (_e: unknown, checked: boolean) => {
-    setMyosArkistoidut(checked);
+  const changeTila = (e: SelectChangeEvent) => {
+    setTila(e.target.value);
   };
 
   const changeHakutapa = (e: SelectChangeEvent) => {
@@ -59,39 +57,57 @@ export default function HakuControls() {
       gap={2}
       flexWrap="wrap"
     >
-      <FormControl
-        sx={{
-          flexGrow: 2,
-          minWidth: '180px',
-          textAlign: 'left',
-        }}
+      <Box
+        display="flex"
+        flexGrow={2}
+        flexDirection="column"
+        gap={1}
+        alignItems="stretch"
       >
-        <FormLabel htmlFor="haku-search">Hae hakuja</FormLabel>
-        <OutlinedInput
-          id="haku-search"
-          name="haku-search"
-          defaultValue={searchPhrase}
-          onChange={handleSearchChange}
-          autoFocus={true}
-          type="text"
-          placeholder="Hae hakuja"
-          endAdornment={
-            <InputAdornment position="end">
-              <Search />
-            </InputAdornment>
-          }
-        />
-        <FormControlLabel
-          label="Myös arkistoidut"
-          control={
-            <Checkbox
-              data-testid="haku-tila-toggle"
-              checked={myosArkistoidut ?? false}
-              onChange={toggleMyosArkistoidut}
-            />
-          }
-        />
-      </FormControl>
+        <FormControl
+          sx={{
+            minWidth: '180px',
+            textAlign: 'left',
+          }}
+        >
+          <FormLabel htmlFor="haku-search">Hae hakuja</FormLabel>
+          <OutlinedInput
+            id="haku-search"
+            name="haku-search"
+            defaultValue={searchPhrase}
+            onChange={handleSearchChange}
+            autoFocus={true}
+            type="text"
+            placeholder="Hae hakuja"
+            endAdornment={
+              <InputAdornment position="end">
+                <Search />
+              </InputAdornment>
+            }
+          />
+        </FormControl>
+        <FormControl
+          sx={{ width: '150px', textAlign: 'left', alignSelf: 'flex-start' }}
+        >
+          <FormLabel id="tila-select-label">Tila</FormLabel>
+          <Select
+            labelId="tila-select-label"
+            name="tila-select"
+            value={tila ?? ''}
+            onChange={changeTila}
+            displayEmpty={true}
+          >
+            <MenuItem value="">Valitse...</MenuItem>
+            {Object.values(Tila).map((tila) => {
+              return (
+                <MenuItem value={tila} key={tila}>
+                  {tila}
+                </MenuItem>
+              ); //TODO: translate
+            })}
+          </Select>
+        </FormControl>
+      </Box>
       <FormControl sx={{ minWidth: '180px', textAlign: 'left' }}>
         <FormLabel id="hakutapa-select-label">Hakutapa</FormLabel>
         <Select
