@@ -14,9 +14,7 @@ const cspHeader = `
     upgrade-insecure-requests;
 `;
 
-const isProd = process.env.NODE_ENV === 'production';
-
-const isStandalone = process.env.NEXT_OUTPUT_STANDALONE === 'true' ?? isProd;
+const isStandalone = process.env.STANDALONE === 'true';
 
 const basePath = '/valintojen-toteuttaminen';
 
