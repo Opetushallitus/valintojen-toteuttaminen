@@ -7,7 +7,7 @@ import {
 test('index accessibility', async ({ page }) => {
   await page.goto('/');
   await expectAllSpinnersHidden(page);
-  await page.locator('tr').nth(1).hover();
+  await page.locator('tbody tr').nth(1).hover();
   await expectPageAccessibilityOk(page);
 });
 

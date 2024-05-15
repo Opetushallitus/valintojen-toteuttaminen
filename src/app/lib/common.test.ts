@@ -1,9 +1,5 @@
 import { expect, test } from 'vitest';
-import {
-  getTranslation,
-  Language,
-  TranslatedName,
-} from '../../src/app/lib/common';
+import { getTranslation, Language, TranslatedName } from './common';
 
 const school: TranslatedName = { fi: 'koulu', en: 'a school', sv: 'en skola' };
 

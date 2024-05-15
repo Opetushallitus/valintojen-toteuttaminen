@@ -1,9 +1,6 @@
-'use server';
-import { getHakutavat } from './lib/koodisto';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { CSSProperties } from 'react';
-import HakuFilters from './components/haku-filters';
-import Header from './components/header';
+import Header from '../components/header';
+import { AccessTime as AccessTimeIcon } from '@mui/icons-material';
 
 const titleSectionStyle: CSSProperties = {
   borderBottom: '1px solid rgba(0, 0, 0, 0.15)',
@@ -15,9 +12,13 @@ const titleSectionStyle: CSSProperties = {
   padding: 0,
 };
 
-export default async function Home() {
-  const hakutavat = await getHakutavat();
-
+export default async function HakuListLayout({
+  children,
+  controls,
+}: {
+  children: React.ReactNode;
+  controls: React.ReactNode;
+}) {
   return (
     <>
       <Header isHome={true} />
@@ -27,7 +28,8 @@ export default async function Home() {
             <AccessTimeIcon /> Haut
           </h2>
         </div>
-        <HakuFilters hakutavat={hakutavat} />
+        {controls}
+        {children}
       </main>
     </>
   );

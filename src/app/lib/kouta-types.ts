@@ -6,6 +6,7 @@ export type HaunAlkaminen = {
   alkamisVuosi: number;
   alkamisKausiKoodiUri: string;
   alkamisKausiNimi: string;
+  value: string;
 };
 
 //TODO: localization
@@ -20,11 +21,13 @@ export const getHakuAlkamisKaudet = (): HaunAlkaminen[] => {
       alkamisVuosi: i,
       alkamisKausiKoodiUri: 'kausi_s',
       alkamisKausiNimi: 'SYKSY',
+      value: `${i}_syksy`,
     });
     alkamiset.push({
       alkamisVuosi: i,
       alkamisKausiKoodiUri: 'kausi_k',
       alkamisKausiNimi: 'KEVÄT',
+      value: `${i}_kevat`,
     });
   }
   return alkamiset;
@@ -50,6 +53,6 @@ export type Hakukohde = {
 };
 
 export enum Tila {
-  JULKAISTU,
-  ARKISTOITU,
+  JULKAISTU = 'julkaistu',
+  ARKISTOITU = 'arkistoitu',
 }

@@ -14,12 +14,15 @@ const cspHeader = `
     upgrade-insecure-requests;
 `;
 
-const isProd = process.env.NODE_ENV === 'production';
+const isStandalone = process.env.STANDALONE === 'true';
 
 const basePath = '/valintojen-toteuttaminen';
 
 const nextConfig = {
   basePath,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   async headers() {
     return [
       {
@@ -38,7 +41,7 @@ const nextConfig = {
     VIRKAILIJA_URL: process.env.VIRKAILIJA_URL,
     APP_URL: process.env.APP_URL,
   },
-  output: isProd ? 'standalone' : undefined,
+  output: isStandalone ? 'standalone' : undefined,
 };
 
 export default nextConfig;

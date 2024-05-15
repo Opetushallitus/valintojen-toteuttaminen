@@ -36,3 +36,16 @@ export class FetchError extends Error {
     this.response = response;
   }
 }
+
+export function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+export function isTranslatedName(value: unknown): value is TranslatedName {
+  return (
+    isObject(value) &&
+    (typeof value?.fi === 'string' ||
+      typeof value?.sv === 'string' ||
+      typeof value?.en === 'string')
+  );
+}

@@ -6,15 +6,19 @@ import ListTable, {
   makeHakutapaColumn,
   makeKoulutuksenAlkamiskausiColumn,
   makeTilaColumn,
-} from './table/list-table';
+} from '../components/table/list-table';
 import { Haku } from '../lib/kouta-types';
 
-export const HakuList = ({
+export const HakuTable = ({
   haut,
   hakutavat,
+  setSort,
+  sort,
 }: {
   haut: Haku[];
   hakutavat: Koodi[];
+  sort: string;
+  setSort: (sort: string) => void;
 }) => {
   const getMatchingHakutapa = (hakutapaKoodiUri: string) =>
     hakutavat.find((tapa: Koodi) => hakutapaKoodiUri.startsWith(tapa.koodiUri))
@@ -27,10 +31,12 @@ export const HakuList = ({
     makeKoulutuksenAlkamiskausiColumn(),
     makeCountColumn({
       title: 'Hakukohteet',
-      key: 'hakukohteet',
+      key: 'hakukohteita',
       amountProp: 'hakukohteita',
     }),
   ];
 
-  return <ListTable columns={columns} rows={haut} />;
+  return (
+    <ListTable columns={columns} rows={haut} sort={sort} setSort={setSort} />
+  );
 };
