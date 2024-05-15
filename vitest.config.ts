@@ -5,7 +5,8 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: 'jsdom',
-    dir: './tests/unit',
+    dir: './src',
+    include: ['**/**.test.?(c|m)[jt]s?(x)'],
     coverage: {
       provider: 'istanbul',
       include: ['src/**'],
