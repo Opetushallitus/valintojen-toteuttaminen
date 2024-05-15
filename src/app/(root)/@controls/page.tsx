@@ -13,9 +13,9 @@ import {
   CircularProgress,
 } from '@mui/material';
 
-import { Tila, getHakuAlkamisKaudet } from '../../lib/kouta-types';
+import { Tila, getHakuAlkamisKaudet } from '@/app/lib/kouta-types';
 import { Search } from '@mui/icons-material';
-import { useHakuSearchParams } from '../../hooks/useHakuSearch';
+import { useHakuSearchParams } from '@/app/hooks/useHakuSearch';
 import { useHakutavat } from '@/app/hooks/useHakutavat';
 
 const HakutapaSelect = ({
@@ -67,7 +67,7 @@ const HakutapaInput = ({
   onChange: (e: SelectChangeEvent) => void;
 }) => {
   return (
-    <FormControl sx={{ minWidth: '180px', textAlign: 'left' }}>
+    <FormControl sx={{ flex: '1 0 180px', textAlign: 'left' }}>
       <FormLabel id="hakutapa-select-label">Hakutapa</FormLabel>
       <Suspense fallback={<SelectFallback />}>
         <HakutapaSelect value={value} onChange={onChange} />
@@ -110,84 +110,91 @@ export default function HakuControls() {
     <Box
       display="flex"
       flexDirection="row"
-      justifyContent="space-between"
+      justifyContent="stretch"
       gap={2}
+      marginBottom={2}
       flexWrap="wrap"
+      alignItems="flex-end"
     >
+      <FormControl
+        sx={{
+          flexGrow: 4,
+          minWidth: '180px',
+          textAlign: 'left',
+        }}
+      >
+        <FormLabel htmlFor="haku-search">Hae hakuja</FormLabel>
+        <OutlinedInput
+          id="haku-search"
+          name="haku-search"
+          defaultValue={searchPhrase}
+          onChange={handleSearchChange}
+          autoFocus={true}
+          type="text"
+          placeholder="Hae hakuja"
+          endAdornment={
+            <InputAdornment position="end">
+              <Search />
+            </InputAdornment>
+          }
+        />
+      </FormControl>
+      <FormControl
+        sx={{
+          width: 'auto',
+          minWidth: '140px',
+          textAlign: 'left',
+        }}
+      >
+        <FormLabel id="tila-select-label">Tila</FormLabel>
+        <Select
+          labelId="tila-select-label"
+          name="tila-select"
+          value={tila ?? ''}
+          onChange={changeTila}
+          displayEmpty={true}
+        >
+          <MenuItem value="">Valitse...</MenuItem>
+          {Object.values(Tila).map((tila) => {
+            return (
+              <MenuItem value={tila} key={tila}>
+                {tila}
+              </MenuItem>
+            ); //TODO: translate
+          })}
+        </Select>
+      </FormControl>
       <Box
         display="flex"
-        flexGrow={2}
-        flexDirection="column"
-        gap={1}
-        alignItems="stretch"
+        justifyContent="stretch"
+        gap={2}
+        flex="1 0 400px"
+        alignItems="flex-end"
       >
-        <FormControl
-          sx={{
-            minWidth: '180px',
-            textAlign: 'left',
-          }}
-        >
-          <FormLabel htmlFor="haku-search">Hae hakuja</FormLabel>
-          <OutlinedInput
-            id="haku-search"
-            name="haku-search"
-            defaultValue={searchPhrase}
-            onChange={handleSearchChange}
-            autoFocus={true}
-            type="text"
-            placeholder="Hae hakuja"
-            endAdornment={
-              <InputAdornment position="end">
-                <Search />
-              </InputAdornment>
-            }
-          />
-        </FormControl>
-        <FormControl
-          sx={{ width: '150px', textAlign: 'left', alignSelf: 'flex-start' }}
-        >
-          <FormLabel id="tila-select-label">Tila</FormLabel>
+        <HakutapaInput value={selectedHakutapa} onChange={changeHakutapa} />
+        <FormControl sx={{ textAlign: 'left', flex: '1 0 180px' }}>
+          <FormLabel id="alkamiskausi-select-label">
+            Koulutuksen alkamiskausi
+          </FormLabel>
           <Select
-            labelId="tila-select-label"
-            name="tila-select"
-            value={tila ?? ''}
-            onChange={changeTila}
+            labelId="alkamiskausi-select-label"
+            name="alkamiskausi-select"
+            value={selectedAlkamisKausi ?? ''}
+            onChange={changeAlkamisKausi}
             displayEmpty={true}
           >
             <MenuItem value="">Valitse...</MenuItem>
-            {Object.values(Tila).map((tila) => {
+            {alkamiskaudet.map((kausi) => {
+              const vuosiKausi = `${kausi.alkamisVuosi} ${kausi.alkamisKausiNimi}`;
               return (
-                <MenuItem value={tila} key={tila}>
-                  {tila}
+                <MenuItem value={kausi.value} key={kausi.value}>
+                  {vuosiKausi}
                 </MenuItem>
               ); //TODO: translate
             })}
           </Select>
         </FormControl>
       </Box>
-      <HakutapaInput value={selectedHakutapa} onChange={changeHakutapa} />
-      <FormControl sx={{ minWidth: '180px', textAlign: 'left' }}>
-        <FormLabel id="alkamiskausi-select-label">
-          Koulutuksen alkamiskausi
-        </FormLabel>
-        <Select
-          labelId="alkamiskausi-select-label"
-          name="alkamiskausi-select"
-          value={selectedAlkamisKausi ?? ''}
-          onChange={changeAlkamisKausi}
-          displayEmpty={true}
-        >
-          <MenuItem value="">Valitse...</MenuItem>
-          {alkamiskaudet.map((kausi) => {
-            const vuosiKausi = `${kausi.alkamisVuosi} ${kausi.alkamisKausiNimi}`;
-            return (
-              <MenuItem value={kausi.value} key={kausi.value}>
-                {vuosiKausi}
-              </MenuItem>
-            ); //TODO: translate
-          })}
-        </Select>
-      </FormControl>
     </Box>
   );
 }
