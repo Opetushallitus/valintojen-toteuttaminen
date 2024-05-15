@@ -6,7 +6,7 @@ import ListTable, {
   makeHakutapaColumn,
   makeKoulutuksenAlkamiskausiColumn,
   makeTilaColumn,
-} from './table/list-table';
+} from '../components/table/list-table';
 import { Haku } from '../lib/kouta-types';
 
 export const HakuTable = ({

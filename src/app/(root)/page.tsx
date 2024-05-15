@@ -1,10 +1,10 @@
 'use client';
 import React from 'react';
 
-import { HakuTable } from '@/app/components/haku-table';
 import { useHakutavat } from '@/app/hooks/useHakutavat';
 import { useHakuSearchResults } from '@/app/hooks/useHakuSearch';
-import { HakuTablePaginationWrapper } from '../components/haku-table-pagination-wrapper';
+import { HakuTablePaginationWrapper } from './haku-table-pagination-wrapper';
+import { HakuTable } from './haku-table';
 
 export const dynamic = 'force-dynamic';
 

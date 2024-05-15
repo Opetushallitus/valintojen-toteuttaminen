@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { getSortParts } from './getSortParts';
+import { getSortParts } from './table-utils';
 
 const EMPTY_RESULT = {
   orderBy: undefined,

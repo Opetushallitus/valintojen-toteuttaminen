@@ -6,19 +6,18 @@ import {
   Tila,
   getHakuAlkamisKaudet,
 } from '../lib/kouta-types';
-import {
-  DEFAULT_PAGE_SIZE,
-  Language,
-  byProp,
-  getTranslation,
-} from '../lib/common';
+import { Language, getTranslation } from '../lib/common';
 import { useDebounce } from '@/app/hooks/useDebounce';
 import { parseAsInteger, useQueryState } from 'nuqs';
 import { useHasChanged } from '@/app/hooks/useHasChanged';
-import { getSortParts } from '../components/table/getSortParts';
+import { byProp, getSortParts } from '../components/table/table-utils';
 import { getHaut } from '../lib/kouta';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { useHakutavat } from './useHakutavat';
+import {
+  DEFAULT_PAGE_SIZE,
+  HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
+} from '@/app/lib/constants';
 
 const DEFAULT_NUQS_OPTIONS = {
   history: 'push',
@@ -66,7 +65,10 @@ export const useHakuSearchParams = () => {
     DEFAULT_NUQS_OPTIONS,
   );
 
-  const setSearchDebounce = useDebounce(setSearchPhrase, 500);
+  const setSearchDebounce = useDebounce(
+    setSearchPhrase,
+    HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
+  );
 
   const [tila, setTila] = useQueryState('tila', {
     history: 'push',

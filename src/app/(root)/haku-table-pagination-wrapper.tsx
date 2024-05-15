@@ -10,7 +10,7 @@ import {
   styled,
   Pagination,
 } from '@mui/material';
-import { DEFAULT_PAGE_SIZE, PAGE_SIZES } from '@/app/lib/common';
+import { DEFAULT_PAGE_SIZE, PAGE_SIZES } from '@/app/lib/constants';
 
 export const StyledPagination = styled(Pagination)({
   display: 'flex',

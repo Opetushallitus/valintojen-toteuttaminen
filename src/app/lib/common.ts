@@ -37,11 +37,11 @@ export class FetchError extends Error {
   }
 }
 
-function isObject(value: unknown): value is Record<string, unknown> {
+export function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
 }
 
-function isTranslatedName(value: unknown): value is TranslatedName {
+export function isTranslatedName(value: unknown): value is TranslatedName {
   return (
     isObject(value) &&
     (typeof value?.fi === 'string' ||
@@ -49,26 +49,3 @@ function isTranslatedName(value: unknown): value is TranslatedName {
       typeof value?.en === 'string')
   );
 }
-
-export const byProp = <
-  T extends Record<string, string | number | TranslatedName | undefined>,
->(
-  key: string,
-  direction: 'asc' | 'desc' = 'asc',
-  lng: Language,
-) => {
-  const asc = direction === 'asc';
-  return (a: T, b: T) => {
-    const aKey = a[key] ?? '';
-    const aProp = isTranslatedName(aKey) ? getTranslation(aKey, lng) : aKey;
-
-    const bKey = b[key] ?? '';
-    const bProp = isTranslatedName(bKey) ? getTranslation(bKey, lng) : bKey;
-
-    return aProp > bProp ? (asc ? 1 : -1) : bProp > aProp ? (asc ? -1 : 1) : 0;
-  };
-};
-
-export const PAGE_SIZES = [10, 20, 30, 50, 100];
-
-export const DEFAULT_PAGE_SIZE = 30;

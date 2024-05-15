@@ -14,7 +14,7 @@ import { TranslatedName, getTranslation } from '@/app/lib/common';
 import { Haku, getAlkamisKausi, Tila } from '@/app/lib/kouta-types';
 import { colors } from '@/app/theme';
 import { ExpandLess, ExpandMore, UnfoldMore } from '@mui/icons-material';
-import { getSortParts } from './getSortParts';
+import { getSortParts } from './table-utils';
 
 type Column<P> = {
   title?: string;
