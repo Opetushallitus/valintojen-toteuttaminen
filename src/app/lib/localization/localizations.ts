@@ -3,7 +3,6 @@
 import HttpBackend from 'i18next-http-backend';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import { getTranslations } from './translations';
 
 export const createLocalization = () => {
   i18n
@@ -12,14 +11,15 @@ export const createLocalization = () => {
     .init({
       debug: true,
       fallbackLng: 'fi',
-      preload: ['fi', 'sv', 'en'],
+      //preload: ['fi', 'sv', 'en'],
       lng: 'fi',
       backend: {
         loadPath: '{{lng}}',
         request: (options, url, payload, callback) => {
-          getTranslations(url)
-            .then((data) => {
-              callback(null, { status: 200, data });
+          fetch(`/valintojen-toteuttaminen/lokalisaatio?lng=${url}`)
+            .then(async (response) => {
+              const translations = await response.json();
+              callback(null, { status: 200, data: translations });
             })
             .catch(() => callback({ status: 404 }));
         },
