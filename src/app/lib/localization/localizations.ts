@@ -11,7 +11,7 @@ export const createLocalization = () => {
     .init({
       debug: true,
       fallbackLng: 'fi',
-      //preload: ['fi', 'sv', 'en'],
+      preload: ['fi', 'sv', 'en'],
       lng: 'fi',
       backend: {
         loadPath: '{{lng}}',
