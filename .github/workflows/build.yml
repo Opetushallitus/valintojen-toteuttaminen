@@ -87,5 +87,5 @@ jobs:
           bucket: ${{ secrets.BUCKET_NAME }}
         run: |
           npm run build
-          zip -r ga-${{github.run_number}}.zip .next/standalone
+          zip -r ga-${{github.run_number}}.zip .next
           aws s3 cp ga-${{github.run_number}}.zip s3://"$bucket"/ga-${{github.run_number}}.zip
