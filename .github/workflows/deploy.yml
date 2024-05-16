@@ -33,7 +33,7 @@ jobs:
         if: ${{ inputs.environment == 'hahtuva' || inputs.environment == 'untuva' || inputs.environment == 'pallero' }}
         uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
         with:
-          role-to-assume: ${{ secrets.AWS_OPINTOPOLKU_DEV_ROLE_ARN }}
+          role-to-assume: ${{ secrets.AWS_OPH_UTILITY_ROLE_ARN }}
           role-session-name: valintojen-toteuttaminen-deploy
           aws-region: eu-west-1
       - name: Download build from s3
@@ -45,4 +45,4 @@ jobs:
       - name: Deploy Next.js app
         run: |
           cd cdk
-          cdk deploy LoadtestStack --require-approval never -c "environment=${{ inputs.environment }}"
+          cdk deploy SovellusStack --require-approval never -c "environment=${{ inputs.environment }}"
