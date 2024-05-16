@@ -1,9 +1,11 @@
 import {
   Language,
   TranslatedName,
-  getTranslation,
+} from '@/app/lib/localization/localization-types';
+import {
   isTranslatedName,
-} from '@/app/lib/common';
+  translateName,
+} from '@/app/lib/localization/translation-utils';
 
 export const byProp = <
   T extends Record<string, string | number | TranslatedName | undefined>,
@@ -15,10 +17,10 @@ export const byProp = <
   const asc = direction === 'asc';
   return (a: T, b: T) => {
     const aKey = a[key] ?? '';
-    const aProp = isTranslatedName(aKey) ? getTranslation(aKey, lng) : aKey;
+    const aProp = isTranslatedName(aKey) ? translateName(aKey, lng) : aKey;
 
     const bKey = b[key] ?? '';
-    const bProp = isTranslatedName(bKey) ? getTranslation(bKey, lng) : bKey;
+    const bProp = isTranslatedName(bKey) ? translateName(bKey, lng) : bKey;
 
     return aProp > bProp ? (asc ? 1 : -1) : bProp > aProp ? (asc ? -1 : 1) : 0;
   };

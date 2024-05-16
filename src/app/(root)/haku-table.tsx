@@ -8,6 +8,7 @@ import ListTable, {
   makeTilaColumn,
 } from '../components/table/list-table';
 import { Haku } from '../lib/kouta-types';
+import { useUserLanguage } from '../hooks/useAsiointiKieli';
 
 export const HakuTable = ({
   haut,
@@ -24,8 +25,10 @@ export const HakuTable = ({
     hakutavat.find((tapa: Koodi) => hakutapaKoodiUri.startsWith(tapa.koodiUri))
       ?.nimi.fi;
 
+  const userLanguage = useUserLanguage();
+
   const columns = [
-    makeHakuColumn(),
+    makeHakuColumn(userLanguage),
     makeTilaColumn(),
     makeHakutapaColumn(getMatchingHakutapa),
     makeKoulutuksenAlkamiskausiColumn(),

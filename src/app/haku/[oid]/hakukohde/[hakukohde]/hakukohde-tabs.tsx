@@ -1,12 +1,13 @@
 'use client';
 
-import { getTranslation } from '@/app/lib/common';
 import { styled } from '@mui/material';
 import { useState } from 'react';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getHakukohde } from '@/app/lib/kouta';
 import { usePathname } from 'next/navigation';
 import { Link as MuiLink } from '@mui/material';
+import { useUserLanguage } from '@/app/hooks/useAsiointiKieli';
+import { translateName } from '@/app/lib/localization/translation-utils';
 
 const StyledContainer = styled('div')({
   padding: '0.5rem 1.5rem 0',
@@ -64,6 +65,7 @@ export const HakukohdeTabs = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
   const [activeTab, setActiveTab] = useState<BasicTab>(
     getPathMatchingTab(pathName),
   );
+  const userLanguage = useUserLanguage();
 
   const { data: hakukohde } = useSuspenseQuery({
     queryKey: ['getHakukohde', hakukohdeOid],
@@ -79,11 +81,14 @@ export const HakukohdeTabs = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
       <StyledHeader>
         <h2>
           <span className="organisaatioLabel">
-            {getTranslation(hakukohde.jarjestyspaikkaHierarkiaNimi)}
+            {translateName(
+              hakukohde.jarjestyspaikkaHierarkiaNimi,
+              userLanguage,
+            )}
           </span>
           <br />
           <span className="hakukohdeLabel">
-            {getTranslation(hakukohde.nimi)}
+            {translateName(hakukohde.nimi, userLanguage)}
           </span>
         </h2>
       </StyledHeader>

@@ -3,7 +3,7 @@
 import HttpBackend from 'i18next-http-backend';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import { getTranslations } from './localization';
+import { getTranslations } from './translations';
 
 export const createLocalization = () => {
   i18n

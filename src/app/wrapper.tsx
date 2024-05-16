@@ -2,7 +2,7 @@
 import { I18nextProvider } from 'react-i18next';
 import { FullSpinner } from './components/full-spinner';
 import { useAsiointiKieli } from './hooks/useAsiointiKieli';
-import { createLocalization } from './lib/translations';
+import { createLocalization } from './lib/localization/localizations';
 
 const localization = createLocalization();
 

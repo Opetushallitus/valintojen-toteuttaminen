@@ -1,8 +1,9 @@
 'use client';
 
-import { getTranslation } from '@/app/lib/common';
+import { useUserLanguage } from '@/app/hooks/useAsiointiKieli';
 import { getHakukohteet } from '@/app/lib/kouta';
 import { Hakukohde } from '@/app/lib/kouta-types';
+import { translateName } from '@/app/lib/localization/translation-utils';
 import { styled } from '@mui/material';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
@@ -27,6 +28,7 @@ const StyledItem = styled('div')({
 
 export const HakukohdeList = ({ oid }: { oid: string }) => {
   const router = useRouter();
+  const userLanguage = useUserLanguage();
 
   const selectHakukohde = (hakukohde: Hakukohde) => {
     router.push(`/haku/${oid}/hakukohde/${hakukohde.oid}/perustiedot`);
@@ -42,9 +44,9 @@ export const HakukohdeList = ({ oid }: { oid: string }) => {
       {hakukohteet.map((hk: Hakukohde) => (
         <StyledItem key={hk.oid} onClick={() => selectHakukohde(hk)}>
           <p title={hk.organisaatioOid} className="organizationLabel">
-            {getTranslation(hk.jarjestyspaikkaHierarkiaNimi)}
+            {translateName(hk.jarjestyspaikkaHierarkiaNimi, userLanguage)}
           </p>
-          <p title={hk.oid}>{getTranslation(hk.nimi)}</p>
+          <p title={hk.oid}>{translateName(hk.nimi, userLanguage)}</p>
         </StyledItem>
       ))}
     </StyledList>

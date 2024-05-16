@@ -10,11 +10,15 @@ import {
   TableRow,
   styled,
 } from '@mui/material';
-import { TranslatedName, getTranslation } from '@/app/lib/common';
 import { Haku, getAlkamisKausi, Tila } from '@/app/lib/kouta-types';
 import { colors } from '@/app/theme';
 import { ExpandLess, ExpandMore, UnfoldMore } from '@mui/icons-material';
 import { getSortParts } from './table-utils';
+import { translateName } from '@/app/lib/localization/translation-utils';
+import {
+  Language,
+  TranslatedName,
+} from '@/app/lib/localization/localization-types';
 
 type Column<P> = {
   title?: string;
@@ -29,12 +33,14 @@ type KeysMatching<O, T> = {
   [K in keyof O]: O[K] extends T ? K : never;
 }[keyof O & string];
 
-export const makeHakuColumn = <T extends Entity = Entity>(): Column<T> => ({
+export const makeHakuColumn = <T extends Entity = Entity>(
+  userLanguage: Language,
+): Column<T> => ({
   title: 'Nimi',
   key: 'nimi',
   render: (haku) => (
     <MuiLink href={`/haku/${haku.oid}`} sx={{ textDecoration: 'none' }}>
-      {getTranslation(haku.nimi)}
+      {translateName(haku.nimi, userLanguage)}
     </MuiLink>
   ),
   style: {

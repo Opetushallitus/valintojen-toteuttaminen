@@ -1,7 +1,8 @@
 'use client';
 import Header from '@/app/components/header';
-import { getTranslation } from '@/app/lib/common';
+import { useUserLanguage } from '@/app/hooks/useAsiointiKieli';
 import { getHaku } from '@/app/lib/kouta';
+import { translateName } from '@/app/lib/localization/translation-utils';
 import { useSuspenseQuery } from '@tanstack/react-query';
 
 export default function HeaderPage({ params }: { params: { oid: string } }) {
@@ -10,5 +11,7 @@ export default function HeaderPage({ params }: { params: { oid: string } }) {
     queryFn: () => getHaku(params.oid),
   });
 
-  return <Header title={getTranslation(hakuNimi)} />;
+  const userLanguage = useUserLanguage();
+
+  return <Header title={translateName(hakuNimi, userLanguage)} />;
 }

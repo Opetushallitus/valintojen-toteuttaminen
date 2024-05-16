@@ -1,8 +1,8 @@
 'use server';
 
-import { configuration } from './configuration';
-import { client } from './http-client';
-import { Language } from './common';
+import { configuration } from '../configuration';
+import { client } from '../http-client';
+import { Language } from './localization-types';
 
 export const getTranslations = async (lng: Language) => {
   const translations = {};
