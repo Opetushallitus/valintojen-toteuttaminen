@@ -28,10 +28,13 @@
     "@tanstack/react-query": "^5.29.2",
     "@tanstack/react-query-devtools": "^5.29.2",
     "cookie": "^0.6.0",
+    "i18next": "^23.11.4",
+    "i18next-http-backend": "^2.5.1",
     "next": "^14.2.2",
     "nuqs": "^1.17.2",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "react-i18next": "^14.1.1"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.9.0",

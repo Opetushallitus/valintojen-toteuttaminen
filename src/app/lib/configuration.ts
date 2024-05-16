@@ -15,6 +15,7 @@ interface Configuration {
   kooditUrl: string;
   koutaInternalLogin: string;
   asiointiKieliUrl: string;
+  lokalisaatioUrl: string;
 }
 
 export const configuration: Configuration = {
@@ -27,4 +28,5 @@ export const configuration: Configuration = {
   kooditUrl: `${DOMAIN}/koodisto-service/rest/codeelement/codes/`,
   koutaInternalLogin: `${DOMAIN}/kouta-internal/auth/login`,
   asiointiKieliUrl: `${DOMAIN}/oppijanumerorekisteri-service/henkilo/current/asiointiKieli`,
+  lokalisaatioUrl: `${DOMAIN}/lokalisointi/cxf/rest/v1/localisation?category=valintojen-toteuttaminen&locale=`,
 };
