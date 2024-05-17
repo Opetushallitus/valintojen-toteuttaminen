@@ -28,6 +28,7 @@ jobs:
           npm ci
           cd cdk
           npm ci
+          npm install -g aws-cdk
       - name: Configure AWS credentials
         if: ${{ inputs.environment == 'hahtuva' || inputs.environment == 'untuva' || inputs.environment == 'pallero' }}
         uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
@@ -36,10 +37,12 @@ jobs:
           role-session-name: valintojen-toteuttaminen-deploy
           aws-region: eu-west-1
       - name: Download build from s3
+        env:
+          bucket: ${{ secrets.BUCKET_NAME }}
         run: |
-          aws s3 cp s3://${{secrets.BUCKET_NAME}}//GA-${{inputs.build-number}} build.zip
+          aws s3 cp --no-progress s3://"$bucket"/ga-${{inputs.build-number}}.zip build.zip
           unzip build.zip
       - name: Deploy Next.js app
         run: |
           cd cdk
-          ./deploy.sh ${{ inputs.environment }}untuva deploy
+          cdk deploy SovellusStack --require-approval never -c "environment=${{ inputs.environment }}"
