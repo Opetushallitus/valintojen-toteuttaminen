@@ -40,7 +40,7 @@ jobs:
         env:
           bucket: ${{ secrets.BUCKET_NAME }}
         run: |
-          aws s3 cp s3://"$bucket"/ga-${{inputs.build-number}}.zip build.zip
+          aws s3 cp --no-progress s3://"$bucket"/ga-${{inputs.build-number}}.zip build.zip
           unzip build.zip
       - name: Deploy Next.js app
         run: |
