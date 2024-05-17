@@ -13,7 +13,8 @@ async function getKoodit(koodisto: string): Promise<Koodi[]> {
     metadata: [{ nimi: string; kieli: string }],
   ): string => {
     const matchingData = metadata.find(
-      (m: { nimi: string; kieli: string }) => m.kieli === language,
+      (m: { nimi: string; kieli: string }) =>
+        m.kieli.toLowerCase() === language,
     );
     return matchingData ? matchingData.nimi : '';
   };

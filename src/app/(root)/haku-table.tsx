@@ -9,6 +9,8 @@ import ListTable, {
 } from '../components/table/list-table';
 import { Haku } from '../lib/kouta-types';
 import { useUserLanguage } from '../hooks/useAsiointiKieli';
+import { Language } from '../lib/localization/localization-types';
+import { translateName } from '../lib/localization/translation-utils';
 
 export const HakuTable = ({
   haut,
@@ -21,16 +23,20 @@ export const HakuTable = ({
   sort: string;
   setSort: (sort: string) => void;
 }) => {
-  const getMatchingHakutapa = (hakutapaKoodiUri: string) =>
-    hakutavat.find((tapa: Koodi) => hakutapaKoodiUri.startsWith(tapa.koodiUri))
-      ?.nimi.fi;
+  const getMatchingHakutapa =
+    (userLanguage: Language) => (hakutapaKoodiUri: string) => {
+      const matching = hakutavat.find((tapa: Koodi) =>
+        hakutapaKoodiUri.startsWith(tapa.koodiUri),
+      );
+      return matching ? translateName(matching.nimi, userLanguage) : undefined;
+    };
 
   const userLanguage = useUserLanguage();
 
   const columns = [
     makeHakuColumn(userLanguage),
     makeTilaColumn(),
-    makeHakutapaColumn(getMatchingHakutapa),
+    makeHakutapaColumn(getMatchingHakutapa(userLanguage)),
     makeKoulutuksenAlkamiskausiColumn(),
     makeCountColumn({
       title: 'Hakukohteet',
