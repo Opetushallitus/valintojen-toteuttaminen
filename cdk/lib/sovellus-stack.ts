@@ -121,15 +121,10 @@ export class SovellusStack extends cdk.Stack {
       },
     );
 
-    const certificate = new acm.DnsValidatedCertificate(
-      this,
-      'SiteCertificate',
-      {
-        domainName: `valintojen-toteuttaminen.${publicHostedZones[props.environmentName]}`,
-        hostedZone: zone,
-        region: 'us-east-1', // Cloudfront only checks this region for certificates.
-      },
-    );
+    const certificate = new acm.Certificate(this, 'SiteCertificate', {
+      domainName: `valintojen-toteuttaminen.${publicHostedZones[props.environmentName]}`,
+      validation: acm.CertificateValidation.fromDns(zone),
+    });
 
     const noCachePolicy = new cloudfront.CachePolicy(
       this,
