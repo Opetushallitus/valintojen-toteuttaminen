@@ -9,7 +9,7 @@
     "published": "Julkaistu",
     "archived": "Arkistoitu",
     "noresults": "Ei hakutuloksia",
-    "perpage": "Näytä per sivu"
+    "perpage": "Näytä per sivu:"
   },
   "error": {
     "server": "Palvelinpyyntö epäonnistui!",

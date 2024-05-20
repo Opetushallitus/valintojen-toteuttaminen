@@ -1,0 +1,14 @@
+{
+  "title": "Valintojen Toteuttaminen",
+  "common": {
+    "name": "Name",
+    "status": "State",
+    "choose": "Select...",
+    "spring": "Spring",
+    "autumn": "Autumn",
+    "published": "Published",
+    "archived": "Archived",
+    "noresults": "No results",
+    "perpage": "Show per page:"
+  }
+}
