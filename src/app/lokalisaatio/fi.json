@@ -2,7 +2,14 @@
   "title": "Valintojen Toteuttaminen",
   "common": {
     "name": "Nimi",
-    "status": "Tila"
+    "status": "Tila",
+    "choose": "Valitse...",
+    "spring": "Kevät",
+    "autumn": "Syksy",
+    "published": "Julkaistu",
+    "archived": "Arkistoitu",
+    "noresults": "Ei hakutuloksia",
+    "perpage": "Näytä per sivu"
   },
   "error": {
     "server": "Palvelinpyyntö epäonnistui!",
@@ -11,9 +18,12 @@
     "unknown": "Jokin meni vikaan"
   },
   "haku": {
+    "title": "Haut",
     "hakutapa": "Hakutapa",
     "alkamiskausi": "Koulutuksen alkamiskausi",
-    "hakukohteet": "Hakukohteet"
+    "hakukohteet": "Hakukohteet",
+    "search": "Hae hakuja",
+    "amount": "Hakuja:"
   },
   "hakukohde": {
     "valitse": "Valitse hakukohde",

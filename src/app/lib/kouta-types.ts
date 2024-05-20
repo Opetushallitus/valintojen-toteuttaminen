@@ -9,9 +9,10 @@ export type HaunAlkaminen = {
   value: string;
 };
 
-//TODO: localization
 export const getAlkamisKausi = (alkamisKausiKoodiUri: string) =>
-  alkamisKausiKoodiUri.startsWith('kausi_s') ? 'SYKSY' : 'KEVÄT';
+  alkamisKausiKoodiUri.startsWith('kausi_s')
+    ? 'common.autumn'
+    : 'common.spring';
 
 export const getHakuAlkamisKaudet = (): HaunAlkaminen[] => {
   const nowYear = new Date().getFullYear();
@@ -20,20 +21,19 @@ export const getHakuAlkamisKaudet = (): HaunAlkaminen[] => {
     alkamiset.push({
       alkamisVuosi: i,
       alkamisKausiKoodiUri: 'kausi_s',
-      alkamisKausiNimi: 'SYKSY',
+      alkamisKausiNimi: 'common.autumn',
       value: `${i}_syksy`,
     });
     alkamiset.push({
       alkamisVuosi: i,
       alkamisKausiKoodiUri: 'kausi_k',
-      alkamisKausiNimi: 'KEVÄT',
+      alkamisKausiNimi: 'common.spring',
       value: `${i}_kevat`,
     });
   }
   return alkamiset;
 };
 
-//TODO: check whether any values are optional
 export type Haku = {
   oid: string;
   nimi: TranslatedName;
@@ -53,6 +53,6 @@ export type Hakukohde = {
 };
 
 export enum Tila {
-  JULKAISTU = 'julkaistu',
-  ARKISTOITU = 'arkistoitu',
+  JULKAISTU = 'common.published',
+  ARKISTOITU = 'common.archived',
 }
