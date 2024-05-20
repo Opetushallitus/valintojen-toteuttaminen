@@ -1,4 +1,4 @@
-import { TranslatedName } from './common';
+import { TranslatedName } from './localization/localization-types';
 
 const STARTING_YEAR = 2019; // check earliest kouta haku
 

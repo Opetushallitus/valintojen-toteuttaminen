@@ -39,7 +39,7 @@ export const HakuTable = ({
     makeHakutapaColumn(getMatchingHakutapa(userLanguage)),
     makeKoulutuksenAlkamiskausiColumn(),
     makeCountColumn({
-      title: 'Hakukohteet',
+      title: 'haku.hakukohteet',
       key: 'hakukohteita',
       amountProp: 'hakukohteita',
     }),

@@ -1,0 +1,49 @@
+{
+  "title": "Valintojen Toteuttaminen",
+  "common": {
+    "name": "Nimi",
+    "status": "Tila"
+  },
+  "error": {
+    "server": "Palvelinpyyntö epäonnistui!",
+    "code": "Virhekoodi: ",
+    "retry": "Yritä uudelleen",
+    "unknown": "Jokin meni vikaan"
+  },
+  "haku": {
+    "hakutapa": "Hakutapa",
+    "alkamiskausi": "Koulutuksen alkamiskausi",
+    "hakukohteet": "Hakukohteet"
+  },
+  "hakukohde": {
+    "valitse": "Valitse hakukohde",
+    "oid": "Hakukohde oid: "
+  },
+  "perustiedot": {
+    "title": "Perustiedot"
+  },
+  "hakeneet": {
+    "title": "Hakeneet"
+  },
+  "valinnanhallinta": {
+    "title": "Valinnan hallinta"
+  },
+  "koekutsut": {
+    "title": "Valintakoekutsut"
+  },
+  "pistesyotto": {
+    "title": "Pistesyöttö"
+  },
+  "harkinnanvaraiset": {
+    "title": "Harkinnanvaraiset"
+  },
+  "hakijaryhmat": {
+    "title": "Hakijaryhmät"
+  },
+  "valintalaskennantulos": {
+    "title": "Valintalaskennan tulos"
+  },
+  "sijoitteluntulokset": {
+    "title": "Sijoittelun tulokset"
+  }
+}

@@ -1,9 +1,9 @@
 'use client';
 
 import { configuration } from './configuration';
-import { TranslatedName } from './common';
 import { Haku, Hakukohde, Tila } from './kouta-types';
 import { client } from './http-client';
+import { TranslatedName } from './localization/localization-types';
 
 export async function getHaut() {
   const response = await client.get(configuration.hautUrl);

@@ -9,7 +9,7 @@ export async function GET(request: Request) {
     next: { revalidate: REVALIDATE_TIME_SECONDS },
   });
   const data = await res.json();
-  const translations = {};
+  const translations: Record<string, string> = {};
   for (const translation of data) {
     translations[translation.key] = translation.value;
   }

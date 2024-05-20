@@ -44,15 +44,15 @@ export type BasicTab = {
 };
 
 const TABS: BasicTab[] = [
-  { title: 'Perustiedot', route: 'perustiedot' },
-  { title: 'Hakeneet', route: 'hakeneet' },
-  { title: 'Valinnan hallinta', route: 'valinnan-hallinta' },
-  { title: 'Valintakoekutsut', route: 'valintakoekutsut' },
-  { title: 'Pistesyöttö', route: 'pistesyotto' },
-  { title: 'Harkinnanvaraiset', route: 'harkinnanvaraiset' },
-  { title: 'Hakijaryhmät', route: 'hakijaryhmat' },
-  { title: 'Valintalaskennan tulos', route: 'valintalaskennan-tulos' },
-  { title: 'Sijoittelun tulokset', route: 'sijoittelun-tulokset' },
+  { title: 'perustiedot.title', route: 'perustiedot' },
+  { title: 'hakeneet.title', route: 'hakeneet' },
+  { title: 'valinnanhallinta.title', route: 'valinnan-hallinta' },
+  { title: 'koekutsut.title', route: 'valintakoekutsut' },
+  { title: 'pistesyotto.title', route: 'pistesyotto' },
+  { title: 'harkinnanvaraiset.title', route: 'harkinnanvaraiset' },
+  { title: 'hakijaryhmat.title', route: 'hakijaryhmat' },
+  { title: 'valintalaskennantulos.title', route: 'valintalaskennan-tulos' },
+  { title: 'sijoitteluntulokset.title', route: 'sijoittelun-tulokset' },
 ] as const;
 
 function getPathMatchingTab(pathName: string) {

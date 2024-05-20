@@ -19,6 +19,7 @@ import {
   Language,
   TranslatedName,
 } from '@/app/lib/localization/localization-types';
+import { useTranslation } from 'react-i18next';
 
 type Column<P> = {
   title?: string;
@@ -36,7 +37,7 @@ type KeysMatching<O, T> = {
 export const makeHakuColumn = <T extends Entity = Entity>(
   userLanguage: Language,
 ): Column<T> => ({
-  title: 'Nimi',
+  title: 'common.name',
   key: 'nimi',
   render: (haku) => (
     <MuiLink href={`/haku/${haku.oid}`} sx={{ textDecoration: 'none' }}>
@@ -64,7 +65,7 @@ export const makeCountColumn = ({
 });
 
 export const makeTilaColumn = <T extends Entity = Entity>(): Column<T> => ({
-  title: 'Tila',
+  title: 'common.status',
   key: 'tila',
   render: (haku) => <span>{haku.tila}</span>,
   style: {
@@ -75,13 +76,13 @@ export const makeTilaColumn = <T extends Entity = Entity>(): Column<T> => ({
 export const makeHakutapaColumn = (
   getMatchingHakutapa: (koodiUri: string) => string | undefined,
 ): Column<Haku> => ({
-  title: 'Hakutapa',
+  title: 'haku.hakutapa',
   key: 'hakutapaNimi',
   render: (haku) => <span>{getMatchingHakutapa(haku.hakutapaKoodiUri)}</span>,
 });
 
 export const makeKoulutuksenAlkamiskausiColumn = (): Column<Haku> => ({
-  title: 'Koulutuksen alkamiskausi',
+  title: 'haku.alkamiskausi',
   key: 'alkamiskausiNimi',
   render: (haku) => (
     <span>
@@ -187,6 +188,8 @@ export const ListTable = <T extends Entity>({
   setSort,
   ...props
 }: ListTableProps<T>) => {
+  const { t } = useTranslation();
+
   return (
     <StyledTable {...props}>
       <TableHead>
@@ -197,7 +200,7 @@ export const ListTable = <T extends Entity>({
               <HeaderCell
                 key={key}
                 colId={key}
-                title={title}
+                title={t(title ?? '')}
                 style={style}
                 sort={sort}
                 setSort={setSort}

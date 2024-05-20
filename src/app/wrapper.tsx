@@ -15,7 +15,7 @@ export default function Wrapper({ children }: { children: React.ReactNode }) {
     case isError:
       throw error;
     default:
-      localization.changeLanguage(data?.data ?? 'fi');
+      localization.changeLanguage(data ?? 'fi');
       return <I18nextProvider i18n={localization}>{children}</I18nextProvider>;
   }
 }
