@@ -11,6 +11,7 @@ import { Haku } from '../lib/kouta-types';
 import { useUserLanguage } from '../hooks/useAsiointiKieli';
 import { Language } from '../lib/localization/localization-types';
 import { translateName } from '../lib/localization/translation-utils';
+import { useTranslation } from 'react-i18next';
 
 export const HakuTable = ({
   haut,
@@ -32,12 +33,13 @@ export const HakuTable = ({
     };
 
   const userLanguage = useUserLanguage();
+  const { t } = useTranslation();
 
   const columns = [
     makeHakuColumn(userLanguage),
     makeTilaColumn(),
     makeHakutapaColumn(getMatchingHakutapa(userLanguage)),
-    makeKoulutuksenAlkamiskausiColumn(),
+    makeKoulutuksenAlkamiskausiColumn(t),
     makeCountColumn({
       title: 'haku.hakukohteet',
       key: 'hakukohteita',

@@ -194,9 +194,10 @@ export default function HakuControls() {
           >
             <MenuItem value="">{t('common.choose')}</MenuItem>
             {alkamiskaudet.map((kausi) => {
+              const kausiVuosi = `${kausi.alkamisVuosi} ${t(kausi.alkamisKausiNimi)}`;
               return (
                 <MenuItem value={kausi.value} key={kausi.value}>
-                  {`${kausi.alkamisVuosi} ${t(kausi.alkamisKausiNimi)}`}
+                  {kausiVuosi}
                 </MenuItem>
               );
             })}

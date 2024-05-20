@@ -15,7 +15,7 @@ const titleSectionStyle: CSSProperties = {
   padding: 0,
 };
 
-export default async function HakuListLayout({
+export default function HakuListLayout({
   children,
   controls,
 }: {

@@ -81,13 +81,15 @@ export const makeHakutapaColumn = (
   render: (haku) => <span>{getMatchingHakutapa(haku.hakutapaKoodiUri)}</span>,
 });
 
-export const makeKoulutuksenAlkamiskausiColumn = (): Column<Haku> => ({
+export const makeKoulutuksenAlkamiskausiColumn = (
+  t: (s: string) => string,
+): Column<Haku> => ({
   title: 'haku.alkamiskausi',
   key: 'alkamiskausiNimi',
   render: (haku) => (
     <span>
       {haku.alkamisKausiKoodiUri
-        ? `${haku.alkamisVuosi} ${getAlkamisKausi(haku.alkamisKausiKoodiUri)}`
+        ? `${haku.alkamisVuosi} ${t(getAlkamisKausi(haku.alkamisKausiKoodiUri))}`
         : ''}
     </span>
   ),

@@ -1,13 +1,13 @@
 {
   "title": "Valintojen Toteuttaminen",
+  "julkaistu": "Julkaistu",
+  "arkistoitu": "Arkistoitu",
   "common": {
     "name": "Nimi",
     "status": "Tila",
     "choose": "Valitse...",
     "spring": "Kevät",
     "autumn": "Syksy",
-    "published": "Julkaistu",
-    "archived": "Arkistoitu",
     "noresults": "Ei hakutuloksia",
     "perpage": "Näytä per sivu:"
   },

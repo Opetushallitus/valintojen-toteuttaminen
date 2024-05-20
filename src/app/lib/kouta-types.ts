@@ -53,6 +53,6 @@ export type Hakukohde = {
 };
 
 export enum Tila {
-  JULKAISTU = 'common.published',
-  ARKISTOITU = 'common.archived',
+  JULKAISTU = 'julkaistu',
+  ARKISTOITU = 'arkistoitu',
 }
