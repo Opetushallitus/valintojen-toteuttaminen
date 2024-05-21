@@ -59,7 +59,7 @@ function getPathMatchingTab(pathName: string) {
   return TABS.find((tab) => tab.route.startsWith(lastPath)) || TABS[0];
 }
 
-export const HakukohdeTabs = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
+const HakukohdeTabs = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
   const pathName = usePathname();
   const [activeTab, setActiveTab] = useState<BasicTab>(
     getPathMatchingTab(pathName),

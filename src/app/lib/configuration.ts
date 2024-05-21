@@ -1,4 +1,4 @@
-const DOMAIN =
+export const DOMAIN =
   process.env.APP_URL ?? process.env.VIRKAILIJA_URL ?? 'https://localhost:3404';
 
 export const isLocalhost = DOMAIN.includes('localhost');
@@ -18,6 +18,7 @@ interface Configuration {
   koutaInternalLogin: string;
   asiointiKieliUrl: string;
   lokalisaatioUrl: string;
+  valintaperusteetUrl: string;
 }
 
 export const configuration: Configuration = {
@@ -31,4 +32,5 @@ export const configuration: Configuration = {
   koutaInternalLogin: `${DOMAIN}/kouta-internal/auth/login`,
   asiointiKieliUrl: `${DOMAIN}/oppijanumerorekisteri-service/henkilo/current/asiointiKieli`,
   lokalisaatioUrl: `${DOMAIN}/lokalisointi/cxf/rest/v1/localisation?category=valintojen-toteuttaminen&locale=`,
+  valintaperusteetUrl: `${DOMAIN}/valintaperusteet-service/resources/`,
 };
