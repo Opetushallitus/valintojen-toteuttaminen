@@ -8,6 +8,7 @@ import { usePathname } from 'next/navigation';
 import { Link as MuiLink } from '@mui/material';
 import { useUserLanguage } from '@/app/hooks/useAsiointiKieli';
 import { translateName } from '@/app/lib/localization/translation-utils';
+import { useTranslation } from 'react-i18next';
 
 const StyledContainer = styled('div')({
   padding: '0.5rem 1.5rem 0',
@@ -66,6 +67,7 @@ export const HakukohdeTabs = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
     getPathMatchingTab(pathName),
   );
   const userLanguage = useUserLanguage();
+  const { t } = useTranslation();
 
   const { data: hakukohde } = useSuspenseQuery({
     queryKey: ['getHakukohde', hakukohdeOid],
@@ -104,7 +106,7 @@ export const HakukohdeTabs = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
             }
             onClick={() => selectActiveTab(tab)}
           >
-            {tab.title}
+            {t(tab.title)}
           </MuiLink>
         ))}
       </StyledTabs>

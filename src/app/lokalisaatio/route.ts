@@ -23,6 +23,7 @@ async function getTranslations(lng: string) {
 }
 
 function getTranslationsFromFile(lng: string) {
+  console.log('getTranslationsFromFile ' + lng);
   switch (lng) {
     case 'sv':
       return swedishTranslations;
