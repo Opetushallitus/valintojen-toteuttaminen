@@ -1,6 +1,9 @@
 'use client';
 
-import ListTable, { makeCountColumn } from '@/app/components/table/list-table';
+import ListTable, {
+  makeCountColumn,
+  makeNameColumn,
+} from '@/app/components/table/list-table';
 import { ValintatapajonoTulos } from '@/app/lib/valinta-tulos-service';
 
 export const ValintatapajonotTable = ({
@@ -9,6 +12,7 @@ export const ValintatapajonotTable = ({
   valintatapajonoTulokset: ValintatapajonoTulos[];
 }) => {
   const columns = [
+    makeNameColumn(),
     makeCountColumn<ValintatapajonoTulos>({
       title: 'Sijoittelun käyttämät aloituspaikat',
       key: 'sijoittelun-aloituspaikat',

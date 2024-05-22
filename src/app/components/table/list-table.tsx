@@ -46,6 +46,17 @@ export const makeHakuColumn = <T extends Entity = Entity>(
   },
 });
 
+export const makeNameColumn = <T extends Entity = Entity>(): Column<T> => ({
+  title: 'Nimi',
+  key: 'nimi',
+  render: (t) => (
+    <span>{typeof t.nimi == 'string' ? t.nimi : getTranslation(t.nimi)}</span>
+  ),
+  style: {
+    width: 'auto',
+  },
+});
+
 export const makeCountColumn = <T extends Entity = Entity>({
   title,
   key,
