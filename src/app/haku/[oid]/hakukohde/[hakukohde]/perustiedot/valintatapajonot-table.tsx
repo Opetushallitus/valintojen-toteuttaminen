@@ -4,12 +4,16 @@ import ListTable, {
   makeCountColumn,
   makeNameColumn,
 } from '@/app/components/table/list-table';
+import { isToisenAsteenYhteisHaku } from '@/app/lib/kouta';
+import { Haku } from '@/app/lib/kouta-types';
 import { ValintatapajonoTulos } from '@/app/lib/valinta-tulos-service';
 
 export const ValintatapajonotTable = ({
   valintatapajonoTulokset,
+  haku,
 }: {
   valintatapajonoTulokset: ValintatapajonoTulos[];
+  haku: Haku;
 }) => {
   const columns = [
     makeNameColumn(),
@@ -23,16 +27,17 @@ export const ValintatapajonotTable = ({
       key: 'hyvaksytyt',
       amountProp: 'hyvaksytty',
     }),
-    makeCountColumn<ValintatapajonoTulos>({
-      title: 'Joista ehdollisesti hyväksytyt',
-      key: 'ehdollisesti-hyvaksytyt',
-      amountProp: 'ehdollisestiHyvaksytty',
-    }),
-    makeCountColumn<ValintatapajonoTulos>({
-      title: 'Harkinnanvaraisesti hyväksytyt',
-      key: 'harkinnanvaraisesti-hyvaksytyt',
-      amountProp: 'harkinnanvaraisestiHyvaksytty',
-    }),
+    isToisenAsteenYhteisHaku(haku)
+      ? makeCountColumn<ValintatapajonoTulos>({
+          title: 'Harkinnanvaraisesti hyväksytyt',
+          key: 'harkinnanvaraisesti-hyvaksytyt',
+          amountProp: 'harkinnanvaraisestiHyvaksytty',
+        })
+      : makeCountColumn<ValintatapajonoTulos>({
+          title: 'Joista ehdollisesti hyväksytyt',
+          key: 'ehdollisesti-hyvaksytyt',
+          amountProp: 'ehdollisestiHyvaksytty',
+        }),
     makeCountColumn<ValintatapajonoTulos>({
       title: 'Varasijoilla',
       key: 'varasijoilla',

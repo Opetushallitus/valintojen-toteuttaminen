@@ -5,12 +5,18 @@ import { TabContainer } from '../TabContainer';
 import BasicInfo from './basic-info';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { ValintatapajonotTable } from './valintatapajonot-table';
+import { getHaku } from '@/app/lib/kouta';
 
 export default function PerustiedotTab({
   params,
 }: {
   params: { oid: string; hakukohde: string };
 }) {
+  const { data: haku } = useSuspenseQuery({
+    queryKey: ['getHaku', params.oid],
+    queryFn: () => getHaku(params.oid),
+  });
+
   const { data: valintatapajonot } = useSuspenseQuery({
     queryKey: ['getSijoittelunTulokset', params.oid, params.hakukohde],
     queryFn: () => getSijoittelunTulokset(params.oid, params.hakukohde),
@@ -19,7 +25,16 @@ export default function PerustiedotTab({
   return (
     <TabContainer>
       <BasicInfo hakukohdeOid={params.hakukohde} />
-      <ValintatapajonotTable valintatapajonoTulokset={valintatapajonot} />
+      {valintatapajonot && valintatapajonot.length > 0 && (
+        <ValintatapajonotTable
+          valintatapajonoTulokset={valintatapajonot}
+          haku={haku}
+        />
+      )}
+      {!valintatapajonot ||
+        (valintatapajonot.length < 1 && (
+          <span>Ei tulostietoja, sijoittelua ei ole vielä kenties tehty.</span>
+        ))}
     </TabContainer>
   );
 }

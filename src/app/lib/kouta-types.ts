@@ -42,6 +42,7 @@ export type Haku = {
   alkamisKausiKoodiUri: string;
   hakutapaKoodiUri: string;
   hakukohteita: number;
+  kohdejoukkoKoodiUri: string;
 };
 
 export type Hakukohde = {
