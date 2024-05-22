@@ -25,7 +25,7 @@ type Column<P> = {
   style?: Record<string, string | number>;
 };
 
-type Entity = { oid: string; nimi: TranslatedName; tila: Tila };
+type Entity = { oid: string; nimi: TranslatedName | string; tila?: Tila };
 
 type KeysMatching<O, T> = {
   [K in keyof O]: O[K] extends T ? K : never;
@@ -46,18 +46,18 @@ export const makeHakuColumn = <T extends Entity = Entity>(
   },
 });
 
-export const makeCountColumn = ({
+export const makeCountColumn = <T extends Entity = Entity>({
   title,
   key,
   amountProp,
 }: {
   title: string;
   key: string;
-  amountProp: KeysMatching<Haku, number>;
-}): Column<Haku> => ({
+  amountProp: KeysMatching<T, number>;
+}): Column<T> => ({
   title,
   key,
-  render: (props) => <span>{props[amountProp] ?? 0}</span>,
+  render: (props) => <span>{(props[amountProp] ?? 0) as number}</span>,
   style: { width: 0 },
 });
 
@@ -119,8 +119,8 @@ const StyledTableBody = styled(TableBody)({
 interface ListTableProps<T> extends React.ComponentProps<typeof StyledTable> {
   columns?: Array<Column<T>>;
   rows?: Array<T>;
-  sort: string;
-  setSort: (sort: string) => void;
+  sort?: string;
+  setSort?: (sort: string) => void;
 }
 
 const SortIcon = ({
@@ -150,32 +150,35 @@ const HeaderCell = ({
   colId: string;
   title?: string;
   style?: Record<string, string | number>;
-  sort: string;
-  setSort: (sort: string) => void;
+  sort?: string;
+  setSort?: (sort: string) => void;
 }) => {
   const { direction } = getSortParts(sort, colId);
 
   return (
     <StyledCell style={style} sortDirection={direction}>
-      <Button
-        sx={{
-          color: colors.black,
-        }}
-        onClick={() => {
-          let newSortValue = '';
-          if (sort === `${colId}:asc`) {
-            newSortValue = `${colId}:desc`;
-          } else if (sort === `${colId}:desc`) {
-            newSortValue = '';
-          } else {
-            newSortValue = `${colId}:asc`;
-          }
-          setSort(newSortValue);
-        }}
-        endIcon={<SortIcon sortValue={sort} colId={colId} />}
-      >
-        {title}
-      </Button>
+      {sort && setSort && (
+        <Button
+          sx={{
+            color: colors.black,
+          }}
+          onClick={() => {
+            let newSortValue = '';
+            if (sort === `${colId}:asc`) {
+              newSortValue = `${colId}:desc`;
+            } else if (sort === `${colId}:desc`) {
+              newSortValue = '';
+            } else {
+              newSortValue = `${colId}:asc`;
+            }
+            setSort(newSortValue);
+          }}
+          endIcon={<SortIcon sortValue={sort} colId={colId} />}
+        >
+          {title}
+        </Button>
+      )}
+      {!sort && <>{title}</>}
     </StyledCell>
   );
 };

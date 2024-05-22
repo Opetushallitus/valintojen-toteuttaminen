@@ -19,6 +19,8 @@ interface Configuration {
   asiointiKieliUrl: string;
   lokalisaatioUrl: string;
   valintaperusteetUrl: string;
+  valintaTulosServiceUrl: string;
+  valintaTulosServiceLogin: string;
 }
 
 export const configuration: Configuration = {
@@ -33,4 +35,6 @@ export const configuration: Configuration = {
   asiointiKieliUrl: `${DOMAIN}/oppijanumerorekisteri-service/henkilo/current/asiointiKieli`,
   lokalisaatioUrl: `${DOMAIN}/lokalisointi/cxf/rest/v1/localisation?category=valintojen-toteuttaminen&locale=`,
   valintaperusteetUrl: `${DOMAIN}/valintaperusteet-service/resources/`,
+  valintaTulosServiceUrl: `${DOMAIN}/valinta-tulos-service/auth/`,
+  valintaTulosServiceLogin: `${DOMAIN}/valinta-tulos-service/auth/login`,
 };

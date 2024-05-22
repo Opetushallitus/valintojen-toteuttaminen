@@ -4,7 +4,7 @@ import { configuration } from './configuration';
 import { client } from './http-client';
 
 export type Valintaryhma = {
-  nimi: string;
+  name: string;
   oid: string;
 };
 
@@ -14,5 +14,5 @@ export const getValintaryhma = async (
   const response = await client.get(
     `${configuration.valintaperusteetUrl}hakukohde/${hakukohdeOid}/valintaryhma`,
   );
-  return { nimi: response.data.nimi, oid: response.data.oid };
+  return { name: response.data.nimi, oid: response.data.oid };
 };

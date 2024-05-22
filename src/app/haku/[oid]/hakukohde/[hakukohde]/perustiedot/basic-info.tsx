@@ -34,7 +34,7 @@ const BasicInfo = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
       <div>
         <InfoHeader>Valintaryhma</InfoHeader>
         <ExternalLink
-          name={valintaryhma.nimi}
+          name={valintaryhma.name}
           href={`valintaperusteet-ui/app/index.html#/valintaryhma/${valintaryhma.oid}`}
         />
       </div>
