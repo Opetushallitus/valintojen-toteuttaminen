@@ -1,9 +1,13 @@
 'use client';
+import { I18nextProvider } from 'react-i18next';
 import { FullSpinner } from './components/full-spinner';
 import { useAsiointiKieli } from './hooks/useAsiointiKieli';
+import { createLocalizationProvider } from './lib/localization/localizations';
+
+const LocalizationProvider = createLocalizationProvider();
 
 export default function Wrapper({ children }: { children: React.ReactNode }) {
-  const { isLoading, isError, error } = useAsiointiKieli();
+  const { isLoading, isError, error, data } = useAsiointiKieli();
 
   switch (true) {
     case isLoading:
@@ -11,6 +15,11 @@ export default function Wrapper({ children }: { children: React.ReactNode }) {
     case isError:
       throw error;
     default:
-      return children;
+      LocalizationProvider.changeLanguage(data ?? 'fi');
+      return (
+        <I18nextProvider i18n={LocalizationProvider}>
+          {children}
+        </I18nextProvider>
+      );
   }
 }

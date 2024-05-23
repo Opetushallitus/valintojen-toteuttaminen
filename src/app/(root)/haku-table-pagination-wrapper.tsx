@@ -11,6 +11,7 @@ import {
   Pagination,
 } from '@mui/material';
 import { DEFAULT_PAGE_SIZE, PAGE_SIZES } from '@/app/lib/constants';
+import { useTranslations } from '../hooks/useTranslations';
 
 export const StyledPagination = styled(Pagination)({
   display: 'flex',
@@ -33,14 +34,20 @@ export const HakuTablePaginationWrapper = ({
   setPageSize,
   children,
 }: HakuTablePaginationWrapperProps) => {
+  const { t } = useTranslations();
+
   return totalCount === 0 ? (
-    <p>Ei hakutuloksia</p>
+    <p>{t('yleinen.eiosumia')}</p>
   ) : (
     <>
       <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Typography sx={{ textAlign: 'left' }}>Hakuja: {totalCount}</Typography>
+        <Typography sx={{ textAlign: 'left' }}>
+          {t('haku.maara')} {totalCount}
+        </Typography>
         <FormControl>
-          <FormLabel id="page-size-select-label">Näytä per sivu:</FormLabel>
+          <FormLabel id="page-size-select-label">
+            {t('yleinen.persivu')}
+          </FormLabel>
           <Select
             labelId="page-size-select-label"
             name="page-size-select"

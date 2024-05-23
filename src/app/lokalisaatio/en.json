@@ -1,0 +1,16 @@
+{
+  "otsikko": "Valintojen Toteuttaminen",
+  "julkaistu": "Published",
+  "arkistoitu": "Archived",
+  "yleinen": {
+    "nimi": "Name",
+    "tila": "State",
+    "valitse": "Select...",
+    "kevat": "Spring",
+    "syksy": "Autumn",
+    "julkaistu": "Published",
+    "arkistoitu": "Archived",
+    "eiosumia": "No results",
+    "persivu": "Show per page:"
+  }
+}

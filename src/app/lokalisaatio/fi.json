@@ -1,0 +1,59 @@
+{
+  "otsikko": "Valintojen toteuttaminen",
+  "julkaistu": "Julkaistu",
+  "arkistoitu": "Arkistoitu",
+  "yleinen": {
+    "nimi": "Nimi",
+    "tila": "Tila",
+    "valitse": "Valitse...",
+    "kevat": "kevät",
+    "syksy": "syksy",
+    "eiosumia": "Ei hakutuloksia",
+    "persivu": "Näytä per sivu:"
+  },
+  "virhe": {
+    "palvelin": "Palvelinpyyntö epäonnistui!",
+    "virhekoodi": "Virhekoodi: ",
+    "uudelleenyritys": "Yritä uudelleen",
+    "tuntematon": "Jokin meni vikaan"
+  },
+  "haku": {
+    "otsikko": "Haut",
+    "hakutapa": "Hakutapa",
+    "alkamiskausi": "Koulutuksen alkamiskausi",
+    "hakukohteet": "Hakukohteet",
+    "hae": "Hae hakuja",
+    "maara": "Hakuja:"
+  },
+  "hakukohde": {
+    "valitse": "Valitse hakukohde",
+    "oid": "Hakukohde oid: "
+  },
+  "perustiedot": {
+    "otsikko": "Perustiedot"
+  },
+  "hakeneet": {
+    "otsikko": "Hakeneet"
+  },
+  "valinnanhallinta": {
+    "otsikko": "Valinnan hallinta"
+  },
+  "koekutsut": {
+    "otsikko": "Valintakoekutsut"
+  },
+  "pistesyotto": {
+    "otsikko": "Pistesyöttö"
+  },
+  "harkinnanvaraiset": {
+    "otsikko": "Harkinnanvaraiset"
+  },
+  "hakijaryhmat": {
+    "otsikko": "Hakijaryhmät"
+  },
+  "valintalaskennantulos": {
+    "otsikko": "Valintalaskennan tulos"
+  },
+  "sijoitteluntulokset": {
+    "otsikko": "Sijoittelun tulokset"
+  }
+}

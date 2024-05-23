@@ -1,6 +1,9 @@
+'use client';
+
 import { CSSProperties } from 'react';
 import Header from '../components/header';
 import { AccessTime as AccessTimeIcon } from '@mui/icons-material';
+import { useTranslations } from '../hooks/useTranslations';
 
 const titleSectionStyle: CSSProperties = {
   borderBottom: '1px solid rgba(0, 0, 0, 0.15)',
@@ -12,20 +15,22 @@ const titleSectionStyle: CSSProperties = {
   padding: 0,
 };
 
-export default async function HakuListLayout({
+export default function HakuListLayout({
   children,
   controls,
 }: {
   children: React.ReactNode;
   controls: React.ReactNode;
 }) {
+  const { t } = useTranslations();
+
   return (
     <>
-      <Header isHome={true} />
+      <Header isHome={true} title={t('otsikko')} />
       <main className="mainContainer">
         <div style={titleSectionStyle}>
           <h2 style={{ textAlign: 'left', margin: '0 0 1rem' }}>
-            <AccessTimeIcon /> Haut
+            <AccessTimeIcon /> {t('haku.otsikko')}
           </h2>
         </div>
         {controls}

@@ -1,6 +1,6 @@
 'use client';
 import Header from '@/app/components/header';
-import { getTranslation } from '@/app/lib/common';
+import { useTranslations } from '@/app/hooks/useTranslations';
 import { getHaku } from '@/app/lib/kouta';
 import { useSuspenseQuery } from '@tanstack/react-query';
 
@@ -10,5 +10,7 @@ export default function HeaderPage({ params }: { params: { oid: string } }) {
     queryFn: () => getHaku(params.oid),
   });
 
-  return <Header title={getTranslation(hakuNimi)} />;
+  const { translateEntity } = useTranslations();
+
+  return <Header title={translateEntity(hakuNimi)} />;
 }

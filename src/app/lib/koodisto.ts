@@ -1,6 +1,6 @@
 import { configuration } from './configuration';
-import { TranslatedName, Language } from './common';
 import { client } from './http-client';
+import { Language, TranslatedName } from './localization/localization-types';
 
 export type Koodi = {
   koodiUri: string;
@@ -14,7 +14,7 @@ async function getKoodit(koodisto: string): Promise<Koodi[]> {
   ): string => {
     const matchingData = metadata.find(
       (m: { nimi: string; kieli: string }) =>
-        Language[m.kieli.toUpperCase() as keyof typeof Language] === language,
+        m.kieli.toLowerCase() === language,
     );
     return matchingData ? matchingData.nimi : '';
   };
@@ -23,9 +23,9 @@ async function getKoodit(koodisto: string): Promise<Koodi[]> {
   return response.data.map(
     (k: { koodiUri: string; metadata: [{ nimi: string; kieli: string }] }) => {
       const translated = {
-        fi: getTranslatedNimi(Language.FI, k.metadata),
-        sv: getTranslatedNimi(Language.SV, k.metadata),
-        en: getTranslatedNimi(Language.EN, k.metadata),
+        fi: getTranslatedNimi('fi', k.metadata),
+        sv: getTranslatedNimi('sv', k.metadata),
+        en: getTranslatedNimi('en', k.metadata),
       };
       return { koodiUri: k.koodiUri, nimi: translated };
     },

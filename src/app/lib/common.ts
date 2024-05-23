@@ -1,32 +1,3 @@
-export type TranslatedName = {
-  fi?: string;
-  en?: string;
-  sv?: string;
-};
-
-export enum Language {
-  FI,
-  EN,
-  SV,
-}
-
-//TODO: match user's language
-export function getTranslation(
-  translated: TranslatedName,
-  userLanguage: Language = Language.FI,
-): string {
-  const prop = Language[userLanguage].toLowerCase() as keyof TranslatedName;
-  const translation = translated[prop];
-  if (translation && translation?.trim().length > 0) {
-    return translated[prop] || '';
-  } else if (translated.fi && translated.fi.trim().length > 0) {
-    return translated.fi;
-  } else if (translated.en && translated.en.trim().length > 0) {
-    return translated.en;
-  }
-  return translated.sv || '';
-}
-
 export class FetchError extends Error {
   response: Response;
   constructor(response: Response, message: string = 'Fetch error') {
@@ -39,13 +10,4 @@ export class FetchError extends Error {
 
 export function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
-}
-
-export function isTranslatedName(value: unknown): value is TranslatedName {
-  return (
-    isObject(value) &&
-    (typeof value?.fi === 'string' ||
-      typeof value?.sv === 'string' ||
-      typeof value?.en === 'string')
-  );
 }

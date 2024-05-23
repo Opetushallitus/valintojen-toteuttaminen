@@ -1,12 +1,12 @@
 'use client';
 
-import { getTranslation } from '@/app/lib/common';
 import { styled } from '@mui/material';
 import { useState } from 'react';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getHakukohde } from '@/app/lib/kouta';
 import { usePathname } from 'next/navigation';
 import { Link as MuiLink } from '@mui/material';
+import { useTranslations } from '@/app/hooks/useTranslations';
 
 const StyledContainer = styled('div')({
   padding: '0.5rem 1.5rem 0',
@@ -43,15 +43,15 @@ export type BasicTab = {
 };
 
 const TABS: BasicTab[] = [
-  { title: 'Perustiedot', route: 'perustiedot' },
-  { title: 'Hakeneet', route: 'hakeneet' },
-  { title: 'Valinnan hallinta', route: 'valinnan-hallinta' },
-  { title: 'Valintakoekutsut', route: 'valintakoekutsut' },
-  { title: 'Pistesyöttö', route: 'pistesyotto' },
-  { title: 'Harkinnanvaraiset', route: 'harkinnanvaraiset' },
-  { title: 'Hakijaryhmät', route: 'hakijaryhmat' },
-  { title: 'Valintalaskennan tulos', route: 'valintalaskennan-tulos' },
-  { title: 'Sijoittelun tulokset', route: 'sijoittelun-tulokset' },
+  { title: 'perustiedot.otsikko', route: 'perustiedot' },
+  { title: 'hakeneet.otsikko', route: 'hakeneet' },
+  { title: 'valinnanhallinta.otsikko', route: 'valinnan-hallinta' },
+  { title: 'koekutsut.otsikko', route: 'valintakoekutsut' },
+  { title: 'pistesyotto.otsikko', route: 'pistesyotto' },
+  { title: 'harkinnanvaraiset.otsikko', route: 'harkinnanvaraiset' },
+  { title: 'hakijaryhmat.otsikko', route: 'hakijaryhmat' },
+  { title: 'valintalaskennantulos.otsikko', route: 'valintalaskennan-tulos' },
+  { title: 'sijoitteluntulokset.otsikko', route: 'sijoittelun-tulokset' },
 ] as const;
 
 function getPathMatchingTab(pathName: string) {
@@ -64,6 +64,7 @@ export const HakukohdeTabs = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
   const [activeTab, setActiveTab] = useState<BasicTab>(
     getPathMatchingTab(pathName),
   );
+  const { t, translateEntity } = useTranslations();
 
   const { data: hakukohde } = useSuspenseQuery({
     queryKey: ['getHakukohde', hakukohdeOid],
@@ -79,11 +80,11 @@ export const HakukohdeTabs = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
       <StyledHeader>
         <h2>
           <span className="organisaatioLabel">
-            {getTranslation(hakukohde.jarjestyspaikkaHierarkiaNimi)}
+            {translateEntity(hakukohde.jarjestyspaikkaHierarkiaNimi)}
           </span>
           <br />
           <span className="hakukohdeLabel">
-            {getTranslation(hakukohde.nimi)}
+            {translateEntity(hakukohde.nimi)}
           </span>
         </h2>
       </StyledHeader>
@@ -99,7 +100,7 @@ export const HakukohdeTabs = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
             }
             onClick={() => selectActiveTab(tab)}
           >
-            {tab.title}
+            {t(tab.title)}
           </MuiLink>
         ))}
       </StyledTabs>

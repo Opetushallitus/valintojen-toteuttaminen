@@ -1,4 +1,4 @@
-import { TranslatedName } from './common';
+import { TranslatedName } from './localization/localization-types';
 
 const STARTING_YEAR = 2019; // check earliest kouta haku
 
@@ -9,9 +9,10 @@ export type HaunAlkaminen = {
   value: string;
 };
 
-//TODO: localization
 export const getAlkamisKausi = (alkamisKausiKoodiUri: string) =>
-  alkamisKausiKoodiUri.startsWith('kausi_s') ? 'SYKSY' : 'KEVÄT';
+  alkamisKausiKoodiUri.startsWith('kausi_s')
+    ? 'yleinen.syksy'
+    : 'yleinen.kevat';
 
 export const getHakuAlkamisKaudet = (): HaunAlkaminen[] => {
   const nowYear = new Date().getFullYear();
@@ -20,20 +21,19 @@ export const getHakuAlkamisKaudet = (): HaunAlkaminen[] => {
     alkamiset.push({
       alkamisVuosi: i,
       alkamisKausiKoodiUri: 'kausi_s',
-      alkamisKausiNimi: 'SYKSY',
+      alkamisKausiNimi: 'yleinen.syksy',
       value: `${i}_syksy`,
     });
     alkamiset.push({
       alkamisVuosi: i,
       alkamisKausiKoodiUri: 'kausi_k',
-      alkamisKausiNimi: 'KEVÄT',
+      alkamisKausiNimi: 'yleinen.kevat',
       value: `${i}_kevat`,
     });
   }
   return alkamiset;
 };
 
-//TODO: check whether any values are optional
 export type Haku = {
   oid: string;
   nimi: TranslatedName;

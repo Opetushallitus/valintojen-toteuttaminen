@@ -17,6 +17,7 @@ import { Tila, getHakuAlkamisKaudet } from '@/app/lib/kouta-types';
 import { Search } from '@mui/icons-material';
 import { useHakuSearchParams } from '@/app/hooks/useHakuSearch';
 import { useHakutavat } from '@/app/hooks/useHakutavat';
+import { useTranslations } from '@/app/hooks/useTranslations';
 
 const HakutapaSelect = ({
   value: selectedHakutapa,
@@ -26,6 +27,8 @@ const HakutapaSelect = ({
   onChange: (e: SelectChangeEvent) => void;
 }) => {
   const { data: hakutavat } = useHakutavat();
+  const { t, translateEntity } = useTranslations();
+
   return (
     <Select
       labelId="hakutapa-select-label"
@@ -34,13 +37,13 @@ const HakutapaSelect = ({
       onChange={onChange}
       displayEmpty={true}
     >
-      <MenuItem value="">Valitse...</MenuItem>
+      <MenuItem value="">{t('yleinen.valitse')}</MenuItem>
       {hakutavat.map((tapa) => {
         return (
           <MenuItem value={tapa.koodiUri} key={tapa.koodiUri}>
-            {tapa.nimi.fi}
+            {translateEntity(tapa.nimi)}
           </MenuItem>
-        ); //TODO: translate
+        );
       })}
     </Select>
   );
@@ -66,9 +69,10 @@ const HakutapaInput = ({
   value: string;
   onChange: (e: SelectChangeEvent) => void;
 }) => {
+  const { t } = useTranslations();
   return (
     <FormControl sx={{ flex: '1 0 180px', textAlign: 'left' }}>
-      <FormLabel id="hakutapa-select-label">Hakutapa</FormLabel>
+      <FormLabel id="hakutapa-select-label">{t('haku.hakutapa')}</FormLabel>
       <Suspense fallback={<SelectFallback />}>
         <HakutapaSelect value={value} onChange={onChange} />
       </Suspense>
@@ -89,6 +93,8 @@ export default function HakuControls() {
     tila,
     setTila,
   } = useHakuSearchParams();
+
+  const { t } = useTranslations();
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchPhrase(e.target.value);
@@ -123,7 +129,7 @@ export default function HakuControls() {
           textAlign: 'left',
         }}
       >
-        <FormLabel htmlFor="haku-search">Hae hakuja</FormLabel>
+        <FormLabel htmlFor="haku-search">{t('haku.hae')}</FormLabel>
         <OutlinedInput
           id="haku-search"
           name="haku-search"
@@ -131,7 +137,7 @@ export default function HakuControls() {
           onChange={handleSearchChange}
           autoFocus={true}
           type="text"
-          placeholder="Hae hakuja"
+          placeholder={t('haku.hae')}
           endAdornment={
             <InputAdornment position="end">
               <Search />
@@ -146,7 +152,7 @@ export default function HakuControls() {
           textAlign: 'left',
         }}
       >
-        <FormLabel id="tila-select-label">Tila</FormLabel>
+        <FormLabel id="tila-select-label">{t('yleinen.tila')}</FormLabel>
         <Select
           labelId="tila-select-label"
           name="tila-select"
@@ -154,13 +160,13 @@ export default function HakuControls() {
           onChange={changeTila}
           displayEmpty={true}
         >
-          <MenuItem value="">Valitse...</MenuItem>
+          <MenuItem value="">{t('yleinen.valitse')}</MenuItem>
           {Object.values(Tila).map((tila) => {
             return (
               <MenuItem value={tila} key={tila}>
-                {tila}
+                {t(tila)}
               </MenuItem>
-            ); //TODO: translate
+            );
           })}
         </Select>
       </FormControl>
@@ -174,7 +180,7 @@ export default function HakuControls() {
         <HakutapaInput value={selectedHakutapa} onChange={changeHakutapa} />
         <FormControl sx={{ textAlign: 'left', flex: '1 0 180px' }}>
           <FormLabel id="alkamiskausi-select-label">
-            Koulutuksen alkamiskausi
+            {t('haku.alkamiskausi')}
           </FormLabel>
           <Select
             labelId="alkamiskausi-select-label"
@@ -183,14 +189,14 @@ export default function HakuControls() {
             onChange={changeAlkamisKausi}
             displayEmpty={true}
           >
-            <MenuItem value="">Valitse...</MenuItem>
+            <MenuItem value="">{t('yleinen.valitse')}</MenuItem>
             {alkamiskaudet.map((kausi) => {
-              const vuosiKausi = `${kausi.alkamisVuosi} ${kausi.alkamisKausiNimi}`;
+              const kausiVuosi = `${kausi.alkamisVuosi} ${t(kausi.alkamisKausiNimi)}`;
               return (
                 <MenuItem value={kausi.value} key={kausi.value}>
-                  {vuosiKausi}
+                  {kausiVuosi}
                 </MenuItem>
-              ); //TODO: translate
+              );
             })}
           </Select>
         </FormControl>

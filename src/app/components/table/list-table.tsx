@@ -10,11 +10,13 @@ import {
   TableRow,
   styled,
 } from '@mui/material';
-import { TranslatedName, getTranslation } from '@/app/lib/common';
 import { Haku, getAlkamisKausi, Tila } from '@/app/lib/kouta-types';
 import { colors } from '@/app/theme';
 import { ExpandLess, ExpandMore, UnfoldMore } from '@mui/icons-material';
 import { getSortParts } from './table-utils';
+import { TranslatedName } from '@/app/lib/localization/localization-types';
+import { useTranslations } from '@/app/hooks/useTranslations';
+import { TFunction } from 'i18next';
 
 type Column<P> = {
   title?: string;
@@ -29,12 +31,14 @@ type KeysMatching<O, T> = {
   [K in keyof O]: O[K] extends T ? K : never;
 }[keyof O & string];
 
-export const makeHakuColumn = <T extends Entity = Entity>(): Column<T> => ({
-  title: 'Nimi',
+export const makeHakuColumn = <T extends Entity = Entity>(
+  translateEntity: (entity: TranslatedName) => string,
+): Column<T> => ({
+  title: 'yleinen.nimi',
   key: 'nimi',
   render: (haku) => (
     <MuiLink href={`/haku/${haku.oid}`} sx={{ textDecoration: 'none' }}>
-      {getTranslation(haku.nimi)}
+      {translateEntity(haku.nimi)}
     </MuiLink>
   ),
   style: {
@@ -58,7 +62,7 @@ export const makeCountColumn = ({
 });
 
 export const makeTilaColumn = <T extends Entity = Entity>(): Column<T> => ({
-  title: 'Tila',
+  title: 'yleinen.tila',
   key: 'tila',
   render: (haku) => <span>{haku.tila}</span>,
   style: {
@@ -69,18 +73,20 @@ export const makeTilaColumn = <T extends Entity = Entity>(): Column<T> => ({
 export const makeHakutapaColumn = (
   getMatchingHakutapa: (koodiUri: string) => string | undefined,
 ): Column<Haku> => ({
-  title: 'Hakutapa',
+  title: 'haku.hakutapa',
   key: 'hakutapaNimi',
   render: (haku) => <span>{getMatchingHakutapa(haku.hakutapaKoodiUri)}</span>,
 });
 
-export const makeKoulutuksenAlkamiskausiColumn = (): Column<Haku> => ({
-  title: 'Koulutuksen alkamiskausi',
+export const makeKoulutuksenAlkamiskausiColumn = (
+  t: TFunction,
+): Column<Haku> => ({
+  title: 'haku.alkamiskausi',
   key: 'alkamiskausiNimi',
   render: (haku) => (
     <span>
       {haku.alkamisKausiKoodiUri
-        ? `${haku.alkamisVuosi} ${getAlkamisKausi(haku.alkamisKausiKoodiUri)}`
+        ? `${haku.alkamisVuosi} ${t(getAlkamisKausi(haku.alkamisKausiKoodiUri))}`
         : ''}
     </span>
   ),
@@ -181,6 +187,8 @@ export const ListTable = <T extends Entity>({
   setSort,
   ...props
 }: ListTableProps<T>) => {
+  const { t } = useTranslations();
+
   return (
     <StyledTable {...props}>
       <TableHead>
@@ -191,7 +199,7 @@ export const ListTable = <T extends Entity>({
               <HeaderCell
                 key={key}
                 colId={key}
-                title={title}
+                title={t(title ?? '')}
                 style={style}
                 sort={sort}
                 setSort={setSort}

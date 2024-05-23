@@ -53,7 +53,7 @@ test('Haku-page accessibility', async ({ page }) => {
 const getTableRows = (loc: Page | Locator) => loc.locator('tbody tr');
 
 test('filters haku by published state', async ({ page }) => {
-  await selectTila(page, 'julkaistu');
+  await selectTila(page, 'Julkaistu');
   const tableRows = getTableRows(page);
   await expect(tableRows).toHaveCount(3);
   const hakuInput = await page.getByRole('textbox', { name: 'Hae hakuja' });
@@ -65,13 +65,13 @@ test('filters haku by published state', async ({ page }) => {
 test('Set tila filter to julkaistu by default', async ({ page }) => {
   await expectUrlParamToEqual(page, 'tila', 'julkaistu');
   await expect(page.getByRole('combobox', { name: 'Tila' })).toContainText(
-    'julkaistu',
+    'Julkaistu',
   );
 });
 
 test('filters haku by archived state', async ({ page }) => {
   const tableRows = getTableRows(page);
-  await selectTila(page, 'arkistoitu');
+  await selectTila(page, 'Arkistoitu');
 
   await expect(tableRows).toHaveCount(3);
   const hakuInput = await page.getByRole('textbox', { name: 'Hae hakuja' });
@@ -95,9 +95,9 @@ test('filters by hakutapa', async ({ page }) => {
 
 test('filters by start period', async ({ page }) => {
   const tableRows = getTableRows(page);
-  await selectKausi(page, '2024 SYKSY');
+  await selectKausi(page, '2024 syksy');
   await expect(tableRows).toHaveCount(1);
-  await selectKausi(page, '2020 SYKSY');
+  await selectKausi(page, '2020 syksy');
   await expect(tableRows).toHaveCount(0);
   await expectUrlParamToEqual(page, 'alkamiskausi', '2020_syksy');
 });
@@ -106,7 +106,7 @@ test('filters by hakutapa and start period', async ({ page }) => {
   const tableRows = getTableRows(page);
   await selectHakutapa(page, 'Jatkuva haku');
   await expect(tableRows).toHaveCount(2);
-  await selectKausi(page, '2023 SYKSY');
+  await selectKausi(page, '2023 syksy');
   await expect(tableRows).toHaveCount(1);
 });
 

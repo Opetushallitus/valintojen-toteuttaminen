@@ -3,6 +3,8 @@ const DOMAIN =
 
 export const isLocalhost = DOMAIN.includes('localhost');
 
+export const isDev = process.env.NODE_ENV === 'development';
+
 export const isProd = process.env.NODE_ENV === 'production';
 
 interface Configuration {
@@ -15,6 +17,7 @@ interface Configuration {
   kooditUrl: string;
   koutaInternalLogin: string;
   asiointiKieliUrl: string;
+  lokalisaatioUrl: string;
 }
 
 export const configuration: Configuration = {
@@ -27,4 +30,5 @@ export const configuration: Configuration = {
   kooditUrl: `${DOMAIN}/koodisto-service/rest/codeelement/codes/`,
   koutaInternalLogin: `${DOMAIN}/kouta-internal/auth/login`,
   asiointiKieliUrl: `${DOMAIN}/oppijanumerorekisteri-service/henkilo/current/asiointiKieli`,
+  lokalisaatioUrl: `${DOMAIN}/lokalisointi/cxf/rest/v1/localisation?category=valintojen-toteuttaminen&locale=`,
 };

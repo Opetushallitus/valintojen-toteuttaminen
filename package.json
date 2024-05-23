@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "touch .env.development.local && NODE_EXTRA_CA_CERTS=\"$(mkcert -CAROOT)/rootCA.pem\" node --env-file=.env --env-file=.env.development.local dev-server.mjs",
+    "dev": "touch .env.development.local && NODE_EXTRA_CA_CERTS=\"$(mkcert -CAROOT)/rootCA.pem\" NODE_ENV=development node --env-file=.env --env-file=.env.development.local dev-server.mjs",
     "dev-test": "TEST=true APP_URL=https://localhost:3404 VIRKAILIJA_URL=http://localhost:3104 npm run dev",
     "build": "STANDALONE=true next build; cp run.sh .next/standalone",
     "build-test": "APP_URL=https://localhost:3404 VIRKAILIJA_URL=http://localhost:3104 next build",
@@ -28,10 +28,13 @@
     "@tanstack/react-query": "^5.29.2",
     "@tanstack/react-query-devtools": "^5.29.2",
     "cookie": "^0.6.0",
+    "i18next": "^23.11.4",
+    "i18next-http-backend": "^2.5.1",
     "next": "^14.2.2",
     "nuqs": "^1.17.2",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "react-i18next": "^14.1.1"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.9.0",
