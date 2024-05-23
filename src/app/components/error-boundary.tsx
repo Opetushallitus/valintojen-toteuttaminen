@@ -1,7 +1,7 @@
 'use client';
 import { useEffect } from 'react';
 import { FetchError } from '../lib/common';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from '../hooks/useTranslations';
 
 export default function Error({
   error,
@@ -14,23 +14,23 @@ export default function Error({
     console.error(error);
   });
 
-  const { t } = useTranslation();
+  const { t } = useTranslations();
 
   if (error instanceof FetchError) {
     return (
       <>
-        <h1>{t('error.server')}</h1>
+        <h1>{t('virhe.palvelin')}</h1>
         <p>
-          {t('error.code')} {error.response.status}
+          {t('virhe.virhekoodi')} {error.response.status}
         </p>
-        <button onClick={() => reset()}>{t('error.retry')}</button>
+        <button onClick={() => reset()}>{t('virhe.uudelleenyritys')}</button>
       </>
     );
   } else {
     return (
       <>
-        <h1>{t('error.unknown')}</h1>
-        <button onClick={() => reset()}>{t('error.retry')}</button>
+        <h1>{t('virhe.tuntematon')}</h1>
+        <button onClick={() => reset()}>{t('virhe.uudelleenyritys')}</button>
       </>
     );
   }

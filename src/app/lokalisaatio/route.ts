@@ -1,9 +1,4 @@
-import {
-  configuration,
-  isDev,
-  isLocalhost,
-  isProd,
-} from '../lib/configuration';
+import { configuration, isDev, isLocalhost } from '../lib/configuration';
 import finnishTranslations from './fi.json';
 import swedishTranslations from './sv.json';
 import englishTranslations from './en.json';
@@ -23,7 +18,6 @@ async function getTranslations(lng: string) {
 }
 
 function getTranslationsFromFile(lng: string) {
-  console.log('getTranslationsFromFile ' + lng);
   switch (lng) {
     case 'sv':
       return swedishTranslations;
@@ -37,7 +31,7 @@ function getTranslationsFromFile(lng: string) {
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const lng = searchParams.get('lng') || 'fi';
-  if (!isProd && isDev && isLocalhost) {
+  if (isDev && isLocalhost) {
     return Response.json(getTranslationsFromFile(lng));
   } else {
     const translations: Record<string, string> = await getTranslations(lng);

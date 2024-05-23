@@ -1,9 +1,8 @@
 'use client';
 
-import { useUserLanguage } from '@/app/hooks/useAsiointiKieli';
+import { useTranslations } from '@/app/hooks/useTranslations';
 import { getHakukohteet } from '@/app/lib/kouta';
 import { Hakukohde } from '@/app/lib/kouta-types';
-import { translateName } from '@/app/lib/localization/translation-utils';
 import { styled } from '@mui/material';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
@@ -28,7 +27,7 @@ const StyledItem = styled('div')({
 
 export const HakukohdeList = ({ oid }: { oid: string }) => {
   const router = useRouter();
-  const userLanguage = useUserLanguage();
+  const { translateEntity } = useTranslations();
 
   const selectHakukohde = (hakukohde: Hakukohde) => {
     router.push(`/haku/${oid}/hakukohde/${hakukohde.oid}/perustiedot`);
@@ -44,9 +43,9 @@ export const HakukohdeList = ({ oid }: { oid: string }) => {
       {hakukohteet.map((hk: Hakukohde) => (
         <StyledItem key={hk.oid} onClick={() => selectHakukohde(hk)}>
           <p title={hk.organisaatioOid} className="organizationLabel">
-            {translateName(hk.jarjestyspaikkaHierarkiaNimi, userLanguage)}
+            {translateEntity(hk.jarjestyspaikkaHierarkiaNimi)}
           </p>
-          <p title={hk.oid}>{translateName(hk.nimi, userLanguage)}</p>
+          <p title={hk.oid}>{translateEntity(hk.nimi)}</p>
         </StyledItem>
       ))}
     </StyledList>

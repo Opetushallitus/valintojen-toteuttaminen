@@ -14,12 +14,9 @@ import { Haku, getAlkamisKausi, Tila } from '@/app/lib/kouta-types';
 import { colors } from '@/app/theme';
 import { ExpandLess, ExpandMore, UnfoldMore } from '@mui/icons-material';
 import { getSortParts } from './table-utils';
-import { translateName } from '@/app/lib/localization/translation-utils';
-import {
-  Language,
-  TranslatedName,
-} from '@/app/lib/localization/localization-types';
-import { useTranslation } from 'react-i18next';
+import { TranslatedName } from '@/app/lib/localization/localization-types';
+import { useTranslations } from '@/app/hooks/useTranslations';
+import { TFunction } from 'i18next';
 
 type Column<P> = {
   title?: string;
@@ -35,13 +32,13 @@ type KeysMatching<O, T> = {
 }[keyof O & string];
 
 export const makeHakuColumn = <T extends Entity = Entity>(
-  userLanguage: Language,
+  translateEntity: (entity: TranslatedName) => string,
 ): Column<T> => ({
-  title: 'common.name',
+  title: 'yleinen.nimi',
   key: 'nimi',
   render: (haku) => (
     <MuiLink href={`/haku/${haku.oid}`} sx={{ textDecoration: 'none' }}>
-      {translateName(haku.nimi, userLanguage)}
+      {translateEntity(haku.nimi)}
     </MuiLink>
   ),
   style: {
@@ -65,7 +62,7 @@ export const makeCountColumn = ({
 });
 
 export const makeTilaColumn = <T extends Entity = Entity>(): Column<T> => ({
-  title: 'common.status',
+  title: 'yleinen.tila',
   key: 'tila',
   render: (haku) => <span>{haku.tila}</span>,
   style: {
@@ -82,7 +79,7 @@ export const makeHakutapaColumn = (
 });
 
 export const makeKoulutuksenAlkamiskausiColumn = (
-  t: (s: string) => string,
+  t: TFunction,
 ): Column<Haku> => ({
   title: 'haku.alkamiskausi',
   key: 'alkamiskausiNimi',
@@ -190,7 +187,7 @@ export const ListTable = <T extends Entity>({
   setSort,
   ...props
 }: ListTableProps<T>) => {
-  const { t } = useTranslation();
+  const { t } = useTranslations();
 
   return (
     <StyledTable {...props}>

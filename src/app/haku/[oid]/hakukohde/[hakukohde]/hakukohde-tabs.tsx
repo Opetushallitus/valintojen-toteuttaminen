@@ -6,9 +6,7 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 import { getHakukohde } from '@/app/lib/kouta';
 import { usePathname } from 'next/navigation';
 import { Link as MuiLink } from '@mui/material';
-import { useUserLanguage } from '@/app/hooks/useAsiointiKieli';
-import { translateName } from '@/app/lib/localization/translation-utils';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from '@/app/hooks/useTranslations';
 
 const StyledContainer = styled('div')({
   padding: '0.5rem 1.5rem 0',
@@ -45,15 +43,15 @@ export type BasicTab = {
 };
 
 const TABS: BasicTab[] = [
-  { title: 'perustiedot.title', route: 'perustiedot' },
-  { title: 'hakeneet.title', route: 'hakeneet' },
-  { title: 'valinnanhallinta.title', route: 'valinnan-hallinta' },
-  { title: 'koekutsut.title', route: 'valintakoekutsut' },
-  { title: 'pistesyotto.title', route: 'pistesyotto' },
-  { title: 'harkinnanvaraiset.title', route: 'harkinnanvaraiset' },
-  { title: 'hakijaryhmat.title', route: 'hakijaryhmat' },
-  { title: 'valintalaskennantulos.title', route: 'valintalaskennan-tulos' },
-  { title: 'sijoitteluntulokset.title', route: 'sijoittelun-tulokset' },
+  { title: 'perustiedot.otsikko', route: 'perustiedot' },
+  { title: 'hakeneet.otsikko', route: 'hakeneet' },
+  { title: 'valinnanhallinta.otsikko', route: 'valinnan-hallinta' },
+  { title: 'koekutsut.otsikko', route: 'valintakoekutsut' },
+  { title: 'pistesyotto.otsikko', route: 'pistesyotto' },
+  { title: 'harkinnanvaraiset.otsikko', route: 'harkinnanvaraiset' },
+  { title: 'hakijaryhmat.otsikko', route: 'hakijaryhmat' },
+  { title: 'valintalaskennantulos.otsikko', route: 'valintalaskennan-tulos' },
+  { title: 'sijoitteluntulokset.otsikko', route: 'sijoittelun-tulokset' },
 ] as const;
 
 function getPathMatchingTab(pathName: string) {
@@ -66,8 +64,7 @@ export const HakukohdeTabs = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
   const [activeTab, setActiveTab] = useState<BasicTab>(
     getPathMatchingTab(pathName),
   );
-  const userLanguage = useUserLanguage();
-  const { t } = useTranslation();
+  const { t, translateEntity } = useTranslations();
 
   const { data: hakukohde } = useSuspenseQuery({
     queryKey: ['getHakukohde', hakukohdeOid],
@@ -83,14 +80,11 @@ export const HakukohdeTabs = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
       <StyledHeader>
         <h2>
           <span className="organisaatioLabel">
-            {translateName(
-              hakukohde.jarjestyspaikkaHierarkiaNimi,
-              userLanguage,
-            )}
+            {translateEntity(hakukohde.jarjestyspaikkaHierarkiaNimi)}
           </span>
           <br />
           <span className="hakukohdeLabel">
-            {translateName(hakukohde.nimi, userLanguage)}
+            {translateEntity(hakukohde.nimi)}
           </span>
         </h2>
       </StyledHeader>

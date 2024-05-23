@@ -11,7 +11,7 @@ import {
   Pagination,
 } from '@mui/material';
 import { DEFAULT_PAGE_SIZE, PAGE_SIZES } from '@/app/lib/constants';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from '../hooks/useTranslations';
 
 export const StyledPagination = styled(Pagination)({
   display: 'flex',
@@ -34,19 +34,19 @@ export const HakuTablePaginationWrapper = ({
   setPageSize,
   children,
 }: HakuTablePaginationWrapperProps) => {
-  const { t } = useTranslation();
+  const { t } = useTranslations();
 
   return totalCount === 0 ? (
-    <p>{t('common.noresults')}</p>
+    <p>{t('yleinen.eiosumia')}</p>
   ) : (
     <>
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Typography sx={{ textAlign: 'left' }}>
-          {t('haku.amount')} {totalCount}
+          {t('haku.maara')} {totalCount}
         </Typography>
         <FormControl>
           <FormLabel id="page-size-select-label">
-            {t('common.perpage')}
+            {t('yleinen.persivu')}
           </FormLabel>
           <Select
             labelId="page-size-select-label"

@@ -1,59 +1,59 @@
 {
-  "title": "Valintojen toteuttaminen",
+  "otsikko": "Valintojen toteuttaminen",
   "julkaistu": "Julkaistu",
   "arkistoitu": "Arkistoitu",
-  "common": {
-    "name": "Nimi",
-    "status": "Tila",
-    "choose": "Valitse...",
-    "spring": "kevät",
-    "autumn": "syksy",
-    "noresults": "Ei hakutuloksia",
-    "perpage": "Näytä per sivu:"
+  "yleinen": {
+    "nimi": "Nimi",
+    "tila": "Tila",
+    "valitse": "Valitse...",
+    "kevat": "kevät",
+    "syksy": "syksy",
+    "eiosumia": "Ei hakutuloksia",
+    "persivu": "Näytä per sivu:"
   },
-  "error": {
-    "server": "Palvelinpyyntö epäonnistui!",
-    "code": "Virhekoodi: ",
-    "retry": "Yritä uudelleen",
-    "unknown": "Jokin meni vikaan"
+  "virhe": {
+    "palvelin": "Palvelinpyyntö epäonnistui!",
+    "virhekoodi": "Virhekoodi: ",
+    "uudelleenyritys": "Yritä uudelleen",
+    "tuntematon": "Jokin meni vikaan"
   },
   "haku": {
-    "title": "Haut",
+    "otsikko": "Haut",
     "hakutapa": "Hakutapa",
     "alkamiskausi": "Koulutuksen alkamiskausi",
     "hakukohteet": "Hakukohteet",
-    "search": "Hae hakuja",
-    "amount": "Hakuja:"
+    "hae": "Hae hakuja",
+    "maara": "Hakuja:"
   },
   "hakukohde": {
     "valitse": "Valitse hakukohde",
     "oid": "Hakukohde oid: "
   },
   "perustiedot": {
-    "title": "Perustiedot"
+    "otsikko": "Perustiedot"
   },
   "hakeneet": {
-    "title": "Hakeneet"
+    "otsikko": "Hakeneet"
   },
   "valinnanhallinta": {
-    "title": "Valinnan hallinta"
+    "otsikko": "Valinnan hallinta"
   },
   "koekutsut": {
-    "title": "Valintakoekutsut"
+    "otsikko": "Valintakoekutsut"
   },
   "pistesyotto": {
-    "title": "Pistesyöttö"
+    "otsikko": "Pistesyöttö"
   },
   "harkinnanvaraiset": {
-    "title": "Harkinnanvaraiset"
+    "otsikko": "Harkinnanvaraiset"
   },
   "hakijaryhmat": {
-    "title": "Hakijaryhmät"
+    "otsikko": "Hakijaryhmät"
   },
   "valintalaskennantulos": {
-    "title": "Valintalaskennan tulos"
+    "otsikko": "Valintalaskennan tulos"
   },
   "sijoitteluntulokset": {
-    "title": "Sijoittelun tulokset"
+    "otsikko": "Sijoittelun tulokset"
   }
 }

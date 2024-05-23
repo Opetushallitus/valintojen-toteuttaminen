@@ -8,10 +8,8 @@ import ListTable, {
   makeTilaColumn,
 } from '../components/table/list-table';
 import { Haku } from '../lib/kouta-types';
-import { useUserLanguage } from '../hooks/useAsiointiKieli';
-import { Language } from '../lib/localization/localization-types';
-import { translateName } from '../lib/localization/translation-utils';
-import { useTranslation } from 'react-i18next';
+import { TranslatedName } from '../lib/localization/localization-types';
+import { useTranslations } from '../hooks/useTranslations';
 
 export const HakuTable = ({
   haut,
@@ -25,20 +23,20 @@ export const HakuTable = ({
   setSort: (sort: string) => void;
 }) => {
   const getMatchingHakutapa =
-    (userLanguage: Language) => (hakutapaKoodiUri: string) => {
+    (translateEntity: (entity: TranslatedName) => string) =>
+    (hakutapaKoodiUri: string) => {
       const matching = hakutavat.find((tapa: Koodi) =>
         hakutapaKoodiUri.startsWith(tapa.koodiUri),
       );
-      return matching ? translateName(matching.nimi, userLanguage) : undefined;
+      return matching ? translateEntity(matching.nimi) : undefined;
     };
 
-  const userLanguage = useUserLanguage();
-  const { t } = useTranslation();
+  const { t, translateEntity } = useTranslations();
 
   const columns = [
-    makeHakuColumn(userLanguage),
+    makeHakuColumn(translateEntity),
     makeTilaColumn(),
-    makeHakutapaColumn(getMatchingHakutapa(userLanguage)),
+    makeHakutapaColumn(getMatchingHakutapa(translateEntity)),
     makeKoulutuksenAlkamiskausiColumn(t),
     makeCountColumn({
       title: 'haku.hakukohteet',

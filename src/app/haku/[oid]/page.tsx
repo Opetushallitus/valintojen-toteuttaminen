@@ -1,9 +1,9 @@
 'use client';
 
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from '@/app/hooks/useTranslations';
 
 export default function HakuPage() {
-  const { t } = useTranslation();
+  const { t } = useTranslations();
 
   return (
     <div style={{ alignSelf: 'center', width: '70%', padding: '1rem 2rem' }}>

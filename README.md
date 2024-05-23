@@ -18,7 +18,7 @@ Aja yksikkötestit komennolla:
 
 `npm test`
 
-### E2E-testit
+### Kälitestit
 
 Käynnistä sovelluskomennolla:
 
@@ -26,15 +26,15 @@ Käynnistä sovelluskomennolla:
 
 Aja sen jälkeen testit komennolla:
 
-`npm run test:ui`
+`npx playwright test`
 
 Jos haluat ajaa testit vain tietyllä selaimella niin se onnistuu komennolla:
 
-`npm run test:ui -- --project=firefox`
+`npx playwright test --project=firefox`
 
 Jos haluat ajaa vain tietyn testitiedoston, se onnistuu komennolla:
 
-`npm run test:ui -- --project=chromium tests/e2e/lokalisointi.spec.ts`
+`npx playwright test --project=chromium tests/e2e/lokalisointi.spec.ts`
 
 ## Deploy
 

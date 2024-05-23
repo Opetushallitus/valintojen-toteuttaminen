@@ -8,7 +8,7 @@ test.describe('Localization', async () => {
       'Julkaistu',
     );
     await expect(page.getByText('Haut')).toBeVisible();
-    await expect(page.getByText('haut.title')).not.toBeVisible();
+    await expect(page.getByText('haut.otsikko')).not.toBeVisible();
   });
 
   test('translates page to english', async ({ page }) => {
@@ -24,7 +24,7 @@ test.describe('Localization', async () => {
       'Published',
     );
     await expect(page.getByText('Haut')).not.toBeVisible();
-    await expect(page.getByText('haku.title')).toBeVisible();
+    await expect(page.getByText('haku.otsikko')).toBeVisible();
   });
 
   test('translates page to swedish', async ({ page }) => {
@@ -37,9 +37,9 @@ test.describe('Localization', async () => {
     await page.goto('/');
     await expect(page).toHaveTitle(/Valintojen Toteuttaminen/);
     await expect(
-      page.getByRole('combobox', { name: 'common.status' }),
+      page.getByRole('combobox', { name: 'yleinen.tila' }),
     ).toContainText('Publicerad');
     await expect(page.getByText('Haut')).not.toBeVisible();
-    await expect(page.getByText('haku.title')).toBeVisible();
+    await expect(page.getByText('haku.otsikko')).toBeVisible();
   });
 });

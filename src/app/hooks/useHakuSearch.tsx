@@ -6,7 +6,6 @@ import {
   Tila,
   getHakuAlkamisKaudet,
 } from '../lib/kouta-types';
-import { translateName } from '../lib/localization/translation-utils';
 import { useDebounce } from '@/app/hooks/useDebounce';
 import { parseAsInteger, useQueryState } from 'nuqs';
 import { useHasChanged } from '@/app/hooks/useHasChanged';
@@ -18,7 +17,7 @@ import {
   DEFAULT_PAGE_SIZE,
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
 } from '@/app/lib/constants';
-import { useUserLanguage } from './useAsiointiKieli';
+import { useTranslations } from './useTranslations';
 
 const DEFAULT_NUQS_OPTIONS = {
   history: 'push',
@@ -151,7 +150,7 @@ export const useHakuSearchParams = () => {
 export const useHakuSearchResults = () => {
   const alkamiskaudet = useMemo(getHakuAlkamisKaudet, []);
   const { data: hakutavat } = useHakutavat();
-  const userLanguage = useUserLanguage();
+  const { translateEntity } = useTranslations();
 
   const { data: haut } = useSuspenseQuery({
     queryKey: ['getHaut'],
@@ -190,7 +189,7 @@ export const useHakuSearchResults = () => {
     const filtered = haut.filter(
       (haku: Haku) =>
         tilat.includes(haku.tila) &&
-        translateName(haku.nimi, userLanguage)
+        translateEntity(haku.nimi)
           .toLowerCase()
           .includes(searchPhrase?.toLowerCase() ?? '') &&
         alkamisKausiMatchesSelected(
@@ -200,7 +199,7 @@ export const useHakuSearchResults = () => {
         haku.hakutapaKoodiUri.startsWith(selectedHakutapa ?? ''),
     );
     return orderBy && direction
-      ? filtered.sort(byProp(orderBy, direction, userLanguage))
+      ? filtered.sort(byProp(orderBy, direction, translateEntity))
       : filtered;
   }, [
     haut,
@@ -210,6 +209,7 @@ export const useHakuSearchResults = () => {
     selectedHakutapa,
     alkamiskaudet,
     sort,
+    translateEntity,
   ]);
 
   const pageResults = useMemo(() => {

@@ -15,8 +15,3 @@ export const useAsiointiKieli = () =>
 
     staleTime: Infinity,
   });
-
-export const useUserLanguage = (): Language => {
-  const { data } = useAsiointiKieli();
-  return data || 'fi';
-};

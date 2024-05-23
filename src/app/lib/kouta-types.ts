@@ -11,8 +11,8 @@ export type HaunAlkaminen = {
 
 export const getAlkamisKausi = (alkamisKausiKoodiUri: string) =>
   alkamisKausiKoodiUri.startsWith('kausi_s')
-    ? 'common.autumn'
-    : 'common.spring';
+    ? 'yleinen.syksy'
+    : 'yleinen.kevat';
 
 export const getHakuAlkamisKaudet = (): HaunAlkaminen[] => {
   const nowYear = new Date().getFullYear();
@@ -21,13 +21,13 @@ export const getHakuAlkamisKaudet = (): HaunAlkaminen[] => {
     alkamiset.push({
       alkamisVuosi: i,
       alkamisKausiKoodiUri: 'kausi_s',
-      alkamisKausiNimi: 'common.autumn',
+      alkamisKausiNimi: 'yleinen.syksy',
       value: `${i}_syksy`,
     });
     alkamiset.push({
       alkamisVuosi: i,
       alkamisKausiKoodiUri: 'kausi_k',
-      alkamisKausiNimi: 'common.spring',
+      alkamisKausiNimi: 'yleinen.kevat',
       value: `${i}_kevat`,
     });
   }

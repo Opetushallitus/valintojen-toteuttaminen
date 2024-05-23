@@ -1,16 +1,16 @@
 {
-  "title": "Valintojen Toteuttaminen",
+  "otsikko": "Valintojen Toteuttaminen",
   "julkaistu": "Published",
   "arkistoitu": "Archived",
-  "common": {
-    "name": "Name",
-    "status": "State",
-    "choose": "Select...",
-    "spring": "Spring",
-    "autumn": "Autumn",
-    "published": "Published",
-    "archived": "Archived",
-    "noresults": "No results",
-    "perpage": "Show per page:"
+  "yleinen": {
+    "nimi": "Name",
+    "tila": "State",
+    "valitse": "Select...",
+    "kevat": "Spring",
+    "syksy": "Autumn",
+    "julkaistu": "Published",
+    "arkistoitu": "Archived",
+    "eiosumia": "No results",
+    "persivu": "Show per page:"
   }
 }
