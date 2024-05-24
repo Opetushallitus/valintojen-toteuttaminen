@@ -24,7 +24,6 @@ export const getSijoittelunTulokset = async (
     const response = await client.get(
       `${configuration.valintaTulosServiceUrl}sijoitteluntulos/yhteenveto/${hakuOid}/hakukohde/${hakukohdeOid}`,
     );
-    console.log(response);
     const jsonTulokset: ValintatapajonoTulos[] = response.data?.map(
       (tulos: {
         valintatapajonoNimi: string;
