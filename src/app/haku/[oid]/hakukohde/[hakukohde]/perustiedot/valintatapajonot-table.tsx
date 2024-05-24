@@ -2,6 +2,7 @@
 
 import ListTable, {
   makeCountColumn,
+  makeGenericColumn,
   makeNameColumn,
 } from '@/app/components/table/list-table';
 import { isToisenAsteenYhteisHaku } from '@/app/lib/kouta';
@@ -17,10 +18,10 @@ export const ValintatapajonotTable = ({
 }) => {
   const columns = [
     makeNameColumn(),
-    makeCountColumn<ValintatapajonoTulos>({
+    makeGenericColumn<ValintatapajonoTulos>({
       title: 'Sijoittelun käyttämät aloituspaikat',
       key: 'sijoittelun-aloituspaikat',
-      amountProp: 'sijoittelunAloituspaikat',
+      valueProp: 'sijoittelunAloituspaikat',
     }),
     makeCountColumn<ValintatapajonoTulos>({
       title: 'Hyväksytyt yht',

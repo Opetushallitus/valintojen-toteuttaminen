@@ -57,6 +57,21 @@ export const makeNameColumn = <T extends Entity = Entity>(): Column<T> => ({
   },
 });
 
+export const makeGenericColumn = <T extends Entity = Entity>({
+  title,
+  key,
+  valueProp,
+}: {
+  title: string;
+  key: string;
+  valueProp: KeysMatching<T, string>;
+}): Column<T> => ({
+  title,
+  key,
+  render: (props) => <span>{(props[valueProp] ?? 0) as string}</span>,
+  style: { width: 'auto' },
+});
+
 export const makeCountColumn = <T extends Entity = Entity>({
   title,
   key,

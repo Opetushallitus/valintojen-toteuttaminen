@@ -6,7 +6,7 @@ import { client } from './http-client';
 export type ValintatapajonoTulos = {
   nimi: string;
   oid: string;
-  sijoittelunAloituspaikat: number;
+  sijoittelunAloituspaikat: string;
   hyvaksytty: number;
   ehdollisestiHyvaksytty: number;
   harkinnanvaraisestiHyvaksytty: number;
@@ -22,25 +22,37 @@ export const getSijoittelunTulokset = async (
 ): Promise<ValintatapajonoTulos[]> => {
   try {
     const response = await client.get(
-      `${configuration.valintaTulosServiceUrl}sijoitteluntulos/${hakuOid}/sijoitteluajo/latest/hakukohde/${hakukohdeOid}`,
+      `${configuration.valintaTulosServiceUrl}sijoitteluntulos/yhteenveto/${hakuOid}/hakukohde/${hakukohdeOid}`,
     );
-    const jsonTulokset: ValintatapajonoTulos[] =
-      response.data?.sijoittelunTulokset?.valintatapajonot?.map(
-        (jono: { nimi: string; oid: string }) => {
-          return {
-            nimi: jono.nimi,
-            oid: jono.oid,
-            sijoittelunAloituspaikat: 100,
-            hyvaksytty: 40,
-            ehdollisestiHyvaksytty: 5,
-            harkinnanvaraisestiHyvaksytty: 5,
-            varasijoilla: 255,
-            vastaanottaneet: 5,
-            paikanPeruneet: 10,
-            pisteraja: 8.5,
-          };
-        },
-      );
+    console.log(response);
+    const jsonTulokset: ValintatapajonoTulos[] = response.data?.map(
+      (tulos: {
+        valintatapajonoNimi: string;
+        valintatapajonoOid: string;
+        sijoittelunKayttamatAloituspaikat: number;
+        aloituspaikat: number;
+        hyvaksytyt: number;
+        ehdollisestiVastaanottaneet: number;
+        paikanVastaanottaneet: number;
+        varasijoilla: number;
+        alinHyvaksyttyPistemaara: number;
+        ehdollisestiHyvaksytyt: number;
+        peruneet: number;
+      }) => {
+        return {
+          nimi: tulos.valintatapajonoNimi,
+          oid: tulos.valintatapajonoOid,
+          sijoittelunAloituspaikat: `${tulos.sijoittelunKayttamatAloituspaikat}/${tulos.aloituspaikat}`,
+          hyvaksytty: tulos.hyvaksytyt,
+          ehdollisestiHyvaksytty: tulos.ehdollisestiHyvaksytyt,
+          harkinnanvaraisestiHyvaksytty: 0,
+          varasijoilla: tulos.varasijoilla,
+          vastaanottaneet: tulos.paikanVastaanottaneet,
+          paikanPeruneet: tulos.peruneet,
+          pisteraja: tulos.alinHyvaksyttyPistemaara,
+        };
+      },
+    );
     return jsonTulokset;
   } catch (error) {
     if (error?.response?.status == 404) {
