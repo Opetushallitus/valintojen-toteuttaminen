@@ -2,6 +2,8 @@ import { createServer } from 'http';
 import HAUT from './fixtures/haut.json';
 import HAKUKOHTEET from './fixtures/hakukohteet.json';
 import HAKUTAPA_CODES from './fixtures/hakutapa.json';
+import SIJOITTELUN_YHTEENVETO from './fixtures/sijoittelun_yhteenveto.json';
+import VALINTARYHMA from './fixtures/valintaryhma.json';
 
 const port = 3104;
 
@@ -44,6 +46,20 @@ export default async function playwrightSetup() {
       const hakuId = request.url.split('haku/')[1];
       const haku = HAUT.find((hakuData) => hakuData.oid === hakuId);
       response.write(JSON.stringify(haku));
+      response.end();
+      return;
+    } else if (
+      request.url.includes(
+        `valinta-tulos-service/auth/sijoitteluntulos/yhteenveto`,
+      )
+    ) {
+      response.write(JSON.stringify(SIJOITTELUN_YHTEENVETO));
+      response.end();
+      return;
+    } else if (
+      request.url.includes(`valintaperusteet-service/resources/hakukohde`)
+    ) {
+      response.write(JSON.stringify(VALINTARYHMA));
       response.end();
       return;
     } else {

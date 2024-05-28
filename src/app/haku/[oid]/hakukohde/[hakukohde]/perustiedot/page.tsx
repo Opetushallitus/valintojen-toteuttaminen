@@ -30,6 +30,7 @@ export default function PerustiedotTab({
   return (
     <TabContainer>
       <BasicInfo hakukohdeOid={params.hakukohde} />
+      <h3>Valintatapajonot</h3>
       <Suspense fallback={<CircularProgress />}>
         <ValintatapajonotTable
           valintatapajonoTulokset={jonotQuery.data}

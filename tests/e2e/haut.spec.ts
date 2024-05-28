@@ -111,6 +111,7 @@ test('filters by hakutapa and start period', async ({ page }) => {
 });
 
 test('sorts list by nimi when header clicked', async ({ page }) => {
+  await expectAllSpinnersHidden(page);
   const nimiHeader = page.getByRole('columnheader', { name: 'Nimi' });
   await nimiHeader.getByRole('button').click();
   await expect(nimiHeader).toHaveAttribute('aria-sort', 'ascending');
