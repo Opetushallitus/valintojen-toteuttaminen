@@ -38,7 +38,7 @@ export const makeHakuColumn = <T extends Entity = Entity>(
   key: 'nimi',
   render: (haku) => (
     <MuiLink href={`/haku/${haku.oid}`} sx={{ textDecoration: 'none' }}>
-      {translateEntity(haku.nimi)}
+      {typeof haku.nimi == 'string' ? haku.nimi : translateEntity(haku.nimi)}
     </MuiLink>
   ),
   style: {
@@ -46,11 +46,13 @@ export const makeHakuColumn = <T extends Entity = Entity>(
   },
 });
 
-export const makeNameColumn = <T extends Entity = Entity>(): Column<T> => ({
+export const makeNameColumn = <T extends Entity = Entity>(
+  translateEntity: (entity: TranslatedName) => string,
+): Column<T> => ({
   title: 'Nimi',
   key: 'nimi',
   render: (t) => (
-    <span>{typeof t.nimi == 'string' ? t.nimi : getTranslation(t.nimi)}</span>
+    <span>{typeof t.nimi == 'string' ? t.nimi : translateEntity(t.nimi)}</span>
   ),
   style: {
     width: 'auto',

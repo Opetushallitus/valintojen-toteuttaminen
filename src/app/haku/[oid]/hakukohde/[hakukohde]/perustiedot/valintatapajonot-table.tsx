@@ -5,6 +5,7 @@ import ListTable, {
   makeGenericColumn,
   makeNameColumn,
 } from '@/app/components/table/list-table';
+import { useTranslations } from '@/app/hooks/useTranslations';
 import { isToisenAsteenYhteisHaku } from '@/app/lib/kouta';
 import { Haku } from '@/app/lib/kouta-types';
 import { ValintatapajonoTulos } from '@/app/lib/valinta-tulos-service';
@@ -16,8 +17,10 @@ export const ValintatapajonotTable = ({
   valintatapajonoTulokset: ValintatapajonoTulos[];
   haku: Haku;
 }) => {
+  const { translateEntity } = useTranslations();
+
   const columns = [
-    makeNameColumn(),
+    makeNameColumn(translateEntity),
     makeGenericColumn<ValintatapajonoTulos>({
       title: 'Sijoittelun käyttämät aloituspaikat',
       key: 'sijoittelun-aloituspaikat',
