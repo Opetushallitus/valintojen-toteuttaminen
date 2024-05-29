@@ -155,7 +155,7 @@ const SortIcon = ({
   sortValue,
   colId,
 }: {
-  sortValue: string;
+  sortValue?: string;
   colId: string;
 }) => {
   switch (sortValue) {
@@ -185,7 +185,7 @@ const HeaderCell = ({
 
   return (
     <StyledCell style={style} sortDirection={direction}>
-      {sort && setSort && (
+      {setSort && (
         <Button
           sx={{
             color: colors.black,
@@ -206,7 +206,7 @@ const HeaderCell = ({
           {title}
         </Button>
       )}
-      {!sort && <>{title}</>}
+      {!setSort && <>{title}</>}
     </StyledCell>
   );
 };
