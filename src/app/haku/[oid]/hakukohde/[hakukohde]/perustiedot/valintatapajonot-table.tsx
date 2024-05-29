@@ -3,9 +3,7 @@
 import ListTable, {
   makeCountColumn,
   makeGenericColumn,
-  makeNameColumn,
 } from '@/app/components/table/list-table';
-import { useTranslations } from '@/app/hooks/useTranslations';
 import { isToisenAsteenYhteisHaku } from '@/app/lib/kouta';
 import { Haku } from '@/app/lib/kouta-types';
 import { ValintatapajonoTulos } from '@/app/lib/valinta-tulos-service';
@@ -17,48 +15,50 @@ export const ValintatapajonotTable = ({
   valintatapajonoTulokset: ValintatapajonoTulos[];
   haku: Haku;
 }) => {
-  const { translateEntity } = useTranslations();
-
   const columns = [
-    makeNameColumn(translateEntity),
     makeGenericColumn<ValintatapajonoTulos>({
-      title: 'Sijoittelun käyttämät aloituspaikat',
+      title: 'perustiedot.taulukko.valintatapajono',
+      key: 'valintatapajono',
+      valueProp: 'nimi',
+    }),
+    makeGenericColumn<ValintatapajonoTulos>({
+      title: 'perustiedot.taulukko.aloituspaikat',
       key: 'sijoittelun-aloituspaikat',
       valueProp: 'sijoittelunAloituspaikat',
     }),
     makeCountColumn<ValintatapajonoTulos>({
-      title: 'Hyväksytyt yht',
+      title: 'perustiedot.taulukko.hyvaksytyt',
       key: 'hyvaksytyt',
       amountProp: 'hyvaksytty',
     }),
     isToisenAsteenYhteisHaku(haku)
       ? makeCountColumn<ValintatapajonoTulos>({
-          title: 'Harkinnanvaraisesti hyväksytyt',
+          title: 'perustiedot.taulukko.harkinnanvaraiset',
           key: 'harkinnanvaraisesti-hyvaksytyt',
           amountProp: 'harkinnanvaraisestiHyvaksytty',
         })
       : makeCountColumn<ValintatapajonoTulos>({
-          title: 'Joista ehdollisesti hyväksytyt',
+          title: 'perustiedot.taulukko.ehdolliset',
           key: 'ehdollisesti-hyvaksytyt',
           amountProp: 'ehdollisestiHyvaksytty',
         }),
     makeCountColumn<ValintatapajonoTulos>({
-      title: 'Varasijoilla',
+      title: 'perustiedot.taulukko.varasijoilla',
       key: 'varasijoilla',
       amountProp: 'varasijoilla',
     }),
     makeCountColumn<ValintatapajonoTulos>({
-      title: 'Paikan vastaanottaneet',
+      title: 'perustiedot.taulukko.vastaanottaneet',
       key: 'vastaanottaneet',
       amountProp: 'vastaanottaneet',
     }),
     makeCountColumn<ValintatapajonoTulos>({
-      title: 'Paikan peruneet',
+      title: 'perustiedot.taulukko.peruneet',
       key: 'peruneet',
       amountProp: 'paikanPeruneet',
     }),
     makeCountColumn<ValintatapajonoTulos>({
-      title: 'Alin hyväksytty pistemäärä',
+      title: 'perustiedot.taulukko.pisteraja',
       key: 'pisteraja',
       amountProp: 'pisteraja',
     }),

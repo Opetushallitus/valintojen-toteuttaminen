@@ -3,18 +3,20 @@
 import { getSijoittelunTulokset } from '@/app/lib/valinta-tulos-service';
 import { TabContainer } from '../TabContainer';
 import BasicInfo from './basic-info';
-import { useSuspenseQueries } from '@tanstack/react-query';
+import { useQueries } from '@tanstack/react-query';
 import { ValintatapajonotTable } from './valintatapajonot-table';
 import { getHaku } from '@/app/lib/kouta';
 import { CircularProgress } from '@mui/material';
-import { Suspense } from 'react';
+import { useTranslations } from '@/app/hooks/useTranslations';
 
 export default function PerustiedotTab({
   params,
 }: {
   params: { oid: string; hakukohde: string };
 }) {
-  const [hakuQuery, jonotQuery] = useSuspenseQueries({
+  const { t } = useTranslations();
+
+  const [hakuQuery, jonotQuery] = useQueries({
     queries: [
       {
         queryKey: ['getHaku', params.oid],
@@ -30,16 +32,24 @@ export default function PerustiedotTab({
   return (
     <TabContainer>
       <BasicInfo hakukohdeOid={params.hakukohde} />
-      <h3>Valintatapajonot</h3>
-      <Suspense fallback={<CircularProgress />}>
-        <ValintatapajonotTable
-          valintatapajonoTulokset={jonotQuery.data}
-          haku={hakuQuery.data}
-        />
-      </Suspense>
-      {(!jonotQuery.data || jonotQuery.data.length < 1) && (
-        <span>Ei tulostietoja, sijoittelua ei ole vielä kenties tehty.</span>
-      )}
+      <h3>{t('perustiedot.taulukko.otsikko')}</h3>
+      {hakuQuery.isLoading ||
+        (jonotQuery.isLoading && (
+          <CircularProgress aria-label={t('yleinen.ladataan')} />
+        ))}
+      {!(hakuQuery.isLoading || jonotQuery.isLoading) &&
+        jonotQuery.data &&
+        jonotQuery.data.length > 0 &&
+        hakuQuery.data && (
+          <ValintatapajonotTable
+            valintatapajonoTulokset={jonotQuery.data}
+            haku={hakuQuery.data}
+          />
+        )}
+      {!(hakuQuery.isLoading || jonotQuery.isLoading) &&
+        (!jonotQuery.data || jonotQuery.data.length < 1) && (
+          <span>{t('perustiedot.taulukko.eiosumia')}</span>
+        )}
     </TabContainer>
   );
 }

@@ -30,7 +30,7 @@ test('displays perustiedot', async ({ page }) => {
   checkRow(
     headrow,
     [
-      'Nimi',
+      'Valintatapajono',
       'Sijoittelun käyttämät aloituspaikat',
       'Hyväksytyt yht',
       'Joista ehdollisesti hyväksytyt',
@@ -73,4 +73,43 @@ test('displays perustiedot', async ({ page }) => {
     '5',
     '5.76',
   ]);
+});
+
+test('shows harkinnanvarainen column when toisen asteen yhteishaku', async ({
+  page,
+}) => {
+  await page.route(
+    '*/**/kouta-internal/haku/1.2.246.562.29.00000000000000045102*',
+    async (route) => {
+      const haku = {
+        oid: '1.2.246.562.29.00000000000000045102',
+        tila: 'julkaistu',
+        hakutapaKoodiUri: 'hakutapa_01',
+        hakuVuosi: '2024',
+        hakukausi: 'kausi_s',
+        totalHakukohteet: 1,
+        kohdejoukkoKoodiUri: 'haunkohdejoukko_11',
+      };
+      await route.fulfill({ body: JSON.stringify(haku), contentType: 'json' });
+    },
+  );
+  await page.goto(
+    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/perustiedot',
+  );
+  await expectAllSpinnersHidden(page);
+  const headrow = await page.locator('thead tr');
+  checkRow(
+    headrow,
+    [
+      'Valintatapajono',
+      'Sijoittelun käyttämät aloituspaikat',
+      'Hyväksytyt yht',
+      'Harkinnanvaraisesti hyväksytyt',
+      'Varasijoilla',
+      'Paikan vastaanottaneet',
+      'Paikan peruneet',
+      'Alin hyväksytty pistemäärä',
+    ],
+    'th',
+  );
 });

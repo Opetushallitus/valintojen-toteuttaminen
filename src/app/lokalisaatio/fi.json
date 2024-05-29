@@ -9,7 +9,9 @@
     "kevat": "kevät",
     "syksy": "syksy",
     "eiosumia": "Ei hakutuloksia",
-    "persivu": "Näytä per sivu:"
+    "persivu": "Näytä per sivu:",
+    "ladataan": "ladataan...",
+    "lisatiedot": "Lisätiedot"
   },
   "virhe": {
     "palvelin": "Palvelinpyyntö epäonnistui!",
@@ -30,7 +32,23 @@
     "oid": "Hakukohde oid: "
   },
   "perustiedot": {
-    "otsikko": "Perustiedot"
+    "otsikko": "Perustiedot",
+    "valintaryhma": "Valintaryhmä",
+    "valintaperusteet": "Valintaperusteet",
+    "tarjonta": "Tarjonta",
+    "taulukko": {
+      "otsikko": "Valintatapajonot",
+      "valintatapajono": "Valintatapajono",
+      "eiosumia": "Ei tulostietoja, sijoittelua ei ole vielä ehkä tehty",
+      "aloituspaikat": "Sijoittelun käyttämät aloituspaikat",
+      "hyvaksytyt": "Hyväksytyt yht",
+      "harkinnanvaraiset": "Harkinnanvaraisesti hyväksytyt",
+      "ehdolliset": "Joista ehdollisesti hyväksytyt",
+      "varasijoilla": "Varasijoilla",
+      "vastaanottaneet": "Paikan vastaanottaneet",
+      "peruneet": "Paikan peruneet",
+      "pisteraja": "Alin hyväksytty pistemäärä"
+    }
   },
   "hakeneet": {
     "otsikko": "Hakeneet"

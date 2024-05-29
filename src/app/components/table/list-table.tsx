@@ -206,7 +206,7 @@ const HeaderCell = ({
           {title}
         </Button>
       )}
-      {!setSort && <>{title}</>}
+      {!setSort && <span style={{ fontWeight: 600 }}>{title}</span>}
     </StyledCell>
   );
 };
