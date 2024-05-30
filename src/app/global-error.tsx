@@ -1,5 +1,5 @@
 'use client';
-import ErrorBoundary from './components/error-boundary';
+import { ErrorView } from './components/error-view';
 
 export default function GlobalError({
   error,
@@ -11,7 +11,7 @@ export default function GlobalError({
   return (
     <html>
       <body>
-        <ErrorBoundary error={error} reset={reset} />
+        <ErrorView error={error} reset={reset} />
       </body>
     </html>
   );

@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { FetchError } from '../lib/common';
 import { useTranslations } from '../hooks/useTranslations';
 
-export default function Error({
+export function ErrorView({
   error,
   reset,
 }: {
