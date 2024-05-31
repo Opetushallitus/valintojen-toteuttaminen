@@ -98,7 +98,7 @@ test('shows harkinnanvarainen column when toisen asteen yhteishaku', async ({
   );
   await expectAllSpinnersHidden(page);
   const headrow = await page.locator('thead tr');
-  checkRow(
+  await checkRow(
     headrow,
     [
       'Valintatapajono',
