@@ -1,0 +1,44 @@
+[
+  {
+    "valintatapajonoNimi": "Perusjono",
+    "valintatapajonoOid": "Perusjonon tunniste",
+    "sijoittelunKayttamatAloituspaikat": 80,
+    "aloituspaikat": 100,
+    "hyvaksytyt": 80,
+    "ehdollisestiVastaanottaneet": 25,
+    "paikanVastaanottaneet": 35,
+    "varasijoilla": 150,
+    "alinHyvaksyttyPistemaara": 7.76,
+    "ehdollisestiHyvaksytyt": 20,
+    "peruneet": 15,
+    "harkinnanvaraisestiHyvaksytty": 5
+  },
+  {
+    "valintatapajonoNimi": "Erikoisjono",
+    "valintatapajonoOid": "Erikoisjonon tunniste",
+    "sijoittelunKayttamatAloituspaikat": 15,
+    "aloituspaikat": 100,
+    "hyvaksytyt": 10,
+    "ehdollisestiVastaanottaneet": 5,
+    "paikanVastaanottaneet": 5,
+    "varasijoilla": 250,
+    "alinHyvaksyttyPistemaara": 9.76,
+    "ehdollisestiHyvaksytyt": 10,
+    "peruneet": 5,
+    "harkinnanvaraisestiHyvaksytty": 0
+  },
+  {
+    "valintatapajonoNimi": "Harkinnanvaraisten jono",
+    "valintatapajonoOid": "Harkinnanvaraisten jonon tunniste",
+    "sijoittelunKayttamatAloituspaikat": 5,
+    "aloituspaikat": 100,
+    "hyvaksytyt": 2,
+    "ehdollisestiVastaanottaneet": 1,
+    "paikanVastaanottaneet": 1,
+    "varasijoilla": 5,
+    "alinHyvaksyttyPistemaara": 5.76,
+    "ehdollisestiHyvaksytyt": 1,
+    "peruneet": 5,
+    "harkinnanvaraisestiHyvaksytty": 2
+  }
+]

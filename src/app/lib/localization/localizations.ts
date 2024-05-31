@@ -5,7 +5,7 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { isDev } from '../configuration';
 
-export const createLocalizationProvider = () => {
+export const createLocalization = () => {
   i18n
     .use(HttpBackend)
     .use(initReactI18next)

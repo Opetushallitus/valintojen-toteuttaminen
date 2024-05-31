@@ -5,12 +5,12 @@ import { getHaku } from '@/app/lib/kouta';
 import { useSuspenseQuery } from '@tanstack/react-query';
 
 export default function HeaderPage({ params }: { params: { oid: string } }) {
-  const { data: hakuNimi } = useSuspenseQuery({
+  const { data: haku } = useSuspenseQuery({
     queryKey: ['getHaku', params.oid],
     queryFn: () => getHaku(params.oid),
   });
 
   const { translateEntity } = useTranslations();
 
-  return <Header title={translateEntity(hakuNimi)} />;
+  return <Header title={translateEntity(haku.nimi)} />;
 }

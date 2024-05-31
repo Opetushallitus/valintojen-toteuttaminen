@@ -91,6 +91,14 @@ const makeRequest = async (request: Request) => {
 
             return responseToData(resp);
           }
+          if (request?.url?.includes('/valinta-tulos-service')) {
+            const resp = await retryWithLogin(
+              request,
+              configuration.valintaTulosServiceLogin,
+            );
+
+            return responseToData(resp);
+          }
         } catch (e) {
           if (e instanceof FetchError && isUnauthenticated(e.response)) {
             redirectToLogin();

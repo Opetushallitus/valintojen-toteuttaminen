@@ -1,4 +1,4 @@
 'use client';
-import ErrorBoundary from '@/app/components/error-boundary';
+import { ErrorView } from '@/app/components/error-view';
 
-export default ErrorBoundary;
+export default ErrorView;

@@ -25,7 +25,7 @@ type Column<P> = {
   style?: Record<string, string | number>;
 };
 
-type Entity = { oid: string; nimi: TranslatedName; tila: Tila };
+type Entity = { oid: string; nimi: TranslatedName | string; tila?: Tila };
 
 type KeysMatching<O, T> = {
   [K in keyof O]: O[K] extends T ? K : never;
@@ -38,7 +38,7 @@ export const makeHakuColumn = <T extends Entity = Entity>(
   key: 'nimi',
   render: (haku) => (
     <MuiLink href={`/haku/${haku.oid}`} sx={{ textDecoration: 'none' }}>
-      {translateEntity(haku.nimi)}
+      {typeof haku.nimi == 'string' ? haku.nimi : translateEntity(haku.nimi)}
     </MuiLink>
   ),
   style: {
@@ -46,18 +46,46 @@ export const makeHakuColumn = <T extends Entity = Entity>(
   },
 });
 
-export const makeCountColumn = ({
+export const makeNameColumn = <T extends Entity = Entity>(
+  translateEntity: (entity: TranslatedName) => string,
+): Column<T> => ({
+  title: 'Nimi',
+  key: 'nimi',
+  render: (t) => (
+    <span>{typeof t.nimi == 'string' ? t.nimi : translateEntity(t.nimi)}</span>
+  ),
+  style: {
+    width: 'auto',
+  },
+});
+
+export const makeGenericColumn = <T extends Entity = Entity>({
+  title,
+  key,
+  valueProp,
+}: {
+  title: string;
+  key: string;
+  valueProp: KeysMatching<T, string>;
+}): Column<T> => ({
+  title,
+  key,
+  render: (props) => <span>{(props[valueProp] ?? 0) as string}</span>,
+  style: { width: 'auto' },
+});
+
+export const makeCountColumn = <T extends Entity = Entity>({
   title,
   key,
   amountProp,
 }: {
   title: string;
   key: string;
-  amountProp: KeysMatching<Haku, number>;
-}): Column<Haku> => ({
+  amountProp: KeysMatching<T, number>;
+}): Column<T> => ({
   title,
   key,
-  render: (props) => <span>{props[amountProp] ?? 0}</span>,
+  render: (props) => <span>{(props[amountProp] ?? 0) as number}</span>,
   style: { width: 0 },
 });
 
@@ -119,15 +147,15 @@ const StyledTableBody = styled(TableBody)({
 interface ListTableProps<T> extends React.ComponentProps<typeof StyledTable> {
   columns?: Array<Column<T>>;
   rows?: Array<T>;
-  sort: string;
-  setSort: (sort: string) => void;
+  sort?: string;
+  setSort?: (sort: string) => void;
 }
 
 const SortIcon = ({
   sortValue,
   colId,
 }: {
-  sortValue: string;
+  sortValue?: string;
   colId: string;
 }) => {
   switch (sortValue) {
@@ -150,32 +178,35 @@ const HeaderCell = ({
   colId: string;
   title?: string;
   style?: Record<string, string | number>;
-  sort: string;
-  setSort: (sort: string) => void;
+  sort?: string;
+  setSort?: (sort: string) => void;
 }) => {
   const { direction } = getSortParts(sort, colId);
 
   return (
     <StyledCell style={style} sortDirection={direction}>
-      <Button
-        sx={{
-          color: colors.black,
-        }}
-        onClick={() => {
-          let newSortValue = '';
-          if (sort === `${colId}:asc`) {
-            newSortValue = `${colId}:desc`;
-          } else if (sort === `${colId}:desc`) {
-            newSortValue = '';
-          } else {
-            newSortValue = `${colId}:asc`;
-          }
-          setSort(newSortValue);
-        }}
-        endIcon={<SortIcon sortValue={sort} colId={colId} />}
-      >
-        {title}
-      </Button>
+      {setSort && (
+        <Button
+          sx={{
+            color: colors.black,
+          }}
+          onClick={() => {
+            let newSortValue = '';
+            if (sort === `${colId}:asc`) {
+              newSortValue = `${colId}:desc`;
+            } else if (sort === `${colId}:desc`) {
+              newSortValue = '';
+            } else {
+              newSortValue = `${colId}:asc`;
+            }
+            setSort(newSortValue);
+          }}
+          endIcon={<SortIcon sortValue={sort} colId={colId} />}
+        >
+          {title}
+        </Button>
+      )}
+      {!setSort && <span style={{ fontWeight: 600 }}>{title}</span>}
     </StyledCell>
   );
 };

@@ -3,12 +3,12 @@
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { getHakukohteet } from '@/app/lib/kouta';
 import { Hakukohde } from '@/app/lib/kouta-types';
-import { styled } from '@mui/material';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { CircularProgress, styled } from '@mui/material';
+import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 
 const StyledList = styled('div')({
-  maxWidth: '20vw',
+  width: '20vw',
   textAlign: 'left',
 });
 
@@ -33,21 +33,25 @@ export const HakukohdeList = ({ oid }: { oid: string }) => {
     router.push(`/haku/${oid}/hakukohde/${hakukohde.oid}/perustiedot`);
   };
 
-  const { data: hakukohteet } = useSuspenseQuery({
+  const { isLoading, data: hakukohteet } = useQuery({
     queryKey: ['getHakukohteet', oid],
     queryFn: () => getHakukohteet(oid),
   });
 
   return (
     <StyledList>
-      {hakukohteet.map((hk: Hakukohde) => (
-        <StyledItem key={hk.oid} onClick={() => selectHakukohde(hk)}>
-          <p title={hk.organisaatioOid} className="organizationLabel">
-            {translateEntity(hk.jarjestyspaikkaHierarkiaNimi)}
-          </p>
-          <p title={hk.oid}>{translateEntity(hk.nimi)}</p>
-        </StyledItem>
-      ))}
+      {isLoading && <CircularProgress />}
+      {!isLoading &&
+        hakukohteet?.map((hk: Hakukohde) => (
+          <StyledItem key={hk.oid} onClick={() => selectHakukohde(hk)}>
+            <p title={hk.organisaatioOid} className="organizationLabel">
+              {hk.jarjestyspaikkaHierarkiaNimi
+                ? translateEntity(hk.jarjestyspaikkaHierarkiaNimi)
+                : ''}
+            </p>
+            <p title={hk.oid}>{translateEntity(hk.nimi)}</p>
+          </StyledItem>
+        ))}
     </StyledList>
   );
 };

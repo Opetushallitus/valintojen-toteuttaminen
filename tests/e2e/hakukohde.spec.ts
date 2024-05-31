@@ -36,7 +36,7 @@ test('navigates to hakukohde tabs', async ({ page }) => {
   await expect(page.locator('span.hakukohdeLabel')).toHaveText(
     'Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs)',
   );
-  await expect(page.locator('h3')).toHaveText('Perustiedot');
+  await expect(page.locator('h3')).toHaveText('Valintatapajonot');
 });
 
 test('Hakukohde-page accessibility', async ({ page }) => {

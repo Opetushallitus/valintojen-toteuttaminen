@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import ReactQueryClientProvider from './components/react-query-client-provider';
-import Wrapper from './wrapper';
+import LocalizationProvider from './localization_provider';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '@/app/theme';
@@ -27,7 +27,7 @@ export default async function RootLayout({
         <AppRouterCacheProvider>
           <ReactQueryClientProvider>
             <ThemeProvider theme={theme}>
-              <Wrapper>{children}</Wrapper>
+              <LocalizationProvider>{children}</LocalizationProvider>
             </ThemeProvider>
           </ReactQueryClientProvider>
         </AppRouterCacheProvider>

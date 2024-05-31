@@ -10,8 +10,7 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 
 const StyledContainer = styled('div')({
   padding: '0.5rem 1.5rem 0',
-  width: '100%',
-  border: '1px solid lightgray',
+  borderBottom: '1px solid lightgray',
 });
 
 const StyledHeader = styled('div')({
@@ -59,7 +58,7 @@ function getPathMatchingTab(pathName: string) {
   return TABS.find((tab) => tab.route.startsWith(lastPath)) || TABS[0];
 }
 
-export const HakukohdeTabs = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
+const HakukohdeTabs = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
   const pathName = usePathname();
   const [activeTab, setActiveTab] = useState<BasicTab>(
     getPathMatchingTab(pathName),
