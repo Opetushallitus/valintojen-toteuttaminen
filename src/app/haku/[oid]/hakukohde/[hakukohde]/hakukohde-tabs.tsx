@@ -10,8 +10,7 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 
 const StyledContainer = styled('div')({
   padding: '0.5rem 1.5rem 0',
-  width: '100%',
-  border: '1px solid lightgray',
+  borderBottom: '1px solid lightgray',
 });
 
 const StyledHeader = styled('div')({
