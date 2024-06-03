@@ -25,7 +25,14 @@ export default async function playwrightSetup() {
       response.end();
       return;
     } else if (request.url.includes(`kouta-internal/haku/search`)) {
-      response.write(JSON.stringify(HAUT));
+      if (request.url.includes('&tarjoaja=')) {
+        const tarjoaja = request.url.split('&tarjoaja=')[1];
+        response.write(
+          JSON.stringify(HAUT.filter((h) => h.organisaatioOid === tarjoaja)),
+        );
+      } else {
+        response.write(JSON.stringify(HAUT));
+      }
       response.end();
       return;
     } else if (
