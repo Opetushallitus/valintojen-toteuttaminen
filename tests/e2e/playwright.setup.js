@@ -13,6 +13,12 @@ export default async function playwrightSetup() {
       response.writeHead(404);
       response.end();
       return;
+    } else if (
+      request.url.includes(`kayttooikeus-service/henkilo/current/omattiedot`)
+    ) {
+      response.write(JSON.stringify({ isAdmin: true, organisaatiot: [] }));
+      response.end();
+      return;
     } else if (request.url.includes(`henkilo/current/asiointiKieli`)) {
       response.setHeader('Content-Type', 'text/plain');
       response.write('fi');
