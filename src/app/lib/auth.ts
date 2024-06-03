@@ -1,6 +1,6 @@
-//TODO: check in (ticket) if service "VALINTOJENTOTEUTTAMINENKK" should still be considered
+//TODO: check in OK-519 if service "VALINTOJENTOTEUTTAMINENKK" should still be considered
 export const AUTH_SERVICE = 'VALINTOJENTOTEUTTAMINEN';
-//TODO: check also in (ticket) if role "TULOSTENTUONTI" is relevant
+//TODO: check also in OK-519 if role "TULOSTENTUONTI" is relevant
 export type RIGHT = 'CRUD' | 'READ' | 'READ_UPDATE';
 
 export type RightToOrganization = {
