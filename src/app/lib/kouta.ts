@@ -33,7 +33,7 @@ const rightsToTarjoajat = (userRights: UserRights): string =>
   userRights.admin
     ? ''
     : userRights.readOrganizations.reduce(
-        (prev, current) => `${prev}'&tarjoaja=${current}`,
+        (prev, current) => `${prev}&tarjoaja=${current}`,
         '',
       );
 

@@ -32,7 +32,7 @@ export const getUserRights = async (): Promise<UserRights> => {
   const userRights: UserRights = {
     admin: response.data.isAdmin,
     readOrganizations: getOrgsForRight(organizations, 'READ'),
-    writeOrganizations: getOrgsForRight(organizations, 'WRITE'),
+    writeOrganizations: getOrgsForRight(organizations, 'READ_UPDATE'),
     crudOrganizations: getOrgsForRight(organizations, 'CRUD'),
   };
   if (userRights.readOrganizations.length < 1 && !userRights.admin) {

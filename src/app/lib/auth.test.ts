@@ -3,10 +3,10 @@ import { RightToOrganization, getOrgsForRight } from './auth';
 
 const rights: RightToOrganization[] = [
   { organizationOid: 'readonly', rights: ['READ'] },
-  { organizationOid: 'writeonly', rights: ['WRITE'] },
+  { organizationOid: 'writeonly', rights: ['READ_UPDATE'] },
   { organizationOid: 'crudonly', rights: ['CRUD'] },
-  { organizationOid: 'all', rights: ['READ', 'CRUD', 'WRITE'] },
-  { organizationOid: 'writenread', rights: ['READ', 'WRITE'] },
+  { organizationOid: 'all', rights: ['READ', 'CRUD', 'READ_UPDATE'] },
+  { organizationOid: 'writenread', rights: ['READ', 'READ_UPDATE'] },
 ];
 
 test('returns organization oids allowed to read', () => {
@@ -20,7 +20,7 @@ test('returns organization oids allowed to read', () => {
 });
 
 test('returns organization oids allowed to write', () => {
-  expect(getOrgsForRight(rights, 'WRITE')).toStrictEqual([
+  expect(getOrgsForRight(rights, 'READ_UPDATE')).toStrictEqual([
     'writeonly',
     'crudonly',
     'all',

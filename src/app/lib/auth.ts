@@ -1,6 +1,7 @@
-export const AUTH_SERVICE = 'VALINTOJENTOTEUTTAMINEN'; //"VALINTOJENTOTEUTTAMINENKK" //Oikeudet? "CRUD" "TULOSTENTUONTI" "READ" "WRITE"
-export type RIGHT = 'CRUD' | 'READ' | 'WRITE';
-//const OPH_ORG = '1.2.246.562.10.00000000001' // RELEVANT?
+//TODO: check in (ticket) if service "VALINTOJENTOTEUTTAMINENKK" should still be considered
+export const AUTH_SERVICE = 'VALINTOJENTOTEUTTAMINEN';
+//TODO: check also in (ticket) if role "TULOSTENTUONTI" is relevant
+export type RIGHT = 'CRUD' | 'READ' | 'READ_UPDATE';
 
 export type RightToOrganization = {
   organizationOid: string;
@@ -14,10 +15,11 @@ export type UserRights = {
   crudOrganizations: string[];
 };
 
-const allowedToWrite = (right: RIGHT) => ['CRUD', 'WRITE'].includes(right);
+const allowedToWrite = (right: RIGHT) =>
+  ['CRUD', 'READ_UPDATE'].includes(right);
 const allowedToCRUD = (right: RIGHT) => right === 'CRUD';
 const allowedToRead = (right: RIGHT) =>
-  ['CRUD', 'READ', 'WRITE'].includes(right);
+  ['CRUD', 'READ', 'READ_UPDATE'].includes(right);
 
 export function getOrgsForRight(
   rights: RightToOrganization[],
@@ -28,7 +30,7 @@ export function getOrgsForRight(
   switch (right) {
     case 'CRUD':
       return filterByRight(allowedToCRUD);
-    case 'WRITE':
+    case 'READ_UPDATE':
       return filterByRight(allowedToWrite);
     case 'READ':
       return filterByRight(allowedToRead);
