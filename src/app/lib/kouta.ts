@@ -4,6 +4,7 @@ import { configuration } from './configuration';
 import { Haku, Hakukohde, Tila } from './kouta-types';
 import { client } from './http-client';
 import { TranslatedName } from './localization/localization-types';
+import { UserRights } from './auth';
 
 const mapToHaku = (h: {
   oid: string;
@@ -28,8 +29,17 @@ const mapToHaku = (h: {
   };
 };
 
-export async function getHaut() {
-  const response = await client.get(configuration.hautUrl);
+const rightsToTarjoajat = (userRights: UserRights): string =>
+  userRights.admin
+    ? ''
+    : userRights.readOrganizations.reduce(
+        (prev, current) => `${prev}'&tarjoaja=${current}`,
+        '',
+      );
+
+export async function getHaut(userRights: UserRights) {
+  const tarjoajaOids = rightsToTarjoajat(userRights);
+  const response = await client.get(`${configuration.hautUrl}${tarjoajaOids}`);
   const haut: Haku[] = response.data.map(mapToHaku);
   return haut;
 }
@@ -46,9 +56,13 @@ export async function getHaku(oid: string): Promise<Haku> {
   return mapToHaku(response.data);
 }
 
-export async function getHakukohteet(hakuOid: string): Promise<Hakukohde[]> {
+export async function getHakukohteet(
+  hakuOid: string,
+  userRights: UserRights,
+): Promise<Hakukohde[]> {
+  const tarjoajaOids = rightsToTarjoajat(userRights);
   const response = await client.get(
-    `${configuration.hakukohteetUrl}&haku=${hakuOid}`,
+    `${configuration.hakukohteetUrl}&haku=${hakuOid}${tarjoajaOids}`,
   );
   const hakukohteet: Hakukohde[] = response.data.map(
     (h: {
