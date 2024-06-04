@@ -7,8 +7,10 @@ import { styled } from '@mui/material';
 import { useRouter } from 'next/navigation';
 
 const StyledList = styled('div')({
-  width: '20vw',
+  width: '100%',
   textAlign: 'left',
+  overflowY: 'auto',
+  height: '80vh',
 });
 
 const StyledItem = styled('div')({
@@ -35,6 +37,7 @@ export const HakukohdeList = ({ hakuOid }: { hakuOid: string }) => {
 
   return (
     <StyledList>
+      <p>{results.length} hakukohdetta</p>
       {results?.map((hk: Hakukohde) => (
         <StyledItem key={hk.oid} onClick={() => selectHakukohde(hk)}>
           <p title={hk.organisaatioOid} className="organizationLabel">

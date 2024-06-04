@@ -7,6 +7,7 @@ import HakukohdeSearch from './hakukohde-search';
 const StyledPanel = styled('div')({
   width: '20vw',
   textAlign: 'left',
+  minHeight: '85vh',
 });
 
 export const HakukohdePanel = ({ oid }: { oid: string }) => {
