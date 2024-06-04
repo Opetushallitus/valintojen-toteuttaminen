@@ -1,11 +1,8 @@
 'use client';
 
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { useUserPermissions } from '@/app/hooks/useUserPermissions';
-import { getHakukohteet } from '@/app/lib/kouta';
 import { Hakukohde } from '@/app/lib/kouta-types';
-import { CircularProgress, styled } from '@mui/material';
-import { useQuery } from '@tanstack/react-query';
+import { styled } from '@mui/material';
 import { useRouter } from 'next/navigation';
 
 const StyledList = styled('div')({
@@ -26,35 +23,32 @@ const StyledItem = styled('div')({
   },
 });
 
-export const HakukohdeList = ({ oid }: { oid: string }) => {
+export const HakukohdeList = ({
+  hakuOid,
+  hakukohteet,
+}: {
+  hakuOid: string;
+  hakukohteet: Hakukohde[];
+}) => {
   const router = useRouter();
   const { translateEntity } = useTranslations();
 
   const selectHakukohde = (hakukohde: Hakukohde) => {
-    router.push(`/haku/${oid}/hakukohde/${hakukohde.oid}/perustiedot`);
+    router.push(`/haku/${hakuOid}/hakukohde/${hakukohde.oid}/perustiedot`);
   };
-
-  const { data: userPermissions } = useUserPermissions();
-
-  const { isLoading, data: hakukohteet } = useQuery({
-    queryKey: ['getHakukohteet', oid],
-    queryFn: () => getHakukohteet(oid, userPermissions),
-  });
 
   return (
     <StyledList>
-      {isLoading && <CircularProgress />}
-      {!isLoading &&
-        hakukohteet?.map((hk: Hakukohde) => (
-          <StyledItem key={hk.oid} onClick={() => selectHakukohde(hk)}>
-            <p title={hk.organisaatioOid} className="organizationLabel">
-              {hk.jarjestyspaikkaHierarkiaNimi
-                ? translateEntity(hk.jarjestyspaikkaHierarkiaNimi)
-                : ''}
-            </p>
-            <p title={hk.oid}>{translateEntity(hk.nimi)}</p>
-          </StyledItem>
-        ))}
+      {hakukohteet?.map((hk: Hakukohde) => (
+        <StyledItem key={hk.oid} onClick={() => selectHakukohde(hk)}>
+          <p title={hk.organisaatioOid} className="organizationLabel">
+            {hk.jarjestyspaikkaHierarkiaNimi
+              ? translateEntity(hk.jarjestyspaikkaHierarkiaNimi)
+              : ''}
+          </p>
+          <p title={hk.oid}>{translateEntity(hk.nimi)}</p>
+        </StyledItem>
+      ))}
     </StyledList>
   );
 };
