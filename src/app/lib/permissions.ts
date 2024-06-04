@@ -1,11 +1,11 @@
 //TODO: check in OK-519 if service "VALINTOJENTOTEUTTAMINENKK" should still be considered
-export const AUTH_SERVICE = 'VALINTOJENTOTEUTTAMINEN';
+export const SERVICE_KEY = 'VALINTOJENTOTEUTTAMINEN';
 //TODO: check also in OK-519 if role "TULOSTENTUONTI" is relevant
 export type Permission = 'CRUD' | 'READ' | 'READ_UPDATE';
 
 export type OrganizationPermissions = {
   organizationOid: string;
-  rights: Permission[];
+  permissions: Permission[];
 };
 
 export type UserPermissions = {
@@ -29,7 +29,7 @@ export function getOrgsForPermission(
     rightFn: (right: Permission) => boolean,
   ): string[] =>
     permissions
-      .filter((o) => o.rights.some(rightFn))
+      .filter((o) => o.permissions.some(rightFn))
       .map((o) => o.organizationOid);
   switch (permission) {
     case 'CRUD':

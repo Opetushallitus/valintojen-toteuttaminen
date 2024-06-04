@@ -149,14 +149,14 @@ export const useHakuSearchParams = () => {
 };
 
 export const useHakuSearchResults = () => {
-  const { data: userRights } = useUserPermissions();
+  const { data: userPermissions } = useUserPermissions();
   const alkamiskaudet = useMemo(getHakuAlkamisKaudet, []);
   const { data: hakutavat } = useHakutavat();
   const { translateEntity } = useTranslations();
 
   const { data: haut } = useSuspenseQuery({
     queryKey: ['getHaut'],
-    queryFn: () => getHaut(userRights),
+    queryFn: () => getHaut(userPermissions),
     select: (haut) =>
       haut.map((haku) => ({
         ...haku,

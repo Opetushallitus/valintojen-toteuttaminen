@@ -29,16 +29,16 @@ const mapToHaku = (h: {
   };
 };
 
-const rightsToTarjoajat = (userRights: UserPermissions): string =>
-  userRights.admin
+const permissionsToTarjoajat = (userPermissions: UserPermissions): string =>
+  userPermissions.admin
     ? ''
-    : userRights.readOrganizations.reduce(
+    : userPermissions.readOrganizations.reduce(
         (prev, current) => `${prev}&tarjoaja=${current}`,
         '',
       );
 
-export async function getHaut(userRights: UserPermissions) {
-  const tarjoajaOids = rightsToTarjoajat(userRights);
+export async function getHaut(userPermissions: UserPermissions) {
+  const tarjoajaOids = permissionsToTarjoajat(userPermissions);
   const response = await client.get(`${configuration.hautUrl}${tarjoajaOids}`);
   const haut: Haku[] = response.data.map(mapToHaku);
   return haut;
@@ -58,9 +58,9 @@ export async function getHaku(oid: string): Promise<Haku> {
 
 export async function getHakukohteet(
   hakuOid: string,
-  userRights: UserPermissions,
+  userPermissions: UserPermissions,
 ): Promise<Hakukohde[]> {
-  const tarjoajaOids = rightsToTarjoajat(userRights);
+  const tarjoajaOids = permissionsToTarjoajat(userPermissions);
   const response = await client.get(
     `${configuration.hakukohteetUrl}&haku=${hakuOid}${tarjoajaOids}`,
   );

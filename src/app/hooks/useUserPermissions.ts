@@ -4,41 +4,41 @@ import { configuration } from '../lib/configuration';
 import {
   OrganizationPermissions,
   UserPermissions,
-  AUTH_SERVICE,
+  SERVICE_KEY,
   Permission,
   getOrgsForPermission,
 } from '../lib/permissions';
 
 export const getUserPermissions = async (): Promise<UserPermissions> => {
   const response = await client.get(configuration.kayttoikeusUrl);
-  if (!response.data) {
-    throw Error('Unable to get user data');
-  }
   const organizations: OrganizationPermissions[] = response.data.organisaatiot
     .map(
       (o: {
         organisaatioOid: string;
         kayttooikeudet: [{ palvelu: string; oikeus: Permission }];
       }) => {
-        const rights: Permission[] = o.kayttooikeudet
-          .filter((o) => o.palvelu === AUTH_SERVICE)
+        const permissions: Permission[] = o.kayttooikeudet
+          .filter((o) => o.palvelu === SERVICE_KEY)
           .map((o) => o.oikeus);
-        return rights.length > 0
-          ? { organizationOid: o.organisaatioOid, rights }
+        return permissions.length > 0
+          ? { organizationOid: o.organisaatioOid, permissions }
           : null;
       },
     )
     .filter((o: OrganizationPermissions | null) => o !== null);
-  const userRights: UserPermissions = {
+  const userPermissions: UserPermissions = {
     admin: response.data.isAdmin,
     readOrganizations: getOrgsForPermission(organizations, 'READ'),
     writeOrganizations: getOrgsForPermission(organizations, 'READ_UPDATE'),
     crudOrganizations: getOrgsForPermission(organizations, 'CRUD'),
   };
-  if (userRights.readOrganizations.length === 0 && !userRights.admin) {
+  if (
+    userPermissions.readOrganizations.length === 0 &&
+    !userPermissions.admin
+  ) {
     throw Error('Unauthorized');
   }
-  return userRights;
+  return userPermissions;
 };
 
 const queryProps = {

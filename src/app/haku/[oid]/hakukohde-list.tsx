@@ -34,11 +34,11 @@ export const HakukohdeList = ({ oid }: { oid: string }) => {
     router.push(`/haku/${oid}/hakukohde/${hakukohde.oid}/perustiedot`);
   };
 
-  const { data: userRights } = useUserPermissions();
+  const { data: userPermissions } = useUserPermissions();
 
   const { isLoading, data: hakukohteet } = useQuery({
     queryKey: ['getHakukohteet', oid],
-    queryFn: () => getHakukohteet(oid, userRights),
+    queryFn: () => getHakukohteet(oid, userPermissions),
   });
 
   return (
