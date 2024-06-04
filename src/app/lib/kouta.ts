@@ -4,7 +4,7 @@ import { configuration } from './configuration';
 import { Haku, Hakukohde, Tila } from './kouta-types';
 import { client } from './http-client';
 import { TranslatedName } from './localization/localization-types';
-import { UserRights } from './auth';
+import { UserPermissions } from './permissions';
 
 const mapToHaku = (h: {
   oid: string;
@@ -29,7 +29,7 @@ const mapToHaku = (h: {
   };
 };
 
-const rightsToTarjoajat = (userRights: UserRights): string =>
+const rightsToTarjoajat = (userRights: UserPermissions): string =>
   userRights.admin
     ? ''
     : userRights.readOrganizations.reduce(
@@ -37,7 +37,7 @@ const rightsToTarjoajat = (userRights: UserRights): string =>
         '',
       );
 
-export async function getHaut(userRights: UserRights) {
+export async function getHaut(userRights: UserPermissions) {
   const tarjoajaOids = rightsToTarjoajat(userRights);
   const response = await client.get(`${configuration.hautUrl}${tarjoajaOids}`);
   const haut: Haku[] = response.data.map(mapToHaku);
@@ -58,7 +58,7 @@ export async function getHaku(oid: string): Promise<Haku> {
 
 export async function getHakukohteet(
   hakuOid: string,
-  userRights: UserRights,
+  userRights: UserPermissions,
 ): Promise<Hakukohde[]> {
   const tarjoajaOids = rightsToTarjoajat(userRights);
   const response = await client.get(

@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest';
-import { RightToOrganization, getOrgsForRight } from './auth';
+import { OrganizationPermissions, getOrgsForPermission } from './permissions';
 
-const rights: RightToOrganization[] = [
+const rights: OrganizationPermissions[] = [
   { organizationOid: 'readonly', rights: ['READ'] },
   { organizationOid: 'writeonly', rights: ['READ_UPDATE'] },
   { organizationOid: 'crudonly', rights: ['CRUD'] },
@@ -10,7 +10,7 @@ const rights: RightToOrganization[] = [
 ];
 
 test('returns organization oids allowed to read', () => {
-  expect(getOrgsForRight(rights, 'READ')).toStrictEqual([
+  expect(getOrgsForPermission(rights, 'READ')).toStrictEqual([
     'readonly',
     'writeonly',
     'crudonly',
@@ -20,7 +20,7 @@ test('returns organization oids allowed to read', () => {
 });
 
 test('returns organization oids allowed to write', () => {
-  expect(getOrgsForRight(rights, 'READ_UPDATE')).toStrictEqual([
+  expect(getOrgsForPermission(rights, 'READ_UPDATE')).toStrictEqual([
     'writeonly',
     'crudonly',
     'all',
@@ -29,5 +29,8 @@ test('returns organization oids allowed to write', () => {
 });
 
 test('returns organization oids allowed to crud', () => {
-  expect(getOrgsForRight(rights, 'CRUD')).toStrictEqual(['crudonly', 'all']);
+  expect(getOrgsForPermission(rights, 'CRUD')).toStrictEqual([
+    'crudonly',
+    'all',
+  ]);
 });

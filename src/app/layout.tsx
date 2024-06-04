@@ -8,7 +8,7 @@ import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from '@/app/theme';
 import { checkAccessibility } from './lib/checkAccessibility';
-import AuthenticationProvider from './authentication-provider';
+import PermissionProvider from './permission-provider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -28,9 +28,9 @@ export default async function RootLayout({
         <AppRouterCacheProvider>
           <ReactQueryClientProvider>
             <ThemeProvider theme={theme}>
-              <AuthenticationProvider>
+              <PermissionProvider>
                 <LocalizationProvider>{children}</LocalizationProvider>
-              </AuthenticationProvider>
+              </PermissionProvider>
             </ThemeProvider>
           </ReactQueryClientProvider>
         </AppRouterCacheProvider>

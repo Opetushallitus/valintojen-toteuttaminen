@@ -2,7 +2,7 @@ import { test, expect, Page, Locator } from '@playwright/test';
 
 const getTableRows = (loc: Page | Locator) => loc.locator('tbody tr');
 
-test('shows only organizations user has rights to', async ({ page }) => {
+test('shows only organizations user has permissions to', async ({ page }) => {
   await page.goto('/');
   await expect(page).toHaveTitle(/Valintojen Toteuttaminen/);
   await page.route(

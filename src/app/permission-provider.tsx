@@ -1,13 +1,13 @@
 'use client';
 import { FullSpinner } from './components/full-spinner';
-import { useQueryUserRights } from './hooks/useUserRights';
+import { useQueryUserPermissions } from './hooks/useUserPermissions';
 
-export default function AuthenticationProvider({
+export default function PermissionProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { isLoading, isError, error } = useQueryUserRights();
+  const { isLoading, isError, error } = useQueryUserPermissions();
 
   switch (true) {
     case isLoading:
@@ -15,6 +15,6 @@ export default function AuthenticationProvider({
     case isError:
       throw error;
     default:
-      return <>{children}</>;
+      return children;
   }
 }
