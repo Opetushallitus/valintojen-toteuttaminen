@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import { client } from '../lib/http-client';
 import { configuration } from '../lib/configuration';
 import {
@@ -41,9 +41,12 @@ export const getUserRights = async (): Promise<UserRights> => {
   return userRights;
 };
 
-export const useUserRights = () =>
-  useQuery({
-    queryKey: ['getUserRights'],
-    queryFn: getUserRights,
-    staleTime: Infinity,
-  });
+const queryProps = {
+  queryKey: ['getUserRights'],
+  queryFn: getUserRights,
+  staleTime: Infinity,
+};
+
+export const useQueryUserRights = () => useQuery(queryProps);
+
+export const useUserData = () => useSuspenseQuery(queryProps);
