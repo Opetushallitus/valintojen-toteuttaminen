@@ -32,7 +32,7 @@ export const useHakukohdeSearchParams = () => {
   };
 };
 
-export const useHakuKohdeSearchResults = (hakuOid: string) => {
+export const useHakukohdeSearchResults = (hakuOid: string) => {
   const { translateEntity } = useTranslations();
   const { data: userPermissions } = useUserPermissions();
 

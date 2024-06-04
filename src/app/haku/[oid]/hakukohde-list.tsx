@@ -1,5 +1,6 @@
 'use client';
 
+import { useHakukohdeSearchResults } from '@/app/hooks/useHakukohdeSearch';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Hakukohde } from '@/app/lib/kouta-types';
 import { styled } from '@mui/material';
@@ -23,15 +24,10 @@ const StyledItem = styled('div')({
   },
 });
 
-export const HakukohdeList = ({
-  hakuOid,
-  hakukohteet,
-}: {
-  hakuOid: string;
-  hakukohteet: Hakukohde[];
-}) => {
+export const HakukohdeList = ({ hakuOid }: { hakuOid: string }) => {
   const router = useRouter();
   const { translateEntity } = useTranslations();
+  const { results } = useHakukohdeSearchResults(hakuOid);
 
   const selectHakukohde = (hakukohde: Hakukohde) => {
     router.push(`/haku/${hakuOid}/hakukohde/${hakukohde.oid}/perustiedot`);
@@ -39,7 +35,7 @@ export const HakukohdeList = ({
 
   return (
     <StyledList>
-      {hakukohteet?.map((hk: Hakukohde) => (
+      {results?.map((hk: Hakukohde) => (
         <StyledItem key={hk.oid} onClick={() => selectHakukohde(hk)}>
           <p title={hk.organisaatioOid} className="organizationLabel">
             {hk.jarjestyspaikkaHierarkiaNimi
