@@ -1,6 +1,6 @@
 'use client';
 import { useEffect } from 'react';
-import { FetchError } from '../lib/common';
+import { FetchError, PermissionError } from '../lib/common';
 import { useTranslations } from '../hooks/useTranslations';
 
 export function ErrorView({
@@ -26,6 +26,8 @@ export function ErrorView({
         <button onClick={() => reset()}>{t('virhe.uudelleenyritys')}</button>
       </>
     );
+  } else if (error instanceof PermissionError) {
+    return <p>{error.message}</p>;
   } else {
     return (
       <>

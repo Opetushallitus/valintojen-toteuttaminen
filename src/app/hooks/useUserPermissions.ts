@@ -8,8 +8,9 @@ import {
   Permission,
   getOrgsForPermission,
 } from '../lib/permissions';
+import { PermissionError } from '../lib/common';
 
-export const getUserPermissions = async (): Promise<UserPermissions> => {
+const getUserPermissions = async (): Promise<UserPermissions> => {
   const response = await client.get(configuration.kayttoikeusUrl);
   const organizations: OrganizationPermissions[] = response.data.organisaatiot
     .map(
@@ -36,7 +37,7 @@ export const getUserPermissions = async (): Promise<UserPermissions> => {
     userPermissions.readOrganizations.length === 0 &&
     !userPermissions.admin
   ) {
-    throw Error('Unauthorized');
+    throw new PermissionError();
   }
   return userPermissions;
 };
