@@ -1,37 +1,70 @@
 'use client';
 
-import { styled, IconButton } from '@mui/material';
+import { styled, IconButton, FormLabel } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import HakukohdeList from './hakukohde-list';
 import HakukohdeSearch from './hakukohde-search';
 import { useState } from 'react';
+import { colors } from '@/app/theme';
 
 const StyledPanel = styled('div')({
   width: '20vw',
   textAlign: 'left',
   minHeight: '85vh',
-  position: 'relative',
-});
-
-const MinimizedPanel = styled('div')({
-  width: '5vw'
+  display: 'flex',
+  flexDirection: 'column',
+  rowGap: '7px',
+  paddingRight: '5px',
+  alignItems: 'start',
+  transition: 'width 300ms ease-in-out',
+  ['label, button']: {
+    color: colors.blue2,
+    maxWidth: '50px',
+    alignSelf: 'end',
+    marginRight: '15px',
+    marginBottom: '5px',
+  },
+  '&.minimized': {
+    width: '50px',
+    rowGap: '3px',
+    ['label, button']: {
+      margin: 0,
+      alignSelf: 'start',
+    },
+  },
 });
 
 export const HakukohdePanel = ({ oid }: { oid: string }) => {
-
-  const [ minimized, setMinimized ] = useState(false);
+  const [minimized, setMinimized] = useState(false);
 
   return (
-    <>
-      {!minimized &&
-        <StyledPanel>
-          <IconButton sx={{position: 'absolute', top: '5px', right: '5px'}}><CloseIcon /></IconButton>
+    <StyledPanel className={minimized ? 'minimized' : ''}>
+      {!minimized && (
+        <>
+          <IconButton
+            sx={{ alignSelf: 'right', width: '1rem', height: '1rem' }}
+            onClick={() => setMinimized(true)}
+          >
+            <CloseIcon />
+          </IconButton>
           <HakukohdeSearch />
           <HakukohdeList hakuOid={oid} />
-        </StyledPanel>
-      }
-    </>
-
+        </>
+      )}
+      {minimized && (
+        <>
+          <IconButton
+            id="expand-button"
+            name="expand-button"
+            onClick={() => setMinimized(false)}
+          >
+            <KeyboardDoubleArrowRightIcon />
+          </IconButton>
+          <FormLabel htmlFor="expand-button">Haku</FormLabel>
+        </>
+      )}
+    </StyledPanel>
   );
 };
 
