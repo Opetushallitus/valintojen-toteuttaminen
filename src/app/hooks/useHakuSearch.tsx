@@ -18,6 +18,7 @@ import {
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
 } from '@/app/lib/constants';
 import { useTranslations } from './useTranslations';
+import { useUserPermissions } from './useUserPermissions';
 
 const DEFAULT_NUQS_OPTIONS = {
   history: 'push',
@@ -148,13 +149,14 @@ export const useHakuSearchParams = () => {
 };
 
 export const useHakuSearchResults = () => {
+  const { data: userPermissions } = useUserPermissions();
   const alkamiskaudet = useMemo(getHakuAlkamisKaudet, []);
   const { data: hakutavat } = useHakutavat();
   const { translateEntity } = useTranslations();
 
   const { data: haut } = useSuspenseQuery({
     queryKey: ['getHaut'],
-    queryFn: () => getHaut(),
+    queryFn: () => getHaut(userPermissions),
     select: (haut) =>
       haut.map((haku) => ({
         ...haku,

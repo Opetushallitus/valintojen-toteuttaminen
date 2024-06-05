@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from '@/app/hooks/useTranslations';
+import { useUserPermissions } from '@/app/hooks/useUserPermissions';
 import { getHakukohteet } from '@/app/lib/kouta';
 import { Hakukohde } from '@/app/lib/kouta-types';
 import { CircularProgress, styled } from '@mui/material';
@@ -33,9 +34,11 @@ export const HakukohdeList = ({ oid }: { oid: string }) => {
     router.push(`/haku/${oid}/hakukohde/${hakukohde.oid}/perustiedot`);
   };
 
+  const { data: userPermissions } = useUserPermissions();
+
   const { isLoading, data: hakukohteet } = useQuery({
     queryKey: ['getHakukohteet', oid],
-    queryFn: () => getHakukohteet(oid),
+    queryFn: () => getHakukohteet(oid, userPermissions),
   });
 
   return (

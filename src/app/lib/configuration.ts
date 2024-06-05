@@ -10,6 +10,7 @@ export const isProd = process.env.NODE_ENV === 'production';
 interface Configuration {
   loginUrl: string;
   sessionCookie: string;
+  kayttoikeusUrl: string;
   hautUrl: string;
   hakuUrl: string;
   hakukohteetUrl: string;
@@ -26,6 +27,7 @@ interface Configuration {
 export const configuration: Configuration = {
   loginUrl: process.env.LOGIN_URL || `${DOMAIN}/cas/login`,
   sessionCookie: process.env.SESSION_COOKIE || 'JSESSIONID',
+  kayttoikeusUrl: `${DOMAIN}/kayttooikeus-service/henkilo/current/omattiedot`,
   hautUrl: `${DOMAIN}/kouta-internal/haku/search?includeHakukohdeOids=false`,
   hakuUrl: `${DOMAIN}/kouta-internal/haku`,
   hakukohteetUrl: `${DOMAIN}/kouta-internal/hakukohde/search?all=false`,

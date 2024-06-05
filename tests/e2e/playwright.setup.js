@@ -13,13 +13,26 @@ export default async function playwrightSetup() {
       response.writeHead(404);
       response.end();
       return;
+    } else if (
+      request.url.includes(`kayttooikeus-service/henkilo/current/omattiedot`)
+    ) {
+      response.write(JSON.stringify({ isAdmin: true, organisaatiot: [] }));
+      response.end();
+      return;
     } else if (request.url.includes(`henkilo/current/asiointiKieli`)) {
       response.setHeader('Content-Type', 'text/plain');
       response.write('fi');
       response.end();
       return;
     } else if (request.url.includes(`kouta-internal/haku/search`)) {
-      response.write(JSON.stringify(HAUT));
+      if (request.url.includes('&tarjoaja=')) {
+        const tarjoaja = request.url.split('&tarjoaja=')[1];
+        response.write(
+          JSON.stringify(HAUT.filter((h) => h.organisaatioOid === tarjoaja)),
+        );
+      } else {
+        response.write(JSON.stringify(HAUT));
+      }
       response.end();
       return;
     } else if (
