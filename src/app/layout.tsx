@@ -9,7 +9,6 @@ import { ThemeProvider } from '@mui/material/styles';
 import theme from '@/app/theme';
 import { checkAccessibility } from './lib/checkAccessibility';
 import PermissionProvider from './permission-provider';
-import { QuerySuspenseBoundary } from './components/query-suspense-boundary';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -29,11 +28,9 @@ export default async function RootLayout({
         <AppRouterCacheProvider>
           <ReactQueryClientProvider>
             <ThemeProvider theme={theme}>
-              <QuerySuspenseBoundary>
-                <PermissionProvider>
-                  <LocalizationProvider>{children}</LocalizationProvider>
-                </PermissionProvider>
-              </QuerySuspenseBoundary>
+              <PermissionProvider>
+                <LocalizationProvider>{children}</LocalizationProvider>
+              </PermissionProvider>
             </ThemeProvider>
           </ReactQueryClientProvider>
         </AppRouterCacheProvider>

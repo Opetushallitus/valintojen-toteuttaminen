@@ -25,7 +25,11 @@ const isRedirected = (response: Response) => {
 const redirectToLogin = () => {
   const loginUrl = new URL(configuration.loginUrl);
   loginUrl.searchParams.set('service', window.location.href);
-  redirect(loginUrl.toString());
+  if (typeof window === 'undefined') {
+    redirect(loginUrl.toString());
+  } else {
+    window.location.replace(loginUrl.toString());
+  }
 };
 
 const makeBareRequest = (request: Request) => {

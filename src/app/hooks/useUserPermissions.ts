@@ -48,6 +48,7 @@ const queryProps = {
   staleTime: Infinity,
 };
 
-export const useQueryUserPermissions = () => useQuery(queryProps);
+export const useQueryUserPermissions = () =>
+  useQuery({ ...queryProps, throwOnError: false });
 
 export const useUserPermissions = () => useSuspenseQuery(queryProps);
