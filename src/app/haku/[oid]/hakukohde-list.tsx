@@ -28,18 +28,35 @@ const StyledItem = styled('div')({
 
 export const HakukohdeList = ({ hakuOid }: { hakuOid: string }) => {
   const router = useRouter();
-  const { translateEntity } = useTranslations();
+  const { t, translateEntity } = useTranslations();
   const { results } = useHakukohdeSearchResults(hakuOid);
 
   const selectHakukohde = (hakukohde: Hakukohde) => {
     router.push(`/haku/${hakuOid}/hakukohde/${hakukohde.oid}/perustiedot`);
   };
 
+  const handleHakukohdeKeyDown = (
+    event: React.KeyboardEvent<HTMLDivElement>,
+    hakukohde: Hakukohde,
+  ) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      selectHakukohde(hakukohde);
+    }
+  };
+
   return (
     <StyledList tabIndex={0}>
-      <p>{results.length} hakukohdetta</p>
+      <p>
+        {results.length} {t('haku.hakukohdetta')}
+      </p>
       {results?.map((hk: Hakukohde) => (
-        <StyledItem key={hk.oid} onClick={() => selectHakukohde(hk)}>
+        <StyledItem
+          key={hk.oid}
+          onClick={() => selectHakukohde(hk)}
+          onKeyDown={(event) => handleHakukohdeKeyDown(event, hk)}
+          tabIndex={0}
+        >
           <p title={hk.organisaatioOid} className="organizationLabel">
             {hk.jarjestyspaikkaHierarkiaNimi
               ? translateEntity(hk.jarjestyspaikkaHierarkiaNimi)
