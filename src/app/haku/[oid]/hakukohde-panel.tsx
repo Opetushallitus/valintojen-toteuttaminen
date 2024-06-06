@@ -7,6 +7,7 @@ import HakukohdeList from './hakukohde-list';
 import HakukohdeSearch from './hakukohde-search';
 import { useState } from 'react';
 import { colors } from '@/app/theme';
+import { useTranslations } from '@/app/hooks/useTranslations';
 
 const StyledPanel = styled('div')({
   width: '20vw',
@@ -37,6 +38,7 @@ const StyledPanel = styled('div')({
 
 export const HakukohdePanel = ({ oid }: { oid: string }) => {
   const [minimized, setMinimized] = useState(false);
+  const { t } = useTranslations();
 
   return (
     <StyledPanel className={minimized ? 'minimized' : ''}>
@@ -45,6 +47,7 @@ export const HakukohdePanel = ({ oid }: { oid: string }) => {
           <IconButton
             sx={{ alignSelf: 'right', width: '1rem', height: '1rem' }}
             onClick={() => setMinimized(true)}
+            aria-label={t('haku.pienenna')}
           >
             <CloseIcon />
           </IconButton>
@@ -58,10 +61,11 @@ export const HakukohdePanel = ({ oid }: { oid: string }) => {
             id="expand-button"
             name="expand-button"
             onClick={() => setMinimized(false)}
+            aria-label={t('haku.suurenna')}
           >
             <KeyboardDoubleArrowRightIcon />
           </IconButton>
-          <FormLabel htmlFor="expand-button">Haku</FormLabel>
+          <FormLabel htmlFor="expand-button">{t('yleinen.haku')}</FormLabel>
         </>
       )}
     </StyledPanel>

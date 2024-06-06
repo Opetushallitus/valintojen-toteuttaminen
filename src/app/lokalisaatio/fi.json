@@ -11,7 +11,8 @@
     "eiosumia": "Ei hakutuloksia",
     "persivu": "Näytä per sivu:",
     "ladataan": "ladataan...",
-    "lisatiedot": "Lisätiedot"
+    "lisatiedot": "Lisätiedot",
+    "haku": "Haku"
   },
   "virhe": {
     "palvelin": "Palvelinpyyntö epäonnistui!",
@@ -26,7 +27,9 @@
     "haehakukohde": "Hae hakukohteita",
     "hakukohteet": "Hakukohteet",
     "hae": "Hae hakuja",
-    "maara": "Hakuja:"
+    "maara": "Hakuja:",
+    "pienenna": "Pienennä hakukohteitten listaus",
+    "suurenna": "Suurenna hakukohteitten listaus"
   },
   "hakukohde": {
     "valitse": "Valitse tai hae hakukohde",

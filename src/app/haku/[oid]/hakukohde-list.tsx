@@ -36,7 +36,7 @@ export const HakukohdeList = ({ hakuOid }: { hakuOid: string }) => {
   };
 
   return (
-    <StyledList>
+    <StyledList tabIndex={0}>
       <p>{results.length} hakukohdetta</p>
       {results?.map((hk: Hakukohde) => (
         <StyledItem key={hk.oid} onClick={() => selectHakukohde(hk)}>
@@ -45,7 +45,9 @@ export const HakukohdeList = ({ hakuOid }: { hakuOid: string }) => {
               ? translateEntity(hk.jarjestyspaikkaHierarkiaNimi)
               : ''}
           </p>
-          <p title={hk.oid}>{translateEntity(hk.nimi)}</p>
+          <p title={hk.oid} className="hakukohdeLabel">
+            {translateEntity(hk.nimi)}
+          </p>
         </StyledItem>
       ))}
     </StyledList>
