@@ -1,6 +1,6 @@
 'use client';
 
-import { styled, IconButton, FormLabel } from '@mui/material';
+import { styled, IconButton, FormLabel, CircularProgress } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import HakukohdeList from './hakukohde-list';
@@ -8,6 +8,7 @@ import HakukohdeSearch from './hakukohde-search';
 import { useState } from 'react';
 import { colors } from '@/app/theme';
 import { useTranslations } from '@/app/hooks/useTranslations';
+import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 
 const StyledPanel = styled('div')({
   width: '20vw',
@@ -43,7 +44,11 @@ export const HakukohdePanel = ({ oid }: { oid: string }) => {
   return (
     <StyledPanel className={minimized ? 'minimized' : ''}>
       {!minimized && (
-        <>
+        <QuerySuspenseBoundary
+          suspenseFallback={
+            <CircularProgress aria-label={t('yleinen.ladataan')} />
+          }
+        >
           <IconButton
             sx={{ alignSelf: 'right', width: '1rem', height: '1rem' }}
             onClick={() => setMinimized(true)}
@@ -52,8 +57,9 @@ export const HakukohdePanel = ({ oid }: { oid: string }) => {
             <CloseIcon />
           </IconButton>
           <HakukohdeSearch />
+
           <HakukohdeList hakuOid={oid} />
-        </>
+        </QuerySuspenseBoundary>
       )}
       {minimized && (
         <>
