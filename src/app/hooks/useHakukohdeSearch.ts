@@ -37,17 +37,22 @@ export const useHakukohdeSearchResults = (hakuOid: string) => {
   const { data: userPermissions } = useUserPermissions();
 
   const { data: hakukohteet } = useSuspenseQuery({
-    queryKey: ['getHakukohteet'],
+    queryKey: ['getHakukohteet' + hakuOid],
     queryFn: () => getHakukohteet(hakuOid, userPermissions),
   });
 
   const { searchPhrase } = useHakukohdeSearchParams();
 
   const results = useMemo(() => {
-    return hakukohteet.filter((hakukohde: Hakukohde) =>
-      translateEntity(hakukohde.nimi)
-        .toLowerCase()
-        .includes(searchPhrase?.toLowerCase() ?? ''),
+    return hakukohteet.filter(
+      (hakukohde: Hakukohde) =>
+        translateEntity(hakukohde.nimi)
+          .toLowerCase()
+          .includes(searchPhrase?.toLowerCase() ?? '') ||
+        translateEntity(hakukohde.jarjestyspaikkaHierarkiaNimi)
+          .toLowerCase()
+          .includes(searchPhrase?.toLowerCase() || '') ||
+        hakukohde.oid.includes(searchPhrase?.toLowerCase() || ''),
     );
   }, [hakukohteet, searchPhrase]);
 
