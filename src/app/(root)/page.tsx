@@ -3,7 +3,7 @@ import React from 'react';
 
 import { useHakutavat } from '@/app/hooks/useHakutavat';
 import { useHakuSearchResults } from '@/app/hooks/useHakuSearch';
-import { HakuTablePaginationWrapper } from './haku-table-pagination-wrapper';
+import { TablePaginationWrapper } from '../components/table/table-pagination-wrapper';
 import { HakuTable } from './haku-table';
 
 export const dynamic = 'force-dynamic';
@@ -23,12 +23,13 @@ export default function Home() {
   const { data: hakutavat } = useHakutavat();
 
   return (
-    <HakuTablePaginationWrapper
+    <TablePaginationWrapper
       totalCount={results?.length ?? 0}
       pageNumber={page}
       setPageNumber={setPage}
       pageSize={pageSize}
       setPageSize={setPageSize}
+      countTranslationKey="haku.maara"
     >
       <HakuTable
         haut={pageResults}
@@ -36,6 +37,6 @@ export default function Home() {
         setSort={setSort}
         sort={sort ?? ''}
       />
-    </HakuTablePaginationWrapper>
+    </TablePaginationWrapper>
   );
 }
