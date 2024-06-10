@@ -25,7 +25,7 @@ type Column<P> = {
   style?: Record<string, string | number>;
 };
 
-type Entity = { oid: string; nimi: TranslatedName | string; tila?: Tila };
+type Entity = { oid: string; nimi?: TranslatedName | string; tila?: Tila };
 
 type KeysMatching<O, T> = {
   [K in keyof O]: O[K] extends T ? K : never;
@@ -66,7 +66,7 @@ export const makeGenericColumn = <T extends Entity = Entity>({
 }: {
   title: string;
   key: string;
-  valueProp: KeysMatching<T, string>;
+  valueProp: KeysMatching<T, string | number>;
 }): Column<T> => ({
   title,
   key,

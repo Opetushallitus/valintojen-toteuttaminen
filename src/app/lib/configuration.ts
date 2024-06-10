@@ -22,6 +22,8 @@ interface Configuration {
   valintaperusteetUrl: string;
   valintaTulosServiceUrl: string;
   valintaTulosServiceLogin: string;
+  ataruEditoriLogin: string;
+  hakemuksetUrl: string;
 }
 
 export const configuration: Configuration = {
@@ -39,4 +41,6 @@ export const configuration: Configuration = {
   valintaperusteetUrl: `${DOMAIN}/valintaperusteet-service/resources/`,
   valintaTulosServiceUrl: `${DOMAIN}/valinta-tulos-service/auth/`,
   valintaTulosServiceLogin: `${DOMAIN}/valinta-tulos-service/auth/login`,
+  hakemuksetUrl: `${DOMAIN}/lomake-editori/api/external/valinta-ui`,
+  ataruEditoriLogin: `${DOMAIN}/lomake-editori/auth/cas`,
 };

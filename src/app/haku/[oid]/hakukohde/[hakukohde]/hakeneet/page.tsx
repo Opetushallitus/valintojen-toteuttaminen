@@ -1,20 +1,15 @@
 'use client';
 
-import { getHakukohde } from '@/app/lib/kouta';
 import { TabContainer } from '../TabContainer';
-import { useSuspenseQuery } from '@tanstack/react-query';
 import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
+import { useHakeneetSearchResults } from '@/app/hooks/useHakeneetSearch';
+import { HakeneetTable } from './hakeneet-table';
 
 export default function HakeneetPage({
   params,
 }: {
   params: { oid: string; hakukohde: string };
 }) {
-  const { data: hakukohde } = useSuspenseQuery({
-    queryKey: ['getHakukohde', params.hakukohde],
-    queryFn: () => getHakukohde(params.hakukohde),
-  });
-
   const {
     page,
     setPage,
@@ -24,18 +19,19 @@ export default function HakeneetPage({
     pageResults,
     sort,
     setSort,
-  } = useHakeneetSearchResults();
+  } = useHakeneetSearchResults(params.oid, params.hakukohde);
 
   return (
     <TabContainer>
-      <TablePaginationWrapper 
+      <TablePaginationWrapper
         totalCount={results?.length ?? 0}
         pageSize={pageSize}
-        setPageSize={pageSize}
+        setPageSize={setPageSize}
         setPageNumber={setPage}
         pageNumber={page}
-      countTranslationKey="hakeneet.maara">
-
+        countTranslationKey="hakeneet.maara"
+      >
+        <HakeneetTable setSort={setSort} sort={sort} hakeneet={pageResults} />
       </TablePaginationWrapper>
     </TabContainer>
   );

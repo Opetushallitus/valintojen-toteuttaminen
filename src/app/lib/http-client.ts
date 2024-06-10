@@ -95,6 +95,13 @@ const makeRequest = async (request: Request) => {
 
             return responseToData(resp);
           }
+          if (request?.url?.includes('/lomake-editori')) {
+            const resp = await retryWithLogin(
+              request,
+              configuration.ataruEditoriLogin,
+            );
+            return responseToData(resp);
+          }
           if (request?.url?.includes('/valinta-tulos-service')) {
             const resp = await retryWithLogin(
               request,

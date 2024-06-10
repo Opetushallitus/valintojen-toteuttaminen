@@ -1,20 +1,16 @@
-https://virkailija.untuvaopintopolku.fi/lomake-editori/api/external/valinta-ui?hakuOid=1.2.246.562.29.00000000000000021303&hakukohdeOid=1.2.246.562.20.00000000000000024798
-
 'use client';
 import { useEffect, useMemo } from 'react';
 import { useDebounce } from '@/app/hooks/useDebounce';
 import { parseAsInteger, useQueryState } from 'nuqs';
 import { useHasChanged } from '@/app/hooks/useHasChanged';
 import { byProp, getSortParts } from '../components/table/table-utils';
-import { getHaut } from '../lib/kouta';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { useHakutavat } from './useHakutavat';
 import {
   DEFAULT_PAGE_SIZE,
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
 } from '@/app/lib/constants';
 import { useTranslations } from './useTranslations';
-import { useUserPermissions } from './useUserPermissions';
+import { Hakemus, getHakemukset } from '../lib/ataru';
 
 const DEFAULT_NUQS_OPTIONS = {
   history: 'push',
@@ -22,10 +18,9 @@ const DEFAULT_NUQS_OPTIONS = {
   defaultValue: '',
 } as const;
 
-
 export const useHakeneetSearchParams = () => {
   const [searchPhrase, setSearchPhrase] = useQueryState(
-    'search',
+    'hakeneetSearch',
     DEFAULT_NUQS_OPTIONS,
   );
 
@@ -51,15 +46,10 @@ export const useHakeneetSearchParams = () => {
   const searchPhraseChanged = useHasChanged(searchPhrase);
 
   useEffect(() => {
-    if (
-      searchPhraseChanged
-    ) {
+    if (searchPhraseChanged) {
       setPage(1);
     }
-  }, [
-    searchPhraseChanged,
-    setPage,
-  ]);
+  }, [searchPhraseChanged, setPage]);
 
   return {
     searchPhrase,
@@ -73,50 +63,40 @@ export const useHakeneetSearchParams = () => {
   };
 };
 
-export const useHakeneetSearchResults = () => {
-  const { data: userPermissions } = useUserPermissions();
+export const useHakeneetSearchResults = (
+  hakuOid: string,
+  hakukohdeOid: string,
+) => {
   const { translateEntity } = useTranslations();
 
   const { data: hakeneet } = useSuspenseQuery({
-    queryKey: ['getHakeneet'],
-    queryFn: () => getHaut(userPermissions),
+    queryKey: ['getHakeneet' + hakukohdeOid],
+    queryFn: () => getHakemukset(hakuOid, hakukohdeOid),
   });
 
-  const {
-    searchPhrase,
-    page,
-    setPage,
-    pageSize,
-    setPageSize,
-    sort,
-    setSort,
-  } = useHakeneetSearchParams();
+  const { searchPhrase, page, setPage, pageSize, setPageSize, sort, setSort } =
+    useHakeneetSearchParams();
 
   const results = useMemo(() => {
-
     const { orderBy, direction } = getSortParts(sort);
 
-    const filtered = hakijat.filter(
-      (haku: Haku) =>
-        tilat.includes(haku.tila) &&
-        translateEntity(haku.nimi)
+    const filtered = hakeneet.filter(
+      (hakemus: Hakemus) =>
+        hakemus.sukunimi
           .toLowerCase()
-          .includes(searchPhrase?.toLowerCase() ?? '') &&
-        alkamisKausiMatchesSelected(
-          haku,
-          alkamiskaudet.find((k) => k.value === selectedAlkamisKausi),
-        ) &&
-        haku.hakutapaKoodiUri.startsWith(selectedHakutapa ?? ''),
+          .includes(searchPhrase?.toLowerCase() ?? '') ||
+        hakemus.etunimet
+          .toLowerCase()
+          .includes(searchPhrase?.toLowerCase() ?? '') ||
+        hakemus.oid.toLowerCase().includes(searchPhrase?.toLowerCase() ?? '') ||
+        hakemus.henkiloOid
+          .toLowerCase()
+          .includes(searchPhrase?.toLowerCase() ?? ''),
     );
     return orderBy && direction
       ? filtered.sort(byProp(orderBy, direction, translateEntity))
       : filtered;
-  }, [
-    hakeneet,
-    searchPhrase,
-    sort,
-    translateEntity,
-  ]);
+  }, [hakeneet, searchPhrase, sort, translateEntity]);
 
   const pageResults = useMemo(() => {
     const start = pageSize * (page - 1);
