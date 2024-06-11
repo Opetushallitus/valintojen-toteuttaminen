@@ -25,6 +25,7 @@
     "@mui/icons-material": "^5.15.15",
     "@mui/material": "^5.15.15",
     "@mui/material-nextjs": "^5.15.11",
+    "@opetushallitus/oph-design-system": "github:opetushallitus/oph-design-system#OK-496_pohja",
     "@tanstack/react-query": "^5.29.2",
     "@tanstack/react-query-devtools": "^5.29.2",
     "cookie": "^0.6.0",
