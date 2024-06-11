@@ -51,6 +51,10 @@ export function isToisenAsteenYhteisHaku(haku: Haku): boolean {
   );
 }
 
+export function isKorkeakouluHaku(haku: Haku): boolean {
+  return haku.kohdejoukkoKoodiUri.startsWith('haunkohdejoukko_12');
+}
+
 export async function getHaku(oid: string): Promise<Haku> {
   const response = await client.get(`${configuration.hakuUrl}/${oid}`);
   return mapToHaku(response.data);

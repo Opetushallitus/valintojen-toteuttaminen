@@ -18,10 +18,12 @@ export const HakeneetTable = ({
   hakeneet,
   setSort,
   sort,
+  isKorkeakouluHaku,
 }: {
   hakeneet: Hakemus[];
   sort: string;
   setSort: (sort: string) => void;
+  isKorkeakouluHaku: boolean;
 }) => {
   const { t } = useTranslations();
 
@@ -33,23 +35,27 @@ export const HakeneetTable = ({
       nameProp: 'hakijanNimi',
       linkProp: 'henkiloOid',
     }),
-    makeColumnWithValueToTranslate<Hakemus>({
-      t,
-      title: 'hakeneet.taulukko.hakukelpoisuus',
-      key: 'hakukelpoisuus',
-      valueProp: 'hakukelpoisuus',
-    }),
+    isKorkeakouluHaku
+      ? makeColumnWithValueToTranslate<Hakemus>({
+          t,
+          title: 'hakeneet.taulukko.hakukelpoisuus',
+          key: 'hakukelpoisuus',
+          valueProp: 'hakukelpoisuus',
+        })
+      : null,
     makeGenericColumn<Hakemus>({
       title: 'hakeneet.taulukko.hakutoiveennro',
       key: 'hakutoiveennro',
       valueProp: 'hakutoiveNumero',
     }),
-    makeColumnWithValueToTranslate<Hakemus>({
-      t,
-      title: 'hakeneet.taulukko.maksuvelvollisuus',
-      key: 'maksuvelvollisuus',
-      valueProp: 'maksuvelvollisuus',
-    }),
+    isKorkeakouluHaku
+      ? makeColumnWithValueToTranslate<Hakemus>({
+          t,
+          title: 'hakeneet.taulukko.maksuvelvollisuus',
+          key: 'maksuvelvollisuus',
+          valueProp: 'maksuvelvollisuus',
+        })
+      : null,
     makeExternalLinkColumn<Hakemus>({
       linkBuilder: buildLinkToApplication,
       title: 'hakeneet.taulukko.oid',
@@ -62,7 +68,7 @@ export const HakeneetTable = ({
       key: 'henkiloOid',
       linkProp: 'henkiloOid',
     }),
-  ];
+  ].filter((c) => c != null);
 
   return (
     <ListTable

@@ -14,7 +14,6 @@ export const HakukohdeSearch = () => {
   return (
     <FormControl
       sx={{
-        flexGrow: 4,
         minWidth: '180px',
         textAlign: 'left',
       }}
