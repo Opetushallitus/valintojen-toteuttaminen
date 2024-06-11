@@ -1,5 +1,7 @@
 # valintojen-toteuttaminen
 
+[![Build](https://github.com/Opetushallitus/valintojen-toteuttaminen/actions/workflows/build.yml/badge.svg)](https://github.com/Opetushallitus/valintojen-toteuttaminen/actions/workflows/build.yml)
+
 Valintojen toteuttamisen käyttöliittymä
 
 ## Lokaaliajo

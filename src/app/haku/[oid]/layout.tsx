@@ -1,4 +1,4 @@
-import HakukohdeList from './hakukohde-list';
+import HakukohdePanel from './hakukohde-panel';
 
 export default function HakuLayout({
   children,
@@ -16,7 +16,7 @@ export default function HakuLayout({
         className="mainContainer"
         style={{ display: 'flex', flexDirection: 'row', textAlign: 'left' }}
       >
-        <HakukohdeList oid={params.oid} />
+        <HakukohdePanel oid={params.oid} />
         {children}
       </main>
     </>

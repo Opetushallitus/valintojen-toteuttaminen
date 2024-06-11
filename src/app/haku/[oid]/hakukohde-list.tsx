@@ -1,16 +1,16 @@
 'use client';
 
+import { useHakukohdeSearchResults } from '@/app/hooks/useHakukohdeSearch';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { useUserPermissions } from '@/app/hooks/useUserPermissions';
-import { getHakukohteet } from '@/app/lib/kouta';
 import { Hakukohde } from '@/app/lib/kouta-types';
-import { CircularProgress, styled } from '@mui/material';
-import { useQuery } from '@tanstack/react-query';
+import { styled } from '@mui/material';
 import { useRouter } from 'next/navigation';
 
 const StyledList = styled('div')({
-  width: '20vw',
+  width: '100%',
   textAlign: 'left',
+  overflowY: 'auto',
+  height: '80vh',
 });
 
 const StyledItem = styled('div')({
@@ -26,35 +26,47 @@ const StyledItem = styled('div')({
   },
 });
 
-export const HakukohdeList = ({ oid }: { oid: string }) => {
+export const HakukohdeList = ({ hakuOid }: { hakuOid: string }) => {
   const router = useRouter();
-  const { translateEntity } = useTranslations();
+  const { t, translateEntity } = useTranslations();
+  const { results } = useHakukohdeSearchResults(hakuOid);
 
   const selectHakukohde = (hakukohde: Hakukohde) => {
-    router.push(`/haku/${oid}/hakukohde/${hakukohde.oid}/perustiedot`);
+    router.push(`/haku/${hakuOid}/hakukohde/${hakukohde.oid}/perustiedot`);
   };
 
-  const { data: userPermissions } = useUserPermissions();
-
-  const { isLoading, data: hakukohteet } = useQuery({
-    queryKey: ['getHakukohteet', oid],
-    queryFn: () => getHakukohteet(oid, userPermissions),
-  });
+  const handleHakukohdeKeyDown = (
+    event: React.KeyboardEvent<HTMLDivElement>,
+    hakukohde: Hakukohde,
+  ) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      selectHakukohde(hakukohde);
+    }
+  };
 
   return (
-    <StyledList>
-      {isLoading && <CircularProgress />}
-      {!isLoading &&
-        hakukohteet?.map((hk: Hakukohde) => (
-          <StyledItem key={hk.oid} onClick={() => selectHakukohde(hk)}>
-            <p title={hk.organisaatioOid} className="organizationLabel">
-              {hk.jarjestyspaikkaHierarkiaNimi
-                ? translateEntity(hk.jarjestyspaikkaHierarkiaNimi)
-                : ''}
-            </p>
-            <p title={hk.oid}>{translateEntity(hk.nimi)}</p>
-          </StyledItem>
-        ))}
+    <StyledList tabIndex={0}>
+      <p>
+        {results.length} {t('haku.hakukohdetta')}
+      </p>
+      {results?.map((hk: Hakukohde) => (
+        <StyledItem
+          key={hk.oid}
+          onClick={() => selectHakukohde(hk)}
+          onKeyDown={(event) => handleHakukohdeKeyDown(event, hk)}
+          tabIndex={0}
+        >
+          <p title={hk.organisaatioOid} className="organizationLabel">
+            {hk.jarjestyspaikkaHierarkiaNimi
+              ? translateEntity(hk.jarjestyspaikkaHierarkiaNimi)
+              : ''}
+          </p>
+          <p title={hk.oid} className="hakukohdeLabel">
+            {translateEntity(hk.nimi)}
+          </p>
+        </StyledItem>
+      ))}
     </StyledList>
   );
 };
