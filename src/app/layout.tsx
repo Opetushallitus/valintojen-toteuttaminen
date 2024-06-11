@@ -1,7 +1,5 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import './globals.css';
 import ReactQueryClientProvider from './components/react-query-client-provider';
 import LocalizationProvider from './localization-provider';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter';
@@ -9,8 +7,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import theme from '@/app/theme';
 import { checkAccessibility } from './lib/checkAccessibility';
 import PermissionProvider from './permission-provider';
-
-const inter = Inter({ subsets: ['latin'] });
+import { CssBaseline } from '@mui/material';
 
 export const metadata: Metadata = {
   title: 'Valintojen Toteuttaminen',
@@ -24,10 +21,11 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="fi">
-      <body className={inter.className}>
+      <body>
         <AppRouterCacheProvider>
           <ReactQueryClientProvider>
             <ThemeProvider theme={theme}>
+              <CssBaseline />
               <PermissionProvider>
                 <LocalizationProvider>{children}</LocalizationProvider>
               </PermissionProvider>

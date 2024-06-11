@@ -1,6 +1,9 @@
+'use client';
 import { Grid, Button, Typography } from '@mui/material';
+import { useTranslations } from '@/app/hooks/useTranslations';
 
 export default function Custom404() {
+  const { t } = useTranslations();
   return (
     <main>
       <Grid
@@ -22,10 +25,10 @@ export default function Custom404() {
         </Grid>
         <Grid item>
           <Typography variant="h2" component="h2">
-            Sivua ei löytynyt
+            {t('404.otsikko')}
           </Typography>
           <Typography variant="body1" paragraph>
-            Linkki on virheellinen tai vanhentunut.
+            {t('404.teksti')}
           </Typography>
         </Grid>
         <Grid item>
@@ -39,11 +42,10 @@ export default function Custom404() {
             <Grid item>
               <Button
                 variant="contained"
-                aria-label="Palaa etusivulle"
-                color="primary"
+                aria-label={t('yleinen.palaa-etusivulle')}
                 href="/"
               >
-                Palaa etusivulle
+                {t('yleinen.palaa-etusivulle')}
               </Button>
             </Grid>
           </Grid>

@@ -1,4 +1,5 @@
 import HakukohdeTabs from './hakukohde-tabs';
+import { MainContainer } from '@/app/components/MainContainer';
 
 export default function HakuLayout({
   children,
@@ -8,19 +9,17 @@ export default function HakuLayout({
   params: { oid: string; hakukohde: string };
 }) {
   return (
-    <>
-      <div
-        className="mainContainer"
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          padding: 0,
-          width: '100%',
-        }}
-      >
-        <HakukohdeTabs hakukohdeOid={params.hakukohde} />
-        {children}
-      </div>
-    </>
+    <MainContainer
+      component="div"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        padding: 0,
+        width: '100%',
+      }}
+    >
+      <HakukohdeTabs hakukohdeOid={params.hakukohde} />
+      {children}
+    </MainContainer>
   );
 }

@@ -12,13 +12,19 @@
     "persivu": "Näytä per sivu:",
     "ladataan": "ladataan...",
     "lisatiedot": "Lisätiedot",
-    "haku": "Haku"
+    "haku": "Haku",
+    "sivutus": "Sivutus",
+    "palaa-etusivulle": "Palaa etusivulle"
   },
   "virhe": {
     "palvelin": "Palvelinpyyntö epäonnistui!",
     "virhekoodi": "Virhekoodi: ",
     "uudelleenyritys": "Yritä uudelleen",
     "tuntematon": "Jokin meni vikaan"
+  },
+  "404": {
+    "otsikko": "Sivua ei löytynyt",
+    "teksti": "Linkki on virheellinen tai vanhentunut."
   },
   "haku": {
     "otsikko": "Haut",

@@ -1,55 +1,50 @@
-import React, { CSSProperties } from 'react';
+'use client';
+import React from 'react';
 import { HomeOutlined as HomeOutlinedIcon } from '@mui/icons-material';
-import { Link as MuiLink } from '@mui/material';
+import { colors } from '@/app/theme';
+import { Typography } from '@mui/material';
+import { PageContent } from './PageContent';
+import { Button } from '@opetushallitus/oph-design-system';
+import { useTranslations } from '../hooks/useTranslations';
+import { DEFAULT_BOX_BORDER } from '../lib/constants';
 
 export type HeaderProps = {
   title?: React.ReactNode;
   isHome?: boolean;
 };
 
-export default function Header({
-  title = 'Valintojen toteuttaminen',
-  isHome = false,
-}: HeaderProps) {
-  const HEADER_HEIGHT = '4rem';
-  const TITLE_SIZE = isHome ? '2rem' : '1.5rem';
-
-  const headerStyle: CSSProperties = {
-    borderBottom: '1px solid rgba(0, 0, 0, 0.15)',
-    backgroundColor: 'white',
-    padding: '0.5rem 3vw',
-    width: '100svw',
-    left: 0,
-    position: 'absolute',
-    height: HEADER_HEIGHT,
-    display: 'flex',
-    textAlign: 'left',
-    justifyContent: 'flex-start',
-    alignContent: 'center',
-    columnGap: '0.8rem',
-  };
-
-  const titleStyle: CSSProperties = {
-    alignSelf: 'center',
-    fontSize: TITLE_SIZE,
-  };
-
+export default function Header({ title, isHome = false }: HeaderProps) {
+  const { t } = useTranslations();
   return (
-    <header>
-      <div style={headerStyle}>
+    <header
+      style={{
+        position: 'relative',
+        backgroundColor: colors.white,
+        width: '100%',
+        border: DEFAULT_BOX_BORDER,
+      }}
+    >
+      <PageContent
+        sx={{
+          paddingY: 2,
+          display: 'flex',
+          alignItems: 'center',
+          columnGap: 2,
+        }}
+      >
         {!isHome && (
-          <MuiLink href="/" sx={titleStyle} aria-label="Palaa etusivulle">
-            <HomeOutlinedIcon
-              sx={{ border: '1px solid', padding: '3px', borderRadius: '2px' }}
-            />
-          </MuiLink>
+          <Button
+            href="/"
+            variant="outlined"
+            startIcon={<HomeOutlinedIcon />}
+            aria-label={t('yleinen.palaa-etusivulle')}
+          />
         )}
-        <h1 style={titleStyle}>
-          {!isHome ? '> ' : ''}
-          {title}
-        </h1>
-      </div>
-      <div style={{ height: HEADER_HEIGHT, marginBottom: '4rem' }} />
+        <Typography variant="h1">
+          {isHome ? '' : '> '}
+          {title ?? t('otsikko')}
+        </Typography>
+      </PageContent>
     </header>
   );
 }

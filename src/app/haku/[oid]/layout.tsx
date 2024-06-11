@@ -1,4 +1,6 @@
 import HakukohdePanel from './hakukohde-panel';
+import { MainContainer } from '@/app/components/MainContainer';
+import { PageLayout } from '@/app/components/PageLayout';
 
 export default function HakuLayout({
   children,
@@ -10,15 +12,13 @@ export default function HakuLayout({
   params: { oid: string };
 }) {
   return (
-    <>
-      {header}
-      <main
-        className="mainContainer"
-        style={{ display: 'flex', flexDirection: 'row', textAlign: 'left' }}
+    <PageLayout header={header}>
+      <MainContainer
+        sx={{ display: 'flex', flexDirection: 'row', textAlign: 'left' }}
       >
         <HakukohdePanel oid={params.oid} />
         {children}
-      </main>
-    </>
+      </MainContainer>
+    </PageLayout>
   );
 }
