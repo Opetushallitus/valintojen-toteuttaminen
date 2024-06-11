@@ -5,34 +5,31 @@ import { colors } from '@/app/theme';
 import { Typography } from '@mui/material';
 import { PageContent } from './PageContent';
 import { Button } from '@opetushallitus/oph-design-system';
+import { useTranslations } from '../hooks/useTranslations';
+import { DEFAULT_BOX_BORDER } from '../lib/constants';
 
 export type HeaderProps = {
   title?: React.ReactNode;
   isHome?: boolean;
 };
 
-export default function Header({
-  title = 'Valintojen toteuttaminen',
-  isHome = false,
-}: HeaderProps) {
+export default function Header({ title, isHome = false }: HeaderProps) {
+  const { t } = useTranslations();
   return (
     <header
       style={{
         position: 'relative',
         backgroundColor: colors.white,
         width: '100%',
-        border: `2px solid ${colors.grey100}`,
+        border: DEFAULT_BOX_BORDER,
       }}
     >
       <PageContent
         sx={{
-          paddingTop: (theme) => theme.spacing(2),
-          paddingBottom: (theme) => theme.spacing(2),
+          paddingY: 2,
           display: 'flex',
-          textAlign: 'left',
-          justifyContent: 'flex-start',
           alignItems: 'center',
-          columnGap: (theme) => theme.spacing(2),
+          columnGap: 2,
         }}
       >
         {!isHome && (
@@ -40,12 +37,12 @@ export default function Header({
             href="/"
             variant="outlined"
             startIcon={<HomeOutlinedIcon />}
-            aria-label="Palaa etusivulle"
+            aria-label={t('yleinen.palaa-etusivulle')}
           />
         )}
         <Typography variant="h1">
-          {!isHome ? '> ' : ''}
-          {title}
+          {isHome ? '' : '> '}
+          {title ?? t('otsikko')}
         </Typography>
       </PageContent>
     </header>
