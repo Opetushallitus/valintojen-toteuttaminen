@@ -4,6 +4,7 @@ import { TabContainer } from '../TabContainer';
 import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
 import { useHakeneetSearchResults } from '@/app/hooks/useHakeneetSearch';
 import { HakeneetTable } from './hakeneet-table';
+import HakeneetSearch from './hakeneet-search';
 
 export default function HakeneetPage({
   params,
@@ -23,6 +24,7 @@ export default function HakeneetPage({
 
   return (
     <TabContainer>
+      <HakeneetSearch />
       <TablePaginationWrapper
         totalCount={results?.length ?? 0}
         pageSize={pageSize}

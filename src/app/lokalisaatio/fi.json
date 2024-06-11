@@ -75,7 +75,8 @@
   },
   "hakeneet": {
     "otsikko": "Hakeneet",
-    "maara": "Hakijaa: ",
+    "hae": "Hae hakijan nimellä tai tunnisteilla",
+    "maara": "Hakijoita: ",
     "taulukko": {
       "hakija": "Hakija",
       "hakukelpoisuus": "Hakukelpoisuus",
