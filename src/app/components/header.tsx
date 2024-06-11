@@ -2,9 +2,9 @@
 import React from 'react';
 import { HomeOutlined as HomeOutlinedIcon } from '@mui/icons-material';
 import { colors } from '@/app/theme';
-import { IconButton } from './IconButton';
 import { Typography } from '@mui/material';
 import { PageContent } from './PageContent';
+import { Button } from '@opetushallitus/oph-design-system';
 
 export type HeaderProps = {
   title?: React.ReactNode;
@@ -36,7 +36,7 @@ export default function Header({
         }}
       >
         {!isHome && (
-          <IconButton
+          <Button
             href="/"
             variant="outlined"
             startIcon={<HomeOutlinedIcon />}
