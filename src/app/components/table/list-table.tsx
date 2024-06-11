@@ -74,6 +74,23 @@ export const makeGenericColumn = <T extends Entity = Entity>({
   style: { width: 'auto' },
 });
 
+export const makeColumnWithValueToTranslate = <T extends Entity = Entity>({
+  t,
+  title,
+  key,
+  valueProp,
+}: {
+  t: TFunction;
+  title: string;
+  key: string;
+  valueProp: KeysMatching<T, string>;
+}): Column<T> => ({
+  title,
+  key,
+  render: (props) => <span>{t(props[valueProp] as string)}</span>,
+  style: { width: 'auto' },
+});
+
 export const makeCountColumn = <T extends Entity = Entity>({
   title,
   key,

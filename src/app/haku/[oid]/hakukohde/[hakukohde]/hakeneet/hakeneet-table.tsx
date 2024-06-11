@@ -1,7 +1,9 @@
 'use client';
 import ListTable, {
   makeGenericColumn,
+  makeColumnWithValueToTranslate,
 } from '@/app/components/table/list-table';
+import { useTranslations } from '@/app/hooks/useTranslations';
 import { Hakemus } from '@/app/lib/ataru';
 
 export const HakeneetTable = ({
@@ -13,13 +15,16 @@ export const HakeneetTable = ({
   sort: string;
   setSort: (sort: string) => void;
 }) => {
+  const { t } = useTranslations();
+
   const columns = [
     makeGenericColumn<Hakemus>({
       title: 'hakeneet.taulukko.hakija',
       key: 'hakija',
       valueProp: 'hakijanNimi',
     }),
-    makeGenericColumn<Hakemus>({
+    makeColumnWithValueToTranslate<Hakemus>({
+      t,
       title: 'hakeneet.taulukko.hakukelpoisuus',
       key: 'hakukelpoisuus',
       valueProp: 'hakukelpoisuus',
@@ -29,7 +34,8 @@ export const HakeneetTable = ({
       key: 'hakutoiveennro',
       valueProp: 'hakutoiveNumero',
     }),
-    makeGenericColumn<Hakemus>({
+    makeColumnWithValueToTranslate<Hakemus>({
+      t,
       title: 'hakeneet.taulukko.maksuvelvollisuus',
       key: 'maksuvelvollisuus',
       valueProp: 'maksuvelvollisuus',
