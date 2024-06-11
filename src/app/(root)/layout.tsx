@@ -18,6 +18,7 @@ const IconHeaderBlock = ({
 }) => {
   return (
     <Box
+      component="main"
       sx={{
         backgroundColor: colors.white,
       }}
