@@ -1,6 +1,10 @@
-import React, { CSSProperties } from 'react';
+'use client';
+import React from 'react';
 import { HomeOutlined as HomeOutlinedIcon } from '@mui/icons-material';
-import { Link as MuiLink } from '@mui/material';
+import { colors } from '@/app/theme';
+import { IconButton } from './IconButton';
+import { Typography } from '@mui/material';
+import { PageContent } from './PageContent';
 
 export type HeaderProps = {
   title?: React.ReactNode;
@@ -11,45 +15,39 @@ export default function Header({
   title = 'Valintojen toteuttaminen',
   isHome = false,
 }: HeaderProps) {
-  const HEADER_HEIGHT = '4rem';
-  const TITLE_SIZE = isHome ? '2rem' : '1.5rem';
-
-  const headerStyle: CSSProperties = {
-    borderBottom: '1px solid rgba(0, 0, 0, 0.15)',
-    backgroundColor: 'white',
-    padding: '0.5rem 3vw',
-    width: '100svw',
-    left: 0,
-    position: 'absolute',
-    height: HEADER_HEIGHT,
-    display: 'flex',
-    textAlign: 'left',
-    justifyContent: 'flex-start',
-    alignContent: 'center',
-    columnGap: '0.8rem',
-  };
-
-  const titleStyle: CSSProperties = {
-    alignSelf: 'center',
-    fontSize: TITLE_SIZE,
-  };
-
   return (
-    <header>
-      <div style={headerStyle}>
+    <header
+      style={{
+        position: 'relative',
+        backgroundColor: colors.white,
+        width: '100%',
+        border: `2px solid ${colors.grey100}`,
+      }}
+    >
+      <PageContent
+        sx={{
+          paddingTop: (theme) => theme.spacing(2),
+          paddingBottom: (theme) => theme.spacing(2),
+          display: 'flex',
+          textAlign: 'left',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+          columnGap: (theme) => theme.spacing(2),
+        }}
+      >
         {!isHome && (
-          <MuiLink href="/" sx={titleStyle} aria-label="Palaa etusivulle">
-            <HomeOutlinedIcon
-              sx={{ border: '1px solid', padding: '3px', borderRadius: '2px' }}
-            />
-          </MuiLink>
+          <IconButton
+            href="/"
+            variant="outlined"
+            startIcon={<HomeOutlinedIcon />}
+            aria-label="Palaa etusivulle"
+          />
         )}
-        <h1 style={titleStyle}>
+        <Typography variant="h1">
           {!isHome ? '> ' : ''}
           {title}
-        </h1>
-      </div>
-      <div style={{ height: HEADER_HEIGHT, marginBottom: '4rem' }} />
+        </Typography>
+      </PageContent>
     </header>
   );
 }

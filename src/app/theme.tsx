@@ -11,7 +11,16 @@ export { colors };
 
 const theme = createODSTheme({
   variant: 'oph',
-  overrides: deepmerge(MUI_NEXTJS_OVERRIDES, {}),
+  overrides: deepmerge(MUI_NEXTJS_OVERRIDES, {
+    palette: {
+      background: {
+        default: colors.grey50,
+      },
+    },
+    Typography: {
+      color: colors.grey900,
+    },
+  }),
 });
 
 // MUI:sta (Emotionista) puuttuu styled-componentsin .attrs

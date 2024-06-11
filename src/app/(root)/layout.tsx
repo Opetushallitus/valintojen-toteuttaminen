@@ -1,19 +1,54 @@
 'use client';
 
-import { CSSProperties } from 'react';
 import Header from '../components/header';
 import { AccessTime as AccessTimeIcon } from '@mui/icons-material';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { MainContainer } from '@/app/components/MainContainer';
+import { Box, Typography } from '@mui/material';
+import { PageLayout } from '../components/PageLayout';
+import { colors } from '@opetushallitus/oph-design-system';
+import { DEFAULT_BOX_BORDER } from '../lib/constants';
 
-const titleSectionStyle: CSSProperties = {
-  borderBottom: '1px solid rgba(0, 0, 0, 0.15)',
-  display: 'flex',
-  flexDirection: 'row',
-  width: '100%',
-  justifyContent: 'flex-start',
-  marginBottom: '2rem',
-  padding: 0,
+const IconHeaderBlock = ({
+  title,
+  children,
+}: {
+  title: string;
+  icon: React.ReactNode;
+  children: React.ReactNode;
+}) => {
+  return (
+    <Box
+      sx={{
+        backgroundColor: colors.white,
+      }}
+    >
+      <Typography
+        component="div"
+        variant="h2"
+        sx={{
+          border: DEFAULT_BOX_BORDER,
+          borderBottom: 'none',
+          paddingX: 4,
+          paddingY: 2,
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1,
+        }}
+      >
+        <AccessTimeIcon /> {title}
+      </Typography>
+      <Box
+        sx={{
+          border: DEFAULT_BOX_BORDER,
+          paddingX: 4,
+          paddingY: 2,
+        }}
+      >
+        {children}
+      </Box>
+    </Box>
+  );
 };
 
 export default function HakuListLayout({
@@ -26,17 +61,11 @@ export default function HakuListLayout({
   const { t } = useTranslations();
 
   return (
-    <>
-      <Header isHome={true} title={t('otsikko')} />
-      <MainContainer>
-        <div style={titleSectionStyle}>
-          <h2 style={{ textAlign: 'left', margin: '0 0 1rem' }}>
-            <AccessTimeIcon /> {t('haku.otsikko')}
-          </h2>
-        </div>
+    <PageLayout header={<Header isHome={true} title={t('otsikko')} />}>
+      <IconHeaderBlock title={t('haku.otsikko')} icon={<AccessTimeIcon />}>
         {controls}
         {children}
-      </MainContainer>
-    </>
+      </IconHeaderBlock>
+    </PageLayout>
   );
 }
