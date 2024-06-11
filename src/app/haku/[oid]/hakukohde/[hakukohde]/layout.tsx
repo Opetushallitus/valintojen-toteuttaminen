@@ -9,19 +9,17 @@ export default function HakuLayout({
   params: { oid: string; hakukohde: string };
 }) {
   return (
-    <>
-      <MainContainer
-        component="div"
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          padding: 0,
-          width: '100%',
-        }}
-      >
-        <HakukohdeTabs hakukohdeOid={params.hakukohde} />
-        {children}
-      </MainContainer>
-    </>
+    <MainContainer
+      component="div"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        padding: 0,
+        width: '100%',
+      }}
+    >
+      <HakukohdeTabs hakukohdeOid={params.hakukohde} />
+      {children}
+    </MainContainer>
   );
 }
