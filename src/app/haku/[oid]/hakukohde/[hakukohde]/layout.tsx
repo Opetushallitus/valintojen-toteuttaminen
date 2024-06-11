@@ -1,4 +1,5 @@
 import HakukohdeTabs from './hakukohde-tabs';
+import { MainContainer } from '@/app/components/MainContainer';
 
 export default function HakuLayout({
   children,
@@ -9,9 +10,9 @@ export default function HakuLayout({
 }) {
   return (
     <>
-      <div
-        className="mainContainer"
-        style={{
+      <MainContainer
+        component="div"
+        sx={{
           display: 'flex',
           flexDirection: 'column',
           padding: 0,
@@ -20,7 +21,7 @@ export default function HakuLayout({
       >
         <HakukohdeTabs hakukohdeOid={params.hakukohde} />
         {children}
-      </div>
+      </MainContainer>
     </>
   );
 }

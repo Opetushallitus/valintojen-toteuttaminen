@@ -3,7 +3,8 @@
 import { CSSProperties } from 'react';
 import Header from '../components/header';
 import { AccessTime as AccessTimeIcon } from '@mui/icons-material';
-import { useTranslations } from '../hooks/useTranslations';
+import { useTranslations } from '@/app/hooks/useTranslations';
+import { MainContainer } from '@/app/components/MainContainer';
 
 const titleSectionStyle: CSSProperties = {
   borderBottom: '1px solid rgba(0, 0, 0, 0.15)',
@@ -27,7 +28,7 @@ export default function HakuListLayout({
   return (
     <>
       <Header isHome={true} title={t('otsikko')} />
-      <main className="mainContainer">
+      <MainContainer>
         <div style={titleSectionStyle}>
           <h2 style={{ textAlign: 'left', margin: '0 0 1rem' }}>
             <AccessTimeIcon /> {t('haku.otsikko')}
@@ -35,7 +36,7 @@ export default function HakuListLayout({
         </div>
         {controls}
         {children}
-      </main>
+      </MainContainer>
     </>
   );
 }
