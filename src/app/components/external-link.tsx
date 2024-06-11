@@ -5,13 +5,16 @@ import { Link } from '@mui/material';
 export type ExternalLinkProps = {
   name: string;
   href: string;
+  noIcon?: boolean;
 };
 
-export const ExternalLink = ({ name, href }: ExternalLinkProps) => (
-  <Link target="_blank" href={`${DOMAIN}/${href}}`}>
+export const ExternalLink = ({ name, href, noIcon }: ExternalLinkProps) => (
+  <Link target="_blank" href={`${DOMAIN}/${href}`}>
     {name}{' '}
-    <OpenInNew
-      sx={{ verticalAlign: 'middle', width: '20px', height: '20px' }}
-    />
+    {!noIcon && (
+      <OpenInNew
+        sx={{ verticalAlign: 'middle', width: '20px', height: '20px' }}
+      />
+    )}
   </Link>
 );

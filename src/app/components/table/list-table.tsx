@@ -17,6 +17,7 @@ import { getSortParts } from './table-utils';
 import { TranslatedName } from '@/app/lib/localization/localization-types';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { TFunction } from 'i18next';
+import { ExternalLink } from '../external-link';
 
 type Column<P> = {
   title?: string;
@@ -104,6 +105,31 @@ export const makeCountColumn = <T extends Entity = Entity>({
   key,
   render: (props) => <span>{(props[amountProp] ?? 0) as number}</span>,
   style: { width: 0 },
+});
+
+export const makeExternalLinkColumn = <T extends Entity = Entity>({
+  linkBuilder,
+  title,
+  key,
+  nameProp,
+  linkProp,
+}: {
+  linkBuilder: (s: string) => string;
+  title: string;
+  key: string;
+  nameProp?: KeysMatching<T, string>;
+  linkProp: KeysMatching<T, string>;
+}): Column<T> => ({
+  title,
+  key,
+  render: (props) => (
+    <ExternalLink
+      noIcon={true}
+      name={props[nameProp ?? linkProp] as string}
+      href={linkBuilder(props[linkProp] as string)}
+    />
+  ),
+  style: { width: 'auto' },
 });
 
 export const makeTilaColumn = <T extends Entity = Entity>(): Column<T> => ({

@@ -1,10 +1,18 @@
 'use client';
 import ListTable, {
   makeGenericColumn,
+  makeExternalLinkColumn,
   makeColumnWithValueToTranslate,
 } from '@/app/components/table/list-table';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Hakemus } from '@/app/lib/ataru';
+
+const LINK_TO_APPLICATION = 'lomake-editori/applications/search?term=';
+const LINK_TO_PERSON = 'henkilo-ui/oppija/';
+
+const buildLinkToApplication = (hakemusOid: string) =>
+  LINK_TO_APPLICATION + hakemusOid;
+const buildLinkToPerson = (personOid: string) => LINK_TO_PERSON + personOid;
 
 export const HakeneetTable = ({
   hakeneet,
@@ -18,10 +26,12 @@ export const HakeneetTable = ({
   const { t } = useTranslations();
 
   const columns = [
-    makeGenericColumn<Hakemus>({
+    makeExternalLinkColumn<Hakemus>({
+      linkBuilder: buildLinkToPerson,
       title: 'hakeneet.taulukko.hakija',
       key: 'hakija',
-      valueProp: 'hakijanNimi',
+      nameProp: 'hakijanNimi',
+      linkProp: 'henkiloOid',
     }),
     makeColumnWithValueToTranslate<Hakemus>({
       t,
@@ -40,15 +50,17 @@ export const HakeneetTable = ({
       key: 'maksuvelvollisuus',
       valueProp: 'maksuvelvollisuus',
     }),
-    makeGenericColumn<Hakemus>({
+    makeExternalLinkColumn<Hakemus>({
+      linkBuilder: buildLinkToApplication,
       title: 'hakeneet.taulukko.oid',
       key: 'hakemusoid',
-      valueProp: 'oid',
+      linkProp: 'oid',
     }),
-    makeGenericColumn<Hakemus>({
+    makeExternalLinkColumn<Hakemus>({
+      linkBuilder: buildLinkToPerson,
       title: 'hakeneet.taulukko.henkilooid',
       key: 'henkiloOid',
-      valueProp: 'henkiloOid',
+      linkProp: 'henkiloOid',
     }),
   ];
 
