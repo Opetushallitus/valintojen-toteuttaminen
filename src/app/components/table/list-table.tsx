@@ -174,6 +174,9 @@ const StyledCell = styled(TableCell)({
   textAlign: 'left',
   whiteSpace: 'pre-wrap',
   borderWidth: 0,
+  'button:focus': {
+    color: colors.blue2,
+  },
 });
 
 const StyledTableBody = styled(TableBody)({
