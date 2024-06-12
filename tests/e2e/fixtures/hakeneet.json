@@ -1,0 +1,105 @@
+[
+  {
+    "etunimet": "Ruhtinas",
+    "asiointiKieli": {
+      "kieliKoodi": "",
+      "kieliTyyppi": ""
+    },
+    "sukunimi": "Nukettaja",
+    "postinumero": "00100",
+    "oid": "1.2.246.562.11.00000000000001796027",
+    "hakuOid": "1.2.246.562.29.00000000000000045102",
+    "hakutoiveet": [
+      {
+        "processingState": "processed",
+        "eligibilityState": "Hakukelpoinen",
+        "paymentObligation": "unreviewed",
+        "hakukohdeOid": "1.2.246.562.20.00000000000000029096",
+        "languageRequirement": "unreviewed",
+        "degreeRequirement": "unreviewed"
+      },
+      {
+        "processingState": "processed",
+        "eligibilityState": "eligible",
+        "paymentObligation": "not-obligated",
+        "hakukohdeOid": "1.2.246.562.20.00000000000000045105",
+        "languageRequirement": "unreviewed",
+        "degreeRequirement": "unreviewed"
+      }
+    ],
+    "personOid": "1.2.246.562.24.69259807406",
+    "lahiosoite": "Kuoppamäki 905"
+  },
+  {
+    "etunimet": "Kreivi",
+    "asiointiKieli": {
+      "kieliKoodi": "",
+      "kieliTyyppi": ""
+    },
+    "sukunimi": "Dacula",
+    "postinumero": "00100",
+    "oid": "1.2.246.562.11.00000000000001793706",
+    "hakuOid": "1.2.246.562.29.00000000000000045102",
+    "henkilotunnus": "101172-979F",
+    "hakutoiveet": [
+      {
+        "processingState": "processed",
+        "eligibilityState": "eligible",
+        "paymentObligation": "obligated",
+        "hakukohdeOid": "1.2.246.562.20.00000000000000045105",
+        "languageRequirement": "unreviewed",
+        "degreeRequirement": "unreviewed"
+      }
+    ],
+    "personOid": "1.2.246.562.24.25732574711",
+    "lahiosoite": "Rämsöönranta 183"
+  },
+  {
+    "etunimet": "Puru",
+    "asiointiKieli": {
+      "kieliKoodi": "",
+      "kieliTyyppi": ""
+    },
+    "sukunimi": "Purukumi",
+    "postinumero": "00100",
+    "oid": "1.2.246.562.11.00000000000001790371",
+    "hakuOid": "1.2.246.562.29.00000000000000045102",
+    "henkilotunnus": "210988-9151",
+    "hakutoiveet": [
+      {
+        "processingState": "processed",
+        "eligibilityState": "conditionally-eligible",
+        "paymentObligation": "unreviewed",
+        "hakukohdeOid": "1.2.246.562.20.00000000000000045105",
+        "languageRequirement": "unreviewed",
+        "degreeRequirement": "unreviewed"
+      }
+    ],
+    "personOid": "1.2.246.562.24.14598775927",
+    "lahiosoite": "Kuoppamäki 992"
+  },
+  {
+    "etunimet": "Haamu",
+    "asiointiKieli": {
+      "kieliKoodi": "",
+      "kieliTyyppi": ""
+    },
+    "sukunimi": "Hui",
+    "postinumero": "00100",
+    "oid": "1.2.246.562.11.00000000000001543832",
+    "hakuOid": "1.2.246.562.29.00000000000000045102",
+    "henkilotunnus": "021016A934L",
+    "hakutoiveet": [
+      {
+        "processingState": "processed",
+        "eligibilityState": "uneligible",
+        "paymentObligation": "unreviewed",
+        "hakukohdeOid": "1.2.246.562.20.00000000000000045105",
+        "languageRequirement": "unreviewed",
+        "degreeRequirement": "unreviewed"
+      }
+    ],
+    "personOid": "1.2.246.562.24.30476885816",
+    "lahiosoite": "Yläpääntie 875"
+  }
+]

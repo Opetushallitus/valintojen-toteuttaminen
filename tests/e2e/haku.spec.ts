@@ -26,12 +26,12 @@ test.describe('hakukohde search', () => {
     const hakuInput = await page.getByRole('textbox', {
       name: 'Hae hakukohteita',
     });
-    hakuInput.fill('Natural Sciences');
+    await hakuInput.fill('Natural Sciences');
     await expect(page.locator('.organizationLabel')).toHaveCount(1);
     await expect(page.locator('.hakukohdeLabel').first()).toContainText(
       'Finnish MAOL competition route, Natural Sciences and Mathematics',
     );
-    hakuInput.fill('Sustainable Urban');
+    await hakuInput.fill('Sustainable Urban');
     await expect(page.locator('.organizationLabel')).toHaveCount(1);
     await expect(page.locator('.hakukohdeLabel').first()).toContainText(
       'Finnish MAOL competition route, Technology, Sustainable Urban Development',
@@ -42,7 +42,7 @@ test.describe('hakukohde search', () => {
     const hakuInput = await page.getByRole('textbox', {
       name: 'Hae hakukohteita',
     });
-    hakuInput.fill('Tekniikan ja luonnontieteiden tiedekunta');
+    await hakuInput.fill('Tekniikan ja luonnontieteiden tiedekunta');
     await expect(page.locator('.organizationLabel')).toHaveCount(2);
   });
 
@@ -50,7 +50,7 @@ test.describe('hakukohde search', () => {
     const hakuInput = await page.getByRole('textbox', {
       name: 'Hae hakukohteita',
     });
-    hakuInput.fill('1.2.246.562.20.00000000000000045104');
+    await hakuInput.fill('1.2.246.562.20.00000000000000045104');
     await expect(page.locator('.organizationLabel')).toHaveCount(1);
     await expect(page.locator('.hakukohdeLabel').first()).toContainText(
       'Finnish MAOL competition route, Computing and Electrical Engineering',
