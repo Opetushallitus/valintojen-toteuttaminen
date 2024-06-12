@@ -27,48 +27,58 @@ export const HakeneetTable = ({
 }) => {
   const { t } = useTranslations();
 
-  const columns = [
-    makeExternalLinkColumn<Hakemus>({
-      linkBuilder: buildLinkToPerson,
-      title: 'hakeneet.taulukko.hakija',
-      key: 'hakija',
-      nameProp: 'hakijanNimi',
-      linkProp: 'henkiloOid',
-    }),
-    isKorkeakouluHaku
-      ? makeColumnWithValueToTranslate<Hakemus>({
-          t,
-          title: 'hakeneet.taulukko.hakukelpoisuus',
-          key: 'hakukelpoisuus',
-          valueProp: 'hakukelpoisuus',
-        })
-      : null,
-    makeGenericColumn<Hakemus>({
-      title: 'hakeneet.taulukko.hakutoiveennro',
-      key: 'hakutoiveennro',
-      valueProp: 'hakutoiveNumero',
-    }),
-    isKorkeakouluHaku
-      ? makeColumnWithValueToTranslate<Hakemus>({
-          t,
-          title: 'hakeneet.taulukko.maksuvelvollisuus',
-          key: 'maksuvelvollisuus',
-          valueProp: 'maksuvelvollisuus',
-        })
-      : null,
-    makeExternalLinkColumn<Hakemus>({
-      linkBuilder: buildLinkToApplication,
-      title: 'hakeneet.taulukko.oid',
-      key: 'hakemusoid',
-      linkProp: 'oid',
-    }),
-    makeExternalLinkColumn<Hakemus>({
-      linkBuilder: buildLinkToPerson,
-      title: 'hakeneet.taulukko.henkilooid',
-      key: 'henkiloOid',
-      linkProp: 'henkiloOid',
-    }),
-  ].filter((c) => c != null);
+  const hakijaColumn = makeExternalLinkColumn<Hakemus>({
+    linkBuilder: buildLinkToPerson,
+    title: 'hakeneet.taulukko.hakija',
+    key: 'hakijanNimi',
+    nameProp: 'hakijanNimi',
+    linkProp: 'henkiloOid',
+  });
+
+  const hakukelpoisuusColumn = makeColumnWithValueToTranslate<Hakemus>({
+    t,
+    title: 'hakeneet.taulukko.hakukelpoisuus',
+    key: 'hakukelpoisuus',
+    valueProp: 'hakukelpoisuus',
+  });
+
+  const hakutoivenroColumn = makeGenericColumn<Hakemus>({
+    title: 'hakeneet.taulukko.hakutoiveennro',
+    key: 'hakutoiveNumero',
+    valueProp: 'hakutoiveNumero',
+  });
+
+  const maksuvelvollisuusColumn = makeColumnWithValueToTranslate<Hakemus>({
+    t,
+    title: 'hakeneet.taulukko.maksuvelvollisuus',
+    key: 'maksuvelvollisuus',
+    valueProp: 'maksuvelvollisuus',
+  });
+
+  const hakemusOidColumn = makeExternalLinkColumn<Hakemus>({
+    linkBuilder: buildLinkToApplication,
+    title: 'hakeneet.taulukko.oid',
+    key: 'oid',
+    linkProp: 'oid',
+  });
+
+  const henkiloOidColumn = makeExternalLinkColumn<Hakemus>({
+    linkBuilder: buildLinkToPerson,
+    title: 'hakeneet.taulukko.henkilooid',
+    key: 'henkiloOid',
+    linkProp: 'henkiloOid',
+  });
+
+  const columns = isKorkeakouluHaku
+    ? [
+        hakijaColumn,
+        hakukelpoisuusColumn,
+        hakutoivenroColumn,
+        maksuvelvollisuusColumn,
+        hakemusOidColumn,
+        henkiloOidColumn,
+      ]
+    : [hakijaColumn, hakutoivenroColumn, hakemusOidColumn, henkiloOidColumn];
 
   return (
     <ListTable
