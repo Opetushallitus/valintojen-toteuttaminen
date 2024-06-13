@@ -11,11 +11,12 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 
 const StyledPanel = styled('div')({
-  width: '20vw',
+  width: '16vw',
   textAlign: 'left',
   minHeight: '85vh',
   display: 'flex',
   flexDirection: 'column',
+  flexShrink: 0,
   rowGap: '7px',
   paddingRight: '5px',
   alignItems: 'start',

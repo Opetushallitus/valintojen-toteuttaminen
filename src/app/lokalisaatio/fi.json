@@ -14,7 +14,8 @@
     "lisatiedot": "Lisätiedot",
     "haku": "Haku",
     "sivutus": "Sivutus",
-    "palaa-etusivulle": "Palaa etusivulle"
+    "palaa-etusivulle": "Palaa etusivulle",
+    "ulkoinenlinkki": "Avautuu uuteen ikkunaan"
   },
   "virhe": {
     "palvelin": "Palvelinpyyntö epäonnistui!",
@@ -51,7 +52,7 @@
     },
     "maksuvelvollisuus": {
       "maksuvelvollinen": "Maksuvelvollinen",
-      "maksuvelvoton": "Ei maksuvelvollinen"
+      "eimaksuvelvollinen": "Ei maksuvelvollinen"
     }
   },
   "perustiedot": {

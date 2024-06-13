@@ -3,7 +3,7 @@ import { client } from './http-client';
 
 export enum Maksuvelvollisuus {
   MAKSUVELVOLLINEN = 'hakemus.maksuvelvollisuus.maksuvelvollinen',
-  MAKSUVELVOTON = 'hakemus.maksuvelvollisuus.maksuvelvoton',
+  EI_MAKSUVELVOLLINEN = 'hakemus.maksuvelvollisuus.eimaksuvelvollinen',
   TARKASTAMATTA = 'hakemus.tarkastamatta',
 }
 
@@ -41,7 +41,7 @@ const getMaksuvelvollisuus = (toive?: {
     case 'obligated':
       return Maksuvelvollisuus.MAKSUVELVOLLINEN;
     case 'not-obligated':
-      return Maksuvelvollisuus.MAKSUVELVOTON;
+      return Maksuvelvollisuus.EI_MAKSUVELVOLLINEN;
     default:
       return Maksuvelvollisuus.TARKASTAMATTA;
   }
