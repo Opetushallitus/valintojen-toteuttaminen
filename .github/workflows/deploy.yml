@@ -1,4 +1,6 @@
 name: Valintojen toteuttaminen deploy
+env:
+  HUSKY: 0
 permissions:
   id-token: write
   contents: read
@@ -16,7 +18,7 @@ on:
           - hahtuva
           - pallero
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -45,4 +47,4 @@ jobs:
       - name: Deploy Next.js app
         run: |
           cd cdk
-          cdk deploy SovellusStack --require-approval never -c "environment=${{ inputs.environment }}"
+          cdk deploy SovellusStack --require-approval never -c "environment=${{ inputs.environment }}" -c "skipBuild=true"

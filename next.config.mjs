@@ -20,6 +20,7 @@ const basePath = '/valintojen-toteuttaminen';
 
 const nextConfig = {
   basePath,
+  compress: false, // nginx hoitaa pakkauksen
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -37,7 +38,6 @@ const nextConfig = {
     ];
   },
   env: {
-    basePath,
     VIRKAILIJA_URL: process.env.VIRKAILIJA_URL,
     APP_URL: process.env.APP_URL,
   },

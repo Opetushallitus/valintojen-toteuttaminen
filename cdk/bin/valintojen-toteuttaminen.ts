@@ -5,10 +5,12 @@ import { SovellusStack } from '../lib/sovellus-stack';
 
 const app = new cdk.App();
 const environmentName = app.node.tryGetContext('environment');
+const skipBuild = app.node.tryGetContext('skipBuild');
 
 new SovellusStack(app, 'SovellusStack', {
   stackName: `${environmentName}-valintojen-toteuttaminen`,
-  environmentName: environmentName,
+  environmentName,
+  skipBuild,
   env: {
     account: process.env.CDK_DEFAULT_ACCOUNT,
     region: process.env.CDK_DEFAULT_REGION,
