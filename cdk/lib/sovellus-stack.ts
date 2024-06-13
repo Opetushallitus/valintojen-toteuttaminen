@@ -6,6 +6,7 @@ import { Nextjs } from 'cdk-nextjs-standalone';
 
 interface ValintojenToteuttaminenStackProps extends cdk.StackProps {
   environmentName: string;
+  skipBuild: boolean;
 }
 
 export class SovellusStack extends cdk.Stack {
@@ -51,6 +52,12 @@ export class SovellusStack extends cdk.Stack {
 
     const nextjs = new Nextjs(this, 'Nextjs', {
       nextjsPath: '..', // relative path from your project root to NextJS
+      ...(props.skipBuild
+        ? {
+            buildCommand:
+              'npx --yes open-next@^2 build -- --build-command "npm run noop"',
+          }
+        : {}),
       basePath: '/valintojen-toteuttaminen',
       environment: {
         STANDALONE: 'true',
