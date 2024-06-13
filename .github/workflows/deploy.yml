@@ -1,4 +1,6 @@
 name: Valintojen toteuttaminen deploy
+env:
+  HUSKY: 0
 permissions:
   id-token: write
   contents: read
