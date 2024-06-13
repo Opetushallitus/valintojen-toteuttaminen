@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "touch .env.development.local && NODE_EXTRA_CA_CERTS=\"$(mkcert -CAROOT)/rootCA.pem\" NODE_ENV=development node --env-file=.env --env-file=.env.development.local dev-server.mjs",
     "dev-test": "TEST=true APP_URL=https://localhost:3404 VIRKAILIJA_URL=http://localhost:3104 npm run dev",
-    "build": "STANDALONE=true next build; cp run.sh .next/standalone",
+    "build": "next build",
     "build-test": "APP_URL=https://localhost:3404 VIRKAILIJA_URL=http://localhost:3104 next build",
     "start": "NODE_ENV=production npm run dev",
     "start-test": "NODE_ENV=production npm run dev-test",
