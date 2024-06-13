@@ -4,8 +4,14 @@ import HAKUKOHTEET from './fixtures/hakukohteet.json';
 import HAKUTAPA_CODES from './fixtures/hakutapa.json';
 import SIJOITTELUN_YHTEENVETO from './fixtures/sijoittelun_yhteenveto.json';
 import VALINTARYHMA from './fixtures/valintaryhma.json';
+import HAKENEET from './fixtures/hakeneet.json';
 
 const port = 3104;
+
+const modifyResponse = (response, body) => {
+  response.write(JSON.stringify(body));
+  response.end();
+};
 
 export default async function playwrightSetup() {
   const server = await createServer(async (request, response) => {
@@ -16,9 +22,7 @@ export default async function playwrightSetup() {
     } else if (
       request.url.includes(`kayttooikeus-service/henkilo/current/omattiedot`)
     ) {
-      response.write(JSON.stringify({ isAdmin: true, organisaatiot: [] }));
-      response.end();
-      return;
+      return modifyResponse(response, { isAdmin: true, organisaatiot: [] });
     } else if (request.url.includes(`henkilo/current/asiointiKieli`)) {
       response.setHeader('Content-Type', 'text/plain');
       response.write('fi');
@@ -27,54 +31,49 @@ export default async function playwrightSetup() {
     } else if (request.url.includes(`kouta-internal/haku/search`)) {
       if (request.url.includes('&tarjoaja=')) {
         const tarjoaja = request.url.split('&tarjoaja=')[1];
-        response.write(
-          JSON.stringify(HAUT.filter((h) => h.organisaatioOid === tarjoaja)),
+        return modifyResponse(
+          response,
+          HAUT.filter((h) => h.organisaatioOid === tarjoaja),
         );
       } else {
-        response.write(JSON.stringify(HAUT));
+        return modifyResponse(response, HAUT);
       }
-      response.end();
-      return;
     } else if (
       request.url.includes(`koodisto-service/rest/codeelement/codes/hakutapa`)
     ) {
-      response.write(JSON.stringify(HAKUTAPA_CODES));
-      response.end();
-      return;
+      return modifyResponse(response, HAKUTAPA_CODES);
     } else if (request.url.includes('kouta-internal/hakukohde/search')) {
       const hakuId = request.url.split('&haku=')[1];
-      response.write(
-        JSON.stringify(HAKUKOHTEET.filter((hk) => hk.hakuOid === hakuId)),
+      return modifyResponse(
+        response,
+        HAKUKOHTEET.filter((hk) => hk.hakuOid === hakuId),
       );
-      response.end();
-      return;
     } else if (request.url.includes('kouta-internal/hakukohde/')) {
       const hakukohdeOid = request.url.split('/').reverse()[0];
-      response.write(
-        JSON.stringify(HAKUKOHTEET.find((hk) => hk.oid === hakukohdeOid)),
+      return modifyResponse(
+        response,
+        HAKUKOHTEET.find((hk) => hk.oid === hakukohdeOid),
       );
-      response.end();
-      return;
     } else if (request.url.includes(`kouta-internal/haku/`)) {
       const hakuId = request.url.split('haku/')[1];
-      const haku = HAUT.find((hakuData) => hakuData.oid === hakuId);
-      response.write(JSON.stringify(haku));
-      response.end();
-      return;
+      return modifyResponse(
+        response,
+        HAUT.find((hakuData) => hakuData.oid === hakuId),
+      );
     } else if (
       request.url.includes(
         `valinta-tulos-service/auth/sijoitteluntulos/yhteenveto`,
       )
     ) {
-      response.write(JSON.stringify(SIJOITTELUN_YHTEENVETO));
-      response.end();
-      return;
+      return modifyResponse(response, SIJOITTELUN_YHTEENVETO);
     } else if (
       request.url.includes(`valintaperusteet-service/resources/hakukohde`)
     ) {
-      response.write(JSON.stringify(VALINTARYHMA));
-      response.end();
-      return;
+      return modifyResponse(response, VALINTARYHMA);
+    } else if (
+      request.url.includes('lomake-editori/api/external/valinta-ui?')
+    ) {
+      return modifyResponse(response, HAKENEET);
     } else {
       console.log('(Backend) mock not implementeded', request.url);
       return;

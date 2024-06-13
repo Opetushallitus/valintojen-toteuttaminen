@@ -3,10 +3,15 @@ import {
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
 } from './playwright-utils';
-import { BasicTab } from '@/app/haku/[oid]/hakukohde/[hakukohde]/hakukohde-tabs';
 
-const TABS_TO_TEST: BasicTab[] = [
-  { title: 'Hakeneet', route: 'hakeneet' },
+type Tab = { title: string; textLocator?: string; route: string };
+
+const TABS_TO_TEST: Tab[] = [
+  {
+    title: 'Hakeneet',
+    textLocator: 'Hae hakijan nimellä tai tunnisteilla',
+    route: 'hakeneet',
+  },
   { title: 'Valinnan hallinta', route: 'valinnan-hallinta' },
   { title: 'Valintakoekutsut', route: 'valintakoekutsut' },
   { title: 'Pistesyöttö', route: 'pistesyotto' },
@@ -55,14 +60,22 @@ test.describe('Hakukohde tabs', () => {
       );
       await page.locator('.organizationLabel').first().click();
       await page.getByText(tab.title).click();
-      await expect(page.locator('h3')).toHaveText(tab.title);
+      if (tab.textLocator) {
+        await expect(page.locator('body')).toContainText(tab.textLocator);
+      } else {
+        await expect(page.locator('h3')).toHaveText(tab.title);
+      }
     });
 
     test(`Navigates directly to ${tab.title}`, async ({ page }) => {
       await page.goto(
         `/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/${tab.route}`,
       );
-      await expect(page.locator('h3')).toHaveText(tab.title);
+      if (tab.textLocator) {
+        await expect(page.locator('body')).toContainText(tab.textLocator);
+      } else {
+        await expect(page.locator('h3')).toHaveText(tab.title);
+      }
     });
 
     test(`${tab.title} page accessibility`, async ({ page }) => {

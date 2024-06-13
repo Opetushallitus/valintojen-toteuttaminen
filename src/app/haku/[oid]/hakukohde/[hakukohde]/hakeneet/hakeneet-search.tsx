@@ -1,11 +1,16 @@
-import { useHakukohdeSearchParams } from '@/app/hooks/useHakukohdeSearch';
+import { useHakeneetSearchParams } from '@/app/hooks/useHakeneetSearch';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Search } from '@mui/icons-material';
-import { FormControl, InputAdornment, OutlinedInput } from '@mui/material';
+import {
+  FormControl,
+  FormLabel,
+  InputAdornment,
+  OutlinedInput,
+} from '@mui/material';
 import { ChangeEvent } from 'react';
 
-export const HakukohdeSearch = () => {
-  const { searchPhrase, setSearchPhrase } = useHakukohdeSearchParams();
+export const HakeneetSearch = () => {
+  const { searchPhrase, setSearchPhrase } = useHakeneetSearchParams();
   const { t } = useTranslations();
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchPhrase(e.target.value);
@@ -14,18 +19,21 @@ export const HakukohdeSearch = () => {
   return (
     <FormControl
       sx={{
-        minWidth: '180px',
+        flexGrow: 4,
+        minWidth: '380px',
         textAlign: 'left',
       }}
     >
+      <FormLabel htmlFor="hakeneet-search" sx={{ fontWeight: 600 }}>
+        {t('hakeneet.hae')}
+      </FormLabel>
       <OutlinedInput
-        id="hakukohde-search"
-        name="hakukohde-search"
+        id="hakeneet-search"
+        name="hakeneet-search"
         defaultValue={searchPhrase}
         onChange={handleSearchChange}
         autoFocus={true}
         type="text"
-        placeholder={t('haku.haehakukohde')}
         endAdornment={
           <InputAdornment position="end">
             <Search />
@@ -36,4 +44,4 @@ export const HakukohdeSearch = () => {
   );
 };
 
-export default HakukohdeSearch;
+export default HakeneetSearch;

@@ -1,40 +1,35 @@
 'use client';
 
 import { styled } from '@mui/material';
-import { useState } from 'react';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getHakukohde } from '@/app/lib/kouta';
 import { usePathname } from 'next/navigation';
 import { Link as MuiLink } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
+import { colors } from '@/app/theme';
+import { DEFAULT_BOX_BORDER } from '@/app/lib/constants';
 
-const StyledContainer = styled('div')({
-  padding: '0.5rem 1.5rem 0',
-  borderBottom: '1px solid lightgray',
-});
+const StyledContainer = styled('div')(({ theme }) => ({
+  padding: theme.spacing(2, 3, 0),
+  borderBottom: DEFAULT_BOX_BORDER,
+}));
 
 const StyledHeader = styled('div')({
   textAlign: 'left',
-  h2: {},
-  '.hakukohdeLabel': {
-    fontWeight: 600,
-  },
-  '.organisaatioLabel': {
-    fontWeight: 'normal',
-  },
 });
 
-const StyledTabs = styled('div')({
+const StyledTabs = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'row',
-  columnGap: '0.5rem',
+  columnGap: theme.spacing(2),
   '.hakukohde-tab': {
     cursor: 'pointer',
     '&--active': {
-      borderBottom: '3px solid #0a789c',
+      borderBottom: '3px solid',
+      borderColor: colors.blue2,
     },
   },
-});
+}));
 
 export type BasicTab = {
   title: string;
@@ -60,19 +55,13 @@ function getPathMatchingTab(pathName: string) {
 
 const HakukohdeTabs = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
   const pathName = usePathname();
-  const [activeTab, setActiveTab] = useState<BasicTab>(
-    getPathMatchingTab(pathName),
-  );
+  const activeTab = getPathMatchingTab(pathName);
   const { t, translateEntity } = useTranslations();
 
   const { data: hakukohde } = useSuspenseQuery({
     queryKey: ['getHakukohde', hakukohdeOid],
     queryFn: () => getHakukohde(hakukohdeOid),
   });
-
-  const selectActiveTab = (tab: BasicTab) => {
-    setActiveTab(tab);
-  };
 
   return (
     <StyledContainer>
@@ -97,7 +86,6 @@ const HakukohdeTabs = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
                 ? 'hakukohde-tab hakukohde-tab--active'
                 : 'hakukohde-tab'
             }
-            onClick={() => selectActiveTab(tab)}
           >
             {t(tab.title)}
           </MuiLink>

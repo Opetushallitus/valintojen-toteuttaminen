@@ -17,6 +17,7 @@ import { getSortParts } from './table-utils';
 import { TranslatedName } from '@/app/lib/localization/localization-types';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { TFunction } from 'i18next';
+import { ExternalLink } from '../external-link';
 
 type Column<P> = {
   title?: string;
@@ -25,7 +26,7 @@ type Column<P> = {
   style?: Record<string, string | number>;
 };
 
-type Entity = { oid: string; nimi: TranslatedName | string; tila?: Tila };
+type Entity = { oid: string; nimi?: TranslatedName | string; tila?: Tila };
 
 type KeysMatching<O, T> = {
   [K in keyof O]: O[K] extends T ? K : never;
@@ -38,7 +39,7 @@ export const makeHakuColumn = <T extends Entity = Entity>(
   key: 'nimi',
   render: (haku) => (
     <MuiLink href={`/haku/${haku.oid}`} sx={{ textDecoration: 'none' }}>
-      {typeof haku.nimi == 'string' ? haku.nimi : translateEntity(haku.nimi)}
+      {typeof haku.nimi == 'object' ? translateEntity(haku.nimi) : haku.nimi}
     </MuiLink>
   ),
   style: {
@@ -52,7 +53,7 @@ export const makeNameColumn = <T extends Entity = Entity>(
   title: 'Nimi',
   key: 'nimi',
   render: (t) => (
-    <span>{typeof t.nimi == 'string' ? t.nimi : translateEntity(t.nimi)}</span>
+    <span>{typeof t.nimi === 'object' ? translateEntity(t.nimi) : t.nimi}</span>
   ),
   style: {
     width: 'auto',
@@ -66,11 +67,28 @@ export const makeGenericColumn = <T extends Entity = Entity>({
 }: {
   title: string;
   key: string;
-  valueProp: KeysMatching<T, string>;
+  valueProp: KeysMatching<T, string | number>;
 }): Column<T> => ({
   title,
   key,
   render: (props) => <span>{(props[valueProp] ?? 0) as string}</span>,
+  style: { width: 'auto' },
+});
+
+export const makeColumnWithValueToTranslate = <T extends Entity = Entity>({
+  t,
+  title,
+  key,
+  valueProp,
+}: {
+  t: TFunction;
+  title: string;
+  key: string;
+  valueProp: KeysMatching<T, string>;
+}): Column<T> => ({
+  title,
+  key,
+  render: (props) => <span>{t(props[valueProp] as string)}</span>,
   style: { width: 'auto' },
 });
 
@@ -87,6 +105,31 @@ export const makeCountColumn = <T extends Entity = Entity>({
   key,
   render: (props) => <span>{(props[amountProp] ?? 0) as number}</span>,
   style: { width: 0 },
+});
+
+export const makeExternalLinkColumn = <T extends Entity = Entity>({
+  linkBuilder,
+  title,
+  key,
+  nameProp,
+  linkProp,
+}: {
+  linkBuilder: (s: string) => string;
+  title: string;
+  key: string;
+  nameProp?: KeysMatching<T, string>;
+  linkProp: KeysMatching<T, string>;
+}): Column<T> => ({
+  title,
+  key,
+  render: (props) => (
+    <ExternalLink
+      noIcon={true}
+      name={props[nameProp ?? linkProp] as string}
+      href={linkBuilder(props[linkProp] as string)}
+    />
+  ),
+  style: { width: 'auto' },
 });
 
 export const makeTilaColumn = <T extends Entity = Entity>(): Column<T> => ({
@@ -131,6 +174,9 @@ const StyledCell = styled(TableCell)({
   textAlign: 'left',
   whiteSpace: 'pre-wrap',
   borderWidth: 0,
+  'button:focus': {
+    color: colors.blue2,
+  },
 });
 
 const StyledTableBody = styled(TableBody)({

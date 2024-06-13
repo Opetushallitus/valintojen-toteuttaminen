@@ -14,7 +14,8 @@
     "lisatiedot": "Lisätiedot",
     "haku": "Haku",
     "sivutus": "Sivutus",
-    "palaa-etusivulle": "Palaa etusivulle"
+    "palaa-etusivulle": "Palaa etusivulle",
+    "ulkoinenlinkki": "Avautuu uuteen ikkunaan"
   },
   "virhe": {
     "palvelin": "Palvelinpyyntö epäonnistui!",
@@ -42,6 +43,18 @@
     "valitse": "Valitse tai hae hakukohde",
     "oid": "Hakukohde oid: "
   },
+  "hakemus": {
+    "tarkastamatta": "Tarkastamatta",
+    "hakukelpoisuus": {
+      "hakukelpoinen": "Hakukelpoinen",
+      "hakukelvoton": "Ei hakukelpoinen",
+      "ehdollinen": "Ehdollisesti hakukelpoinen"
+    },
+    "maksuvelvollisuus": {
+      "maksuvelvollinen": "Maksuvelvollinen",
+      "eimaksuvelvollinen": "Ei maksuvelvollinen"
+    }
+  },
   "perustiedot": {
     "otsikko": "Perustiedot",
     "valintaryhma": "Valintaryhmä",
@@ -62,7 +75,17 @@
     }
   },
   "hakeneet": {
-    "otsikko": "Hakeneet"
+    "otsikko": "Hakeneet",
+    "hae": "Hae hakijan nimellä tai tunnisteilla",
+    "maara": "Hakijoita: ",
+    "taulukko": {
+      "hakija": "Hakija",
+      "hakukelpoisuus": "Hakukelpoisuus",
+      "hakutoiveennro": "Hakutoiveen nro",
+      "maksuvelvollisuus": "Maksuvelvollisuus",
+      "oid": "Hakemuksen tekninen tunniste (OID)",
+      "henkilooid": "Oppijan numero"
+    }
   },
   "valinnanhallinta": {
     "otsikko": "Valinnan hallinta"

@@ -11,29 +11,31 @@ import {
   Pagination,
 } from '@mui/material';
 import { DEFAULT_PAGE_SIZE, PAGE_SIZES } from '@/app/lib/constants';
-import { useTranslations } from '../hooks/useTranslations';
+import { useTranslations } from '../../hooks/useTranslations';
 
 export const StyledPagination = styled(Pagination)({
   display: 'flex',
 });
 
-export type HakuTablePaginationWrapperProps = {
+export type TablePaginationWrapperProps = {
   totalCount: number;
   pageNumber: number;
   setPageNumber: (page: number) => void;
   pageSize: number;
   setPageSize: (page: number) => void;
   children: React.ReactNode;
+  countTranslationKey: string;
 };
 
-export const HakuTablePaginationWrapper = ({
+export const TablePaginationWrapper = ({
   totalCount,
   pageNumber,
   pageSize,
   setPageNumber,
   setPageSize,
   children,
-}: HakuTablePaginationWrapperProps) => {
+  countTranslationKey,
+}: TablePaginationWrapperProps) => {
   const { t } = useTranslations();
 
   return totalCount === 0 ? (
@@ -42,7 +44,7 @@ export const HakuTablePaginationWrapper = ({
     <>
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Typography sx={{ textAlign: 'left' }}>
-          {t('haku.maara')} {totalCount}
+          {t(countTranslationKey)} {totalCount}
         </Typography>
         <FormControl>
           <FormLabel id="page-size-select-label">
@@ -70,7 +72,7 @@ export const HakuTablePaginationWrapper = ({
       <Box display="flex" flexDirection="column" rowGap={1} alignItems="center">
         {children}
         <StyledPagination
-          aria-label="Sivutus"
+          aria-label={t('yleinen.sivutus')}
           count={Math.ceil(totalCount / pageSize)}
           page={pageNumber}
           onChange={(_e: unknown, value: number) => {
