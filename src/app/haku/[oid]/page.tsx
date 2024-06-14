@@ -8,11 +8,11 @@ import { styled } from '@mui/material';
 export default function HakuPage() {
   const { t } = useTranslations();
 
-  const Container = styled('div')({
+  const Container = styled('div')(({ theme }) => ({
     textAlign: 'center',
-    padding: '5rem 2rem 1rem',
+    padding: theme.spacing(8, 4, 2),
     width: '70%',
-  });
+  }));
 
   return (
     <Container>
@@ -21,6 +21,7 @@ export default function HakuPage() {
           borderRadius: '45px',
           backgroundColor: colors.grey50,
           padding: '15px',
+          boxSizing: 'content-box',
         }}
       />
       <h2>{t('hakukohde.valitse')}</h2>

@@ -15,7 +15,8 @@
     "haku": "Haku",
     "sivutus": "Sivutus",
     "palaa-etusivulle": "Palaa etusivulle",
-    "ulkoinenlinkki": "Avautuu uuteen ikkunaan"
+    "ulkoinenlinkki": "Avautuu uuteen ikkunaan",
+    "toiminnot": "Toiminnot"
   },
   "virhe": {
     "palvelin": "Palvelinpyyntö epäonnistui!",
@@ -88,7 +89,14 @@
     }
   },
   "valinnanhallinta": {
-    "otsikko": "Valinnan hallinta"
+    "otsikko": "Valinnan hallinta",
+    "eilasketajalkeen": "Ei lasketa {{pvm}} jälkeen",
+    "eilaskennassa": "Valinnanvaihe ei ole aktiivinen",
+    "mukanalaskennassa": "Mukana laskennassa",
+    "kaynnista": "Käynnistä laskenta",
+    "kaynnistakaikki": "Käynnistä kaikki laskennat",
+    "tyyppi": "Tyyppi",
+    "laskenta": "Laskenta"
   },
   "koekutsut": {
     "otsikko": "Valintakoekutsut"
@@ -107,5 +115,12 @@
   },
   "sijoitteluntulokset": {
     "otsikko": "Sijoittelun tulokset"
+  },
+  "valinnanvaihe": {
+    "nimi": "Valinnanvaiheen nimi",
+    "tyyppi": {
+      "valintakoe": "Valintakoevalinnanvaihe",
+      "tavallinen": "Valinnanvaihe"
+    }
   }
 }
