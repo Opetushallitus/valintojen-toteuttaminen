@@ -53,7 +53,7 @@ const makeBareRequest = (request: Request) => {
 
 const retryWithLogin = async (request: Request, loginUrl: string) => {
   await makeBareRequest(new Request(loginUrl));
-  return await makeBareRequest(request);
+  return makeBareRequest(request);
 };
 
 const responseToData = async (res: Response) => {
@@ -72,43 +72,43 @@ const responseToData = async (res: Response) => {
   }
 };
 
+const LOGIN_MAP = [
+  {
+    urlIncludes: '/kouta-internal',
+    loginUrl: configuration.koutaInternalLogin,
+  },
+  {
+    urlIncludes: '/lomake-editori',
+    loginUrl: configuration.ataruEditoriLogin,
+  },
+  {
+    urlIncludes: '/valinta-tulos-service',
+    loginUrl: configuration.valintaTulosServiceLogin,
+  },
+  {
+    urlIncludes: '/valintalaskenta-laskenta-service',
+    loginUrl: configuration.valintalaskentaServiceLogin,
+  },
+] as const;
+
 const makeRequest = async (request: Request) => {
   try {
     const response = await makeBareRequest(request);
-
     if (isRedirected(response)) {
       if (response.url.includes('/cas/login')) {
         redirectToLogin();
       }
     }
-
     return responseToData(response);
   } catch (error: unknown) {
     if (error instanceof FetchError) {
       if (isUnauthenticated(error.response)) {
         try {
-          if (request?.url?.includes('/kouta-internal')) {
-            const resp = await retryWithLogin(
-              request,
-              configuration.koutaInternalLogin,
-            );
-
-            return responseToData(resp);
-          }
-          if (request?.url?.includes('/lomake-editori')) {
-            const resp = await retryWithLogin(
-              request,
-              configuration.ataruEditoriLogin,
-            );
-            return responseToData(resp);
-          }
-          if (request?.url?.includes('/valinta-tulos-service')) {
-            const resp = await retryWithLogin(
-              request,
-              configuration.valintaTulosServiceLogin,
-            );
-
-            return responseToData(resp);
+          for (const { urlIncludes, loginUrl } of LOGIN_MAP) {
+            if (request?.url?.includes(urlIncludes)) {
+              const resp = await retryWithLogin(request, loginUrl);
+              return responseToData(resp);
+            }
           }
         } catch (e) {
           if (e instanceof FetchError && isUnauthenticated(e.response)) {
