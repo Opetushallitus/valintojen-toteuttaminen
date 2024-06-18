@@ -7,26 +7,7 @@ export const isDev = process.env.NODE_ENV === 'development';
 
 export const isProd = process.env.NODE_ENV === 'production';
 
-interface Configuration {
-  loginUrl: string;
-  sessionCookie: string;
-  kayttoikeusUrl: string;
-  hautUrl: string;
-  hakuUrl: string;
-  hakukohteetUrl: string;
-  hakukohdeUrl: string;
-  kooditUrl: string;
-  koutaInternalLogin: string;
-  asiointiKieliUrl: string;
-  lokalisaatioUrl: string;
-  valintaperusteetUrl: string;
-  valintaTulosServiceUrl: string;
-  valintaTulosServiceLogin: string;
-  ataruEditoriLogin: string;
-  hakemuksetUrl: string;
-}
-
-export const configuration: Configuration = {
+export const configuration = {
   loginUrl: process.env.LOGIN_URL || `${DOMAIN}/cas/login`,
   sessionCookie: process.env.SESSION_COOKIE || 'JSESSIONID',
   kayttoikeusUrl: `${DOMAIN}/kayttooikeus-service/henkilo/current/omattiedot`,
@@ -43,4 +24,7 @@ export const configuration: Configuration = {
   valintaTulosServiceLogin: `${DOMAIN}/valinta-tulos-service/auth/login`,
   hakemuksetUrl: `${DOMAIN}/lomake-editori/api/external/valinta-ui`,
   ataruEditoriLogin: `${DOMAIN}/lomake-editori/auth/cas`,
-};
+  valintalaskentaServiceLogin: `${DOMAIN}/valintalaskenta-laskenta-service/auth/login`,
+  lasketutValinnanVaiheetUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
+    `${DOMAIN}/valintalaskenta-laskenta-service/resources/hakukohde/${hakukohdeOid}/valinnanvaihe`,
+} as const;
