@@ -1,6 +1,7 @@
 'use client';
 import * as React from 'react';
 import { MUI_NEXTJS_OVERRIDES } from '@opetushallitus/oph-design-system/next/theme';
+import { createStyled } from '@mui/system';
 
 import { createODSTheme } from '@opetushallitus/oph-design-system/theme';
 
@@ -28,5 +29,7 @@ export function withDefaultProps<P>(
   ComponentWithDefaultProps.displayName = displayName;
   return ComponentWithDefaultProps;
 }
+
+export const styled = createStyled({ defaultTheme: theme });
 
 export default theme;
