@@ -2,14 +2,26 @@
 
 import { getValinnanvaiheet } from '@/app/lib/valintaperusteet';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { Table, Box, TableCell, TableHead, TableRow } from '@mui/material';
+import {
+  Table,
+  TableCell,
+  TableHead,
+  TableRow,
+  TableBody,
+} from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { Button } from '@opetushallitus/oph-design-system';
+import { Haku, Hakukohde } from '@/app/lib/kouta-types';
+import HallintaTableRow from './hallinta-table-row';
 
-const HallintaTable = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
+type HallintaTableParams = {
+  haku: Haku;
+  hakukohde: Hakukohde;
+};
+
+const HallintaTable = ({ hakukohde, haku }: HallintaTableParams) => {
   const { data: valinnanvaiheet } = useSuspenseQuery({
-    queryKey: ['getValinnanvaiheet', hakukohdeOid],
-    queryFn: () => getValinnanvaiheet(hakukohdeOid),
+    queryKey: ['getValinnanvaiheet', hakukohde.oid],
+    queryFn: () => getValinnanvaiheet(hakukohde.oid),
   });
 
   const { t } = useTranslations();
@@ -17,48 +29,24 @@ const HallintaTable = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
   return (
     <Table>
       <TableHead>
-        <TableCell>{t('valinnanvaihe.nimi')}</TableCell>
-        <TableCell>{t('valinnanhallinta.laskenta')}</TableCell>
-        <TableCell>{t('valinnanhallinta.tyyppi')}</TableCell>
-        <TableCell>{t('yleinen.toiminnot')}</TableCell>
+        <TableRow>
+          <TableCell>{t('valinnanvaihe.nimi')}</TableCell>
+          <TableCell>{t('valinnanhallinta.laskenta')}</TableCell>
+          <TableCell>{t('valinnanhallinta.tyyppi')}</TableCell>
+          <TableCell>{t('yleinen.toiminnot')}</TableCell>
+        </TableRow>
       </TableHead>
-      {valinnanvaiheet.map((vaihe) => {
-        return (
-          <TableRow key={'vv-' + vaihe.oid}>
-            <TableCell>
-              <Box sx={{ fontWeight: 600 }}>{vaihe.nimi}</Box>
-              {vaihe.jonot.map((jono) => (
-                <Box key={'vtj-' + jono.oid}>{jono.nimi}</Box>
-              ))}
-            </TableCell>
-            <TableCell>
-              <br />
-              {vaihe.jonot.map((jono) => (
-                <Box key={'vtj-aktiivinen-' + jono.oid}>
-                  {jono.eiLasketaPaivamaaranJalkeen
-                    ? t('valinnanhallinta.eilasketajalkeen', {
-                        pvm: jono.eiLasketaPaivamaaranJalkeen,
-                      })
-                    : t('valinnanhallinta.mukanalaskennassa')}
-                </Box>
-              ))}
-            </TableCell>
-            <TableCell sx={{ verticalAlign: 'top' }}>
-              {t(vaihe.tyyppi)}
-            </TableCell>
-            <TableCell>
-              {vaihe.aktiivinen && (
-                <Button variant="outlined">
-                  {t('valinnanhallinta.kaynnista')}
-                </Button>
-              )}
-              {!vaihe.aktiivinen && (
-                <Box>{t('valinnanhallinta.eilaskennassa')}</Box>
-              )}
-            </TableCell>
-          </TableRow>
-        );
-      })}
+      <TableBody>
+        {valinnanvaiheet.map((vaihe, index) => (
+          <HallintaTableRow
+            key={'vv-' + vaihe.oid}
+            vaihe={vaihe}
+            index={index}
+            haku={haku}
+            hakukohde={hakukohde}
+          />
+        ))}
+      </TableBody>
     </Table>
   );
 };

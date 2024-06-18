@@ -35,9 +35,9 @@ const redirectToLogin = () => {
 const makeBareRequest = (request: Request) => {
   const { method } = request;
   const modifiedOptions: RequestInit = {
-    headers: {
+    headers: Object.assign(request.headers, {
       'Caller-id': '1.2.246.562.10.00000000001.valintojen-toteuttaminen',
-    },
+    }),
   };
   if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
     const csrfCookie = getCookies()['CSRF'];
@@ -89,6 +89,10 @@ const LOGIN_MAP = [
     urlIncludes: '/valintalaskenta-laskenta-service',
     loginUrl: configuration.valintalaskentaServiceLogin,
   },
+  {
+    urlIncludes: '/valintalaskentakoostepalvelu',
+    loginUrl: configuration.valintalaskentaKoostePalveluLogin,
+  },
 ] as const;
 
 const makeRequest = async (request: Request) => {
@@ -125,6 +129,12 @@ const makeRequest = async (request: Request) => {
 export const client = {
   get: (url: string, options: RequestInit = {}) =>
     makeRequest(new Request(url, { method: 'GET', ...options })),
-  post: (url: string, options: RequestInit = {}) =>
-    makeRequest(new Request(url, { method: 'POST', ...options })),
+  post: (url: string, body: NonNullable<unknown>, options: RequestInit = {}) =>
+    makeRequest(
+      new Request(url, {
+        method: 'POST',
+        body: JSON.stringify(body),
+        ...options,
+      }),
+    ),
 };
