@@ -7,6 +7,8 @@ export const isDev = process.env.NODE_ENV === 'development';
 
 export const isProd = process.env.NODE_ENV === 'production';
 
+export const isTesting = process.env.TEST === 'true';
+
 export const configuration = {
   loginUrl: process.env.LOGIN_URL || `${DOMAIN}/cas/login`,
   sessionCookie: process.env.SESSION_COOKIE || 'JSESSIONID',
