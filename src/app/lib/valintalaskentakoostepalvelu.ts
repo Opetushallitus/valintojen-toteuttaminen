@@ -14,13 +14,15 @@ export const kaynnistaLaskenta = async (
   haku: Haku,
   hakukohde: Hakukohde,
   vvTyyppi: ValinnanvaiheTyyppi,
+  sijoitellaankoHaunHakukohteetLaskennanYhteydessa: boolean,
 ): Promise<boolean> => {
   const laskentaUrl = new URL(
     `${configuration.valintalaskentaKoostePalveluUrl}valintalaskentakerralla/haku/${haku.oid}/tyyppi/HAKUKOHDE/whitelist/true?`,
   );
-  laskentaUrl.searchParams.append;
-  //TODO check if actually erillishaku or what erillishaku means in old ui
-  laskentaUrl.searchParams.append('erillishaku', 'false');
+  laskentaUrl.searchParams.append(
+    'erillishaku',
+    '' + sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
+  );
   //TODO need to translate or is default ok?
   laskentaUrl.searchParams.append('haunnimi', translateName(haku.nimi));
   laskentaUrl.searchParams.append('nimi', getFullnameOfHakukohde(hakukohde));

@@ -31,4 +31,5 @@ export const configuration = {
   valintalaskentaKoostePalveluLogin: `${DOMAIN}/valintalaskentakoostepalvelu/cas/login`,
   lasketutValinnanVaiheetUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
     `${DOMAIN}/valintalaskenta-laskenta-service/resources/hakukohde/${hakukohdeOid}/valinnanvaihe`,
+  ohjausparametritUrl: `${DOMAIN}/ohjausparametrit-service/api/v1/rest/parametri/`,
 } as const;

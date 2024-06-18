@@ -7,12 +7,15 @@ import { Button } from '@opetushallitus/oph-design-system';
 import { Haku, Hakukohde } from '@/app/lib/kouta-types';
 import { kaynnistaLaskenta } from '@/app/lib/valintalaskentakoostepalvelu';
 import { useState } from 'react';
+import { HaunAsetukset } from '@/app/lib/ohjausparametrit';
+import { sijoitellaankoHaunHakukohteetLaskennanYhteydessa } from '@/app/lib/kouta';
 
 type HallintaTableRowParams = {
   haku: Haku;
   hakukohde: Hakukohde;
   vaihe: Valinnanvaihe;
   index: number;
+  haunAsetukset: HaunAsetukset;
 };
 
 const HallintaTableRow = ({
@@ -20,6 +23,7 @@ const HallintaTableRow = ({
   haku,
   vaihe,
   index,
+  haunAsetukset,
 }: HallintaTableRowParams) => {
   const [isCalculationRunning, setCalculationRunning] = useState(false);
 
@@ -32,6 +36,7 @@ const HallintaTableRow = ({
       haku,
       hakukohde,
       vaihe.tyyppi,
+      sijoitellaankoHaunHakukohteetLaskennanYhteydessa(haku, haunAsetukset),
     );
     setCalculationRunning(!started);
   };

@@ -7,6 +7,7 @@ import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary'
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { useSuspenseQueries } from '@tanstack/react-query';
 import { CircularProgress } from '@mui/material';
+import { getHaunAsetukset } from '@/app/lib/ohjausparametrit';
 
 type ValinnanHallintaContentParams = {
   hakuOid: string;
@@ -17,7 +18,7 @@ const ValinnanHallintaContent = ({
   hakuOid,
   hakukohdeOid,
 }: ValinnanHallintaContentParams) => {
-  const [hakuQuery, hakukohdeQuery] = useSuspenseQueries({
+  const [hakuQuery, hakukohdeQuery, haunAsetuksetQuery] = useSuspenseQueries({
     queries: [
       {
         queryKey: ['getHaku', hakuOid],
@@ -26,6 +27,10 @@ const ValinnanHallintaContent = ({
       {
         queryKey: ['getHakukohde', hakukohdeOid],
         queryFn: () => getHakukohde(hakukohdeOid),
+      },
+      {
+        queryKey: ['getHaunAsetukset', hakuOid],
+        queryFn: () => getHaunAsetukset(hakuOid),
       },
     ],
   });
@@ -38,8 +43,16 @@ const ValinnanHallintaContent = ({
     throw hakukohdeQuery.error;
   }
 
+  if (haunAsetuksetQuery.error && !haunAsetuksetQuery.isFetching) {
+    throw haunAsetuksetQuery.error;
+  }
+
   return (
-    <HallintaTable hakukohde={hakukohdeQuery.data} haku={hakuQuery.data} />
+    <HallintaTable
+      hakukohde={hakukohdeQuery.data}
+      haku={hakuQuery.data}
+      haunAsetukset={haunAsetuksetQuery.data}
+    />
   );
 };
 export default function ValinnanHallintaPage({

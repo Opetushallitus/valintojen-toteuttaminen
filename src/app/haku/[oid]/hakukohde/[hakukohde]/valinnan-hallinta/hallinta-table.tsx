@@ -12,13 +12,19 @@ import {
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Haku, Hakukohde } from '@/app/lib/kouta-types';
 import HallintaTableRow from './hallinta-table-row';
+import { HaunAsetukset } from '@/app/lib/ohjausparametrit';
 
 type HallintaTableParams = {
   haku: Haku;
   hakukohde: Hakukohde;
+  haunAsetukset: HaunAsetukset;
 };
 
-const HallintaTable = ({ hakukohde, haku }: HallintaTableParams) => {
+const HallintaTable = ({
+  hakukohde,
+  haku,
+  haunAsetukset,
+}: HallintaTableParams) => {
   const { data: valinnanvaiheet } = useSuspenseQuery({
     queryKey: ['getValinnanvaiheet', hakukohde.oid],
     queryFn: () => getValinnanvaiheet(hakukohde.oid),
@@ -44,6 +50,7 @@ const HallintaTable = ({ hakukohde, haku }: HallintaTableParams) => {
             index={index}
             haku={haku}
             hakukohde={hakukohde}
+            haunAsetukset={haunAsetukset}
           />
         ))}
       </TableBody>
