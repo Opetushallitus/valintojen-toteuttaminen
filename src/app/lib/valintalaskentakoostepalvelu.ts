@@ -6,7 +6,7 @@ import { client } from './http-client';
 
 export type CalculationStart = {
   startedNewCalculation: boolean;
-  loadUrl: string;
+  loadingUrl: string;
 };
 
 export const kaynnistaLaskenta = async (
@@ -15,7 +15,7 @@ export const kaynnistaLaskenta = async (
   hakukohde: Hakukohde,
   vvTyyppi: ValinnanvaiheTyyppi,
   sijoitellaankoHaunHakukohteetLaskennanYhteydessa: boolean,
-): Promise<boolean> => {
+): Promise<CalculationStart> => {
   const laskentaUrl = new URL(
     `${configuration.valintalaskentaKoostePalveluUrl}valintalaskentakerralla/haku/${haku.oid}/tyyppi/HAKUKOHDE/whitelist/true?`,
   );
@@ -35,5 +35,16 @@ export const kaynnistaLaskenta = async (
     headers: { 'Content-Type': 'application/json' },
   });
   console.log(response);
-  return response.data?.lisatiedot?.luotiinkoUusiLaskenta;
+  return {
+    startedNewCalculation: response.data?.lisatiedot?.luotiinkoUusiLaskenta,
+    loadingUrl: response.data?.latausUrl,
+  };
+};
+
+export const getLaskennanTila = async (loadingUrl: string) => {
+  const response = await client.get(
+    `${configuration.valintalaskentaKoostePalveluUrl}valintalaskentakerralla/status/${loadingUrl}`,
+  );
+  console.log(response.data);
+  return response.data;
 };

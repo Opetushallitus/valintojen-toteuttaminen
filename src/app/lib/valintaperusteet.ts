@@ -18,6 +18,7 @@ export type Valintatapajono = {
   oid: string;
   eiLasketaPaivamaaranJalkeen?: Date;
   prioriteetti: number;
+  kaytetaanValintalaskentaa: boolean;
 };
 
 export type Valinnanvaihe = {
@@ -27,6 +28,21 @@ export type Valinnanvaihe = {
   tyyppi: ValinnanvaiheTyyppi;
   oid: string;
   jonot: Valintatapajono[];
+};
+
+export const isCalculationUsedForValinnanvaihe = (
+  valinnanvaihe: Valinnanvaihe,
+): boolean => {
+  return (
+    valinnanvaihe.aktiivinen &&
+    valinnanvaihe.jonot.some((jono) => {
+      return (
+        jono.kaytetaanValintalaskentaa &&
+        (!jono.eiLasketaPaivamaaranJalkeen ||
+          jono.eiLasketaPaivamaaranJalkeen.getTime() > new Date().getTime())
+      );
+    })
+  );
 };
 
 export const getValintaryhma = async (
@@ -59,6 +75,7 @@ export const getValinnanvaiheet = async (
           valisijoittelu: boolean;
           eiLasketaPaivamaaranJalkeen: string;
           prioriteetti: number;
+          kaytetaanValintalaskentaa: boolean;
         },
       ];
     }) => {
@@ -77,6 +94,7 @@ export const getValinnanvaiheet = async (
             nimi: jono.nimi,
             prioriteetti: jono.prioriteetti,
             eiLasketaPaivamaaranJalkeen,
+            kaytetaanValintalaskentaa: jono.kaytetaanValintalaskentaa,
           };
         })
         .sort((j1, j2) => j1.prioriteetti - j2.prioriteetti);
