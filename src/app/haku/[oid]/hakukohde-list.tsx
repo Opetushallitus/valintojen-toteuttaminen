@@ -5,6 +5,7 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { Hakukohde } from '@/app/lib/kouta-types';
 import { styled } from '@mui/material';
 import { useRouter } from 'next/navigation';
+import { useHakukohdeTab } from './hakukohde/[hakukohde]/hakukohde-tabs';
 
 const StyledList = styled('div')({
   width: '100%',
@@ -31,8 +32,12 @@ export const HakukohdeList = ({ hakuOid }: { hakuOid: string }) => {
   const { t, translateEntity } = useTranslations();
   const { results } = useHakukohdeSearchResults(hakuOid);
 
+  const activeHakukohdeTab = useHakukohdeTab();
+
   const selectHakukohde = (hakukohde: Hakukohde) => {
-    router.push(`/haku/${hakuOid}/hakukohde/${hakukohde.oid}/perustiedot`);
+    router.push(
+      `/haku/${hakuOid}/hakukohde/${hakukohde.oid}/${activeHakukohdeTab.route}`,
+    );
   };
 
   const handleHakukohdeKeyDown = (

@@ -53,9 +53,13 @@ function getPathMatchingTab(pathName: string) {
   return TABS.find((tab) => tab.route.startsWith(lastPath)) || TABS[0];
 }
 
-const HakukohdeTabs = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
+export const useHakukohdeTab = () => {
   const pathName = usePathname();
-  const activeTab = getPathMatchingTab(pathName);
+  return getPathMatchingTab(pathName);
+};
+
+const HakukohdeTabs = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
+  const activeTab = useHakukohdeTab();
   const { t, translateEntity } = useTranslations();
 
   const { data: hakukohde } = useSuspenseQuery({
