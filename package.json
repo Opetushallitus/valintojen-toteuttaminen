@@ -9,7 +9,7 @@
     "build-test": "APP_URL=https://localhost:3404 VIRKAILIJA_URL=http://localhost:3104 next build",
     "start": "NODE_ENV=production npm run dev",
     "start-test": "NODE_ENV=production npm run dev-test",
-    "lint": "next lint",
+    "lint": "next lint --max-warnings=0",
     "prettier-eslint:fix": "prettier-eslint \"**/*.{js,ts,mjs,cjs,jsx,tsx}\" --write",
     "test:ui": "playwright test",
     "test": "vitest",

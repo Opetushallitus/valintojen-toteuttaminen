@@ -54,7 +54,7 @@ export const useHakukohdeSearchResults = (hakuOid: string) => {
           .includes(searchPhrase?.toLowerCase() || '') ||
         hakukohde.oid.includes(searchPhrase?.toLowerCase() || ''),
     );
-  }, [hakukohteet, searchPhrase]);
+  }, [hakukohteet, searchPhrase, translateEntity]);
 
   return {
     results,
