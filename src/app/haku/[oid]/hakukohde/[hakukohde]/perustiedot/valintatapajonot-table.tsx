@@ -64,5 +64,11 @@ export const ValintatapajonotTable = ({
     }),
   ];
 
-  return <ListTable columns={columns} rows={valintatapajonoTulokset} />;
+  return (
+    <ListTable
+      rowKeyProp="oid"
+      columns={columns}
+      rows={valintatapajonoTulokset}
+    />
+  );
 };

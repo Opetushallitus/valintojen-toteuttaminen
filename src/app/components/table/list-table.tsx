@@ -18,12 +18,13 @@ import { TranslatedName } from '@/app/lib/localization/localization-types';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { TFunction } from 'i18next';
 import { ExternalLink } from '../external-link';
+import React, { Key } from 'react';
 
 type Column<P> = {
   title?: string;
   key: string;
   render: (props: P) => React.ReactNode;
-  style?: Record<string, string | number>;
+  style?: React.CSSProperties;
 };
 
 type Entity = { oid: string; nimi?: TranslatedName | string; tila?: Tila };
@@ -60,22 +61,24 @@ export const makeNameColumn = <T extends Entity = Entity>(
   },
 });
 
-export const makeGenericColumn = <T extends Entity = Entity>({
+export const makeGenericColumn = <T extends Record<string, unknown>>({
   title,
   key,
   valueProp,
 }: {
   title: string;
   key: string;
-  valueProp: KeysMatching<T, string | number>;
+  valueProp: KeysMatching<T, string | number | undefined>;
 }): Column<T> => ({
   title,
   key,
-  render: (props) => <span>{(props[valueProp] ?? 0) as string}</span>,
+  render: (props) => <span>{props[valueProp] as string}</span>,
   style: { width: 'auto' },
 });
 
-export const makeColumnWithValueToTranslate = <T extends Entity = Entity>({
+export const makeColumnWithValueToTranslate = <
+  T extends Record<string, unknown>,
+>({
   t,
   title,
   key,
@@ -92,7 +95,7 @@ export const makeColumnWithValueToTranslate = <T extends Entity = Entity>({
   style: { width: 'auto' },
 });
 
-export const makeCountColumn = <T extends Entity = Entity>({
+export const makeCountColumn = <T extends Record<string, unknown>>({
   title,
   key,
   amountProp,
@@ -107,7 +110,7 @@ export const makeCountColumn = <T extends Entity = Entity>({
   style: { width: 0 },
 });
 
-export const makeExternalLinkColumn = <T extends Entity = Entity>({
+export const makeExternalLinkColumn = <T extends Record<string, unknown>>({
   linkBuilder,
   title,
   key,
@@ -195,6 +198,7 @@ interface ListTableProps<T> extends React.ComponentProps<typeof StyledTable> {
   rows?: Array<T>;
   sort?: string;
   setSort?: (sort: string) => void;
+  rowKeyProp: keyof T;
 }
 
 const SortIcon = ({
@@ -223,14 +227,14 @@ const HeaderCell = ({
 }: {
   colId: string;
   title?: string;
-  style?: Record<string, string | number>;
+  style?: React.CSSProperties;
   sort?: string;
   setSort?: (sort: string) => void;
 }) => {
   const { direction } = getSortParts(sort, colId);
 
   return (
-    <StyledCell style={style} sortDirection={direction}>
+    <StyledCell sx={style} sortDirection={direction}>
       {setSort && (
         <Button
           sx={{
@@ -257,11 +261,14 @@ const HeaderCell = ({
   );
 };
 
-export const ListTable = <T extends Entity>({
+export type Row<K extends string = string> = Record<K, unknown>;
+
+export const ListTable = <T extends Row>({
   columns = [],
   rows = [],
   sort,
   setSort,
+  rowKeyProp,
   ...props
 }: ListTableProps<T>) => {
   const { t } = useTranslations();
@@ -287,12 +294,11 @@ export const ListTable = <T extends Entity>({
       </TableHead>
       <StyledTableBody>
         {rows.map((rowProps) => {
-          const { oid } = rowProps;
           return (
-            <TableRow key={oid}>
+            <TableRow key={rowProps?.[rowKeyProp] as Key}>
               {columns.map(({ key: columnKey, render, style }) => {
                 return (
-                  <StyledCell key={columnKey} style={style}>
+                  <StyledCell key={columnKey} sx={style}>
                     {render({ ...rowProps })}
                   </StyledCell>
                 );
