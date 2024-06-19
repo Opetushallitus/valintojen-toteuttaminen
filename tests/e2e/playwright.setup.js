@@ -5,6 +5,7 @@ import HAKUTAPA_CODES from './fixtures/hakutapa.json';
 import SIJOITTELUN_YHTEENVETO from './fixtures/sijoittelun_yhteenveto.json';
 import VALINTARYHMA from './fixtures/valintaryhma.json';
 import HAKENEET from './fixtures/hakeneet.json';
+import LASKETUT_VALINNANVAIHEET from './fixtures/hakeneet.json';
 
 const port = 3104;
 
@@ -74,6 +75,12 @@ export default async function playwrightSetup() {
       request.url.includes('lomake-editori/api/external/valinta-ui?')
     ) {
       return modifyResponse(response, HAKENEET);
+    } else if (
+      request.url.match(
+        /\/valintalaskenta-laskenta-service\/resources\/hakukohde\/[^/]+\/valinnanvaihe/,
+      )
+    ) {
+      return modifyResponse(response, LASKETUT_VALINNANVAIHEET);
     } else {
       console.log('(Backend) mock not implementeded', request.url);
       return;
