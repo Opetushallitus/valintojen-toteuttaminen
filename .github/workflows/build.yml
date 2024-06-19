@@ -67,6 +67,7 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 10
+          if-no-files-found: ignore
   deploy-zip:
     needs: [lint, test, e2e]
     timeout-minutes: 30
