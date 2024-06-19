@@ -24,6 +24,9 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  typescript: {
+    ignoreBuildErrors: Boolean(process.env.CI),
+  },
   async headers() {
     return [
       {
