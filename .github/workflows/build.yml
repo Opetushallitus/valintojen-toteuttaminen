@@ -4,6 +4,8 @@ on:
     branches: [main, master]
   pull_request:
     branches: [main, master]
+env:
+  HUSKY: 0
 jobs:
   lint:
     timeout-minutes: 10
