@@ -96,7 +96,8 @@
     "kaynnista": "Käynnistä laskenta",
     "kaynnistakaikki": "Käynnistä kaikki laskennat",
     "tyyppi": "Tyyppi",
-    "laskenta": "Laskenta"
+    "laskenta": "Laskenta",
+    "tyhja": "Hakukohteella ei ole valinnanvaiheita."
   },
   "koekutsut": {
     "otsikko": "Valintakoekutsut"
