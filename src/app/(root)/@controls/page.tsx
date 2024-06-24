@@ -4,7 +4,6 @@ import React, { ChangeEvent, Suspense, useMemo } from 'react';
 import {
   FormControl,
   Select,
-  MenuItem,
   SelectChangeEvent,
   FormLabel,
   OutlinedInput,
@@ -18,6 +17,7 @@ import { Search } from '@mui/icons-material';
 import { useHakuSearchParams } from '@/app/hooks/useHakuSearch';
 import { useHakutavat } from '@/app/hooks/useHakutavat';
 import { useTranslations } from '@/app/hooks/useTranslations';
+import { OphSelectControl, OphSelect } from '@/app/components/oph-select';
 
 const HakutapaSelect = ({
   value: selectedHakutapa,
@@ -27,25 +27,22 @@ const HakutapaSelect = ({
   onChange: (e: SelectChangeEvent) => void;
 }) => {
   const { data: hakutavat } = useHakutavat();
-  const { t, translateEntity } = useTranslations();
+
+  const { translateEntity } = useTranslations();
+
+  const hakutapaOptions = hakutavat.map((tapa) => {
+    return { value: tapa.koodiUri, label: translateEntity(tapa.nimi) };
+  });
 
   return (
-    <Select
+    <OphSelect
       labelId="hakutapa-select-label"
-      name="hakutapa-select"
+      id="hakutapa-select"
       value={selectedHakutapa ?? ''}
       onChange={onChange}
-      displayEmpty={true}
-    >
-      <MenuItem value="">{t('yleinen.valitse')}</MenuItem>
-      {hakutavat.map((tapa) => {
-        return (
-          <MenuItem value={tapa.koodiUri} key={tapa.koodiUri}>
-            {translateEntity(tapa.nimi)}
-          </MenuItem>
-        );
-      })}
-    </Select>
+      options={hakutapaOptions}
+      clearable
+    />
   );
 };
 
@@ -145,31 +142,26 @@ export default function HakuControls() {
           }
         />
       </FormControl>
-      <FormControl
-        sx={{
-          width: 'auto',
-          minWidth: '140px',
-          textAlign: 'left',
+      <OphSelectControl
+        formControlProps={{
+          sx: {
+            width: 'auto',
+            minWidth: '140px',
+            textAlign: 'left',
+          },
         }}
-      >
-        <FormLabel id="tila-select-label">{t('yleinen.tila')}</FormLabel>
-        <Select
-          labelId="tila-select-label"
-          name="tila-select"
-          value={tila ?? ''}
-          onChange={changeTila}
-          displayEmpty={true}
-        >
-          <MenuItem value="">{t('yleinen.valitse')}</MenuItem>
-          {Object.values(Tila).map((tila) => {
-            return (
-              <MenuItem value={tila} key={tila}>
-                {t(tila)}
-              </MenuItem>
-            );
-          })}
-        </Select>
-      </FormControl>
+        id="tila-select"
+        label={t('yleinen.tila')}
+        value={tila ?? ''}
+        onChange={changeTila}
+        options={Object.values(Tila).map((tila) => {
+          return {
+            value: tila,
+            label: t(tila),
+          };
+        })}
+        clearable
+      />
       <Box
         display="flex"
         justifyContent="stretch"
@@ -178,28 +170,20 @@ export default function HakuControls() {
         alignItems="flex-end"
       >
         <HakutapaInput value={selectedHakutapa} onChange={changeHakutapa} />
-        <FormControl sx={{ textAlign: 'left', flex: '1 0 180px' }}>
-          <FormLabel id="alkamiskausi-select-label">
-            {t('haku.alkamiskausi')}
-          </FormLabel>
-          <Select
-            labelId="alkamiskausi-select-label"
-            name="alkamiskausi-select"
-            value={selectedAlkamisKausi ?? ''}
-            onChange={changeAlkamisKausi}
-            displayEmpty={true}
-          >
-            <MenuItem value="">{t('yleinen.valitse')}</MenuItem>
-            {alkamiskaudet.map((kausi) => {
-              const kausiVuosi = `${kausi.alkamisVuosi} ${t(kausi.alkamisKausiNimi)}`;
-              return (
-                <MenuItem value={kausi.value} key={kausi.value}>
-                  {kausiVuosi}
-                </MenuItem>
-              );
-            })}
-          </Select>
-        </FormControl>
+        <OphSelectControl
+          formControlProps={{
+            sx: { textAlign: 'left', flex: '1 0 180px' },
+          }}
+          clearable
+          label={t('haku.alkamiskausi')}
+          id="alkamiskausi-select"
+          value={selectedAlkamisKausi ?? ''}
+          onChange={changeAlkamisKausi}
+          options={alkamiskaudet.map((kausi) => ({
+            value: kausi.value,
+            label: `${kausi.alkamisVuosi} ${t(kausi.alkamisKausiNimi)}`,
+          }))}
+        />
       </Box>
     </Box>
   );
