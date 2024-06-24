@@ -15,7 +15,9 @@
     "haku": "Haku",
     "sivutus": "Sivutus",
     "palaa-etusivulle": "Palaa etusivulle",
-    "ulkoinenlinkki": "Avautuu uuteen ikkunaan"
+    "ulkoinenlinkki": "Avautuu uuteen ikkunaan",
+    "edellinen": "Edellinen",
+    "seuraava": "Seuraava"
   },
   "virhe": {
     "palvelin": "Palvelinpyyntö epäonnistui!",
