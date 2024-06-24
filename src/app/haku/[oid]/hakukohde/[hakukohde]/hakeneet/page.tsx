@@ -1,6 +1,6 @@
 'use client';
 
-import { TabContainer } from '../TabContainer';
+import { TabContainer } from '../tab-container';
 import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
 import { useHakeneetSearchResults } from '@/app/hooks/useHakeneetSearch';
 import { HakeneetTable } from './hakeneet-table';

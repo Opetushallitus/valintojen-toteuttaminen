@@ -3,7 +3,7 @@ import React from 'react';
 import { HomeOutlined as HomeOutlinedIcon } from '@mui/icons-material';
 import { colors } from '@/app/theme';
 import { Typography } from '@mui/material';
-import { PageContent } from './PageContent';
+import { PageContent } from './page-content';
 import { Button } from '@opetushallitus/oph-design-system';
 import { useTranslations } from '../hooks/useTranslations';
 import { DEFAULT_BOX_BORDER } from '../lib/constants';

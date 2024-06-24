@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import { PageContent } from './PageContent';
+import { PageContent } from './page-content';
 
 export const PageLayout = ({
   header,

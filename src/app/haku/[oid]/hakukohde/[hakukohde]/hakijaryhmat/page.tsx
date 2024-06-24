@@ -1,7 +1,7 @@
 'use client';
 
 import { getHakukohde } from '@/app/lib/kouta';
-import { TabContainer } from '../TabContainer';
+import { TabContainer } from '../tab-container';
 import { useSuspenseQuery } from '@tanstack/react-query';
 
 export default function HakijaryhmatPage({
