@@ -27,7 +27,7 @@ export type JonoSijaWithHakijaInfo = Omit<
   hakijanNimi: string;
   henkiloOid: string;
   pisteet?: number;
-  hakutoive?: number;
+  hakutoiveNumero?: number;
 };
 
 export type LaskettuValintatapajono = {
