@@ -29,4 +29,12 @@ export const configuration = {
   valintalaskentaServiceLogin: `${DOMAIN}/valintalaskenta-laskenta-service/auth/login`,
   lasketutValinnanVaiheetUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
     `${DOMAIN}/valintalaskenta-laskenta-service/resources/hakukohde/${hakukohdeOid}/valinnanvaihe`,
+  valintalaskentahistoriaUrl: ({
+    valintatapajonoOid,
+    hakemusOid,
+  }: {
+    valintatapajonoOid: string;
+    hakemusOid: string;
+  }) =>
+    `${DOMAIN}/valintalaskenta-ui/app/index.html#/valintatapajono/${valintatapajonoOid}/hakemus/${hakemusOid}/valintalaskentahistoria`,
 } as const;

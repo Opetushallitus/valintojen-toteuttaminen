@@ -4,7 +4,11 @@ import ListTable, {
   makeCountColumn,
   makeGenericColumn,
 } from '@/app/components/table/list-table';
+import { useTranslations } from '@/app/hooks/useTranslations';
+import { configuration } from '@/app/lib/configuration';
 import { JonoSijaWithHakijaInfo } from '@/app/lib/valintalaskenta-service';
+import { Link } from '@mui/material';
+import { useMemo } from 'react';
 
 const LINK_TO_PERSON = 'henkilo-ui/oppija/';
 
@@ -24,29 +28,51 @@ const hakijaColumn = makeExternalLinkColumn<JonoSijaWithHakijaInfo>({
   linkProp: 'henkiloOid',
 });
 
-const pisteetColumn = makeGenericColumn<JonoSijaWithHakijaInfo>({
-  title: 'pisteet',
-  key: 'pisteet',
-  valueProp: 'pisteet',
-});
-
 const hakutoiveColumn = makeGenericColumn<JonoSijaWithHakijaInfo>({
   title: 'hakutoive',
   key: 'hakutoive',
   valueProp: 'hakutoive',
 });
 
-const columns = [jonosijaColumn, hakijaColumn, pisteetColumn, hakutoiveColumn];
-
 export const ValintalaskennanTulosTable = ({
   jonosijat,
+  jonoId,
   setSort,
   sort,
 }: {
   jonosijat: Array<JonoSijaWithHakijaInfo>;
+  jonoId: string;
   sort: string;
   setSort: (sort: string) => void;
 }) => {
+  const { t } = useTranslations();
+
+  const columns = useMemo(
+    () => [
+      jonosijaColumn,
+      hakijaColumn,
+      {
+        title: 'pisteet',
+        key: 'pisteet',
+        render: ({ pisteet, hakemusOid }) => (
+          <span>
+            {pisteet}{' '}
+            <Link
+              href={configuration.valintalaskentahistoriaUrl({
+                hakemusOid,
+                valintatapajonoOid: jonoId,
+              })}
+            >
+              {t('yleinen.lisatietoja')}
+            </Link>
+          </span>
+        ),
+      },
+      hakutoiveColumn,
+    ],
+    [t, jonoId],
+  );
+
   return (
     <ListTable
       rowKeyProp="hakijaOid"
