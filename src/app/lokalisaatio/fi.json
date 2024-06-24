@@ -16,7 +16,9 @@
     "sivutus": "Sivutus",
     "palaa-etusivulle": "Palaa etusivulle",
     "ulkoinenlinkki": "Avautuu uuteen ikkunaan",
-    "toiminnot": "Toiminnot"
+    "toiminnot": "Toiminnot",
+    "peruuta": "Peruuta",
+    "ok": "Ok"
   },
   "virhe": {
     "palvelin": "Palvelinpyyntö epäonnistui!",
@@ -97,7 +99,8 @@
     "kaynnistakaikki": "Käynnistä kaikki laskennat",
     "tyyppi": "Tyyppi",
     "laskenta": "Laskenta",
-    "tyhja": "Hakukohteella ei ole valinnanvaiheita."
+    "tyhja": "Hakukohteella ei ole valinnanvaiheita.",
+    "varmista": "Käynnistetäänkö laskenta?"
   },
   "koekutsut": {
     "otsikko": "Valintakoekutsut"

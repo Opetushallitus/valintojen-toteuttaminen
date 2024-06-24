@@ -25,6 +25,9 @@ import {
 import { sijoitellaankoHaunHakukohteetLaskennanYhteydessa } from '@/app/lib/kouta';
 import { useState } from 'react';
 import { CalculationProgress } from './calculation-progress';
+import { CalculationInitializationStatus } from './valinnan-hallinta-types';
+import CalculationConfirm from './calculation-confirm';
+import theme from '@/app/theme';
 
 type HallintaTableParams = {
   haku: Haku;
@@ -44,12 +47,15 @@ const HallintaTable = ({
 
   const { t } = useTranslations();
 
-  const [isCalculationRunning, setCalculationRunning] = useState(false);
+  const [calculationInitializationStatus, setCalculationInitializationStatus] =
+    useState<CalculationInitializationStatus>(
+      CalculationInitializationStatus.NOT_STARTED,
+    );
   const [runningCalculation, setRunningCalculation] =
     useState<CalculationStart | null>(null);
 
   const startAllCalculations = async () => {
-    setCalculationRunning(true);
+    setCalculationInitializationStatus(CalculationInitializationStatus.STARTED);
     const started = await kaynnistaLaskentaHakukohteenValinnanvaiheille(
       haku,
       hakukohde,
@@ -60,11 +66,29 @@ const HallintaTable = ({
     }
   };
 
+  const start = () => {
+    setCalculationInitializationStatus(
+      CalculationInitializationStatus.WAITING_FOR_CONFIRMATION,
+    );
+  };
+
+  const cancelConfirmation = () => {
+    setCalculationInitializationStatus(
+      CalculationInitializationStatus.NOT_STARTED,
+    );
+  };
+
   if (valinnanvaiheet.length === 0) {
     return <Box>{t('valinnanhallinta.tyhja')}</Box>;
   } else {
     return (
-      <Box sx={{ display: 'flex', flexDirection: 'column', rowGap: '1rem' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          rowGap: theme.spacing(2),
+        }}
+      >
         <Table>
           <TableHead>
             <TableRow>
@@ -83,28 +107,56 @@ const HallintaTable = ({
                 haku={haku}
                 hakukohde={hakukohde}
                 haunAsetukset={haunAsetukset}
-                areAllCalculationsRunning={isCalculationRunning}
+                areAllCalculationsRunning={
+                  calculationInitializationStatus ===
+                  CalculationInitializationStatus.STARTED
+                }
               />
             ))}
           </TableBody>
         </Table>
-        <Box sx={{ textAlign: 'right', paddingRight: '1rem' }}>
-          <Button
-            variant="contained"
-            onClick={startAllCalculations}
-            disabled={
-              isCalculationRunning ||
-              !valinnanvaiheet.some((vaihe) =>
-                isCalculationUsedForValinnanvaihe(vaihe),
-              )
-            }
-          >
-            {t('valinnanhallinta.kaynnistakaikki')}
-          </Button>
+        <Box
+          sx={{
+            textAlign: 'right',
+            paddingRight: theme.spacing(2),
+            maxWidth: '400px',
+            alignSelf: 'flex-end',
+            display: 'flex',
+            flexDirection: 'column',
+            rowGap: theme.spacing(1),
+          }}
+        >
+          {calculationInitializationStatus !==
+            CalculationInitializationStatus.WAITING_FOR_CONFIRMATION && (
+            <Button
+              variant="contained"
+              onClick={start}
+              disabled={
+                calculationInitializationStatus ===
+                  CalculationInitializationStatus.STARTED ||
+                !valinnanvaiheet.some((vaihe) =>
+                  isCalculationUsedForValinnanvaihe(vaihe),
+                )
+              }
+            >
+              {t('valinnanhallinta.kaynnistakaikki')}
+            </Button>
+          )}
+          {calculationInitializationStatus ===
+            CalculationInitializationStatus.WAITING_FOR_CONFIRMATION && (
+            <CalculationConfirm
+              cancel={cancelConfirmation}
+              confirm={startAllCalculations}
+            />
+          )}
           {runningCalculation && (
             <CalculationProgress
               calculationStart={runningCalculation}
-              setCalculationFinished={() => setCalculationRunning(false)}
+              setCalculationFinished={() =>
+                setCalculationInitializationStatus(
+                  CalculationInitializationStatus.NOT_STARTED,
+                )
+              }
             />
           )}
         </Box>
