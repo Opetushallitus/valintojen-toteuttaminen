@@ -19,6 +19,7 @@ import {
 } from '@/app/lib/constants';
 import { useTranslations } from './useTranslations';
 import { useUserPermissions } from './useUserPermissions';
+import { TranslatedName } from '../lib/localization/localization-types';
 
 const DEFAULT_NUQS_OPTIONS = {
   history: 'push',
@@ -58,6 +59,11 @@ const getKausiVuosiTranslation = (kausiUri: string, vuosi: number) => {
       en: `${vuosi} ${kausiName.en}`,
     };
   }
+};
+
+export type HakuListItem = Haku & {
+  hakutapaNimi?: TranslatedName;
+  alkamiskausiNimi?: TranslatedName;
 };
 
 export const useHakuSearchParams = () => {
