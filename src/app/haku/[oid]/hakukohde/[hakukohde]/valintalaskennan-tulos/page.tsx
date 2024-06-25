@@ -26,6 +26,7 @@ import { PageSizeSelector } from '@/app/components/table/page-size-selector';
 import { ExpandMore, SaveAlt } from '@mui/icons-material';
 import { configuration } from '@/app/lib/configuration';
 import React from 'react';
+import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
 
 type LasketutValinnanvaiheetParams = {
   hakuOid: string;
@@ -83,9 +84,7 @@ const AccordionBlock = ({
         aria-controls={contentId}
         id={headerId}
       >
-        <Typography variant="h2" component="h3">
-          {title}
-        </Typography>
+        {title}
       </AccordionSummary>
       <AccordionDetails
         sx={{
@@ -151,13 +150,34 @@ const LasketutValinnanVaiheetContent = ({
       </Box>
       {valinnanVaiheet.map((valinnanVaihe) =>
         valinnanVaihe.valintatapajonot?.map((jono) => {
+          const jonoSubHeader = `(${toFormattedDateTimeString(valinnanVaihe.createdAt)} | 
+                      ${t('yleinen.prioriteetti')}: ${jono.prioriteetti})`;
           return (
             <Box key={valinnanVaihe.valinnanvaiheoid} width="100%">
               <AccordionBlock
-                title={getJonoNimi({
-                  valinnanVaiheNimi: valinnanVaihe.nimi,
-                  jonoNimi: jono.nimi,
-                })}
+                title={
+                  <Typography
+                    variant="h2"
+                    component="h3"
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      flexWrap: 'nowrap',
+                      columnGap: 2,
+                      alignItems: 'center',
+                    }}
+                  >
+                    <div>
+                      {getJonoNimi({
+                        valinnanVaiheNimi: valinnanVaihe.nimi,
+                        jonoNimi: jono.nimi,
+                      })}
+                    </div>
+                    <Typography component="div" variant="body1">
+                      {jonoSubHeader}
+                    </Typography>
+                  </Typography>
+                }
               >
                 <ValintatapaJonoContent
                   jonoId={jono.valintatapajonooid}

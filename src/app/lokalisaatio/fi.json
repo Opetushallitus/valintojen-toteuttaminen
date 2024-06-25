@@ -18,7 +18,8 @@
     "ulkoinenlinkki": "Avautuu uuteen ikkunaan",
     "edellinen": "Edellinen",
     "seuraava": "Seuraava",
-    "lisatietoja": "Lisätietoja"
+    "lisatietoja": "Lisätietoja",
+    "prioriteetti": "Prioriteetti"
   },
   "tuloksenTila": {
     "HYVAKSYTTAVISSA": "Hyväksyttävissä",
