@@ -95,6 +95,5 @@ export const getLaskennanTila = async (loadingUrl: string) => {
   const response = await client.get(
     `${configuration.valintalaskentaKoostePalveluUrl}valintalaskentakerralla/status/${loadingUrl}`,
   );
-  console.log(response.data);
   return response.data;
 };
