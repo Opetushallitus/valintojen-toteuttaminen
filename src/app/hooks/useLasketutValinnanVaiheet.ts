@@ -50,6 +50,12 @@ export const useLasketutValinnanVaiheet = ({
                 hakemusOid: hakemus.oid,
                 henkiloOid: hakemus.henkiloOid,
                 pisteet: jarjestyskriteeri?.arvo,
+                tuloksenTila: jonosija.tuloksenTila,
+                muutoksenSyy: Object.fromEntries(
+                  Object.entries(jarjestyskriteeri?.kuvaus ?? {}).map(
+                    ([key, value]) => [key.toLowerCase(), value],
+                  ),
+                ),
               };
             }),
           };

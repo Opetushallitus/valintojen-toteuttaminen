@@ -23,7 +23,7 @@ type KeysMatching<O, T> = {
 
 export type ListTableColumn<P> = {
   title?: string;
-  key: string;
+  key: keyof P;
   render: (props: P) => React.ReactNode;
   style?: React.CSSProperties;
 };
@@ -171,7 +171,7 @@ const HeaderCell = ({
 
   return (
     <StyledCell sx={style} sortDirection={direction}>
-      {setSort && (
+      {setSort ? (
         <Button
           sx={{
             color: colors.black,
@@ -191,8 +191,9 @@ const HeaderCell = ({
         >
           {title}
         </Button>
+      ) : (
+        <span style={{ fontWeight: 600 }}>{title}</span>
       )}
-      {!setSort && <span style={{ fontWeight: 600 }}>{title}</span>}
     </StyledCell>
   );
 };
