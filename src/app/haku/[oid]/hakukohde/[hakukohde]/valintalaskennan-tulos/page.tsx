@@ -3,7 +3,14 @@
 import { TabContainer } from '../tab-container';
 import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
-import { Button, Box, CircularProgress } from '@mui/material';
+import {
+  Button,
+  Box,
+  CircularProgress,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+} from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { ValintalaskennanTulosTable } from './valintalaskennan-tulos-table';
 import { useLasketutValinnanVaiheet } from '@/app/hooks/useLasketutValinnanVaiheet';
@@ -16,8 +23,9 @@ import { DEFAULT_BOX_BORDER } from '@/app/lib/constants';
 import { Typography } from '@opetushallitus/oph-design-system';
 import ValintalaskennanTulosSearch from './valintalaskennan-tulos-search';
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
-import { SaveAlt } from '@mui/icons-material';
+import { ExpandMore, SaveAlt } from '@mui/icons-material';
 import { configuration } from '@/app/lib/configuration';
+import React from 'react';
 
 type LasketutValinnanvaiheetParams = {
   hakuOid: string;
@@ -57,37 +65,36 @@ const AccordionBlock = ({
   title,
   children,
 }: {
-  title: string;
+  title: React.ReactNode;
   children: React.ReactNode;
 }) => {
+  const headerId = `${title}-accordion-header`;
+  const contentId = `${title}-accordion-content`;
+
   return (
-    <Box>
-      <Typography
-        component="div"
-        variant="h2"
-        sx={{
-          border: DEFAULT_BOX_BORDER,
-          borderBottom: 'none',
-          paddingX: 4,
-          paddingY: 2,
-          width: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1,
-        }}
+    <Accordion
+      defaultExpanded={true}
+      sx={{
+        border: DEFAULT_BOX_BORDER,
+      }}
+    >
+      <AccordionSummary
+        expandIcon={<ExpandMore />}
+        aria-controls={contentId}
+        id={headerId}
       >
-        {title}
-      </Typography>
-      <Box
+        <Typography variant="h2" component="h3">
+          {title}
+        </Typography>
+      </AccordionSummary>
+      <AccordionDetails
         sx={{
-          border: DEFAULT_BOX_BORDER,
-          paddingX: 4,
-          paddingY: 2,
+          borderTop: DEFAULT_BOX_BORDER,
         }}
       >
         {children}
-      </Box>
-    </Box>
+      </AccordionDetails>
+    </Accordion>
   );
 };
 
