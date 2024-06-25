@@ -19,6 +19,7 @@ import { CalculationProgress } from './calculation-progress';
 import theme from '@/app/theme';
 import CalculationConfirm from './calculation-confirm';
 import { CalculationInitializationStatus } from './valinnan-hallinta-types';
+import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
 
 type HallintaTableRowParams = {
   haku: Haku;
@@ -27,6 +28,7 @@ type HallintaTableRowParams = {
   index: number;
   haunAsetukset: HaunAsetukset;
   areAllCalculationsRunning: boolean;
+  lastCalculated: number | undefined;
 };
 
 const HallintaTableRow = ({
@@ -36,6 +38,7 @@ const HallintaTableRow = ({
   index,
   haunAsetukset,
   areAllCalculationsRunning,
+  lastCalculated,
 }: HallintaTableRowParams) => {
   const [calculationInitializationStatus, setCalculationInitializationStatus] =
     useState<CalculationInitializationStatus>(
@@ -86,7 +89,9 @@ const HallintaTableRow = ({
           <Box key={'vtj-aktiivinen-' + jono.oid}>
             {jono.eiLasketaPaivamaaranJalkeen
               ? t('valinnanhallinta.eilasketajalkeen', {
-                  pvm: jono.eiLasketaPaivamaaranJalkeen,
+                  pvm: toFormattedDateTimeString(
+                    jono.eiLasketaPaivamaaranJalkeen,
+                  ),
                 })
               : t('valinnanhallinta.mukanalaskennassa')}
           </Box>
@@ -134,6 +139,13 @@ const HallintaTableRow = ({
           )}
         {!isCalculationUsedForValinnanvaihe(vaihe) && (
           <Box>{t('valinnanhallinta.eilaskennassa')}</Box>
+        )}
+        {lastCalculated && (
+          <Box>
+            {t('valinnanhallinta.laskettuviimeksi', {
+              pvm: toFormattedDateTimeString(lastCalculated),
+            })}
+          </Box>
         )}
       </TableCell>
     </TableRow>

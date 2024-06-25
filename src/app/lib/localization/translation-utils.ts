@@ -25,3 +25,8 @@ export function isTranslatedName(value: unknown): value is TranslatedName {
       typeof value?.en === 'string')
   );
 }
+
+export function toFormattedDateTimeString(value: number | Date): string {
+  const date = new Date(value);
+  return `${date.getDate()}.${date.getMonth()}.${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`;
+}

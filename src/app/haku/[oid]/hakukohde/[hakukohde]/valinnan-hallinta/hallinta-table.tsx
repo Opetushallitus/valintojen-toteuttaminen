@@ -4,7 +4,7 @@ import {
   getValinnanvaiheet,
   isCalculationUsedForValinnanvaihe,
 } from '@/app/lib/valintaperusteet';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useSuspenseQueries } from '@tanstack/react-query';
 import {
   Table,
   TableCell,
@@ -28,6 +28,7 @@ import { CalculationProgress } from './calculation-progress';
 import { CalculationInitializationStatus } from './valinnan-hallinta-types';
 import CalculationConfirm from './calculation-confirm';
 import theme from '@/app/theme';
+import { getLasketutValinnanVaiheet } from '@/app/lib/valintalaskenta-service';
 
 type HallintaTableParams = {
   haku: Haku;
@@ -40,10 +41,19 @@ const HallintaTable = ({
   haku,
   haunAsetukset,
 }: HallintaTableParams) => {
-  const { data: valinnanvaiheet } = useSuspenseQuery({
-    queryKey: ['getValinnanvaiheet', hakukohde.oid],
-    queryFn: () => getValinnanvaiheet(hakukohde.oid),
-  });
+  const [valinnanvaiheetQuery, lasketutValinnanvaiheetQuery] =
+    useSuspenseQueries({
+      queries: [
+        {
+          queryKey: ['getValinnanvaiheet', hakukohde.oid],
+          queryFn: () => getValinnanvaiheet(hakukohde.oid),
+        },
+        {
+          queryKey: ['getLasketutValinnanvaiheet', hakukohde.oid],
+          queryFn: () => getLasketutValinnanVaiheet(hakukohde.oid),
+        },
+      ],
+    });
 
   const { t } = useTranslations();
 
@@ -78,7 +88,7 @@ const HallintaTable = ({
     );
   };
 
-  if (valinnanvaiheet.length === 0) {
+  if (valinnanvaiheetQuery.data.length === 0) {
     return <Box>{t('valinnanhallinta.tyhja')}</Box>;
   } else {
     return (
@@ -99,7 +109,7 @@ const HallintaTable = ({
             </TableRow>
           </TableHead>
           <TableBody>
-            {valinnanvaiheet.map((vaihe, index) => (
+            {valinnanvaiheetQuery.data.map((vaihe, index) => (
               <HallintaTableRow
                 key={'vv-' + vaihe.oid}
                 vaihe={vaihe}
@@ -107,6 +117,11 @@ const HallintaTable = ({
                 haku={haku}
                 hakukohde={hakukohde}
                 haunAsetukset={haunAsetukset}
+                lastCalculated={
+                  lasketutValinnanvaiheetQuery.data?.find(
+                    (a) => a.valinnanvaiheoid === vaihe.oid,
+                  )?.createdAt
+                }
                 areAllCalculationsRunning={
                   calculationInitializationStatus ===
                   CalculationInitializationStatus.STARTED
@@ -134,7 +149,7 @@ const HallintaTable = ({
               disabled={
                 calculationInitializationStatus ===
                   CalculationInitializationStatus.STARTED ||
-                !valinnanvaiheet.some((vaihe) =>
+                !valinnanvaiheetQuery.data.some((vaihe) =>
                   isCalculationUsedForValinnanvaihe(vaihe),
                 )
               }
