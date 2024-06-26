@@ -1,18 +1,14 @@
 'use client';
 
-import { getHakukohde } from '@/app/lib/kouta';
 import { TabContainer } from '../tab-container';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useHakukohde } from '@/app/hooks/useHakukohde';
 
 export default function HakijaryhmatPage({
   params,
 }: {
   params: { oid: string; hakukohde: string };
 }) {
-  const { data: hakukohde } = useSuspenseQuery({
-    queryKey: ['getHakukohde', params.hakukohde],
-    queryFn: () => getHakukohde(params.hakukohde),
-  });
+  const { data: hakukohde } = useHakukohde({ hakukohdeOid: params.hakukohde });
 
   return (
     <TabContainer>

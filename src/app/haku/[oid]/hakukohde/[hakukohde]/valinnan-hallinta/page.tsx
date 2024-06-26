@@ -1,7 +1,6 @@
 'use client';
 
-import { getHakukohde } from '@/app/lib/kouta';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useHakukohde } from '@/app/hooks/useHakukohde';
 import { TabContainer } from '../tab-container';
 
 export default function ValinnanHallintaPage({
@@ -9,10 +8,7 @@ export default function ValinnanHallintaPage({
 }: {
   params: { oid: string; hakukohde: string };
 }) {
-  const { data: hakukohde } = useSuspenseQuery({
-    queryKey: ['getHakukohde', params.hakukohde],
-    queryFn: () => getHakukohde(params.hakukohde),
-  });
+  const { data: hakukohde } = useHakukohde({ hakukohdeOid: params.hakukohde });
 
   return (
     <TabContainer>
