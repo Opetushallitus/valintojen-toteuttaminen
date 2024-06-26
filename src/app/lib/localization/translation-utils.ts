@@ -1,5 +1,6 @@
 import { isObject } from '../common';
 import { Language, TranslatedName } from './localization-types';
+import { format } from 'date-fns-tz';
 
 export function translateName(
   translated: TranslatedName,
@@ -28,9 +29,9 @@ export function isTranslatedName(value: unknown): value is TranslatedName {
 
 export function toFormattedDateTimeString(value: number | Date): string {
   try {
-    //TODO use datefns, use only finnish locale
-    const date = new Date(value);
-    return `${date.getDate()}.${1 + date.getMonth()}.${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`;
+    return format(new Date(value), 'd.M.yyyy HH:mm', {
+      timeZone: 'Europe/Helsinki',
+    });
   } catch (error) {
     console.warn(
       'Caught error when trying to format date, returning empty string',
