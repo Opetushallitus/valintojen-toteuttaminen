@@ -36,6 +36,7 @@ const makeBareRequest = (request: Request) => {
   const { method } = request;
   const modifiedOptions: RequestInit = {
     headers: {
+      ...request.headers,
       'Caller-id': '1.2.246.562.10.00000000001.valintojen-toteuttaminen',
     },
   };
@@ -43,6 +44,7 @@ const makeBareRequest = (request: Request) => {
     const csrfCookie = getCookies()['CSRF'];
     if (csrfCookie) {
       modifiedOptions.headers = {
+        ...modifiedOptions.headers,
         CSRF: csrfCookie,
       };
     }
@@ -127,4 +129,6 @@ export const client = {
     makeRequest(new Request(url, { method: 'GET', ...options })),
   post: (url: string, options: RequestInit = {}) =>
     makeRequest(new Request(url, { method: 'POST', ...options })),
+  put: (url: string, options: RequestInit = {}) =>
+    makeRequest(new Request(url, { method: 'PUT', ...options })),
 };
