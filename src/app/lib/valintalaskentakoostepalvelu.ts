@@ -93,7 +93,7 @@ export const kaynnistaLaskentaHakukohteenValinnanvaiheille = async (
 
 export const getLaskennanTila = async (loadingUrl: string) => {
   const response = await client.get(
-    `${configuration.valintalaskentaKoostePalveluUrl}valintalaskentakerralla/status/${loadingUrl}`,
+    `${configuration.valintalaskentaKoostePalveluUrl}valintalaskentakerralla/status/${loadingUrl}/yhteenveto`,
   );
   return response.data;
 };

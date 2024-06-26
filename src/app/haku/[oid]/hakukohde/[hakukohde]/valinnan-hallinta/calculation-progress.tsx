@@ -2,8 +2,11 @@
 
 import { CircularProgress } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { CalculationStart } from '@/app/lib/valintalaskentakoostepalvelu';
-import { useQuery } from '@tanstack/react-query';
+import {
+  CalculationStart,
+  getLaskennanTila,
+} from '@/app/lib/valintalaskentakoostepalvelu';
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import {
   SeurantaTiedot,
   getLaskennanSeurantaTiedot,
@@ -12,16 +15,18 @@ import {
 const POLLING_INTERVAL_SECONDS = 1000 * 10;
 
 const CalculationResult = ({
+  calculationStart,
   seurantaTiedot,
 }: {
   calculationStart: CalculationStart;
   seurantaTiedot: SeurantaTiedot;
 }) => {
-  //TODO Implement in later ticket when it is logical to make the new endpoint for checking error status from koostepalvelu
-  /*   const {data: calculationResult} = useSuspenseQuery({
-      queryKey: ['calculationResult', calculationStart.loadingUrl],
-      queryFn: () => getLaskennanTila(calculationStart.loadingUrl),
-    }); */
+  const { data: calculationResult } = useSuspenseQuery({
+    queryKey: ['calculationResult', calculationStart.loadingUrl],
+    queryFn: () => getLaskennanTila(calculationStart.loadingUrl),
+  });
+
+  console.log(calculationResult);
 
   return (
     <span>

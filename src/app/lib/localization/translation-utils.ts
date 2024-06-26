@@ -27,6 +27,14 @@ export function isTranslatedName(value: unknown): value is TranslatedName {
 }
 
 export function toFormattedDateTimeString(value: number | Date): string {
-  const date = new Date(value);
-  return `${date.getDate()}.${date.getMonth()}.${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`;
+  try {
+    //TODO use datefns, use only finnish locale
+    const date = new Date(value);
+    return `${date.getDate()}.${1 + date.getMonth()}.${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`;
+  } catch (error) {
+    console.warn(
+      'Caught error when trying to format date, returning empty string',
+    );
+    return '';
+  }
 }
