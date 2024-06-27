@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { MUI_NEXTJS_OVERRIDES } from '@opetushallitus/oph-design-system/next/theme';
 import { createStyled } from '@mui/system';
+import { deepmerge } from '@mui/utils';
 
 import { createODSTheme } from '@opetushallitus/oph-design-system/theme';
 
@@ -11,7 +12,25 @@ export { colors };
 
 const theme = createODSTheme({
   variant: 'oph',
-  overrides: MUI_NEXTJS_OVERRIDES,
+  overrides: deepmerge(MUI_NEXTJS_OVERRIDES, {
+    components: {
+      MuiButtonBase: {
+        defaultProps: {
+          disableRipple: true,
+        },
+      },
+      MuiAccordion: {
+        defaultProps: {
+          disableGutters: true,
+        },
+        styleOverrides: {
+          root: {
+            boxShadow: 'none',
+          },
+        },
+      },
+    },
+  }),
 });
 
 // MUI:sta (Emotionista) puuttuu styled-componentsin .attrs

@@ -6,7 +6,7 @@ import {
 } from '@/app/lib/valintaperusteet';
 import { Box, TableCell, TableRow } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { Button, aliasColors } from '@opetushallitus/oph-design-system';
+import { Button } from '@opetushallitus/oph-design-system';
 import { Haku, Hakukohde } from '@/app/lib/kouta-types';
 import {
   CalculationStart,
@@ -21,7 +21,7 @@ import CalculationConfirm from './calculation-confirm';
 import { CalculationInitializationStatus } from './valinnan-hallinta-types';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
 import { FetchError } from '@/app/lib/common';
-import { Error } from '@mui/icons-material';
+import ErrorRow from './error-row';
 
 type HallintaTableRowParams = {
   haku: Haku;
@@ -52,7 +52,7 @@ const HallintaTableRow = ({
 
   const { t } = useTranslations();
 
-  const [errorMessage, setErrorMessage] = useState<string | null>();
+  const [errorMessage, setErrorMessage] = useState<string | string[] | null>();
 
   const start = () => {
     setCalculationInitializationStatus(
@@ -136,12 +136,6 @@ const HallintaTableRow = ({
                   }
                   onClick={() => start()}
                 >
-                  {errorMessage && (
-                    <Error
-                      color="error"
-                      sx={{ marginRight: theme.spacing(0.5) }}
-                    />
-                  )}
                   {t('valinnanhallinta.kaynnista')}
                 </Button>
                 {runningCalculation && (
@@ -152,6 +146,7 @@ const HallintaTableRow = ({
                         CalculationInitializationStatus.NOT_STARTED,
                       )
                     }
+                    setError={setErrorMessage}
                   />
                 )}
               </Box>
@@ -176,29 +171,7 @@ const HallintaTableRow = ({
           )}
         </TableCell>
       </TableRow>
-      {errorMessage && (
-        <TableRow>
-          <TableCell
-            colSpan={4}
-            sx={{
-              color: aliasColors.error,
-              fontWeight: 600,
-              wordBreak: 'break-word',
-            }}
-          >
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                columnGap: theme.spacing(2),
-              }}
-            >
-              <Error fontSize="large" />
-              <Box>{errorMessage}</Box>
-            </Box>
-          </TableCell>
-        </TableRow>
-      )}
+      {errorMessage && <ErrorRow errorMessage={errorMessage} />}
     </>
   );
 };

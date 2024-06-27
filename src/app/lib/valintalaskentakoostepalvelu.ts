@@ -91,9 +91,26 @@ export const kaynnistaLaskentaHakukohteenValinnanvaiheille = async (
   };
 };
 
-export const getLaskennanTila = async (loadingUrl: string) => {
+export type CalculationErrorSummary = {
+  hakukohdeOid: string;
+  notifications: string[];
+};
+
+export const getLaskennanTilaHakukohteelle = async (
+  loadingUrl: string,
+): Promise<CalculationErrorSummary> => {
   const response = await client.get(
     `${configuration.valintalaskentaKoostePalveluUrl}valintalaskentakerralla/status/${loadingUrl}/yhteenveto`,
   );
-  return response.data;
+  return response.data?.hakukohteet?.map(
+    (hakukohde: {
+      hakukohdeOid: string;
+      ilmoitukset: [{ otsikko: string }];
+    }) => {
+      return {
+        hakukohdeOid: hakukohde.hakukohdeOid,
+        notifications: hakukohde.ilmoitukset.map((i) => i.otsikko),
+      };
+    },
+  )[0];
 };

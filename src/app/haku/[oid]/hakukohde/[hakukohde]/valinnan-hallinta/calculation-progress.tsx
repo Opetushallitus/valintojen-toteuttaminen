@@ -1,10 +1,10 @@
 'use client';
 
-import { CircularProgress } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import {
   CalculationStart,
-  getLaskennanTila,
+  getLaskennanTilaHakukohteelle,
 } from '@/app/lib/valintalaskentakoostepalvelu';
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import {
@@ -17,30 +17,35 @@ const POLLING_INTERVAL_SECONDS = 1000 * 10;
 const CalculationResult = ({
   calculationStart,
   seurantaTiedot,
+  setError,
 }: {
   calculationStart: CalculationStart;
   seurantaTiedot: SeurantaTiedot;
+  setError: (msg: string[]) => void;
 }) => {
+  const { t } = useTranslations();
+
   const { data: calculationResult } = useSuspenseQuery({
     queryKey: ['calculationResult', calculationStart.loadingUrl],
-    queryFn: () => getLaskennanTila(calculationStart.loadingUrl),
+    queryFn: () => getLaskennanTilaHakukohteelle(calculationStart.loadingUrl),
   });
 
-  console.log(calculationResult);
-
-  return (
-    <span>
-      Valmistunut: {seurantaTiedot.hakukohteitaKeskeytetty > 0 ? 'FAIL' : 'OK'}
-    </span>
-  );
+  if (seurantaTiedot.hakukohteitaKeskeytetty > 0) {
+    setError(calculationResult.notifications);
+    return <></>;
+  } else {
+    return <Box component="p">{t('valinnanhallinta.valmistui')}</Box>;
+  }
 };
 
 export const CalculationProgress = ({
   calculationStart,
   setCalculationFinished,
+  setError,
 }: {
   calculationStart: CalculationStart;
   setCalculationFinished: () => void;
+  setError: (msg: string[]) => void;
 }) => {
   const { t } = useTranslations();
 
@@ -69,6 +74,7 @@ export const CalculationProgress = ({
       <CalculationResult
         seurantaTiedot={data}
         calculationStart={calculationStart}
+        setError={setError}
       />
     );
   }

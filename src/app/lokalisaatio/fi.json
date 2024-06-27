@@ -101,7 +101,10 @@
     "tyyppi": "Tyyppi",
     "laskenta": "Laskenta",
     "tyhja": "Hakukohteella ei ole valinnanvaiheita.",
-    "varmista": "Käynnistetäänkö laskenta?"
+    "varmista": "Käynnistetäänkö laskenta?",
+    "virhe": "Laskenta epäonnistui. Yritä myöhemmin uudelleen",
+    "piilotavirhe": "Piilota virhe",
+    "naytavirhe": "Näytä virhe"
   },
   "koekutsut": {
     "otsikko": "Valintakoekutsut"

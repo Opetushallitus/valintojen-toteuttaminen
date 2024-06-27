@@ -29,6 +29,8 @@ import { CalculationInitializationStatus } from './valinnan-hallinta-types';
 import CalculationConfirm from './calculation-confirm';
 import theme from '@/app/theme';
 import { getLasketutValinnanVaiheet } from '@/app/lib/valintalaskenta-service';
+import { FetchError } from '@/app/lib/common';
+import ErrorRow from './error-row';
 
 type HallintaTableParams = {
   haku: Haku;
@@ -57,6 +59,8 @@ const HallintaTable = ({
 
   const { t } = useTranslations();
 
+  const [errorMessage, setErrorMessage] = useState<string | string[] | null>();
+
   const [calculationInitializationStatus, setCalculationInitializationStatus] =
     useState<CalculationInitializationStatus>(
       CalculationInitializationStatus.NOT_STARTED,
@@ -66,13 +70,25 @@ const HallintaTable = ({
 
   const startAllCalculations = async () => {
     setCalculationInitializationStatus(CalculationInitializationStatus.STARTED);
-    const started = await kaynnistaLaskentaHakukohteenValinnanvaiheille(
-      haku,
-      hakukohde,
-      sijoitellaankoHaunHakukohteetLaskennanYhteydessa(haku, haunAsetukset),
-    );
-    if (started.startedNewCalculation) {
-      setRunningCalculation(started);
+    try {
+      const started = await kaynnistaLaskentaHakukohteenValinnanvaiheille(
+        haku,
+        hakukohde,
+        sijoitellaankoHaunHakukohteetLaskennanYhteydessa(haku, haunAsetukset),
+      );
+      if (started.startedNewCalculation) {
+        setRunningCalculation(started);
+      }
+    } catch (error) {
+      console.error(error);
+      if (error instanceof FetchError) {
+        setErrorMessage(await error.response.text());
+      } else {
+        setErrorMessage('' + error);
+      }
+      setCalculationInitializationStatus(
+        CalculationInitializationStatus.NOT_STARTED,
+      );
     }
   };
 
@@ -97,6 +113,7 @@ const HallintaTable = ({
           display: 'flex',
           flexDirection: 'column',
           rowGap: theme.spacing(2),
+          marginBottom: theme.spacing(2),
         }}
       >
         <Table>
@@ -172,9 +189,15 @@ const HallintaTable = ({
                   CalculationInitializationStatus.NOT_STARTED,
                 )
               }
+              setError={setErrorMessage}
             />
           )}
         </Box>
+        {errorMessage && (
+          <Table>
+            <ErrorRow errorMessage={errorMessage} />
+          </Table>
+        )}
       </Box>
     );
   }
