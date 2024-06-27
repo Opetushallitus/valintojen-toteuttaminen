@@ -60,7 +60,8 @@ export const kaynnistaLaskenta = async (
     sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
     valinnanvaihe,
   });
-  const response = await client.post(laskentaUrl.toString(), [hakukohde.oid], {
+  const response = await client.post(laskentaUrl.toString(), {
+    body: JSON.stringify([hakukohde.oid]),
     headers: { 'Content-Type': 'application/json' },
   });
   return {
@@ -82,7 +83,8 @@ export const kaynnistaLaskentaHakukohteenValinnanvaiheille = async (
     hakukohde,
     sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
   });
-  const response = await client.post(laskentaUrl.toString(), [hakukohde.oid], {
+  const response = await client.post(laskentaUrl.toString(), {
+    body: JSON.stringify([hakukohde.oid]),
     headers: { 'Content-Type': 'application/json' },
   });
   return {

@@ -92,9 +92,14 @@ const LOGIN_MAP = [
 ] as const;
 
 const makeRequest = async (request: Request) => {
+  const originalRequest = request.clone();
   try {
     const response = await makeBareRequest(request);
-    if (isRedirected(response) && response.url.includes('/cas/login')) {
+    const responseUrl = new URL(response.url);
+    if (
+      isRedirected(response) &&
+      responseUrl.pathname.startsWith('/cas/login')
+    ) {
       redirectToLogin();
     }
     return responseToData(response);
@@ -114,6 +119,13 @@ const makeRequest = async (request: Request) => {
           }
           return Promise.reject(e);
         }
+      } else if (
+        isRedirected(error.response) &&
+        error.response.url === request.url
+      ) {
+        //Some backend services lose the original method and headers, so we need to do retry with cloned request
+        const response = await makeBareRequest(originalRequest);
+        return responseToData(response);
       }
     }
     return Promise.reject(error);
@@ -123,12 +135,6 @@ const makeRequest = async (request: Request) => {
 export const client = {
   get: (url: string, options: RequestInit = {}) =>
     makeRequest(new Request(url, { method: 'GET', ...options })),
-  post: (url: string, body: NonNullable<unknown>, options: RequestInit = {}) =>
-    makeRequest(
-      new Request(url, {
-        method: 'POST',
-        body: JSON.stringify(body),
-        ...options,
-      }),
-    ),
+  post: (url: string, options: RequestInit = {}) =>
+    makeRequest(new Request(url, { method: 'POST', ...options })),
 };
