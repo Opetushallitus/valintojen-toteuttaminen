@@ -135,6 +135,13 @@ const makeRequest = async (request: Request) => {
 export const client = {
   get: (url: string, options: RequestInit = {}) =>
     makeRequest(new Request(url, { method: 'GET', ...options })),
-  post: (url: string, options: RequestInit = {}) =>
-    makeRequest(new Request(url, { method: 'POST', ...options })),
+  post: (url: string, body: NonNullable<unknown>, options: RequestInit = {}) =>
+    makeRequest(
+      new Request(url, {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: { 'Content-Type': 'application/json' },
+        ...options,
+      }),
+    ),
 };

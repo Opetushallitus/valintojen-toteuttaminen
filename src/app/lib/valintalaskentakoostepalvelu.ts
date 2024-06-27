@@ -60,10 +60,7 @@ export const kaynnistaLaskenta = async (
     sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
     valinnanvaihe,
   });
-  const response = await client.post(laskentaUrl.toString(), {
-    body: JSON.stringify([hakukohde.oid]),
-    headers: { 'Content-Type': 'application/json' },
-  });
+  const response = await client.post(laskentaUrl.toString(), [hakukohde.oid]);
   return {
     startedNewCalculation: response.data?.lisatiedot?.luotiinkoUusiLaskenta,
     loadingUrl: response.data?.latausUrl,
@@ -83,10 +80,7 @@ export const kaynnistaLaskentaHakukohteenValinnanvaiheille = async (
     hakukohde,
     sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
   });
-  const response = await client.post(laskentaUrl.toString(), {
-    body: JSON.stringify([hakukohde.oid]),
-    headers: { 'Content-Type': 'application/json' },
-  });
+  const response = await client.post(laskentaUrl.toString(), [hakukohde.oid]);
   return {
     startedNewCalculation: response.data?.lisatiedot?.luotiinkoUusiLaskenta,
     loadingUrl: response.data?.latausUrl,
