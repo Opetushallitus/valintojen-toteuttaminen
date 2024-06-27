@@ -33,22 +33,18 @@ const redirectToLogin = () => {
 };
 
 const makeBareRequest = (request: Request) => {
-  const { method } = request;
-  const modifiedOptions: RequestInit = {
-    headers: Object.assign(request.headers, {
-      'Caller-id': '1.2.246.562.10.00000000001.valintojen-toteuttaminen',
-    }),
-  };
-  if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
+  request.headers.set(
+    'Caller-Id',
+    '1.2.246.562.10.00000000001.valintojen-toteuttaminen',
+  );
+  if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method)) {
     const csrfCookie = getCookies()['CSRF'];
     if (csrfCookie) {
-      modifiedOptions.headers = {
-        CSRF: csrfCookie,
-      };
+      request.headers.set('CSRF', csrfCookie);
     }
   }
 
-  return doFetch(new Request(request, modifiedOptions));
+  return doFetch(request);
 };
 
 const retryWithLogin = async (request: Request, loginUrl: string) => {
@@ -98,10 +94,8 @@ const LOGIN_MAP = [
 const makeRequest = async (request: Request) => {
   try {
     const response = await makeBareRequest(request);
-    if (isRedirected(response)) {
-      if (response.url.includes('/cas/login')) {
-        redirectToLogin();
-      }
+    if (isRedirected(response) && response.url.includes('/cas/login')) {
+      redirectToLogin();
     }
     return responseToData(response);
   } catch (error: unknown) {
