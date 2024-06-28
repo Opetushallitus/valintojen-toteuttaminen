@@ -43,5 +43,3 @@ export const ValintalaskennanTulosSearch = () => {
     </FormControl>
   );
 };
-
-export default ValintalaskennanTulosSearch;
