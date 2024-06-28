@@ -1,5 +1,5 @@
 import HakukohdeTabs from './hakukohde-tabs';
-import { MainContainer } from '@/app/components/MainContainer';
+import { MainContainer } from '@/app/components/main-container';
 
 export default function HakuLayout({
   children,

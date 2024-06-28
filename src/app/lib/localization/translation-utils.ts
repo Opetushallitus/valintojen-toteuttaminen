@@ -25,3 +25,18 @@ export function isTranslatedName(value: unknown): value is TranslatedName {
       typeof value?.en === 'string')
   );
 }
+
+export function toFormattedDateTimeString(
+  value: number | Date,
+  fallback: string = '',
+): string {
+  const date = new Date(value);
+  if (Number.isNaN(date)) {
+    console.log(
+      `Couldn't parse date "${value}"! Using fallback "${fallback}".`,
+    );
+    return fallback;
+  }
+
+  return `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+}

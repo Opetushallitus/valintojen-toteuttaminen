@@ -4,7 +4,7 @@ import Header from '../components/header';
 import { AccessTime as AccessTimeIcon } from '@mui/icons-material';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Box, Typography } from '@mui/material';
-import { PageLayout } from '../components/PageLayout';
+import { PageLayout } from '../components/page-layout';
 import { colors } from '@opetushallitus/oph-design-system';
 import { DEFAULT_BOX_BORDER } from '../lib/constants';
 

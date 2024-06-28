@@ -8,8 +8,10 @@ import { translateName } from '../lib/localization/translation-utils';
 
 export const useTranslations = () => {
   const { t, i18n } = useTranslation();
-  const translateEntity = (translateable: TranslatedName) => {
-    return translateName(translateable, i18n.language as Language);
+  const translateEntity = (translateable?: TranslatedName) => {
+    return translateable
+      ? translateName(translateable, i18n.language as Language)
+      : '';
   };
   return { t, translateEntity };
 };
