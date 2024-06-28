@@ -72,7 +72,20 @@ const ErrorRow = ({ errorMessage }: ErrorRowParams) => {
                 </Typography>
               </StyledAccordionSummary>
               <AccordionDetails sx={{ paddingLeft: 0 }}>
-                <Typography>{errorMessage}</Typography>
+                {Array.isArray(errorMessage) && (
+                  <>
+                    {errorMessage.map((msg, index) => {
+                      return (
+                        <Typography key={`error-message-${index}`}>
+                          {msg}
+                        </Typography>
+                      );
+                    })}
+                  </>
+                )}
+                {!Array.isArray(errorMessage) && (
+                  <Typography>{errorMessage}</Typography>
+                )}
               </AccordionDetails>
             </Accordion>
           </Box>

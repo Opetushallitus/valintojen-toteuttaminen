@@ -52,7 +52,9 @@ const HallintaTableRow = ({
 
   const { t } = useTranslations();
 
-  const [errorMessage, setErrorMessage] = useState<string | string[] | null>();
+  const [errorMessage, setErrorMessage] = useState<string | string[] | null>(
+    null,
+  );
 
   const start = () => {
     setCalculationInitializationStatus(
@@ -68,6 +70,7 @@ const HallintaTableRow = ({
 
   const confirm = async () => {
     setCalculationInitializationStatus(CalculationInitializationStatus.STARTED);
+    setErrorMessage(null);
     try {
       const started = await kaynnistaLaskenta(
         haku,
@@ -140,6 +143,7 @@ const HallintaTableRow = ({
                 </Button>
                 {runningCalculation && (
                   <CalculationProgress
+                    key={runningCalculation.loadingUrl}
                     calculationStart={runningCalculation}
                     setCalculationFinished={() =>
                       setCalculationInitializationStatus(
@@ -171,7 +175,7 @@ const HallintaTableRow = ({
           )}
         </TableCell>
       </TableRow>
-      {errorMessage && <ErrorRow errorMessage={errorMessage} />}
+      {errorMessage != null && <ErrorRow errorMessage={errorMessage} />}
     </>
   );
 };

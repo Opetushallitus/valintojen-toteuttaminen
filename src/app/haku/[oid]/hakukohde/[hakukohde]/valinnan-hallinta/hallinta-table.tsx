@@ -59,7 +59,9 @@ const HallintaTable = ({
 
   const { t } = useTranslations();
 
-  const [errorMessage, setErrorMessage] = useState<string | string[] | null>();
+  const [errorMessage, setErrorMessage] = useState<string | string[] | null>(
+    null,
+  );
 
   const [calculationInitializationStatus, setCalculationInitializationStatus] =
     useState<CalculationInitializationStatus>(
@@ -70,6 +72,7 @@ const HallintaTable = ({
 
   const startAllCalculations = async () => {
     setCalculationInitializationStatus(CalculationInitializationStatus.STARTED);
+    setErrorMessage(null);
     try {
       const started = await kaynnistaLaskentaHakukohteenValinnanvaiheille(
         haku,
@@ -193,7 +196,7 @@ const HallintaTable = ({
             />
           )}
         </Box>
-        {errorMessage && (
+        {errorMessage != null && (
           <Table>
             <ErrorRow errorMessage={errorMessage} />
           </Table>
