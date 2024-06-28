@@ -1,4 +1,4 @@
-import { FullSpinner } from '../components/full-spinner';
+import { FullSpinner } from '../components/spinner';
 
 export default function Loading() {
   return <FullSpinner />;

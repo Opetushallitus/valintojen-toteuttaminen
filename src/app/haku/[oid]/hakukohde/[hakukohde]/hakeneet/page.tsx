@@ -8,9 +8,8 @@ import HakeneetSearch from './hakeneet-search';
 import { getHaku, isKorkeakouluHaku } from '@/app/lib/kouta';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
-import { CircularProgress } from '@mui/material';
-import { useTranslations } from '@/app/hooks/useTranslations';
 import { Haku } from '@/app/lib/kouta-types';
+import { Spinner } from '@/app/components/spinner';
 
 type HakeneetParams = {
   haku: Haku;
@@ -56,8 +55,6 @@ export default function HakeneetPage({
 }: {
   params: { oid: string; hakukohde: string };
 }) {
-  const { t } = useTranslations();
-
   const { data: haku } = useSuspenseQuery({
     queryKey: ['getHaku', params.oid],
     queryFn: () => getHaku(params.oid),
@@ -65,11 +62,7 @@ export default function HakeneetPage({
 
   return (
     <TabContainer>
-      <QuerySuspenseBoundary
-        suspenseFallback={
-          <CircularProgress aria-label={t('yleinen.ladataan')} />
-        }
-      >
+      <QuerySuspenseBoundary suspenseFallback={<Spinner />}>
         <HakeneetContent haku={haku} hakukohdeOid={params.hakukohde} />
       </QuerySuspenseBoundary>
     </TabContainer>

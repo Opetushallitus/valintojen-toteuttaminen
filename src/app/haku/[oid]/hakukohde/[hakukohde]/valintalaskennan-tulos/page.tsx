@@ -6,7 +6,6 @@ import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary'
 import {
   Button,
   Box,
-  CircularProgress,
   Accordion,
   AccordionSummary,
   AccordionDetails,
@@ -35,6 +34,7 @@ import { toFormattedDateTimeString } from '@/app/lib/localization/translation-ut
 import { useUserPermissions } from '@/app/hooks/useUserPermissions';
 import { useHakukohde } from '@/app/hooks/useHakukohde';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Spinner } from '@/app/components/spinner';
 
 type LasketutValinnanvaiheetParams = {
   hakuOid: string;
@@ -203,7 +203,7 @@ const ValintatapajonoContent = ({
             <Button
               startIcon={
                 sijoittelunStatusMutation.isPending && (
-                  <CircularProgress color="inherit" size="24px" />
+                  <Spinner color="inherit" size="24px" />
                 )
               }
               disabled={
@@ -222,7 +222,7 @@ const ValintatapajonoContent = ({
             <Button
               startIcon={
                 sijoittelunStatusMutation.isPending && (
-                  <CircularProgress color="inherit" size="24px" />
+                  <Spinner color="inherit" size="24px" />
                 )
               }
               disabled={sijoittelunStatusMutation.isPending || !hasOphUpdate}
@@ -304,15 +304,9 @@ export default function ValintalaskennanTulosPage({
 }: {
   params: { oid: string; hakukohde: string };
 }) {
-  const { t } = useTranslations();
-
   return (
     <TabContainer>
-      <QuerySuspenseBoundary
-        suspenseFallback={
-          <CircularProgress aria-label={t('yleinen.ladataan')} />
-        }
-      >
+      <QuerySuspenseBoundary suspenseFallback={<Spinner />}>
         <LasketutValinnanVaiheetContent
           hakuOid={params.oid}
           hakukohdeOid={params.hakukohde}
