@@ -1,6 +1,6 @@
 import { isObject } from '../common';
 import { Language, TranslatedName } from './localization-types';
-import { format } from 'date-fns-tz';
+import { format, toZonedTime } from 'date-fns-tz';
 
 export function translateName(
   translated: TranslatedName,
@@ -29,7 +29,8 @@ export function isTranslatedName(value: unknown): value is TranslatedName {
 
 export function toFormattedDateTimeString(value: number | Date): string {
   try {
-    return format(new Date(value), 'd.M.yyyy HH:mm', {
+    const zonedDate = toZonedTime(new Date(value), 'Europe/Helsinki');
+    return format(zonedDate, 'd.M.yyyy HH:mm', {
       timeZone: 'Europe/Helsinki',
     });
   } catch (error) {
