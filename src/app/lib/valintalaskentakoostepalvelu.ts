@@ -89,7 +89,7 @@ export const kaynnistaLaskentaHakukohteenValinnanvaiheille = async (
 
 export type CalculationErrorSummary = {
   hakukohdeOid: string;
-  notifications: string[];
+  notifications: string[] | undefined;
 };
 
 export const getLaskennanTilaHakukohteelle = async (
@@ -101,11 +101,11 @@ export const getLaskennanTilaHakukohteelle = async (
   return response.data?.hakukohteet?.map(
     (hakukohde: {
       hakukohdeOid: string;
-      ilmoitukset: [{ otsikko: string }];
+      ilmoitukset: [{ otsikko: string }] | null;
     }) => {
       return {
         hakukohdeOid: hakukohde.hakukohdeOid,
-        notifications: hakukohde.ilmoitukset.map((i) => i.otsikko),
+        notifications: hakukohde.ilmoitukset?.map((i) => i.otsikko),
       };
     },
   )[0];
