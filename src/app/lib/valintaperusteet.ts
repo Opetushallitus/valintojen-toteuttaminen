@@ -66,7 +66,7 @@ export const getValinnanvaiheet = async (
       nimi: string;
       aktiivinen: boolean;
       hasValisijoittelu: boolean;
-      valinnanvaiheTyyppi: string;
+      valinnanVaiheTyyppi: string;
       jonot: [
         {
           nimi: string;
@@ -80,7 +80,7 @@ export const getValinnanvaiheet = async (
       ];
     }) => {
       const tyyppi =
-        vaihe.valinnanvaiheTyyppi === 'VALINTAKOE'
+        vaihe.valinnanVaiheTyyppi == 'VALINTAKOE'
           ? ValinnanvaiheTyyppi.VALINTAKOE
           : ValinnanvaiheTyyppi.TAVALLINEN;
       const jonot: Valintatapajono[] = vaihe.jonot
