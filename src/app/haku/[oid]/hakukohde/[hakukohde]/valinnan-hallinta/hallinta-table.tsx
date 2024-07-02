@@ -17,7 +17,7 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { Haku, Hakukohde } from '@/app/lib/kouta-types';
 import HallintaTableRow from './hallinta-table-row';
 import { HaunAsetukset } from '@/app/lib/ohjausparametrit';
-import { Button } from '@opetushallitus/oph-design-system';
+import { Button, Typography } from '@opetushallitus/oph-design-system';
 import { kaynnistaLaskentaHakukohteenValinnanvaiheille } from '@/app/lib/valintalaskentakoostepalvelu';
 import { sijoitellaankoHaunHakukohteetLaskennanYhteydessa } from '@/app/lib/kouta';
 import { useReducer } from 'react';
@@ -114,8 +114,11 @@ const HallintaTable = ({
   };
 
   if (valinnanvaiheetQuery.data.length === 0) {
-    return <Box>{t('valinnanhallinta.tyhja')}</Box>;
+    return <Box>{t('valinnanhallinta.eiolemallinnettu')}</Box>;
   } else {
+    const containsValisijoittelu = valinnanvaiheetQuery.data.some(
+      (vv) => vv.valisijoittelu,
+    );
     return (
       <Box
         sx={{
@@ -176,7 +179,8 @@ const HallintaTable = ({
                   CalculationInitializationStatus.STARTED ||
                 !valinnanvaiheetQuery.data.some((vaihe) =>
                   isCalculationUsedForValinnanvaihe(vaihe),
-                )
+                ) ||
+                containsValisijoittelu
               }
             >
               {t('valinnanhallinta.kaynnistakaikki')}
@@ -196,12 +200,17 @@ const HallintaTable = ({
               setCompleted={setCompleted}
             />
           )}
+          {containsValisijoittelu && (
+            <Typography>
+              {t('valinnanhallinta.onvalisijoittelusuoritakaikki')}
+            </Typography>
+          )}
           {calculation.calculatedTime && (
-            <Box>
+            <Typography>
               {t('valinnanhallinta.laskettuviimeksi', {
                 pvm: toFormattedDateTimeString(calculation.calculatedTime),
               })}
-            </Box>
+            </Typography>
           )}
         </Box>
         {calculation.errorMessage != null && (

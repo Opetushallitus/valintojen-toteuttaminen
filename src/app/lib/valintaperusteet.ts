@@ -35,6 +35,7 @@ export const isCalculationUsedForValinnanvaihe = (
 ): boolean => {
   return (
     valinnanvaihe.aktiivinen &&
+    !valinnanvaihe.valisijoittelu &&
     valinnanvaihe.jonot.some((jono) => {
       return (
         jono.kaytetaanValintalaskentaa &&

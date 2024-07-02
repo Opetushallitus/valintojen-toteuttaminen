@@ -45,6 +45,25 @@ test('calculation is not used for inactive valinnanvaihe', () => {
   expect(isCalculationUsedForValinnanvaihe(vaihe)).toBeFalsy();
 });
 
+test('calculation is not used for valinnanvaihe with valisijoittelu', () => {
+  const vaihe: Valinnanvaihe = {
+    aktiivinen: true,
+    jonot: [
+      {
+        kaytetaanValintalaskentaa: true,
+        nimi: 'jono',
+        prioriteetti: 1,
+        oid: '4.4',
+      },
+    ],
+    nimi: 'vaihe',
+    oid: '2.3',
+    tyyppi: ValinnanvaiheTyyppi.TAVALLINEN,
+    valisijoittelu: true,
+  };
+  expect(isCalculationUsedForValinnanvaihe(vaihe)).toBeFalsy();
+});
+
 test('calculation is not used for valinnanvaihe when jonos are not using calculation', () => {
   const vaihe: Valinnanvaihe = {
     aktiivinen: true,

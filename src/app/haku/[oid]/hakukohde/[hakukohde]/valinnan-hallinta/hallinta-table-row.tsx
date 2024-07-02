@@ -164,8 +164,12 @@ const HallintaTableRow = ({
                 confirm={confirm}
               />
             )}
-          {!isCalculationUsedForValinnanvaihe(vaihe) && (
-            <Box>{t('valinnanhallinta.eilaskennassa')}</Box>
+          {!isCalculationUsedForValinnanvaihe(vaihe) &&
+            !vaihe.valisijoittelu && (
+              <Box>{t('valinnanhallinta.eilaskennassa')}</Box>
+            )}
+          {vaihe.valisijoittelu && (
+            <Box>{t('valinnanhallinta.onvalisijoittelu')}</Box>
           )}
           {calculation.calculatedTime && (
             <Box>
