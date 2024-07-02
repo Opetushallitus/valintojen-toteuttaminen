@@ -12,7 +12,11 @@ const TABS_TO_TEST: Tab[] = [
     textLocator: 'Hae hakijan nimellä tai tunnisteilla',
     route: 'hakeneet',
   },
-  { title: 'Valinnan hallinta', route: 'valinnan-hallinta' },
+  {
+    title: 'Valinnan hallinta',
+    textLocator: 'Valinnanvaiheen nimi',
+    route: 'valinnan-hallinta',
+  },
   { title: 'Valintakoekutsut', route: 'valintakoekutsut' },
   { title: 'Pistesyöttö', route: 'pistesyotto' },
   { title: 'Harkinnanvaraiset', route: 'harkinnanvaraiset' },

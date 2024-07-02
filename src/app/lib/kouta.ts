@@ -5,6 +5,7 @@ import { Haku, Hakukohde, Tila } from './kouta-types';
 import { client } from './http-client';
 import { TranslatedName } from './localization/localization-types';
 import { UserPermissions } from './permissions';
+import { HaunAsetukset } from './ohjausparametrit';
 
 const mapToHaku = (h: {
   oid: string;
@@ -44,9 +45,17 @@ export async function getHaut(userPermissions: UserPermissions) {
   return haut;
 }
 
+export const isYhteishaku = (haku: Haku): boolean =>
+  haku.hakutapaKoodiUri.startsWith('hakutapa_01');
+
+export const sijoitellaankoHaunHakukohteetLaskennanYhteydessa = (
+  haku: Haku,
+  haunAsetukset: HaunAsetukset,
+): boolean => !(isYhteishaku(haku) || haunAsetukset.sijoittelu);
+
 export function isToisenAsteenYhteisHaku(haku: Haku): boolean {
   return (
-    haku.hakutapaKoodiUri.startsWith('hakutapa_01') &&
+    isYhteishaku(haku) &&
     haku.kohdejoukkoKoodiUri.startsWith('haunkohdejoukko_11')
   );
 }

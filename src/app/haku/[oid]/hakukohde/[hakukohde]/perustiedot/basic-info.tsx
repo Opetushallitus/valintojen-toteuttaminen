@@ -37,7 +37,7 @@ const BasicInfo = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
       <div>
         <InfoHeader>{t('perustiedot.valintaryhma')}</InfoHeader>
         <ExternalLink
-          name={valintaryhma.name}
+          name={valintaryhma.nimi}
           href={`valintaperusteet-ui/app/index.html#/valintaryhma/${valintaryhma.oid}`}
         />
       </div>

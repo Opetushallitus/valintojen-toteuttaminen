@@ -33,22 +33,18 @@ const redirectToLogin = () => {
 };
 
 const makeBareRequest = (request: Request) => {
-  const { method } = request;
-  const modifiedOptions: RequestInit = {
-    headers: {
-      'Caller-id': '1.2.246.562.10.00000000001.valintojen-toteuttaminen',
-    },
-  };
-  if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
+  request.headers.set(
+    'Caller-Id',
+    '1.2.246.562.10.00000000001.valintojen-toteuttaminen',
+  );
+  if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method)) {
     const csrfCookie = getCookies()['CSRF'];
     if (csrfCookie) {
-      modifiedOptions.headers = {
-        CSRF: csrfCookie,
-      };
+      request.headers.set('CSRF', csrfCookie);
     }
   }
 
-  return doFetch(new Request(request, modifiedOptions));
+  return doFetch(request);
 };
 
 const retryWithLogin = async (request: Request, loginUrl: string) => {
@@ -89,15 +85,22 @@ const LOGIN_MAP = [
     urlIncludes: '/valintalaskenta-laskenta-service',
     loginUrl: configuration.valintalaskentaServiceLogin,
   },
+  {
+    urlIncludes: '/valintalaskentakoostepalvelu',
+    loginUrl: configuration.valintalaskentaKoostePalveluLogin,
+  },
 ] as const;
 
 const makeRequest = async (request: Request) => {
+  const originalRequest = request.clone();
   try {
     const response = await makeBareRequest(request);
-    if (isRedirected(response)) {
-      if (response.url.includes('/cas/login')) {
-        redirectToLogin();
-      }
+    const responseUrl = new URL(response.url);
+    if (
+      isRedirected(response) &&
+      responseUrl.pathname.startsWith('/cas/login')
+    ) {
+      redirectToLogin();
     }
     return responseToData(response);
   } catch (error: unknown) {
@@ -116,6 +119,13 @@ const makeRequest = async (request: Request) => {
           }
           return Promise.reject(e);
         }
+      } else if (
+        isRedirected(error.response) &&
+        error.response.url === request.url
+      ) {
+        //Some backend services lose the original method and headers, so we need to do retry with cloned request
+        const response = await makeBareRequest(originalRequest);
+        return responseToData(response);
       }
     }
     return Promise.reject(error);
@@ -125,6 +135,13 @@ const makeRequest = async (request: Request) => {
 export const client = {
   get: (url: string, options: RequestInit = {}) =>
     makeRequest(new Request(url, { method: 'GET', ...options })),
-  post: (url: string, options: RequestInit = {}) =>
-    makeRequest(new Request(url, { method: 'POST', ...options })),
+  post: (url: string, body: NonNullable<unknown>, options: RequestInit = {}) =>
+    makeRequest(
+      new Request(url, {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: { 'Content-Type': 'application/json' },
+        ...options,
+      }),
+    ),
 };

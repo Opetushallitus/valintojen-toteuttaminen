@@ -5,6 +5,7 @@ import HAKUTAPA_CODES from './fixtures/hakutapa.json';
 import SIJOITTELUN_YHTEENVETO from './fixtures/sijoittelun_yhteenveto.json';
 import VALINTARYHMA from './fixtures/valintaryhma.json';
 import HAKENEET from './fixtures/hakeneet.json';
+import VALINNANVAIHE from './fixtures/valinnanvaiheet.json';
 
 const port = 3104;
 
@@ -67,6 +68,11 @@ export default async function playwrightSetup() {
     ) {
       return modifyResponse(response, SIJOITTELUN_YHTEENVETO);
     } else if (
+      request.url.includes(`valintaperusteet-service/resources/hakukohde`) &&
+      request.url.includes('valinnanvaihe?withValisijoitteluTieto=true')
+    ) {
+      return modifyResponse(response, VALINNANVAIHE);
+    } else if (
       request.url.includes(`valintaperusteet-service/resources/hakukohde`)
     ) {
       return modifyResponse(response, VALINTARYHMA);
@@ -74,6 +80,17 @@ export default async function playwrightSetup() {
       request.url.includes('lomake-editori/api/external/valinta-ui?')
     ) {
       return modifyResponse(response, HAKENEET);
+    } else if (
+      request.url.includes(
+        'valintalaskenta-laskenta-service/resources/hakukohde/',
+      ) &&
+      request.url.includes('valinnanvaihe')
+    ) {
+      return modifyResponse(response, []);
+    } else if (
+      request.url.includes('ohjausparametrit-service/api/v1/rest/parametri')
+    ) {
+      return modifyResponse(response, { sijoittelu: true });
     } else {
       console.log('(Backend) mock not implementeded', request.url);
       return;
