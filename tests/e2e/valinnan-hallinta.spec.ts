@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 import { expectAllSpinnersHidden } from './playwright-utils';
 
 test('displays valinnanvaiheet', async ({ page }) => {
@@ -28,3 +28,70 @@ test('displays valinnanvaiheet', async ({ page }) => {
   expect.soft(columns.nth(2)).toContainText('Valinnanvaihe');
   expect.soft(columns.nth(3).locator('button')).toBeEnabled();
 });
+
+test('starts calculation', async ({ page }) => {
+  await page.route(
+    '*/**/valintalaskentakoostepalvelu/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000045102/tyyppi/HAKUKOHDE/whitelist/true**',
+    async (route) => {
+      console.log('here');
+      const started = {
+        lisatiedot: {
+          luotiinkoUusiLaskenta: true,
+        },
+        latausUrl: '12345abs',
+      };
+      await route.fulfill({
+        body: JSON.stringify(started),
+        contentType: 'json',
+      });
+    },
+  );
+  await page.route(
+    '*/**//valintalaskenta-laskenta-service/resources/seuranta/yhteenveto/12345abs`',
+    async (route) => {
+      const seuranta = {
+        tila: 'MENEILLAAN',
+        hakukohteitaYhteensa: 1,
+        hakukohteitaValmiina: 0,
+        hakukohteitaKeskeytetty: 0,
+      };
+      await route.fulfill({
+        body: JSON.stringify(seuranta),
+        contentType: 'json',
+      });
+    },
+  );
+  await startCalculation(page);
+  await expect(
+    page.locator('tbody tr').first().locator('button'),
+  ).toBeDisabled();
+  const spinners = page.getByRole('progressbar');
+  await expect(spinners).toHaveCount(1);
+});
+
+test('starting calculation causes error', async ({ page }) => {
+  await page.route(
+    '*/**/valintalaskentakoostepalvelu/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000045102/tyyppi/HAKUKOHDE/whitelist/true**',
+    async (route) => {
+      await route.fulfill({ status: 500, body: 'Unknown error' });
+    },
+  );
+  await startCalculation(page);
+  const error = page.getByText(
+    'Laskenta epäonnistui. Yritä myöhemmin uudelleen',
+  );
+  await expect(error).toBeVisible();
+  await page.getByRole('button', { name: 'Näytä virhe' }).click();
+  const specificError = page.getByText('Unknown error');
+  await expect(specificError).toBeVisible();
+});
+
+const startCalculation = async (page: Page) => {
+  await page.goto(
+    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/valinnan-hallinta',
+  );
+  await expectAllSpinnersHidden(page);
+  await page.locator('tbody tr').first().locator('button').click();
+  //click confirm
+  await page.locator('tbody tr').first().locator('button').last().click();
+};
