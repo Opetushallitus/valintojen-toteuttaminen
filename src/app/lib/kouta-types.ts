@@ -1,5 +1,4 @@
-import { Language, TranslatedName } from './localization/localization-types';
-import { translateName } from './localization/translation-utils';
+import { TranslatedName } from './localization/localization-types';
 
 const STARTING_YEAR = 2019; // check earliest kouta haku
 
@@ -61,12 +60,11 @@ export enum Tila {
 
 export function getFullnameOfHakukohde(
   hakukohde: Hakukohde,
-  lang: Language = 'fi',
+  translateEntity: (translateable: TranslatedName) => string,
 ): string {
-  const orgName = translateName(
+  const orgName = translateEntity(
     hakukohde.jarjestyspaikkaHierarkiaNimi ?? hakukohde.organisaatioNimi,
-    lang,
   );
-  const hakukohdeName = translateName(hakukohde.nimi, lang);
+  const hakukohdeName = translateEntity(hakukohde.nimi);
   return `${orgName}: ${hakukohdeName}`;
 }

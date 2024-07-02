@@ -1,8 +1,8 @@
 import { Haku, Hakukohde, getFullnameOfHakukohde } from './kouta-types';
 import { configuration } from './configuration';
-import { translateName } from './localization/translation-utils';
 import { ValinnanvaiheTyyppi } from './valintaperusteet';
 import { client } from './http-client';
+import { TranslatedName } from './localization/localization-types';
 
 export type CalculationStart = {
   startedNewCalculation: boolean;
@@ -16,6 +16,7 @@ const formSearchParamsForStartCalculation = ({
   vvTyyppi,
   sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
   valinnanvaihe,
+  translateEntity,
 }: {
   laskentaUrl: URL;
   haku: Haku;
@@ -23,14 +24,17 @@ const formSearchParamsForStartCalculation = ({
   vvTyyppi?: ValinnanvaiheTyyppi;
   sijoitellaankoHaunHakukohteetLaskennanYhteydessa: boolean;
   valinnanvaihe?: number;
+  translateEntity: (translateable: TranslatedName) => string;
 }): URL => {
   laskentaUrl.searchParams.append(
     'erillishaku',
     '' + sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
   );
-  //TODO need to translate or is default ok?
-  laskentaUrl.searchParams.append('haunnimi', translateName(haku.nimi));
-  laskentaUrl.searchParams.append('nimi', getFullnameOfHakukohde(hakukohde));
+  laskentaUrl.searchParams.append('haunnimi', translateEntity(haku.nimi));
+  laskentaUrl.searchParams.append(
+    'nimi',
+    getFullnameOfHakukohde(hakukohde, translateEntity),
+  );
   if (valinnanvaihe) {
     laskentaUrl.searchParams.append('valinnanvaihe', '' + valinnanvaihe);
   }
@@ -49,6 +53,7 @@ export const kaynnistaLaskenta = async (
   vvTyyppi: ValinnanvaiheTyyppi,
   sijoitellaankoHaunHakukohteetLaskennanYhteydessa: boolean,
   valinnanvaihe: number,
+  translateEntity: (translateable: TranslatedName) => string,
 ): Promise<CalculationStart> => {
   const laskentaUrl = formSearchParamsForStartCalculation({
     laskentaUrl: new URL(
@@ -59,6 +64,7 @@ export const kaynnistaLaskenta = async (
     vvTyyppi,
     sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
     valinnanvaihe,
+    translateEntity,
   });
   const response = await client.post(laskentaUrl.toString(), [hakukohde.oid]);
   return {
@@ -71,6 +77,7 @@ export const kaynnistaLaskentaHakukohteenValinnanvaiheille = async (
   haku: Haku,
   hakukohde: Hakukohde,
   sijoitellaankoHaunHakukohteetLaskennanYhteydessa: boolean,
+  translateEntity: (translateable: TranslatedName) => string,
 ): Promise<CalculationStart> => {
   const laskentaUrl = formSearchParamsForStartCalculation({
     laskentaUrl: new URL(
@@ -79,6 +86,7 @@ export const kaynnistaLaskentaHakukohteenValinnanvaiheille = async (
     haku,
     hakukohde,
     sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
+    translateEntity,
   });
   const response = await client.post(laskentaUrl.toString(), [hakukohde.oid]);
   return {

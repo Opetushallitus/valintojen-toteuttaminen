@@ -58,7 +58,7 @@ const HallintaTable = ({
       ],
     });
 
-  const { t } = useTranslations();
+  const { t, translateEntity } = useTranslations();
 
   const [calculation, dispatchCalculation] = useReducer(calculationReducer, {
     status: CalculationInitializationStatus.NOT_STARTED,
@@ -75,6 +75,7 @@ const HallintaTable = ({
         haku,
         hakukohde,
         sijoitellaankoHaunHakukohteetLaskennanYhteydessa(haku, haunAsetukset),
+        translateEntity,
       );
       dispatchCalculation({ runningCalculation: started });
     } catch (error) {

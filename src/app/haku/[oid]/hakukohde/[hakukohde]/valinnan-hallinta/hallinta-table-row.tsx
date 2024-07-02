@@ -42,7 +42,7 @@ const HallintaTableRow = ({
   areAllCalculationsRunning,
   lastCalculated,
 }: HallintaTableRowParams) => {
-  const { t } = useTranslations();
+  const { t, translateEntity } = useTranslations();
 
   const [calculation, dispatchCalculation] = useReducer(calculationReducer, {
     status: CalculationInitializationStatus.NOT_STARTED,
@@ -73,6 +73,7 @@ const HallintaTableRow = ({
         vaihe.tyyppi,
         sijoitellaankoHaunHakukohteetLaskennanYhteydessa(haku, haunAsetukset),
         index,
+        translateEntity,
       );
       dispatchCalculation({ runningCalculation: started });
     } catch (error) {
