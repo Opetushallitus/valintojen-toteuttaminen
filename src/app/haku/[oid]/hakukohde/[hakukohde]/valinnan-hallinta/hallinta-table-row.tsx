@@ -9,7 +9,7 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { Button } from '@opetushallitus/oph-design-system';
 import { Haku, Hakukohde } from '@/app/lib/kouta-types';
 import { kaynnistaLaskenta } from '@/app/lib/valintalaskentakoostepalvelu';
-import { useReducer } from 'react';
+import { useCallback, useReducer } from 'react';
 import { HaunAsetukset } from '@/app/lib/ohjausparametrit';
 import { sijoitellaankoHaunHakukohteetLaskennanYhteydessa } from '@/app/lib/kouta';
 import { CalculationProgress } from './calculation-progress';
@@ -87,16 +87,16 @@ const HallintaTableRow = ({
     }
   };
 
-  const setCompleted = (
-    time?: Date | number | null,
-    errorMessage?: string | string[],
-  ) => {
-    dispatchCalculation({
-      calculatedTime: time,
-      errorMessage,
-      status: CalculationInitializationStatus.NOT_STARTED,
-    });
-  };
+  const setCompleted = useCallback(
+    (time?: Date | number | null, errorMessage?: string | string[]) => {
+      dispatchCalculation({
+        calculatedTime: time,
+        errorMessage,
+        status: CalculationInitializationStatus.NOT_STARTED,
+      });
+    },
+    [],
+  );
 
   return (
     <>

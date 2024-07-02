@@ -67,6 +67,9 @@ export const CalculationProgress = ({
     resultIsLoading,
     data,
     calculationResult,
+    resultError,
+    error,
+    setCompleted,
   ]);
 
   if (isLoading || data?.tila !== 'VALMIS' || resultIsLoading) {

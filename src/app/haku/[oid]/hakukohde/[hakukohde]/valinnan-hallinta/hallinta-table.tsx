@@ -20,7 +20,7 @@ import { HaunAsetukset } from '@/app/lib/ohjausparametrit';
 import { Button, Typography } from '@opetushallitus/oph-design-system';
 import { kaynnistaLaskentaHakukohteenValinnanvaiheille } from '@/app/lib/valintalaskentakoostepalvelu';
 import { sijoitellaankoHaunHakukohteetLaskennanYhteydessa } from '@/app/lib/kouta';
-import { useReducer } from 'react';
+import { useCallback, useReducer } from 'react';
 import { CalculationProgress } from './calculation-progress';
 import {
   CalculationInitializationStatus,
@@ -101,16 +101,16 @@ const HallintaTable = ({
     });
   };
 
-  const setCompleted = (
-    time?: Date | number | null,
-    errorMessage?: string | string[],
-  ) => {
-    dispatchCalculation({
-      calculatedTime: time,
-      errorMessage,
-      status: CalculationInitializationStatus.NOT_STARTED,
-    });
-  };
+  const setCompleted = useCallback(
+    (time?: Date | number | null, errorMessage?: string | string[]) => {
+      dispatchCalculation({
+        calculatedTime: time,
+        errorMessage,
+        status: CalculationInitializationStatus.NOT_STARTED,
+      });
+    },
+    [],
+  );
 
   if (valinnanvaiheetQuery.data.length === 0) {
     return <Box>{t('valinnanhallinta.eiolemallinnettu')}</Box>;
