@@ -104,9 +104,10 @@
     "virhe": "Laskenta epäonnistui. Yritä myöhemmin uudelleen",
     "piilotavirhe": "Piilota virhe",
     "naytavirhe": "Näytä virhe",
-    "onvalisijoittelu": "Valinnanvaiheella on käytössä välisijoittelu, joten laskentaa ei voi käynnistää hakukohteen kautta",
+    "onvalisijoittelu": "Valinnanvaiheella on käytössä välisijoittelu, joten laskentaa ei voi käynnistää hakukohteen kautta.",
     "onvalisijoittelusuoritakaikki": "Yhdellä tai useammalla Valinnanvaiheella on käytössä välisijoittelu, joten kaikkia valinnanvaiheita ei voi kerralla suorittaa.",
-    "eiolemallinnettu": "Valintaperusteita ei ole mallinnettu, mallinna valintaperusteet ennen valintalaskentaa"
+    "eiolemallinnettu": "Valintaperusteita ei ole mallinnettu, mallinna valintaperusteet ennen valintalaskentaa.",
+    "laskentaolikaynnissajo": "Laskenta oli jo käynnissä, seurataan käynnissä olevaa laskentaa."
   },
   "koekutsut": {
     "otsikko": "Valintakoekutsut"

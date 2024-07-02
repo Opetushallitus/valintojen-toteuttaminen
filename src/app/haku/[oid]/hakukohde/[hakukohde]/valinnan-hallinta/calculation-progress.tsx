@@ -1,6 +1,6 @@
 'use client';
 
-import { CircularProgress } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import {
   CalculationStart,
@@ -8,6 +8,7 @@ import {
 } from '@/app/lib/valintalaskentakoostepalvelu';
 import { useQuery } from '@tanstack/react-query';
 import { getLaskennanSeurantaTiedot } from '@/app/lib/valintalaskenta-service';
+import { useEffect } from 'react';
 
 const POLLING_INTERVAL_SECONDS = 1000 * 10;
 
@@ -43,21 +44,43 @@ export const CalculationProgress = ({
     enabled: data?.tila === 'VALMIS',
   });
 
-  if (isError) {
-    setCompleted(null, error.message);
-  }
+  useEffect(() => {
+    if (isError) {
+      setCompleted(null, error.message);
+    }
 
-  if (resultIsError) {
-    setCompleted(null, resultError.message);
-  }
+    if (resultIsError) {
+      setCompleted(null, resultError.message);
+    }
+
+    if (!(isLoading || data?.tila !== 'VALMIS' || resultIsLoading)) {
+      if (data?.hakukohteitaKeskeytetty > 0 && calculationResult) {
+        setCompleted(null, calculationResult.notifications ?? []);
+      } else {
+        setCompleted(new Date());
+      }
+    }
+  }, [
+    isError,
+    resultIsError,
+    isLoading,
+    resultIsLoading,
+    data,
+    calculationResult,
+  ]);
 
   if (isLoading || data?.tila !== 'VALMIS' || resultIsLoading) {
-    return <CircularProgress aria-label={t('yleinen.ladataan')} />;
-  } else if (data?.hakukohteitaKeskeytetty > 0 && calculationResult) {
-    setCompleted(null, calculationResult.notifications ?? []);
-    return <></>;
+    return (
+      <>
+        <CircularProgress aria-label={t('yleinen.ladataan')} />
+        {!calculationStart.startedNewCalculation && (
+          <Box sx={{ textAlign: 'left' }}>
+            {t('valinnanhallinta.laskentaolikaynnissajo')}
+          </Box>
+        )}
+      </>
+    );
   } else {
-    setCompleted(new Date());
     return <></>;
   }
 };

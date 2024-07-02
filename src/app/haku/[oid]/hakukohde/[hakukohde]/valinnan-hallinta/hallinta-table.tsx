@@ -76,9 +76,7 @@ const HallintaTable = ({
         hakukohde,
         sijoitellaankoHaunHakukohteetLaskennanYhteydessa(haku, haunAsetukset),
       );
-      if (started.startedNewCalculation) {
-        dispatchCalculation({ runningCalculation: started });
-      }
+      dispatchCalculation({ runningCalculation: started });
     } catch (error) {
       console.error(error);
       const errorMessage =
