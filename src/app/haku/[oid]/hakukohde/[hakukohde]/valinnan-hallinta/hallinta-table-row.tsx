@@ -4,99 +4,44 @@ import {
   Valinnanvaihe,
   isCalculationUsedForValinnanvaihe,
 } from '@/app/lib/valintaperusteet';
-import { Box, TableCell, TableRow } from '@mui/material';
+import { Box, CircularProgress, TableCell, TableRow } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Button } from '@opetushallitus/oph-design-system';
-import { Haku, Hakukohde } from '@/app/lib/kouta-types';
-import { kaynnistaLaskenta } from '@/app/lib/valintalaskentakoostepalvelu';
-import { useCallback, useReducer } from 'react';
-import { HaunAsetukset } from '@/app/lib/ohjausparametrit';
-import { sijoitellaankoHaunHakukohteetLaskennanYhteydessa } from '@/app/lib/kouta';
-import { CalculationProgress } from './calculation-progress';
 import theme from '@/app/theme';
 import CalculationConfirm from './calculation-confirm';
-import {
-  CalculationInitializationStatus,
-  calculationReducer,
-} from './valinnan-hallinta-types';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
-import { FetchError } from '@/app/lib/common';
 import ErrorRow from './error-row';
+import { AnyStateMachine } from 'xstate';
+import { useMachine } from '@xstate/react';
 
 type HallintaTableRowParams = {
-  haku: Haku;
-  hakukohde: Hakukohde;
   vaihe: Valinnanvaihe;
-  index: number;
-  haunAsetukset: HaunAsetukset;
   areAllCalculationsRunning: boolean;
   lastCalculated: number | undefined;
+  laskentaActor?: AnyStateMachine;
 };
 
 const HallintaTableRow = ({
-  hakukohde,
-  haku,
   vaihe,
-  index,
-  haunAsetukset,
   areAllCalculationsRunning,
   lastCalculated,
+  laskentaActor,
 }: HallintaTableRowParams) => {
-  const { t, translateEntity } = useTranslations();
+  const { t } = useTranslations();
 
-  const [calculation, dispatchCalculation] = useReducer(calculationReducer, {
-    status: CalculationInitializationStatus.NOT_STARTED,
-    calculatedTime: lastCalculated,
-  });
+  const [state, send] = useMachine(laskentaActor);
 
   const start = () => {
-    dispatchCalculation({
-      status: CalculationInitializationStatus.WAITING_FOR_CONFIRMATION,
-    });
+    send({ type: 'START_CALCULATION' });
   };
 
   const cancelConfirmation = () => {
-    dispatchCalculation({
-      status: CalculationInitializationStatus.NOT_STARTED,
-    });
+    send({ type: 'CANCEL' });
   };
 
   const confirm = async () => {
-    dispatchCalculation({
-      status: CalculationInitializationStatus.STARTED,
-      errorMessage: null,
-    });
-    try {
-      const started = await kaynnistaLaskenta(
-        haku,
-        hakukohde,
-        vaihe.tyyppi,
-        sijoitellaankoHaunHakukohteetLaskennanYhteydessa(haku, haunAsetukset),
-        index,
-        translateEntity,
-      );
-      dispatchCalculation({ runningCalculation: started });
-    } catch (error) {
-      console.error(error);
-      const errorMessage =
-        error instanceof FetchError ? await error.response.text() : '' + error;
-      dispatchCalculation({
-        errorMessage,
-        status: CalculationInitializationStatus.NOT_STARTED,
-      });
-    }
+    send({ type: 'CONFIRM' });
   };
-
-  const setCompleted = useCallback(
-    (time?: Date | number | null, errorMessage?: string | string[]) => {
-      dispatchCalculation({
-        calculatedTime: time,
-        errorMessage,
-        status: CalculationInitializationStatus.NOT_STARTED,
-      });
-    },
-    [],
-  );
 
   return (
     <>
@@ -124,8 +69,7 @@ const HallintaTableRow = ({
         <TableCell sx={{ verticalAlign: 'top' }}>{t(vaihe.tyyppi)}</TableCell>
         <TableCell>
           {isCalculationUsedForValinnanvaihe(vaihe) &&
-            calculation.status !==
-              CalculationInitializationStatus.WAITING_FOR_CONFIRMATION && (
+            !state.matches('WAITING_CONFIRMATION') && (
               <Box
                 sx={{
                   display: 'flex',
@@ -135,29 +79,18 @@ const HallintaTableRow = ({
               >
                 <Button
                   variant="outlined"
-                  disabled={
-                    calculation.status ===
-                      CalculationInitializationStatus.STARTED ||
-                    areAllCalculationsRunning
-                  }
+                  disabled={!state.matches('IDLE') || areAllCalculationsRunning}
                   onClick={() => start()}
                 >
                   {t('valinnanhallinta.kaynnista')}
                 </Button>
-                {calculation.runningCalculation &&
-                  calculation.status ===
-                    CalculationInitializationStatus.STARTED && (
-                    <CalculationProgress
-                      key={calculation.runningCalculation.loadingUrl}
-                      calculationStart={calculation.runningCalculation}
-                      setCompleted={setCompleted}
-                    />
-                  )}
+                {state.matches('PROCESSING') && (
+                  <CircularProgress aria-label={t('yleinen.ladataan')} />
+                )}
               </Box>
             )}
           {isCalculationUsedForValinnanvaihe(vaihe) &&
-            calculation.status ===
-              CalculationInitializationStatus.WAITING_FOR_CONFIRMATION && (
+            state.matches('WAITING_CONFIRMATION') && (
               <CalculationConfirm
                 cancel={cancelConfirmation}
                 confirm={confirm}
@@ -170,17 +103,19 @@ const HallintaTableRow = ({
           {vaihe.valisijoittelu && (
             <Box>{t('valinnanhallinta.onvalisijoittelu')}</Box>
           )}
-          {calculation.calculatedTime && (
+          {(state.context.calculation.calculatedTime || lastCalculated) && (
             <Box>
               {t('valinnanhallinta.laskettuviimeksi', {
-                pvm: toFormattedDateTimeString(calculation.calculatedTime),
+                pvm: toFormattedDateTimeString(
+                  state.context.calculation.calculatedTime ?? lastCalculated,
+                ),
               })}
             </Box>
           )}
         </TableCell>
       </TableRow>
-      {calculation.errorMessage != null && (
-        <ErrorRow errorMessage={calculation.errorMessage} />
+      {state.context.calculation.errorMessage != null && (
+        <ErrorRow errorMessage={state.context.calculation.errorMessage} />
       )}
     </>
   );

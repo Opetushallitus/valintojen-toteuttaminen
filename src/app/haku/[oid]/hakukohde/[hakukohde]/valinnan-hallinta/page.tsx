@@ -2,7 +2,7 @@
 
 import { getHaku, getHakukohde } from '@/app/lib/kouta';
 import { TabContainer } from '../TabContainer';
-import HallintaTable from './hallinta-table';
+import { HallintaTableContainer } from './hallinta-table';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { useSuspenseQueries } from '@tanstack/react-query';
@@ -48,7 +48,7 @@ const ValinnanHallintaContent = ({
   }
 
   return (
-    <HallintaTable
+    <HallintaTableContainer
       hakukohde={hakukohdeQuery.data}
       haku={hakuQuery.data}
       haunAsetukset={haunAsetuksetQuery.data}
