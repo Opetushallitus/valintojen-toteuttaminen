@@ -4,6 +4,7 @@ import { ValinnanvaiheTyyppi } from '@/app/lib/valintaperusteet';
 import { Haku, Hakukohde } from '@/app/lib/kouta-types';
 import {
   LaskentaErrorSummary,
+  LaskentaStart,
   getLaskennanTilaHakukohteelle,
   kaynnistaLaskenta,
   kaynnistaLaskentaHakukohteenValinnanvaiheille,
@@ -13,6 +14,7 @@ import {
   SeurantaTiedot,
   getLaskennanSeurantaTiedot,
 } from '@/app/lib/valintalaskenta-service';
+import { FetchError } from '@/app/lib/common';
 
 type StartLaskentaParams = {
   haku: Haku;
@@ -51,6 +53,18 @@ export enum LaskentaEvents {
   CANCEL = 'CANCEL',
 }
 
+const tryAndParseError = async <T>(wrappedFn: () => Promise<T>) => {
+  try {
+    return await wrappedFn();
+  } catch (e) {
+    if (e instanceof FetchError) {
+      const message = await e.response.text();
+      throw message;
+    }
+    throw e;
+  }
+};
+
 export const createLaskentaMachine = (params: StartLaskentaParams) => {
   return setup({
     types: {
@@ -59,38 +73,46 @@ export const createLaskentaMachine = (params: StartLaskentaParams) => {
     actors: {
       startLaskenta: fromPromise(
         ({ input }: { input: StartLaskentaParams }) => {
-          if (input.valinnanvaiheTyyppi && input.valinnanvaiheNumber) {
-            return kaynnistaLaskenta(
-              input.haku,
-              input.hakukohde,
-              input.valinnanvaiheTyyppi,
-              input.sijoitellaanko,
-              input.valinnanvaiheNumber,
-              input.translateEntity,
-            );
-          } else {
-            return kaynnistaLaskentaHakukohteenValinnanvaiheille(
-              input.haku,
-              input.hakukohde,
-              input.sijoitellaanko,
-              input.translateEntity,
-            );
-          }
+          return tryAndParseError<LaskentaStart>(async () => {
+            if (input.valinnanvaiheTyyppi && input.valinnanvaiheNumber) {
+              return await kaynnistaLaskenta(
+                input.haku,
+                input.hakukohde,
+                input.valinnanvaiheTyyppi,
+                input.sijoitellaanko,
+                input.valinnanvaiheNumber,
+                input.translateEntity,
+              );
+            } else {
+              return await kaynnistaLaskentaHakukohteenValinnanvaiheille(
+                input.haku,
+                input.hakukohde,
+                input.sijoitellaanko,
+                input.translateEntity,
+              );
+            }
+          });
         },
       ),
       pollLaskenta: fromPromise(({ input }: { input: Laskenta }) => {
-        if (input.runningLaskenta) {
-          return getLaskennanSeurantaTiedot(input.runningLaskenta.loadingUrl);
-        }
-        throw 'Tried to fetch seurantatiedot without having access to running laskenta';
+        return tryAndParseError<SeurantaTiedot>(async () => {
+          if (input.runningLaskenta) {
+            return await getLaskennanSeurantaTiedot(
+              input.runningLaskenta.loadingUrl,
+            );
+          }
+          throw 'Tried to fetch seurantatiedot without having access to running laskenta';
+        });
       }),
       fetchSummary: fromPromise(({ input }: { input: Laskenta }) => {
-        if (input.runningLaskenta) {
-          return getLaskennanTilaHakukohteelle(
-            input.runningLaskenta.loadingUrl,
-          );
-        }
-        throw 'Tried to fetch summary without having access to laskenta';
+        return tryAndParseError<LaskentaErrorSummary>(async () => {
+          if (input.runningLaskenta) {
+            return getLaskennanTilaHakukohteelle(
+              input.runningLaskenta.loadingUrl,
+            );
+          }
+          throw 'Tried to fetch summary without having access to laskenta';
+        });
       }),
     },
   }).createMachine({

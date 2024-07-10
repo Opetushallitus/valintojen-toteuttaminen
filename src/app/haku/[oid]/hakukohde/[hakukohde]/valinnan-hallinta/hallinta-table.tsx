@@ -185,8 +185,7 @@ const HallintaTable = ({
               <ErrorRow
                 errorMessage={
                   state.context.laskenta.errorMessage ??
-                  state.context.error ??
-                  ''
+                  '' + state.context.error
                 }
               />
             </TableBody>
