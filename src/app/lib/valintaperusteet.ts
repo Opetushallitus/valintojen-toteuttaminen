@@ -30,7 +30,7 @@ export type Valinnanvaihe = {
   jonot: Valintatapajono[];
 };
 
-export const isCalculationUsedForValinnanvaihe = (
+export const isLaskentaUsedForValinnanvaihe = (
   valinnanvaihe: Valinnanvaihe,
 ): boolean => {
   return (

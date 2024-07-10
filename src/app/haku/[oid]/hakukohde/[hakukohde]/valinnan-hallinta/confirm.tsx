@@ -3,12 +3,12 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { Button } from '@opetushallitus/oph-design-system';
 import theme from '@/app/theme';
 
-type CalculationConfirmParams = {
+type ConfirmParams = {
   confirm: () => void;
   cancel: () => void;
 };
 
-const CalculationConfirm = ({ confirm, cancel }: CalculationConfirmParams) => {
+const Confirm = ({ confirm, cancel }: ConfirmParams) => {
   const { t } = useTranslations();
 
   return (
@@ -38,4 +38,4 @@ const CalculationConfirm = ({ confirm, cancel }: CalculationConfirmParams) => {
   );
 };
 
-export default CalculationConfirm;
+export default Confirm;

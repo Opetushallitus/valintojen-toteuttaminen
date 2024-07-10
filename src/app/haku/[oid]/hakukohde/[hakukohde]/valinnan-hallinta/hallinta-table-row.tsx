@@ -2,13 +2,13 @@
 
 import {
   Valinnanvaihe,
-  isCalculationUsedForValinnanvaihe,
+  isLaskentaUsedForValinnanvaihe,
 } from '@/app/lib/valintaperusteet';
 import { Box, CircularProgress, TableCell, TableRow } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Button } from '@opetushallitus/oph-design-system';
 import theme from '@/app/theme';
-import CalculationConfirm from './calculation-confirm';
+import Confirm from './confirm';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
 import ErrorRow from './error-row';
 import { useMachine } from '@xstate/react';
@@ -28,7 +28,7 @@ type HallintaTableRowParams = {
   haunAsetukset: HaunAsetukset;
   vaihe: Valinnanvaihe;
   index: number;
-  areAllCalculationsRunning: boolean;
+  areAllLaskentaRunning: boolean;
   lastCalculated: number | undefined;
 };
 
@@ -38,7 +38,7 @@ const HallintaTableRow = ({
   haunAsetukset,
   vaihe,
   index,
-  areAllCalculationsRunning,
+  areAllLaskentaRunning,
   lastCalculated,
 }: HallintaTableRowParams) => {
   const { t, translateEntity } = useTranslations();
@@ -62,7 +62,7 @@ const HallintaTableRow = ({
   const [state, send] = useMachine(laskentaMachine);
 
   const start = () => {
-    send({ type: LaskentaEvents.START_CALCULATION });
+    send({ type: LaskentaEvents.START });
   };
 
   const cancelConfirmation = () => {
@@ -98,7 +98,7 @@ const HallintaTableRow = ({
         </TableCell>
         <TableCell sx={{ verticalAlign: 'top' }}>{t(vaihe.tyyppi)}</TableCell>
         <TableCell>
-          {isCalculationUsedForValinnanvaihe(vaihe) &&
+          {isLaskentaUsedForValinnanvaihe(vaihe) &&
             !state.matches(LaskentaStates.WAITING_CONFIRMATION) && (
               <Box
                 sx={{
@@ -110,8 +110,7 @@ const HallintaTableRow = ({
                 <Button
                   variant="outlined"
                   disabled={
-                    !state.matches(LaskentaStates.IDLE) ||
-                    areAllCalculationsRunning
+                    !state.matches(LaskentaStates.IDLE) || areAllLaskentaRunning
                   }
                   onClick={() => start()}
                 >
@@ -124,38 +123,31 @@ const HallintaTableRow = ({
                 )}
               </Box>
             )}
-          {isCalculationUsedForValinnanvaihe(vaihe) &&
+          {isLaskentaUsedForValinnanvaihe(vaihe) &&
             state.matches(LaskentaStates.WAITING_CONFIRMATION) && (
-              <CalculationConfirm
-                cancel={cancelConfirmation}
-                confirm={confirm}
-              />
+              <Confirm cancel={cancelConfirmation} confirm={confirm} />
             )}
-          {!isCalculationUsedForValinnanvaihe(vaihe) &&
-            !vaihe.valisijoittelu && (
-              <Box>{t('valinnanhallinta.eilaskennassa')}</Box>
-            )}
+          {!isLaskentaUsedForValinnanvaihe(vaihe) && !vaihe.valisijoittelu && (
+            <Box>{t('valinnanhallinta.eilaskennassa')}</Box>
+          )}
           {vaihe.valisijoittelu && (
             <Box>{t('valinnanhallinta.onvalisijoittelu')}</Box>
           )}
-          {(state.context.calculation.calculatedTime || lastCalculated) && (
+          {(state.context.laskenta.calculatedTime || lastCalculated) && (
             <Box>
               {t('valinnanhallinta.laskettuviimeksi', {
                 pvm: toFormattedDateTimeString(
-                  state.context.calculation.calculatedTime ??
-                    lastCalculated ??
-                    0,
+                  state.context.laskenta.calculatedTime ?? lastCalculated ?? 0,
                 ),
               })}
             </Box>
           )}
         </TableCell>
       </TableRow>
-      {(state.context.calculation.errorMessage != null ||
-        state.context.error) && (
+      {(state.context.laskenta.errorMessage != null || state.context.error) && (
         <ErrorRow
           errorMessage={
-            state.context.calculation.errorMessage ?? state.context.error ?? ''
+            state.context.laskenta.errorMessage ?? state.context.error ?? ''
           }
         />
       )}

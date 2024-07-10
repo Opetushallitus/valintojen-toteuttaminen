@@ -1,9 +1,9 @@
 import { assign, fromPromise, setup } from 'xstate';
-import { Calculation, calculationReducer } from './valinnan-hallinta-types';
+import { Laskenta, laskentaReducer } from './valinnan-hallinta-types';
 import { ValinnanvaiheTyyppi } from '@/app/lib/valintaperusteet';
 import { Haku, Hakukohde } from '@/app/lib/kouta-types';
 import {
-  CalculationErrorSummary,
+  LaskentaErrorSummary,
   getLaskennanTilaHakukohteelle,
   kaynnistaLaskenta,
   kaynnistaLaskentaHakukohteenValinnanvaiheille,
@@ -14,7 +14,7 @@ import {
   getLaskennanSeurantaTiedot,
 } from '@/app/lib/valintalaskenta-service';
 
-type StartCalculationParams = {
+type StartLaskentaParams = {
   haku: Haku;
   hakukohde: Hakukohde;
   valinnanvaiheTyyppi?: ValinnanvaiheTyyppi;
@@ -24,10 +24,10 @@ type StartCalculationParams = {
 };
 
 export type LaskentaContext = {
-  calculation: Calculation;
-  startCalculationParams: StartCalculationParams;
+  laskenta: Laskenta;
+  startLaskentaParams: StartLaskentaParams;
   seurantaTiedot: SeurantaTiedot | null;
-  errorSummary: CalculationErrorSummary | null;
+  errorSummary: LaskentaErrorSummary | null;
   error?: Error;
 };
 
@@ -41,24 +41,24 @@ export enum LaskentaStates {
   PROCESSING_DETERMINE_POLL_COMPLETION = 'DETERMINE_POLL_COMPLETION',
   FETCHING_SUMMARY = 'FETCHING_SUMMARY',
   DETERMINE_SUMMARY = 'DETERMINE_SUMMARY',
-  ERROR_CALCULATION = 'ERROR_CALCULATION',
+  ERROR_LASKENTA = 'ERROR_LASKENTA',
   COMPLETED = 'COMPLETED',
 }
 
 export enum LaskentaEvents {
-  START_CALCULATION = 'START_CALCULATION',
+  START = 'START',
   CONFIRM = 'CONFIRM',
   CANCEL = 'CANCEL',
 }
 
-export const createLaskentaMachine = (params: StartCalculationParams) => {
+export const createLaskentaMachine = (params: StartLaskentaParams) => {
   return setup({
     types: {
       context: {} as LaskentaContext,
     },
     actors: {
-      startCalculation: fromPromise(
-        ({ input }: { input: StartCalculationParams }) => {
+      startLaskenta: fromPromise(
+        ({ input }: { input: StartLaskentaParams }) => {
           if (input.valinnanvaiheTyyppi && input.valinnanvaiheNumber) {
             return kaynnistaLaskenta(
               input.haku,
@@ -78,18 +78,16 @@ export const createLaskentaMachine = (params: StartCalculationParams) => {
           }
         },
       ),
-      pollCalculation: fromPromise(({ input }: { input: Calculation }) => {
-        if (input.runningCalculation) {
-          return getLaskennanSeurantaTiedot(
-            input.runningCalculation.loadingUrl,
-          );
+      pollLaskenta: fromPromise(({ input }: { input: Laskenta }) => {
+        if (input.runningLaskenta) {
+          return getLaskennanSeurantaTiedot(input.runningLaskenta.loadingUrl);
         }
         throw 'Tried to fetch seurantatiedot without having access to running laskenta';
       }),
-      fetchSummary: fromPromise(({ input }: { input: Calculation }) => {
-        if (input.runningCalculation) {
+      fetchSummary: fromPromise(({ input }: { input: Laskenta }) => {
+        if (input.runningLaskenta) {
           return getLaskennanTilaHakukohteelle(
-            input.runningCalculation.loadingUrl,
+            input.runningLaskenta.loadingUrl,
           );
         }
         throw 'Tried to fetch summary without having access to laskenta';
@@ -99,15 +97,15 @@ export const createLaskentaMachine = (params: StartCalculationParams) => {
     id: `LaskentaMachine-${params.hakukohde.oid}-${params.valinnanvaiheNumber ?? ''}`,
     initial: LaskentaStates.IDLE,
     context: {
-      calculation: {},
-      startCalculationParams: params,
+      laskenta: {},
+      startLaskentaParams: params,
       seurantaTiedot: null,
       errorSummary: null,
     },
     states: {
       [LaskentaStates.IDLE]: {
         on: {
-          [LaskentaEvents.START_CALCULATION]: {
+          [LaskentaEvents.START]: {
             target: LaskentaStates.WAITING_CONFIRMATION,
           },
         },
@@ -117,7 +115,7 @@ export const createLaskentaMachine = (params: StartCalculationParams) => {
           [LaskentaEvents.CONFIRM]: {
             target: LaskentaStates.STARTING,
             actions: assign({
-              calculation: {},
+              laskenta: {},
             }),
           },
           [LaskentaEvents.CANCEL]: {
@@ -127,19 +125,19 @@ export const createLaskentaMachine = (params: StartCalculationParams) => {
       },
       [LaskentaStates.STARTING]: {
         invoke: {
-          src: 'startCalculation',
-          input: ({ context }) => context.startCalculationParams,
+          src: 'startLaskenta',
+          input: ({ context }) => context.startLaskentaParams,
           onDone: {
             target: 'PROCESSING.FETCHING',
             actions: assign({
-              calculation: ({ event, context }) =>
-                calculationReducer(context.calculation, {
-                  runningCalculation: event.output,
+              laskenta: ({ event, context }) =>
+                laskentaReducer(context.laskenta, {
+                  runningLaskenta: event.output,
                 }),
             }),
           },
           onError: {
-            target: LaskentaStates.ERROR_CALCULATION,
+            target: LaskentaStates.ERROR_LASKENTA,
             actions: assign({
               error: ({ event }) => event.error as Error,
             }),
@@ -151,8 +149,8 @@ export const createLaskentaMachine = (params: StartCalculationParams) => {
         states: {
           [LaskentaStates.PROCESSING_FETCHING]: {
             invoke: {
-              src: 'pollCalculation',
-              input: ({ context }) => context.calculation,
+              src: 'pollLaskenta',
+              input: ({ context }) => context.laskenta,
               onDone: {
                 target: LaskentaStates.PROCESSING_DETERMINE_POLL_COMPLETION,
                 actions: assign({
@@ -160,7 +158,7 @@ export const createLaskentaMachine = (params: StartCalculationParams) => {
                 }),
               },
               onError: {
-                target: '#ERROR_CALCULATION',
+                target: '#ERROR_LASKENTA',
                 actions: assign({
                   error: ({ event }) => event.error as Error,
                 }),
@@ -190,7 +188,7 @@ export const createLaskentaMachine = (params: StartCalculationParams) => {
         id: 'FETCHING_SUMMARY',
         invoke: {
           src: 'fetchSummary',
-          input: ({ context }) => context.calculation,
+          input: ({ context }) => context.laskenta,
           onDone: {
             target: LaskentaStates.DETERMINE_SUMMARY,
             actions: assign({
@@ -198,7 +196,7 @@ export const createLaskentaMachine = (params: StartCalculationParams) => {
             }),
           },
           onError: {
-            target: LaskentaStates.ERROR_CALCULATION,
+            target: LaskentaStates.ERROR_LASKENTA,
             actions: assign({
               error: ({ event }) => event.error as Error,
             }),
@@ -211,10 +209,10 @@ export const createLaskentaMachine = (params: StartCalculationParams) => {
             guard: ({ context }) =>
               context.seurantaTiedot != null &&
               context.seurantaTiedot.hakukohteitaKeskeytetty > 0,
-            target: LaskentaStates.ERROR_CALCULATION,
+            target: LaskentaStates.ERROR_LASKENTA,
             actions: assign({
-              calculation: ({ context }) =>
-                calculationReducer(context.calculation, {
+              laskenta: ({ context }) =>
+                laskentaReducer(context.laskenta, {
                   errorMessage: context.errorSummary?.notifications,
                 }),
             }),
@@ -224,16 +222,16 @@ export const createLaskentaMachine = (params: StartCalculationParams) => {
           },
         ],
       },
-      [LaskentaStates.ERROR_CALCULATION]: {
-        id: 'ERROR_CALCULATION',
+      [LaskentaStates.ERROR_LASKENTA]: {
+        id: 'ERROR_LASKENTA',
         always: [{ target: LaskentaStates.IDLE }],
       },
       [LaskentaStates.COMPLETED]: {
         always: [{ target: LaskentaStates.IDLE }],
         entry: [
           assign({
-            calculation: ({ context }) =>
-              calculationReducer(context.calculation, {
+            laskenta: ({ context }) =>
+              laskentaReducer(context.laskenta, {
                 calculatedTime: new Date(),
               }),
           }),

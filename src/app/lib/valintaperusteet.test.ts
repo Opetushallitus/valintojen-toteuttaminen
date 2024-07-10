@@ -3,11 +3,11 @@ import {
   Valinnanvaihe,
   ValinnanvaiheTyyppi,
   getValinnanvaiheet,
-  isCalculationUsedForValinnanvaihe,
+  isLaskentaUsedForValinnanvaihe,
 } from './valintaperusteet';
 import { client } from './http-client';
 
-test('calculation is used for active valinnanvaihe', () => {
+test('laskenta is used for active valinnanvaihe', () => {
   const vaihe: Valinnanvaihe = {
     aktiivinen: true,
     jonot: [
@@ -23,10 +23,10 @@ test('calculation is used for active valinnanvaihe', () => {
     tyyppi: ValinnanvaiheTyyppi.TAVALLINEN,
     valisijoittelu: false,
   };
-  expect(isCalculationUsedForValinnanvaihe(vaihe)).toBeTruthy();
+  expect(isLaskentaUsedForValinnanvaihe(vaihe)).toBeTruthy();
 });
 
-test('calculation is not used for inactive valinnanvaihe', () => {
+test('laskenta is not used for inactive valinnanvaihe', () => {
   const vaihe: Valinnanvaihe = {
     aktiivinen: false,
     jonot: [
@@ -42,10 +42,10 @@ test('calculation is not used for inactive valinnanvaihe', () => {
     tyyppi: ValinnanvaiheTyyppi.TAVALLINEN,
     valisijoittelu: false,
   };
-  expect(isCalculationUsedForValinnanvaihe(vaihe)).toBeFalsy();
+  expect(isLaskentaUsedForValinnanvaihe(vaihe)).toBeFalsy();
 });
 
-test('calculation is not used for valinnanvaihe with valisijoittelu', () => {
+test('laskenta is not used for valinnanvaihe with valisijoittelu', () => {
   const vaihe: Valinnanvaihe = {
     aktiivinen: true,
     jonot: [
@@ -61,10 +61,10 @@ test('calculation is not used for valinnanvaihe with valisijoittelu', () => {
     tyyppi: ValinnanvaiheTyyppi.TAVALLINEN,
     valisijoittelu: true,
   };
-  expect(isCalculationUsedForValinnanvaihe(vaihe)).toBeFalsy();
+  expect(isLaskentaUsedForValinnanvaihe(vaihe)).toBeFalsy();
 });
 
-test('calculation is not used for valinnanvaihe when jonos are not using calculation', () => {
+test('laskenta is not used for valinnanvaihe when jonos are not using laskenta', () => {
   const vaihe: Valinnanvaihe = {
     aktiivinen: true,
     jonot: [
@@ -80,10 +80,10 @@ test('calculation is not used for valinnanvaihe when jonos are not using calcula
     tyyppi: ValinnanvaiheTyyppi.TAVALLINEN,
     valisijoittelu: false,
   };
-  expect(isCalculationUsedForValinnanvaihe(vaihe)).toBeFalsy();
+  expect(isLaskentaUsedForValinnanvaihe(vaihe)).toBeFalsy();
 });
 
-test('calculation is not used for valinnanvaihe when jonos best before date has passed ', () => {
+test('laskenta is not used for valinnanvaihe when jonos best before date has passed ', () => {
   const vaihe: Valinnanvaihe = {
     aktiivinen: true,
     jonot: [
@@ -100,10 +100,10 @@ test('calculation is not used for valinnanvaihe when jonos best before date has 
     tyyppi: ValinnanvaiheTyyppi.TAVALLINEN,
     valisijoittelu: false,
   };
-  expect(isCalculationUsedForValinnanvaihe(vaihe)).toBeFalsy();
+  expect(isLaskentaUsedForValinnanvaihe(vaihe)).toBeFalsy();
 });
 
-test('calculation is used for valinnanvaihe when there is at least one eligible jono', () => {
+test('laskenta is used for valinnanvaihe when there is at least one eligible jono', () => {
   const vaihe: Valinnanvaihe = {
     aktiivinen: true,
     jonot: [
@@ -132,7 +132,7 @@ test('calculation is used for valinnanvaihe when there is at least one eligible 
     tyyppi: ValinnanvaiheTyyppi.VALINTAKOE,
     valisijoittelu: false,
   };
-  expect(isCalculationUsedForValinnanvaihe(vaihe)).toBeTruthy();
+  expect(isLaskentaUsedForValinnanvaihe(vaihe)).toBeTruthy();
 });
 
 describe('Valintaperusteet: getValinnanvaiheet', () => {

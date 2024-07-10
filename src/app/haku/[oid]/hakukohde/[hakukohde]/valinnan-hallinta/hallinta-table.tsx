@@ -2,7 +2,7 @@
 
 import {
   getValinnanvaiheet,
-  isCalculationUsedForValinnanvaihe,
+  isLaskentaUsedForValinnanvaihe,
 } from '@/app/lib/valintaperusteet';
 import { useSuspenseQueries } from '@tanstack/react-query';
 import {
@@ -20,7 +20,7 @@ import HallintaTableRow from './hallinta-table-row';
 import { HaunAsetukset } from '@/app/lib/ohjausparametrit';
 import { Button, Typography } from '@opetushallitus/oph-design-system';
 import { sijoitellaankoHaunHakukohteetLaskennanYhteydessa } from '@/app/lib/kouta';
-import CalculationConfirm from './calculation-confirm';
+import Confirm from './confirm';
 import theme from '@/app/theme';
 import { getLasketutValinnanVaiheet } from '@/app/lib/valintalaskenta-service';
 import ErrorRow from './error-row';
@@ -76,15 +76,15 @@ const HallintaTable = ({
       ],
     });
 
-  const startAllCalculations = async () => {
+  const confirm = async () => {
     send({ type: LaskentaEvents.CONFIRM });
   };
 
   const start = () => {
-    send({ type: LaskentaEvents.START_CALCULATION });
+    send({ type: LaskentaEvents.START });
   };
 
-  const cancelConfirmation = () => {
+  const cancel = () => {
     send({ type: LaskentaEvents.CANCEL });
   };
 
@@ -126,9 +126,7 @@ const HallintaTable = ({
                     (a) => a.valinnanvaiheoid === vaihe.oid,
                   )?.createdAt
                 }
-                areAllCalculationsRunning={state.matches(
-                  LaskentaStates.PROCESSING,
-                )}
+                areAllLaskentaRunning={state.matches(LaskentaStates.PROCESSING)}
               />
             ))}
           </TableBody>
@@ -151,7 +149,7 @@ const HallintaTable = ({
               disabled={
                 !state.matches(LaskentaStates.IDLE) ||
                 !valinnanvaiheetQuery.data.some((vaihe) =>
-                  isCalculationUsedForValinnanvaihe(vaihe),
+                  isLaskentaUsedForValinnanvaihe(vaihe),
                 ) ||
                 containsValisijoittelu
               }
@@ -160,10 +158,7 @@ const HallintaTable = ({
             </Button>
           )}
           {state.matches(LaskentaStates.WAITING_CONFIRMATION) && (
-            <CalculationConfirm
-              cancel={cancelConfirmation}
-              confirm={startAllCalculations}
-            />
+            <Confirm cancel={cancel} confirm={confirm} />
           )}
           {state.matches(LaskentaStates.PROCESSING) && (
             <CircularProgress aria-label={t('valinnanhallinta.lasketaan')} />
@@ -173,23 +168,23 @@ const HallintaTable = ({
               {t('valinnanhallinta.onvalisijoittelusuoritakaikki')}
             </Typography>
           )}
-          {state.context.calculation.calculatedTime && (
+          {state.context.laskenta.calculatedTime && (
             <Typography>
               {t('valinnanhallinta.laskettuviimeksi', {
                 pvm: toFormattedDateTimeString(
-                  state.context.calculation.calculatedTime,
+                  state.context.laskenta.calculatedTime,
                 ),
               })}
             </Typography>
           )}
         </Box>
-        {(state.context.calculation.errorMessage != null ||
+        {(state.context.laskenta.errorMessage != null ||
           state.context.error) && (
           <Table>
             <TableBody>
               <ErrorRow
                 errorMessage={
-                  state.context.calculation.errorMessage ??
+                  state.context.laskenta.errorMessage ??
                   state.context.error ??
                   ''
                 }

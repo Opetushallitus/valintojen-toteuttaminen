@@ -29,7 +29,7 @@ test('displays valinnanvaiheet', async ({ page }) => {
   expect.soft(columns.nth(3).locator('button')).toBeEnabled();
 });
 
-test('starts calculation', async ({ page }) => {
+test('starts laskenta', async ({ page }) => {
   await page.route(
     '*/**/valintalaskentakoostepalvelu/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000045102/tyyppi/HAKUKOHDE/whitelist/true**',
     async (route) => {
@@ -61,7 +61,7 @@ test('starts calculation', async ({ page }) => {
       });
     },
   );
-  await startCalculation(page);
+  await startLaskenta(page);
   await expect(
     page.locator('tbody tr').first().locator('button'),
   ).toBeDisabled();
@@ -69,14 +69,14 @@ test('starts calculation', async ({ page }) => {
   await expect(spinners).toHaveCount(1);
 });
 
-test('starting calculation causes error', async ({ page }) => {
+test('starting laskenta causes error', async ({ page }) => {
   await page.route(
     '*/**/valintalaskentakoostepalvelu/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000045102/tyyppi/HAKUKOHDE/whitelist/true**',
     async (route) => {
       await route.fulfill({ status: 500, body: 'Unknown error' });
     },
   );
-  await startCalculation(page);
+  await startLaskenta(page);
   const error = page.getByText(
     'Laskenta epäonnistui. Yritä myöhemmin uudelleen',
   );
@@ -86,7 +86,7 @@ test('starting calculation causes error', async ({ page }) => {
   await expect(specificError).toBeVisible();
 });
 
-const startCalculation = async (page: Page) => {
+const startLaskenta = async (page: Page) => {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/valinnan-hallinta',
   );

@@ -1,21 +1,14 @@
-import { CalculationStart } from '@/app/lib/valintalaskentakoostepalvelu';
+import { LaskentaStart } from '@/app/lib/valintalaskentakoostepalvelu';
 
-export enum CalculationInitializationStatus {
-  WAITING_FOR_CONFIRMATION,
-  STARTED,
-  NOT_STARTED,
-}
-
-export type Calculation = {
+export type Laskenta = {
   errorMessage?: string | string[] | null;
   calculatedTime?: Date | number | null;
-  runningCalculation?: CalculationStart;
-  status?: CalculationInitializationStatus;
+  runningLaskenta?: LaskentaStart;
 };
 
-export const calculationReducer = (
-  state: Calculation,
-  action: Calculation,
-): Calculation => {
+export const laskentaReducer = (
+  state: Laskenta,
+  action: Laskenta,
+): Laskenta => {
   return Object.assign({}, state, action);
 };

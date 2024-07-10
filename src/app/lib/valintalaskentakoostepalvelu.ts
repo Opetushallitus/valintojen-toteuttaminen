@@ -4,12 +4,12 @@ import { ValinnanvaiheTyyppi } from './valintaperusteet';
 import { client } from './http-client';
 import { TranslatedName } from './localization/localization-types';
 
-export type CalculationStart = {
-  startedNewCalculation: boolean;
+export type LaskentaStart = {
+  startedNewLaskenta: boolean;
   loadingUrl: string;
 };
 
-const formSearchParamsForStartCalculation = ({
+const formSearchParamsForStartLaskenta = ({
   laskentaUrl,
   haku,
   hakukohde,
@@ -54,8 +54,8 @@ export const kaynnistaLaskenta = async (
   sijoitellaankoHaunHakukohteetLaskennanYhteydessa: boolean,
   valinnanvaihe: number,
   translateEntity: (translateable: TranslatedName) => string,
-): Promise<CalculationStart> => {
-  const laskentaUrl = formSearchParamsForStartCalculation({
+): Promise<LaskentaStart> => {
+  const laskentaUrl = formSearchParamsForStartLaskenta({
     laskentaUrl: new URL(
       `${configuration.valintalaskentaKoostePalveluUrl}valintalaskentakerralla/haku/${haku.oid}/tyyppi/HAKUKOHDE/whitelist/true?`,
     ),
@@ -68,7 +68,7 @@ export const kaynnistaLaskenta = async (
   });
   const response = await client.post(laskentaUrl.toString(), [hakukohde.oid]);
   return {
-    startedNewCalculation: response.data?.lisatiedot?.luotiinkoUusiLaskenta,
+    startedNewLaskenta: response.data?.lisatiedot?.luotiinkoUusiLaskenta,
     loadingUrl: response.data?.latausUrl,
   };
 };
@@ -78,8 +78,8 @@ export const kaynnistaLaskentaHakukohteenValinnanvaiheille = async (
   hakukohde: Hakukohde,
   sijoitellaankoHaunHakukohteetLaskennanYhteydessa: boolean,
   translateEntity: (translateable: TranslatedName) => string,
-): Promise<CalculationStart> => {
-  const laskentaUrl = formSearchParamsForStartCalculation({
+): Promise<LaskentaStart> => {
+  const laskentaUrl = formSearchParamsForStartLaskenta({
     laskentaUrl: new URL(
       `${configuration.valintalaskentaKoostePalveluUrl}valintalaskentakerralla/haku/${haku.oid}/tyyppi/HAKUKOHDE/whitelist/true?`,
     ),
@@ -90,19 +90,19 @@ export const kaynnistaLaskentaHakukohteenValinnanvaiheille = async (
   });
   const response = await client.post(laskentaUrl.toString(), [hakukohde.oid]);
   return {
-    startedNewCalculation: response.data?.lisatiedot?.luotiinkoUusiLaskenta,
+    startedNewLaskenta: response.data?.lisatiedot?.luotiinkoUusiLaskenta,
     loadingUrl: response.data?.latausUrl,
   };
 };
 
-export type CalculationErrorSummary = {
+export type LaskentaErrorSummary = {
   hakukohdeOid: string;
   notifications: string[] | undefined;
 };
 
 export const getLaskennanTilaHakukohteelle = async (
   loadingUrl: string,
-): Promise<CalculationErrorSummary> => {
+): Promise<LaskentaErrorSummary> => {
   const response = await client.get(
     `${configuration.valintalaskentaKoostePalveluUrl}valintalaskentakerralla/status/${loadingUrl}/yhteenveto`,
   );
