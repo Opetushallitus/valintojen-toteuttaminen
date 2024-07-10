@@ -1,10 +1,9 @@
-import { assign, createActor, createMachine, fromPromise, setup } from 'xstate';
+import { assign, fromPromise, setup } from 'xstate';
 import { Calculation, calculationReducer } from './valinnan-hallinta-types';
 import { ValinnanvaiheTyyppi } from '@/app/lib/valintaperusteet';
 import { Haku, Hakukohde } from '@/app/lib/kouta-types';
 import {
   CalculationErrorSummary,
-  CalculationStart,
   getLaskennanTilaHakukohteelle,
   kaynnistaLaskenta,
   kaynnistaLaskentaHakukohteenValinnanvaiheille,
@@ -14,7 +13,6 @@ import {
   SeurantaTiedot,
   getLaskennanSeurantaTiedot,
 } from '@/app/lib/valintalaskenta-service';
-import { FetchError } from '@/app/lib/common';
 
 type StartCalculationParams = {
   haku: Haku;
@@ -25,20 +23,42 @@ type StartCalculationParams = {
   translateEntity: (translateable: TranslatedName) => string;
 };
 
+export type LaskentaContext = {
+  calculation: Calculation;
+  startCalculationParams: StartCalculationParams;
+  seurantaTiedot: SeurantaTiedot | null;
+  errorSummary: CalculationErrorSummary | null;
+  error?: Error;
+};
+
+export enum LaskentaStates {
+  IDLE = 'IDLE',
+  WAITING_CONFIRMATION = 'WAITING_CONFIRMATION',
+  STARTING = 'STARTING',
+  PROCESSING = 'PROCESSING',
+  PROCESSING_FETCHING = 'FETCHING',
+  PROCESSING_WAITING = 'WAITING',
+  PROCESSING_DETERMINE_POLL_COMPLETION = 'DETERMINE_POLL_COMPLETION',
+  FETCHING_SUMMARY = 'FETCHING_SUMMARY',
+  DETERMINE_SUMMARY = 'DETERMINE_SUMMARY',
+  ERROR_CALCULATION = 'ERROR_CALCULATION',
+  COMPLETED = 'COMPLETED',
+}
+
+export enum LaskentaEvents {
+  START_CALCULATION = 'START_CALCULATION',
+  CONFIRM = 'CONFIRM',
+  CANCEL = 'CANCEL',
+}
+
 export const createLaskentaMachine = (params: StartCalculationParams) => {
   return setup({
     types: {
-      context: {} as {
-        calculation: Calculation;
-        startCalculationParams: StartCalculationParams;
-        seurantaTiedot: SeurantaTiedot | null;
-        errorSummary: CalculationErrorSummary | null;
-      },
+      context: {} as LaskentaContext,
     },
     actors: {
       startCalculation: fromPromise(
         ({ input }: { input: StartCalculationParams }) => {
-          console.log('HÄR');
           if (input.valinnanvaiheTyyppi && input.valinnanvaiheNumber) {
             return kaynnistaLaskenta(
               input.haku,
@@ -58,18 +78,26 @@ export const createLaskentaMachine = (params: StartCalculationParams) => {
           }
         },
       ),
-      pollCalculation: fromPromise(({ input }: { input: CalculationStart }) => {
-        console.log('POLLING');
-        return getLaskennanSeurantaTiedot(input.loadingUrl);
+      pollCalculation: fromPromise(({ input }: { input: Calculation }) => {
+        if (input.runningCalculation) {
+          return getLaskennanSeurantaTiedot(
+            input.runningCalculation.loadingUrl,
+          );
+        }
+        throw 'Tried to fetch seurantatiedot without having access to running laskenta';
       }),
-      fetchSummary: fromPromise(({ input }: { input: CalculationStart }) => {
-        console.log('FETCHING_SUMMARY');
-        return getLaskennanTilaHakukohteelle(input.loadingUrl);
+      fetchSummary: fromPromise(({ input }: { input: Calculation }) => {
+        if (input.runningCalculation) {
+          return getLaskennanTilaHakukohteelle(
+            input.runningCalculation.loadingUrl,
+          );
+        }
+        throw 'Tried to fetch summary without having access to laskenta';
       }),
     },
   }).createMachine({
-    id: `${params.hakukohde.oid}-${params.valinnanvaiheNumber ?? ''}`,
-    initial: 'IDLE',
+    id: `LaskentaMachine-${params.hakukohde.oid}-${params.valinnanvaiheNumber ?? ''}`,
+    initial: LaskentaStates.IDLE,
     context: {
       calculation: {},
       startCalculationParams: params,
@@ -77,24 +105,27 @@ export const createLaskentaMachine = (params: StartCalculationParams) => {
       errorSummary: null,
     },
     states: {
-      IDLE: {
+      [LaskentaStates.IDLE]: {
         on: {
-          START_CALCULATION: {
-            target: 'WAITING_CONFIRMATION',
+          [LaskentaEvents.START_CALCULATION]: {
+            target: LaskentaStates.WAITING_CONFIRMATION,
           },
         },
       },
-      WAITING_CONFIRMATION: {
+      [LaskentaStates.WAITING_CONFIRMATION]: {
         on: {
-          CONFIRM: {
-            target: 'STARTING',
+          [LaskentaEvents.CONFIRM]: {
+            target: LaskentaStates.STARTING,
+            actions: assign({
+              calculation: {},
+            }),
           },
-          CANCEL: {
-            target: 'IDLE',
+          [LaskentaEvents.CANCEL]: {
+            target: LaskentaStates.IDLE,
           },
         },
       },
-      STARTING: {
+      [LaskentaStates.STARTING]: {
         invoke: {
           src: 'startCalculation',
           input: ({ context }) => context.startCalculationParams,
@@ -108,77 +139,79 @@ export const createLaskentaMachine = (params: StartCalculationParams) => {
             }),
           },
           onError: {
-            target: 'ERROR_CALCULATION',
+            target: LaskentaStates.ERROR_CALCULATION,
             actions: assign({
-              calculation: ({ event, context }) => {
-                const errorMessage = '' + event.error;
-                if (event.error instanceof FetchError) {
-                  Promise.resolve(event.error.response.text()).then(
-                    console.error,
-                  );
-                }
-                return calculationReducer(context.calculation, {
-                  errorMessage,
-                });
-              },
+              error: ({ event }) => event.error as Error,
             }),
           },
         },
       },
-      PROCESSING: {
-        initial: 'FETCHING',
+      [LaskentaStates.PROCESSING]: {
+        initial: LaskentaStates.PROCESSING_FETCHING,
         states: {
-          FETCHING: {
+          [LaskentaStates.PROCESSING_FETCHING]: {
             invoke: {
               src: 'pollCalculation',
-              input: ({ context }) => context.calculation.runningCalculation,
+              input: ({ context }) => context.calculation,
               onDone: {
-                target: 'DETERMINE_POLL_COMPLETION',
+                target: LaskentaStates.PROCESSING_DETERMINE_POLL_COMPLETION,
                 actions: assign({
                   seurantaTiedot: ({ event }) => event.output,
                 }),
               },
+              onError: {
+                target: '#ERROR_CALCULATION',
+                actions: assign({
+                  error: ({ event }) => event.error as Error,
+                }),
+              },
             },
           },
-          WAITING: {
+          [LaskentaStates.PROCESSING_WAITING]: {
             after: {
-              5000: 'FETCHING',
+              5000: LaskentaStates.PROCESSING_FETCHING,
             },
           },
-          DETERMINE_POLL_COMPLETION: {
+          [LaskentaStates.PROCESSING_DETERMINE_POLL_COMPLETION]: {
             always: [
               {
                 guard: ({ context }) =>
-                  context.seurantaTiedot.tila === 'VALMIS',
+                  context.seurantaTiedot?.tila === 'VALMIS',
                 target: '#FETCHING_SUMMARY',
               },
               {
-                target: 'WAITING',
+                target: LaskentaStates.PROCESSING_WAITING,
               },
             ],
           },
         },
       },
-      FETCHING_SUMMARY: {
+      [LaskentaStates.FETCHING_SUMMARY]: {
         id: 'FETCHING_SUMMARY',
         invoke: {
           src: 'fetchSummary',
-          input: ({ context }) => context.calculation.runningCalculation,
+          input: ({ context }) => context.calculation,
           onDone: {
-            target: 'DETERMINE_SUMMARY',
+            target: LaskentaStates.DETERMINE_SUMMARY,
             actions: assign({
               errorSummary: ({ event }) => event.output,
             }),
           },
+          onError: {
+            target: LaskentaStates.ERROR_CALCULATION,
+            actions: assign({
+              error: ({ event }) => event.error as Error,
+            }),
+          },
         },
       },
-      DETERMINE_SUMMARY: {
+      [LaskentaStates.DETERMINE_SUMMARY]: {
         always: [
           {
             guard: ({ context }) =>
               context.seurantaTiedot != null &&
               context.seurantaTiedot.hakukohteitaKeskeytetty > 0,
-            target: 'ERROR_CALCULATION',
+            target: LaskentaStates.ERROR_CALCULATION,
             actions: assign({
               calculation: ({ context }) =>
                 calculationReducer(context.calculation, {
@@ -187,15 +220,16 @@ export const createLaskentaMachine = (params: StartCalculationParams) => {
             }),
           },
           {
-            target: 'COMPLETED',
+            target: LaskentaStates.COMPLETED,
           },
         ],
       },
-      ERROR_CALCULATION: {
-        always: [{ target: 'IDLE' }],
+      [LaskentaStates.ERROR_CALCULATION]: {
+        id: 'ERROR_CALCULATION',
+        always: [{ target: LaskentaStates.IDLE }],
       },
-      COMPLETED: {
-        always: [{ target: 'IDLE' }],
+      [LaskentaStates.COMPLETED]: {
+        always: [{ target: LaskentaStates.IDLE }],
         entry: [
           assign({
             calculation: ({ context }) =>
@@ -208,28 +242,3 @@ export const createLaskentaMachine = (params: StartCalculationParams) => {
     },
   });
 };
-
-export const laskentaManagerActor = createActor(
-  createMachine({
-    id: 'laskentaManagerActor',
-    context: {
-      actors: [],
-    },
-    on: {
-      ADD_CALCULATION: {
-        actions: assign({
-          actors: ({ context, event }) => {
-            return [...context.actors, event.actor];
-          },
-        }),
-      },
-      FETCH_CALCULATION: {
-        actions: ({ context, event }) => {
-          const values = event.value;
-          const machineId = values.hakukohde.oid;
-          return context.actors.find((actor) => actor.id === machineId);
-        },
-      },
-    },
-  }),
-);

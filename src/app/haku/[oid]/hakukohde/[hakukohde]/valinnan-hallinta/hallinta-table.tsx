@@ -25,41 +25,30 @@ import theme from '@/app/theme';
 import { getLasketutValinnanVaiheet } from '@/app/lib/valintalaskenta-service';
 import ErrorRow from './error-row';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
-import { createLaskentaMachine } from './laskenta-state';
+import {
+  LaskentaEvents,
+  LaskentaStates,
+  createLaskentaMachine,
+} from './laskenta-state';
 import { useMachine } from '@xstate/react';
-import { AnyStateMachine } from 'xstate';
+import { useMemo } from 'react';
 
 type HallintaTableParams = {
   haku: Haku;
   hakukohde: Hakukohde;
   haunAsetukset: HaunAsetukset;
-  laskentaActor?: AnyStateMachine;
 };
 
-export const HallintaTableContainer = ({
+const HallintaTable = ({
   hakukohde,
   haku,
   haunAsetukset,
 }: HallintaTableParams) => {
-  const { translateEntity } = useTranslations();
+  const { t, translateEntity } = useTranslations();
 
-  /*const existingLaskentaActor = useSelector(laskentaManagerActor, (snapshot) => snapshot.context.actors.find((actor) => actor.id === hakukohde.oid));
-    if (existingLaskentaActor) {
-      return (<HallintaTable
-        hakukohde={hakukohde}
-        haku={haku}
-        haunAsetukset={haunAsetukset}
-        laskentaActor={useActorRef(existingLaskentaActor)}
-      />)
-    } else {*/
-  //const laskentaActor = createLaskentaActor({haku, hakukohde, sijoitellaanko: sijoitellaankoHaunHakukohteetLaskennanYhteydessa(haku, haunAsetukset)});
-  //laskentaManagerActor.send({ type: 'ADD_CALCULATION', value: {actor: laskentaActor}});
-  return (
-    <HallintaTable
-      hakukohde={hakukohde}
-      haku={haku}
-      haunAsetukset={haunAsetukset}
-      laskentaActor={createLaskentaMachine({
+  const laskentaMachine = useMemo(
+    () =>
+      createLaskentaMachine({
         haku,
         hakukohde,
         sijoitellaanko: sijoitellaankoHaunHakukohteetLaskennanYhteydessa(
@@ -67,21 +56,11 @@ export const HallintaTableContainer = ({
           haunAsetukset,
         ),
         translateEntity,
-      })}
-    />
+      }),
+    [haku, hakukohde, haunAsetukset, translateEntity],
   );
-  //}
-};
 
-const HallintaTable = ({
-  hakukohde,
-  haku,
-  haunAsetukset,
-  laskentaActor,
-}: HallintaTableParams) => {
-  const [state, send] = useMachine(laskentaActor);
-
-  const { t, translateEntity } = useTranslations();
+  const [state, send] = useMachine(laskentaMachine);
 
   const [valinnanvaiheetQuery, lasketutValinnanvaiheetQuery] =
     useSuspenseQueries({
@@ -97,18 +76,16 @@ const HallintaTable = ({
       ],
     });
 
-  //const calculation = useSelector(laskentaActor, (snapshot) => snapshot.context.calculation)
-
   const startAllCalculations = async () => {
-    send({ type: 'CONFIRM' });
+    send({ type: LaskentaEvents.CONFIRM });
   };
 
   const start = () => {
-    send({ type: 'START_CALCULATION' });
+    send({ type: LaskentaEvents.START_CALCULATION });
   };
 
   const cancelConfirmation = () => {
-    send({ type: 'CANCEL' });
+    send({ type: LaskentaEvents.CANCEL });
   };
 
   if (valinnanvaiheetQuery.data.length === 0) {
@@ -139,25 +116,19 @@ const HallintaTable = ({
             {valinnanvaiheetQuery.data.map((vaihe, index) => (
               <HallintaTableRow
                 key={'vv-' + vaihe.oid}
+                haku={haku}
+                hakukohde={hakukohde}
+                haunAsetukset={haunAsetukset}
                 vaihe={vaihe}
+                index={index}
                 lastCalculated={
                   lasketutValinnanvaiheetQuery.data?.find(
                     (a) => a.valinnanvaiheoid === vaihe.oid,
                   )?.createdAt
                 }
-                areAllCalculationsRunning={state.matches('PROCESSING')}
-                laskentaActor={createLaskentaMachine({
-                  haku,
-                  hakukohde,
-                  sijoitellaanko:
-                    sijoitellaankoHaunHakukohteetLaskennanYhteydessa(
-                      haku,
-                      haunAsetukset,
-                    ),
-                  valinnanvaiheTyyppi: vaihe.tyyppi,
-                  valinnanvaiheNumber: index,
-                  translateEntity,
-                })}
+                areAllCalculationsRunning={state.matches(
+                  LaskentaStates.PROCESSING,
+                )}
               />
             ))}
           </TableBody>
@@ -173,12 +144,12 @@ const HallintaTable = ({
             rowGap: theme.spacing(1),
           }}
         >
-          {!state.matches('WAITING_CONFIRMATION') && (
+          {!state.matches(LaskentaStates.WAITING_CONFIRMATION) && (
             <Button
               variant="contained"
               onClick={start}
               disabled={
-                !state.matches('IDLE') ||
+                !state.matches(LaskentaStates.IDLE) ||
                 !valinnanvaiheetQuery.data.some((vaihe) =>
                   isCalculationUsedForValinnanvaihe(vaihe),
                 ) ||
@@ -188,14 +159,14 @@ const HallintaTable = ({
               {t('valinnanhallinta.kaynnistakaikki')}
             </Button>
           )}
-          {state.matches('WAITING_CONFIRMATION') && (
+          {state.matches(LaskentaStates.WAITING_CONFIRMATION) && (
             <CalculationConfirm
               cancel={cancelConfirmation}
               confirm={startAllCalculations}
             />
           )}
-          {state.matches('PROCESSING') && (
-            <CircularProgress aria-label={t('yleinen.ladataan')} />
+          {state.matches(LaskentaStates.PROCESSING) && (
+            <CircularProgress aria-label={t('valinnanhallinta.lasketaan')} />
           )}
           {containsValisijoittelu && (
             <Typography>
@@ -212,9 +183,18 @@ const HallintaTable = ({
             </Typography>
           )}
         </Box>
-        {state.context.calculation.errorMessage != null && (
+        {(state.context.calculation.errorMessage != null ||
+          state.context.error) && (
           <Table>
-            <ErrorRow errorMessage={state.context.calculation.errorMessage} />
+            <TableBody>
+              <ErrorRow
+                errorMessage={
+                  state.context.calculation.errorMessage ??
+                  state.context.error ??
+                  ''
+                }
+              />
+            </TableBody>
           </Table>
         )}
       </Box>
@@ -222,4 +202,4 @@ const HallintaTable = ({
   }
 };
 
-//export default HallintaTable;
+export default HallintaTable;

@@ -11,12 +11,13 @@ import {
 } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { aliasColors } from '@opetushallitus/oph-design-system';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import theme, { styled } from '@/app/theme';
 import { ArrowRight, ErrorOutline } from '@mui/icons-material';
+import { FetchError } from '@/app/lib/common';
 
 type ErrorRowParams = {
-  errorMessage: string | string[];
+  errorMessage: string | string[] | Error;
 };
 
 const StyledAccordionSummary = styled(AccordionSummary)({
@@ -29,6 +30,25 @@ const StyledAccordionSummary = styled(AccordionSummary)({
 
 const ErrorRow = ({ errorMessage }: ErrorRowParams) => {
   const [showError, setShowError] = useState(false);
+  const [error, setError] = useState<string | string[]>('');
+
+  useEffect(() => {
+    async function parseError() {
+      if (errorMessage instanceof FetchError) {
+        try {
+          setError(await errorMessage.response.text());
+        } catch (e) {
+          console.warn(e);
+        }
+      } else if (errorMessage instanceof Error) {
+        setError('' + errorMessage);
+      } else {
+        setError(errorMessage);
+      }
+    }
+    parseError();
+  }, [errorMessage]);
+
   const { t } = useTranslations();
 
   return (
@@ -72,9 +92,9 @@ const ErrorRow = ({ errorMessage }: ErrorRowParams) => {
                 </Typography>
               </StyledAccordionSummary>
               <AccordionDetails sx={{ paddingLeft: 0 }}>
-                {Array.isArray(errorMessage) && (
+                {Array.isArray(error) && (
                   <>
-                    {errorMessage.map((msg, index) => {
+                    {error.map((msg, index) => {
                       return (
                         <Typography key={`error-message-${index}`}>
                           {msg}
@@ -83,9 +103,7 @@ const ErrorRow = ({ errorMessage }: ErrorRowParams) => {
                     })}
                   </>
                 )}
-                {!Array.isArray(errorMessage) && (
-                  <Typography>{errorMessage}</Typography>
-                )}
+                {!Array.isArray(error) && <Typography>{error}</Typography>}
               </AccordionDetails>
             </Accordion>
           </Box>
