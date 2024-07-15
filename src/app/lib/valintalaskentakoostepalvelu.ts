@@ -13,7 +13,7 @@ const formSearchParamsForStartLaskenta = ({
   laskentaUrl,
   haku,
   hakukohde,
-  vvTyyppi,
+  valinnanvaiheTyyppi,
   sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
   valinnanvaihe,
   translateEntity,
@@ -21,7 +21,7 @@ const formSearchParamsForStartLaskenta = ({
   laskentaUrl: URL;
   haku: Haku;
   hakukohde: Hakukohde;
-  vvTyyppi?: ValinnanvaiheTyyppi;
+  valinnanvaiheTyyppi?: ValinnanvaiheTyyppi;
   sijoitellaankoHaunHakukohteetLaskennanYhteydessa: boolean;
   valinnanvaihe?: number;
   translateEntity: (translateable: TranslatedName) => string;
@@ -38,10 +38,10 @@ const formSearchParamsForStartLaskenta = ({
   if (valinnanvaihe) {
     laskentaUrl.searchParams.append('valinnanvaihe', '' + valinnanvaihe);
   }
-  if (vvTyyppi) {
+  if (valinnanvaiheTyyppi) {
     laskentaUrl.searchParams.append(
       'valintakoelaskenta',
-      `${vvTyyppi === ValinnanvaiheTyyppi.VALINTAKOE}`,
+      `${valinnanvaiheTyyppi === ValinnanvaiheTyyppi.VALINTAKOE}`,
     );
   }
   return laskentaUrl;
@@ -50,7 +50,7 @@ const formSearchParamsForStartLaskenta = ({
 export const kaynnistaLaskenta = async (
   haku: Haku,
   hakukohde: Hakukohde,
-  vvTyyppi: ValinnanvaiheTyyppi,
+  valinnanvaiheTyyppi: ValinnanvaiheTyyppi,
   sijoitellaankoHaunHakukohteetLaskennanYhteydessa: boolean,
   valinnanvaihe: number,
   translateEntity: (translateable: TranslatedName) => string,
@@ -61,7 +61,7 @@ export const kaynnistaLaskenta = async (
     ),
     haku,
     hakukohde,
-    vvTyyppi,
+    valinnanvaiheTyyppi: valinnanvaiheTyyppi,
     sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
     valinnanvaihe,
     translateEntity,

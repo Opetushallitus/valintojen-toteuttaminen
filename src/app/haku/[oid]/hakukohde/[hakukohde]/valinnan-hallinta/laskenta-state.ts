@@ -16,6 +16,8 @@ import {
 } from '@/app/lib/valintalaskenta-service';
 import { FetchError } from '@/app/lib/common';
 
+const POLLING_INTERVAL = 5000;
+
 type StartLaskentaParams = {
   haku: Haku;
   hakukohde: Hakukohde;
@@ -189,7 +191,7 @@ export const createLaskentaMachine = (params: StartLaskentaParams) => {
           },
           [LaskentaStates.PROCESSING_WAITING]: {
             after: {
-              5000: LaskentaStates.PROCESSING_FETCHING,
+              [POLLING_INTERVAL]: LaskentaStates.PROCESSING_FETCHING,
             },
           },
           [LaskentaStates.PROCESSING_DETERMINE_POLL_COMPLETION]: {

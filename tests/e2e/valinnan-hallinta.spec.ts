@@ -33,7 +33,6 @@ test('starts laskenta', async ({ page }) => {
   await page.route(
     '*/**/valintalaskentakoostepalvelu/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000045102/tyyppi/HAKUKOHDE/whitelist/true**',
     async (route) => {
-      console.log('here');
       const started = {
         lisatiedot: {
           luotiinkoUusiLaskenta: true,
