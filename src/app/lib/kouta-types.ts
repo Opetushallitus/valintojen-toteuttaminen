@@ -57,3 +57,14 @@ export enum Tila {
   JULKAISTU = 'julkaistu',
   ARKISTOITU = 'arkistoitu',
 }
+
+export function getFullnameOfHakukohde(
+  hakukohde: Hakukohde,
+  translateEntity: (translateable: TranslatedName) => string,
+): string {
+  const orgName = translateEntity(
+    hakukohde.jarjestyspaikkaHierarkiaNimi ?? hakukohde.organisaatioNimi,
+  );
+  const hakukohdeName = translateEntity(hakukohde.nimi);
+  return `${orgName}: ${hakukohdeName}`;
+}

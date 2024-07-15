@@ -1,23 +1,79 @@
 'use client';
 
-import { getHakukohde } from '@/app/lib/kouta';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { getHaku, getHakukohde } from '@/app/lib/kouta';
 import { TabContainer } from '../TabContainer';
+import HallintaTable from './hallinta-table';
+import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
+import { useTranslations } from '@/app/hooks/useTranslations';
+import { useSuspenseQueries } from '@tanstack/react-query';
+import { CircularProgress } from '@mui/material';
+import { getHaunAsetukset } from '@/app/lib/ohjausparametrit';
 
+type ValinnanHallintaContentParams = {
+  hakuOid: string;
+  hakukohdeOid: string;
+};
+
+const ValinnanHallintaContent = ({
+  hakuOid,
+  hakukohdeOid,
+}: ValinnanHallintaContentParams) => {
+  const [hakuQuery, hakukohdeQuery, haunAsetuksetQuery] = useSuspenseQueries({
+    queries: [
+      {
+        queryKey: ['getHaku', hakuOid],
+        queryFn: () => getHaku(hakuOid),
+      },
+      {
+        queryKey: ['getHakukohde', hakukohdeOid],
+        queryFn: () => getHakukohde(hakukohdeOid),
+      },
+      {
+        queryKey: ['getHaunAsetukset', hakuOid],
+        queryFn: () => getHaunAsetukset(hakuOid),
+      },
+    ],
+  });
+
+  if (hakuQuery.error && !hakuQuery.isFetching) {
+    throw hakuQuery.error;
+  }
+
+  if (hakukohdeQuery.error && !hakukohdeQuery.isFetching) {
+    throw hakukohdeQuery.error;
+  }
+
+  if (haunAsetuksetQuery.error && !haunAsetuksetQuery.isFetching) {
+    throw haunAsetuksetQuery.error;
+  }
+
+  return (
+    <HallintaTable
+      hakukohde={hakukohdeQuery.data}
+      haku={hakuQuery.data}
+      haunAsetukset={haunAsetuksetQuery.data}
+    />
+  );
+};
 export default function ValinnanHallintaPage({
   params,
 }: {
   params: { oid: string; hakukohde: string };
 }) {
-  const { data: hakukohde } = useSuspenseQuery({
-    queryKey: ['getHakukohde', params.hakukohde],
-    queryFn: () => getHakukohde(params.hakukohde),
-  });
+  const { t } = useTranslations();
 
   return (
     <TabContainer>
-      <h3>Valinnan hallinta</h3>
-      <p>Hakukohde oid: {hakukohde.oid}</p>
+      <QuerySuspenseBoundary
+        suspenseFallback={
+          <CircularProgress aria-label={t('yleinen.ladataan')} />
+        }
+      >
+        <ValinnanHallintaContent
+          hakukohdeOid={params.hakukohde}
+          hakuOid={params.oid}
+        />
+      </QuerySuspenseBoundary>
     </TabContainer>
   );
 }

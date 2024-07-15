@@ -42,6 +42,13 @@ export type LaskettuValinnanVaihe = {
   valintatapajonot: Array<LaskettuValintatapajono>;
 };
 
+export type SeurantaTiedot = {
+  tila: 'VALMIS' | 'MENEILLAAN';
+  hakukohteitaYhteensa: number;
+  hakukohteitaValmiina: number;
+  hakukohteitaKeskeytetty: number;
+};
+
 export const getLasketutValinnanVaiheet = async (
   hakukohdeOid: string,
 ): Promise<Array<LaskettuValinnanVaihe>> => {
@@ -49,4 +56,18 @@ export const getLasketutValinnanVaiheet = async (
     configuration.lasketutValinnanVaiheetUrl({ hakukohdeOid }),
   );
   return response.data;
+};
+
+export const getLaskennanSeurantaTiedot = async (
+  loadingUrl: string,
+): Promise<SeurantaTiedot> => {
+  const response = await client.get(
+    `${configuration.seurantaUrl}/${loadingUrl}`,
+  );
+  return {
+    tila: response.data.tila,
+    hakukohteitaYhteensa: response.data.hakukohteitaYhteensa,
+    hakukohteitaValmiina: response.data.hakukohteitaValmiina,
+    hakukohteitaKeskeytetty: response.data.hakukohteitaKeskeytetty,
+  };
 };

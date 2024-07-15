@@ -27,6 +27,10 @@ export const configuration = {
   hakemuksetUrl: `${DOMAIN}/lomake-editori/api/external/valinta-ui`,
   ataruEditoriLogin: `${DOMAIN}/lomake-editori/auth/cas`,
   valintalaskentaServiceLogin: `${DOMAIN}/valintalaskenta-laskenta-service/auth/login`,
+  valintalaskentaKoostePalveluUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/`,
+  valintalaskentaKoostePalveluLogin: `${DOMAIN}/valintalaskentakoostepalvelu/cas/login`,
   lasketutValinnanVaiheetUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
     `${DOMAIN}/valintalaskenta-laskenta-service/resources/hakukohde/${hakukohdeOid}/valinnanvaihe`,
+  seurantaUrl: `${DOMAIN}/valintalaskenta-laskenta-service/resources/seuranta/yhteenveto/`,
+  ohjausparametritUrl: `${DOMAIN}/ohjausparametrit-service/api/v1/rest/parametri/`,
 } as const;
