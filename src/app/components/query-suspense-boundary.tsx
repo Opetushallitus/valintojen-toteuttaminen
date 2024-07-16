@@ -7,7 +7,7 @@ import {
   type ErrorBoundaryPropsWithRender,
 } from 'react-error-boundary';
 import { ErrorView } from './error-view';
-import { FullSpinner } from './full-spinner';
+import { FullSpinner } from './spinner';
 
 type FallbackRenderType = ErrorBoundaryPropsWithRender['fallbackRender'];
 

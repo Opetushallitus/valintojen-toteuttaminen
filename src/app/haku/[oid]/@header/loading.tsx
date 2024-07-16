@@ -1,6 +1,6 @@
 import Header from '@/app/components/header';
-import { CircularProgress } from '@mui/material';
+import { Spinner } from '@/app/components/spinner';
 
 export default function Loading() {
-  return <Header title={<CircularProgress />} isHome={true} />;
+  return <Header title={<Spinner />} isHome={true} />;
 }
