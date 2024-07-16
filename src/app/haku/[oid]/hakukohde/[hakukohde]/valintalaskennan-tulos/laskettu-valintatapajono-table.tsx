@@ -35,7 +35,7 @@ const hakutoiveColumn = makeGenericColumn<JonoSijaWithHakijaInfo>({
   valueProp: 'hakutoiveNumero',
 });
 
-export const ValintalaskennanTulosTable = ({
+export const LaskettuValintatapajonoTable = ({
   jonosijat,
   jonoId,
   setSort,

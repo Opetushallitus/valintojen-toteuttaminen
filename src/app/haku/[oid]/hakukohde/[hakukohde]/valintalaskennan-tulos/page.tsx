@@ -11,7 +11,7 @@ import {
   AccordionDetails,
 } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { ValintalaskennanTulosTable } from './valintalaskennan-tulos-table';
+import { LaskettuValintatapajonoTable } from './laskettu-valintatapajono-table';
 import { useLasketutValinnanVaiheet } from '@/app/hooks/useLasketutValinnanVaiheet';
 import {
   useJonosijatSearch,
@@ -25,7 +25,7 @@ import {
 } from '@/app/lib/valintalaskenta-service';
 import { DEFAULT_BOX_BORDER, OPH_ORGANIZATION_OID } from '@/app/lib/constants';
 import { Typography } from '@opetushallitus/oph-design-system';
-import ValintalaskennanTulosSearch from './valintalaskennan-tulos-search';
+import { ValintalaskennanTulosSearch } from './valintalaskennan-tulos-search';
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
 import { ExpandMore, FileDownloadOutlined } from '@mui/icons-material';
 import { configuration } from '@/app/lib/configuration';
@@ -60,7 +60,7 @@ const ValintatapaJonoTable = ({
       pageNumber={page}
       countHidden={true}
     >
-      <ValintalaskennanTulosTable
+      <LaskettuValintatapajonoTable
         setSort={setSort}
         sort={sort}
         jonoId={jonoId}
