@@ -20,7 +20,8 @@
     "peruuta": "Peruuta",
     "ok": "Ok",
     "edellinen": "Edellinen",
-    "seuraava": "Seuraava"
+    "seuraava": "Seuraava",
+    "lisatietoja": "Lisätietoja"
   },
   "virhe": {
     "palvelin": "Palvelinpyyntö epäonnistui!",

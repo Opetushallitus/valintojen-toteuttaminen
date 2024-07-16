@@ -33,4 +33,12 @@ export const configuration = {
     `${DOMAIN}/valintalaskenta-laskenta-service/resources/hakukohde/${hakukohdeOid}/valinnanvaihe`,
   seurantaUrl: `${DOMAIN}/valintalaskenta-laskenta-service/resources/seuranta/yhteenveto/`,
   ohjausparametritUrl: `${DOMAIN}/ohjausparametrit-service/api/v1/rest/parametri/`,
+  valintalaskentahistoriaUrl: ({
+    valintatapajonoOid,
+    hakemusOid,
+  }: {
+    valintatapajonoOid: string;
+    hakemusOid: string;
+  }) =>
+    `${DOMAIN}/valintalaskenta-ui/app/index.html#/valintatapajono/${valintatapajonoOid}/hakemus/${hakemusOid}/valintalaskentahistoria`,
 } as const;

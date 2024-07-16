@@ -44,6 +44,7 @@ const ValintatapaJonoContent = ({
       <ValintalaskennanTulosTable
         setSort={setSort}
         sort={sort}
+        jonoId={jonoId}
         jonosijat={pageResults}
       />
     </TablePaginationWrapper>
