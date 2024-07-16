@@ -1,24 +1,20 @@
 'use client';
-import { Button, Box, ButtonProps } from '@mui/material';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { Box } from '@mui/material';
 import {
   JonoSijaWithHakijaInfo,
   LaskettuJonoWithHakijaInfot,
   LaskettuValinnanVaihe,
-  LaskettuValintatapajono,
-  muutaSijoittelunStatus,
 } from '@/app/lib/valintalaskenta-service';
-import { OPH_ORGANIZATION_OID } from '@/app/lib/constants';
 import React from 'react';
-import { useUserPermissions } from '@/app/hooks/useUserPermissions';
-import { useHakukohde } from '@/app/hooks/useHakukohde';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ValintatapajonoAccordion } from './valintatapajono-accordion';
 import { useJonosijatSearch } from '@/app/hooks/useJonosijatSearch';
 import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
 import { LaskettuValintatapajonoTable } from './laskettu-valintatapajono-table';
 import { ValintatapajonoAccordionTitle } from './valintatapajono-accordion-title';
-import { ClientSpinner } from '@/app/components/client-spinner';
+import { SijoitteluStatusChangeButton } from './sijoittelu-status-change-button';
+import { useSijoitteluStatusMutation } from './useSijoitteluStatusMutation';
+import { useHakukohde } from '@/app/hooks/useHakukohde';
+import { useUserPermissions } from '@/app/hooks/useUserPermissions';
 
 const PaginatedValintatapajonoTable = ({
   jonoId,
@@ -49,57 +45,25 @@ const PaginatedValintatapajonoTable = ({
   );
 };
 
-const SijoitteluButton = ({
-  isLoading = false,
-  disabled,
-  startIcon,
-  ...props
-}: ButtonProps & { isLoading?: boolean }) => {
+const JonoActions = ({
+  hakukohdeOid,
+  jono,
+}: {
+  hakukohdeOid: string;
+  jono: LaskettuJonoWithHakijaInfot;
+}) => {
+  const { data: hakukohde } = useHakukohde({ hakukohdeOid });
+  const { data: permissions } = useUserPermissions();
+  const statusMutation = useSijoitteluStatusMutation(hakukohdeOid);
+
   return (
-    <Button
-      {...props}
-      disabled={isLoading || disabled}
-      variant="outlined"
-      startIcon={
-        isLoading ? <ClientSpinner color="inherit" size="24px" /> : startIcon
-      }
+    <SijoitteluStatusChangeButton
+      organisaatioOid={hakukohde?.organisaatioOid}
+      jono={jono}
+      permissions={permissions}
+      statusMutation={statusMutation}
     />
   );
-};
-
-const useSijoitteluStatusMutation = (hakukohdeOid: string) => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({
-      jono,
-      status,
-    }: {
-      jono: LaskettuValintatapajono;
-      status: boolean;
-    }) => {
-      await muutaSijoittelunStatus({ jono, status });
-      queryClient.setQueryData(
-        ['getLasketutValinnanVaiheet', hakukohdeOid],
-        (vaiheet: Array<LaskettuValinnanVaihe>) =>
-          vaiheet.map((vaihe) => ({
-            ...vaihe,
-            valintatapajonot: vaihe.valintatapajonot?.map((oldJono) => ({
-              ...oldJono,
-              valmisSijoiteltavaksi:
-                jono.oid === oldJono.oid
-                  ? status
-                  : oldJono.valmisSijoiteltavaksi,
-            })),
-          })),
-      );
-    },
-    onError: (e) => {
-      // TODO: Toast-notifikaatio (OK-585)
-      window.alert('Jonon sijoittelun statuksen muuttamisesa tapahtui virhe!');
-      console.error(e);
-    },
-  });
 };
 
 export const ValintatapajonoContent = ({
@@ -111,20 +75,6 @@ export const ValintatapajonoContent = ({
   valinnanVaihe: LaskettuValinnanVaihe;
   jono: LaskettuJonoWithHakijaInfot;
 }) => {
-  const { t } = useTranslations();
-
-  const { data: permissions } = useUserPermissions();
-
-  const { data: hakukohde } = useHakukohde({ hakukohdeOid });
-
-  const hasOphUpdate =
-    permissions.writeOrganizations.includes(OPH_ORGANIZATION_OID);
-
-  const hasOrgCrud = permissions.crudOrganizations.includes(
-    hakukohde.organisaatioOid,
-  );
-  const sijoittelunStatusMutation = useSijoitteluStatusMutation(hakukohdeOid);
-
   return (
     <Box key={jono.oid} width="100%">
       <ValintatapajonoAccordion
@@ -137,28 +87,7 @@ export const ValintatapajonoContent = ({
         }
       >
         <Box paddingTop={2} paddingBottom={1}>
-          {!jono.valmisSijoiteltavaksi && jono.siirretaanSijoitteluun && (
-            <SijoitteluButton
-              isLoading={sijoittelunStatusMutation.isPending}
-              disabled={!hasOphUpdate && !hasOrgCrud}
-              onClick={() =>
-                sijoittelunStatusMutation.mutate({ jono, status: true })
-              }
-            >
-              {t('valintalaskennan-tulos.siirra-jono-sijoitteluun')}
-            </SijoitteluButton>
-          )}
-          {jono.valmisSijoiteltavaksi && jono.siirretaanSijoitteluun && (
-            <SijoitteluButton
-              isLoading={sijoittelunStatusMutation.isPending}
-              disabled={!hasOphUpdate}
-              onClick={() =>
-                sijoittelunStatusMutation.mutate({ jono, status: false })
-              }
-            >
-              {t('valintalaskennan-tulos.poista-jono-sijoittelusta')}
-            </SijoitteluButton>
-          )}
+          <JonoActions hakukohdeOid={hakukohdeOid} jono={jono} />
         </Box>
         <PaginatedValintatapajonoTable
           jonoId={jono.valintatapajonooid}

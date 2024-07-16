@@ -10,6 +10,7 @@ export default defineConfig({
     },
   },
   test: {
+    globals: true,
     environment: 'jsdom',
     dir: './src',
     include: ['**/**.test.?(c|m)[jt]s?(x)'],
@@ -17,5 +18,6 @@ export default defineConfig({
       include: ['src/**'],
     },
     exclude: ['./cdk'],
+    setupFiles: ['./vitest-setup.ts'],
   },
 });
