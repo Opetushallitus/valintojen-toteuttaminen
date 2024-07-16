@@ -50,7 +50,7 @@ export const HakuTable = ({
       },
       {
         title: 'haku.alkamiskausi',
-        key: 'nimi',
+        key: 'alkamiskausiNimi',
         render: (haku) => <span>{translateEntity(haku.alkamiskausiNimi)}</span>,
       },
       makeCountColumn<HakuListItem>({
