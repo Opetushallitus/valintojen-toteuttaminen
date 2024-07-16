@@ -50,6 +50,10 @@ export type LaskettuValintatapajono = {
   siirretaanSijoitteluun: boolean;
 };
 
+export type LaskettuJonoWithHakijaInfot = LaskettuValintatapajono & {
+  jonosijat: Array<JonoSijaWithHakijaInfo>;
+};
+
 export type LaskettuValinnanVaihe = {
   jarjestysnumero: number;
   valinnanvaiheoid: string;
