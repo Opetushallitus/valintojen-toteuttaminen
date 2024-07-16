@@ -34,8 +34,8 @@ export const HakuTable = ({
   const { t, translateEntity } = useTranslations();
 
   const columns = [
-    makeHakuColumn(translateEntity),
-    makeTilaColumn(),
+    makeHakuColumn<Haku>(translateEntity),
+    makeTilaColumn<Haku>(),
     makeHakutapaColumn(getMatchingHakutapa(translateEntity)),
     makeKoulutuksenAlkamiskausiColumn(t),
     makeCountColumn<Haku>({
@@ -46,6 +46,12 @@ export const HakuTable = ({
   ];
 
   return (
-    <ListTable columns={columns} rows={haut} sort={sort} setSort={setSort} />
+    <ListTable
+      rowKeyProp="oid"
+      columns={columns}
+      rows={haut}
+      sort={sort}
+      setSort={setSort}
+    />
   );
 };
