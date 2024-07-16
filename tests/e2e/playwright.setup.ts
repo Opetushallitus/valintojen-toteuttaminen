@@ -6,7 +6,6 @@ import SIJOITTELUN_YHTEENVETO from './fixtures/sijoittelun_yhteenveto.json';
 import VALINTARYHMA from './fixtures/valintaryhma.json';
 import HAKENEET from './fixtures/hakeneet.json';
 import VALINNANVAIHE from './fixtures/valinnanvaiheet.json';
-import LASKETUT_VALINNANVAIHEET from './fixtures/lasketut-valinnanvaiheet.json';
 
 const port = 3104;
 
@@ -92,12 +91,6 @@ export default async function playwrightSetup() {
       request.url?.includes('ohjausparametrit-service/api/v1/rest/parametri')
     ) {
       return modifyResponse(response, { sijoittelu: true });
-    } else if (
-      request.url?.match(
-        /\/valintalaskenta-laskenta-service\/resources\/hakukohde\/[^/]+\/valinnanvaihe/,
-      )
-    ) {
-      return modifyResponse(response, LASKETUT_VALINNANVAIHEET);
     } else {
       console.log('(Backend) mock not implementeded', request.url);
       return;

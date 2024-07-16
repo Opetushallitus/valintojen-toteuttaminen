@@ -4,6 +4,7 @@ import {
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
 } from './playwright-utils';
+import LASKETUT_VALINNANVAIHEET from './fixtures/lasketut-valinnanvaiheet.json';
 
 const JONO_TABLE_HEADINGS = [
   'Jonosija',
@@ -13,6 +14,13 @@ const JONO_TABLE_HEADINGS = [
   'Valintatieto',
   'Muutoksen syy',
 ];
+
+test.beforeEach(async ({ page }) => {
+  await page.route(
+    '**/valintalaskenta-laskenta-service/resources/hakukohde/**',
+    async (route) => await route.fulfill({ json: LASKETUT_VALINNANVAIHEET }),
+  );
+});
 
 test('valintalaskennan tulos accessibility', async ({ page }) => {
   await page.goto(

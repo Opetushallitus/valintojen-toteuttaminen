@@ -13,20 +13,22 @@ test('displays valinnanvaiheet', async ({ page }) => {
   await expect(rows).toHaveCount(3);
   let columns = rows.first().locator('td');
   await expect(columns).toHaveCount(4);
-  expect.soft(columns.first()).toContainText('Tietojen tulostus');
-  expect.soft(columns.nth(1)).toContainText('Mukana laskennassa');
-  expect.soft(columns.nth(2)).toContainText('Valinnanvaihe');
-  expect.soft(columns.nth(3).locator('button')).toBeEnabled();
-  columns = await rows.nth(1).locator('td');
+  await expect.soft(columns.first()).toContainText('Tietojen tulostus');
+  await expect.soft(columns.nth(1)).toContainText('Mukana laskennassa');
+  await expect.soft(columns.nth(2)).toContainText('Valinnanvaihe');
+  await expect.soft(columns.nth(3).locator('button')).toBeEnabled();
+  columns = rows.nth(1).locator('td');
   await expect.soft(columns.first()).toContainText('Välikoe');
-  expect.soft(columns.nth(1)).toContainText('Ei lasketa');
-  expect.soft(columns.nth(2)).toContainText('Valintakoevalinnanvaihe');
-  expect.soft(columns.nth(3)).toContainText('Valinnanvaihe ei ole aktiivinen');
-  columns = await rows.nth(2).locator('td');
+  await expect.soft(columns.nth(1)).toContainText('Ei lasketa');
+  await expect.soft(columns.nth(2)).toContainText('Valintakoevalinnanvaihe');
+  await expect
+    .soft(columns.nth(3))
+    .toContainText('Valinnanvaihe ei ole aktiivinen');
+  columns = rows.nth(2).locator('td');
   await expect.soft(columns.first()).toContainText('Varsinainen valinta');
-  expect.soft(columns.nth(1)).toContainText('Mukana laskennassa');
-  expect.soft(columns.nth(2)).toContainText('Valinnanvaihe');
-  expect.soft(columns.nth(3).locator('button')).toBeEnabled();
+  await expect.soft(columns.nth(1)).toContainText('Mukana laskennassa');
+  await expect.soft(columns.nth(2)).toContainText('Valinnanvaihe');
+  await expect.soft(columns.nth(3).locator('button')).toBeEnabled();
 });
 
 test('starts laskenta', async ({ page }) => {
