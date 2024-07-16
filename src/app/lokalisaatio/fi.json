@@ -134,7 +134,8 @@
   "valintalaskennan-tulos": {
     "otsikko": "Valintalaskennan tulos",
     "vie-kaikki-taulukkolaskentaan": "Vie kaikki taulukkolaskentaan",
-    "poista-jono-sijoittelusta": "Poista jono sijoittelusta"
+    "poista-jono-sijoittelusta": "Poista jono sijoittelusta",
+    "siirra-jono-sijoitteluun": "Siirrä jono sijoitteluun"
   },
   "sijoittelun-tulokset": {
     "otsikko": "Sijoittelun tulokset"

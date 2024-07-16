@@ -28,13 +28,13 @@ import { DEFAULT_BOX_BORDER, OPH_ORGANIZATION_OID } from '@/app/lib/constants';
 import { Typography } from '@opetushallitus/oph-design-system';
 import ValintalaskennanTulosSearch from './valintalaskennan-tulos-search';
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
-import { ExpandMore, SaveAlt } from '@mui/icons-material';
+import { ExpandMore, FileDownloadOutlined } from '@mui/icons-material';
 import { configuration } from '@/app/lib/configuration';
 import React from 'react';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
 import { useUserPermissions } from '@/app/hooks/useUserPermissions';
 import { useHakukohde } from '@/app/hooks/useHakukohde';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 type LasketutValinnanvaiheetParams = {
   hakuOid: string;
@@ -140,15 +140,35 @@ const ValintatapajonoContent = ({
   const hasOrgCrud = permissions.crudOrganizations.includes(
     hakukohde.organisaatioOid,
   );
+  const queryClient = useQueryClient();
 
   const sijoittelunStatusMutation = useMutation({
-    mutationFn: ({
+    mutationFn: async ({
       jono,
       status,
     }: {
       jono: LaskettuValintatapajono;
       status: boolean;
-    }) => muutaSijoittelunStatus({ jono, status }),
+    }) => {
+      await muutaSijoittelunStatus({ jono, status });
+      queryClient.setQueryData(
+        ['getLasketutValinnanVaiheet', hakukohdeOid],
+        (vaiheet: Array<LaskettuValinnanVaihe>) =>
+          vaiheet.map((vaihe) => ({
+            ...vaihe,
+            valintatapajonot: vaihe.valintatapajonot?.map((oldJono) => ({
+              ...oldJono,
+              valmisSijoiteltavaksi:
+                jono.oid === oldJono.oid ? status : jono.valmisSijoiteltavaksi,
+            })),
+          })),
+      );
+    },
+    onError: (e) => {
+      // TODO: Toast-notifikaatio
+      window.alert('Tapahtui virhe!');
+      console.error(e);
+    },
   });
 
   return (
@@ -181,7 +201,15 @@ const ValintatapajonoContent = ({
         <Box paddingTop={2} paddingBottom={1}>
           {!jono.valmisSijoiteltavaksi && jono.siirretaanSijoitteluun && (
             <Button
-              disabled={!hasOphUpdate && !hasOrgCrud}
+              startIcon={
+                sijoittelunStatusMutation.isPending && (
+                  <CircularProgress color="inherit" size="24px" />
+                )
+              }
+              disabled={
+                sijoittelunStatusMutation.isPending ||
+                (!hasOphUpdate && !hasOrgCrud)
+              }
               variant="outlined"
               onClick={() =>
                 sijoittelunStatusMutation.mutate({ jono, status: true })
@@ -192,7 +220,12 @@ const ValintatapajonoContent = ({
           )}
           {jono.valmisSijoiteltavaksi && jono.siirretaanSijoitteluun && (
             <Button
-              disabled={!hasOphUpdate}
+              startIcon={
+                sijoittelunStatusMutation.isPending && (
+                  <CircularProgress color="inherit" size="24px" />
+                )
+              }
+              disabled={sijoittelunStatusMutation.isPending || !hasOphUpdate}
               variant="outlined"
               onClick={() =>
                 sijoittelunStatusMutation.mutate({ jono, status: false })
@@ -242,7 +275,7 @@ const LasketutValinnanVaiheetContent = ({
           <Button
             variant="text"
             download
-            startIcon={<SaveAlt />}
+            startIcon={<FileDownloadOutlined />}
             href={`${configuration.valintalaskennanTulosExcelUrl({ hakukohdeOid })}`}
           >
             {t('valintalaskennan-tulos.vie-kaikki-taulukkolaskentaan')}
