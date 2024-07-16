@@ -3,7 +3,7 @@
 import { TabContainer } from '../tab-container';
 import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
-import { Box, CircularProgress } from '@mui/material';
+import { Button, Box, CircularProgress } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { ValintalaskennanTulosTable } from './valintalaskennan-tulos-table';
 import { useLasketutValinnanVaiheet } from '@/app/hooks/useLasketutValinnanVaiheet';
@@ -16,6 +16,8 @@ import { DEFAULT_BOX_BORDER } from '@/app/lib/constants';
 import { Typography } from '@opetushallitus/oph-design-system';
 import ValintalaskennanTulosSearch from './valintalaskennan-tulos-search';
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
+import { SaveAlt } from '@mui/icons-material';
+import { configuration } from '@/app/lib/configuration';
 
 type LasketutValinnanvaiheetParams = {
   hakuOid: string;
@@ -111,6 +113,7 @@ const LasketutValinnanVaiheetContent = ({
   });
 
   const { pageSize, setPageSize } = useJonosijatSearchParams();
+  const { t } = useTranslations();
 
   return (
     <Box
@@ -119,8 +122,24 @@ const LasketutValinnanVaiheetContent = ({
       rowGap={2}
       alignItems="flex-start"
     >
-      <Box display="flex" justifyContent="space-between" width="100%">
-        <ValintalaskennanTulosSearch />
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="flex-end"
+        width="100%"
+        gap={2}
+      >
+        <Box display="flex" alignItems="flex-end" gap={2}>
+          <ValintalaskennanTulosSearch />
+          <Button
+            variant="text"
+            download
+            startIcon={<SaveAlt />}
+            href={`${configuration.valintalaskennanTulosExcelUrl({ hakukohdeOid })}`}
+          >
+            {t('valintalaskennan-tulos.vie-kaikki-taulukkolaskentaan')}
+          </Button>
+        </Box>
         <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
       </Box>
       {valinnanVaiheet.map((valinnanVaihe) =>

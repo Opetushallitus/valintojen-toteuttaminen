@@ -130,10 +130,11 @@
   "hakijaryhmat": {
     "otsikko": "Hakijaryhmät"
   },
-  "valintalaskennantulos": {
-    "otsikko": "Valintalaskennan tulos"
+  "valintalaskennan-tulos": {
+    "otsikko": "Valintalaskennan tulos",
+    "vie-kaikki-taulukkolaskentaan": "Vie kaikki taulukkolaskentaan"
   },
-  "sijoitteluntulokset": {
+  "sijoittelun-tulokset": {
     "otsikko": "Sijoittelun tulokset"
   },
   "valinnanvaihe": {

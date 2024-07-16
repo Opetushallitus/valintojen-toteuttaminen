@@ -44,8 +44,8 @@ const TABS: BasicTab[] = [
   { title: 'pistesyotto.otsikko', route: 'pistesyotto' },
   { title: 'harkinnanvaraiset.otsikko', route: 'harkinnanvaraiset' },
   { title: 'hakijaryhmat.otsikko', route: 'hakijaryhmat' },
-  { title: 'valintalaskennantulos.otsikko', route: 'valintalaskennan-tulos' },
-  { title: 'sijoitteluntulokset.otsikko', route: 'sijoittelun-tulokset' },
+  { title: 'valintalaskennan-tulos.otsikko', route: 'valintalaskennan-tulos' },
+  { title: 'sijoittelun-tulokset.otsikko', route: 'sijoittelun-tulokset' },
 ] as const;
 
 function getPathMatchingTab(pathName: string) {
