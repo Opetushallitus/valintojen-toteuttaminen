@@ -135,7 +135,15 @@
     "otsikko": "Valintalaskennan tulos",
     "vie-kaikki-taulukkolaskentaan": "Vie kaikki taulukkolaskentaan",
     "poista-jono-sijoittelusta": "Poista jono sijoittelusta",
-    "siirra-jono-sijoitteluun": "Siirrä jono sijoitteluun"
+    "siirra-jono-sijoitteluun": "Siirrä jono sijoitteluun",
+    "taulukko": {
+      "jonosija": "Jonosija",
+      "hakija": "Hakija",
+      "hakutoive": "Hakutoive",
+      "pisteet": "Pisteet",
+      "valintatieto": "Valintatieto",
+      "muutoksen-syy": "Muutoksen syy"
+    }
   },
   "sijoittelun-tulokset": {
     "otsikko": "Sijoittelun tulokset"

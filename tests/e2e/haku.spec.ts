@@ -23,7 +23,7 @@ test.describe('hakukohde search', () => {
   });
 
   test('filters by name', async () => {
-    const hakuInput = await page.getByRole('textbox', {
+    const hakuInput = page.getByRole('textbox', {
       name: 'Hae hakukohteita',
     });
     await hakuInput.fill('Natural Sciences');
@@ -39,7 +39,7 @@ test.describe('hakukohde search', () => {
   });
 
   test('filter by organizer name', async () => {
-    const hakuInput = await page.getByRole('textbox', {
+    const hakuInput = page.getByRole('textbox', {
       name: 'Hae hakukohteita',
     });
     await hakuInput.fill('Tekniikan ja luonnontieteiden tiedekunta');
@@ -47,7 +47,7 @@ test.describe('hakukohde search', () => {
   });
 
   test('filter by hakukohde oid', async () => {
-    const hakuInput = await page.getByRole('textbox', {
+    const hakuInput = page.getByRole('textbox', {
       name: 'Hae hakukohteita',
     });
     await hakuInput.fill('1.2.246.562.20.00000000000000045104');

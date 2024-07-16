@@ -1,4 +1,4 @@
-import { createServer } from 'http';
+import { ServerResponse, createServer } from 'http';
 import HAUT from './fixtures/haut.json';
 import HAKUKOHTEET from './fixtures/hakukohteet.json';
 import HAKUTAPA_CODES from './fixtures/hakutapa.json';
@@ -6,31 +6,31 @@ import SIJOITTELUN_YHTEENVETO from './fixtures/sijoittelun_yhteenveto.json';
 import VALINTARYHMA from './fixtures/valintaryhma.json';
 import HAKENEET from './fixtures/hakeneet.json';
 import VALINNANVAIHE from './fixtures/valinnanvaiheet.json';
-import LASKETUT_VALINNANVAIHEET from './fixtures/hakeneet.json';
+import LASKETUT_VALINNANVAIHEET from './fixtures/lasketut-valinnanvaiheet.json';
 
 const port = 3104;
 
-const modifyResponse = (response, body) => {
+const modifyResponse = (response: ServerResponse, body: unknown) => {
   response.write(JSON.stringify(body));
   response.end();
 };
 
 export default async function playwrightSetup() {
   const server = await createServer(async (request, response) => {
-    if (request.url.endsWith(`favicon.ico`)) {
+    if (request.url?.endsWith(`favicon.ico`)) {
       response.writeHead(404);
       response.end();
       return;
     } else if (
-      request.url.includes(`kayttooikeus-service/henkilo/current/omattiedot`)
+      request.url?.includes(`kayttooikeus-service/henkilo/current/omattiedot`)
     ) {
       return modifyResponse(response, { isAdmin: true, organisaatiot: [] });
-    } else if (request.url.includes(`henkilo/current/asiointiKieli`)) {
+    } else if (request.url?.includes(`henkilo/current/asiointiKieli`)) {
       response.setHeader('Content-Type', 'text/plain');
       response.write('fi');
       response.end();
       return;
-    } else if (request.url.includes(`kouta-internal/haku/search`)) {
+    } else if (request.url?.includes(`kouta-internal/haku/search`)) {
       if (request.url.includes('&tarjoaja=')) {
         const tarjoaja = request.url.split('&tarjoaja=')[1];
         return modifyResponse(
@@ -41,59 +41,59 @@ export default async function playwrightSetup() {
         return modifyResponse(response, HAUT);
       }
     } else if (
-      request.url.includes(`koodisto-service/rest/codeelement/codes/hakutapa`)
+      request.url?.includes(`koodisto-service/rest/codeelement/codes/hakutapa`)
     ) {
       return modifyResponse(response, HAKUTAPA_CODES);
-    } else if (request.url.includes('kouta-internal/hakukohde/search')) {
+    } else if (request.url?.includes('kouta-internal/hakukohde/search')) {
       const hakuId = request.url.split('&haku=')[1];
       return modifyResponse(
         response,
         HAKUKOHTEET.filter((hk) => hk.hakuOid === hakuId),
       );
-    } else if (request.url.includes('kouta-internal/hakukohde/')) {
+    } else if (request.url?.includes('kouta-internal/hakukohde/')) {
       const hakukohdeOid = request.url.split('/').reverse()[0];
       return modifyResponse(
         response,
         HAKUKOHTEET.find((hk) => hk.oid === hakukohdeOid),
       );
-    } else if (request.url.includes(`kouta-internal/haku/`)) {
+    } else if (request.url?.includes(`kouta-internal/haku/`)) {
       const hakuId = request.url.split('haku/')[1];
       return modifyResponse(
         response,
         HAUT.find((hakuData) => hakuData.oid === hakuId),
       );
     } else if (
-      request.url.includes(
+      request.url?.includes(
         `valinta-tulos-service/auth/sijoitteluntulos/yhteenveto`,
       )
     ) {
       return modifyResponse(response, SIJOITTELUN_YHTEENVETO);
     } else if (
-      request.url.includes(`valintaperusteet-service/resources/hakukohde`) &&
-      request.url.includes('valinnanvaihe?withValisijoitteluTieto=true')
+      request.url?.includes(`valintaperusteet-service/resources/hakukohde`) &&
+      request.url?.includes('valinnanvaihe?withValisijoitteluTieto=true')
     ) {
       return modifyResponse(response, VALINNANVAIHE);
     } else if (
-      request.url.includes(`valintaperusteet-service/resources/hakukohde`)
+      request.url?.includes(`valintaperusteet-service/resources/hakukohde`)
     ) {
       return modifyResponse(response, VALINTARYHMA);
     } else if (
-      request.url.includes('lomake-editori/api/external/valinta-ui?')
+      request.url?.includes('lomake-editori/api/external/valinta-ui?')
     ) {
       return modifyResponse(response, HAKENEET);
     } else if (
-      request.url.includes(
+      request.url?.includes(
         'valintalaskenta-laskenta-service/resources/hakukohde/',
       ) &&
-      request.url.includes('valinnanvaihe')
+      request.url?.includes('valinnanvaihe')
     ) {
       return modifyResponse(response, []);
     } else if (
-      request.url.includes('ohjausparametrit-service/api/v1/rest/parametri')
+      request.url?.includes('ohjausparametrit-service/api/v1/rest/parametri')
     ) {
       return modifyResponse(response, { sijoittelu: true });
     } else if (
-      request.url.match(
+      request.url?.match(
         /\/valintalaskenta-laskenta-service\/resources\/hakukohde\/[^/]+\/valinnanvaihe/,
       )
     ) {
@@ -103,8 +103,10 @@ export default async function playwrightSetup() {
       return;
     }
   });
-
-  server.listen(port, (error) => {
-    console.error(error);
+  server.listen(port, () => {
+    console.log(`(Backend) Mock server listening on port ${port}`);
+  });
+  server.once('error', (err) => {
+    console.error(err);
   });
 }

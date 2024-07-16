@@ -5,14 +5,16 @@ import { ExpandMore } from '@mui/icons-material';
 import React from 'react';
 
 export const ValintatapajonoAccordion = ({
+  id,
   title,
   children,
 }: {
+  id: string;
   title: React.ReactNode;
   children: React.ReactNode;
 }) => {
-  const headerId = `${title}-accordion-header`;
-  const contentId = `${title}-accordion-content`;
+  const headerId = `${id}-accordion-header`;
+  const contentId = `${id}-accordion-content`;
 
   return (
     <Accordion

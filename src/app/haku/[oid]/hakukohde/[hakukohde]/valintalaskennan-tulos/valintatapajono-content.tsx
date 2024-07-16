@@ -128,6 +128,7 @@ export const ValintatapajonoContent = ({
   return (
     <Box key={jono.oid} width="100%">
       <ValintatapajonoAccordion
+        id={valinnanVaihe.valinnanvaiheoid}
         title={
           <ValintatapajonoAccordionTitle
             valinnanVaihe={valinnanVaihe}

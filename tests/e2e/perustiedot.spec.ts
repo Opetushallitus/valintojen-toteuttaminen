@@ -1,16 +1,5 @@
-import { test, expect, Locator } from '@playwright/test';
-import { expectAllSpinnersHidden } from './playwright-utils';
-
-const checkRow = async (
-  row: Locator,
-  expectedValues: string[],
-  cellType: 'th' | 'td' = 'td',
-) => {
-  const cells = row.locator(cellType);
-  for (const [index, value] of expectedValues.entries()) {
-    await expect(cells.nth(index)).toHaveText(value);
-  }
-};
+import { test, expect } from '@playwright/test';
+import { checkRow, expectAllSpinnersHidden } from './playwright-utils';
 
 test('displays perustiedot', async ({ page }) => {
   await page.goto(
@@ -26,8 +15,8 @@ test('displays perustiedot', async ({ page }) => {
     page.getByRole('link', { name: 'Valintaperusteet' }),
   ).toBeVisible();
   await expect(page.getByRole('link', { name: 'Tarjonta' })).toBeVisible();
-  const headrow = await page.locator('thead tr');
-  checkRow(
+  const headrow = page.locator('thead tr');
+  await checkRow(
     headrow,
     [
       'Valintatapajono',
@@ -97,7 +86,7 @@ test('shows harkinnanvarainen column when toisen asteen yhteishaku', async ({
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/perustiedot',
   );
   await expectAllSpinnersHidden(page);
-  const headrow = await page.locator('thead tr');
+  const headrow = page.locator('thead tr');
   await checkRow(
     headrow,
     [

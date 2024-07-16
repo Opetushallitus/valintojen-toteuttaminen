@@ -11,26 +11,28 @@ import { JonoSijaWithHakijaInfo } from '@/app/lib/valintalaskenta-service';
 import { Link } from '@mui/material';
 import { useMemo } from 'react';
 
+const TRANSLATIONS_PREFIX = 'valintalaskennan-tulos.taulukko';
+
 const LINK_TO_PERSON = 'henkilo-ui/oppija/';
 
 const buildLinkToPerson = (personOid: string) => LINK_TO_PERSON + personOid;
 
 const jonosijaColumn = makeCountColumn<JonoSijaWithHakijaInfo>({
-  title: 'jonosija',
+  title: `${TRANSLATIONS_PREFIX}.jonosija`,
   key: 'jonosija',
   amountProp: 'jonosija',
 });
 
 const hakijaColumn = makeExternalLinkColumn<JonoSijaWithHakijaInfo>({
   linkBuilder: buildLinkToPerson,
-  title: 'hakeneet.taulukko.hakija',
+  title: `${TRANSLATIONS_PREFIX}.hakija`,
   key: 'hakijanNimi',
   nameProp: 'hakijanNimi',
   linkProp: 'henkiloOid',
 });
 
 const hakutoiveColumn = makeGenericColumn<JonoSijaWithHakijaInfo>({
-  title: 'hakutoive',
+  title: `${TRANSLATIONS_PREFIX}.hakutoive`,
   key: 'hakutoiveNumero',
   valueProp: 'hakutoiveNumero',
 });
@@ -53,7 +55,7 @@ export const LaskettuValintatapajonoTable = ({
       jonosijaColumn,
       hakijaColumn,
       {
-        title: 'pisteet',
+        title: `${TRANSLATIONS_PREFIX}.pisteet`,
         key: 'pisteet',
         render: ({ pisteet, hakemusOid }) => (
           <span>
@@ -71,14 +73,14 @@ export const LaskettuValintatapajonoTable = ({
       },
       hakutoiveColumn,
       {
-        title: 'valintatieto',
+        title: `${TRANSLATIONS_PREFIX}.valintatieto`,
         key: 'tuloksenTila',
         render: (props) => (
           <span>{t('tuloksenTila.' + props.tuloksenTila)}</span>
         ),
       },
       {
-        title: 'muutoksenSyy',
+        title: `${TRANSLATIONS_PREFIX}.muutoksen-syy`,
         key: 'muutoksenSyy',
         render: (props) => <span>{translateEntity(props.muutoksenSyy)}</span>,
       },

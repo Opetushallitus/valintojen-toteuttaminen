@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Localization', async () => {
+test.describe('Localization', () => {
   test('translates page to finnish', async ({ page }) => {
     await page.goto('/');
     await expect(page).toHaveTitle(/Valintojen Toteuttaminen/);
@@ -8,7 +8,7 @@ test.describe('Localization', async () => {
       'Julkaistu',
     );
     await expect(page.getByText('Haut')).toBeVisible();
-    await expect(page.getByText('haut.otsikko')).not.toBeVisible();
+    await expect(page.getByText('haut.otsikko')).toBeHidden();
   });
 
   test('translates page to english', async ({ page }) => {
@@ -23,7 +23,7 @@ test.describe('Localization', async () => {
     await expect(page.getByRole('combobox', { name: 'State' })).toContainText(
       'Published',
     );
-    await expect(page.getByText('Haut')).not.toBeVisible();
+    await expect(page.getByText('Haut')).toBeHidden();
     await expect(page.getByText('haku.otsikko')).toBeVisible();
   });
 
@@ -39,7 +39,7 @@ test.describe('Localization', async () => {
     await expect(
       page.getByRole('combobox', { name: 'yleinen.tila' }),
     ).toContainText('Publicerad');
-    await expect(page.getByText('Haut')).not.toBeVisible();
+    await expect(page.getByText('Haut')).toBeHidden();
     await expect(page.getByText('haku.otsikko')).toBeVisible();
   });
 });
