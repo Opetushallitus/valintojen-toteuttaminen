@@ -3,6 +3,7 @@ import ListTable, {
   makeExternalLinkColumn,
   makeCountColumn,
   makeGenericColumn,
+  ListTableColumn,
 } from '@/app/components/table/list-table';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { configuration } from '@/app/lib/configuration';
@@ -16,14 +17,14 @@ const buildLinkToPerson = (personOid: string) => LINK_TO_PERSON + personOid;
 
 const jonosijaColumn = makeCountColumn<JonoSijaWithHakijaInfo>({
   title: 'jonosija',
-  key: 'hakemus',
+  key: 'jonosija',
   amountProp: 'jonosija',
 });
 
 const hakijaColumn = makeExternalLinkColumn<JonoSijaWithHakijaInfo>({
   linkBuilder: buildLinkToPerson,
   title: 'hakeneet.taulukko.hakija',
-  key: 'hakemus.hakija',
+  key: 'hakijanNimi',
   nameProp: 'hakijanNimi',
   linkProp: 'henkiloOid',
 });
@@ -45,9 +46,9 @@ export const ValintalaskennanTulosTable = ({
   sort: string;
   setSort: (sort: string) => void;
 }) => {
-  const { t } = useTranslations();
+  const { t, translateEntity } = useTranslations();
 
-  const columns = useMemo(
+  const columns: Array<ListTableColumn<JonoSijaWithHakijaInfo>> = useMemo(
     () => [
       jonosijaColumn,
       hakijaColumn,
@@ -69,8 +70,20 @@ export const ValintalaskennanTulosTable = ({
         ),
       },
       hakutoiveColumn,
+      {
+        title: 'valintatieto',
+        key: 'tuloksenTila',
+        render: (props) => (
+          <span>{t('tuloksenTila.' + props.tuloksenTila)}</span>
+        ),
+      },
+      {
+        title: 'muutoksenSyy',
+        key: 'muutoksenSyy',
+        render: (props) => <span>{translateEntity(props.muutoksenSyy)}</span>,
+      },
     ],
-    [t, jonoId],
+    [t, jonoId, translateEntity],
   );
 
   return (

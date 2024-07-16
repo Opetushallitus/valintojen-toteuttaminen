@@ -23,6 +23,11 @@
     "seuraava": "Seuraava",
     "lisatietoja": "Lisätietoja"
   },
+  "tuloksenTila": {
+    "HYVAKSYTTAVISSA": "Hyväksyttävissä",
+    "HYLATTY": "Hylätty",
+    "MAARITTELEMATON": "Määrittelemätön"
+  },
   "virhe": {
     "palvelin": "Palvelinpyyntö epäonnistui!",
     "virhekoodi": "Virhekoodi: ",

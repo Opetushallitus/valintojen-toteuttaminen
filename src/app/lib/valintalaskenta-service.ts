@@ -2,12 +2,18 @@
 
 import { configuration } from './configuration';
 import { client } from './http-client';
+import { TranslatedName } from './localization/localization-types';
 
 export type Jarjestyskriteeri = {
   arvo: number;
   tila: string;
   prioriteetti: number;
   nimi: string;
+  kuvaus?: {
+    FI?: string;
+    SV?: string;
+    EN?: string;
+  };
 };
 
 export type JonoSija = {
@@ -25,9 +31,12 @@ export type JonoSijaWithHakijaInfo = Omit<
   'jarjestyskriteerit' | 'harkinnanvarainen'
 > & {
   hakijanNimi: string;
+  hakemusOid: string;
   henkiloOid: string;
   pisteet?: number;
   hakutoiveNumero?: number;
+  tuloksenTila?: string;
+  muutoksenSyy?: TranslatedName;
 };
 
 export type LaskettuValintatapajono = {
