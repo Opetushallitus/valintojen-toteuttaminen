@@ -1,9 +1,9 @@
 'use client';
 
+import { LaskettuJonoWithHakijaInfo } from '../hooks/useLasketutValinnanVaiheet';
 import { booleanToString } from './common';
 import { configuration } from './configuration';
 import { client } from './http-client';
-import { TranslatedName } from './localization/localization-types';
 
 export type Jarjestyskriteeri = {
   arvo: number;
@@ -27,31 +27,14 @@ export type JonoSija = {
   jarjestyskriteerit: Array<Jarjestyskriteeri>;
 };
 
-export type JonoSijaWithHakijaInfo = Omit<
-  JonoSija,
-  'jarjestyskriteerit' | 'harkinnanvarainen'
-> & {
-  hakijanNimi: string;
-  hakemusOid: string;
-  henkiloOid: string;
-  pisteet?: number;
-  hakutoiveNumero?: number;
-  tuloksenTila?: string;
-  muutoksenSyy?: TranslatedName;
-};
-
 export type LaskettuValintatapajono = {
-  oid: string; //?
+  oid: string;
   nimi: string;
   valintatapajonooid: string;
   prioriteetti: number;
   jonosijat: Array<JonoSija>;
   valmisSijoiteltavaksi: boolean;
   siirretaanSijoitteluun: boolean;
-};
-
-export type LaskettuJonoWithHakijaInfot = LaskettuValintatapajono & {
-  jonosijat: Array<JonoSijaWithHakijaInfo>;
 };
 
 export type LaskettuValinnanVaihe = {
@@ -102,13 +85,13 @@ export const muutaSijoittelunStatus = async ({
   jono,
   status,
 }: {
-  jono: LaskettuValintatapajono;
+  jono: Pick<LaskettuJonoWithHakijaInfo, 'oid' | 'prioriteetti'>;
   status: boolean;
 }): Promise<Array<MuutaSijoitteluaResponse>> => {
   const valintatapajonoOid = jono.oid;
 
   const { data: updatedJono } = await client.post(
-    // TODO: Miksi samat parametrit välitetään sekä URL:ssä että bodyssa?
+    // Miksi samat parametrit välitetään sekä URL:ssä että bodyssa?
     configuration.automaattinenSiirtoUrl({ valintatapajonoOid, status }),
     {
       valintatapajonoOid,

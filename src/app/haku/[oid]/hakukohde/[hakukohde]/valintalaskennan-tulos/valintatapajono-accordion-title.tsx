@@ -1,13 +1,11 @@
 'use client';
 import { Box } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import {
-  LaskettuJonoWithHakijaInfot,
-  LaskettuValinnanVaihe,
-} from '@/app/lib/valintalaskenta-service';
+import { LaskettuValinnanVaihe } from '@/app/lib/valintalaskenta-service';
 import { Typography } from '@opetushallitus/oph-design-system';
 import React from 'react';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
+import { LaskettuJonoWithHakijaInfo } from '@/app/hooks/useLasketutValinnanVaiheet';
 
 const getJonoNimi = ({
   valinnanVaiheNimi,
@@ -26,7 +24,7 @@ export const ValintatapajonoAccordionTitle = ({
   jono,
 }: {
   valinnanVaihe: LaskettuValinnanVaihe;
-  jono: LaskettuJonoWithHakijaInfot;
+  jono: LaskettuJonoWithHakijaInfo;
 }) => {
   const { t } = useTranslations();
 

@@ -1,11 +1,11 @@
 import { OPH_ORGANIZATION_OID } from '@/app/lib/constants';
 import { UserPermissions } from '@/app/lib/permissions';
-import { LaskettuJonoWithHakijaInfot } from '@/app/lib/valintalaskenta-service';
 import { ButtonProps } from '@mui/material';
 import { Button } from '@opetushallitus/oph-design-system';
 import { ClientSpinner } from '@/app/components/client-spinner';
 import { useSijoitteluStatusMutation } from './useSijoitteluStatusMutation';
 import { useTranslations } from '@/app/hooks/useTranslations';
+import { LaskettuJonoWithHakijaInfo } from '@/app/hooks/useLasketutValinnanVaiheet';
 
 export const SijoitteluButton = ({
   isLoading,
@@ -32,7 +32,7 @@ export const SijoitteluStatusChangeButton = ({
   statusMutation,
 }: {
   organisaatioOid: string;
-  jono: LaskettuJonoWithHakijaInfot;
+  jono: LaskettuJonoWithHakijaInfo;
   permissions: UserPermissions;
   statusMutation: ReturnType<typeof useSijoitteluStatusMutation>;
 }) => {
@@ -41,9 +41,7 @@ export const SijoitteluStatusChangeButton = ({
   const hasOphUpdate =
     permissions.writeOrganizations.includes(OPH_ORGANIZATION_OID);
 
-  const hasOrgCrud = permissions.crudOrganizations.includes(
-    organisaatioOid,
-  );
+  const hasOrgCrud = permissions.crudOrganizations.includes(organisaatioOid);
 
   switch (true) {
     case !jono.valmisSijoiteltavaksi && jono.siirretaanSijoitteluun:

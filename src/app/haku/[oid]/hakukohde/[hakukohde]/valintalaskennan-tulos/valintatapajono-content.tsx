@@ -1,10 +1,6 @@
 'use client';
 import { Box } from '@mui/material';
-import {
-  JonoSijaWithHakijaInfo,
-  LaskettuJonoWithHakijaInfot,
-  LaskettuValinnanVaihe,
-} from '@/app/lib/valintalaskenta-service';
+import { LaskettuValinnanVaihe } from '@/app/lib/valintalaskenta-service';
 import React from 'react';
 import { ValintatapajonoAccordion } from './valintatapajono-accordion';
 import { useJonosijatSearch } from '@/app/hooks/useJonosijatSearch';
@@ -15,6 +11,10 @@ import { SijoitteluStatusChangeButton } from './sijoittelu-status-change-button'
 import { useSijoitteluStatusMutation } from './useSijoitteluStatusMutation';
 import { useHakukohde } from '@/app/hooks/useHakukohde';
 import { useUserPermissions } from '@/app/hooks/useUserPermissions';
+import {
+  JonoSijaWithHakijaInfo,
+  LaskettuJonoWithHakijaInfo,
+} from '@/app/hooks/useLasketutValinnanVaiheet';
 
 const PaginatedValintatapajonoTable = ({
   jonoId,
@@ -50,7 +50,7 @@ const JonoActions = ({
   jono,
 }: {
   hakukohdeOid: string;
-  jono: LaskettuJonoWithHakijaInfot;
+  jono: LaskettuJonoWithHakijaInfo;
 }) => {
   const { data: hakukohde } = useHakukohde({ hakukohdeOid });
   const { data: permissions } = useUserPermissions();
@@ -73,7 +73,7 @@ export const ValintatapajonoContent = ({
 }: {
   hakukohdeOid: string;
   valinnanVaihe: LaskettuValinnanVaihe;
-  jono: LaskettuJonoWithHakijaInfot;
+  jono: LaskettuJonoWithHakijaInfo;
 }) => {
   return (
     <Box key={jono.oid} width="100%">

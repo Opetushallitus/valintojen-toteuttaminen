@@ -5,9 +5,9 @@ import ListTable, {
   makeGenericColumn,
   ListTableColumn,
 } from '@/app/components/table/list-table';
+import { JonoSijaWithHakijaInfo } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { configuration } from '@/app/lib/configuration';
-import { JonoSijaWithHakijaInfo } from '@/app/lib/valintalaskenta-service';
 import { Link } from '@mui/material';
 import { useMemo } from 'react';
 

@@ -6,7 +6,7 @@ import { useHasChanged } from '@/app/hooks/useHasChanged';
 import { byProp, getSortParts } from '../components/table/table-utils';
 import { HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY } from '@/app/lib/constants';
 import { useTranslations } from './useTranslations';
-import { JonoSijaWithHakijaInfo } from '../lib/valintalaskenta-service';
+import { JonoSijaWithHakijaInfo } from './useLasketutValinnanVaiheet';
 
 const DEFAULT_PAGE_SIZE = 10;
 
