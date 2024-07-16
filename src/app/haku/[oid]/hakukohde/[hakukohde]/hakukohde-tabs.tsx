@@ -1,13 +1,12 @@
 'use client';
 
 import { styled } from '@mui/material';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { getHakukohde } from '@/app/lib/kouta';
 import { usePathname } from 'next/navigation';
 import { Link as MuiLink } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { colors } from '@/app/theme';
 import { DEFAULT_BOX_BORDER } from '@/app/lib/constants';
+import { useHakukohde } from '@/app/hooks/useHakukohde';
 
 const StyledContainer = styled('div')(({ theme }) => ({
   padding: theme.spacing(2, 3, 0),
@@ -62,10 +61,7 @@ const HakukohdeTabs = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
   const activeTab = useHakukohdeTab();
   const { t, translateEntity } = useTranslations();
 
-  const { data: hakukohde } = useSuspenseQuery({
-    queryKey: ['getHakukohde', hakukohdeOid],
-    queryFn: () => getHakukohde(hakukohdeOid),
-  });
+  const { data: hakukohde } = useHakukohde({ hakukohdeOid });
 
   return (
     <StyledContainer>
