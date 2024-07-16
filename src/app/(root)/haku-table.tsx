@@ -1,5 +1,4 @@
 'use client';
-import { Koodi } from '../lib/koodisto';
 import ListTable, {
   ListTableColumn,
   makeCountColumn,
@@ -15,7 +14,6 @@ export const HakuTable = ({
   sort,
 }: {
   haut: Array<HakuListItem>;
-  hakutavat: Koodi[];
   sort: string;
   setSort: (sort: string) => void;
 }) => {
