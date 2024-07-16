@@ -15,11 +15,15 @@ import {
   JonoSijaWithHakijaInfo,
   LaskettuJonoWithHakijaInfo,
 } from '@/app/hooks/useLasketutValinnanVaiheet';
+import { useTranslations } from '@/app/hooks/useTranslations';
+import { getJonoNimi } from './get-jono-nimi';
 
 const PaginatedValintatapajonoTable = ({
+  label,
   jonoId,
   jonosijat,
 }: {
+  label: string;
   jonoId: string;
   jonosijat: Array<JonoSijaWithHakijaInfo>;
 }) => {
@@ -28,8 +32,8 @@ const PaginatedValintatapajonoTable = ({
 
   return (
     <TablePaginationWrapper
+      label={label}
       totalCount={results?.length ?? 0}
-      countTranslationKey="jonosijat.maara"
       pageSize={pageSize}
       setPageNumber={setPage}
       pageNumber={page}
@@ -75,6 +79,14 @@ export const ValintatapajonoContent = ({
   valinnanVaihe: LaskettuValinnanVaihe;
   jono: LaskettuJonoWithHakijaInfo;
 }) => {
+  const { t } = useTranslations();
+  const label =
+    t('yleinen.sivutus') +
+    ': ' +
+    getJonoNimi({
+      valinnanVaiheNimi: valinnanVaihe.nimi,
+      jonoNimi: jono.nimi,
+    });
   return (
     <Box key={jono.oid} width="100%">
       <ValintatapajonoAccordion
@@ -90,6 +102,7 @@ export const ValintatapajonoContent = ({
           <JonoActions hakukohdeOid={hakukohdeOid} jono={jono} />
         </Box>
         <PaginatedValintatapajonoTable
+          label={label}
           jonoId={jono.valintatapajonooid}
           jonosijat={jono.jonosijat}
         />

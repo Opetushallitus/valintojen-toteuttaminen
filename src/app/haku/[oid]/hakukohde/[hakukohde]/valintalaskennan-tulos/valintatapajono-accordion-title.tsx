@@ -6,18 +6,7 @@ import { Typography } from '@opetushallitus/oph-design-system';
 import React from 'react';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
 import { LaskettuJonoWithHakijaInfo } from '@/app/hooks/useLasketutValinnanVaiheet';
-
-const getJonoNimi = ({
-  valinnanVaiheNimi,
-  jonoNimi,
-}: {
-  valinnanVaiheNimi: string;
-  jonoNimi: string;
-}) => {
-  return jonoNimi.includes(valinnanVaiheNimi)
-    ? jonoNimi
-    : `${valinnanVaiheNimi}: ${jonoNimi}`;
-};
+import { getJonoNimi } from './get-jono-nimi';
 
 export const ValintatapajonoAccordionTitle = ({
   valinnanVaihe,

@@ -1,5 +1,9 @@
 import { test, expect } from '@playwright/test';
-import { checkRow, expectAllSpinnersHidden } from './playwright-utils';
+import {
+  checkRow,
+  expectAllSpinnersHidden,
+  expectPageAccessibilityOk,
+} from './playwright-utils';
 
 const JONO_TABLE_HEADINGS = [
   'Jonosija',
@@ -9,6 +13,15 @@ const JONO_TABLE_HEADINGS = [
   'Valintatieto',
   'Muutoksen syy',
 ];
+
+test('valintalaskennan tulos accessibility', async ({ page }) => {
+  await page.goto(
+    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/valintalaskennan-tulos',
+  );
+  await expectAllSpinnersHidden(page);
+  await page.locator('tbody tr').nth(1).hover();
+  await expectPageAccessibilityOk(page);
+});
 
 test('displays valintalaskennan tulos', async ({ page }) => {
   await page.goto(

@@ -57,9 +57,11 @@ export const OphPagination = ({
   setPageNumber,
   previousText,
   nextText,
+  ...props
 }: OphPaginationProps) => {
   return (
     <Pagination
+      {...props}
       count={Math.ceil(totalCount / pageSize)}
       page={pageNumber}
       onChange={(_e: unknown, value: number) => {

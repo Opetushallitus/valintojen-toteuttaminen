@@ -5,18 +5,28 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { PageSizeSelector } from './page-size-selector';
 import { OphPagination } from './oph-pagination';
 
+type CountFields =
+  | {
+      countTranslationKey?: undefined;
+      countHidden: true;
+    }
+  | {
+      countHidden?: false;
+      countTranslationKey: string;
+    };
+
 export type TablePaginationWrapperProps = {
+  label?: string;
   totalCount: number;
   pageNumber?: number;
   setPageNumber?: (page: number) => void;
   pageSize?: number;
   setPageSize?: (page: number) => void;
   children: React.ReactNode;
-  countTranslationKey: string;
-  countHidden?: boolean;
-};
+} & CountFields;
 
 export const TablePaginationWrapper = ({
+  label,
   totalCount,
   pageNumber,
   pageSize,
@@ -24,7 +34,7 @@ export const TablePaginationWrapper = ({
   setPageSize,
   children,
   countTranslationKey,
-  countHidden = false,
+  countHidden,
 }: TablePaginationWrapperProps) => {
   const { t } = useTranslations();
 
@@ -49,7 +59,7 @@ export const TablePaginationWrapper = ({
         {children}
         {hasPagination && (
           <OphPagination
-            aria-label={t('yleinen.sivutus')}
+            aria-label={label ?? t('yleinen.sivutus')}
             totalCount={totalCount}
             pageSize={pageSize}
             pageNumber={pageNumber}
