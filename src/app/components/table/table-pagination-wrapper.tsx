@@ -2,8 +2,8 @@
 import React from 'react';
 import { Typography, Box, styled, Pagination } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { PageSizeSelector } from './PageSizeSelector';
-import { OphPagination } from './OphPagination';
+import { PageSizeSelector } from './page-size-selector';
+import { OphPagination } from './oph-pagination';
 
 export const StyledPagination = styled(Pagination)({
   display: 'flex',

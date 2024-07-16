@@ -2,7 +2,7 @@
 
 import { getHakukohde } from '@/app/lib/kouta';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { TabContainer } from '../TabContainer';
+import { TabContainer } from '../tab-container';
 
 export default function SijoittelunTuloksetPage({
   params,

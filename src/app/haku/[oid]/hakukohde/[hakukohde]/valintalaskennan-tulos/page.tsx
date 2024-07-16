@@ -1,6 +1,6 @@
 'use client';
 
-import { TabContainer } from '../TabContainer';
+import { TabContainer } from '../tab-container';
 import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { Box, CircularProgress } from '@mui/material';
@@ -15,7 +15,7 @@ import { JonoSijaWithHakijaInfo } from '@/app/lib/valintalaskenta-service';
 import { DEFAULT_BOX_BORDER } from '@/app/lib/constants';
 import { Typography } from '@opetushallitus/oph-design-system';
 import ValintalaskennanTulosSearch from './valintalaskennan-tulos-search';
-import { PageSizeSelector } from '@/app/components/table/PageSizeSelector';
+import { PageSizeSelector } from '@/app/components/table/page-size-selector';
 
 type LasketutValinnanvaiheetParams = {
   hakuOid: string;
