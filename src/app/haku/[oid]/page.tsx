@@ -3,7 +3,7 @@
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { colors } from '@/app/theme';
 import { ListAlt } from '@mui/icons-material';
-import { styled } from '@mui/material';
+import { styled } from '@/app/theme';
 
 export default function HakuPage() {
   const { t } = useTranslations();

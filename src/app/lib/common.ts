@@ -23,3 +23,11 @@ export function isObject(value: unknown): value is Record<string, unknown> {
 
 export const booleanToString = (value: boolean) =>
   value === true ? 'true' : 'false';
+
+export const isEmpty = (value: unknown) => {
+  return (
+    value == null ||
+    (isObject(value) && Object.keys(value).length === 0) ||
+    (Array.isArray(value) && value.length === 0)
+  );
+};

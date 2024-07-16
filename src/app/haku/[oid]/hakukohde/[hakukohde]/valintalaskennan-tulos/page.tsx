@@ -7,12 +7,14 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { useLasketutValinnanVaiheet } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { ValintalaskennanTulosSearch } from './valintalaskennan-tulos-search';
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
-import { FileDownloadOutlined } from '@mui/icons-material';
+import { FileDownloadOutlined, FolderOutlined } from '@mui/icons-material';
 import { configuration } from '@/app/lib/configuration';
 import React from 'react';
 import { ValintatapajonoContent } from './valintatapajono-content';
 import { useJonosijatSearchParams } from '@/app/hooks/useJonosijatSearch';
 import { ClientSpinner } from '@/app/components/client-spinner';
+import { isEmpty } from '@/app/lib/common';
+import { IconCircle } from '@/app/components/icon-circle';
 
 type LasketutValinnanvaiheetParams = {
   hakuOid: string;
@@ -31,7 +33,14 @@ const LasketutValinnanVaiheetContent = ({
   const { pageSize, setPageSize } = useJonosijatSearchParams();
   const { t } = useTranslations();
 
-  return (
+  return isEmpty(valinnanVaiheet) ? (
+    <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
+      <IconCircle>
+        <FolderOutlined />
+      </IconCircle>
+      <Box>{t('valintalaskennan-tulos.ei-tuloksia')}</Box>
+    </Box>
+  ) : (
     <Box
       display="flex"
       flexDirection="column"
