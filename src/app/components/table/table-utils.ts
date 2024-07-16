@@ -2,7 +2,10 @@ import { TranslatedName } from '@/app/lib/localization/localization-types';
 import { isTranslatedName } from '@/app/lib/localization/translation-utils';
 
 export const byProp = <
-  T extends Record<string, string | number | TranslatedName | undefined>,
+  T extends Record<
+    string,
+    string | number | TranslatedName | boolean | undefined
+  >,
 >(
   key: string,
   direction: 'asc' | 'desc' = 'asc',

@@ -20,7 +20,10 @@ export type JonoSija = {
   jarjestyskriteerit: Array<Jarjestyskriteeri>;
 };
 
-export type JonoSijaWithHakijaInfo = JonoSija & {
+export type JonoSijaWithHakijaInfo = Omit<
+  JonoSija,
+  'jarjestyskriteerit' | 'harkinnanvarainen'
+> & {
   hakijanNimi: string;
   henkiloOid: string;
   pisteet?: number;
@@ -29,7 +32,7 @@ export type JonoSijaWithHakijaInfo = JonoSija & {
 
 export type LaskettuValintatapajono = {
   nimi: string;
-  valintapajonooid: string;
+  valintatapajonooid: string;
   jonosijat: Array<JonoSija>;
 };
 
@@ -39,7 +42,7 @@ export type LaskettuValinnanVaihe = {
   hakuOid: string;
   nimi: string;
   createdAt: number;
-  valintatapajonot: Array<LaskettuValintatapajono>;
+  valintatapajonot?: Array<LaskettuValintatapajono>;
 };
 
 export type SeurantaTiedot = {
