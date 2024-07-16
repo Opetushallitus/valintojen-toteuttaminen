@@ -30,8 +30,8 @@ const hakijaColumn = makeExternalLinkColumn<JonoSijaWithHakijaInfo>({
 
 const hakutoiveColumn = makeGenericColumn<JonoSijaWithHakijaInfo>({
   title: 'hakutoive',
-  key: 'hakutoive',
-  valueProp: 'hakutoive',
+  key: 'hakutoiveNumero',
+  valueProp: 'hakutoiveNumero',
 });
 
 export const ValintalaskennanTulosTable = ({

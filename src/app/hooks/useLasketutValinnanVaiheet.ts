@@ -45,12 +45,11 @@ export const useLasketutValinnanVaiheet = ({
               return {
                 ...jonosija,
                 hakijanNimi: hakemus.hakijanNimi,
-                hakutoiveNumero: hakemus.hakutoiveNumero,
+                hakutoiveNumero: jonosija.prioriteetti,
                 hakemuksenTila: hakemus.hakemuksenTila,
                 hakemusOid: hakemus.oid,
                 henkiloOid: hakemus.henkiloOid,
                 pisteet: jarjestyskriteeri?.arvo,
-                hakutoive: hakemus.hakutoiveNumero,
               };
             }),
           };
