@@ -9,7 +9,7 @@ import { getHaku, isKorkeakouluHaku } from '@/app/lib/kouta';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { Haku } from '@/app/lib/kouta-types';
-import { Spinner } from '@/app/components/spinner';
+import { ClientSpinner } from '@/app/components/client-spinner';
 
 type HakeneetParams = {
   haku: Haku;
@@ -62,7 +62,7 @@ export default function HakeneetPage({
 
   return (
     <TabContainer>
-      <QuerySuspenseBoundary suspenseFallback={<Spinner />}>
+      <QuerySuspenseBoundary suspenseFallback={<ClientSpinner />}>
         <HakeneetContent haku={haku} hakukohdeOid={params.hakukohde} />
       </QuerySuspenseBoundary>
     </TabContainer>

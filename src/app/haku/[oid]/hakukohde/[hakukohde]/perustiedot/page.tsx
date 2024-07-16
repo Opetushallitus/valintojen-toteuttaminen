@@ -8,7 +8,7 @@ import { ValintatapajonotTable } from './valintatapajonot-table';
 import { getHaku } from '@/app/lib/kouta';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
-import { Spinner } from '@/app/components/spinner';
+import { ClientSpinner } from '@/app/components/client-spinner';
 
 type PerustiedotParams = {
   oid: string;
@@ -60,7 +60,7 @@ export default function PerustiedotTab({
     <TabContainer>
       <BasicInfo hakukohdeOid={params.hakukohde} />
       <h3>{t('perustiedot.taulukko.otsikko')}</h3>
-      <QuerySuspenseBoundary suspenseFallback={<Spinner />}>
+      <QuerySuspenseBoundary suspenseFallback={<ClientSpinner />}>
         <PerustiedotContent oid={params.oid} hakukohde={params.hakukohde} />
       </QuerySuspenseBoundary>
     </TabContainer>

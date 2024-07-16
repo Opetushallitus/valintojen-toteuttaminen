@@ -1,6 +1,6 @@
 'use client';
 import { ErrorView } from './components/error-view';
-import { FullSpinner } from './components/spinner';
+import { FullSpinner } from '@/app/components/full-spinner';
 import { useQueryUserPermissions } from './hooks/useUserPermissions';
 
 export default function PermissionProvider({

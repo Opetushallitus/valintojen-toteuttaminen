@@ -17,7 +17,7 @@ import { useHakuSearchParams } from '@/app/hooks/useHakuSearch';
 import { useHakutavat } from '@/app/hooks/useHakutavat';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { OphSelectControl, OphSelect } from '@/app/components/oph-select';
-import { Spinner } from '@/app/components/spinner';
+import { ClientSpinner } from '@/app/components/client-spinner';
 
 const HakutapaSelect = ({
   value: selectedHakutapa,
@@ -51,7 +51,9 @@ const SelectFallback = () => (
     disabled={true}
     startAdornment={
       <InputAdornment position="start">
-        <Spinner sx={{ height: '24px !important', width: '24px !important' }} />
+        <ClientSpinner
+          sx={{ height: '24px !important', width: '24px !important' }}
+        />
       </InputAdornment>
     }
   />

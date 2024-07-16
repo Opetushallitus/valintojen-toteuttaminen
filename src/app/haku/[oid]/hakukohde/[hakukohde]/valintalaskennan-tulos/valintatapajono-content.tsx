@@ -13,12 +13,12 @@ import React from 'react';
 import { useUserPermissions } from '@/app/hooks/useUserPermissions';
 import { useHakukohde } from '@/app/hooks/useHakukohde';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Spinner } from '@/app/components/spinner';
 import { ValintatapajonoAccordion } from './valintatapajono-accordion';
 import { useJonosijatSearch } from '@/app/hooks/useJonosijatSearch';
 import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
 import { LaskettuValintatapajonoTable } from './laskettu-valintatapajono-table';
 import { ValintatapajonoAccordionTitle } from './valintatapajono-accordion-title';
+import { ClientSpinner } from '@/app/components/client-spinner';
 
 const PaginatedValintatapajonoTable = ({
   jonoId,
@@ -61,7 +61,7 @@ const SijoitteluButton = ({
       disabled={isLoading || disabled}
       variant="outlined"
       startIcon={
-        isLoading ? <Spinner color="inherit" size="24px" /> : startIcon
+        isLoading ? <ClientSpinner color="inherit" size="24px" /> : startIcon
       }
     />
   );

@@ -1,6 +1,6 @@
+import { ClientSpinner } from '@/app/components/client-spinner';
 import Header from '@/app/components/header';
-import { Spinner } from '@/app/components/spinner';
 
 export default function Loading() {
-  return <Header title={<Spinner />} isHome={true} />;
+  return <Header title={<ClientSpinner />} isHome={true} />;
 }

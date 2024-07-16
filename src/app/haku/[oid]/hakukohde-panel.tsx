@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { colors } from '@/app/theme';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
-import { Spinner } from '@/app/components/spinner';
+import { ClientSpinner } from '@/app/components/client-spinner';
 
 const StyledPanel = styled('div')({
   width: '16vw',
@@ -46,7 +46,7 @@ export const HakukohdePanel = ({ oid }: { oid: string }) => {
   return (
     <StyledPanel className={minimized ? 'minimized' : ''}>
       {!minimized && (
-        <QuerySuspenseBoundary suspenseFallback={<Spinner />}>
+        <QuerySuspenseBoundary suspenseFallback={<ClientSpinner />}>
           <IconButton
             sx={{ alignSelf: 'right', width: '1rem', height: '1rem' }}
             onClick={() => setMinimized(true)}

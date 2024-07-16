@@ -10,9 +10,9 @@ import { PageSizeSelector } from '@/app/components/table/page-size-selector';
 import { FileDownloadOutlined } from '@mui/icons-material';
 import { configuration } from '@/app/lib/configuration';
 import React from 'react';
-import { Spinner } from '@/app/components/spinner';
 import { ValintatapajonoContent } from './valintatapajono-content';
 import { useJonosijatSearchParams } from '@/app/hooks/useJonosijatSearch';
+import { ClientSpinner } from '@/app/components/client-spinner';
 
 type LasketutValinnanvaiheetParams = {
   hakuOid: string;
@@ -81,7 +81,7 @@ export default function ValintalaskennanTulosPage({
 }) {
   return (
     <TabContainer>
-      <QuerySuspenseBoundary suspenseFallback={<Spinner />}>
+      <QuerySuspenseBoundary suspenseFallback={<ClientSpinner />}>
         <LasketutValinnanVaiheetContent
           hakuOid={params.oid}
           hakukohdeOid={params.hakukohde}
