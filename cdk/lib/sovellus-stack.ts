@@ -55,7 +55,8 @@ export class SovellusStack extends cdk.Stack {
       nextjsPath: '..', // relative path from your project root to NextJS
       ...(props.skipBuild
         ? {
-            buildCommand: 'npx --yes open-next@^2 build',
+            buildCommand:
+              'npx --yes open-next@^2 build -- --build-command "npm run noop"',
           }
         : {}),
       basePath: '/valintojen-toteuttaminen',
