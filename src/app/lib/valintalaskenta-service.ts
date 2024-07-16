@@ -42,6 +42,7 @@ export type JonoSijaWithHakijaInfo = Omit<
 export type LaskettuValintatapajono = {
   nimi: string;
   valintatapajonooid: string;
+  prioriteetti: number;
   jonosijat: Array<JonoSija>;
 };
 

@@ -21,7 +21,8 @@
     "ok": "Ok",
     "edellinen": "Edellinen",
     "seuraava": "Seuraava",
-    "lisatietoja": "Lisätietoja"
+    "lisatietoja": "Lisätietoja",
+    "prioriteetti": "Prioriteetti"
   },
   "tuloksenTila": {
     "HYVAKSYTTAVISSA": "Hyväksyttävissä",
