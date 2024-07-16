@@ -78,9 +78,8 @@ export const useJonosijatSearch = (
         jonosija.hakijanNimi
           .toLowerCase()
           .includes(searchPhrase?.toLowerCase() ?? '') ||
-        jonosija.henkiloOid
-          .toLowerCase()
-          .includes(searchPhrase?.toLowerCase() ?? ''),
+        jonosija.hakemusOid.includes(searchPhrase?.toLowerCase() ?? '') ||
+        jonosija.henkiloOid.includes(searchPhrase?.toLowerCase() ?? ''),
     );
     return orderBy && direction
       ? filtered.sort(byProp(orderBy, direction, translateEntity))
