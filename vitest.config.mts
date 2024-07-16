@@ -19,5 +19,10 @@ export default defineConfig({
     },
     exclude: ['./cdk'],
     setupFiles: ['./vitest-setup.ts'],
+    server: {
+      deps: {
+        inline: ['@opetushallitus/oph-design-system'],
+      },
+    },
   },
 });
