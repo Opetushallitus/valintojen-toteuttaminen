@@ -18,7 +18,9 @@
     "ulkoinenlinkki": "Avautuu uuteen ikkunaan",
     "toiminnot": "Toiminnot",
     "peruuta": "Peruuta",
-    "ok": "Ok"
+    "ok": "Ok",
+    "edellinen": "Edellinen",
+    "seuraava": "Seuraava"
   },
   "virhe": {
     "palvelin": "Palvelinpyyntö epäonnistui!",

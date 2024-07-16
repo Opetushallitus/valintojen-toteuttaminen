@@ -1,13 +1,9 @@
 'use client';
 import React from 'react';
-import { Typography, Box, styled, Pagination } from '@mui/material';
+import { Typography, Box } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { PageSizeSelector } from './page-size-selector';
 import { OphPagination } from './oph-pagination';
-
-export const StyledPagination = styled(Pagination)({
-  display: 'flex',
-});
 
 export type TablePaginationWrapperProps = {
   totalCount: number;
@@ -53,10 +49,13 @@ export const TablePaginationWrapper = ({
         {children}
         {hasPagination && (
           <OphPagination
+            aria-label={t('yleinen.sivutus')}
             totalCount={totalCount}
             pageSize={pageSize}
             pageNumber={pageNumber}
             setPageNumber={setPageNumber}
+            previousText={t('yleinen.edellinen')}
+            nextText={t('yleinen.seuraava')}
           />
         )}
       </Box>
