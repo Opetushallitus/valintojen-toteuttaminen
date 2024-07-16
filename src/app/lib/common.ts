@@ -20,3 +20,6 @@ export class PermissionError extends Error {
 export function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
 }
+
+export const booleanToString = (value: boolean) =>
+  value === true ? 'true' : 'false';

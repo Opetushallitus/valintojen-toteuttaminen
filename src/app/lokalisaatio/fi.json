@@ -133,7 +133,8 @@
   },
   "valintalaskennan-tulos": {
     "otsikko": "Valintalaskennan tulos",
-    "vie-kaikki-taulukkolaskentaan": "Vie kaikki taulukkolaskentaan"
+    "vie-kaikki-taulukkolaskentaan": "Vie kaikki taulukkolaskentaan",
+    "poista-jono-sijoittelusta": "Poista jono sijoittelusta"
   },
   "sijoittelun-tulokset": {
     "otsikko": "Sijoittelun tulokset"

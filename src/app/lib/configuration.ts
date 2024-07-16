@@ -9,6 +9,11 @@ export const isProd = process.env.NODE_ENV === 'production';
 
 export const isTesting = process.env.TEST === 'true';
 
+type ValintatapajonoStatusParams = {
+  valintatapajonoOid: string;
+  status: boolean;
+};
+
 export const configuration = {
   loginUrl: process.env.LOGIN_URL || `${DOMAIN}/cas/login`,
   sessionCookie: process.env.SESSION_COOKIE || 'JSESSIONID',
@@ -43,4 +48,14 @@ export const configuration = {
     `${DOMAIN}/valintalaskenta-ui/app/index.html#/valintatapajono/${valintatapajonoOid}/hakemus/${hakemusOid}/valintalaskentahistoria`,
   valintalaskennanTulosExcelUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintalaskentaexcel/valintalaskennantulos/aktivoi?hakukohdeOid=${hakukohdeOid}`,
+  valmisSijoiteltavaksiUrl: ({
+    valintatapajonoOid,
+    status,
+  }: ValintatapajonoStatusParams) =>
+    `${DOMAIN}/valintalaskenta-laskenta-service/resources/valintatapajono/${valintatapajonoOid}/valmissijoiteltavaksi?status=${status}`,
+  automaattinenSiirtoUrl: ({
+    valintatapajonoOid,
+    status,
+  }: ValintatapajonoStatusParams) =>
+    `${DOMAIN}/valintaperusteet-service/resources/V2valintaperusteet/${valintatapajonoOid}/automaattinenSiirto?status=${status}`,
 } as const;

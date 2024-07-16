@@ -144,4 +144,13 @@ export const client = {
         ...options,
       }),
     ),
+  put: (url: string, body: NonNullable<unknown>, options: RequestInit = {}) =>
+    makeRequest(
+      new Request(url, {
+        method: 'PUT',
+        body: JSON.stringify(body),
+        headers: { 'Content-Type': 'application/json' },
+        ...options,
+      }),
+    ),
 };
