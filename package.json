@@ -10,7 +10,9 @@
     "start": "NODE_ENV=production npm run dev",
     "start-test": "NODE_ENV=production npm run dev-test",
     "lint": "next lint --max-warnings=0",
-    "prettier-eslint:fix": "prettier-eslint \"**/*.{js,ts,mjs,cjs,jsx,tsx}\" --write",
+    "lint:fix": "next lint --fix",
+    "prettier": "prettier -u -c *",
+    "prettier:fix": "prettier --write -u *",
     "test:ui": "playwright test",
     "test": "vitest",
     "coverage": "vitest run --coverage",
@@ -65,15 +67,8 @@
     "lint-staged": "^15.2.6",
     "postcss": "^8",
     "prettier": "^3.3.2",
-    "prettier-eslint-cli": "^8.0.1",
+    "tsc-files": "^1.1.4",
     "typescript": "^5",
     "vitest": "^1.6.0"
-  },
-  "lint-staged": {
-    "**/*.{js,ts,mjs,cjs,jsx,tsx}": [
-      "eslint --fix",
-      "prettier --write -u"
-    ],
-    "!**/*.{js,ts,mjs,cjs,jsx,tsx}": "prettier --write -u"
   }
 }
