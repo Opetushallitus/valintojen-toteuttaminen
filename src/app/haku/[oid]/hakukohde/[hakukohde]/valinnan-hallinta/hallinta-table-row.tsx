@@ -21,6 +21,7 @@ import { useMemo } from 'react';
 import { Haku, Hakukohde } from '@/app/lib/kouta-types';
 import { sijoitellaankoHaunHakukohteetLaskennanYhteydessa } from '@/app/lib/kouta';
 import { HaunAsetukset } from '@/app/lib/ohjausparametrit';
+import { useToaster } from '@/app/hooks/useToaster';
 
 type HallintaTableRowParams = {
   haku: Haku;
@@ -42,10 +43,11 @@ const HallintaTableRow = ({
   lastCalculated,
 }: HallintaTableRowParams) => {
   const { t, translateEntity } = useTranslations();
+  const { addToast } = useToaster();
 
-  const laskentaMachine = useMemo(
-    () =>
-      createLaskentaMachine({
+  const laskentaMachine = useMemo(() => {
+    return createLaskentaMachine(
+      {
         haku,
         hakukohde,
         sijoitellaanko: sijoitellaankoHaunHakukohteetLaskennanYhteydessa(
@@ -54,10 +56,21 @@ const HallintaTableRow = ({
         ),
         valinnanvaiheTyyppi: vaihe.tyyppi,
         valinnanvaiheNumber: index,
+        valinnanvaiheNimi: vaihe.nimi,
         translateEntity,
-      }),
-    [haku, hakukohde, haunAsetukset, translateEntity, index, vaihe.tyyppi],
-  );
+      },
+      addToast,
+    );
+  }, [
+    haku,
+    hakukohde,
+    haunAsetukset,
+    translateEntity,
+    index,
+    vaihe.tyyppi,
+    addToast,
+    vaihe.nimi,
+  ]);
 
   const [state, send] = useMachine(laskentaMachine);
 

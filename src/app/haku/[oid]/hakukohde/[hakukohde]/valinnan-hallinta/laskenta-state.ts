@@ -1,3 +1,5 @@
+'use client';
+
 import { assign, fromPromise, setup } from 'xstate';
 import { Laskenta, laskentaReducer } from './valinnan-hallinta-types';
 import { ValinnanvaiheTyyppi } from '@/app/lib/valintaperusteet';
@@ -15,6 +17,7 @@ import {
   getLaskennanSeurantaTiedot,
 } from '@/app/lib/valintalaskenta-service';
 import { FetchError } from '@/app/lib/common';
+import { Toast } from '@/app/hooks/useToaster';
 
 const POLLING_INTERVAL = 5000;
 
@@ -24,6 +27,7 @@ type StartLaskentaParams = {
   valinnanvaiheTyyppi?: ValinnanvaiheTyyppi;
   sijoitellaanko: boolean;
   valinnanvaiheNumber?: number;
+  valinnanvaiheNimi?: string;
   translateEntity: (translateable: TranslatedName) => string;
 };
 
@@ -67,7 +71,10 @@ const tryAndParseError = async <T>(wrappedFn: () => Promise<T>) => {
   }
 };
 
-export const createLaskentaMachine = (params: StartLaskentaParams) => {
+export const createLaskentaMachine = (
+  params: StartLaskentaParams,
+  addToast: (toast: Toast) => void,
+) => {
   return setup({
     types: {
       context: {} as LaskentaContext,
@@ -259,6 +266,21 @@ export const createLaskentaMachine = (params: StartLaskentaParams) => {
                 calculatedTime: new Date(),
               }),
           }),
+          ({ context }) => {
+            const wholeHakukohde: boolean =
+              !context.startLaskentaParams.valinnanvaiheNumber;
+            const keyPartValinnanvaihe = wholeHakukohde
+              ? ''
+              : `-${context.startLaskentaParams.valinnanvaiheNumber ?? 0}`;
+            const key = `laskenta-completed-for-${context.startLaskentaParams.hakukohde.oid}${keyPartValinnanvaihe}`;
+            const message = wholeHakukohde
+              ? 'valinnanhallinta.valmis'
+              : 'valinnanhallinta.valmisvalinnanvaihe';
+            const messageParams = wholeHakukohde
+              ? undefined
+              : { nimi: context.startLaskentaParams.valinnanvaiheNimi ?? '' };
+            addToast({ key, message, type: 'success', messageParams });
+          },
         ],
       },
     },
