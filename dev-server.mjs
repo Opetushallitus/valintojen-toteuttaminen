@@ -49,8 +49,11 @@ app.prepare().then(() => {
     } else {
       proxy(req, res);
     }
-  }).listen(port, (err) => {
-    if (err) throw err;
-    console.log('ready - started server on url: https://localhost:' + port);
-  });
+  })
+    .listen(port, () => {
+      console.log('ready - started server on url: https://localhost:' + port);
+    })
+    .on('error', (e) => {
+      console.error(e);
+    });
 });

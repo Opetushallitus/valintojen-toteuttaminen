@@ -1,16 +1,5 @@
-import { test, expect, Locator, Page } from '@playwright/test';
-import { expectAllSpinnersHidden } from './playwright-utils';
-
-const checkRow = async (
-  row: Locator,
-  expectedValues: string[],
-  cellType: 'th' | 'td' = 'td',
-) => {
-  const cells = row.locator(cellType);
-  for (const [index, value] of expectedValues.entries()) {
-    await expect.soft(cells.nth(index)).toHaveText(value);
-  }
-};
+import { test, expect, Page } from '@playwright/test';
+import { checkRow, expectAllSpinnersHidden } from './playwright-utils';
 
 test('displays hakeneet', async ({ page }) => {
   await page.goto(
@@ -20,8 +9,8 @@ test('displays hakeneet', async ({ page }) => {
   await expect(page.locator('h1')).toHaveText(
     '> Tampere University Separate Admission/ Finnish MAOL Competition Route 2024',
   );
-  const headrow = await page.locator('thead tr');
-  checkRow(
+  const headrow = page.locator('thead tr');
+  await checkRow(
     headrow,
     [
       'Hakija',
@@ -91,7 +80,7 @@ test('does not show maksuvelvollisuus and hakukelpoisuus columns when not korkea
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/hakeneet',
   );
   await expectAllSpinnersHidden(page);
-  const headrow = await page.locator('thead tr');
+  const headrow = page.locator('thead tr');
   await checkRow(
     headrow,
     [
@@ -123,7 +112,7 @@ test.describe('hakeneet search', () => {
   });
 
   test('filters by name', async () => {
-    const hakuInput = await page.getByRole('textbox', {
+    const hakuInput = page.getByRole('textbox', {
       name: 'Hae hakijan nimellä tai tunnisteilla',
     });
     await hakuInput.fill('Ruht');
@@ -137,7 +126,7 @@ test.describe('hakeneet search', () => {
       '1.2.246.562.11.00000000000001796027',
       '1.2.246.562.24.69259807406',
     ]);
-    hakuInput.fill('Hui');
+    await hakuInput.fill('Hui');
     rows = page.locator('tbody tr');
     await expect(rows).toHaveCount(1);
     await checkRow(rows.nth(0), [
@@ -151,7 +140,7 @@ test.describe('hakeneet search', () => {
   });
 
   test('filters by application oid', async () => {
-    const hakuInput = await page.getByRole('textbox', {
+    const hakuInput = page.getByRole('textbox', {
       name: 'Hae hakijan nimellä tai tunnisteilla',
     });
     await hakuInput.fill('1.2.246.562.11.00000000000001543832');
@@ -168,7 +157,7 @@ test.describe('hakeneet search', () => {
   });
 
   test('filters henkiloOid', async () => {
-    const hakuInput = await page.getByRole('textbox', {
+    const hakuInput = page.getByRole('textbox', {
       name: 'Hae hakijan nimellä tai tunnisteilla',
     });
     await hakuInput.fill('1.2.246.562.24.14598775927');

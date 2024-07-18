@@ -1,6 +1,6 @@
 import HakukohdePanel from './hakukohde-panel';
-import { MainContainer } from '@/app/components/MainContainer';
-import { PageLayout } from '@/app/components/PageLayout';
+import { MainContainer } from '@/app/components/main-container';
+import { PageLayout } from '@/app/components/page-layout';
 
 export default function HakuLayout({
   children,

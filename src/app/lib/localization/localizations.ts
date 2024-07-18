@@ -1,13 +1,14 @@
 'use client';
 
-import HttpBackend from 'i18next-http-backend';
+import FetchBackend from 'i18next-fetch-backend';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { isDev } from '../configuration';
 
 export const createLocalization = () => {
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   i18n
-    .use(HttpBackend)
+    .use(FetchBackend)
     .use(initReactI18next)
     .init({
       debug: isDev,
@@ -15,20 +16,7 @@ export const createLocalization = () => {
       preload: ['fi', 'sv', 'en'],
       lng: 'fi',
       backend: {
-        loadPath: '{{lng}}',
-        request: (
-          options: [],
-          url: string,
-          payload: unknown,
-          callback: (a: unknown, b?: unknown) => void,
-        ) => {
-          fetch(`/valintojen-toteuttaminen/lokalisaatio?lng=${url}`)
-            .then(async (response) => {
-              const translations = await response.json();
-              callback(null, { status: 200, data: translations });
-            })
-            .catch(() => callback({ status: 404 }));
-        },
+        loadPath: '/valintojen-toteuttaminen/lokalisaatio?lng={{lng}}',
       },
     });
   return i18n;

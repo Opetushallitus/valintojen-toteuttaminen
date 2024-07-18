@@ -1,7 +1,6 @@
 'use client';
 import React from 'react';
 
-import { useHakutavat } from '@/app/hooks/useHakutavat';
 import { useHakuSearchResults } from '@/app/hooks/useHakuSearch';
 import { TablePaginationWrapper } from '../components/table/table-pagination-wrapper';
 import { HakuTable } from './haku-table';
@@ -20,8 +19,6 @@ export default function Home() {
     setSort,
   } = useHakuSearchResults();
 
-  const { data: hakutavat } = useHakutavat();
-
   return (
     <TablePaginationWrapper
       totalCount={results?.length ?? 0}
@@ -31,12 +28,7 @@ export default function Home() {
       setPageSize={setPageSize}
       countTranslationKey="haku.maara"
     >
-      <HakuTable
-        haut={pageResults}
-        hakutavat={hakutavat}
-        setSort={setSort}
-        sort={sort ?? ''}
-      />
+      <HakuTable haut={pageResults} setSort={setSort} sort={sort ?? ''} />
     </TablePaginationWrapper>
   );
 }

@@ -82,6 +82,7 @@ export const HakeneetTable = ({
 
   return (
     <ListTable
+      rowKeyProp="oid"
       columns={columns}
       rows={hakeneet}
       sort={sort}

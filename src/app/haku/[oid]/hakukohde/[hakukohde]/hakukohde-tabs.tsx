@@ -1,13 +1,12 @@
 'use client';
 
 import { styled } from '@mui/material';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { getHakukohde } from '@/app/lib/kouta';
 import { usePathname } from 'next/navigation';
 import { Link as MuiLink } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { colors } from '@/app/theme';
 import { DEFAULT_BOX_BORDER } from '@/app/lib/constants';
+import { useHakukohde } from '@/app/hooks/useHakukohde';
 
 const StyledContainer = styled('div')(({ theme }) => ({
   padding: theme.spacing(2, 3, 0),
@@ -44,8 +43,8 @@ const TABS: BasicTab[] = [
   { title: 'pistesyotto.otsikko', route: 'pistesyotto' },
   { title: 'harkinnanvaraiset.otsikko', route: 'harkinnanvaraiset' },
   { title: 'hakijaryhmat.otsikko', route: 'hakijaryhmat' },
-  { title: 'valintalaskennantulos.otsikko', route: 'valintalaskennan-tulos' },
-  { title: 'sijoitteluntulokset.otsikko', route: 'sijoittelun-tulokset' },
+  { title: 'valintalaskennan-tulos.otsikko', route: 'valintalaskennan-tulos' },
+  { title: 'sijoittelun-tulokset.otsikko', route: 'sijoittelun-tulokset' },
 ] as const;
 
 function getPathMatchingTab(pathName: string) {
@@ -53,15 +52,16 @@ function getPathMatchingTab(pathName: string) {
   return TABS.find((tab) => tab.route.startsWith(lastPath)) || TABS[0];
 }
 
-const HakukohdeTabs = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
+export const useHakukohdeTab = () => {
   const pathName = usePathname();
-  const activeTab = getPathMatchingTab(pathName);
+  return getPathMatchingTab(pathName);
+};
+
+const HakukohdeTabs = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
+  const activeTab = useHakukohdeTab();
   const { t, translateEntity } = useTranslations();
 
-  const { data: hakukohde } = useSuspenseQuery({
-    queryKey: ['getHakukohde', hakukohdeOid],
-    queryFn: () => getHakukohde(hakukohdeOid),
-  });
+  const { data: hakukohde } = useHakukohde({ hakukohdeOid });
 
   return (
     <StyledContainer>

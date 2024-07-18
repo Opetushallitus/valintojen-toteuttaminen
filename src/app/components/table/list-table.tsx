@@ -1,8 +1,8 @@
 'use client';
 
 import {
+  Box,
   Button,
-  Link as MuiLink,
   Table,
   TableBody,
   TableCell,
@@ -10,72 +10,43 @@ import {
   TableRow,
   styled,
 } from '@mui/material';
-import { Haku, getAlkamisKausi, Tila } from '@/app/lib/kouta-types';
 import { colors } from '@/app/theme';
 import { ExpandLess, ExpandMore, UnfoldMore } from '@mui/icons-material';
 import { getSortParts } from './table-utils';
-import { TranslatedName } from '@/app/lib/localization/localization-types';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { TFunction } from 'i18next';
 import { ExternalLink } from '../external-link';
-
-type Column<P> = {
-  title?: string;
-  key: string;
-  render: (props: P) => React.ReactNode;
-  style?: Record<string, string | number>;
-};
-
-type Entity = { oid: string; nimi?: TranslatedName | string; tila?: Tila };
+import React, { Key } from 'react';
 
 type KeysMatching<O, T> = {
   [K in keyof O]: O[K] extends T ? K : never;
 }[keyof O & string];
 
-export const makeHakuColumn = <T extends Entity = Entity>(
-  translateEntity: (entity: TranslatedName) => string,
-): Column<T> => ({
-  title: 'yleinen.nimi',
-  key: 'nimi',
-  render: (haku) => (
-    <MuiLink href={`/haku/${haku.oid}`} sx={{ textDecoration: 'none' }}>
-      {typeof haku.nimi == 'object' ? translateEntity(haku.nimi) : haku.nimi}
-    </MuiLink>
-  ),
-  style: {
-    width: 'auto',
-  },
-});
+export type ListTableColumn<P> = {
+  title?: string;
+  key: keyof P;
+  render: (props: P) => React.ReactNode;
+  style?: React.CSSProperties;
+};
 
-export const makeNameColumn = <T extends Entity = Entity>(
-  translateEntity: (entity: TranslatedName) => string,
-): Column<T> => ({
-  title: 'Nimi',
-  key: 'nimi',
-  render: (t) => (
-    <span>{typeof t.nimi === 'object' ? translateEntity(t.nimi) : t.nimi}</span>
-  ),
-  style: {
-    width: 'auto',
-  },
-});
-
-export const makeGenericColumn = <T extends Entity = Entity>({
+export const makeGenericColumn = <T extends Record<string, unknown>>({
   title,
   key,
   valueProp,
 }: {
   title: string;
   key: string;
-  valueProp: KeysMatching<T, string | number>;
-}): Column<T> => ({
+  valueProp: KeysMatching<T, string | number | undefined>;
+}): ListTableColumn<T> => ({
   title,
   key,
-  render: (props) => <span>{(props[valueProp] ?? 0) as string}</span>,
+  render: (props) => <span>{props[valueProp] as string}</span>,
   style: { width: 'auto' },
 });
 
-export const makeColumnWithValueToTranslate = <T extends Entity = Entity>({
+export const makeColumnWithValueToTranslate = <
+  T extends Record<string, unknown>,
+>({
   t,
   title,
   key,
@@ -85,14 +56,14 @@ export const makeColumnWithValueToTranslate = <T extends Entity = Entity>({
   title: string;
   key: string;
   valueProp: KeysMatching<T, string>;
-}): Column<T> => ({
+}): ListTableColumn<T> => ({
   title,
   key,
   render: (props) => <span>{t(props[valueProp] as string)}</span>,
   style: { width: 'auto' },
 });
 
-export const makeCountColumn = <T extends Entity = Entity>({
+export const makeCountColumn = <T extends Record<string, unknown>>({
   title,
   key,
   amountProp,
@@ -100,14 +71,14 @@ export const makeCountColumn = <T extends Entity = Entity>({
   title: string;
   key: string;
   amountProp: KeysMatching<T, number>;
-}): Column<T> => ({
+}): ListTableColumn<T> => ({
   title,
   key,
   render: (props) => <span>{(props[amountProp] ?? 0) as number}</span>,
   style: { width: 0 },
 });
 
-export const makeExternalLinkColumn = <T extends Entity = Entity>({
+export const makeExternalLinkColumn = <T extends Record<string, unknown>>({
   linkBuilder,
   title,
   key,
@@ -119,7 +90,7 @@ export const makeExternalLinkColumn = <T extends Entity = Entity>({
   key: string;
   nameProp?: KeysMatching<T, string>;
   linkProp: KeysMatching<T, string>;
-}): Column<T> => ({
+}): ListTableColumn<T> => ({
   title,
   key,
   render: (props) => (
@@ -130,37 +101,6 @@ export const makeExternalLinkColumn = <T extends Entity = Entity>({
     />
   ),
   style: { width: 'auto' },
-});
-
-export const makeTilaColumn = <T extends Entity = Entity>(): Column<T> => ({
-  title: 'yleinen.tila',
-  key: 'tila',
-  render: (haku) => <span>{haku.tila}</span>,
-  style: {
-    width: 0,
-  },
-});
-
-export const makeHakutapaColumn = (
-  getMatchingHakutapa: (koodiUri: string) => string | undefined,
-): Column<Haku> => ({
-  title: 'haku.hakutapa',
-  key: 'hakutapaNimi',
-  render: (haku) => <span>{getMatchingHakutapa(haku.hakutapaKoodiUri)}</span>,
-});
-
-export const makeKoulutuksenAlkamiskausiColumn = (
-  t: TFunction,
-): Column<Haku> => ({
-  title: 'haku.alkamiskausi',
-  key: 'alkamiskausiNimi',
-  render: (haku) => (
-    <span>
-      {haku.alkamisKausiKoodiUri
-        ? `${haku.alkamisVuosi} ${t(getAlkamisKausi(haku.alkamisKausiKoodiUri))}`
-        : ''}
-    </span>
-  ),
 });
 
 const StyledTable = styled(Table)({
@@ -191,10 +131,11 @@ const StyledTableBody = styled(TableBody)({
 });
 
 interface ListTableProps<T> extends React.ComponentProps<typeof StyledTable> {
-  columns?: Array<Column<T>>;
+  columns?: Array<ListTableColumn<T>>;
   rows?: Array<T>;
   sort?: string;
   setSort?: (sort: string) => void;
+  rowKeyProp: keyof T;
 }
 
 const SortIcon = ({
@@ -223,15 +164,15 @@ const HeaderCell = ({
 }: {
   colId: string;
   title?: string;
-  style?: Record<string, string | number>;
+  style?: React.CSSProperties;
   sort?: string;
   setSort?: (sort: string) => void;
 }) => {
   const { direction } = getSortParts(sort, colId);
 
   return (
-    <StyledCell style={style} sortDirection={direction}>
-      {setSort && (
+    <StyledCell sx={style} sortDirection={direction}>
+      {setSort ? (
         <Button
           sx={{
             color: colors.black,
@@ -251,57 +192,69 @@ const HeaderCell = ({
         >
           {title}
         </Button>
+      ) : (
+        <span style={{ fontWeight: 600 }}>{title}</span>
       )}
-      {!setSort && <span style={{ fontWeight: 600 }}>{title}</span>}
     </StyledCell>
   );
 };
 
-export const ListTable = <T extends Entity>({
+const TableWrapper = styled(Box)({
+  position: 'relative',
+  display: 'block',
+  width: '100%',
+  overflowX: 'auto',
+});
+
+export type Row<K extends string = string> = Record<K, unknown>;
+
+export const ListTable = <T extends Row>({
   columns = [],
   rows = [],
   sort,
   setSort,
+  rowKeyProp,
   ...props
 }: ListTableProps<T>) => {
   const { t } = useTranslations();
 
   return (
-    <StyledTable {...props}>
-      <TableHead>
-        <TableRow>
-          {columns.map((columnProps) => {
-            const { key, title, style } = columnProps;
+    <TableWrapper>
+      <StyledTable {...props}>
+        <TableHead>
+          <TableRow>
+            {columns.map((columnProps) => {
+              const { key, title, style } = columnProps;
+              return (
+                <HeaderCell
+                  key={key.toString()}
+                  colId={key.toString()}
+                  title={t(title ?? '')}
+                  style={style}
+                  sort={sort}
+                  setSort={setSort}
+                />
+              );
+            })}
+          </TableRow>
+        </TableHead>
+        <StyledTableBody>
+          {rows.map((rowProps) => {
             return (
-              <HeaderCell
-                key={key}
-                colId={key}
-                title={t(title ?? '')}
-                style={style}
-                sort={sort}
-                setSort={setSort}
-              />
+              <TableRow key={rowProps?.[rowKeyProp] as Key}>
+                {columns.map(({ key: columnKey, render, style }) => {
+                  return (
+                    <StyledCell key={columnKey.toString()} sx={style}>
+                      {render({ ...rowProps })}
+                    </StyledCell>
+                  );
+                })}
+              </TableRow>
             );
           })}
-        </TableRow>
-      </TableHead>
-      <StyledTableBody>
-        {rows.map((rowProps) => {
-          const { oid } = rowProps;
-          return (
-            <TableRow key={oid}>
-              {columns.map(({ key: columnKey, render, style }) => {
-                return (
-                  <StyledCell key={columnKey} style={style}>
-                    {render({ ...rowProps })}
-                  </StyledCell>
-                );
-              })}
-            </TableRow>
-          );
-        })}
-      </StyledTableBody>
-    </StyledTable>
+        </StyledTableBody>
+      </StyledTable>
+    </TableWrapper>
   );
 };
 

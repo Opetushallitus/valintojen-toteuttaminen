@@ -12,8 +12,7 @@ export type ExternalLinkProps = {
 export const ExternalLink = ({ name, href, noIcon }: ExternalLinkProps) => {
   const { t } = useTranslations();
   return (
-    // TODO: Korjaa nextjs-teemaan komponentti absoluuttisille linkeille (next.js-linkki vain suhteellisille linkeille)
-    <Link component="a" target="_blank" href={`${DOMAIN}/${href}`}>
+    <Link target="_blank" href={`${DOMAIN}/${href}`}>
       {name}{' '}
       {!noIcon && (
         <OpenInNew

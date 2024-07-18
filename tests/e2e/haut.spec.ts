@@ -56,8 +56,8 @@ test('filters haku by published state', async ({ page }) => {
   await selectTila(page, 'Julkaistu');
   const tableRows = getTableRows(page);
   await expect(tableRows).toHaveCount(3);
-  const hakuInput = await page.getByRole('textbox', { name: 'Hae hakuja' });
-  hakuInput.fill('Luk');
+  const hakuInput = page.getByRole('textbox', { name: 'Hae hakuja' });
+  await hakuInput.fill('Luk');
   await expect(tableRows).toHaveCount(1);
   await expect(tableRows).toContainText('Hausjärven lukio jatkuva haku');
 });
@@ -74,10 +74,10 @@ test('filters haku by archived state', async ({ page }) => {
   await selectTila(page, 'Arkistoitu');
 
   await expect(tableRows).toHaveCount(3);
-  const hakuInput = await page.getByRole('textbox', { name: 'Hae hakuja' });
-  hakuInput.fill('hak');
+  const hakuInput = page.getByRole('textbox', { name: 'Hae hakuja' });
+  await hakuInput.fill('hak');
   await expect(tableRows).toHaveCount(3);
-  hakuInput.fill('Leppä');
+  await hakuInput.fill('Leppä');
   await expect(tableRows).toHaveCount(1);
   await expect(tableRows).toContainText('Leppävirran lukio - Jatkuva haku');
   await expectUrlParamToEqual(page, 'search', 'Leppä');

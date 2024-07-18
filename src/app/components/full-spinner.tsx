@@ -1,6 +1,6 @@
 import { Box, CircularProgress } from '@mui/material';
 
-export const FullSpinner = () => (
+export const FullSpinner = ({ ariaLabel }: { ariaLabel?: string }) => (
   <Box
     position="relative"
     left="0"
@@ -12,6 +12,6 @@ export const FullSpinner = () => (
     justifyContent="center"
     alignItems="center"
   >
-    <CircularProgress aria-label="Ladataan..." />
+    <CircularProgress aria-label={ariaLabel} />
   </Box>
 );

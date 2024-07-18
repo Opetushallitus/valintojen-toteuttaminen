@@ -1,18 +1,14 @@
 'use client';
 
-import { getHakukohde } from '@/app/lib/kouta';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { TabContainer } from '../TabContainer';
+import { TabContainer } from '../tab-container';
+import { useHakukohde } from '@/app/hooks/useHakukohde';
 
 export default function HarkinnanvaraisetPage({
   params,
 }: {
   params: { oid: string; hakukohde: string };
 }) {
-  const { data: hakukohde } = useSuspenseQuery({
-    queryKey: ['getHakukohde', params.hakukohde],
-    queryFn: () => getHakukohde(params.hakukohde),
-  });
+  const { data: hakukohde } = useHakukohde({ hakukohdeOid: params.hakukohde });
 
   return (
     <TabContainer>

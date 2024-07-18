@@ -10,13 +10,19 @@ export default defineConfig({
     },
   },
   test: {
+    globals: true,
     environment: 'jsdom',
     dir: './src',
     include: ['**/**.test.?(c|m)[jt]s?(x)'],
     coverage: {
-      provider: 'istanbul',
       include: ['src/**'],
     },
     exclude: ['./cdk'],
+    setupFiles: ['./vitest-setup.ts'],
+    server: {
+      deps: {
+        inline: ['@opetushallitus/oph-design-system'],
+      },
+    },
   },
 });

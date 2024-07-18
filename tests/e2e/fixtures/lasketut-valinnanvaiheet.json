@@ -1,0 +1,208 @@
+[
+  {
+    "jarjestysnumero": 0,
+    "valinnanvaiheoid": "16799135931442767799185219089995",
+    "hakuOid": "1.2.246.562.29.00000000000000045102",
+    "nimi": "Harkinnanvaraisten käsittelyvaihe",
+    "createdAt": 1704817368170,
+    "valintatapajonot": [
+      {
+        "valintatapajonooid": "1679913593167-8093928466417053918",
+        "nimi": "Harkinnanvaraisten käsittelyvaiheen valintatapajono",
+        "prioriteetti": 0,
+        "aloituspaikat": 0,
+        "siirretaanSijoitteluun": false,
+        "tasasijasaanto": "ARVONTA",
+        "eiVarasijatayttoa": false,
+        "kaikkiEhdonTayttavatHyvaksytaan": false,
+        "poissaOlevaTaytto": null,
+        "kaytetaanValintalaskentaa": true,
+        "valmisSijoiteltavaksi": false,
+        "jonosijat": [
+          {
+            "jonosija": 1,
+            "hakemusOid": "1.2.246.562.11.00000000000001796027",
+            "hakijaOid": "1.2.246.562.24.69259807406",
+            "jarjestyskriteerit": [
+              {
+                "arvo": null,
+                "tila": "HYVAKSYTTAVISSA",
+                "kuvaus": {},
+                "prioriteetti": 0,
+                "nimi": "Ulkomailla suoritettu koulutus tai oppivelvollisuuden suorittaminen keskeytynyt"
+              }
+            ],
+            "prioriteetti": 6,
+            "sukunimi": null,
+            "etunimi": null,
+            "harkinnanvarainen": false,
+            "tuloksenTila": "HYVAKSYTTAVISSA",
+            "historiat": null,
+            "syotetytArvot": [],
+            "funktioTulokset": [],
+            "muokattu": false,
+            "hylattyValisijoittelussa": false
+          }
+        ],
+        "aktiivinen": true,
+        "kaytetaanKokonaispisteita": null,
+        "hakija": [],
+        "varasijat": 0,
+        "varasijaTayttoPaivat": 0,
+        "varasijojaKaytetaanAlkaen": null,
+        "varasijojaTaytetaanAsti": null,
+        "tayttojono": null,
+        "sijoitteluajoId": null,
+        "oid": "1679913593167-8093928466417053918"
+      }
+    ],
+    "valintakokeet": [],
+    "valinnanvaihe": 0
+  },
+  {
+    "jarjestysnumero": 1,
+    "valinnanvaiheoid": "16799135928546091301454143920196",
+    "hakuOid": "1.2.246.562.29.00000000000000045102",
+    "nimi": "Varsinainen valinta",
+    "createdAt": 1704817368805,
+    "valintatapajonot": [
+      {
+        "valintatapajonooid": "1679913592869-3133925962577840128",
+        "nimi": "Lukiokoulutus",
+        "prioriteetti": 0,
+        "aloituspaikat": 50,
+        "siirretaanSijoitteluun": true,
+        "tasasijasaanto": "ARVONTA",
+        "eiVarasijatayttoa": false,
+        "kaikkiEhdonTayttavatHyvaksytaan": false,
+        "poissaOlevaTaytto": null,
+        "kaytetaanValintalaskentaa": true,
+        "valmisSijoiteltavaksi": true,
+        "jonosijat": [
+          {
+            "jonosija": 1,
+            "hakemusOid": "1.2.246.562.11.00000000000001793706",
+            "hakijaOid": "1.2.246.562.24.25732574711",
+            "jarjestyskriteerit": [
+              {
+                "arvo": 10.0,
+                "tila": "HYVAKSYTTAVISSA",
+                "kuvaus": {},
+                "prioriteetti": 0,
+                "nimi": "Lukion valintaperusteet, painotettu keskiarvo"
+              },
+              {
+                "arvo": 6.0,
+                "tila": "HYVAKSYTTAVISSA",
+                "kuvaus": {},
+                "prioriteetti": 1,
+                "nimi": "Hakutoivejärjestystasapistetilanne, lukiokoulutus"
+              },
+              {
+                "arvo": 9.83,
+                "tila": "HYVAKSYTTAVISSA",
+                "kuvaus": {},
+                "prioriteetti": 2,
+                "nimi": "Kaikkien aineiden keskiarvo, lukiokoulutus"
+              }
+            ],
+            "prioriteetti": 2,
+            "sukunimi": null,
+            "etunimi": null,
+            "harkinnanvarainen": false,
+            "tuloksenTila": "HYVAKSYTTAVISSA",
+            "historiat": null,
+            "syotetytArvot": [],
+            "funktioTulokset": [
+              {
+                "tunniste": "keskiarvo_lk",
+                "arvo": "9.83",
+                "nimiFi": "keskiarvo",
+                "nimiSv": "keskiarvo",
+                "nimiEn": "keskiarvo",
+                "omaopintopolku": false
+              },
+              {
+                "tunniste": "painotettu_keskiarvo",
+                "arvo": "10.00",
+                "nimiFi": "Keskiarvo",
+                "nimiSv": "Medeltalet",
+                "nimiEn": "",
+                "omaopintopolku": false
+              }
+            ],
+            "muokattu": false,
+            "hylattyValisijoittelussa": false
+          },
+          {
+            "jonosija": 2,
+            "hakemusOid": "1.2.246.562.11.00000000000001790371",
+            "hakijaOid": "1.2.246.562.24.14598775927",
+            "jarjestyskriteerit": [
+              {
+                "arvo": 9.91,
+                "tila": "HYVAKSYTTAVISSA",
+                "kuvaus": {},
+                "prioriteetti": 0,
+                "nimi": "Lukion valintaperusteet, painotettu keskiarvo"
+              },
+              {
+                "arvo": 7.0,
+                "tila": "HYVAKSYTTAVISSA",
+                "kuvaus": {},
+                "prioriteetti": 1,
+                "nimi": "Hakutoivejärjestystasapistetilanne, lukiokoulutus"
+              },
+              {
+                "arvo": 9.81,
+                "tila": "HYVAKSYTTAVISSA",
+                "kuvaus": {},
+                "prioriteetti": 2,
+                "nimi": "Kaikkien aineiden keskiarvo, lukiokoulutus"
+              }
+            ],
+            "prioriteetti": 1,
+            "sukunimi": null,
+            "etunimi": null,
+            "harkinnanvarainen": false,
+            "tuloksenTila": "HYVAKSYTTAVISSA",
+            "historiat": null,
+            "syotetytArvot": [],
+            "funktioTulokset": [
+              {
+                "tunniste": "keskiarvo_lk",
+                "arvo": "9.81",
+                "nimiFi": "keskiarvo",
+                "nimiSv": "keskiarvo",
+                "nimiEn": "keskiarvo",
+                "omaopintopolku": false
+              },
+              {
+                "tunniste": "painotettu_keskiarvo",
+                "arvo": "9.91",
+                "nimiFi": "Keskiarvo",
+                "nimiSv": "Medeltalet",
+                "nimiEn": "",
+                "omaopintopolku": false
+              }
+            ],
+            "muokattu": false,
+            "hylattyValisijoittelussa": false
+          }
+        ],
+        "aktiivinen": true,
+        "kaytetaanKokonaispisteita": null,
+        "hakija": [],
+        "varasijat": 0,
+        "varasijaTayttoPaivat": 0,
+        "varasijojaKaytetaanAlkaen": null,
+        "varasijojaTaytetaanAsti": null,
+        "tayttojono": null,
+        "sijoitteluajoId": null,
+        "oid": "1679913592869-3133925962577840128"
+      }
+    ],
+    "valintakokeet": [],
+    "valinnanvaihe": 0
+  }
+]

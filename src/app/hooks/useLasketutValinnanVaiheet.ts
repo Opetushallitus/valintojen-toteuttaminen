@@ -1,7 +1,29 @@
 'use client';
 import { useSuspenseQueries } from '@tanstack/react-query';
-import { getLasketutValinnanVaiheet } from '../lib/valintalaskenta-service';
+import {
+  JonoSija,
+  LaskettuValintatapajono,
+  getLasketutValinnanVaiheet,
+} from '../lib/valintalaskenta-service';
 import { Hakemus, getHakemukset } from '../lib/ataru';
+import { TranslatedName } from '../lib/localization/localization-types';
+
+export type JonoSijaWithHakijaInfo = Omit<
+  JonoSija,
+  'jarjestyskriteerit' | 'harkinnanvarainen'
+> & {
+  hakijanNimi: string;
+  hakemusOid: string;
+  henkiloOid: string;
+  pisteet?: number;
+  hakutoiveNumero?: number;
+  tuloksenTila?: string;
+  muutoksenSyy?: TranslatedName;
+};
+
+export type LaskettuJonoWithHakijaInfo = LaskettuValintatapajono & {
+  jonosijat: Array<JonoSijaWithHakijaInfo>;
+};
 
 export const useLasketutValinnanVaiheet = ({
   hakuOid,
@@ -45,12 +67,17 @@ export const useLasketutValinnanVaiheet = ({
               return {
                 ...jonosija,
                 hakijanNimi: hakemus.hakijanNimi,
-                hakutoiveNumero: hakemus.hakutoiveNumero,
+                hakutoiveNumero: jonosija.prioriteetti,
                 hakemuksenTila: hakemus.hakemuksenTila,
                 hakemusOid: hakemus.oid,
                 henkiloOid: hakemus.henkiloOid,
                 pisteet: jarjestyskriteeri?.arvo,
-                hakutoive: hakemus.hakutoiveNumero,
+                tuloksenTila: jonosija.tuloksenTila,
+                muutoksenSyy: Object.fromEntries(
+                  Object.entries(jarjestyskriteeri?.kuvaus ?? {}).map(
+                    ([key, value]) => [key.toLowerCase(), value],
+                  ),
+                ),
               };
             }),
           };

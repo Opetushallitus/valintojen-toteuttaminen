@@ -1,13 +1,13 @@
 'use client';
 
 import { getHaku, getHakukohde } from '@/app/lib/kouta';
-import { TabContainer } from '../TabContainer';
 import HallintaTable from './hallinta-table';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { useSuspenseQueries } from '@tanstack/react-query';
 import { CircularProgress } from '@mui/material';
 import { getHaunAsetukset } from '@/app/lib/ohjausparametrit';
+import { TabContainer } from '../tab-container';
 
 type ValinnanHallintaContentParams = {
   hakuOid: string;

@@ -21,7 +21,6 @@ const TABS_TO_TEST: Tab[] = [
   { title: 'Pistesyöttö', route: 'pistesyotto' },
   { title: 'Harkinnanvaraiset', route: 'harkinnanvaraiset' },
   { title: 'Hakijaryhmät', route: 'hakijaryhmat' },
-  { title: 'Valintalaskennan tulos', route: 'valintalaskennan-tulos' },
   { title: 'Sijoittelun tulokset', route: 'sijoittelun-tulokset' },
 ] as const;
 

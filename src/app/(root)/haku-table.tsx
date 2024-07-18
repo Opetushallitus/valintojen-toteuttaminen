@@ -1,51 +1,74 @@
 'use client';
-import { Koodi } from '../lib/koodisto';
 import ListTable, {
+  ListTableColumn,
   makeCountColumn,
-  makeHakuColumn,
-  makeHakutapaColumn,
-  makeKoulutuksenAlkamiskausiColumn,
-  makeTilaColumn,
 } from '../components/table/list-table';
-import { Haku } from '../lib/kouta-types';
-import { TranslatedName } from '../lib/localization/localization-types';
-import { useTranslations } from '../hooks/useTranslations';
+import { useTranslations } from '@/app/hooks/useTranslations';
+import { HakuListItem } from '@/app/hooks/useHakuSearch';
+import { Link } from '@mui/material';
+import { useMemo } from 'react';
 
 export const HakuTable = ({
   haut,
-  hakutavat,
   setSort,
   sort,
 }: {
-  haut: Haku[];
-  hakutavat: Koodi[];
+  haut: Array<HakuListItem>;
   sort: string;
   setSort: (sort: string) => void;
 }) => {
-  const getMatchingHakutapa =
-    (translateEntity: (entity: TranslatedName) => string) =>
-    (hakutapaKoodiUri: string) => {
-      const matching = hakutavat.find((tapa: Koodi) =>
-        hakutapaKoodiUri.startsWith(tapa.koodiUri),
-      );
-      return matching ? translateEntity(matching.nimi) : undefined;
-    };
+  const { translateEntity } = useTranslations();
 
-  const { t, translateEntity } = useTranslations();
-
-  const columns = [
-    makeHakuColumn(translateEntity),
-    makeTilaColumn(),
-    makeHakutapaColumn(getMatchingHakutapa(translateEntity)),
-    makeKoulutuksenAlkamiskausiColumn(t),
-    makeCountColumn<Haku>({
-      title: 'haku.hakukohteet',
-      key: 'hakukohteita',
-      amountProp: 'hakukohteita',
-    }),
-  ];
+  const columns: Array<ListTableColumn<HakuListItem>> = useMemo(
+    () => [
+      {
+        title: 'yleinen.nimi',
+        key: 'nimi',
+        render: (haku) => (
+          <Link href={`/haku/${haku.oid}`} sx={{ textDecoration: 'none' }}>
+            {typeof haku.nimi == 'object'
+              ? translateEntity(haku.nimi)
+              : haku.nimi}
+          </Link>
+        ),
+        style: {
+          width: 'auto',
+        },
+      },
+      {
+        title: 'yleinen.tila',
+        key: 'tila',
+        render: (haku) => <span>{haku.tila}</span>,
+        style: {
+          width: 0,
+        },
+      },
+      {
+        title: 'haku.hakutapa',
+        key: 'hakutapaNimi',
+        render: (haku) => <span>{translateEntity(haku?.hakutapaNimi)}</span>,
+      },
+      {
+        title: 'haku.alkamiskausi',
+        key: 'alkamiskausiNimi',
+        render: (haku) => <span>{translateEntity(haku.alkamiskausiNimi)}</span>,
+      },
+      makeCountColumn<HakuListItem>({
+        title: 'haku.hakukohteet',
+        key: 'hakukohteita',
+        amountProp: 'hakukohteita',
+      }),
+    ],
+    [translateEntity],
+  );
 
   return (
-    <ListTable columns={columns} rows={haut} sort={sort} setSort={setSort} />
+    <ListTable
+      rowKeyProp="oid"
+      columns={columns}
+      rows={haut}
+      sort={sort}
+      setSort={setSort}
+    />
   );
 };
