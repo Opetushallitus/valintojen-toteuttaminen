@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  Box,
   Button,
   Table,
   TableBody,
@@ -198,6 +199,13 @@ const HeaderCell = ({
   );
 };
 
+const TableWrapper = styled(Box)({
+  position: 'relative',
+  display: 'block',
+  width: '100%',
+  overflowX: 'auto',
+});
+
 export type Row<K extends string = string> = Record<K, unknown>;
 
 export const ListTable = <T extends Row>({
@@ -211,40 +219,42 @@ export const ListTable = <T extends Row>({
   const { t } = useTranslations();
 
   return (
-    <StyledTable {...props}>
-      <TableHead>
-        <TableRow>
-          {columns.map((columnProps) => {
-            const { key, title, style } = columnProps;
+    <TableWrapper>
+      <StyledTable {...props}>
+        <TableHead>
+          <TableRow>
+            {columns.map((columnProps) => {
+              const { key, title, style } = columnProps;
+              return (
+                <HeaderCell
+                  key={key.toString()}
+                  colId={key.toString()}
+                  title={t(title ?? '')}
+                  style={style}
+                  sort={sort}
+                  setSort={setSort}
+                />
+              );
+            })}
+          </TableRow>
+        </TableHead>
+        <StyledTableBody>
+          {rows.map((rowProps) => {
             return (
-              <HeaderCell
-                key={key.toString()}
-                colId={key.toString()}
-                title={t(title ?? '')}
-                style={style}
-                sort={sort}
-                setSort={setSort}
-              />
+              <TableRow key={rowProps?.[rowKeyProp] as Key}>
+                {columns.map(({ key: columnKey, render, style }) => {
+                  return (
+                    <StyledCell key={columnKey.toString()} sx={style}>
+                      {render({ ...rowProps })}
+                    </StyledCell>
+                  );
+                })}
+              </TableRow>
             );
           })}
-        </TableRow>
-      </TableHead>
-      <StyledTableBody>
-        {rows.map((rowProps) => {
-          return (
-            <TableRow key={rowProps?.[rowKeyProp] as Key}>
-              {columns.map(({ key: columnKey, render, style }) => {
-                return (
-                  <StyledCell key={columnKey.toString()} sx={style}>
-                    {render({ ...rowProps })}
-                  </StyledCell>
-                );
-              })}
-            </TableRow>
-          );
-        })}
-      </StyledTableBody>
-    </StyledTable>
+        </StyledTableBody>
+      </StyledTable>
+    </TableWrapper>
   );
 };
 
