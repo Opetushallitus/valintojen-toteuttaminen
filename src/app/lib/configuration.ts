@@ -37,7 +37,7 @@ export const configuration = {
   lasketutValinnanVaiheetUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
     `${DOMAIN}/valintalaskenta-laskenta-service/resources/hakukohde/${hakukohdeOid}/valinnanvaihe`,
   seurantaUrl: `${DOMAIN}/valintalaskenta-laskenta-service/resources/seuranta/yhteenveto/`,
-  ohjausparametritUrl: `${DOMAIN}/ohjausparametrit-service/api/v1/rest/parametri/`,
+  ohjausparametritUrl: `${DOMAIN}/ohjausparametrit-service/api/v1/rest/parametri`,
   valintalaskentahistoriaUrl: ({
     valintatapajonoOid,
     hakemusOid,
