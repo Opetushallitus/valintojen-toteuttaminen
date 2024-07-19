@@ -12,7 +12,7 @@ import {
   sendTo,
 } from 'xstate';
 
-const DEFAULT_TOAST_DURATION = 5000;
+const DEFAULT_TOAST_DURATION = 6000;
 
 enum ToastEvents {
   REMOVE = 'REMOVE_TOAST',
