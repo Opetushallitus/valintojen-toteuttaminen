@@ -271,7 +271,7 @@ export const createLaskentaMachine = (
           }),
           ({ context }) => {
             const wholeHakukohde: boolean =
-              !context.startLaskentaParams.valinnanvaiheNumber;
+              !context.startLaskentaParams.valinnanvaiheNimi;
             const keyPartValinnanvaihe = wholeHakukohde
               ? ''
               : `-${context.startLaskentaParams.valinnanvaiheNumber ?? 0}`;
