@@ -116,3 +116,29 @@ test('displays valintalaskennan tulos', async ({ page }) => {
     jono2Content.getByRole('button', { name: 'Poista jono sijoittelusta' }),
   ).toBeVisible();
 });
+
+test('shows error toast when removing jono from sijoittelu fails', async ({
+  page,
+}) => {
+  await page.goto(
+    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/valintalaskennan-tulos',
+  );
+  await expectAllSpinnersHidden(page);
+
+  const jono2HeadingText = 'Varsinainen valinta: Lukiokoulutus';
+  const jono2Content = page.getByRole('region', { name: jono2HeadingText });
+
+  await page.route(
+    '*/**/valintaperusteet-service/resources/V2valintaperusteet/1679913592869-3133925962577840128/automaattinenSiirto?status=false',
+    async (route) => {
+      await route.fulfill({ status: 500, body: 'Unknown error' });
+    },
+  );
+  await jono2Content
+    .getByRole('button', { name: 'Poista jono sijoittelusta' })
+    .click();
+
+  await expect(
+    page.getByText('Jonon sijoittelun tilan muuttamisesa tapahtui virhe!'),
+  ).toBeVisible();
+});

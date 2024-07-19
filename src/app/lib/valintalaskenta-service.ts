@@ -66,7 +66,7 @@ export const getLaskennanSeurantaTiedot = async (
   loadingUrl: string,
 ): Promise<SeurantaTiedot> => {
   const response = await client.get(
-    `${configuration.seurantaUrl}/${loadingUrl}`,
+    `${configuration.seurantaUrl}${loadingUrl}`,
   );
   return {
     tila: response.data.tila,

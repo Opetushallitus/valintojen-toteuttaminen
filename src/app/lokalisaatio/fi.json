@@ -118,7 +118,7 @@
     "onvalisijoittelusuoritakaikki": "Yhdellä tai useammalla Valinnanvaiheella on käytössä välisijoittelu, joten kaikkia valinnanvaiheita ei voi kerralla suorittaa.",
     "eiolemallinnettu": "Valintaperusteita ei ole mallinnettu, mallinna valintaperusteet ennen valintalaskentaa.",
     "laskentaolikaynnissajo": "Laskenta oli jo käynnissä, seurataan käynnissä olevaa laskentaa.",
-    "valmis": "Laskenta suorittettu onnistuneesti",
+    "valmis": "Laskenta suoritettu onnistuneesti",
     "valmisvalinnanvaihe": "Laskenta suoritettu onnistuneesti valinnanvaiheelle: {{nimi}}"
   },
   "koekutsut": {
@@ -138,7 +138,7 @@
     "vie-kaikki-taulukkolaskentaan": "Vie kaikki taulukkolaskentaan",
     "poista-jono-sijoittelusta": "Poista jono sijoittelusta",
     "siirra-jono-sijoitteluun": "Siirrä jono sijoitteluun",
-    "virhe-sijoittelu-muutos": "Jonon sijoittelun statuksen muuttamisesa tapahtui virhe!",
+    "virhe-sijoittelu-muutos": "Jonon sijoittelun tilan muuttamisesa tapahtui virhe!",
     "ei-tuloksia": "Ei valintalaskennan tuloksia",
     "taulukko": {
       "jonosija": "Jonosija",

@@ -48,7 +48,7 @@ test('starts laskenta', async ({ page }) => {
     },
   );
   await page.route(
-    '*/**//valintalaskenta-laskenta-service/resources/seuranta/yhteenveto/12345abs`',
+    '*/**/valintalaskenta-laskenta-service/resources/seuranta/yhteenveto/12345abs',
     async (route) => {
       const seuranta = {
         tila: 'MENEILLAAN',
@@ -68,6 +68,59 @@ test('starts laskenta', async ({ page }) => {
   ).toBeDisabled();
   const spinners = page.getByRole('progressbar');
   await expect(spinners).toHaveCount(1);
+});
+
+test('shows success toast when laskenta completes', async ({ page }) => {
+  await page.route(
+    '*/**/valintalaskentakoostepalvelu/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000045102/tyyppi/HAKUKOHDE/whitelist/true**',
+    async (route) => {
+      const started = {
+        lisatiedot: {
+          luotiinkoUusiLaskenta: true,
+        },
+        latausUrl: '12345abs',
+      };
+      await route.fulfill({
+        body: JSON.stringify(started),
+        contentType: 'json',
+      });
+    },
+  );
+  await page.route(
+    '*/**/valintalaskenta-laskenta-service/resources/seuranta/yhteenveto/12345abs',
+    async (route) => {
+      const seuranta = {
+        tila: 'VALMIS',
+        hakukohteitaYhteensa: 1,
+        hakukohteitaValmiina: 1,
+        hakukohteitaKeskeytetty: 0,
+      };
+      await route.fulfill({
+        body: JSON.stringify(seuranta),
+        contentType: 'json',
+      });
+    },
+  );
+  await page.route(
+    '*/**/valintalaskentakoostepalvelu/resources/valintalaskentakerralla/status/12345abs/yhteenveto',
+    async (route) => {
+      await route.fulfill({
+        body: JSON.stringify({
+          hakukohteet: [
+            {
+              hakukohde: '1.2.246.562.20.00000000000000045105',
+              ilmoitukset: null,
+            },
+          ],
+        }),
+        contentType: 'json',
+      });
+    },
+  );
+  await startLaskenta(page);
+  await expect(
+    page.getByText('Laskenta suoritettu onnistuneesti'),
+  ).toBeVisible();
 });
 
 test('starting laskenta causes error', async ({ page }) => {
