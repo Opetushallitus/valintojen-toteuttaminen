@@ -147,6 +147,9 @@ export const createLaskentaMachine = (
             target: LaskentaStates.STARTING,
             actions: assign({
               laskenta: {},
+              errorSummary: null,
+              seurantaTiedot: null,
+              error: undefined,
             }),
           },
           [LaskentaEvents.CANCEL]: {

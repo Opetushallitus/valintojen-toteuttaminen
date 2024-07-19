@@ -8,7 +8,7 @@ import theme from '@/app/theme';
 import { checkAccessibility } from './lib/checkAccessibility';
 import PermissionProvider from './permission-provider';
 import { CssBaseline } from '@mui/material';
-import { Toaster } from './components/Toaster';
+import { Toaster } from './components/toaster';
 
 export const metadata: Metadata = {
   title: 'Valintojen Toteuttaminen',

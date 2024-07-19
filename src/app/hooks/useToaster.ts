@@ -9,18 +9,23 @@ import {
   fromCallback,
   AnyEventObject,
   CallbackActorLogic,
+  sendTo,
 } from 'xstate';
 
-const DEFAULT_TOAST_DURATION = 15000;
+const DEFAULT_TOAST_DURATION = 5000;
 
-const CLOSE_TOAST = 'CLOSE_TOAST';
-const OPEN_TOAST = 'OPEN_TOAST';
+enum ToastEvents {
+  REMOVE = 'REMOVE_TOAST',
+  ADD = 'ADD_TOAST',
+  ENTER = 'TOAST_ENTER',
+  LEAVE = 'TOAST_LEAVE',
+}
 
 const setToastTimer = (
   key: string,
   duration: number,
   sendBack: (event: AnyEventObject) => void,
-) => setTimeout(() => sendBack({ type: CLOSE_TOAST, key }), duration);
+) => setTimeout(() => sendBack({ type: ToastEvents.REMOVE, key }), duration);
 
 export type Toast = {
   key: string;
@@ -45,8 +50,16 @@ const toasterMachine = setup({
           {
             ...event.toast,
             ref: spawn(
-              fromCallback(({ sendBack }) => {
-                const id = setToastTimer(key, DEFAULT_TOAST_DURATION, sendBack);
+              fromCallback(({ sendBack, receive }) => {
+                let id = setToastTimer(key, DEFAULT_TOAST_DURATION, sendBack);
+
+                receive(({ type }) => {
+                  if (type === ToastEvents.ENTER) {
+                    clearTimeout(id);
+                  } else if (type === ToastEvents.LEAVE) {
+                    id = setToastTimer(key, DEFAULT_TOAST_DURATION, sendBack);
+                  }
+                });
 
                 return () => {
                   clearTimeout(id);
@@ -78,15 +91,25 @@ const toasterMachine = setup({
           guard: ({ context }) => context.toasts.length < 1,
           target: 'empty',
         },
-        [CLOSE_TOAST]: {
+        [ToastEvents.REMOVE]: {
           target: 'showing',
           actions: 'removeToast',
+        },
+        [ToastEvents.ENTER]: {
+          actions: sendTo(({ event }) => event.key, {
+            type: ToastEvents.ENTER,
+          }),
+        },
+        [ToastEvents.LEAVE]: {
+          actions: sendTo(({ event }) => event.key, {
+            type: ToastEvents.LEAVE,
+          }),
         },
       },
     },
   },
   on: {
-    [OPEN_TOAST]: {
+    [ToastEvents.ADD]: {
       target: '.showing',
       actions: 'addToast',
     },
@@ -100,15 +123,22 @@ export const useToaster = () => {
 
   const addToast = useMemo(
     () => (toast: Toast) =>
-      toasterActor.send({ type: OPEN_TOAST, toast: toast }),
+      toasterActor.send({ type: ToastEvents.ADD, toast: toast }),
     [],
   );
   const removeToast = (key: string) =>
-    toasterActor.send({ type: CLOSE_TOAST, key });
+    toasterActor.send({ type: ToastEvents.REMOVE, key });
+
+  const toastEnter = (key: string) =>
+    toasterActor.send({ type: ToastEvents.ENTER, key });
+  const toastLeave = (key: string) =>
+    toasterActor.send({ type: ToastEvents.LEAVE, key });
   return {
     toasts,
     addToast,
     removeToast,
+    toastEnter,
+    toastLeave,
   };
 };
 
