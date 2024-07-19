@@ -1,3 +1,4 @@
+import useToaster from '@/app/hooks/useToaster';
 import {
   LaskettuValinnanVaihe,
   LaskettuValintatapajono,
@@ -7,6 +8,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export const useSijoitteluStatusMutation = (hakukohdeOid: string) => {
   const queryClient = useQueryClient();
+  const { addToast } = useToaster();
 
   return useMutation({
     mutationFn: async ({
@@ -33,8 +35,11 @@ export const useSijoitteluStatusMutation = (hakukohdeOid: string) => {
       );
     },
     onError: (e) => {
-      // TODO: Toast-notifikaatio (OK-585)
-      window.alert('Jonon sijoittelun statuksen muuttamisesa tapahtui virhe!');
+      addToast({
+        key: 'jono-sijoittelu-status-change',
+        message: 'valintalaskennan-tulos.virhe-sijoittelu-muutos',
+        type: 'error',
+      });
       console.error(e);
     },
   });
