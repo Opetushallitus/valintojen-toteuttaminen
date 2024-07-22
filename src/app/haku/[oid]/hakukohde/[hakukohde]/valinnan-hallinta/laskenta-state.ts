@@ -21,7 +21,7 @@ import { Toast } from '@/app/hooks/useToaster';
 
 const POLLING_INTERVAL = 5000;
 
-type StartLaskentaParams = {
+export type StartLaskentaParams = {
   haku: Haku;
   hakukohde: Hakukohde;
   valinnanvaiheTyyppi?: ValinnanvaiheTyyppi;
