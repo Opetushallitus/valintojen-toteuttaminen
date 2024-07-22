@@ -32,6 +32,7 @@ import {
 } from './laskenta-state';
 import { useMachine } from '@xstate/react';
 import { useMemo } from 'react';
+import { useToaster } from '@/app/hooks/useToaster';
 
 type HallintaTableParams = {
   haku: Haku;
@@ -45,10 +46,11 @@ const HallintaTable = ({
   haunAsetukset,
 }: HallintaTableParams) => {
   const { t, translateEntity } = useTranslations();
+  const { addToast } = useToaster();
 
-  const laskentaMachine = useMemo(
-    () =>
-      createLaskentaMachine({
+  const laskentaMachine = useMemo(() => {
+    return createLaskentaMachine(
+      {
         haku,
         hakukohde,
         sijoitellaanko: sijoitellaankoHaunHakukohteetLaskennanYhteydessa(
@@ -56,9 +58,10 @@ const HallintaTable = ({
           haunAsetukset,
         ),
         translateEntity,
-      }),
-    [haku, hakukohde, haunAsetukset, translateEntity],
-  );
+      },
+      addToast,
+    );
+  }, [haku, hakukohde, haunAsetukset, translateEntity, addToast]);
 
   const [state, send] = useMachine(laskentaMachine);
 

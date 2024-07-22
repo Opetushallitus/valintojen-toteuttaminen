@@ -6,6 +6,7 @@ import SIJOITTELUN_YHTEENVETO from './fixtures/sijoittelun_yhteenveto.json';
 import VALINTARYHMA from './fixtures/valintaryhma.json';
 import HAKENEET from './fixtures/hakeneet.json';
 import VALINNANVAIHE from './fixtures/valinnanvaiheet.json';
+import { SERVICE_KEY } from '../../src/app/lib/permissions';
 
 const port = 3104;
 
@@ -23,7 +24,14 @@ export default async function playwrightSetup() {
     } else if (
       request.url?.includes(`kayttooikeus-service/henkilo/current/omattiedot`)
     ) {
-      return modifyResponse(response, { isAdmin: true, organisaatiot: [] });
+      const ophOrg = {
+        organisaatioOid: '1.2.246.562.10.00000000001',
+        kayttooikeudet: [{ palvelu: SERVICE_KEY, oikeus: 'CRUD' }],
+      };
+      return modifyResponse(response, {
+        isAdmin: true,
+        organisaatiot: [ophOrg],
+      });
     } else if (request.url?.includes(`henkilo/current/asiointiKieli`)) {
       response.setHeader('Content-Type', 'text/plain');
       response.write('fi');

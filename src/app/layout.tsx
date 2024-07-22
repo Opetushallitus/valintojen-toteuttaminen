@@ -8,6 +8,7 @@ import theme from '@/app/theme';
 import { checkAccessibility } from './lib/checkAccessibility';
 import PermissionProvider from './permission-provider';
 import { CssBaseline } from '@mui/material';
+import { Toaster } from './components/toaster';
 
 export const metadata: Metadata = {
   title: 'Valintojen Toteuttaminen',
@@ -27,7 +28,10 @@ export default async function RootLayout({
             <ThemeProvider theme={theme}>
               <CssBaseline />
               <PermissionProvider>
-                <LocalizationProvider>{children}</LocalizationProvider>
+                <LocalizationProvider>
+                  <Toaster />
+                  {children}
+                </LocalizationProvider>
               </PermissionProvider>
             </ThemeProvider>
           </ReactQueryClientProvider>
