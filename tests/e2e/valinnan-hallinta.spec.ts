@@ -121,6 +121,10 @@ test('shows success toast when laskenta completes', async ({ page }) => {
   await expect(
     page.getByText('Laskenta suoritettu onnistuneesti'),
   ).toBeVisible();
+  await page.getByLabel('Close').click();
+  await expect(
+    page.getByText('Laskenta suoritettu onnistuneesti'),
+  ).toBeHidden();
 });
 
 test('starting laskenta causes error', async ({ page }) => {
