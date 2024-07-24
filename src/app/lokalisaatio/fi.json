@@ -22,7 +22,9 @@
     "edellinen": "Edellinen",
     "seuraava": "Seuraava",
     "lisatietoja": "Lisätietoja",
-    "prioriteetti": "Prioriteetti"
+    "prioriteetti": "Prioriteetti",
+    "kylla": "Kyllä",
+    "ei": "Ei"
   },
   "tuloksenTila": {
     "HYVAKSYTTAVISSA": "Hyväksyttävissä",
@@ -131,7 +133,17 @@
     "otsikko": "Harkinnanvaraiset"
   },
   "hakijaryhmat": {
-    "otsikko": "Hakijaryhmät"
+    "otsikko": "Hakijaryhmät",
+    "ei-tuloksia": "Ei hakijaryhmiä tai valintojen tuloksia hakijaryhmille",
+    "kiintio": "(kiintiö: {{kiintio}})",
+    "taulukko": {
+      "hakija": "Hakija",
+      "kuuluminen": "Hakijaryhmässä",
+      "sijoittelun-tila": "Sijoittelun tila",
+      "hyvaksytty": "Hyväksytty hakijaryhmästä",
+      "pisteet": "Pisteet",
+      "vastaanottotila": "Vastaanottotila"
+    }
   },
   "valintalaskennan-tulos": {
     "otsikko": "Valintalaskennan tulos",

@@ -1,19 +1,86 @@
 'use client';
 
+import { useTranslations } from '@/app/hooks/useTranslations';
 import { TabContainer } from '../tab-container';
-import { useHakukohde } from '@/app/hooks/useHakukohde';
+import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
+import { Box, CircularProgress } from '@mui/material';
+import { useSuspenseQueries } from '@tanstack/react-query';
+import { getHakijaryhmat } from '@/app/lib/valintalaskenta-service';
+import { isEmpty } from '@/app/lib/common';
+import { IconCircle } from '@/app/components/icon-circle';
+import { FolderOutlined } from '@mui/icons-material';
+import { HakijaryhmaContent } from './hakijaryhma-content';
+
+type HakijaryhmatContentParams = {
+  hakuOid: string;
+  hakukohdeOid: string;
+};
+
+const HakijaryhmatContent = ({
+  hakuOid,
+  hakukohdeOid,
+}: HakijaryhmatContentParams) => {
+  const { t } = useTranslations();
+  const [hakijaryhmatQuery] = useSuspenseQueries({
+    queries: [
+      {
+        queryKey: ['getHakijaryhmat', hakuOid, hakukohdeOid],
+        queryFn: () => getHakijaryhmat(hakuOid, hakukohdeOid),
+      },
+    ],
+  });
+
+  if (hakijaryhmatQuery.error) {
+    throw hakijaryhmatQuery.error;
+  }
+
+  return isEmpty(hakijaryhmatQuery.data) ? (
+    <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
+      <IconCircle>
+        <FolderOutlined />
+      </IconCircle>
+      <Box>{t('valintalaskennan-tulos.ei-tuloksia')}</Box>
+    </Box>
+  ) : (
+    <Box
+      display="flex"
+      flexDirection="column"
+      rowGap={2}
+      alignItems="flex-start"
+    >
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="flex-end"
+        width="100%"
+        gap={2}
+      ></Box>
+      {hakijaryhmatQuery.data.map((hakijaryhma) => (
+        <HakijaryhmaContent hakijaryhma={hakijaryhma} key={hakijaryhma.oid} />
+      ))}
+    </Box>
+  );
+};
 
 export default function HakijaryhmatPage({
   params,
 }: {
   params: { oid: string; hakukohde: string };
 }) {
-  const { data: hakukohde } = useHakukohde({ hakukohdeOid: params.hakukohde });
+  const { t } = useTranslations();
 
   return (
     <TabContainer>
-      <h3>Hakijaryhmät</h3>
-      <p>Hakukohde oid: {hakukohde.oid}</p>
+      <QuerySuspenseBoundary
+        suspenseFallback={
+          <CircularProgress aria-label={t('yleinen.ladataan')} />
+        }
+      >
+        <HakijaryhmatContent
+          hakuOid={params.oid}
+          hakukohdeOid={params.hakukohde}
+        />
+      </QuerySuspenseBoundary>
     </TabContainer>
   );
 }

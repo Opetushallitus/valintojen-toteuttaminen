@@ -4,6 +4,7 @@ import { LaskettuJonoWithHakijaInfo } from '../hooks/useLasketutValinnanVaiheet'
 import { booleanToString } from './common';
 import { configuration } from './configuration';
 import { client } from './http-client';
+import { getHakemukset, Hakemus } from './ataru';
 
 export type Jarjestyskriteeri = {
   arvo: number;
@@ -117,3 +118,92 @@ export const muutaSijoittelunStatus = async ({
 
   return data;
 };
+
+type JarjestyskriteeriTila = 'hylatty' | 'hyvaksytty';
+
+export type HakijaryhmanHakija = {
+  hakijanNimi: string;
+  kuuluuHakijaryhmaan: boolean;
+  hakemusOid: string;
+  henkiloOid: string;
+  hyvaksyttyHakijaryhmasta: boolean;
+};
+
+export type HakukohteenHakijaryhma = {
+  nimi: string;
+  oid: string;
+  prioriteetti: number;
+  kiintio: number;
+  hakijat: HakijaryhmanHakija[];
+};
+
+export const getHakijaryhmat = async (
+  hakuOid: string,
+  hakukohdeOid: string,
+): Promise<HakukohteenHakijaryhma[]> => {
+  const hakemukset: Hakemus[] = await getHakemukset(hakuOid, hakukohdeOid);
+  const { data } = await client.get(
+    configuration.hakukohdeHakijaryhmatUrl({ hakukohdeOid }),
+  );
+  return data.map(
+    (ryhma: {
+      nimi: string;
+      hakijaryhmaOid: string;
+      prioriteetti: number;
+      kiintio: number;
+      jonosijat: [
+        {
+          hakemusOid: string;
+          jarjestyskriteerit: [{ tila: JarjestyskriteeriTila }];
+        },
+      ];
+    }) => {
+      const ryhmanHakijat: HakijaryhmanHakija[] = hakemukset.map((h) => {
+        const jonosijanTiedot = ryhma.jonosijat.find(
+          (js) => js.hakemusOid === h.oid,
+        );
+        return {
+          hakijanNimi: h.hakijanNimi,
+          hakemusOid: h.oid,
+          henkiloOid: h.henkiloOid,
+          hyvaksyttyHakijaryhmasta:
+            jonosijanTiedot?.jarjestyskriteerit[0].tila === 'hyvaksytty',
+          kuuluuHakijaryhmaan: jonosijanTiedot != undefined,
+        };
+      });
+      return {
+        nimi: ryhma.nimi,
+        oid: ryhma.hakijaryhmaOid,
+        prioriteetti: ryhma.prioriteetti,
+        kiintio: ryhma.kiintio,
+        hakijat: ryhmanHakijat,
+      };
+    },
+  );
+};
+
+/*
+                 etunimi: hakemus.etunimet
+                      ? hakemus.etunimet
+                      : hakemus.answers.henkilotiedot.Etunimet,
+                    sukunimi: hakemus.sukunimi
+                      ? hakemus.sukunimi
+                      : hakemus.answers.henkilotiedot.Sukunimi,
+                    hakemusOid: hakija.hakemusOid,
+                    hakijaOid: hakija.hakijaOid,
+                    ryhmaanKuuluminen: hakija.jarjestyskriteerit[0].tila,
+                    jononNimi: hakemusSijoittelussa
+                      ? valintatapajonot[
+                          hakemusSijoittelussa.valintatapajonoOid
+                        ].nimi
+                      : undefined,
+                    hakemusSijoittelussa: hakemusSijoittelussa,
+                    sijoittelunTila: hakemusSijoittelussa
+                      ? hakemusSijoittelussa.tila
+                      : undefined,
+                    vastaanottotila: vastaanottotila,
+                    hyvaksyttyHakijaryhmasta: hyvaksyttyHakijaryhmasta,
+                    pisteet: hakemusSijoittelussa
+                      ? hakemusSijoittelussa.pisteet
+                      : undefined,
+                      */
