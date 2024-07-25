@@ -5,11 +5,11 @@ import { TablePaginationWrapper } from '@/app/components/table/table-pagination-
 import { useHakeneetSearchResults } from '@/app/hooks/useHakeneetSearch';
 import { HakeneetTable } from './hakeneet-table';
 import HakeneetSearch from './hakeneet-search';
-import { getHaku, isKorkeakouluHaku } from '@/app/lib/kouta';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { isKorkeakouluHaku } from '@/app/lib/kouta';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { Haku } from '@/app/lib/kouta-types';
 import { ClientSpinner } from '@/app/components/client-spinner';
+import { useHaku } from '@/app/hooks/useHaku';
 
 type HakeneetParams = {
   haku: Haku;
@@ -55,10 +55,7 @@ export default function HakeneetPage({
 }: {
   params: { oid: string; hakukohde: string };
 }) {
-  const { data: haku } = useSuspenseQuery({
-    queryKey: ['getHaku', params.oid],
-    queryFn: () => getHaku(params.oid),
-  });
+  const { data: haku } = useHaku({ hakuOid: params.oid });
 
   return (
     <TabContainer>

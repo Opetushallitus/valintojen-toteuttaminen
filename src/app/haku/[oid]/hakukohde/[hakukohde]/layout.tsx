@@ -18,7 +18,7 @@ export default function HakuLayout({
         width: '100%',
       }}
     >
-      <HakukohdeTabs hakukohdeOid={params.hakukohde} />
+      <HakukohdeTabs hakuOid={params.oid} hakukohdeOid={params.hakukohde} />
       {children}
     </MainContainer>
   );

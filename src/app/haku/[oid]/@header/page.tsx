@@ -1,14 +1,10 @@
 'use client';
 import Header from '@/app/components/header';
+import { useHaku } from '@/app/hooks/useHaku';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { getHaku } from '@/app/lib/kouta';
-import { useSuspenseQuery } from '@tanstack/react-query';
 
 export default function HeaderPage({ params }: { params: { oid: string } }) {
-  const { data: haku } = useSuspenseQuery({
-    queryKey: ['getHaku', params.oid],
-    queryFn: () => getHaku(params.oid),
-  });
+  const { data: haku } = useHaku({ hakuOid: params.oid });
 
   const { translateEntity } = useTranslations();
 

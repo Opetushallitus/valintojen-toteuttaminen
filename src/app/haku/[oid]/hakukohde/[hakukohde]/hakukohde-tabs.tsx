@@ -7,6 +7,9 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { colors } from '@/app/theme';
 import { DEFAULT_BOX_BORDER } from '@/app/lib/constants';
 import { useHakukohde } from '@/app/hooks/useHakukohde';
+import { useHaku } from '@/app/hooks/useHaku';
+import { Haku } from '@/app/lib/kouta-types';
+import { isKorkeakouluHaku, isToisenAsteenYhteisHaku } from '@/app/lib/kouta';
 
 const StyledContainer = styled('div')(({ theme }) => ({
   padding: theme.spacing(2, 3, 0),
@@ -33,6 +36,7 @@ const StyledTabs = styled('div')(({ theme }) => ({
 export type BasicTab = {
   title: string;
   route: string;
+  visibleFn?: (haku: Haku) => boolean;
 };
 
 const TABS: BasicTab[] = [
@@ -41,8 +45,16 @@ const TABS: BasicTab[] = [
   { title: 'valinnanhallinta.otsikko', route: 'valinnan-hallinta' },
   { title: 'koekutsut.otsikko', route: 'valintakoekutsut' },
   { title: 'pistesyotto.otsikko', route: 'pistesyotto' },
-  { title: 'harkinnanvaraiset.otsikko', route: 'harkinnanvaraiset' },
-  { title: 'hakijaryhmat.otsikko', route: 'hakijaryhmat' },
+  {
+    title: 'harkinnanvaraiset.otsikko',
+    route: 'harkinnanvaraiset',
+    visibleFn: (haku: Haku) => isToisenAsteenYhteisHaku(haku),
+  },
+  {
+    title: 'hakijaryhmat.otsikko',
+    route: 'hakijaryhmat',
+    visibleFn: (haku: Haku) => isKorkeakouluHaku(haku),
+  },
   { title: 'valintalaskennan-tulos.otsikko', route: 'valintalaskennan-tulos' },
   { title: 'sijoittelun-tulokset.otsikko', route: 'sijoittelun-tulokset' },
 ] as const;
@@ -57,11 +69,18 @@ export const useHakukohdeTab = () => {
   return getPathMatchingTab(pathName);
 };
 
-const HakukohdeTabs = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
+const HakukohdeTabs = ({
+  hakuOid,
+  hakukohdeOid,
+}: {
+  hakuOid: string;
+  hakukohdeOid: string;
+}) => {
   const activeTab = useHakukohdeTab();
   const { t, translateEntity } = useTranslations();
 
   const { data: hakukohde } = useHakukohde({ hakukohdeOid });
+  const { data: haku } = useHaku({ hakuOid });
 
   return (
     <StyledContainer>
@@ -77,7 +96,7 @@ const HakukohdeTabs = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
         </h2>
       </StyledHeader>
       <StyledTabs>
-        {TABS.map((tab) => (
+        {TABS.filter((t) => !t.visibleFn || t.visibleFn(haku)).map((tab) => (
           <MuiLink
             href={tab.route}
             key={'hakukohde-tab-' + tab.route}
