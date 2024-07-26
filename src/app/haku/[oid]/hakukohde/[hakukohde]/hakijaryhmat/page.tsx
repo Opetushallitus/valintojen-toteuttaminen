@@ -10,6 +10,9 @@ import { isEmpty } from '@/app/lib/common';
 import { IconCircle } from '@/app/components/icon-circle';
 import { FolderOutlined } from '@mui/icons-material';
 import { HakijaryhmaContent } from './hakijaryhma-content';
+import { PageSizeSelector } from '@/app/components/table/page-size-selector';
+import { useHakijaryhmatSearchParams } from '@/app/hooks/useHakijaryhmatSearch';
+import { HakijaryhmatSearch } from './hakijaryhmat-search';
 
 type HakijaryhmatContentParams = {
   hakuOid: string;
@@ -21,6 +24,9 @@ const HakijaryhmatContent = ({
   hakukohdeOid,
 }: HakijaryhmatContentParams) => {
   const { t } = useTranslations();
+
+  const { pageSize, setPageSize } = useHakijaryhmatSearchParams();
+
   const [hakijaryhmatQuery] = useSuspenseQueries({
     queries: [
       {
@@ -39,7 +45,7 @@ const HakijaryhmatContent = ({
       <IconCircle>
         <FolderOutlined />
       </IconCircle>
-      <Box>{t('valintalaskennan-tulos.ei-tuloksia')}</Box>
+      <Box>{t('hakijaryhmat.ei-tuloksia')}</Box>
     </Box>
   ) : (
     <Box
@@ -54,7 +60,12 @@ const HakijaryhmatContent = ({
         alignItems="flex-end"
         width="100%"
         gap={2}
-      ></Box>
+      >
+        <Box display="flex" alignItems="flex-end" gap={2}>
+          <HakijaryhmatSearch />
+        </Box>
+        <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
+      </Box>
       {hakijaryhmatQuery.data.map((hakijaryhma) => (
         <HakijaryhmaContent hakijaryhma={hakijaryhma} key={hakijaryhma.oid} />
       ))}

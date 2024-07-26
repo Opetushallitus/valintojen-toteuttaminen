@@ -5,19 +5,40 @@ import React from 'react';
 import { HakijaryhmaAccordion } from './hakijaryhma-accordion';
 import { HakijaryhmaAccordionTitle } from './hakijaryhma-accordion-title';
 import { HakijaryhmaTable } from './hakijaryhma-table';
+import { useHakijaryhmatSearch } from '@/app/hooks/useHakijaryhmatSearch';
+import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
+import { useTranslations } from '@/app/hooks/useTranslations';
 
 export const HakijaryhmaContent = ({
   hakijaryhma,
 }: {
   hakijaryhma: HakukohteenHakijaryhma;
 }) => {
+  const { t } = useTranslations();
+
+  const { results, pageResults, sort, setSort, pageSize, setPage, page } =
+    useHakijaryhmatSearch(hakijaryhma.oid, hakijaryhma.hakijat);
+
   return (
     <Box width="100%">
       <HakijaryhmaAccordion
         id={hakijaryhma.oid}
         title={<HakijaryhmaAccordionTitle hakijaryhma={hakijaryhma} />}
       >
-        <HakijaryhmaTable hakijat={hakijaryhma.hakijat} />
+        <TablePaginationWrapper
+          label={t('yleinen.sivutus')}
+          totalCount={results?.length ?? 0}
+          pageSize={pageSize}
+          setPageNumber={setPage}
+          pageNumber={page}
+          countHidden={true}
+        >
+          <HakijaryhmaTable
+            hakijat={pageResults}
+            sort={sort}
+            setSort={setSort}
+          />
+        </TablePaginationWrapper>
       </HakijaryhmaAccordion>
     </Box>
   );

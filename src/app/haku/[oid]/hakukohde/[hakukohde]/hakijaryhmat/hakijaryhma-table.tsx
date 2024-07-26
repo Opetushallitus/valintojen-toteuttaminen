@@ -32,8 +32,12 @@ const hakijaColumn = makeExternalLinkColumn<HakijaryhmanHakija>({
 
 export const HakijaryhmaTable = ({
   hakijat,
+  sort,
+  setSort,
 }: {
   hakijat: Array<HakijaryhmanHakija>;
+  sort: string;
+  setSort: (sort: string) => void;
 }) => {
   const { t } = useTranslations();
 
@@ -56,5 +60,13 @@ export const HakijaryhmaTable = ({
     [t],
   );
 
-  return <ListTable rowKeyProp="hakemusOid" columns={columns} rows={hakijat} />;
+  return (
+    <ListTable
+      rowKeyProp="hakemusOid"
+      columns={columns}
+      rows={hakijat}
+      sort={sort}
+      setSort={setSort}
+    />
+  );
 };

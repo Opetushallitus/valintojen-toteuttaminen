@@ -4,13 +4,11 @@ import { useDebounce } from '@/app/hooks/useDebounce';
 import { parseAsInteger, useQueryState } from 'nuqs';
 import { useHasChanged } from '@/app/hooks/useHasChanged';
 import { byProp, getSortParts } from '../components/table/table-utils';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import {
-  DEFAULT_PAGE_SIZE,
-  HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
-} from '@/app/lib/constants';
+import { HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY } from '@/app/lib/constants';
 import { useTranslations } from './useTranslations';
-import { Hakemus, getHakemukset } from '../lib/ataru';
+import { HakijaryhmanHakija } from '../lib/valintalaskenta-service';
+
+const DEFAULT_PAGE_SIZE = 10;
 
 const DEFAULT_NUQS_OPTIONS = {
   history: 'push',
@@ -18,9 +16,9 @@ const DEFAULT_NUQS_OPTIONS = {
   defaultValue: '',
 } as const;
 
-export const useHakeneetSearchParams = () => {
+export const useHakijaryhmatSearchParams = (hakijaryhmaOid?: string) => {
   const [searchPhrase, setSearchPhrase] = useQueryState(
-    'hakeneetSearch',
+    `search`,
     DEFAULT_NUQS_OPTIONS,
   );
 
@@ -30,7 +28,7 @@ export const useHakeneetSearchParams = () => {
   );
 
   const [page, setPage] = useQueryState<number>(
-    'page',
+    `page-${hakijaryhmaOid}`,
     parseAsInteger.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(1),
   );
 
@@ -63,37 +61,30 @@ export const useHakeneetSearchParams = () => {
   };
 };
 
-export const useHakeneetSearchResults = (
-  hakuOid: string,
-  hakukohdeOid: string,
+export const useHakijaryhmatSearch = (
+  hakijaryhmaOid: string,
+  hakijaryhmanHakijat: HakijaryhmanHakija[],
 ) => {
   const { translateEntity } = useTranslations();
 
-  const { data: hakeneet } = useSuspenseQuery({
-    queryKey: ['getHakeneet' + hakukohdeOid],
-    queryFn: () => getHakemukset(hakuOid, hakukohdeOid),
-  });
-
   const { searchPhrase, page, setPage, pageSize, setPageSize, sort, setSort } =
-    useHakeneetSearchParams();
+    useHakijaryhmatSearchParams(hakijaryhmaOid);
 
   const results = useMemo(() => {
     const { orderBy, direction } = getSortParts(sort);
 
-    const filtered = hakeneet.filter(
-      (hakemus: Hakemus) =>
-        hakemus.hakijanNimi
+    const filtered = hakijaryhmanHakijat.filter(
+      (hakijat) =>
+        hakijat.hakijanNimi
           .toLowerCase()
           .includes(searchPhrase?.toLowerCase() ?? '') ||
-        hakemus.oid.toLowerCase().includes(searchPhrase?.toLowerCase() ?? '') ||
-        hakemus.henkiloOid
-          .toLowerCase()
-          .includes(searchPhrase?.toLowerCase() ?? ''),
+        hakijat.hakemusOid.includes(searchPhrase?.toLowerCase() ?? '') ||
+        hakijat.henkiloOid.includes(searchPhrase?.toLowerCase() ?? ''),
     );
     return orderBy && direction
       ? filtered.sort(byProp(orderBy, direction, translateEntity))
       : filtered;
-  }, [hakeneet, searchPhrase, sort, translateEntity]);
+  }, [hakijaryhmanHakijat, searchPhrase, sort, translateEntity]);
 
   const pageResults = useMemo(() => {
     const start = pageSize * (page - 1);
