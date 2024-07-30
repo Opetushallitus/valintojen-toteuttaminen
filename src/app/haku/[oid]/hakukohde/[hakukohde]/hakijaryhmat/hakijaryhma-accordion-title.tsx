@@ -25,7 +25,9 @@ export const HakijaryhmaAccordionTitle = ({
         alignItems: 'center',
       }}
     >
-      <Box>{hakijaryhma.nimi}</Box>
+      <Box>
+        {t('hakijaryhmat.taulukko.otsikko')}: {hakijaryhma.nimi}
+      </Box>
       <Typography component="div" variant="body1">
         {t('hakijaryhmat.kiintio', { kiintio: hakijaryhma.kiintio })}
       </Typography>

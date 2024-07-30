@@ -137,12 +137,14 @@
     "ei-tuloksia": "Ei hakijaryhmiä tai valintojen tuloksia hakijaryhmille",
     "kiintio": "(kiintiö: {{kiintio}})",
     "taulukko": {
+      "otsikko": "Hakijaryhmä",
       "hakija": "Hakija",
-      "kuuluminen": "Hakijaryhmässä",
+      "kuuluminen": "Kuuluu hakijaryhmään",
       "sijoittelun-tila": "Sijoittelun tila",
       "hyvaksytty": "Hyväksytty hakijaryhmästä",
       "pisteet": "Pisteet",
-      "vastaanottotila": "Vastaanottotila"
+      "vastaanottotila": "Vastaanottotila",
+      "valintatapajono": "Valintatapajono"
     }
   },
   "valintalaskennan-tulos": {

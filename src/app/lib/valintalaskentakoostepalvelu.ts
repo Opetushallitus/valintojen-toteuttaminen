@@ -118,3 +118,20 @@ export const getLaskennanTilaHakukohteelle = async (
     },
   )[0];
 };
+
+export type HenkilonValintaTulos = {
+  tila: string;
+  hakijaOid: string;
+};
+
+export const getHakukohteenValintatuloksetIlmanHakijanTilaa = async (
+  hakuOid: string,
+  hakukohdeOid: string,
+): Promise<HenkilonValintaTulos[]> => {
+  const { data } = await client.get(
+    `${configuration.valintalaskentaKoostePalveluUrl}proxy/valintatulosservice/ilmanhakijantilaa/haku/${hakuOid}/hakukohde/${hakukohdeOid}`,
+  );
+  return data.map((t: { tila: string; hakijaOid: string }) => {
+    return { tila: t.tila, hakijaOid: t.hakijaOid };
+  });
+};
