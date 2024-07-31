@@ -68,7 +68,7 @@ export const HakijaryhmatControls = () => {
             textAlign: 'left',
           },
         }}
-        id="kuuluu-ryhmaan-select"
+        id="sijoittelun-tila-select"
         label={t('hakijaryhmat.taulukko.sijoittelun-tila')}
         value={sijoittelunTila}
         onChange={changeSijoittelunTila}

@@ -120,7 +120,6 @@ export const getLatestSijoitteluAjonTulokset = async (
           valintatapajonoOid: string;
           hyvaksyttyHakijaryhmista: string[];
           varasijanNumero: number;
-          hyvaksyttyHarkinnanvaraisesti: boolean;
         },
       ];
     }) => {

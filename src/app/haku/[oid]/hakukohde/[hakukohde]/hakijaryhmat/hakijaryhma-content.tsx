@@ -26,7 +26,7 @@ export const HakijaryhmaContent = ({
         title={<HakijaryhmaAccordionTitle hakijaryhma={hakijaryhma} />}
       >
         <TablePaginationWrapper
-          label={t('yleinen.sivutus')}
+          label={`${t('yleinen.sivutus')} ${t('hakijaryhmat.taulukko.otsikko')}: ${hakijaryhma.nimi}`}
           totalCount={results?.length ?? 0}
           pageSize={pageSize}
           setPageNumber={setPage}

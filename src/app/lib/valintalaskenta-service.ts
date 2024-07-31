@@ -158,17 +158,21 @@ export const getHakijaryhmat = async (
   hakukohdeOid: string,
 ): Promise<HakukohteenHakijaryhma[]> => {
   const hakemukset: Hakemus[] = await getHakemukset(hakuOid, hakukohdeOid);
+  console.log('Hakemukset', hakemukset);
   const tulokset = await getLatestSijoitteluAjonTulokset(hakuOid, hakukohdeOid);
+  console.log('Tulokset', tulokset);
   const valintaTulokset = await getHakukohteenValintatuloksetIlmanHakijanTilaa(
     hakuOid,
     hakukohdeOid,
   );
+  console.log('Valintatulokset', valintaTulokset);
   const sijoittelunHakemukset = tulokset?.valintatapajonot
     ?.map((jono) => jono.hakemukset)
-    .reduce((a, b) => a.concat(b));
+    .reduce((a, b) => a.concat(b), []);
   const { data } = await client.get(
     configuration.hakukohdeHakijaryhmatUrl({ hakukohdeOid }),
   );
+  console.log('Hakijaryhmat', data);
   return data.map(
     (ryhma: {
       nimi: string;

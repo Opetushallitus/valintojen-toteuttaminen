@@ -6,6 +6,9 @@ import SIJOITTELUN_YHTEENVETO from './fixtures/sijoittelun_yhteenveto.json';
 import VALINTARYHMA from './fixtures/valintaryhma.json';
 import HAKENEET from './fixtures/hakeneet.json';
 import VALINNANVAIHE from './fixtures/valinnanvaiheet.json';
+import LASKETUT_HAKIJARYHMAT from './fixtures/lasketut_hakijaryhmat.json';
+import SIJOITTELUAJON_TULOKSET from './fixtures/sijoitteluajon-tulokset.json';
+import HAKUKOHTEEN_VALINTATULOKSET from './fixtures/hakukohteen_valintatulokset.json';
 import { SERVICE_KEY } from '../../src/app/lib/permissions';
 
 const port = 3104;
@@ -75,6 +78,24 @@ export default async function playwrightSetup() {
       )
     ) {
       return modifyResponse(response, SIJOITTELUN_YHTEENVETO);
+    } else if (
+      request.url?.includes(
+        `valintalaskenta-laskenta-service/resources/hakukohde`,
+      ) &&
+      request.url?.includes('/hakijaryhma')
+    ) {
+      return modifyResponse(response, LASKETUT_HAKIJARYHMAT);
+    } else if (
+      request.url?.includes(`valinta-tulos-service/auth/sijoittelu`) &&
+      request.url?.includes('sijoitteluajo/latest/hakukohde')
+    ) {
+      return modifyResponse(response, SIJOITTELUAJON_TULOKSET);
+    } else if (
+      request.url?.includes(
+        `valintalaskentakoostepalvelu/resources/proxy/valintatulosservice/ilmanhakijantilaa/haku`,
+      )
+    ) {
+      return modifyResponse(response, HAKUKOHTEEN_VALINTATULOKSET);
     } else if (
       request.url?.includes(`valintaperusteet-service/resources/hakukohde`) &&
       request.url?.includes('valinnanvaihe?withValisijoitteluTieto=true')

@@ -24,9 +24,7 @@ export const HakijaryhmatSearch = () => {
         textAlign: 'left',
       }}
     >
-      <FormLabel htmlFor="valintalaskennan-tulos-search">
-        {t('hakeneet.hae')}
-      </FormLabel>
+      <FormLabel htmlFor="hakijaryhmat-search">{t('hakeneet.hae')}</FormLabel>
       <OutlinedInput
         id="hakijaryhmat-search"
         name="hakijaryhmat-search"
