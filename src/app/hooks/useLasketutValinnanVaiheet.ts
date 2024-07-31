@@ -1,12 +1,10 @@
 'use client';
 import { useSuspenseQueries } from '@tanstack/react-query';
-import {
-  JonoSija,
-  LaskettuValintatapajono,
-  getLasketutValinnanVaiheet,
-} from '../lib/valintalaskenta-service';
-import { Hakemus, getHakemukset } from '../lib/ataru';
+import { getLasketutValinnanVaiheet } from '../lib/valintalaskenta-service';
+import { getHakemukset } from '../lib/ataru';
 import { TranslatedName } from '../lib/localization/localization-types';
+import { JonoSija, LaskettuValintatapajono } from '../lib/laskenta-types';
+import { Hakemus } from '../lib/ataru-types';
 
 export type JonoSijaWithHakijaInfo = Omit<
   JonoSija,

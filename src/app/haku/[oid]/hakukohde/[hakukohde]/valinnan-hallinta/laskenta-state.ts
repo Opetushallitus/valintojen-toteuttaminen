@@ -2,22 +2,22 @@
 
 import { assign, fromPromise, setup } from 'xstate';
 import { Laskenta, laskentaReducer } from './valinnan-hallinta-types';
-import { ValinnanvaiheTyyppi } from '@/app/lib/valintaperusteet';
+import { ValinnanvaiheTyyppi } from '@/app/lib/valintaperusteet-types';
 import { Haku, Hakukohde } from '@/app/lib/kouta-types';
 import {
-  LaskentaErrorSummary,
-  LaskentaStart,
   getLaskennanTilaHakukohteelle,
   kaynnistaLaskenta,
   kaynnistaLaskentaHakukohteenValinnanvaiheille,
 } from '@/app/lib/valintalaskentakoostepalvelu';
 import { TranslatedName } from '@/app/lib/localization/localization-types';
-import {
-  SeurantaTiedot,
-  getLaskennanSeurantaTiedot,
-} from '@/app/lib/valintalaskenta-service';
+import { getLaskennanSeurantaTiedot } from '@/app/lib/valintalaskenta-service';
 import { FetchError } from '@/app/lib/common';
 import { Toast } from '@/app/hooks/useToaster';
+import {
+  LaskentaErrorSummary,
+  LaskentaStart,
+  SeurantaTiedot,
+} from '@/app/lib/laskenta-types';
 
 const POLLING_INTERVAL = 5000;
 

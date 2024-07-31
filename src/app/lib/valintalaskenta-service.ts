@@ -4,66 +4,24 @@ import { LaskettuJonoWithHakijaInfo } from '../hooks/useLasketutValinnanVaiheet'
 import { booleanToString } from './common';
 import { configuration } from './configuration';
 import { client } from './http-client';
-import { getHakemukset, Hakemus } from './ataru';
+import { getHakemukset } from './ataru';
+import { getLatestSijoitteluAjonTulokset } from './valinta-tulos-service';
+import { getHakukohteenValintatuloksetIlmanHakijanTilaa } from './valintalaskentakoostepalvelu';
 import {
-  getLatestSijoitteluAjonTulokset,
+  HakijaryhmanHakija,
+  HakukohteenHakijaryhma,
+  JarjestyskriteeriTila,
+  LaskettuValinnanVaihe,
+  SeurantaTiedot,
+} from './laskenta-types';
+import {
+  HenkilonValintaTulos,
   SijoitteluajonTulokset,
   SijoitteluajonValintatapajono,
   SijoittelunHakemus,
   SijoittelunTila,
-} from './valinta-tulos-service';
-import {
-  getHakukohteenValintatuloksetIlmanHakijanTilaa,
-  HenkilonValintaTulos,
-} from './valintalaskentakoostepalvelu';
-
-export type Jarjestyskriteeri = {
-  arvo: number;
-  tila: string;
-  prioriteetti: number;
-  nimi: string;
-  kuvaus?: {
-    FI?: string;
-    SV?: string;
-    EN?: string;
-  };
-};
-
-export type JonoSija = {
-  jonosija: number;
-  hakemusOid: string;
-  hakijaOid: string;
-  tuloksenTila: string;
-  harkinnanvarainen: boolean;
-  prioriteetti: number;
-  jarjestyskriteerit: Array<Jarjestyskriteeri>;
-};
-
-export type LaskettuValintatapajono = {
-  oid: string;
-  nimi: string;
-  valintatapajonooid: string;
-  prioriteetti: number;
-  jonosijat: Array<JonoSija>;
-  valmisSijoiteltavaksi: boolean;
-  siirretaanSijoitteluun: boolean;
-};
-
-export type LaskettuValinnanVaihe = {
-  jarjestysnumero: number;
-  valinnanvaiheoid: string;
-  hakuOid: string;
-  nimi: string;
-  createdAt: number;
-  valintatapajonot?: Array<LaskettuValintatapajono>;
-};
-
-export type SeurantaTiedot = {
-  tila: 'VALMIS' | 'MENEILLAAN';
-  hakukohteitaYhteensa: number;
-  hakukohteitaValmiina: number;
-  hakukohteitaKeskeytetty: number;
-};
+} from './sijoittelu-types';
+import { Hakemus } from './ataru-types';
 
 export const getLasketutValinnanVaiheet = async (
   hakukohdeOid: string,
@@ -130,49 +88,22 @@ export const muutaSijoittelunStatus = async ({
   return data;
 };
 
-type JarjestyskriteeriTila = 'HYLATTY' | 'HYVAKSYTTAVISSA';
-
-export type HakijaryhmanHakija = {
-  hakijanNimi: string;
-  kuuluuHakijaryhmaan: boolean;
-  hakemusOid: string;
-  henkiloOid: string;
-  hyvaksyttyHakijaryhmasta: boolean;
-  sijoittelunTila?: SijoittelunTila;
-  vastaanottoTila?: string;
-  pisteet: number;
-  jononNimi?: string;
-  varasijanNumero?: number;
-};
-
-export type HakukohteenHakijaryhma = {
-  nimi: string;
-  oid: string;
-  prioriteetti: number;
-  kiintio: number;
-  hakijat: HakijaryhmanHakija[];
-};
-
 export const getHakijaryhmat = async (
   hakuOid: string,
   hakukohdeOid: string,
 ): Promise<HakukohteenHakijaryhma[]> => {
   const hakemukset: Hakemus[] = await getHakemukset(hakuOid, hakukohdeOid);
-  console.log('Hakemukset', hakemukset);
   const tulokset = await getLatestSijoitteluAjonTulokset(hakuOid, hakukohdeOid);
-  console.log('Tulokset', tulokset);
   const valintaTulokset = await getHakukohteenValintatuloksetIlmanHakijanTilaa(
     hakuOid,
     hakukohdeOid,
   );
-  console.log('Valintatulokset', valintaTulokset);
   const sijoittelunHakemukset = tulokset?.valintatapajonot
     ?.map((jono) => jono.hakemukset)
     .reduce((a, b) => a.concat(b), []);
   const { data } = await client.get(
     configuration.hakukohdeHakijaryhmatUrl({ hakukohdeOid }),
   );
-  console.log('Hakijaryhmat', data);
   return data.map(
     (ryhma: {
       nimi: string;
@@ -250,7 +181,7 @@ const findVastaanottotila = (
   }
 };
 
-const sijoittelunTilaOrdinal = (tila: SijoittelunTila): number => {
+const sijoittelunTilaOrdinalForHakemus = (tila: SijoittelunTila): number => {
   return [
     'VARALLA',
     'HYVAKSYTTY',
@@ -268,10 +199,16 @@ const findHakemusSijoittelussa = (
     (h) => h.hakemusOid === hakijanHakemus.oid,
   );
   return hakijanHakemukset.reduce((h, hakemus) => {
-    if (sijoittelunTilaOrdinal(hakemus.tila) > sijoittelunTilaOrdinal(h.tila)) {
+    if (
+      sijoittelunTilaOrdinalForHakemus(hakemus.tila) >
+      sijoittelunTilaOrdinalForHakemus(h.tila)
+    ) {
       return hakemus;
     }
-    if (sijoittelunTilaOrdinal(hakemus.tila) < sijoittelunTilaOrdinal(h.tila)) {
+    if (
+      sijoittelunTilaOrdinalForHakemus(hakemus.tila) <
+      sijoittelunTilaOrdinalForHakemus(h.tila)
+    ) {
       return h;
     }
     if (

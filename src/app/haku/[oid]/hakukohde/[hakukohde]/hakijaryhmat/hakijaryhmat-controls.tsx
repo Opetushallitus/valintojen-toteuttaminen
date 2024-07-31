@@ -4,7 +4,7 @@ import { Box, SelectChangeEvent } from '@mui/material';
 import { HakijaryhmatSearch } from './hakijaryhmat-search';
 import { OphSelectControl } from '@/app/components/oph-select';
 import theme from '@/app/theme';
-import { SijoittelunTila } from '@/app/lib/valinta-tulos-service';
+import { SijoittelunTila } from '@/app/lib/sijoittelu-types';
 
 export const HakijaryhmatControls = () => {
   const {

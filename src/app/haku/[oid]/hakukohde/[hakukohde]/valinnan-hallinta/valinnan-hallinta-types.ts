@@ -1,4 +1,4 @@
-import { LaskentaStart } from '@/app/lib/valintalaskentakoostepalvelu';
+import { LaskentaStart } from '@/app/lib/laskenta-types';
 
 export type Laskenta = {
   errorMessage?: string | string[] | null;

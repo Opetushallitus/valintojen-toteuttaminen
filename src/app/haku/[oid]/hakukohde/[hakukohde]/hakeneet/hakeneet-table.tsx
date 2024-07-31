@@ -5,7 +5,7 @@ import ListTable, {
   makeColumnWithValueToTranslate,
 } from '@/app/components/table/list-table';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { Hakemus } from '@/app/lib/ataru';
+import { Hakemus } from '@/app/lib/ataru-types';
 
 const LINK_TO_APPLICATION = 'lomake-editori/applications/search?term=';
 const LINK_TO_PERSON = 'henkilo-ui/oppija/';

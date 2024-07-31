@@ -1,13 +1,10 @@
 import { Haku, Hakukohde, getFullnameOfHakukohde } from './kouta-types';
 import { configuration } from './configuration';
-import { ValinnanvaiheTyyppi } from './valintaperusteet';
+import { ValinnanvaiheTyyppi } from './valintaperusteet-types';
 import { client } from './http-client';
 import { TranslatedName } from './localization/localization-types';
-
-export type LaskentaStart = {
-  startedNewLaskenta: boolean;
-  loadingUrl: string;
-};
+import { HenkilonValintaTulos } from './sijoittelu-types';
+import { LaskentaErrorSummary, LaskentaStart } from './laskenta-types';
 
 const formSearchParamsForStartLaskenta = ({
   laskentaUrl,
@@ -95,11 +92,6 @@ export const kaynnistaLaskentaHakukohteenValinnanvaiheille = async (
   };
 };
 
-export type LaskentaErrorSummary = {
-  hakukohdeOid: string;
-  notifications: string[] | undefined;
-};
-
 export const getLaskennanTilaHakukohteelle = async (
   loadingUrl: string,
 ): Promise<LaskentaErrorSummary> => {
@@ -117,11 +109,6 @@ export const getLaskennanTilaHakukohteelle = async (
       };
     },
   )[0];
-};
-
-export type HenkilonValintaTulos = {
-  tila: string;
-  hakijaOid: string;
 };
 
 export const getHakukohteenValintatuloksetIlmanHakijanTilaa = async (

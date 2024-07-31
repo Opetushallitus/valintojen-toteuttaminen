@@ -1,7 +1,7 @@
 'use client';
 import { Box } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { HakukohteenHakijaryhma } from '@/app/lib/valintalaskenta-service';
+import { HakukohteenHakijaryhma } from '@/app/lib/laskenta-types';
 import { Typography } from '@opetushallitus/oph-design-system';
 import React from 'react';
 import theme from '@/app/theme';
