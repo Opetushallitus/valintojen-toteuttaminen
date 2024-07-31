@@ -8,6 +8,7 @@ import ListTable, {
 } from '@/app/components/table/list-table';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { HakijaryhmanHakija } from '@/app/lib/valintalaskenta-service';
+import theme from '@/app/theme';
 import { Box } from '@mui/material';
 import { TFunction } from 'i18next';
 import { useMemo } from 'react';
@@ -32,14 +33,22 @@ const makeSijoittelunTilaColumn = (
   title: `${TRANSLATIONS_PREFIX}.sijoittelun-tila`,
   key: 'sijoittelunTila',
   render: (props) => (
-    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        rowGap: theme.spacing(1),
+      }}
+    >
       {props.jononNimi && (
         <span>
           {t(`${TRANSLATIONS_PREFIX}.valintatapajono`)}: {props.jononNimi}
         </span>
       )}
       <span>
-        {props.sijoittelunTila && <>{props.sijoittelunTila}</>}
+        {props.sijoittelunTila && (
+          <>{t(`sijoitteluntila.${props.sijoittelunTila}`)}</>
+        )}
         {props.varasijanNumero && <>({props.varasijanNumero})</>}
       </span>
     </Box>

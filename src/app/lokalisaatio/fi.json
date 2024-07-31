@@ -172,5 +172,15 @@
       "valintakoe": "Valintakoevalinnanvaihe",
       "tavallinen": "Valinnanvaihe"
     }
+  },
+  "sijoitteluntila": {
+    "HYVAKSYTTY": "HYVÄKSYTTY",
+    "VARASIJALTA_HYVAKSYTTY": "VARASIJALTA HYVÄKSYTTY",
+    "HARKINNANVARAISESTI_HYVAKSYTTY": "HARKINNANVARAISESTI HYVÄKSYTTY",
+    "VARALLA": "VARALLA",
+    "HYLATTY": "HYLÄTTY",
+    "PERUUNTUNUT": "PERUUNTUNUT",
+    "PERUNUT": "PERUNUT",
+    "PERUUTETTU": "PERUUTETTU"
   }
 }

@@ -55,14 +55,16 @@ export const getSijoittelunTulokset = async (
   return jsonTulokset;
 };
 
-export type SijoittelunTila =
-  | 'VARALLA'
-  | 'HYVAKSYTTY'
-  | 'VARASIJALTA_HYVAKSYTTY'
-  | 'HARKINNANVARAISESTI_HYVAKSYTTY'
-  | 'HYLATTY'
-  | 'PERUUNTUNUT'
-  | 'PERUNUT';
+export enum SijoittelunTila {
+  HYVAKSYTTY = 'HYVAKSYTTY',
+  VARASIJALTA_HYVAKSYTTY = 'VARASIJALTA_HYVAKSYTTY',
+  HARKINNANVARAISESTI_HYVAKSYTTY = 'HARKINNANVARAISESTI_HYVAKSYTTY',
+  VARALLA = 'VARALLA',
+  HYLATTY = 'HYLATTY',
+  PERUUNTUNUT = 'PERUUNTUNUT',
+  PERUNUT = 'PERUNUT',
+  PERUUTETTU = 'PERUUTETTU',
+}
 
 export type SijoittelunHakemus = {
   hakijaOid: string;

@@ -12,7 +12,7 @@ import { FolderOutlined } from '@mui/icons-material';
 import { HakijaryhmaContent } from './hakijaryhma-content';
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
 import { useHakijaryhmatSearchParams } from '@/app/hooks/useHakijaryhmatSearch';
-import { HakijaryhmatSearch } from './hakijaryhmat-search';
+import { HakijaryhmatControls } from './hakijaryhmat-controls';
 
 type HakijaryhmatContentParams = {
   hakuOid: string;
@@ -62,7 +62,7 @@ const HakijaryhmatContent = ({
         gap={2}
       >
         <Box display="flex" alignItems="flex-end" gap={2}>
-          <HakijaryhmatSearch />
+          <HakijaryhmatControls />
         </Box>
         <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
       </Box>
