@@ -1,6 +1,8 @@
 import { TranslatedName } from '@/app/lib/localization/localization-types';
 import { isTranslatedName } from '@/app/lib/localization/translation-utils';
 
+export type SortDirection = 'asc' | 'desc';
+
 export const byProp = <
   T extends Record<
     string,
@@ -8,7 +10,7 @@ export const byProp = <
   >,
 >(
   key: string,
-  direction: 'asc' | 'desc' = 'asc',
+  direction: SortDirection = 'asc',
   translateEntity: (entity: TranslatedName) => string,
 ) => {
   const asc = direction === 'asc';
@@ -32,7 +34,7 @@ export const getSortParts = (sortStr?: string, colId?: string) => {
   ) {
     return { orderBy, direction } as {
       orderBy: string;
-      direction: 'asc' | 'desc';
+      direction: SortDirection;
     };
   }
   return {

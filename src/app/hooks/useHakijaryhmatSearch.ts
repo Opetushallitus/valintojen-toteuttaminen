@@ -3,10 +3,18 @@ import { useEffect, useMemo, useState } from 'react';
 import { useDebounce } from '@/app/hooks/useDebounce';
 import { parseAsInteger, useQueryState } from 'nuqs';
 import { useHasChanged } from '@/app/hooks/useHasChanged';
-import { byProp, getSortParts } from '../components/table/table-utils';
+import {
+  byProp,
+  getSortParts,
+  SortDirection,
+} from '../components/table/table-utils';
 import { HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY } from '@/app/lib/constants';
 import { useTranslations } from './useTranslations';
 import { HakijaryhmanHakija } from '../lib/valintalaskenta-service';
+import {
+  SijoittelunTila,
+  SijoittelunTilaOrdinals,
+} from '../lib/valinta-tulos-service';
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -140,9 +148,55 @@ export const useHakijaryhmatSearch = (
           hakija.hakemusOid.includes(searchPhrase?.toLowerCase() ?? '') ||
           hakija.henkiloOid.includes(searchPhrase?.toLowerCase() ?? '')),
     );
-    return orderBy && direction
-      ? filtered.sort(byProp(orderBy, direction, translateEntity))
-      : filtered;
+
+    const sortHakijat = (orderBy: string, direction: SortDirection) => {
+      if (orderBy === 'sijoittelunTila') {
+        const asc = direction === 'asc';
+        return filtered.sort((a, b) => {
+          if (a.sijoittelunTila && b.sijoittelunTila) {
+            const aOrdinal = SijoittelunTilaOrdinals[a.sijoittelunTila];
+            const bOrdinal = SijoittelunTilaOrdinals[b.sijoittelunTila];
+            if (
+              aOrdinal === bOrdinal &&
+              aOrdinal === SijoittelunTilaOrdinals[SijoittelunTila.VARALLA] &&
+              a.varasijanNumero &&
+              b.varasijanNumero
+            ) {
+              return a.varasijanNumero > b.varasijanNumero
+                ? asc
+                  ? 1
+                  : -1
+                : b.varasijanNumero > a.varasijanNumero
+                  ? asc
+                    ? -1
+                    : 1
+                  : 0;
+            }
+            return aOrdinal > bOrdinal
+              ? asc
+                ? 1
+                : -1
+              : bOrdinal > aOrdinal
+                ? asc
+                  ? -1
+                  : 1
+                : 0;
+          }
+          return a.sijoittelunTila
+            ? asc
+              ? 1
+              : -1
+            : b.sijoittelunTila
+              ? asc
+                ? -1
+                : 1
+              : 0;
+        });
+      }
+      return filtered.sort(byProp(orderBy, direction, translateEntity));
+    };
+
+    return orderBy && direction ? sortHakijat(orderBy, direction) : filtered;
   }, [
     hakijaryhmanHakijat,
     searchPhrase,

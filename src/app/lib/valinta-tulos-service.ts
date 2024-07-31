@@ -66,6 +66,12 @@ export enum SijoittelunTila {
   PERUUTETTU = 'PERUUTETTU',
 }
 
+export const SijoittelunTilaOrdinals: Record<string, number> = Object.keys(
+  SijoittelunTila,
+)
+  .map((key, index) => ({ [key]: index }))
+  .reduce((a, b) => ({ ...a, ...b }));
+
 export type SijoittelunHakemus = {
   hakijaOid: string;
   hakemusOid: string;
