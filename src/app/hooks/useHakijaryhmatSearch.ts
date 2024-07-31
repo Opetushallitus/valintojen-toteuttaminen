@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useDebounce } from '@/app/hooks/useDebounce';
 import { parseAsInteger, useQueryState } from 'nuqs';
 import { useHasChanged } from '@/app/hooks/useHasChanged';
@@ -54,7 +54,7 @@ export const useHakijaryhmatSearchParams = (hakijaryhmaOid?: string) => {
       .withDefault(DEFAULT_PAGE_SIZE),
   );
 
-  const [sort, setSort] = useQueryState('sort', DEFAULT_NUQS_OPTIONS);
+  const [sort, setSort] = useState<string>('');
 
   const searchPhraseChanged = useHasChanged(searchPhrase);
 
