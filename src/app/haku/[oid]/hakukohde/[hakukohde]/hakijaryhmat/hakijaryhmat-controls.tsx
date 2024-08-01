@@ -4,7 +4,7 @@ import { Box, SelectChangeEvent } from '@mui/material';
 import { HakijaryhmatSearch } from './hakijaryhmat-search';
 import { OphSelectControl } from '@/app/components/oph-select';
 import theme from '@/app/theme';
-import { SijoittelunTila } from '@/app/lib/sijoittelu-types';
+import { SijoittelunTila } from '@/app/lib/types/sijoittelu-types';
 
 export const HakijaryhmatControls = () => {
   const {
@@ -30,7 +30,7 @@ export const HakijaryhmatControls = () => {
   };
 
   const sijoitteluntilaOptions = Object.values(SijoittelunTila).map((tila) => {
-    return { value: tila, label: t(`sijoitteluntila.${tila}`) };
+    return { value: tila as string, label: t(`sijoitteluntila.${tila}`) };
   });
 
   return (

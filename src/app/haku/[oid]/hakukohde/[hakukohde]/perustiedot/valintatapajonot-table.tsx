@@ -6,7 +6,7 @@ import ListTable, {
 } from '@/app/components/table/list-table';
 import { isToisenAsteenYhteisHaku } from '@/app/lib/kouta';
 import { Haku } from '@/app/lib/types/kouta-types';
-import { ValintatapajonoTulos } from '@/app/lib/sijoittelu-types';
+import { ValintatapajonoTulos } from '@/app/lib/types/sijoittelu-types';
 
 export const ValintatapajonotTable = ({
   valintatapajonoTulokset,
