@@ -1,5 +1,71 @@
-import { test, expect, Page } from '@playwright/test';
+import { test, expect, Page, Locator } from '@playwright/test';
 import { checkRow, expectAllSpinnersHidden } from './playwright-utils';
+
+const ROWS = {
+  ruhtinas: [
+    'Nukettaja Ruhtinas',
+    'Kyllä',
+    'Valintatapajono: Todistusvalinta (YO)HYVÄKSYTTY',
+    'Kyllä',
+    '100',
+    'KESKEN',
+  ],
+  kreiviTable1: [
+    'Dacula Kreivi',
+    'Kyllä',
+    'Valintatapajono: Todistusvalinta (YO)VARALLA(1)',
+    'Kyllä',
+    '78',
+    'KESKEN',
+  ],
+  kreiviTable2: [
+    'Dacula Kreivi',
+    'Ei',
+    'Valintatapajono: Todistusvalinta (YO)VARALLA(1)',
+    'Ei',
+    '78',
+    'KESKEN',
+  ],
+  purukumiTable1: [
+    'Purukumi Puru',
+    'Kyllä',
+    'Valintatapajono: Todistusvalinta (YO)VARALLA(2)',
+    'Kyllä',
+    '49',
+    'KESKEN',
+  ],
+  purukumiTable2: [
+    'Purukumi Puru',
+    'Ei',
+    'Valintatapajono: Todistusvalinta (YO)VARALLA(2)',
+    'Ei',
+    '49',
+    'KESKEN',
+  ],
+  haamuTable1: [
+    'Hui Haamu',
+    'Ei',
+    'Valintatapajono: Todistusvalinta (YO)HYLÄTTY',
+    'Kyllä',
+    '0',
+    'KESKEN',
+  ],
+  haamuTable2: [
+    'Hui Haamu',
+    'Ei',
+    'Valintatapajono: Todistusvalinta (YO)HYLÄTTY',
+    'Ei',
+    '0',
+    'KESKEN',
+  ],
+};
+
+const assertRows = async (rows: Locator, contentToExpect: string[][]) => {
+  await expect(rows).toHaveCount(contentToExpect.length);
+  for (const [index, content] of contentToExpect.entries()) {
+    await checkRow(rows.nth(index), content);
+  }
+};
 
 test('displays hakijaryhmat', async ({ page }) => {
   await page.goto(
@@ -25,76 +91,22 @@ test('displays hakijaryhmat', async ({ page }) => {
     'th',
   );
   const rows = page.locator(
-    '#ensikertalaiset-hakijaryhma-oid-accordion-content tbody tr',
+    '[data-test-id="ensikertalaiset-hakijaryhma-oid-accordion-content"] tbody tr',
   );
-  await expect(rows).toHaveCount(4);
-  await checkRow(rows.nth(0), [
-    'Nukettaja Ruhtinas',
-    'Kyllä',
-    'Valintatapajono: Todistusvalinta (YO)HYVÄKSYTTY',
-    'Kyllä',
-    '100',
-    'KESKEN',
-  ]);
-  await checkRow(rows.nth(1), [
-    'Dacula Kreivi',
-    'Kyllä',
-    'Valintatapajono: Todistusvalinta (YO)VARALLA(1)',
-    'Kyllä',
-    '78',
-    'KESKEN',
-  ]);
-  await checkRow(rows.nth(2), [
-    'Purukumi Puru',
-    'Kyllä',
-    'Valintatapajono: Todistusvalinta (YO)VARALLA(2)',
-    'Kyllä',
-    '49',
-    'KESKEN',
-  ]);
-  await checkRow(rows.nth(3), [
-    'Hui Haamu',
-    'Ei',
-    'Valintatapajono: Todistusvalinta (YO)HYLÄTTY',
-    'Kyllä',
-    '0',
-    'KESKEN',
+  await assertRows(rows, [
+    ROWS.ruhtinas,
+    ROWS.kreiviTable1,
+    ROWS.purukumiTable1,
+    ROWS.haamuTable1,
   ]);
   const rows2 = page.locator(
-    '#ensikertalaiset-hakijaryhma-oid2-accordion-content tbody tr',
+    '[data-test-id="ensikertalaiset-hakijaryhma-oid2-accordion-content"] tbody tr',
   );
-  await expect(rows2).toHaveCount(4);
-  await checkRow(rows2.nth(0), [
-    'Nukettaja Ruhtinas',
-    'Kyllä',
-    'Valintatapajono: Todistusvalinta (YO)HYVÄKSYTTY',
-    'Kyllä',
-    '100',
-    'KESKEN',
-  ]);
-  await checkRow(rows2.nth(1), [
-    'Dacula Kreivi',
-    'Ei',
-    'Valintatapajono: Todistusvalinta (YO)VARALLA(1)',
-    'Ei',
-    '78',
-    'KESKEN',
-  ]);
-  await checkRow(rows2.nth(2), [
-    'Purukumi Puru',
-    'Ei',
-    'Valintatapajono: Todistusvalinta (YO)VARALLA(2)',
-    'Ei',
-    '49',
-    'KESKEN',
-  ]);
-  await checkRow(rows2.nth(3), [
-    'Hui Haamu',
-    'Ei',
-    'Valintatapajono: Todistusvalinta (YO)HYLÄTTY',
-    'Ei',
-    '0',
-    'KESKEN',
+  await assertRows(rows2, [
+    ROWS.ruhtinas,
+    ROWS.kreiviTable2,
+    ROWS.purukumiTable2,
+    ROWS.haamuTable2,
   ]);
 });
 
@@ -110,40 +122,13 @@ test('sorts list by sijoittelun tila when header clicked', async ({ page }) => {
   await expect(tilaHeader).toHaveAttribute('aria-sort', 'ascending');
 
   let rows = page.locator(
-    '#ensikertalaiset-hakijaryhma-oid-accordion-content tbody tr',
+    '[data-test-id="ensikertalaiset-hakijaryhma-oid-accordion-content"] tbody tr',
   );
-  await expect(rows).toHaveCount(4);
-  await checkRow(rows.nth(0), [
-    'Nukettaja Ruhtinas',
-    'Kyllä',
-    'Valintatapajono: Todistusvalinta (YO)HYVÄKSYTTY',
-    'Kyllä',
-    '100',
-    'KESKEN',
-  ]);
-  await checkRow(rows.nth(1), [
-    'Dacula Kreivi',
-    'Kyllä',
-    'Valintatapajono: Todistusvalinta (YO)VARALLA(1)',
-    'Kyllä',
-    '78',
-    'KESKEN',
-  ]);
-  await checkRow(rows.nth(2), [
-    'Purukumi Puru',
-    'Kyllä',
-    'Valintatapajono: Todistusvalinta (YO)VARALLA(2)',
-    'Kyllä',
-    '49',
-    'KESKEN',
-  ]);
-  await checkRow(rows.nth(3), [
-    'Hui Haamu',
-    'Ei',
-    'Valintatapajono: Todistusvalinta (YO)HYLÄTTY',
-    'Kyllä',
-    '0',
-    'KESKEN',
+  await assertRows(rows, [
+    ROWS.ruhtinas,
+    ROWS.kreiviTable1,
+    ROWS.purukumiTable1,
+    ROWS.haamuTable1,
   ]);
 
   await tilaHeader.getByRole('button').click();
@@ -151,40 +136,13 @@ test('sorts list by sijoittelun tila when header clicked', async ({ page }) => {
   await expect(tilaHeader).toHaveAttribute('aria-sort', 'descending');
 
   rows = page.locator(
-    '#ensikertalaiset-hakijaryhma-oid-accordion-content tbody tr',
+    '[data-test-id="ensikertalaiset-hakijaryhma-oid-accordion-content"] tbody tr',
   );
-  await expect(rows).toHaveCount(4);
-  await checkRow(rows.nth(0), [
-    'Hui Haamu',
-    'Ei',
-    'Valintatapajono: Todistusvalinta (YO)HYLÄTTY',
-    'Kyllä',
-    '0',
-    'KESKEN',
-  ]);
-  await checkRow(rows.nth(1), [
-    'Purukumi Puru',
-    'Kyllä',
-    'Valintatapajono: Todistusvalinta (YO)VARALLA(2)',
-    'Kyllä',
-    '49',
-    'KESKEN',
-  ]);
-  await checkRow(rows.nth(2), [
-    'Dacula Kreivi',
-    'Kyllä',
-    'Valintatapajono: Todistusvalinta (YO)VARALLA(1)',
-    'Kyllä',
-    '78',
-    'KESKEN',
-  ]);
-  await checkRow(rows.nth(3), [
-    'Nukettaja Ruhtinas',
-    'Kyllä',
-    'Valintatapajono: Todistusvalinta (YO)HYVÄKSYTTY',
-    'Kyllä',
-    '100',
-    'KESKEN',
+  await assertRows(rows, [
+    ROWS.haamuTable1,
+    ROWS.purukumiTable1,
+    ROWS.kreiviTable1,
+    ROWS.ruhtinas,
   ]);
 });
 
@@ -200,147 +158,83 @@ test.describe('filters', () => {
   });
 
   test('filters by name', async () => {
-    const hakuInput = page.locator('#hakijaryhmat-search');
+    const hakuInput = page.getByLabel('Hae hakijan nimellä tai');
     await hakuInput.fill('Ruht');
     let rows = page.locator(
-      '#ensikertalaiset-hakijaryhma-oid-accordion-content tbody tr',
+      '[data-test-id="ensikertalaiset-hakijaryhma-oid-accordion-content"] tbody tr',
     );
-    await expect(rows).toHaveCount(1);
-    await checkRow(rows.nth(0), [
-      'Nukettaja Ruhtinas',
-      'Kyllä',
-      'Valintatapajono: Todistusvalinta (YO)HYVÄKSYTTY',
-      'Kyllä',
-      '100',
-      'KESKEN',
-    ]);
+    await assertRows(rows, [ROWS.ruhtinas]);
     await hakuInput.fill('Hui');
     rows = page.locator(
-      '#ensikertalaiset-hakijaryhma-oid-accordion-content tbody tr',
+      '[data-test-id="ensikertalaiset-hakijaryhma-oid-accordion-content"] tbody tr',
     );
-    await expect(rows).toHaveCount(1);
-    await checkRow(rows.nth(0), [
-      'Hui Haamu',
-      'Ei',
-      'Valintatapajono: Todistusvalinta (YO)HYLÄTTY',
-      'Kyllä',
-      '0',
-      'KESKEN',
-    ]);
+    await assertRows(rows, [ROWS.haamuTable1]);
   });
 
   test('filters by application oid', async () => {
-    const hakuInput = page.locator('#hakijaryhmat-search');
+    const hakuInput = page.getByLabel('Hae hakijan nimellä tai');
     await hakuInput.fill('1.2.246.562.11.00000000000001543832');
     const rows = page.locator(
-      '#ensikertalaiset-hakijaryhma-oid-accordion-content tbody tr',
+      '[data-test-id="ensikertalaiset-hakijaryhma-oid-accordion-content"] tbody tr',
     );
-    await expect(rows).toHaveCount(1);
-    await checkRow(rows.nth(0), [
-      'Hui Haamu',
-      'Ei',
-      'Valintatapajono: Todistusvalinta (YO)HYLÄTTY',
-      'Kyllä',
-      '0',
-      'KESKEN',
-    ]);
+    await assertRows(rows, [ROWS.haamuTable1]);
   });
 
   test('filters henkiloOid', async () => {
-    const hakuInput = page.locator('#hakijaryhmat-search');
+    const hakuInput = page.getByLabel('Hae hakijan nimellä tai');
     await hakuInput.fill('1.2.246.562.24.14598775927');
     const rows = page.locator(
-      '#ensikertalaiset-hakijaryhma-oid-accordion-content tbody tr',
+      '[data-test-id="ensikertalaiset-hakijaryhma-oid-accordion-content"] tbody tr',
     );
-    await expect(rows).toHaveCount(1);
-    await checkRow(rows.nth(0), [
-      'Purukumi Puru',
-      'Kyllä',
-      'Valintatapajono: Todistusvalinta (YO)VARALLA(2)',
-      'Kyllä',
-      '49',
-      'KESKEN',
-    ]);
+    await assertRows(rows, [ROWS.purukumiTable1]);
   });
 
   test('filters by sijoittelutila hylätty', async () => {
     await selectTila(page, 'HYLÄTTY');
     const rows = page.locator(
-      '#ensikertalaiset-hakijaryhma-oid-accordion-content tbody tr',
+      '[data-test-id="ensikertalaiset-hakijaryhma-oid-accordion-content"] tbody tr',
     );
-    await expect(rows).toHaveCount(1);
-    await checkRow(rows.nth(0), [
-      'Hui Haamu',
-      'Ei',
-      'Valintatapajono: Todistusvalinta (YO)HYLÄTTY',
-      'Kyllä',
-      '0',
-      'KESKEN',
-    ]);
+    await assertRows(rows, [ROWS.haamuTable1]);
   });
 
   test('filters by sijoittelutila varalla', async () => {
     await selectTila(page, 'VARALLA');
     const rows = page.locator(
-      '#ensikertalaiset-hakijaryhma-oid-accordion-content tbody tr',
+      '[data-test-id="ensikertalaiset-hakijaryhma-oid-accordion-content"] tbody tr',
     );
-    await expect(rows).toHaveCount(2);
-    await checkRow(rows.nth(0), [
-      'Dacula Kreivi',
-      'Kyllä',
-      'Valintatapajono: Todistusvalinta (YO)VARALLA(1)',
-      'Kyllä',
-      '78',
-      'KESKEN',
-    ]);
-    await checkRow(rows.nth(1), [
-      'Purukumi Puru',
-      'Kyllä',
-      'Valintatapajono: Todistusvalinta (YO)VARALLA(2)',
-      'Kyllä',
-      '49',
-      'KESKEN',
-    ]);
+    await assertRows(rows, [ROWS.kreiviTable1, ROWS.purukumiTable1]);
   });
 
   test('filters by kuuluu hakijaryhmaan', async () => {
     await selectKuuluuRyhmaan(page, 'Kyllä');
     let rows = page.locator(
-      '#ensikertalaiset-hakijaryhma-oid-accordion-content tbody tr',
+      '[data-test-id="ensikertalaiset-hakijaryhma-oid-accordion-content"] tbody tr',
     );
     await expect(rows).toHaveCount(3);
     await selectKuuluuRyhmaan(page, 'Ei');
     rows = page.locator(
-      '#ensikertalaiset-hakijaryhma-oid-accordion-content tbody tr',
+      '[data-test-id="ensikertalaiset-hakijaryhma-oid-accordion-content"] tbody tr',
     );
-    await expect(rows).toHaveCount(1);
-    await checkRow(rows.nth(0), [
-      'Hui Haamu',
-      'Ei',
-      'Valintatapajono: Todistusvalinta (YO)HYLÄTTY',
-      'Kyllä',
-      '0',
-      'KESKEN',
-    ]);
+    await assertRows(rows, [ROWS.haamuTable1]);
   });
 
   test('filters by hyvaksytty hakijaryhmasta', async () => {
     await selectHyvaksytty(page, 'Kyllä');
     let rows = page.locator(
-      '#ensikertalaiset-hakijaryhma-oid-accordion-content tbody tr',
+      '[data-test-id="ensikertalaiset-hakijaryhma-oid-accordion-content"] tbody tr',
     );
     await expect(rows).toHaveCount(4);
     rows = page.locator(
-      '#ensikertalaiset-hakijaryhma-oid2-accordion-content tbody tr',
+      '[data-test-id="ensikertalaiset-hakijaryhma-oid2-accordion-content"] tbody tr',
     );
     await expect(rows).toHaveCount(1);
     await selectHyvaksytty(page, 'Ei');
     rows = page.locator(
-      '#ensikertalaiset-hakijaryhma-oid-accordion-content tbody tr',
+      '[data-test-id="ensikertalaiset-hakijaryhma-oid-accordion-content"] tbody tr',
     );
     await expect(rows).toHaveCount(0);
     rows = page.locator(
-      '#ensikertalaiset-hakijaryhma-oid2-accordion-content tbody tr',
+      '[data-test-id="ensikertalaiset-hakijaryhma-oid2-accordion-content"] tbody tr',
     );
     await expect(rows).toHaveCount(3);
   });

@@ -34,6 +34,7 @@ export const HakijaryhmaAccordion = ({
         sx={{
           borderTop: DEFAULT_BOX_BORDER,
         }}
+        data-test-id={contentId}
       >
         {children}
       </AccordionDetails>
