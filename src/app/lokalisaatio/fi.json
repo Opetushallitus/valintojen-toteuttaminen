@@ -22,7 +22,9 @@
     "edellinen": "Edellinen",
     "seuraava": "Seuraava",
     "lisatietoja": "Lisätietoja",
-    "prioriteetti": "Prioriteetti"
+    "prioriteetti": "Prioriteetti",
+    "kylla": "Kyllä",
+    "ei": "Ei"
   },
   "tuloksenTila": {
     "HYVAKSYTTAVISSA": "Hyväksyttävissä",
@@ -131,7 +133,19 @@
     "otsikko": "Harkinnanvaraiset"
   },
   "hakijaryhmat": {
-    "otsikko": "Hakijaryhmät"
+    "otsikko": "Hakijaryhmät",
+    "ei-tuloksia": "Ei hakijaryhmiä tai valintojen tuloksia hakijaryhmille",
+    "kiintio": "(kiintiö: {{kiintio}})",
+    "taulukko": {
+      "otsikko": "Hakijaryhmä",
+      "hakija": "Hakija",
+      "kuuluminen": "Kuuluu hakijaryhmään",
+      "sijoittelun-tila": "Sijoittelun tila",
+      "hyvaksytty": "Hyväksytty hakijaryhmästä",
+      "pisteet": "Pisteet",
+      "vastaanottotila": "Vastaanottotila",
+      "valintatapajono": "Valintatapajono"
+    }
   },
   "valintalaskennan-tulos": {
     "otsikko": "Valintalaskennan tulos",
@@ -158,5 +172,15 @@
       "valintakoe": "Valintakoevalinnanvaihe",
       "tavallinen": "Valinnanvaihe"
     }
+  },
+  "sijoitteluntila": {
+    "HYVAKSYTTY": "HYVÄKSYTTY",
+    "VARASIJALTA_HYVAKSYTTY": "VARASIJALTA HYVÄKSYTTY",
+    "HARKINNANVARAISESTI_HYVAKSYTTY": "HARKINNANVARAISESTI HYVÄKSYTTY",
+    "VARALLA": "VARALLA",
+    "HYLATTY": "HYLÄTTY",
+    "PERUUNTUNUT": "PERUUNTUNUT",
+    "PERUNUT": "PERUNUT",
+    "PERUUTETTU": "PERUUTETTU"
   }
 }

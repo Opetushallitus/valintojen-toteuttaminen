@@ -44,6 +44,29 @@ export const makeGenericColumn = <T extends Record<string, unknown>>({
   style: { width: 'auto' },
 });
 
+export const makeBooleanYesNoColumn = <T extends Record<string, unknown>>({
+  t,
+  title,
+  key,
+  booleanValueProp,
+}: {
+  t: TFunction;
+  title: string;
+  key: string;
+  booleanValueProp: KeysMatching<T, boolean>;
+}): ListTableColumn<T> => ({
+  title,
+  key,
+  render: (props) => (
+    <span>
+      {(props[booleanValueProp] as boolean)
+        ? t('yleinen.kylla')
+        : t('yleinen.ei')}
+    </span>
+  ),
+  style: { width: 'auto' },
+});
+
 export const makeColumnWithValueToTranslate = <
   T extends Record<string, unknown>,
 >({

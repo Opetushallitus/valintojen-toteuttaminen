@@ -46,6 +46,7 @@
     "react-dom": "^18",
     "react-error-boundary": "^4.0.13",
     "react-i18next": "^14.1.2",
+    "remeda": "^2.6.0",
     "xstate": "^5.14.0"
   },
   "devDependencies": {

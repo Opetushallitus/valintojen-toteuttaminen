@@ -1,11 +1,13 @@
 import { expect, test, vi, describe, afterEach } from 'vitest';
 import {
-  Valinnanvaihe,
-  ValinnanvaiheTyyppi,
   getValinnanvaiheet,
   isLaskentaUsedForValinnanvaihe,
 } from './valintaperusteet';
 import { client } from './http-client';
+import {
+  Valinnanvaihe,
+  ValinnanvaiheTyyppi,
+} from './types/valintaperusteet-types';
 
 test('laskenta is used for active valinnanvaihe', () => {
   const vaihe: Valinnanvaihe = {

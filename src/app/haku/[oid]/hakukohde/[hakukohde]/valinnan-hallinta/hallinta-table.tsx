@@ -15,7 +15,7 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { Haku, Hakukohde } from '@/app/lib/kouta-types';
+import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
 import HallintaTableRow from './hallinta-table-row';
 import { HaunAsetukset } from '@/app/lib/ohjausparametrit';
 import { Button, Typography } from '@opetushallitus/oph-design-system';

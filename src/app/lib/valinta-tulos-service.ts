@@ -2,19 +2,12 @@
 
 import { configuration } from './configuration';
 import { client } from './http-client';
-
-export type ValintatapajonoTulos = {
-  nimi: string;
-  oid: string;
-  sijoittelunAloituspaikat: string;
-  hyvaksytty: number;
-  ehdollisestiHyvaksytty: number;
-  harkinnanvaraisestiHyvaksytty: number;
-  varasijoilla: number;
-  vastaanottaneet: number;
-  paikanPeruneet: number;
-  pisteraja: number;
-};
+import {
+  SijoitteluajonTulokset,
+  SijoittelunHakemus,
+  SijoittelunTila,
+  ValintatapajonoTulos,
+} from './types/sijoittelu-types';
 
 export const getSijoittelunTulokset = async (
   hakuOid: string,
@@ -53,4 +46,55 @@ export const getSijoittelunTulokset = async (
     },
   );
   return jsonTulokset;
+};
+
+export const getLatestSijoitteluAjonTulokset = async (
+  hakuOid: string,
+  hakukohdeOid: string,
+): Promise<SijoitteluajonTulokset> => {
+  const { data } = await client.get(
+    `${configuration.valintaTulosServiceUrl}sijoittelu/${hakuOid}/sijoitteluajo/latest/hakukohde/${hakukohdeOid}`,
+  );
+  const sijoitteluajonTulokset = data.valintatapajonot.map(
+    (jono: {
+      oid: string;
+      nimi: string;
+      prioriteetti: number;
+      hakemukset: [
+        {
+          hakijaOid: string;
+          hakemusOid: string;
+          pisteet: number;
+          tila: SijoittelunTila;
+          valintatapajonoOid: string;
+          hyvaksyttyHakijaryhmista: string[];
+          varasijanNumero: number;
+        },
+      ];
+    }) => {
+      const hakemukset: SijoittelunHakemus[] = jono.hakemukset.map((h) => {
+        return {
+          hakijaOid: h.hakijaOid,
+          hakemusOid: h.hakemusOid,
+          pisteet: h.pisteet,
+          tila: h.tila,
+          valintatapajonoOid: h.valintatapajonoOid,
+          hyvaksyttyHakijaryhmista: h.hyvaksyttyHakijaryhmista,
+          varasijanNumero: h.varasijanNumero,
+        };
+      });
+      return {
+        oid: jono.oid,
+        nimi: jono.nimi,
+        hakemukset,
+        prioriteetti: jono.prioriteetti,
+      };
+    },
+  );
+  const hakijaryhmat = data.hakijaryhmat.map(
+    (ryhma: { oid: string; kiintio: number }) => {
+      return { oid: ryhma.oid, kiintio: ryhma.kiintio };
+    },
+  );
+  return { valintatapajonot: sijoitteluajonTulokset, hakijaryhmat };
 };

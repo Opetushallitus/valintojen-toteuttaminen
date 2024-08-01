@@ -1,7 +1,7 @@
 'use client';
 import { Box } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { LaskettuValinnanVaihe } from '@/app/lib/valintalaskenta-service';
+import { LaskettuValinnanVaihe } from '@/app/lib/types/laskenta-types';
 import { Typography } from '@opetushallitus/oph-design-system';
 import React from 'react';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';

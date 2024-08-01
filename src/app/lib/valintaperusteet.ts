@@ -2,33 +2,12 @@
 
 import { configuration } from './configuration';
 import { client } from './http-client';
-
-export type Valintaryhma = {
-  nimi: string;
-  oid: string;
-};
-
-export enum ValinnanvaiheTyyppi {
-  VALINTAKOE = 'valinnanvaihe.tyyppi.valintakoe',
-  TAVALLINEN = 'valinnanvaihe.tyyppi.tavallinen',
-}
-
-export type Valintatapajono = {
-  nimi: string;
-  oid: string;
-  eiLasketaPaivamaaranJalkeen?: Date;
-  prioriteetti: number;
-  kaytetaanValintalaskentaa: boolean;
-};
-
-export type Valinnanvaihe = {
-  nimi: string;
-  aktiivinen: boolean;
-  valisijoittelu: boolean;
-  tyyppi: ValinnanvaiheTyyppi;
-  oid: string;
-  jonot: Valintatapajono[];
-};
+import {
+  Valinnanvaihe,
+  ValinnanvaiheTyyppi,
+  Valintaryhma,
+  Valintatapajono,
+} from './types/valintaperusteet-types';
 
 export const isLaskentaUsedForValinnanvaihe = (
   valinnanvaihe: Valinnanvaihe,

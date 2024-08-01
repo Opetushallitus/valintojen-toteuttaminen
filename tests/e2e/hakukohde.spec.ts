@@ -4,7 +4,12 @@ import {
   expectPageAccessibilityOk,
 } from './playwright-utils';
 
-type Tab = { title: string; textLocator?: string; route: string };
+type Tab = {
+  title: string;
+  textLocator?: string;
+  route: string;
+  invisibleInTabsForKKHaku?: boolean;
+};
 
 const TABS_TO_TEST: Tab[] = [
   {
@@ -19,8 +24,16 @@ const TABS_TO_TEST: Tab[] = [
   },
   { title: 'Valintakoekutsut', route: 'valintakoekutsut' },
   { title: 'Pistesyöttö', route: 'pistesyotto' },
-  { title: 'Harkinnanvaraiset', route: 'harkinnanvaraiset' },
-  { title: 'Hakijaryhmät', route: 'hakijaryhmat' },
+  {
+    title: 'Harkinnanvaraiset',
+    route: 'harkinnanvaraiset',
+    invisibleInTabsForKKHaku: true,
+  },
+  {
+    title: 'Hakijaryhmät',
+    textLocator: 'Hae hakijan nimellä tai tunnisteilla',
+    route: 'hakijaryhmat',
+  },
   { title: 'Sijoittelun tulokset', route: 'sijoittelun-tulokset' },
 ] as const;
 
@@ -62,11 +75,15 @@ test.describe('Hakukohde tabs', () => {
         '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102',
       );
       await page.locator('.organizationLabel').first().click();
-      await page.getByText(tab.title).click();
-      if (tab.textLocator) {
-        await expect(page.locator('body')).toContainText(tab.textLocator);
+      if (tab.invisibleInTabsForKKHaku) {
+        await expect(page.getByText(tab.title)).toBeHidden();
       } else {
-        await expect(page.locator('h3')).toHaveText(tab.title);
+        await page.getByText(tab.title).click();
+        if (tab.textLocator) {
+          await expect(page.locator('body')).toContainText(tab.textLocator);
+        } else {
+          await expect(page.locator('h3')).toHaveText(tab.title);
+        }
       }
     });
 

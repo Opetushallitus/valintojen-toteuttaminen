@@ -2,7 +2,7 @@
 
 import { useHakukohdeSearchResults } from '@/app/hooks/useHakukohdeSearch';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { Hakukohde } from '@/app/lib/kouta-types';
+import { Hakukohde } from '@/app/lib/types/kouta-types';
 import { styled } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useHakukohdeTab } from './hakukohde/[hakukohde]/hakukohde-tabs';

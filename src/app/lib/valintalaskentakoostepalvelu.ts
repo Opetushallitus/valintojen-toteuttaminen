@@ -1,13 +1,10 @@
-import { Haku, Hakukohde, getFullnameOfHakukohde } from './kouta-types';
+import { Haku, Hakukohde, getFullnameOfHakukohde } from './types/kouta-types';
 import { configuration } from './configuration';
-import { ValinnanvaiheTyyppi } from './valintaperusteet';
+import { ValinnanvaiheTyyppi } from './types/valintaperusteet-types';
 import { client } from './http-client';
 import { TranslatedName } from './localization/localization-types';
-
-export type LaskentaStart = {
-  startedNewLaskenta: boolean;
-  loadingUrl: string;
-};
+import { HenkilonValintaTulos } from './types/sijoittelu-types';
+import { LaskentaErrorSummary, LaskentaStart } from './types/laskenta-types';
 
 const formSearchParamsForStartLaskenta = ({
   laskentaUrl,
@@ -95,11 +92,6 @@ export const kaynnistaLaskentaHakukohteenValinnanvaiheille = async (
   };
 };
 
-export type LaskentaErrorSummary = {
-  hakukohdeOid: string;
-  notifications: string[] | undefined;
-};
-
 export const getLaskennanTilaHakukohteelle = async (
   loadingUrl: string,
 ): Promise<LaskentaErrorSummary> => {
@@ -117,4 +109,16 @@ export const getLaskennanTilaHakukohteelle = async (
       };
     },
   )[0];
+};
+
+export const getHakukohteenValintatuloksetIlmanHakijanTilaa = async (
+  hakuOid: string,
+  hakukohdeOid: string,
+): Promise<HenkilonValintaTulos[]> => {
+  const { data } = await client.get(
+    `${configuration.valintalaskentaKoostePalveluUrl}proxy/valintatulosservice/ilmanhakijantilaa/haku/${hakuOid}/hakukohde/${hakukohdeOid}`,
+  );
+  return data.map((t: { tila: string; hakijaOid: string }) => {
+    return { tila: t.tila, hakijaOid: t.hakijaOid };
+  });
 };

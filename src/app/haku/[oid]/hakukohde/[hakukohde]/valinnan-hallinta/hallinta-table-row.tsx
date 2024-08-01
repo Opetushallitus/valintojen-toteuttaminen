@@ -1,9 +1,6 @@
 'use client';
 
-import {
-  Valinnanvaihe,
-  isLaskentaUsedForValinnanvaihe,
-} from '@/app/lib/valintaperusteet';
+import { isLaskentaUsedForValinnanvaihe } from '@/app/lib/valintaperusteet';
 import { Box, CircularProgress, TableCell, TableRow } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Button } from '@opetushallitus/oph-design-system';
@@ -18,10 +15,11 @@ import {
   createLaskentaMachine,
 } from './laskenta-state';
 import { useMemo } from 'react';
-import { Haku, Hakukohde } from '@/app/lib/kouta-types';
+import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
 import { sijoitellaankoHaunHakukohteetLaskennanYhteydessa } from '@/app/lib/kouta';
 import { HaunAsetukset } from '@/app/lib/ohjausparametrit';
 import { useToaster } from '@/app/hooks/useToaster';
+import { Valinnanvaihe } from '@/app/lib/types/valintaperusteet-types';
 
 type HallintaTableRowParams = {
   haku: Haku;

@@ -10,7 +10,8 @@ import {
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
 } from '@/app/lib/constants';
 import { useTranslations } from './useTranslations';
-import { Hakemus, getHakemukset } from '../lib/ataru';
+import { getHakemukset } from '../lib/ataru';
+import { Hakemus } from '../lib/types/ataru-types';
 
 const DEFAULT_NUQS_OPTIONS = {
   history: 'push',
@@ -82,10 +83,7 @@ export const useHakeneetSearchResults = (
 
     const filtered = hakeneet.filter(
       (hakemus: Hakemus) =>
-        hakemus.sukunimi
-          .toLowerCase()
-          .includes(searchPhrase?.toLowerCase() ?? '') ||
-        hakemus.etunimet
+        hakemus.hakijanNimi
           .toLowerCase()
           .includes(searchPhrase?.toLowerCase() ?? '') ||
         hakemus.oid.toLowerCase().includes(searchPhrase?.toLowerCase() ?? '') ||

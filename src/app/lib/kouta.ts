@@ -1,7 +1,7 @@
 'use client';
 
 import { configuration } from './configuration';
-import { Haku, Hakukohde, Tila } from './kouta-types';
+import { Haku, Hakukohde, Tila } from './types/kouta-types';
 import { client } from './http-client';
 import { TranslatedName } from './localization/localization-types';
 import { UserPermissions } from './permissions';
