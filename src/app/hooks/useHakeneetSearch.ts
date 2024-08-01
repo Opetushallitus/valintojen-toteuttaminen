@@ -11,7 +11,7 @@ import {
 } from '@/app/lib/constants';
 import { useTranslations } from './useTranslations';
 import { getHakemukset } from '../lib/ataru';
-import { Hakemus } from '../lib/ataru-types';
+import { Hakemus } from '../lib/types/ataru-types';
 
 const DEFAULT_NUQS_OPTIONS = {
   history: 'push',

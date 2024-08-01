@@ -1,4 +1,4 @@
-import { LaskentaStart } from '@/app/lib/laskenta-types';
+import { LaskentaStart } from '@/app/lib/types/laskenta-types';
 
 export type Laskenta = {
   errorMessage?: string | string[] | null;

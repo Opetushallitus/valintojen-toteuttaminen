@@ -2,8 +2,8 @@
 
 import { assign, fromPromise, setup } from 'xstate';
 import { Laskenta, laskentaReducer } from './valinnan-hallinta-types';
-import { ValinnanvaiheTyyppi } from '@/app/lib/valintaperusteet-types';
-import { Haku, Hakukohde } from '@/app/lib/kouta-types';
+import { ValinnanvaiheTyyppi } from '@/app/lib/types/valintaperusteet-types';
+import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
 import {
   getLaskennanTilaHakukohteelle,
   kaynnistaLaskenta,
@@ -17,7 +17,7 @@ import {
   LaskentaErrorSummary,
   LaskentaStart,
   SeurantaTiedot,
-} from '@/app/lib/laskenta-types';
+} from '@/app/lib/types/laskenta-types';
 
 const POLLING_INTERVAL = 5000;
 

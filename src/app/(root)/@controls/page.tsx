@@ -11,7 +11,7 @@ import {
   InputAdornment,
 } from '@mui/material';
 
-import { Tila, getHakuAlkamisKaudet } from '@/app/lib/kouta-types';
+import { Tila, getHakuAlkamisKaudet } from '@/app/lib/types/kouta-types';
 import { Search } from '@mui/icons-material';
 import { useHakuSearchParams } from '@/app/hooks/useHakuSearch';
 import { useHakutavat } from '@/app/hooks/useHakutavat';

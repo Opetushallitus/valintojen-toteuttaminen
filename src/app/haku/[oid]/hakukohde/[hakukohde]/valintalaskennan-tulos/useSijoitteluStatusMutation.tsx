@@ -2,7 +2,7 @@ import useToaster from '@/app/hooks/useToaster';
 import {
   LaskettuValinnanVaihe,
   LaskettuValintatapajono,
-} from '@/app/lib/laskenta-types';
+} from '@/app/lib/types/laskenta-types';
 import { muutaSijoittelunStatus } from '@/app/lib/valintalaskenta-service';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 

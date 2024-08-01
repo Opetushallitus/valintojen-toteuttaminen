@@ -1,10 +1,10 @@
-import { Haku, Hakukohde, getFullnameOfHakukohde } from './kouta-types';
+import { Haku, Hakukohde, getFullnameOfHakukohde } from './types/kouta-types';
 import { configuration } from './configuration';
-import { ValinnanvaiheTyyppi } from './valintaperusteet-types';
+import { ValinnanvaiheTyyppi } from './types/valintaperusteet-types';
 import { client } from './http-client';
 import { TranslatedName } from './localization/localization-types';
-import { HenkilonValintaTulos } from './sijoittelu-types';
-import { LaskentaErrorSummary, LaskentaStart } from './laskenta-types';
+import { HenkilonValintaTulos } from './types/sijoittelu-types';
+import { LaskentaErrorSummary, LaskentaStart } from './types/laskenta-types';
 
 const formSearchParamsForStartLaskenta = ({
   laskentaUrl,

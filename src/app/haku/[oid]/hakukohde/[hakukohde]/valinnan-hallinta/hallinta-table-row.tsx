@@ -15,11 +15,11 @@ import {
   createLaskentaMachine,
 } from './laskenta-state';
 import { useMemo } from 'react';
-import { Haku, Hakukohde } from '@/app/lib/kouta-types';
+import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
 import { sijoitellaankoHaunHakukohteetLaskennanYhteydessa } from '@/app/lib/kouta';
 import { HaunAsetukset } from '@/app/lib/ohjausparametrit';
 import { useToaster } from '@/app/hooks/useToaster';
-import { Valinnanvaihe } from '@/app/lib/valintaperusteet-types';
+import { Valinnanvaihe } from '@/app/lib/types/valintaperusteet-types';
 
 type HallintaTableRowParams = {
   haku: Haku;

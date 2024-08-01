@@ -3,7 +3,7 @@ import {
   Hakemus,
   Hakukelpoisuus,
   Maksuvelvollisuus,
-} from './ataru-types';
+} from './types/ataru-types';
 import { configuration } from './configuration';
 import { client } from './http-client';
 

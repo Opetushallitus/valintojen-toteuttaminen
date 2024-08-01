@@ -4,7 +4,10 @@ import {
   isLaskentaUsedForValinnanvaihe,
 } from './valintaperusteet';
 import { client } from './http-client';
-import { Valinnanvaihe, ValinnanvaiheTyyppi } from './valintaperusteet-types';
+import {
+  Valinnanvaihe,
+  ValinnanvaiheTyyppi,
+} from './types/valintaperusteet-types';
 
 test('laskenta is used for active valinnanvaihe', () => {
   const vaihe: Valinnanvaihe = {

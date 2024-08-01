@@ -7,7 +7,7 @@ import { HakeneetTable } from './hakeneet-table';
 import HakeneetSearch from './hakeneet-search';
 import { isKorkeakouluHaku } from '@/app/lib/kouta';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
-import { Haku } from '@/app/lib/kouta-types';
+import { Haku } from '@/app/lib/types/kouta-types';
 import { ClientSpinner } from '@/app/components/client-spinner';
 import { useHaku } from '@/app/hooks/useHaku';
 

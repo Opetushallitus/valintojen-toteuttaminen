@@ -5,7 +5,7 @@ import ListTable, {
   makeGenericColumn,
 } from '@/app/components/table/list-table';
 import { isToisenAsteenYhteisHaku } from '@/app/lib/kouta';
-import { Haku } from '@/app/lib/kouta-types';
+import { Haku } from '@/app/lib/types/kouta-types';
 import { ValintatapajonoTulos } from '@/app/lib/sijoittelu-types';
 
 export const ValintatapajonotTable = ({

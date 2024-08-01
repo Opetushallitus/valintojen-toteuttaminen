@@ -5,7 +5,7 @@ import {
   HaunAlkaminen,
   Tila,
   getHakuAlkamisKaudet,
-} from '../lib/kouta-types';
+} from '../lib/types/kouta-types';
 import { useDebounce } from '@/app/hooks/useDebounce';
 import { parseAsInteger, useQueryState } from 'nuqs';
 import { useHasChanged } from '@/app/hooks/useHasChanged';

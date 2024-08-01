@@ -7,7 +7,7 @@ import ListTable, {
   makeGenericColumn,
 } from '@/app/components/table/list-table';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { HakijaryhmanHakija } from '@/app/lib/laskenta-types';
+import { HakijaryhmanHakija } from '@/app/lib/types/laskenta-types';
 import theme from '@/app/theme';
 import { Box } from '@mui/material';
 import { TFunction } from 'i18next';

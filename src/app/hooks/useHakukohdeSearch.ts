@@ -1,6 +1,6 @@
 'use client';
 import { useMemo } from 'react';
-import { Hakukohde } from '../lib/kouta-types';
+import { Hakukohde } from '../lib/types/kouta-types';
 import { useDebounce } from '@/app/hooks/useDebounce';
 import { useQueryState } from 'nuqs';
 import { useSuspenseQuery } from '@tanstack/react-query';

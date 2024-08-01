@@ -13,15 +13,15 @@ import {
   JarjestyskriteeriTila,
   LaskettuValinnanVaihe,
   SeurantaTiedot,
-} from './laskenta-types';
+} from './types/laskenta-types';
 import {
   HenkilonValintaTulos,
   SijoitteluajonTulokset,
   SijoitteluajonValintatapajono,
   SijoittelunHakemus,
   SijoittelunTila,
-} from './sijoittelu-types';
-import { Hakemus } from './ataru-types';
+} from './types/sijoittelu-types';
+import { Hakemus } from './types/ataru-types';
 
 export const getLasketutValinnanVaiheet = async (
   hakukohdeOid: string,

@@ -7,7 +7,7 @@ import {
   SijoittelunHakemus,
   SijoittelunTila,
   ValintatapajonoTulos,
-} from './sijoittelu-types';
+} from './types/sijoittelu-types';
 
 export const getSijoittelunTulokset = async (
   hakuOid: string,

@@ -8,7 +8,7 @@ import { colors } from '@/app/theme';
 import { DEFAULT_BOX_BORDER } from '@/app/lib/constants';
 import { useHakukohde } from '@/app/hooks/useHakukohde';
 import { useHaku } from '@/app/hooks/useHaku';
-import { Haku } from '@/app/lib/kouta-types';
+import { Haku } from '@/app/lib/types/kouta-types';
 import { isKorkeakouluHaku, isToisenAsteenYhteisHaku } from '@/app/lib/kouta';
 
 const StyledContainer = styled('div')(({ theme }) => ({

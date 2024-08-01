@@ -1,6 +1,6 @@
 'use client';
 import { Box } from '@mui/material';
-import { LaskettuValinnanVaihe } from '@/app/lib/laskenta-types';
+import { LaskettuValinnanVaihe } from '@/app/lib/types/laskenta-types';
 import React from 'react';
 import { ValintatapajonoAccordion } from './valintatapajono-accordion';
 import { useJonosijatSearch } from '@/app/hooks/useJonosijatSearch';

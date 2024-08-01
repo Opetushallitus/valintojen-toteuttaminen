@@ -7,7 +7,7 @@ import {
   ValinnanvaiheTyyppi,
   Valintaryhma,
   Valintatapajono,
-} from './valintaperusteet-types';
+} from './types/valintaperusteet-types';
 
 export const isLaskentaUsedForValinnanvaihe = (
   valinnanvaihe: Valinnanvaihe,

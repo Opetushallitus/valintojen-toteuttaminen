@@ -10,11 +10,11 @@ import {
 } from '../components/table/table-utils';
 import { HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY } from '@/app/lib/constants';
 import { useTranslations } from './useTranslations';
-import { HakijaryhmanHakija } from '../lib/laskenta-types';
+import { HakijaryhmanHakija } from '../lib/types/laskenta-types';
 import {
   SijoittelunTila,
   SijoittelunTilaOrdinals,
-} from '../lib/sijoittelu-types';
+} from '../lib/types/sijoittelu-types';
 
 const DEFAULT_PAGE_SIZE = 10;
 
