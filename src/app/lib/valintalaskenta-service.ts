@@ -22,6 +22,7 @@ import {
   SijoittelunTila,
 } from './types/sijoittelu-types';
 import { Hakemus } from './types/ataru-types';
+import * as R from 'remeda';
 
 export const getLasketutValinnanVaiheet = async (
   hakukohdeOid: string,
@@ -98,9 +99,17 @@ export const getHakijaryhmat = async (
     hakuOid,
     hakukohdeOid,
   );
-  const sijoittelunHakemukset = tulokset?.valintatapajonot
-    ?.map((jono) => jono.hakemukset)
-    .reduce((a, b) => a.concat(b), []);
+  const sijoittelunHakemukset = R.pipe(
+    tulokset?.valintatapajonot,
+    R.filter(R.isDefined),
+    R.flatMap((jono) => jono.hakemukset),
+    R.groupBy((a) => a.hakemusOid),
+  );
+  const valintatapajonotSijoittelusta = R.pipe(
+    tulokset?.valintatapajonot,
+    R.filter(R.isDefined),
+    R.indexBy((j) => j.oid),
+  );
   const { data } = await client.get(
     configuration.hakukohdeHakijaryhmatUrl({ hakukohdeOid }),
   );
@@ -119,9 +128,8 @@ export const getHakijaryhmat = async (
     }) => {
       const ryhmanHakijat: HakijaryhmanHakija[] = hakemukset.map((h) => {
         const hakemusSijoittelussa = findHakemusSijoittelussa(
-          sijoittelunHakemukset,
+          sijoittelunHakemukset[h.oid],
           tulokset.valintatapajonot,
-          h,
         );
         const jonosijanTiedot = ryhma.jonosijat.find(
           (js) => js.hakemusOid === h.oid,
@@ -134,9 +142,9 @@ export const getHakijaryhmat = async (
         );
         const kuuluuRyhmaan =
           jonosijanTiedot?.jarjestyskriteerit[0]?.tila === 'HYVAKSYTTAVISSA';
-        const jononNimi = tulokset?.valintatapajonot?.find(
-          (j) => j.oid === hakemusSijoittelussa.valintatapajonoOid,
-        )?.nimi;
+        const jononNimi =
+          valintatapajonotSijoittelusta[hakemusSijoittelussa.valintatapajonoOid]
+            ?.nimi;
         return {
           hakijanNimi: h.hakijanNimi,
           hakemusOid: h.oid,
@@ -191,14 +199,10 @@ const sijoittelunTilaOrdinalForHakemus = (tila: SijoittelunTila): number => {
 };
 
 const findHakemusSijoittelussa = (
-  hakemuksetSijoittelussa: SijoittelunHakemus[],
+  hakijanHakemukset: SijoittelunHakemus[],
   valintatapajonot: SijoitteluajonValintatapajono[],
-  hakijanHakemus: Hakemus,
 ): SijoittelunHakemus => {
-  const hakijanHakemukset = hakemuksetSijoittelussa.filter(
-    (h) => h.hakemusOid === hakijanHakemus.oid,
-  );
-  return hakijanHakemukset.reduce((h, hakemus) => {
+  return hakijanHakemukset?.reduce((h, hakemus) => {
     if (
       sijoittelunTilaOrdinalForHakemus(hakemus.tila) >
       sijoittelunTilaOrdinalForHakemus(h.tila)
