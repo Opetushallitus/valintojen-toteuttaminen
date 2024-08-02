@@ -15,6 +15,7 @@ import {
   SijoittelunTila,
   SijoittelunTilaOrdinals,
 } from '../lib/types/sijoittelu-types';
+import { hakemusFilter } from './filters';
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -142,11 +143,7 @@ export const useHakijaryhmatSearch = (
           hakija.hyvaksyttyHakijaryhmasta === parsedHyvaksytty) &&
         (sijoittelunTila.length < 1 ||
           hakija.sijoittelunTila === sijoittelunTila) &&
-        (hakija.hakijanNimi
-          .toLowerCase()
-          .includes(searchPhrase?.toLowerCase() ?? '') ||
-          hakija.hakemusOid.includes(searchPhrase?.toLowerCase() ?? '') ||
-          hakija.henkiloOid.includes(searchPhrase?.toLowerCase() ?? '')),
+        hakemusFilter(hakija, searchPhrase),
     );
 
     const sortHakijat = (orderBy: string, direction: SortDirection) => {

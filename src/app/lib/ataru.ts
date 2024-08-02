@@ -83,8 +83,8 @@ export async function getHakemukset(
       });
       const fullName = `${h.sukunimi} ${h.etunimet}`;
       return {
-        oid: h.oid,
-        henkiloOid: h.personOid,
+        hakemusOid: h.oid,
+        hakijaOid: h.personOid,
         etunimet: h.etunimet,
         sukunimi: h.sukunimi,
         hakijanNimi: fullName,

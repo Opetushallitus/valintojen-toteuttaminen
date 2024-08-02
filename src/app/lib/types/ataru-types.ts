@@ -17,8 +17,8 @@ export enum Hakukelpoisuus {
 }
 
 export type Hakemus = {
-  oid: string;
-  henkiloOid: string;
+  hakemusOid: string;
+  hakijaOid: string;
   etunimet: string;
   sukunimi: string;
   hakijanNimi: string;

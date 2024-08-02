@@ -12,7 +12,7 @@ export type JonoSijaWithHakijaInfo = Omit<
 > & {
   hakijanNimi: string;
   hakemusOid: string;
-  henkiloOid: string;
+  hakijaOid: string;
   pisteet?: number;
   hakutoiveNumero?: number;
   tuloksenTila?: string;
@@ -45,7 +45,7 @@ export const useLasketutValinnanVaiheet = ({
 
   const hakemuksetByOid = hakemukset?.data?.reduce(
     (result, hakemus) => {
-      result[hakemus.oid] = hakemus;
+      result[hakemus.hakemusOid] = hakemus;
       return result;
     },
     {} as Record<string, Hakemus>,
@@ -67,8 +67,8 @@ export const useLasketutValinnanVaiheet = ({
                 hakijanNimi: hakemus.hakijanNimi,
                 hakutoiveNumero: jonosija.prioriteetti,
                 hakemuksenTila: hakemus.hakemuksenTila,
-                hakemusOid: hakemus.oid,
-                henkiloOid: hakemus.henkiloOid,
+                hakemusOid: hakemus.hakemusOid,
+                hakijaOid: hakemus.hakijaOid,
                 pisteet: jarjestyskriteeri?.arvo,
                 tuloksenTila: jonosija.tuloksenTila,
                 muutoksenSyy: Object.fromEntries(
