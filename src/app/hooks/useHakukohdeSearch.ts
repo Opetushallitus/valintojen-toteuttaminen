@@ -8,12 +8,7 @@ import { HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY } from '@/app/lib/constants';
 import { useTranslations } from './useTranslations';
 import { getHakukohteet } from '../lib/kouta';
 import { useUserPermissions } from './useUserPermissions';
-
-const DEFAULT_NUQS_OPTIONS = {
-  history: 'push',
-  clearOnDefault: true,
-  defaultValue: '',
-} as const;
+import { DEFAULT_NUQS_OPTIONS } from './common';
 
 export const useHakukohdeSearchParams = () => {
   const [searchPhrase, setSearchPhrase] = useQueryState(
