@@ -80,3 +80,9 @@ export type LaskentaErrorSummary = {
   hakukohdeOid: string;
   notifications: string[] | undefined;
 };
+
+export type HakemuksenPistetiedot = {
+  hakijanNimi: string;
+  oid: string;
+  henkiloOid: string;
+};

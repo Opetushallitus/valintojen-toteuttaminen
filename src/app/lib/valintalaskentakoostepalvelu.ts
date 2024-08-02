@@ -4,7 +4,12 @@ import { ValinnanvaiheTyyppi } from './types/valintaperusteet-types';
 import { client } from './http-client';
 import { TranslatedName } from './localization/localization-types';
 import { HenkilonValintaTulos } from './types/sijoittelu-types';
-import { LaskentaErrorSummary, LaskentaStart } from './types/laskenta-types';
+import {
+  HakemuksenPistetiedot,
+  LaskentaErrorSummary,
+  LaskentaStart,
+} from './types/laskenta-types';
+import { getHakemukset } from './ataru';
 
 const formSearchParamsForStartLaskenta = ({
   laskentaUrl,
@@ -121,4 +126,20 @@ export const getHakukohteenValintatuloksetIlmanHakijanTilaa = async (
   return data.map((t: { tila: string; hakijaOid: string }) => {
     return { tila: t.tila, hakijaOid: t.hakijaOid };
   });
+};
+
+export const getScoresForHakukohde = async (
+  hakuOid: string,
+  hakukohdeOid: string,
+): Promise<HakemuksenPistetiedot[]> => {
+  const hakemukset = await getHakemukset(hakuOid, hakukohdeOid);
+  const { data } = await client.get(
+    `${configuration.valintalaskentaKoostePalveluUrl}pistesyotto/koostetutPistetiedot/haku/${hakuOid}/hakukohde/${hakukohdeOid}`,
+  );
+  console.log(data);
+  return hakemukset.map((h) => ({
+    oid: h.oid,
+    henkiloOid: h.henkiloOid,
+    hakijanNimi: h.hakijanNimi,
+  }));
 };
