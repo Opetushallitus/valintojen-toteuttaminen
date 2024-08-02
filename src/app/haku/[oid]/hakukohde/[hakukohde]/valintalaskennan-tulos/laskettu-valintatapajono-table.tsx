@@ -28,7 +28,7 @@ const hakijaColumn = makeExternalLinkColumn<JonoSijaWithHakijaInfo>({
   title: `${TRANSLATIONS_PREFIX}.hakija`,
   key: 'hakijanNimi',
   nameProp: 'hakijanNimi',
-  linkProp: 'henkiloOid',
+  linkProp: 'hakijaOid',
 });
 
 const hakutoiveColumn = makeGenericColumn<JonoSijaWithHakijaInfo>({

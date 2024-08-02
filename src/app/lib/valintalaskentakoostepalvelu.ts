@@ -138,8 +138,8 @@ export const getScoresForHakukohde = async (
   );
   console.log(data);
   return hakemukset.map((h) => ({
-    oid: h.oid,
-    henkiloOid: h.henkiloOid,
+    hakemusOid: h.hakemusOid,
+    hakijaOid: h.hakijaOid,
     hakijanNimi: h.hakijanNimi,
   }));
 };

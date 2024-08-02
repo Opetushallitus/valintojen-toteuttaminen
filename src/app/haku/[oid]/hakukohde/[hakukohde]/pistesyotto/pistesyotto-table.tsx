@@ -22,14 +22,14 @@ export const PisteSyottoTable = ({
     title: 'hakeneet.taulukko.hakija',
     key: 'hakijanNimi',
     nameProp: 'hakijanNimi',
-    linkProp: 'henkiloOid',
+    linkProp: 'hakijaOid',
   });
 
   const columns = [hakijaColumn];
 
   return (
     <ListTable
-      rowKeyProp="oid"
+      rowKeyProp="hakemusOid"
       columns={columns}
       rows={pistetiedot}
       sort={sort}

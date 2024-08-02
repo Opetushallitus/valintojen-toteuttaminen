@@ -24,7 +24,7 @@ const hakijaColumn = makeExternalLinkColumn<HakijaryhmanHakija>({
   title: `${TRANSLATIONS_PREFIX}.hakija`,
   key: 'hakijanNimi',
   nameProp: 'hakijanNimi',
-  linkProp: 'henkiloOid',
+  linkProp: 'hakijaOid',
 });
 
 const makeSijoittelunTilaColumn = (

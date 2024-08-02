@@ -10,6 +10,7 @@ import {
 } from '@/app/lib/constants';
 import { useTranslations } from './useTranslations';
 import { HakemuksenPistetiedot } from '../lib/types/laskenta-types';
+import { hakemusFilter } from './filters';
 
 const DEFAULT_NUQS_OPTIONS = {
   history: 'push',
@@ -73,15 +74,8 @@ export const usePisteSyottoSearchResults = (
   const results = useMemo(() => {
     const { orderBy, direction } = getSortParts(sort);
 
-    const filtered = hakijoidenPisteTiedot.filter(
-      (hakemus: HakemuksenPistetiedot) =>
-        hakemus.hakijanNimi
-          .toLowerCase()
-          .includes(searchPhrase?.toLowerCase() ?? '') ||
-        hakemus.oid.toLowerCase().includes(searchPhrase?.toLowerCase() ?? '') ||
-        hakemus.henkiloOid
-          .toLowerCase()
-          .includes(searchPhrase?.toLowerCase() ?? ''),
+    const filtered = hakijoidenPisteTiedot.filter((h) =>
+      hakemusFilter(h, searchPhrase),
     );
     return orderBy && direction
       ? filtered.sort(byProp(orderBy, direction, translateEntity))

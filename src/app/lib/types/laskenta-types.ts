@@ -6,7 +6,7 @@ export type HakijaryhmanHakija = {
   hakijanNimi: string;
   kuuluuHakijaryhmaan: boolean;
   hakemusOid: string;
-  henkiloOid: string;
+  hakijaOid: string;
   hyvaksyttyHakijaryhmasta: boolean;
   sijoittelunTila?: SijoittelunTila;
   vastaanottoTila?: string;
@@ -83,6 +83,6 @@ export type LaskentaErrorSummary = {
 
 export type HakemuksenPistetiedot = {
   hakijanNimi: string;
-  oid: string;
-  henkiloOid: string;
+  hakemusOid: string;
+  hakijaOid: string;
 };
