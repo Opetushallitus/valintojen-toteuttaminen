@@ -12,12 +12,7 @@ import {
 import { useTranslations } from './useTranslations';
 import { getHakemukset } from '../lib/ataru';
 import { hakemusFilter } from './filters';
-
-const DEFAULT_NUQS_OPTIONS = {
-  history: 'push',
-  clearOnDefault: true,
-  defaultValue: '',
-} as const;
+import { DEFAULT_NUQS_OPTIONS } from './common';
 
 export const useHakeneetSearchParams = () => {
   const [searchPhrase, setSearchPhrase] = useQueryState(

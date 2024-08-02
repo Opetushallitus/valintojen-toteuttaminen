@@ -16,14 +16,9 @@ import {
   SijoittelunTilaOrdinals,
 } from '../lib/types/sijoittelu-types';
 import { hakemusFilter } from './filters';
+import { DEFAULT_NUQS_OPTIONS } from './common';
 
 const DEFAULT_PAGE_SIZE = 10;
-
-const DEFAULT_NUQS_OPTIONS = {
-  history: 'push',
-  clearOnDefault: true,
-  defaultValue: '',
-} as const;
 
 export const useHakijaryhmatSearchParams = (hakijaryhmaOid?: string) => {
   const [searchPhrase, setSearchPhrase] = useQueryState(

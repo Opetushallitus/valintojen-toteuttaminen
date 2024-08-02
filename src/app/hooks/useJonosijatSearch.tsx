@@ -8,14 +8,9 @@ import { HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY } from '@/app/lib/constants';
 import { useTranslations } from './useTranslations';
 import { JonoSijaWithHakijaInfo } from './useLasketutValinnanVaiheet';
 import { hakemusFilter } from './filters';
+import { DEFAULT_NUQS_OPTIONS } from './common';
 
 const DEFAULT_PAGE_SIZE = 10;
-
-const DEFAULT_NUQS_OPTIONS = {
-  history: 'push',
-  clearOnDefault: true,
-  defaultValue: '',
-} as const;
 
 export const useJonosijatSearchParams = (id?: string) => {
   const [searchPhrase, setSearchPhrase] = useQueryState(
