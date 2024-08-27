@@ -5,6 +5,7 @@ import { client } from './http-client';
 import {
   Valinnanvaihe,
   ValinnanvaiheTyyppi,
+  Valintakoe,
   Valintaryhma,
   Valintatapajono,
 } from './types/valintaperusteet-types';
@@ -85,6 +86,34 @@ export const getValinnanvaiheet = async (
         tyyppi,
         oid: vaihe.oid,
         jonot,
+      };
+    },
+  );
+};
+
+export const getValintakokeet = async (
+  hakukohdeOid: string,
+): Promise<Valintakoe[]> => {
+  const { data } = await client.get(
+    `${configuration.valintaperusteetUrl}hakukohde/avaimet/${hakukohdeOid}`,
+  );
+  console.log(data);
+  return data.map(
+    (koe: {
+      tunniste: string;
+      arvot: string[] | null;
+      kuvaus: string;
+      max?: string | null;
+      min?: string | null;
+      osallistuminenTunniste: string;
+    }) => {
+      return {
+        tunniste: koe.tunniste,
+        osallistuminenTunniste: koe.osallistuminenTunniste,
+        kuvaus: koe.kuvaus,
+        arvot: koe.arvot,
+        max: koe.max,
+        min: koe.min,
       };
     },
   );

@@ -1,4 +1,5 @@
 import { SijoittelunTila } from './sijoittelu-types';
+import { Valintakoe } from './valintaperusteet-types';
 
 export type JarjestyskriteeriTila = 'HYLATTY' | 'HYVAKSYTTAVISSA';
 
@@ -81,8 +82,27 @@ export type LaskentaErrorSummary = {
   notifications: string[] | undefined;
 };
 
+export type ValintakoeOsallistuminen =
+  | 'OSALLISTUI'
+  | 'EI_OSALLISTUNUT'
+  | 'MERKITSEMATTA'
+  | 'EI_VAADITA';
+
+export type ValintakokeenPisteet = {
+  tunniste: string;
+  arvo: string;
+  osallistuminen: ValintakoeOsallistuminen;
+};
+
 export type HakemuksenPistetiedot = {
   hakijanNimi: string;
   hakemusOid: string;
   hakijaOid: string;
+  valintakokeenPisteet: ValintakokeenPisteet[];
+};
+
+export type HakukohteenPistetiedot = {
+  valintakokeet: Valintakoe[];
+  hakemukset: HakemuksenPistetiedot[];
+  lastModified?: Date;
 };

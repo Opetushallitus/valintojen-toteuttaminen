@@ -8,7 +8,7 @@ import { getScoresForHakukohde } from '@/app/lib/valintalaskentakoostepalvelu';
 import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
 import { PisteSyottoTable } from './pistesyotto-table';
 import { usePisteSyottoSearchResults } from '@/app/hooks/usePisteSyottoSearch';
-import PisteSyottoSearch from './pistesyotto-search';
+import { PisteSyottoControls } from './pistesyotto-controls';
 
 type PisteSyottoContentParams = {
   hakuOid: string;
@@ -37,7 +37,7 @@ const PisteSyottoContent = ({
 
   return (
     <>
-      <PisteSyottoSearch />
+      <PisteSyottoControls kokeet={pistetulokset.valintakokeet} />
       <TablePaginationWrapper
         totalCount={results?.length ?? 0}
         pageSize={pageSize}
@@ -50,6 +50,7 @@ const PisteSyottoContent = ({
           setSort={setSort}
           sort={sort}
           pistetiedot={pageResults}
+          kokeet={pistetulokset.valintakokeet}
         />
       </TablePaginationWrapper>
     </>

@@ -6,10 +6,15 @@ import { TranslatedName } from './localization/localization-types';
 import { HenkilonValintaTulos } from './types/sijoittelu-types';
 import {
   HakemuksenPistetiedot,
+  HakukohteenPistetiedot,
   LaskentaErrorSummary,
   LaskentaStart,
+  ValintakoeOsallistuminen,
+  ValintakokeenPisteet,
 } from './types/laskenta-types';
 import { getHakemukset } from './ataru';
+import { getValintakokeet } from './valintaperusteet';
+import * as R from 'remeda';
 
 const formSearchParamsForStartLaskenta = ({
   laskentaUrl,
@@ -131,15 +136,44 @@ export const getHakukohteenValintatuloksetIlmanHakijanTilaa = async (
 export const getScoresForHakukohde = async (
   hakuOid: string,
   hakukohdeOid: string,
-): Promise<HakemuksenPistetiedot[]> => {
+): Promise<HakukohteenPistetiedot> => {
   const hakemukset = await getHakemukset(hakuOid, hakukohdeOid);
+  const hakemuksetIndexed = R.indexBy(hakemukset, (h) => h.hakemusOid);
+  const kokeet = await getValintakokeet(hakukohdeOid);
   const { data } = await client.get(
     `${configuration.valintalaskentaKoostePalveluUrl}pistesyotto/koostetutPistetiedot/haku/${hakuOid}/hakukohde/${hakukohdeOid}`,
   );
   console.log(data);
-  return hakemukset.map((h) => ({
-    hakemusOid: h.hakemusOid,
-    hakijaOid: h.hakijaOid,
-    hakijanNimi: h.hakijanNimi,
-  }));
+
+  const hakemuksetKokeilla: HakemuksenPistetiedot[] = data.valintapisteet.map(
+    (p: {
+      applicationAdditionalDataDTO: {
+        oid: string;
+        personOid: string;
+        additionalData: Record<string, string>;
+      };
+    }) => {
+      const hakemus = hakemuksetIndexed[p.applicationAdditionalDataDTO.oid];
+      const kokeenPisteet: ValintakokeenPisteet[] = kokeet.map((k) => {
+        const arvo = p.applicationAdditionalDataDTO.additionalData[k.tunniste];
+        const osallistuminen = p.applicationAdditionalDataDTO.additionalData[
+          k.osallistuminenTunniste
+        ] as ValintakoeOsallistuminen;
+        return { tunniste: k.tunniste, arvo, osallistuminen };
+      });
+      return {
+        hakemusOid: hakemus.hakemusOid,
+        hakijaOid: hakemus.hakijaOid,
+        hakijanNimi: hakemus.hakijanNimi,
+        valintakokeenPisteet: kokeenPisteet,
+      };
+    },
+  );
+
+  const lastModified = data.lastModified && new Date(data.lastModified);
+  return {
+    lastModified,
+    valintakokeet: kokeet,
+    hakemukset: hakemuksetKokeilla,
+  };
 };

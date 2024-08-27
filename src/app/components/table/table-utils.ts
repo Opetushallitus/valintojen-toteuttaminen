@@ -6,7 +6,7 @@ export type SortDirection = 'asc' | 'desc';
 export const byProp = <
   T extends Record<
     string,
-    string | number | TranslatedName | boolean | undefined
+    string | number | TranslatedName | boolean | undefined | object
   >,
 >(
   key: string,

@@ -24,3 +24,12 @@ export type Valinnanvaihe = {
   oid: string;
   jonot: Valintatapajono[];
 };
+
+export type Valintakoe = {
+  tunniste: string;
+  osallistuminenTunniste: string;
+  kuvaus: string;
+  arvot?: string[];
+  max?: string; //todo: use number?
+  min?: number; //todo: use number?
+};

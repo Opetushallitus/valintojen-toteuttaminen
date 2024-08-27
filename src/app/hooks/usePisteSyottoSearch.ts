@@ -9,13 +9,23 @@ import {
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
 } from '@/app/lib/constants';
 import { useTranslations } from './useTranslations';
-import { HakemuksenPistetiedot } from '../lib/types/laskenta-types';
+import { HakukohteenPistetiedot } from '../lib/types/laskenta-types';
 import { hakemusFilter } from './filters';
 import { DEFAULT_NUQS_OPTIONS } from './common';
 
 export const usePisteSyottoSearchParams = () => {
   const [searchPhrase, setSearchPhrase] = useQueryState(
     'pisteSyottoSearch',
+    DEFAULT_NUQS_OPTIONS,
+  );
+
+  const [valittuKoe, setValittukoe] = useQueryState(
+    'koe',
+    DEFAULT_NUQS_OPTIONS,
+  );
+
+  const [osallistumisenTila, setOsallistumisenTila] = useQueryState(
+    'osallistumisenTila',
     DEFAULT_NUQS_OPTIONS,
   );
 
@@ -40,11 +50,15 @@ export const usePisteSyottoSearchParams = () => {
 
   const searchPhraseChanged = useHasChanged(searchPhrase);
 
+  const koeChanged = useHasChanged(valittuKoe);
+
+  const osallistumisenTilaChanged = useHasChanged(osallistumisenTila);
+
   useEffect(() => {
-    if (searchPhraseChanged) {
+    if (searchPhraseChanged || koeChanged || osallistumisenTilaChanged) {
       setPage(1);
     }
-  }, [searchPhraseChanged, setPage]);
+  }, [searchPhraseChanged, setPage, koeChanged, osallistumisenTilaChanged]);
 
   return {
     searchPhrase,
@@ -55,11 +69,15 @@ export const usePisteSyottoSearchParams = () => {
     setPageSize,
     sort,
     setSort,
+    osallistumisenTila,
+    setOsallistumisenTila,
+    valittuKoe,
+    setValittukoe,
   };
 };
 
 export const usePisteSyottoSearchResults = (
-  hakijoidenPisteTiedot: HakemuksenPistetiedot[],
+  hakukohteenPistetiedot: HakukohteenPistetiedot,
 ) => {
   const { translateEntity } = useTranslations();
 
@@ -69,13 +87,13 @@ export const usePisteSyottoSearchResults = (
   const results = useMemo(() => {
     const { orderBy, direction } = getSortParts(sort);
 
-    const filtered = hakijoidenPisteTiedot.filter((h) =>
+    const filtered = hakukohteenPistetiedot.hakemukset.filter((h) =>
       hakemusFilter(h, searchPhrase),
     );
     return orderBy && direction
       ? filtered.sort(byProp(orderBy, direction, translateEntity))
       : filtered;
-  }, [hakijoidenPisteTiedot, searchPhrase, sort, translateEntity]);
+  }, [hakukohteenPistetiedot, searchPhrase, sort, translateEntity]);
 
   const pageResults = useMemo(() => {
     const start = pageSize * (page - 1);
