@@ -30,11 +30,14 @@ export const PisteSyottoTable = ({
   });
 
   const koeColumns = kokeet.map((koe) => {
-    return makeGenericColumn<HakemuksenPistetiedot>({
-      title: koe.kuvaus,
-      key: koe.tunniste,
-      valueProp: 'hakijanNimi',
-    });
+    return Object.assign(
+      makeGenericColumn<HakemuksenPistetiedot>({
+        title: koe.kuvaus,
+        key: koe.tunniste,
+        valueProp: 'hakijanNimi',
+      }),
+      { sortable: false },
+    );
   });
 
   const columns = [hakijaColumn, ...koeColumns];

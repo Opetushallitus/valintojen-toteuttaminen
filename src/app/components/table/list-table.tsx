@@ -27,6 +27,7 @@ export type ListTableColumn<P> = {
   key: keyof P;
   render: (props: P) => React.ReactNode;
   style?: React.CSSProperties;
+  sortable?: boolean;
 };
 
 export const makeGenericColumn = <T extends Record<string, unknown>>({
@@ -184,18 +185,20 @@ const HeaderCell = ({
   style,
   sort,
   setSort,
+  sortable,
 }: {
   colId: string;
   title?: string;
   style?: React.CSSProperties;
   sort?: string;
   setSort?: (sort: string) => void;
+  sortable?: boolean;
 }) => {
   const { direction } = getSortParts(sort, colId);
 
   return (
     <StyledCell sx={style} sortDirection={direction}>
-      {setSort ? (
+      {setSort && sortable ? (
         <Button
           sx={{
             color: colors.black,
@@ -247,7 +250,7 @@ export const ListTable = <T extends Row>({
         <TableHead>
           <TableRow>
             {columns.map((columnProps) => {
-              const { key, title, style } = columnProps;
+              const { key, title, style, sortable } = columnProps;
               return (
                 <HeaderCell
                   key={key.toString()}
@@ -256,6 +259,7 @@ export const ListTable = <T extends Row>({
                   style={style}
                   sort={sort}
                   setSort={setSort}
+                  sortable={sortable != false}
                 />
               );
             })}

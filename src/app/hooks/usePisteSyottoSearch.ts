@@ -118,6 +118,14 @@ export const usePisteSyottoSearchResults = (
     valittuKoe,
   ]);
 
+  const koeResults = useMemo(() => {
+    return valittuKoe.length < 1
+      ? hakukohteenPistetiedot.valintakokeet
+      : hakukohteenPistetiedot.valintakokeet.filter(
+          (k) => k.tunniste === valittuKoe,
+        );
+  }, [valittuKoe, hakukohteenPistetiedot]);
+
   const pageResults = useMemo(() => {
     const start = pageSize * (page - 1);
     return results.slice(start, start + pageSize);
@@ -132,5 +140,6 @@ export const usePisteSyottoSearchResults = (
     results,
     sort,
     setSort,
+    koeResults,
   };
 };

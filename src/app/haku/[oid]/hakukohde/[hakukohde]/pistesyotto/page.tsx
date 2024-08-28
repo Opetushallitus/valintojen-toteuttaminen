@@ -33,6 +33,7 @@ const PisteSyottoContent = ({
     pageResults,
     sort,
     setSort,
+    koeResults,
   } = usePisteSyottoSearchResults(pistetulokset);
 
   return (
@@ -50,7 +51,7 @@ const PisteSyottoContent = ({
           setSort={setSort}
           sort={sort}
           pistetiedot={pageResults}
-          kokeet={pistetulokset.valintakokeet}
+          kokeet={koeResults}
         />
       </TablePaginationWrapper>
     </>
