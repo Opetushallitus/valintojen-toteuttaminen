@@ -81,19 +81,42 @@ export const usePisteSyottoSearchResults = (
 ) => {
   const { translateEntity } = useTranslations();
 
-  const { searchPhrase, page, setPage, pageSize, setPageSize, sort, setSort } =
-    usePisteSyottoSearchParams();
+  const {
+    searchPhrase,
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    sort,
+    setSort,
+    valittuKoe,
+    osallistumisenTila,
+  } = usePisteSyottoSearchParams();
 
   const results = useMemo(() => {
     const { orderBy, direction } = getSortParts(sort);
 
-    const filtered = hakukohteenPistetiedot.hakemukset.filter((h) =>
-      hakemusFilter(h, searchPhrase),
+    const filtered = hakukohteenPistetiedot.hakemukset.filter(
+      (h) =>
+        hakemusFilter(h, searchPhrase) &&
+        (osallistumisenTila.length < 1 ||
+          h.valintakokeenPisteet.some(
+            (koe) =>
+              koe.osallistuminen === osallistumisenTila &&
+              (valittuKoe.length < 1 || koe.tunniste === valittuKoe),
+          )),
     );
     return orderBy && direction
       ? filtered.sort(byProp(orderBy, direction, translateEntity))
       : filtered;
-  }, [hakukohteenPistetiedot, searchPhrase, sort, translateEntity]);
+  }, [
+    hakukohteenPistetiedot,
+    searchPhrase,
+    sort,
+    translateEntity,
+    osallistumisenTila,
+    valittuKoe,
+  ]);
 
   const pageResults = useMemo(() => {
     const start = pageSize * (page - 1);

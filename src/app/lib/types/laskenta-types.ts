@@ -82,11 +82,12 @@ export type LaskentaErrorSummary = {
   notifications: string[] | undefined;
 };
 
-export type ValintakoeOsallistuminen =
-  | 'OSALLISTUI'
-  | 'EI_OSALLISTUNUT'
-  | 'MERKITSEMATTA'
-  | 'EI_VAADITA';
+export enum ValintakoeOsallistuminen {
+  OSALLISTUI = 'OSALLISTUI',
+  EI_OSALLISTUNUT = 'EI_OSALLISTUNUT',
+  MERKITSEMATTA = 'MERKITSEMATTA',
+  EI_VAADITA = 'EI_VAADITA',
+}
 
 export type ValintakokeenPisteet = {
   tunniste: string;
