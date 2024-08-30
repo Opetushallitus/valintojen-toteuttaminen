@@ -1,12 +1,8 @@
+import { OphFormControl } from '@/app/components/oph-form-control';
 import { useHakijaryhmatSearchParams } from '@/app/hooks/useHakijaryhmatSearch';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Search } from '@mui/icons-material';
-import {
-  FormControl,
-  FormLabel,
-  InputAdornment,
-  OutlinedInput,
-} from '@mui/material';
+import { InputAdornment, OutlinedInput } from '@mui/material';
 import { ChangeEvent } from 'react';
 
 export const HakijaryhmatSearch = () => {
@@ -17,27 +13,28 @@ export const HakijaryhmatSearch = () => {
   };
 
   return (
-    <FormControl
+    <OphFormControl
       sx={{
         flexGrow: 0,
         minWidth: '380px',
         textAlign: 'left',
       }}
-    >
-      <FormLabel htmlFor="hakijaryhmat-search">{t('hakeneet.hae')}</FormLabel>
-      <OutlinedInput
-        id="hakijaryhmat-search"
-        name="hakijaryhmat-search"
-        defaultValue={searchPhrase}
-        onChange={handleSearchChange}
-        autoFocus={true}
-        type="text"
-        endAdornment={
-          <InputAdornment position="end">
-            <Search />
-          </InputAdornment>
-        }
-      />
-    </FormControl>
+      label={t('hakeneet.hae')}
+      renderInput={({ labelId }) => (
+        <OutlinedInput
+          name="hakijaryhmat-search"
+          inputProps={{ 'aria-labelledby': labelId }}
+          defaultValue={searchPhrase}
+          onChange={handleSearchChange}
+          autoFocus={true}
+          type="text"
+          endAdornment={
+            <InputAdornment position="end">
+              <Search />
+            </InputAdornment>
+          }
+        />
+      )}
+    />
   );
 };
