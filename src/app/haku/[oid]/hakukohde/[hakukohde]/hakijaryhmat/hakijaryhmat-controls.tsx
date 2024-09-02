@@ -2,9 +2,9 @@ import { useHakijaryhmatSearchParams } from '@/app/hooks/useHakijaryhmatSearch';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Box, SelectChangeEvent } from '@mui/material';
 import { HakijaryhmatSearch } from './hakijaryhmat-search';
-import { OphSelectControl } from '@/app/components/oph-select';
-import theme from '@/app/theme';
 import { SijoittelunTila } from '@/app/lib/types/sijoittelu-types';
+import { OphFormControl } from '@/app/components/oph-form-control';
+import { OphSelect } from '@/app/components/oph-select';
 
 export const HakijaryhmatControls = () => {
   const {
@@ -38,60 +38,70 @@ export const HakijaryhmatControls = () => {
       sx={{
         display: 'flex',
         flexDirection: 'row',
-        columnGap: theme.spacing(2),
+        columnGap: 2,
       }}
     >
       <HakijaryhmatSearch />
-      <OphSelectControl
-        formControlProps={{
-          sx: {
-            width: 'auto',
-            minWidth: '140px',
-            textAlign: 'left',
-          },
+      <OphFormControl
+        sx={{
+          width: 'auto',
+          minWidth: '140px',
+          textAlign: 'left',
         }}
-        id="kuuluu-ryhmaan-select"
         label={t('hakijaryhmat.taulukko.kuuluminen')}
-        value={kuuluuRyhmaan}
-        onChange={changeKuuluuRyhmaan}
-        options={[
-          { value: 'true', label: t('yleinen.kylla') },
-          { value: 'false', label: t('yleinen.ei') },
-        ]}
-        clearable
+        renderInput={({ labelId }) => (
+          <OphSelect
+            id="kuuluu-ryhmaan-select"
+            labelId={labelId}
+            value={kuuluuRyhmaan}
+            onChange={changeKuuluuRyhmaan}
+            options={[
+              { value: 'true', label: t('yleinen.kylla') },
+              { value: 'false', label: t('yleinen.ei') },
+            ]}
+            clearable
+          />
+        )}
       />
-      <OphSelectControl
-        formControlProps={{
-          sx: {
-            width: 'auto',
-            minWidth: '140px',
-            textAlign: 'left',
-          },
+      <OphFormControl
+        sx={{
+          width: 'auto',
+          minWidth: '140px',
+          textAlign: 'left',
         }}
-        id="sijoittelun-tila-select"
         label={t('hakijaryhmat.taulukko.sijoittelun-tila')}
-        value={sijoittelunTila}
-        onChange={changeSijoittelunTila}
-        options={sijoitteluntilaOptions}
-        clearable
+        renderInput={({ labelId }) => (
+          <OphSelect
+            id="sijoittelun-tila-select"
+            labelId={labelId}
+            value={sijoittelunTila}
+            onChange={changeSijoittelunTila}
+            options={sijoitteluntilaOptions}
+            clearable
+          />
+        )}
       />
-      <OphSelectControl
-        formControlProps={{
-          sx: {
-            width: 'auto',
-            minWidth: '140px',
-            textAlign: 'left',
-          },
+
+      <OphFormControl
+        sx={{
+          width: 'auto',
+          minWidth: '140px',
+          textAlign: 'left',
         }}
-        id="hyvaksytty-ryhmasta-select"
         label={t('hakijaryhmat.taulukko.hyvaksytty')}
-        value={hyvaksyttyRyhmasta}
-        onChange={changeHyvaksyttyRyhmasta}
-        options={[
-          { value: 'true', label: t('yleinen.kylla') },
-          { value: 'false', label: t('yleinen.ei') },
-        ]}
-        clearable
+        renderInput={({ labelId }) => (
+          <OphSelect
+            id="hyvaksytty-ryhmasta-select"
+            labelId={labelId}
+            value={hyvaksyttyRyhmasta}
+            onChange={changeHyvaksyttyRyhmasta}
+            options={[
+              { value: 'true', label: t('yleinen.kylla') },
+              { value: 'false', label: t('yleinen.ei') },
+            ]}
+            clearable
+          />
+        )}
       />
     </Box>
   );

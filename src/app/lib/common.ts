@@ -31,3 +31,5 @@ export const isEmpty = (value: unknown) => {
     (Array.isArray(value) && value.length === 0)
   );
 };
+
+export const EMPTY_ARRAY: Array<unknown> = [];

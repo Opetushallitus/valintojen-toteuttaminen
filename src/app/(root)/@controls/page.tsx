@@ -2,10 +2,8 @@
 import React, { ChangeEvent, Suspense, useMemo } from 'react';
 
 import {
-  FormControl,
   Select,
   SelectChangeEvent,
-  FormLabel,
   OutlinedInput,
   Box,
   InputAdornment,
@@ -16,13 +14,16 @@ import { Search } from '@mui/icons-material';
 import { useHakuSearchParams } from '@/app/hooks/useHakuSearch';
 import { useHakutavat } from '@/app/hooks/useHakutavat';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { OphSelectControl, OphSelect } from '@/app/components/oph-select';
+import { OphFormControl } from '@/app/components/oph-form-control';
 import { ClientSpinner } from '@/app/components/client-spinner';
+import { OphSelect } from '@/app/components/oph-select';
 
 const HakutapaSelect = ({
+  labelId,
   value: selectedHakutapa,
   onChange,
 }: {
+  labelId: string;
   value: string;
   onChange: (e: SelectChangeEvent) => void;
 }) => {
@@ -36,7 +37,7 @@ const HakutapaSelect = ({
 
   return (
     <OphSelect
-      labelId="hakutapa-select-label"
+      labelId={labelId}
       id="hakutapa-select"
       value={selectedHakutapa ?? ''}
       onChange={onChange}
@@ -68,12 +69,15 @@ const HakutapaInput = ({
 }) => {
   const { t } = useTranslations();
   return (
-    <FormControl sx={{ flex: '1 0 180px', textAlign: 'left' }}>
-      <FormLabel id="hakutapa-select-label">{t('haku.hakutapa')}</FormLabel>
-      <Suspense fallback={<SelectFallback />}>
-        <HakutapaSelect value={value} onChange={onChange} />
-      </Suspense>
-    </FormControl>
+    <OphFormControl
+      label={t('haku.hakutapa')}
+      sx={{ flex: '1 0 180px', textAlign: 'left' }}
+      renderInput={({ labelId }) => (
+        <Suspense fallback={<SelectFallback />}>
+          <HakutapaSelect labelId={labelId} value={value} onChange={onChange} />
+        </Suspense>
+      )}
+    />
   );
 };
 
@@ -119,48 +123,53 @@ export default function HakuControls() {
       flexWrap="wrap"
       alignItems="flex-end"
     >
-      <FormControl
+      <OphFormControl
         sx={{
           flexGrow: 4,
           minWidth: '180px',
           textAlign: 'left',
         }}
-      >
-        <FormLabel htmlFor="haku-search">{t('haku.hae')}</FormLabel>
-        <OutlinedInput
-          id="haku-search"
-          name="haku-search"
-          defaultValue={searchPhrase}
-          onChange={handleSearchChange}
-          autoFocus={true}
-          type="text"
-          placeholder={t('haku.hae')}
-          endAdornment={
-            <InputAdornment position="end">
-              <Search />
-            </InputAdornment>
-          }
-        />
-      </FormControl>
-      <OphSelectControl
-        formControlProps={{
-          sx: {
-            width: 'auto',
-            minWidth: '140px',
-            textAlign: 'left',
-          },
+        label={t('haku.hae')}
+        renderInput={({ labelId }) => {
+          return (
+            <OutlinedInput
+              name="haku-search"
+              inputProps={{ 'aria-labelledby': labelId }}
+              defaultValue={searchPhrase}
+              onChange={handleSearchChange}
+              autoFocus={true}
+              type="text"
+              placeholder={t('haku.hae')}
+              endAdornment={
+                <InputAdornment position="end">
+                  <Search />
+                </InputAdornment>
+              }
+            />
+          );
         }}
-        id="tila-select"
+      ></OphFormControl>
+      <OphFormControl
+        sx={{
+          width: 'auto',
+          minWidth: '140px',
+          textAlign: 'left',
+        }}
         label={t('yleinen.tila')}
-        value={tila ?? ''}
-        onChange={changeTila}
-        options={Object.values(Tila).map((tila) => {
-          return {
-            value: tila,
-            label: t(tila),
-          };
-        })}
-        clearable
+        renderInput={({ labelId }) => (
+          <OphSelect
+            labelId={labelId}
+            value={tila ?? ''}
+            onChange={changeTila}
+            options={Object.values(Tila).map((tila) => {
+              return {
+                value: tila,
+                label: t(tila),
+              };
+            })}
+            clearable
+          />
+        )}
       />
       <Box
         display="flex"
@@ -170,19 +179,23 @@ export default function HakuControls() {
         alignItems="flex-end"
       >
         <HakutapaInput value={selectedHakutapa} onChange={changeHakutapa} />
-        <OphSelectControl
-          formControlProps={{
-            sx: { textAlign: 'left', flex: '1 0 180px' },
-          }}
-          clearable
+        <OphFormControl
           label={t('haku.alkamiskausi')}
-          id="alkamiskausi-select"
-          value={selectedAlkamisKausi ?? ''}
-          onChange={changeAlkamisKausi}
-          options={alkamiskaudet.map((kausi) => ({
-            value: kausi.value,
-            label: `${kausi.alkamisVuosi} ${t(kausi.alkamisKausiNimi)}`,
-          }))}
+          sx={{ textAlign: 'left', flex: '1 0 180px' }}
+          renderInput={({ labelId }) => (
+            <OphSelect
+              labelId={labelId}
+              value={selectedAlkamisKausi ?? ''}
+              onChange={changeAlkamisKausi}
+              options={alkamiskaudet.map((kausi) => {
+                return {
+                  value: kausi.value,
+                  label: `${kausi.alkamisVuosi} ${t(kausi.alkamisKausiNimi)}`,
+                };
+              })}
+              clearable
+            />
+          )}
         />
       </Box>
     </Box>

@@ -29,6 +29,18 @@ const theme = createODSTheme({
           },
         },
       },
+      MuiFormLabel: {
+        styleOverrides: {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          root: ({ theme }: { theme: any }) => ({
+            ...theme.typography.label,
+            color: colors.black,
+            '&.Mui-focused': {
+              color: colors.black,
+            },
+          }),
+        },
+      },
     },
   }),
 });
