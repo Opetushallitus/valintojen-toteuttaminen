@@ -24,7 +24,8 @@
     "lisatietoja": "Lisätietoja",
     "prioriteetti": "Prioriteetti",
     "kylla": "Kyllä",
-    "ei": "Ei"
+    "ei": "Ei",
+    "tallenna": "Tallenna"
   },
   "tuloksenTila": {
     "HYVAKSYTTAVISSA": "Hyväksyttävissä",
@@ -136,7 +137,9 @@
   },
   "pistesyotto": {
     "otsikko": "Pistesyöttö",
-    "koe": "Koe"
+    "koe": "Koe",
+    "valmis": "Tiedot tallennettu.",
+    "virhe": "Tietojen tallentamisessa tapahtui virhe."
   },
   "harkinnanvaraiset": {
     "otsikko": "Harkinnanvaraiset"

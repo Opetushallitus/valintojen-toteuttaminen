@@ -45,6 +45,23 @@ export const makeGenericColumn = <T extends Record<string, unknown>>({
   style: { width: 'auto' },
 });
 
+export const makeColumnWithCustomRender = <T extends Record<string, unknown>>({
+  title,
+  key,
+  renderFn,
+  sortable = true,
+}: {
+  title: string;
+  key: string;
+  renderFn: (props: T) => React.ReactNode;
+  sortable?: boolean;
+}): ListTableColumn<T> => ({
+  title,
+  key,
+  render: (props) => renderFn(props),
+  sortable,
+});
+
 export const makeBooleanYesNoColumn = <T extends Record<string, unknown>>({
   t,
   title,
@@ -159,6 +176,7 @@ interface ListTableProps<T> extends React.ComponentProps<typeof StyledTable> {
   rows?: Array<T>;
   sort?: string;
   setSort?: (sort: string) => void;
+  translateHeader: boolean;
   rowKeyProp: keyof T;
 }
 
@@ -240,6 +258,7 @@ export const ListTable = <T extends Row>({
   sort,
   setSort,
   rowKeyProp,
+  translateHeader = true,
   ...props
 }: ListTableProps<T>) => {
   const { t } = useTranslations();
@@ -255,7 +274,7 @@ export const ListTable = <T extends Row>({
                 <HeaderCell
                   key={key.toString()}
                   colId={key.toString()}
-                  title={t(title ?? '')}
+                  title={translateHeader ? t(title ?? '') : title}
                   style={style}
                   sort={sort}
                   setSort={setSort}

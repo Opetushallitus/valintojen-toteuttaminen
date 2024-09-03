@@ -93,6 +93,7 @@ export type ValintakokeenPisteet = {
   tunniste: string;
   arvo: string;
   osallistuminen: ValintakoeOsallistuminen;
+  osallistuminenTunniste: string;
 };
 
 export type HakemuksenPistetiedot = {
@@ -100,6 +101,8 @@ export type HakemuksenPistetiedot = {
   hakemusOid: string;
   hakijaOid: string;
   valintakokeenPisteet: ValintakokeenPisteet[];
+  etunimet: string;
+  sukunimi: string;
 };
 
 export type HakukohteenPistetiedot = {

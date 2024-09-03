@@ -9,6 +9,11 @@ import { TablePaginationWrapper } from '@/app/components/table/table-pagination-
 import { PisteSyottoTable } from './pistesyotto-table';
 import { usePisteSyottoSearchResults } from '@/app/hooks/usePisteSyottoSearch';
 import { PisteSyottoControls } from './pistesyotto-controls';
+import { useMemo } from 'react';
+import useToaster from '@/app/hooks/useToaster';
+import { createPisteSyottoMachine } from './pistesyotto-state';
+import { useMachine } from '@xstate/react';
+import { PisteSyottoActions } from './pistesyotto-actions';
 
 type PisteSyottoContentParams = {
   hakuOid: string;
@@ -23,6 +28,19 @@ const PisteSyottoContent = ({
     queryKey: ['getScoresForHakukohde', hakukohdeOid],
     queryFn: () => getScoresForHakukohde(hakuOid, hakukohdeOid),
   });
+
+  const { addToast } = useToaster();
+
+  const syottoMachine = useMemo(() => {
+    return createPisteSyottoMachine(
+      hakuOid,
+      hakukohdeOid,
+      pistetulokset.hakemukset,
+      addToast,
+    );
+  }, [hakuOid, hakukohdeOid, pistetulokset, addToast]);
+
+  const [state, send] = useMachine(syottoMachine);
 
   const {
     page,
@@ -39,6 +57,7 @@ const PisteSyottoContent = ({
   return (
     <>
       <PisteSyottoControls kokeet={pistetulokset.valintakokeet} />
+      <PisteSyottoActions state={state} send={send} />
       <TablePaginationWrapper
         totalCount={results?.length ?? 0}
         pageSize={pageSize}
@@ -52,6 +71,7 @@ const PisteSyottoContent = ({
           sort={sort}
           pistetiedot={pageResults}
           kokeet={koeResults}
+          send={send}
         />
       </TablePaginationWrapper>
     </>

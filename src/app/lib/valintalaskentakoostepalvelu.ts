@@ -159,12 +159,19 @@ export const getScoresForHakukohde = async (
         const osallistuminen = p.applicationAdditionalDataDTO.additionalData[
           k.osallistuminenTunniste
         ] as ValintakoeOsallistuminen;
-        return { tunniste: k.tunniste, arvo, osallistuminen };
+        return {
+          tunniste: k.tunniste,
+          arvo,
+          osallistuminen,
+          osallistuminenTunniste: k.osallistuminenTunniste,
+        };
       });
       return {
         hakemusOid: hakemus.hakemusOid,
         hakijaOid: hakemus.hakijaOid,
         hakijanNimi: hakemus.hakijanNimi,
+        etunimet: hakemus.etunimet,
+        sukunimi: hakemus.sukunimi,
         valintakokeenPisteet: kokeenPisteet,
       };
     },
@@ -177,3 +184,40 @@ export const getScoresForHakukohde = async (
     hakemukset: hakemuksetKokeilla,
   };
 };
+
+//TODO check what the return value is
+export const updateScoresForHakukohde = async (
+  hakuOid: string,
+  hakukohdeOid: string,
+  pistetiedot: HakemuksenPistetiedot[],
+) => {
+  const mappedPistetiedot = pistetiedot.map((p) => {
+    const additionalData = R.pipe(
+      p.valintakokeenPisteet,
+      R.flatMap((vp) => [
+        { key: vp.tunniste, value: vp.arvo },
+        { key: vp.osallistuminenTunniste, value: vp.osallistuminen },
+      ]),
+      R.indexBy((kv) => kv.key),
+      R.mapValues((val) => val.value),
+    );
+    return {
+      oid: p.hakemusOid,
+      personOid: p.hakijaOid,
+      firstNames: p.etunimet,
+      lastName: p.sukunimi,
+      additionalData,
+    };
+  });
+  await client.put(
+    `${configuration.valintalaskentaKoostePalveluUrl}pistesyotto/koostetutPistetiedot/haku/${hakuOid}/hakukohde/${hakukohdeOid}`,
+    mappedPistetiedot,
+  );
+};
+
+/*
+private String oid;
+  private String personOid;
+  private String firstNames;
+  private String lastName;
+  private Map<String, String> additionalData = new HashMap<>();*/
