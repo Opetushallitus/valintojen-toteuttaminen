@@ -164,6 +164,15 @@ const StyledTableBody = styled(TableBody)({
   '& .MuiTableRow-root': {
     '&:nth-of-type(even)': {
       backgroundColor: colors.grey50,
+      '.MuiTableCell-root': {
+        backgroundColor: colors.grey50,
+      },
+    },
+    '&:nth-of-type(odd)': {
+      backgroundColor: colors.white,
+      '.MuiTableCell-root': {
+        backgroundColor: colors.white,
+      },
     },
     '&:hover': {
       backgroundColor: colors.lightBlue2,
@@ -267,7 +276,7 @@ export const ListTable = <T extends Row>({
     <TableWrapper>
       <StyledTable {...props}>
         <TableHead>
-          <TableRow>
+          <TableRow sx={{ borderBottom: `2px solid ${colors.grey100}` }}>
             {columns.map((columnProps) => {
               const { key, title, style, sortable } = columnProps;
               return (

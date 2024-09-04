@@ -14,7 +14,7 @@ import {
 } from './types/laskenta-types';
 import { getHakemukset } from './ataru';
 import { getValintakokeet } from './valintaperusteet';
-import * as R from 'remeda';
+import { flatMap, indexBy, mapValues, pipe } from 'remeda';
 
 const formSearchParamsForStartLaskenta = ({
   laskentaUrl,
@@ -138,7 +138,7 @@ export const getScoresForHakukohde = async (
   hakukohdeOid: string,
 ): Promise<HakukohteenPistetiedot> => {
   const hakemukset = await getHakemukset(hakuOid, hakukohdeOid);
-  const hakemuksetIndexed = R.indexBy(hakemukset, (h) => h.hakemusOid);
+  const hakemuksetIndexed = indexBy(hakemukset, (h) => h.hakemusOid);
   const kokeet = await getValintakokeet(hakukohdeOid);
   const { data } = await client.get(
     `${configuration.valintalaskentaKoostePalveluUrl}pistesyotto/koostetutPistetiedot/haku/${hakuOid}/hakukohde/${hakukohdeOid}`,
@@ -192,14 +192,14 @@ export const updateScoresForHakukohde = async (
   pistetiedot: HakemuksenPistetiedot[],
 ) => {
   const mappedPistetiedot = pistetiedot.map((p) => {
-    const additionalData = R.pipe(
+    const additionalData = pipe(
       p.valintakokeenPisteet,
-      R.flatMap((vp) => [
+      flatMap((vp) => [
         { key: vp.tunniste, value: vp.arvo },
         { key: vp.osallistuminenTunniste, value: vp.osallistuminen },
       ]),
-      R.indexBy((kv) => kv.key),
-      R.mapValues((val) => val.value),
+      indexBy((kv) => kv.key),
+      mapValues((val) => val.value),
     );
     return {
       oid: p.hakemusOid,
@@ -214,10 +214,3 @@ export const updateScoresForHakukohde = async (
     mappedPistetiedot,
   );
 };
-
-/*
-private String oid;
-  private String personOid;
-  private String firstNames;
-  private String lastName;
-  private Map<String, String> additionalData = new HashMap<>();*/

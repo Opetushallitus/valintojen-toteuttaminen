@@ -19,6 +19,7 @@ import { Box, SelectChangeEvent } from '@mui/material';
 import { ChangeEvent, useState } from 'react';
 import { AnyEventObject } from 'xstate';
 import { PisteSyottoEvents } from './pistesyotto-state';
+import { colors } from '@opetushallitus/oph-design-system';
 
 const LINK_TO_PERSON = 'henkilo-ui/oppija/';
 
@@ -71,7 +72,14 @@ const KoeCell = ({
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        columnGap: '0.6rem',
+        minWidth: '220px',
+      }}
+    >
       <OphInput
         id={`koe-arvo-${pisteTiedot.hakijaOid}-${koe.tunniste}`}
         value={arvo}
@@ -102,9 +110,19 @@ const KoeCell = ({
         ]}
         size="small"
         onChange={changeOsallistumisenTila}
+        sx={{ minWidth: '150px' }}
       />
     </Box>
   );
+};
+
+const stickyColumnStyle: React.CSSProperties = {
+  minWidth: '200px',
+  position: 'sticky',
+  left: 0,
+  borderRight: `2px solid ${colors.grey100}`,
+  zIndex: 1,
+  backgroundColor: colors.white,
 };
 
 export const PisteSyottoTable = ({
@@ -122,13 +140,16 @@ export const PisteSyottoTable = ({
 }) => {
   const { t } = useTranslations();
 
-  const hakijaColumn = makeExternalLinkColumn<HakemuksenPistetiedot>({
-    linkBuilder: buildLinkToPerson,
-    title: t('hakeneet.taulukko.hakija'),
-    key: 'hakijanNimi',
-    nameProp: 'hakijanNimi',
-    linkProp: 'hakijaOid',
-  });
+  const hakijaColumn = Object.assign(
+    makeExternalLinkColumn<HakemuksenPistetiedot>({
+      linkBuilder: buildLinkToPerson,
+      title: t('hakeneet.taulukko.hakija'),
+      key: 'hakijanNimi',
+      nameProp: 'hakijanNimi',
+      linkProp: 'hakijaOid',
+    }),
+    { style: stickyColumnStyle },
+  );
 
   const koeColumns = kokeet.map((koe) => {
     return makeColumnWithCustomRender<HakemuksenPistetiedot>({
@@ -151,78 +172,7 @@ export const PisteSyottoTable = ({
       sort={sort}
       setSort={setSort}
       translateHeader={false}
+      sx={{ overflowX: 'auto', width: 'unset' }}
     />
   );
 };
-
-/*const TableWrapper = styled(Box)({
-  position: 'relative',
-  display: 'block',
-  width: '100%',
-  overflowX: 'auto',
-});
-
-export const PisteSyottoTable2 = ({
-  pistetiedot,
-  setSort,
-  sort,
-  kokeet,
-}: {
-  pistetiedot: HakemuksenPistetiedot[];
-  sort: string;
-  setSort: (sort: string) => void;
-  kokeet: Valintakoe[]}) => {
-    
-    const { t } = useTranslations();
-
-    const [muuttuneetHakeneet, setMuuttuneetHakeneet] = useState<HakemuksenPistetiedot[]>([]);
-
-    const updateHakeneet = (value: string, hakemusOid: string, koeTunniste: string, updateArvo: boolean) => {
-      const s = new Date().getTime();
-      let hakenut = muuttuneetHakeneet.find(h => h.hakemusOid === hakemusOid);
-      const existing: boolean = !!hakenut;
-      hakenut = hakenut || pistetiedot.find(h => h.hakemusOid === hakemusOid);
-      const koe = hakenut?.valintakokeenPisteet.find(k => k.tunniste === koeTunniste);
-      if (hakenut && koe) {
-        if (updateArvo) {
-          koe.arvo = value;
-        } else {
-          koe.osallistuminen = value as ValintakoeOsallistuminen;
-        }
-        if (existing) {
-          setMuuttuneetHakeneet(muuttuneetHakeneet.map(h => h.hakemusOid === hakemusOid ? hakenut : h)); 
-        } else {
-          setMuuttuneetHakeneet([...muuttuneetHakeneet, ...[hakenut]])
-        }
-      }
-    }
-    
-    return ( 
-      <TableWrapper>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>
-                {t('hakeneet.taulukko.hakija')}
-              </TableCell>
-              {kokeet.map(koe => (
-                <TableCell key={'header-koe-' + koe.tunniste}>{koe.kuvaus}</TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {pistetiedot.map(tieto => (
-              <TableRow key={'body-row-' + tieto.hakemusOid}>
-                <TableCell>{tieto.hakijanNimi}</TableCell>
-                {tieto.valintakokeenPisteet.filter(piste => kokeet.some(k => k.tunniste === piste.tunniste)).map(piste => (
-                  <TableCell key={'body-row-' + tieto.hakemusOid + piste.tunniste} >
-                    <KoeCell pisteTiedot={tieto} koe={kokeet.find(k => k.tunniste === piste.tunniste)} updateHakeneet={updateHakeneet}/>
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableWrapper>
-    );
-  };*/
