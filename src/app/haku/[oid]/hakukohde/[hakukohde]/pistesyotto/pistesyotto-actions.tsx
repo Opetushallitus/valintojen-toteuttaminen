@@ -23,6 +23,7 @@ export const PisteSyottoActions = ({
       }}
     >
       <Button
+        variant="contained"
         disabled={
           !state.matches(PisteSyottoStates.IDLE) ||
           state.context.changedPistetiedot.length < 1

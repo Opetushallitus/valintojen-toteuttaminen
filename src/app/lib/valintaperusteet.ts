@@ -106,6 +106,7 @@ export const getValintakokeet = async (
       max?: string | null;
       min?: string | null;
       osallistuminenTunniste: string;
+      vaatiiOsallistumisen: boolean;
     }) => {
       return {
         tunniste: koe.tunniste,
@@ -114,6 +115,7 @@ export const getValintakokeet = async (
         arvot: koe.arvot,
         max: koe.max,
         min: koe.min,
+        vaatiiOsallistumisen: koe.vaatiiOsallistumisen,
       };
     },
   );

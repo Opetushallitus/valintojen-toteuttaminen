@@ -31,5 +31,6 @@ export type Valintakoe = {
   kuvaus: string;
   arvot?: string[];
   max?: string; //todo: use number?
-  min?: number; //todo: use number?
+  min?: string; //todo: use number?
+  vaatiiOsallistumisen: boolean;
 };

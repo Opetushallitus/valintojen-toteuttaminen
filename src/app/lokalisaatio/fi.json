@@ -139,7 +139,8 @@
     "otsikko": "Pistesyöttö",
     "koe": "Koe",
     "valmis": "Tiedot tallennettu.",
-    "virhe": "Tietojen tallentamisessa tapahtui virhe."
+    "virhe": "Tietojen tallentamisessa tapahtui virhe.",
+    "laskentaanVaikuttavat": "Näytä vain laskentaan vaikuttavat osallistumistiedot"
   },
   "harkinnanvaraiset": {
     "otsikko": "Harkinnanvaraiset"

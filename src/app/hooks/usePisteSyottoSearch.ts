@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useMemo } from 'react';
 import { useDebounce } from '@/app/hooks/useDebounce';
-import { parseAsInteger, useQueryState } from 'nuqs';
+import { parseAsBoolean, parseAsInteger, useQueryState } from 'nuqs';
 import { useHasChanged } from '@/app/hooks/useHasChanged';
 import { byProp, getSortParts } from '../components/table/table-utils';
 import {
@@ -29,6 +29,12 @@ export const usePisteSyottoSearchParams = () => {
     DEFAULT_NUQS_OPTIONS,
   );
 
+  const [naytaVainLaskentaanVaikuttavat, setNaytaVainLaskentaanVaikuttavat] =
+    useQueryState<boolean>(
+      'vainLaskentaanVaikuttavat',
+      parseAsBoolean.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(true),
+    );
+
   const setSearchDebounce = useDebounce(
     setSearchPhrase,
     HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
@@ -54,11 +60,26 @@ export const usePisteSyottoSearchParams = () => {
 
   const osallistumisenTilaChanged = useHasChanged(osallistumisenTila);
 
+  const vainLaskentaanVaikuttavatChanged = useHasChanged(
+    naytaVainLaskentaanVaikuttavat,
+  );
+
   useEffect(() => {
-    if (searchPhraseChanged || koeChanged || osallistumisenTilaChanged) {
+    if (
+      searchPhraseChanged ||
+      koeChanged ||
+      osallistumisenTilaChanged ||
+      vainLaskentaanVaikuttavatChanged
+    ) {
       setPage(1);
     }
-  }, [searchPhraseChanged, setPage, koeChanged, osallistumisenTilaChanged]);
+  }, [
+    searchPhraseChanged,
+    setPage,
+    koeChanged,
+    osallistumisenTilaChanged,
+    vainLaskentaanVaikuttavatChanged,
+  ]);
 
   return {
     searchPhrase,
@@ -73,6 +94,8 @@ export const usePisteSyottoSearchParams = () => {
     setOsallistumisenTila,
     valittuKoe,
     setValittukoe,
+    naytaVainLaskentaanVaikuttavat,
+    setNaytaVainLaskentaanVaikuttavat,
   };
 };
 
@@ -91,6 +114,7 @@ export const usePisteSyottoSearchResults = (
     setSort,
     valittuKoe,
     osallistumisenTila,
+    naytaVainLaskentaanVaikuttavat,
   } = usePisteSyottoSearchParams();
 
   const results = useMemo(() => {
@@ -119,12 +143,14 @@ export const usePisteSyottoSearchResults = (
   ]);
 
   const koeResults = useMemo(() => {
-    return valittuKoe.length < 1
-      ? hakukohteenPistetiedot.valintakokeet
-      : hakukohteenPistetiedot.valintakokeet.filter(
-          (k) => k.tunniste === valittuKoe,
-        );
-  }, [valittuKoe, hakukohteenPistetiedot]);
+    return (
+      valittuKoe.length < 1
+        ? hakukohteenPistetiedot.valintakokeet
+        : hakukohteenPistetiedot.valintakokeet.filter(
+            (k) => k.tunniste === valittuKoe,
+          )
+    ).filter((k) => !naytaVainLaskentaanVaikuttavat || k.vaatiiOsallistumisen);
+  }, [valittuKoe, hakukohteenPistetiedot, naytaVainLaskentaanVaikuttavat]);
 
   const pageResults = useMemo(() => {
     const start = pageSize * (page - 1);
