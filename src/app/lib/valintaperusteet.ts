@@ -16,13 +16,14 @@ export const isLaskentaUsedForValinnanvaihe = (
   return (
     valinnanvaihe.aktiivinen &&
     !valinnanvaihe.valisijoittelu &&
-    valinnanvaihe.jonot.some((jono) => {
-      return (
-        jono.kaytetaanValintalaskentaa &&
-        (!jono.eiLasketaPaivamaaranJalkeen ||
-          jono.eiLasketaPaivamaaranJalkeen.getTime() > new Date().getTime())
-      );
-    })
+    (valinnanvaihe.jonot.length < 1 ||
+      valinnanvaihe.jonot.some((jono) => {
+        return (
+          jono.kaytetaanValintalaskentaa &&
+          (!jono.eiLasketaPaivamaaranJalkeen ||
+            jono.eiLasketaPaivamaaranJalkeen.getTime() > new Date().getTime())
+        );
+      }))
   );
 };
 
