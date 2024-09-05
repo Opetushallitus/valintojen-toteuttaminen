@@ -53,6 +53,9 @@ const retryWithLogin = async (request: Request, loginUrl: string) => {
 };
 
 const responseToData = async (res: Response) => {
+  if (res.status === 204) {
+    return { data: {} };
+  }
   const contentType = res.headers.get('Content-Type') ?? 'application/json';
 
   if (contentType?.includes('json')) {
