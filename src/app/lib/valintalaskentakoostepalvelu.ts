@@ -108,17 +108,21 @@ export const getLaskennanTilaHakukohteelle = async (
   const response = await client.get(
     `${configuration.valintalaskentaKoostePalveluUrl}valintalaskentakerralla/status/${loadingUrl}/yhteenveto`,
   );
-  return response.data?.hakukohteet?.map(
-    (hakukohde: {
-      hakukohdeOid: string;
-      ilmoitukset: [{ otsikko: string }] | null;
-    }) => {
-      return {
-        hakukohdeOid: hakukohde.hakukohdeOid,
-        notifications: hakukohde.ilmoitukset?.map((i) => i.otsikko),
-      };
-    },
-  )[0];
+  return response.data?.hakukohteet
+    ?.filter((hk: { ilmoitukset: [{ tyyppi: string }] }) =>
+      hk.ilmoitukset.some((i) => i.tyyppi === 'VIRHE'),
+    )
+    .map(
+      (hakukohde: {
+        hakukohdeOid: string;
+        ilmoitukset: [{ otsikko: string }] | null;
+      }) => {
+        return {
+          hakukohdeOid: hakukohde.hakukohdeOid,
+          notifications: hakukohde.ilmoitukset?.map((i) => i.otsikko),
+        };
+      },
+    )[0];
 };
 
 export const getHakukohteenValintatuloksetIlmanHakijanTilaa = async (

@@ -241,8 +241,10 @@ export const createLaskentaMachine = (
         always: [
           {
             guard: ({ context }) =>
-              context.seurantaTiedot != null &&
-              context.seurantaTiedot.hakukohteitaKeskeytetty > 0,
+              (context.seurantaTiedot != null &&
+                context.seurantaTiedot.hakukohteitaKeskeytetty > 0) ||
+              (!!context.errorSummary?.notifications &&
+                context.errorSummary?.notifications?.length > 0),
             target: LaskentaStates.ERROR_LASKENTA,
             actions: assign({
               laskenta: ({ context }) =>
