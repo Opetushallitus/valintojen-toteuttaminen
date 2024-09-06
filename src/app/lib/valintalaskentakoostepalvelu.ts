@@ -42,7 +42,7 @@ const formSearchParamsForStartLaskenta = ({
     'nimi',
     getFullnameOfHakukohde(hakukohde, translateEntity),
   );
-  if (valinnanvaihe) {
+  if (valinnanvaihe && valinnanvaiheTyyppi !== ValinnanvaiheTyyppi.VALINTAKOE) {
     laskentaUrl.searchParams.append('valinnanvaihe', '' + valinnanvaihe);
   }
   if (valinnanvaiheTyyppi) {
