@@ -6,6 +6,7 @@ import {
   Valinnanvaihe,
   ValinnanvaiheTyyppi,
   Valintakoe,
+  ValintakoeInputTyyppi,
   Valintaryhma,
   Valintatapajono,
 } from './types/valintaperusteet-types';
@@ -92,6 +93,29 @@ export const getValinnanvaiheet = async (
   );
 };
 
+const determineValintaKoeInputTyyppi = (
+  tunniste: string,
+  funktioTyyppi: string,
+  arvot: string[] | null,
+): ValintakoeInputTyyppi => {
+  if (
+    funktioTyyppi === 'TOTUUSARVOFUNKTIO' ||
+    (arvot &&
+      arvot.length === 2 &&
+      arvot.indexOf('true') != -1 &&
+      arvot.indexOf('false') != -1)
+  ) {
+    if (tunniste.includes('kielikoe')) {
+      return ValintakoeInputTyyppi.BOOLEAN_ACCEPTED;
+    }
+    return ValintakoeInputTyyppi.BOOLEAN;
+  }
+  if (arvot && arvot.length > 0) {
+    return ValintakoeInputTyyppi.SELECT;
+  }
+  return ValintakoeInputTyyppi.INPUT;
+};
+
 export const getValintakokeet = async (
   hakukohdeOid: string,
 ): Promise<Valintakoe[]> => {
@@ -108,7 +132,13 @@ export const getValintakokeet = async (
       min?: string | null;
       osallistuminenTunniste: string;
       vaatiiOsallistumisen: boolean;
+      funktiotyyppi: string;
     }) => {
+      const inputTyyppi = determineValintaKoeInputTyyppi(
+        koe.tunniste,
+        koe.funktiotyyppi,
+        koe.arvot,
+      );
       return {
         tunniste: koe.tunniste,
         osallistuminenTunniste: koe.osallistuminenTunniste,
@@ -117,6 +147,7 @@ export const getValintakokeet = async (
         max: koe.max,
         min: koe.min,
         vaatiiOsallistumisen: koe.vaatiiOsallistumisen,
+        inputTyyppi,
       };
     },
   );

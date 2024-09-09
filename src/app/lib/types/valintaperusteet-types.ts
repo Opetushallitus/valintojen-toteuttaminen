@@ -25,6 +25,13 @@ export type Valinnanvaihe = {
   jonot: Valintatapajono[];
 };
 
+export enum ValintakoeInputTyyppi {
+  BOOLEAN,
+  BOOLEAN_ACCEPTED,
+  SELECT,
+  INPUT,
+}
+
 export type Valintakoe = {
   tunniste: string;
   osallistuminenTunniste: string;
@@ -33,4 +40,5 @@ export type Valintakoe = {
   max?: string; //todo: use number?
   min?: string; //todo: use number?
   vaatiiOsallistumisen: boolean;
+  inputTyyppi: ValintakoeInputTyyppi;
 };
