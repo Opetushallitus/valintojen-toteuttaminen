@@ -2,7 +2,7 @@
 import {
   numberValidator,
   OphInput,
-  OphSelectControl,
+  OphSelect,
 } from '@/app/components/oph-select';
 import ListTable, {
   makeColumnWithCustomRender,
@@ -91,7 +91,7 @@ const KoeCell = ({
         onChange={changeArvo}
         sx={{ width: '5rem' }}
       />
-      <OphSelectControl
+      <OphSelect
         id={`koe-osallistuminen-${pisteTiedot.hakijaOid}-${koe.tunniste}`}
         value={osallistuminen}
         options={[

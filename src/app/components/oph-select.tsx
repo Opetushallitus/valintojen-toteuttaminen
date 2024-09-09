@@ -1,6 +1,14 @@
 'use client';
 import React, { useState } from 'react';
-import { Select, MenuItem, SelectProps, FormControl, OutlinedInput, FormHelperText } from '@mui/material';
+import {
+  Select,
+  MenuItem,
+  SelectProps,
+  FormControl,
+  OutlinedInput,
+  FormHelperText,
+  InputProps,
+} from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
 
 type OphSelectValue<T> = SelectProps<T>['value'];

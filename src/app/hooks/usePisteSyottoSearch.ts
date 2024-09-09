@@ -52,7 +52,12 @@ export const usePisteSyottoSearchParams = () => {
       .withDefault(DEFAULT_PAGE_SIZE),
   );
 
-  const [sort, setSort] = useQueryState('sort', DEFAULT_NUQS_OPTIONS);
+  const [sort, setSort] = useQueryState(
+    'sort',
+    Object.assign({}, DEFAULT_NUQS_OPTIONS, {
+      defaultValue: 'hakijanNimi:asc',
+    }),
+  );
 
   const searchPhraseChanged = useHasChanged(searchPhrase);
 
