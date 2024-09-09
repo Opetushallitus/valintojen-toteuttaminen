@@ -189,7 +189,6 @@ export const getScoresForHakukohde = async (
   };
 };
 
-//TODO check what the return value is
 export const updateScoresForHakukohde = async (
   hakuOid: string,
   hakukohdeOid: string,

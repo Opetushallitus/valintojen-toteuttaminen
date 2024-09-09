@@ -15,11 +15,15 @@ import {
   ValintakokeenPisteet,
 } from '@/app/lib/types/laskenta-types';
 import { Valintakoe } from '@/app/lib/types/valintaperusteet-types';
-import { Box, SelectChangeEvent } from '@mui/material';
+import { Box, SelectChangeEvent, Typography } from '@mui/material';
 import { ChangeEvent, useState } from 'react';
 import { AnyEventObject } from 'xstate';
 import { PisteSyottoEvents } from './pistesyotto-state';
 import { colors } from '@opetushallitus/oph-design-system';
+import {
+  isNotPartOfThisHakukohde,
+  NOT_READABLE_REASON_MAP,
+} from './pistesyotto-utils';
 
 const LINK_TO_PERSON = 'henkilo-ui/oppija/';
 
@@ -116,6 +120,37 @@ const KoeCell = ({
   );
 };
 
+const ReadOnlyCell = ({
+  pisteTiedot,
+  koe,
+}: {
+  pisteTiedot: HakemuksenPistetiedot;
+  koe: Valintakoe;
+}) => {
+  const { t } = useTranslations();
+
+  const pisteet = pisteTiedot.valintakokeenPisteet.find(
+    (vp) => vp.tunniste === koe.tunniste,
+  );
+  const notReadableReason = pisteet?.osallistuminen
+    ? NOT_READABLE_REASON_MAP[pisteet?.osallistuminen]
+    : '';
+
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        columnGap: '0.6rem',
+        minWidth: '220px',
+      }}
+    >
+      <Typography>{pisteet?.arvo}</Typography>
+      <Typography>{t(notReadableReason)}</Typography>
+    </Box>
+  );
+};
+
 const stickyColumnStyle: React.CSSProperties = {
   minWidth: '200px',
   position: 'sticky',
@@ -155,9 +190,14 @@ export const PisteSyottoTable = ({
     return makeColumnWithCustomRender<HakemuksenPistetiedot>({
       title: koe.kuvaus,
       key: koe.tunniste,
-      renderFn: (props) => (
-        <KoeCell pisteTiedot={props} koe={koe} send={send} />
-      ),
+      renderFn: (props) =>
+        isNotPartOfThisHakukohde(
+          props.valintakokeenPisteet.find((p) => p.tunniste === koe.tunniste)!,
+        ) ? (
+          <ReadOnlyCell pisteTiedot={props} koe={koe} />
+        ) : (
+          <KoeCell pisteTiedot={props} koe={koe} send={send} />
+        ),
       sortable: false,
     });
   });

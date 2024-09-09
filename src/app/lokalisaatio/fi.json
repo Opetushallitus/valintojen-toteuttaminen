@@ -140,7 +140,10 @@
     "koe": "Koe",
     "valmis": "Tiedot tallennettu.",
     "virhe": "Tietojen tallentamisessa tapahtui virhe.",
-    "laskentaanVaikuttavat": "Näytä vain laskentaan vaikuttavat osallistumistiedot"
+    "laskentaanVaikuttavat": "Näytä vain laskentaan vaikuttavat osallistumistiedot",
+    "toisessaHakutoiveessa": "Osallistuminen on toisessa hakutoiveessa",
+    "toisellaHakemuksella": "Hyväksytty toisella hakemuksella",
+    "eiKutsuttu": "Hakijaa ei ole kutsuttu kokeeseen"
   },
   "harkinnanvaraiset": {
     "otsikko": "Harkinnanvaraiset"
