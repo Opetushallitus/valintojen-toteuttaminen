@@ -1,5 +1,5 @@
 'use client';
-import { OphInput, OphSelect } from '@/app/components/oph-select';
+import { OphSelect } from '@/app/components/form/oph-select';
 import ListTable, {
   makeColumnWithCustomRender,
   makeExternalLinkColumn,
@@ -26,7 +26,9 @@ import {
 import {
   numberValidator,
   InputValidator,
-} from '@/app/components/input-validators';
+} from '@/app/components/form/input-validators';
+import { OphFormControl } from '@/app/components/form/oph-form-control';
+import { OphInput } from '@/app/components/form/oph-input';
 
 const LINK_TO_PERSON = 'henkilo-ui/oppija/';
 
@@ -133,13 +135,17 @@ const KoeCell = ({
       }}
     >
       {koe.inputTyyppi === ValintakoeInputTyyppi.INPUT && (
-        <OphInput
-          id={arvoId}
-          value={arvo}
+        <OphFormControl
           error={!arvoValid}
-          helperText={helperText}
-          onChange={changeArvo}
-          sx={{ width: '5rem' }}
+          errorMessages={helperText}
+          renderInput={() => (
+            <OphInput
+              id={arvoId}
+              value={arvo}
+              onChange={changeArvo}
+              sx={{ width: '5rem' }}
+            />
+          )}
         />
       )}
       {koe.inputTyyppi != ValintakoeInputTyyppi.INPUT && (

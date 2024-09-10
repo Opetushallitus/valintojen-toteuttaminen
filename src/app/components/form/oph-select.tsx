@@ -1,14 +1,6 @@
 'use client';
 import React from 'react';
-import {
-  Select,
-  MenuItem,
-  SelectProps,
-  FormControl,
-  OutlinedInput,
-  FormHelperText,
-  InputProps,
-} from '@mui/material';
+import { Select, MenuItem, SelectProps } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
 
 type OphSelectValue<T> = SelectProps<T>['value'];
@@ -37,33 +29,5 @@ export const OphSelect = <T extends string | number>({
         );
       })}
     </Select>
-  );
-};
-
-export const OphInput = ({
-  id,
-  value,
-  onChange,
-  helperText,
-  ...props
-}: InputProps & {
-  id: string;
-  value: string;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  helperText?: string[];
-}) => {
-  return (
-    <FormControl>
-      <OutlinedInput
-        id={id}
-        value={value}
-        size="small"
-        onChange={onChange}
-        {...props}
-      ></OutlinedInput>
-      {!!helperText && helperText.length > 0 && (
-        <FormHelperText>{helperText.join(' ')}</FormHelperText>
-      )}
-    </FormControl>
   );
 };

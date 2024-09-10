@@ -7,11 +7,11 @@ import {
   FormControlLabel,
 } from '@mui/material';
 import { PisteSyottoSearch } from './pistesyotto-search';
-import { OphSelect } from '@/app/components/oph-select';
+import { OphSelect } from '@/app/components/form/oph-select';
 import theme from '@/app/theme';
 import { Valintakoe } from '@/app/lib/types/valintaperusteet-types';
 import { CheckBoxOutlined } from '@mui/icons-material';
-import { OphFormControl } from '@/app/components/oph-form-control';
+import { OphFormControl } from '@/app/components/form/oph-form-control';
 
 export const PisteSyottoControls = ({ kokeet }: { kokeet: Valintakoe[] }) => {
   const {

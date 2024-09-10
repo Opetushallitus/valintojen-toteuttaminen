@@ -3,8 +3,8 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { Box, SelectChangeEvent } from '@mui/material';
 import { HakijaryhmatSearch } from './hakijaryhmat-search';
 import { SijoittelunTila } from '@/app/lib/types/sijoittelu-types';
-import { OphFormControl } from '@/app/components/oph-form-control';
-import { OphSelect } from '@/app/components/oph-select';
+import { OphFormControl } from '@/app/components/form/oph-form-control';
+import { OphSelect } from '@/app/components/form/oph-select';
 
 export const HakijaryhmatControls = () => {
   const {

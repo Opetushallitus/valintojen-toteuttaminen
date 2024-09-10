@@ -14,9 +14,9 @@ import { Search } from '@mui/icons-material';
 import { useHakuSearchParams } from '@/app/hooks/useHakuSearch';
 import { useHakutavat } from '@/app/hooks/useHakutavat';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { OphFormControl } from '@/app/components/oph-form-control';
+import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { ClientSpinner } from '@/app/components/client-spinner';
-import { OphSelect } from '@/app/components/oph-select';
+import { OphSelect } from '@/app/components/form/oph-select';
 
 const HakutapaSelect = ({
   labelId,
