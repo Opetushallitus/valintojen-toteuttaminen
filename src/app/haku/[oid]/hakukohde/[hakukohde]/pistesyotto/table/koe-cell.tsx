@@ -30,16 +30,18 @@ export const KoeCell = ({
   send: (event: AnyEventObject) => void;
   koe: Valintakoe;
 }) => {
+  const { t } = useTranslations();
+
   const findMatchingKoePisteet = (): ValintakokeenPisteet | undefined =>
     pisteTiedot.valintakokeenPisteet.find((k) => k.tunniste === koe.tunniste);
 
   const arvoValidator: InputValidator = numberValidator({
+    t,
     min: koe.min,
     max: koe.max,
     nullable: true,
   });
 
-  const { t } = useTranslations();
   const [arvo, setArvo] = useState<string>(
     findMatchingKoePisteet()?.arvo ?? '',
   );

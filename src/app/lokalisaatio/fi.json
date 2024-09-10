@@ -198,5 +198,13 @@
     "PERUUNTUNUT": "PERUUNTUNUT",
     "PERUNUT": "PERUNUT",
     "PERUUTETTU": "PERUUTETTU"
+  },
+  "validaatio": {
+    "numero": {
+      "syota": "Syötä numero",
+      "minmax": "Syötä numero väliltä {{min}}-{{max}}",
+      "min": "Syötä numero yhtä suuri tai isompi kuin {{min}}",
+      "max": "Syötä numero yhtä suuri tai pienempi kuin {{max}}"
+    }
   }
 }
