@@ -17,10 +17,10 @@ const LINK_TO_PERSON = 'henkilo-ui/oppija/';
 const buildLinkToPerson = (personOid: string) => LINK_TO_PERSON + personOid;
 
 const stickyColumnStyle: React.CSSProperties = {
-  minWidth: '200px',
+  minWidth: '260px',
   position: 'sticky',
   left: 0,
-  borderRight: `2px solid ${colors.grey100}`,
+  boxShadow: `0 5px 3px 2px ${colors.grey200}`,
   zIndex: 1,
   backgroundColor: colors.white,
 };

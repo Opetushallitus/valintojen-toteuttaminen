@@ -14,11 +14,19 @@ import useToaster from '@/app/hooks/useToaster';
 import { createPisteSyottoMachine } from './pistesyotto-state';
 import { useMachine } from '@xstate/react';
 import { PisteSyottoActions } from './pistesyotto-actions';
+import { Box, styled } from '@mui/material';
+import { colors } from '@opetushallitus/oph-design-system';
 
 type PisteSyottoContentParams = {
   hakuOid: string;
   hakukohdeOid: string;
 };
+
+const StyledTableAndActionsContainer = styled(Box)({
+  border: `1px solid ${colors.grey100}`,
+  padding: '1.2rem',
+  width: '100%',
+});
 
 const PisteSyottoContent = ({
   hakuOid,
@@ -55,26 +63,28 @@ const PisteSyottoContent = ({
   } = usePisteSyottoSearchResults(pistetulokset);
 
   return (
-    <>
+    <Box sx={{ width: '100%', position: 'relative' }}>
       <PisteSyottoControls kokeet={pistetulokset.valintakokeet} />
-      <PisteSyottoActions state={state} send={send} />
-      <TablePaginationWrapper
-        totalCount={results?.length ?? 0}
-        pageSize={pageSize}
-        setPageSize={setPageSize}
-        setPageNumber={setPage}
-        pageNumber={page}
-        countTranslationKey="hakeneet.maara"
-      >
-        <PisteSyottoTable
-          setSort={setSort}
-          sort={sort}
-          pistetiedot={pageResults}
-          kokeet={koeResults}
-          send={send}
-        />
-      </TablePaginationWrapper>
-    </>
+      <StyledTableAndActionsContainer>
+        <PisteSyottoActions state={state} send={send} />
+        <TablePaginationWrapper
+          totalCount={results?.length ?? 0}
+          pageSize={pageSize}
+          setPageSize={setPageSize}
+          setPageNumber={setPage}
+          pageNumber={page}
+          countTranslationKey="hakeneet.maara"
+        >
+          <PisteSyottoTable
+            setSort={setSort}
+            sort={sort}
+            pistetiedot={pageResults}
+            kokeet={koeResults}
+            send={send}
+          />
+        </TablePaginationWrapper>
+      </StyledTableAndActionsContainer>
+    </Box>
   );
 };
 

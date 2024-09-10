@@ -29,6 +29,25 @@ const theme = createODSTheme({
           },
         },
       },
+      MuiInputBase: {
+        styleOverrides: {
+          root: {
+            borderColor: colors.grey800,
+            borderRadius: '2px',
+            height: '48px',
+          },
+        },
+      },
+      MuiLink: {
+        styleOverrides: {
+          root: {
+            textDecoration: 'none',
+            '&:hover, &:focus': {
+              textDecoration: 'underline',
+            },
+          },
+        },
+      },
       MuiFormLabel: {
         styleOverrides: {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any

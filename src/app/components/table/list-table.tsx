@@ -151,10 +151,18 @@ const StyledTable = styled(Table)({
 
 const StyledCell = styled(TableCell)({
   borderSpacing: '0px',
-  padding: '1rem',
+  padding: '0.6rem 0.8rem',
   textAlign: 'left',
   whiteSpace: 'pre-wrap',
   borderWidth: 0,
+  'button:focus': {
+    color: colors.blue2,
+  },
+});
+
+const StyledHeaderCell = styled(TableCell)({
+  padding: '0.2rem 0.1rem 0.2rem 0.4rem',
+  textAlign: 'left',
   'button:focus': {
     color: colors.blue2,
   },
@@ -224,7 +232,7 @@ const HeaderCell = ({
   const { direction } = getSortParts(sort, colId);
 
   return (
-    <StyledCell sx={style} sortDirection={direction}>
+    <StyledHeaderCell sx={style} sortDirection={direction}>
       {setSort && sortable ? (
         <Button
           sx={{
@@ -248,7 +256,7 @@ const HeaderCell = ({
       ) : (
         <span style={{ fontWeight: 600 }}>{title}</span>
       )}
-    </StyledCell>
+    </StyledHeaderCell>
   );
 };
 
@@ -276,7 +284,7 @@ export const ListTable = <T extends Row>({
     <TableWrapper>
       <StyledTable {...props}>
         <TableHead>
-          <TableRow sx={{ borderBottom: `2px solid ${colors.grey100}` }}>
+          <TableRow sx={{ borderBottom: `2px solid ${colors.grey200}` }}>
             {columns.map((columnProps) => {
               const { key, title, style, sortable } = columnProps;
               return (

@@ -119,6 +119,7 @@ export const KoeCell = ({
         flexDirection: 'row',
         columnGap: '0.6rem',
         minWidth: '220px',
+        alignItems: 'flex-start',
       }}
     >
       {koe.inputTyyppi === ValintakoeInputTyyppi.INPUT && (
