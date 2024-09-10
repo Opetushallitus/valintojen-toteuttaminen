@@ -6,7 +6,7 @@ import { ClientSpinner } from '@/app/components/client-spinner';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getScoresForHakukohde } from '@/app/lib/valintalaskentakoostepalvelu';
 import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
-import { PisteSyottoTable } from './pistesyotto-table';
+import { PisteSyottoTable } from './table/pistesyotto-table';
 import { usePisteSyottoSearchResults } from '@/app/hooks/usePisteSyottoSearch';
 import { PisteSyottoControls } from './pistesyotto-controls';
 import { useMemo } from 'react';
