@@ -10,11 +10,13 @@ export const PageLayout = ({
 }) => {
   return (
     <Box
-      width="100%"
-      display="flex"
-      flexDirection="column"
-      rowGap={4}
-      alignItems="stretch"
+      sx={{
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        rowGap: 4,
+        alignItems: 'stretch',
+      }}
     >
       {header}
       <PageContent>{children}</PageContent>

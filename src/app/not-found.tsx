@@ -1,5 +1,6 @@
 'use client';
-import { Grid, Button, Typography } from '@mui/material';
+import { Button, Typography } from '@mui/material';
+import Grid from '@mui/material/Grid2';
 import { useTranslations } from '@/app/hooks/useTranslations';
 
 export default function Custom404() {
@@ -9,37 +10,37 @@ export default function Custom404() {
       <Grid
         container
         direction="column"
-        justifyContent="center"
-        alignItems="center"
         spacing={5}
         sx={{
+          justifyContent: 'center',
+          alignItems: 'center',
           textAlign: 'center',
           paddingTop: '132px',
           paddingBottom: '132px',
         }}
       >
-        <Grid item>
-          <Typography variant="h1" component="h1" color="secondary">
+        <Grid>
+          <Typography variant="h1" color="primary">
             404
           </Typography>
         </Grid>
-        <Grid item>
-          <Typography variant="h2" component="h2">
-            {t('404.otsikko')}
-          </Typography>
-          <Typography variant="body1" paragraph>
+        <Grid>
+          <Typography variant="h2">{t('404.otsikko')}</Typography>
+          <Typography variant="body1" component="p">
             {t('404.teksti')}
           </Typography>
         </Grid>
-        <Grid item>
+        <Grid>
           <Grid
             container
             direction="row"
-            justifyContent="center"
-            alignItems="center"
             spacing={2}
+            sx={{
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
           >
-            <Grid item>
+            <Grid>
               <Button
                 variant="contained"
                 aria-label={t('yleinen.palaa-etusivulle')}

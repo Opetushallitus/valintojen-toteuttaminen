@@ -87,7 +87,12 @@ export const ValintatapajonoContent = ({
       jonoNimi: jono.nimi,
     });
   return (
-    <Box key={jono.oid} width="100%">
+    <Box
+      key={jono.oid}
+      sx={{
+        width: '100%',
+      }}
+    >
       <AccordionBox
         id={valinnanVaihe.valinnanvaiheoid}
         title={
@@ -97,7 +102,12 @@ export const ValintatapajonoContent = ({
           />
         }
       >
-        <Box paddingTop={2} paddingBottom={1}>
+        <Box
+          sx={{
+            paddingTop: 2,
+            paddingBottom: 1,
+          }}
+        >
           <JonoActions hakukohdeOid={hakukohdeOid} jono={jono} />
         </Box>
         <PaginatedValintatapajonoTable

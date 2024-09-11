@@ -89,7 +89,13 @@ const ValintakoeKutsutWrapper = ({
   const { t } = useTranslations();
 
   return (
-    <Box display="flex" flexDirection="column" rowGap={2}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        rowGap: 2,
+      }}
+    >
       {ryhmittely === 'hakijoittain' ? (
         'TODO: Hakijoittain ryhmittely'
       ) : isEmpty(valintakoekutsutByTunniste) ? (
@@ -154,12 +160,19 @@ function ValintakoekutsutContent({
 
   return (
     <Box>
-      <Box display="flex" flexDirection="column">
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
         <Box
-          display="flex"
-          justifyContent="space-between"
-          alignItems="flex-end"
-          marginBottom={1}
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-end',
+            marginBottom: 1,
+          }}
         >
           <FormControl component="fieldset">
             <FormLabel component="legend">

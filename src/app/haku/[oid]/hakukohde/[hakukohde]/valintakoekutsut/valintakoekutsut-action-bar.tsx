@@ -161,7 +161,11 @@ export const ValintakoekutsutActionBar = ({
 
   return (
     <ActionBar.Container>
-      <Box padding={1}>
+      <Box
+        sx={{
+          padding: 1,
+        }}
+      >
         {t(`valintakoekutsut.valittu-maara`, { count: selection.size })}
       </Box>
       <ActionBar.Divider />
