@@ -122,6 +122,16 @@ export const usePisteSyottoSearchResults = (
     naytaVainLaskentaanVaikuttavat,
   } = usePisteSyottoSearchParams();
 
+  const koeResults = useMemo(() => {
+    return (
+      valittuKoe.length < 1
+        ? hakukohteenPistetiedot.valintakokeet
+        : hakukohteenPistetiedot.valintakokeet.filter(
+            (k) => k.tunniste === valittuKoe,
+          )
+    ).filter((k) => !naytaVainLaskentaanVaikuttavat || k.vaatiiOsallistumisen);
+  }, [valittuKoe, hakukohteenPistetiedot, naytaVainLaskentaanVaikuttavat]);
+
   const results = useMemo(() => {
     const { orderBy, direction } = getSortParts(sort);
 
@@ -131,6 +141,7 @@ export const usePisteSyottoSearchResults = (
         (osallistumisenTila.length < 1 ||
           h.valintakokeenPisteet.some(
             (koe) =>
+              koeResults.some((k) => k.tunniste === koe.tunniste) &&
               koe.osallistuminen === osallistumisenTila &&
               (valittuKoe.length < 1 || koe.tunniste === valittuKoe),
           )),
@@ -145,17 +156,8 @@ export const usePisteSyottoSearchResults = (
     translateEntity,
     osallistumisenTila,
     valittuKoe,
+    koeResults,
   ]);
-
-  const koeResults = useMemo(() => {
-    return (
-      valittuKoe.length < 1
-        ? hakukohteenPistetiedot.valintakokeet
-        : hakukohteenPistetiedot.valintakokeet.filter(
-            (k) => k.tunniste === valittuKoe,
-          )
-    ).filter((k) => !naytaVainLaskentaanVaikuttavat || k.vaatiiOsallistumisen);
-  }, [valittuKoe, hakukohteenPistetiedot, naytaVainLaskentaanVaikuttavat]);
 
   const pageResults = useMemo(() => {
     const start = pageSize * (page - 1);

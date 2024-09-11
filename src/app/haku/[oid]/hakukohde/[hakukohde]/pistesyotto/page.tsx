@@ -65,7 +65,7 @@ const PisteSyottoContent = ({
   return (
     <Box sx={{ width: '100%', position: 'relative' }}>
       <PisteSyottoControls kokeet={pistetulokset.valintakokeet} />
-      <StyledTableAndActionsContainer>
+      <StyledTableAndActionsContainer data-test-id="pistesyotto-container">
         <PisteSyottoActions state={state} send={send} />
         <TablePaginationWrapper
           totalCount={results?.length ?? 0}
