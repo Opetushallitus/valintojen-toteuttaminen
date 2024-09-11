@@ -193,7 +193,7 @@ interface ListTableProps<T> extends React.ComponentProps<typeof StyledTable> {
   rows?: Array<T>;
   sort?: string;
   setSort?: (sort: string) => void;
-  translateHeader: boolean;
+  translateHeader?: boolean;
   rowKeyProp: keyof T;
 }
 

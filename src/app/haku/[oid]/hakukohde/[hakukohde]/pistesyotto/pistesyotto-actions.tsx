@@ -2,14 +2,14 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { Box } from '@mui/material';
 import theme from '@/app/theme';
 import { Button } from '@opetushallitus/oph-design-system';
-import { AnyEventObject } from 'xstate';
+import { AnyEventObject, AnyMachineSnapshot } from 'xstate';
 import { PisteSyottoEvents, PisteSyottoStates } from './pistesyotto-state';
 
 export const PisteSyottoActions = ({
   state,
   send,
 }: {
-  state: unknown;
+  state: AnyMachineSnapshot;
   send: (event: AnyEventObject) => void;
 }) => {
   const { t } = useTranslations();

@@ -122,7 +122,6 @@ export const getValintakokeet = async (
   const { data } = await client.get(
     `${configuration.valintaperusteetUrl}hakukohde/avaimet/${hakukohdeOid}`,
   );
-  console.log(data);
   return data.map(
     (koe: {
       tunniste: string;

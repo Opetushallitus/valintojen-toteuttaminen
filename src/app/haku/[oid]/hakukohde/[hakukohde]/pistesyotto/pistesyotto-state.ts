@@ -81,10 +81,10 @@ export const createPisteSyottoMachine = (
                   }
                   if (existing) {
                     return context.changedPistetiedot.map((h) =>
-                      h.hakemusOid === event.hakemusOid ? hakenut : h,
+                      h.hakemusOid === event.hakemusOid ? hakenut! : h,
                     );
                   } else {
-                    return [...context.changedPistetiedot, ...[hakenut]];
+                    return [...context.changedPistetiedot, ...[hakenut!]];
                   }
                 }
                 return context.changedPistetiedot;

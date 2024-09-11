@@ -147,7 +147,6 @@ export const getScoresForHakukohde = async (
   const { data } = await client.get(
     `${configuration.valintalaskentaKoostePalveluUrl}pistesyotto/koostetutPistetiedot/haku/${hakuOid}/hakukohde/${hakukohdeOid}`,
   );
-  console.log(data);
 
   const hakemuksetKokeilla: HakemuksenPistetiedot[] = data.valintapisteet.map(
     (p: {
