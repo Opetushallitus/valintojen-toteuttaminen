@@ -7,9 +7,11 @@ export const AccordionBox = ({
   id,
   title,
   children,
+  headingComponent = 'h3',
 }: {
   id: string;
   title: React.ReactNode;
+  headingComponent?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
   children: React.ReactNode;
 }) => {
   const headerId = `${id}-accordion-header`;
@@ -21,6 +23,7 @@ export const AccordionBox = ({
       sx={{
         border: DEFAULT_BOX_BORDER,
       }}
+      slotProps={{ heading: { component: headingComponent } }}
     >
       <AccordionSummary
         expandIcon={<ExpandMore />}
