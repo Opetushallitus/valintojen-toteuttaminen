@@ -19,7 +19,11 @@ export const OphSelect = <T extends string | number>({
 }: OphSelectProps<T>) => {
   const { t } = useTranslations();
   return (
-    <Select {...props} displayEmpty={clearable}>
+    <Select
+      {...props}
+      inputProps={{ 'aria-label': t('yleinen.valitsevaihtoehto') }}
+      displayEmpty={clearable}
+    >
       {clearable && <MenuItem value="">{t('yleinen.valitse')}</MenuItem>}
       {options.map(({ value, label }) => {
         return (

@@ -132,6 +132,7 @@ export const KoeCell = ({
             <OphInput
               id={arvoId}
               value={arvo}
+              inputProps={{ 'aria-label': t('validaatio.numero.syota') }}
               onChange={changeArvo}
               sx={{ width: '5rem' }}
             />

@@ -25,7 +25,8 @@
     "prioriteetti": "Prioriteetti",
     "kylla": "Kyllä",
     "ei": "Ei",
-    "tallenna": "Tallenna"
+    "tallenna": "Tallenna",
+    "valitsevaihtoehto": "Valitse vaihtoehdoista"
   },
   "tuloksenTila": {
     "HYVAKSYTTAVISSA": "Hyväksyttävissä",

@@ -109,7 +109,7 @@ test('shows success toast when laskenta completes', async ({ page }) => {
           hakukohteet: [
             {
               hakukohde: '1.2.246.562.20.00000000000000045105',
-              ilmoitukset: null,
+              ilmoitukset: [],
             },
           ],
         }),
