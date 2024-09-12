@@ -3,7 +3,12 @@ import {
   ValintakokeenPisteet,
 } from '@/app/lib/types/laskenta-types';
 
-export const isNotPartOfThisHakukohde = (pisteet: ValintakokeenPisteet) => {
+export const isNotPartOfThisHakukohde = (
+  pisteet: ValintakokeenPisteet | undefined,
+) => {
+  if (!pisteet) {
+    return false;
+  }
   const osallistuminen = pisteet.osallistuminen;
   return (
     osallistuminen === ValintakoeOsallistuminen.EI_KUTSUTTU ||

@@ -16,10 +16,11 @@ import {
 import { ChangeEvent, useState } from 'react';
 import { AnyEventObject } from 'xstate';
 import { PisteSyottoEvents } from '../pistesyotto-state';
-import { Box, SelectChangeEvent } from '@mui/material';
+import { Box, debounce, SelectChangeEvent } from '@mui/material';
 import { OphSelect } from '@/app/components/form/oph-select';
 import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { OphInput } from '@/app/components/form/oph-input';
+import { INPUT_DEBOUNCE_DELAY } from '@/app/lib/constants';
 
 export const KoeCell = ({
   pisteTiedot,
@@ -56,19 +57,23 @@ export const KoeCell = ({
 
   const changeArvo = (event: ChangeEvent<HTMLInputElement>) => {
     setArvo(event.target.value);
-    const validationResult = arvoValidator.validate(event.currentTarget.value);
+    const validationResult = arvoValidator.validate(event.target.value);
     setArvoValid(!validationResult.error);
     if (!validationResult.error) {
-      send({
-        type: PisteSyottoEvents.ADD_CHANGED_PISTETIETO,
-        value: event.target.value,
-        hakemusOid: pisteTiedot.hakemusOid,
-        koeTunniste: koe.tunniste,
-        updateArvo: true,
-      });
+      debounce(
+        () =>
+          send({
+            type: PisteSyottoEvents.ADD_CHANGED_PISTETIETO,
+            value: event.target.value,
+            hakemusOid: pisteTiedot.hakemusOid,
+            koeTunniste: koe.tunniste,
+            updateArvo: true,
+          }),
+        INPUT_DEBOUNCE_DELAY,
+      )();
       setHelperText(undefined);
     } else {
-      setHelperText([validationResult.helperText!]);
+      setHelperText([validationResult.helperText ?? '']);
     }
   };
 

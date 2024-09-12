@@ -63,7 +63,7 @@ export const createPisteSyottoMachine = (
                 let hakenut = context.changedPistetiedot.find(
                   (h) => h.hakemusOid === event.hakemusOid,
                 );
-                const existing: boolean = !!hakenut;
+                const existing: boolean = Boolean(hakenut);
                 hakenut =
                   hakenut ||
                   context.pistetiedot.find(
@@ -81,10 +81,10 @@ export const createPisteSyottoMachine = (
                   }
                   if (existing) {
                     return context.changedPistetiedot.map((h) =>
-                      h.hakemusOid === event.hakemusOid ? hakenut! : h,
+                      h.hakemusOid === event.hakemusOid ? hakenut : h,
                     );
                   } else {
-                    return [...context.changedPistetiedot, ...[hakenut!]];
+                    return [...context.changedPistetiedot, ...[hakenut]];
                   }
                 }
                 return context.changedPistetiedot;

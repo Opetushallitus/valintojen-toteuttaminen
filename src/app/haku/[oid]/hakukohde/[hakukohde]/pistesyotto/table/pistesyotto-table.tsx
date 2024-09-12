@@ -57,7 +57,7 @@ export const PisteSyottoTable = ({
       key: koe.tunniste,
       renderFn: (props) =>
         isNotPartOfThisHakukohde(
-          props.valintakokeenPisteet.find((p) => p.tunniste === koe.tunniste)!,
+          props.valintakokeenPisteet.find((p) => p.tunniste === koe.tunniste),
         ) ? (
           <ReadOnlyKoeCell pisteTiedot={props} koe={koe} />
         ) : (
