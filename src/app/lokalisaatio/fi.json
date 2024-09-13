@@ -49,7 +49,9 @@
     "palvelin": "Palvelinpyyntö epäonnistui!",
     "virhekoodi": "Virhekoodi: ",
     "uudelleenyritys": "Yritä uudelleen",
-    "tuntematon": "Jokin meni vikaan"
+    "tuntematon": "Jokin meni vikaan",
+    "tallennus": "Tietojen tallentamisessa tapahtui virhe.",
+    "eimuutoksia": "Ei muutoksia mitä tallentaa."
   },
   "404": {
     "otsikko": "Sivua ei löytynyt",
@@ -144,7 +146,6 @@
     "otsikko": "Pistesyöttö",
     "koe": "Koe",
     "valmis": "Tiedot tallennettu.",
-    "virhe": "Tietojen tallentamisessa tapahtui virhe.",
     "laskentaanVaikuttavat": "Näytä vain laskentaan vaikuttavat osallistumistiedot",
     "toisessaHakutoiveessa": "Osallistuminen on toisessa hakutoiveessa",
     "toisellaHakemuksella": "Hyväksytty toisella hakemuksella",

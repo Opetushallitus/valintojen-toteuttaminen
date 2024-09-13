@@ -1,5 +1,5 @@
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { Box, Button } from '@mui/material';
+import { Box, Button, CircularProgress } from '@mui/material';
 import theme from '@/app/theme';
 import { AnyMachineSnapshot } from 'xstate';
 import { PisteSyottoStates } from './pistesyotto-state';
@@ -22,13 +22,13 @@ export const PisteSyottoActions = ({
       <Button
         type="submit"
         variant="contained"
-        disabled={
-          !state.matches(PisteSyottoStates.IDLE) ||
-          state.context.changedPistetiedot.length < 1
-        }
+        disabled={!state.matches(PisteSyottoStates.IDLE)}
       >
         {t('yleinen.tallenna')}
       </Button>
+      {state.matches(PisteSyottoStates.UPDATING) && (
+        <CircularProgress aria-label={t('valinnanhallinta.lasketaan')} />
+      )}
     </Box>
   );
 };

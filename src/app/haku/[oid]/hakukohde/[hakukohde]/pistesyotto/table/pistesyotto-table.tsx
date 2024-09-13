@@ -31,12 +31,14 @@ export const PisteSyottoTable = ({
   sort,
   kokeet,
   updateForm,
+  disabled,
 }: {
   pistetiedot: HakemuksenPistetiedot[];
   sort: string;
   setSort: (sort: string) => void;
   kokeet: Valintakoe[];
   updateForm: (params: ChangePisteSyottoFormParams) => void;
+  disabled: boolean;
 }) => {
   const { t } = useTranslations();
 
@@ -61,7 +63,12 @@ export const PisteSyottoTable = ({
         ) ? (
           <ReadOnlyKoeCell pisteTiedot={props} koe={koe} />
         ) : (
-          <KoeCell pisteTiedot={props} koe={koe} updateForm={updateForm} />
+          <KoeCell
+            pisteTiedot={props}
+            koe={koe}
+            updateForm={updateForm}
+            disabled={disabled}
+          />
         ),
       sortable: false,
     });

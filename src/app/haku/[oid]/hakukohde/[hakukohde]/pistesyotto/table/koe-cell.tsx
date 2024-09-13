@@ -25,10 +25,12 @@ export const KoeCell = ({
   pisteTiedot,
   updateForm,
   koe,
+  disabled,
 }: {
   pisteTiedot: HakemuksenPistetiedot;
   updateForm: (params: ChangePisteSyottoFormParams) => void;
   koe: Valintakoe;
+  disabled: boolean;
 }) => {
   const { t } = useTranslations();
 
@@ -129,6 +131,7 @@ export const KoeCell = ({
         <OphFormControl
           error={!arvoValid}
           errorMessages={helperText}
+          disabled={disabled}
           renderInput={() => (
             <OphInput
               id={arvoId}
@@ -148,6 +151,7 @@ export const KoeCell = ({
           size="small"
           onChange={changeSelectArvo}
           sx={{ minWidth: '150px' }}
+          disabled={disabled}
           clearable
         />
       )}
@@ -175,6 +179,7 @@ export const KoeCell = ({
         size="small"
         onChange={changeOsallistumisenTila}
         sx={{ minWidth: '150px' }}
+        disabled={disabled}
       />
     </Box>
   );

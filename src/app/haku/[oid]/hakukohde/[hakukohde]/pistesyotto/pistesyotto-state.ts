@@ -40,6 +40,16 @@ export const createPisteSyottoMachine = (
       hasChangedPistetiedot: ({ context }) =>
         context.changedPistetiedot.length > 0,
     },
+    actions: {
+      //eslint-disable-next-line no-empty-pattern
+      alert: ({}, params: { message: string }) => {
+        addToast({
+          key: `pistetiedot-update-failed-for-${hakukohdeOid}`,
+          message: params.message,
+          type: 'error',
+        });
+      },
+    },
     actors: {
       updatePistetiedot: fromPromise(
         ({ input }: { input: HakemuksenPistetiedot[] }) => {
@@ -91,10 +101,19 @@ export const createPisteSyottoMachine = (
               },
             }),
           },
-          [PisteSyottoEvents.UPDATE]: {
-            guard: 'hasChangedPistetiedot',
-            target: PisteSyottoStates.UPDATING,
-          },
+          [PisteSyottoEvents.UPDATE]: [
+            {
+              guard: 'hasChangedPistetiedot',
+              target: PisteSyottoStates.UPDATING,
+            },
+            {
+              target: PisteSyottoStates.IDLE,
+              actions: {
+                type: 'alert',
+                params: { message: 'virhe.eimuutoksia' },
+              },
+            },
+          ],
         },
       },
       [PisteSyottoStates.UPDATING]: {
@@ -110,14 +129,13 @@ export const createPisteSyottoMachine = (
         },
       },
       [PisteSyottoStates.ERROR]: {
-        always: [{ target: PisteSyottoStates.IDLE }],
-        entry: [
-          () => {
-            addToast({
-              key: `pistetiedot-update-failed-for-${hakukohdeOid}`,
-              message: 'pistesyotto.virhe',
-              type: 'error',
-            });
+        always: [
+          {
+            target: PisteSyottoStates.IDLE,
+            actions: {
+              type: 'alert',
+              params: { message: 'virhe.tallennus' },
+            },
           },
         ],
       },

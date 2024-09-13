@@ -8,6 +8,7 @@ import useToaster from '@/app/hooks/useToaster';
 import {
   createPisteSyottoMachine,
   PisteSyottoEvents,
+  PisteSyottoStates,
 } from './pistesyotto-state';
 import { useMachine } from '@xstate/react';
 import { PisteSyottoActions } from './pistesyotto-actions';
@@ -102,6 +103,7 @@ export const PisteSyottoForm = ({
           pistetiedot={pageResults}
           kokeet={koeResults}
           updateForm={updateForm}
+          disabled={!state.matches(PisteSyottoStates.IDLE)}
         />
       </TablePaginationWrapper>
     </StyledForm>
