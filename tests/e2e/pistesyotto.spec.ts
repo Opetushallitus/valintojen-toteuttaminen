@@ -9,11 +9,9 @@ test('displays pistesyotto', async ({ page }) => {
   await expect(page.locator('h1')).toHaveText(
     '> Tampere University Separate Admission/ Finnish MAOL Competition Route 2024',
   );
-  const headrow = page.locator(
-    '[data-test-id="pistesyotto-container"] thead tr',
-  );
+  const headrow = page.locator('[data-test-id="pistesyotto-form"] thead tr');
   await checkRow(headrow, ['Hakija', 'Nakkikoe, oletko nakkisuojassa?'], 'th');
-  const rows = page.locator('[data-test-id="pistesyotto-container"] tbody tr');
+  const rows = page.locator('[data-test-id="pistesyotto-form"] tbody tr');
   await expect(rows).toHaveCount(4);
   await checkRow(rows.nth(0), ['Dacula Kreivi', 'EiOsallistui']);
   await checkRow(rows.nth(1), ['Hui Haamu', 'Valitse...Merkitsemättä']);
@@ -27,15 +25,13 @@ test('displays pistesyotto with all exams', async ({ page }) => {
   );
   await expectAllSpinnersHidden(page);
   await page.getByLabel('Näytä vain laskentaan').click();
-  const headrow = page.locator(
-    '[data-test-id="pistesyotto-container"] thead tr',
-  );
+  const headrow = page.locator('[data-test-id="pistesyotto-form"] thead tr');
   await checkRow(
     headrow,
     ['Hakija', 'Nakkikoe, oletko nakkisuojassa?', 'Köksäkokeen arvosana'],
     'th',
   );
-  const rows = page.locator('[data-test-id="pistesyotto-container"] tbody tr');
+  const rows = page.locator('[data-test-id="pistesyotto-form"] tbody tr');
   await expect(rows).toHaveCount(4);
   await checkRow(rows.nth(0), [
     'Dacula Kreivi',
@@ -124,11 +120,11 @@ test.describe('filters', () => {
       name: 'Hae hakijan nimellä tai tunnisteilla',
     });
     await hakuInput.fill('Ruht');
-    let rows = page.locator('[data-test-id="pistesyotto-container"] tbody tr');
+    let rows = page.locator('[data-test-id="pistesyotto-form"] tbody tr');
     await expect(rows).toHaveCount(1);
     await checkRow(rows.nth(0), ['Nukettaja Ruhtinas', 'KylläOsallistui']);
     await hakuInput.fill('Hui');
-    rows = page.locator('[data-test-id="pistesyotto-container"] tbody tr');
+    rows = page.locator('[data-test-id="pistesyotto-form"] tbody tr');
     await expect(rows).toHaveCount(1);
     await checkRow(rows.nth(0), ['Hui Haamu', 'Valitse...Merkitsemättä']);
   });
@@ -138,9 +134,7 @@ test.describe('filters', () => {
       name: 'Hae hakijan nimellä tai tunnisteilla',
     });
     await hakuInput.fill('1.2.246.562.11.00000000000001543832');
-    const rows = page.locator(
-      '[data-test-id="pistesyotto-container"] tbody tr',
-    );
+    const rows = page.locator('[data-test-id="pistesyotto-form"] tbody tr');
     await expect(rows).toHaveCount(1);
     await checkRow(rows.nth(0), ['Hui Haamu', 'Valitse...Merkitsemättä']);
   });
@@ -150,18 +144,14 @@ test.describe('filters', () => {
       name: 'Hae hakijan nimellä tai tunnisteilla',
     });
     await hakuInput.fill('1.2.246.562.24.14598775927');
-    const rows = page.locator(
-      '[data-test-id="pistesyotto-container"] tbody tr',
-    );
+    const rows = page.locator('[data-test-id="pistesyotto-form"] tbody tr');
     await expect(rows).toHaveCount(1);
     await checkRow(rows.nth(0), ['Purukumi Puru', 'Valitse...Merkitsemättä']);
   });
 
   test('filters by osallistumisentila Merkitsemättä', async () => {
     await selectTila(page, 'Merkitsemättä');
-    const rows = page.locator(
-      '[data-test-id="pistesyotto-container"] tbody tr',
-    );
+    const rows = page.locator('[data-test-id="pistesyotto-form"] tbody tr');
     await expect(rows).toHaveCount(2);
     await checkRow(rows.nth(0), ['Hui Haamu', 'Valitse...Merkitsemättä']);
     await checkRow(rows.nth(1), ['Purukumi Puru', 'Valitse...Merkitsemättä']);
@@ -169,9 +159,7 @@ test.describe('filters', () => {
 
   test('filters by osallistumisentila Osallistui', async () => {
     await selectTila(page, 'Osallistui');
-    const rows = page.locator(
-      '[data-test-id="pistesyotto-container"] tbody tr',
-    );
+    const rows = page.locator('[data-test-id="pistesyotto-form"] tbody tr');
     await expect(rows).toHaveCount(2);
 
     await checkRow(rows.nth(0), ['Dacula Kreivi', 'EiOsallistui']);

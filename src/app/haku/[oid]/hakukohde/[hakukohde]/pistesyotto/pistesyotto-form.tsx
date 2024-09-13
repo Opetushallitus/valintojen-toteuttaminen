@@ -87,7 +87,11 @@ export const PisteSyottoForm = ({
   };
 
   return (
-    <StyledForm autoComplete="off" onSubmit={submitChanges}>
+    <StyledForm
+      autoComplete="off"
+      onSubmit={submitChanges}
+      data-test-id="pistesyotto-form"
+    >
       <PisteSyottoActions state={state} />
       <TablePaginationWrapper
         totalCount={results?.length ?? 0}
