@@ -28,6 +28,10 @@
     "tallenna": "Tallenna",
     "valitsevaihtoehto": "Valitse vaihtoehdoista"
   },
+  "lomake": {
+    "jatka": "Jatka",
+    "tallentamaton": "Olet poistumassa lomakkeelta jolla on tallentamattomia muutoksia. Jatketaanko silti?"
+  },
   "tuloksenTila": {
     "HYVAKSYTTAVISSA": "Hyväksyttävissä",
     "HYLATTY": "Hylätty",

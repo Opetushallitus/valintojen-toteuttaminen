@@ -6,11 +6,11 @@ import ListTable, {
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { HakemuksenPistetiedot } from '@/app/lib/types/laskenta-types';
 import { Valintakoe } from '@/app/lib/types/valintaperusteet-types';
-import { AnyEventObject } from 'xstate';
 import { colors } from '@opetushallitus/oph-design-system';
 import { isNotPartOfThisHakukohde } from '../pistesyotto-utils';
 import { ReadOnlyKoeCell } from './koe-readonly-cell';
 import { KoeCell } from './koe-cell';
+import { ChangePisteSyottoFormParams } from '../pistesyotto-form';
 
 const LINK_TO_PERSON = 'henkilo-ui/oppija/';
 
@@ -30,13 +30,13 @@ export const PisteSyottoTable = ({
   setSort,
   sort,
   kokeet,
-  send,
+  updateForm,
 }: {
   pistetiedot: HakemuksenPistetiedot[];
   sort: string;
   setSort: (sort: string) => void;
   kokeet: Valintakoe[];
-  send: (event: AnyEventObject) => void;
+  updateForm: (params: ChangePisteSyottoFormParams) => void;
 }) => {
   const { t } = useTranslations();
 
@@ -61,7 +61,7 @@ export const PisteSyottoTable = ({
         ) ? (
           <ReadOnlyKoeCell pisteTiedot={props} koe={koe} />
         ) : (
-          <KoeCell pisteTiedot={props} koe={koe} send={send} />
+          <KoeCell pisteTiedot={props} koe={koe} updateForm={updateForm} />
         ),
       sortable: false,
     });

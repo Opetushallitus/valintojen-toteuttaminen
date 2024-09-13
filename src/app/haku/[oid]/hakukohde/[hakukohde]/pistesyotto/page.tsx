@@ -5,28 +5,14 @@ import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary'
 import { ClientSpinner } from '@/app/components/client-spinner';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getScoresForHakukohde } from '@/app/lib/valintalaskentakoostepalvelu';
-import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
-import { PisteSyottoTable } from './table/pistesyotto-table';
-import { usePisteSyottoSearchResults } from '@/app/hooks/usePisteSyottoSearch';
 import { PisteSyottoControls } from './pistesyotto-controls';
-import { useMemo } from 'react';
-import useToaster from '@/app/hooks/useToaster';
-import { createPisteSyottoMachine } from './pistesyotto-state';
-import { useMachine } from '@xstate/react';
-import { PisteSyottoActions } from './pistesyotto-actions';
-import { Box, styled } from '@mui/material';
-import { colors } from '@opetushallitus/oph-design-system';
+import { Box } from '@mui/material';
+import { PisteSyottoForm } from './pistesyotto-form';
 
 type PisteSyottoContentParams = {
   hakuOid: string;
   hakukohdeOid: string;
 };
-
-const StyledTableAndActionsContainer = styled(Box)({
-  border: `1px solid ${colors.grey100}`,
-  padding: '1.2rem',
-  width: '100%',
-});
 
 const PisteSyottoContent = ({
   hakuOid,
@@ -37,53 +23,14 @@ const PisteSyottoContent = ({
     queryFn: () => getScoresForHakukohde(hakuOid, hakukohdeOid),
   });
 
-  const { addToast } = useToaster();
-
-  const syottoMachine = useMemo(() => {
-    return createPisteSyottoMachine(
-      hakuOid,
-      hakukohdeOid,
-      pistetulokset.hakemukset,
-      addToast,
-    );
-  }, [hakuOid, hakukohdeOid, pistetulokset, addToast]);
-
-  const [state, send] = useMachine(syottoMachine);
-
-  const {
-    page,
-    setPage,
-    pageSize,
-    setPageSize,
-    results,
-    pageResults,
-    sort,
-    setSort,
-    koeResults,
-  } = usePisteSyottoSearchResults(pistetulokset);
-
   return (
     <Box sx={{ width: '100%', position: 'relative' }}>
       <PisteSyottoControls kokeet={pistetulokset.valintakokeet} />
-      <StyledTableAndActionsContainer data-test-id="pistesyotto-container">
-        <PisteSyottoActions state={state} send={send} />
-        <TablePaginationWrapper
-          totalCount={results?.length ?? 0}
-          pageSize={pageSize}
-          setPageSize={setPageSize}
-          setPageNumber={setPage}
-          pageNumber={page}
-          countTranslationKey="hakeneet.maara"
-        >
-          <PisteSyottoTable
-            setSort={setSort}
-            sort={sort}
-            pistetiedot={pageResults}
-            kokeet={koeResults}
-            send={send}
-          />
-        </TablePaginationWrapper>
-      </StyledTableAndActionsContainer>
+      <PisteSyottoForm
+        hakuOid={hakuOid}
+        hakukohdeOid={hakukohdeOid}
+        pistetulokset={pistetulokset}
+      />
     </Box>
   );
 };

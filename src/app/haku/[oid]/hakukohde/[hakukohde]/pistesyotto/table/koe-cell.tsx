@@ -14,21 +14,20 @@ import {
   ValintakoeInputTyyppi,
 } from '@/app/lib/types/valintaperusteet-types';
 import { ChangeEvent, useState } from 'react';
-import { AnyEventObject } from 'xstate';
-import { PisteSyottoEvents } from '../pistesyotto-state';
 import { Box, debounce, SelectChangeEvent } from '@mui/material';
 import { OphSelect } from '@/app/components/form/oph-select';
 import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { OphInput } from '@/app/components/form/oph-input';
 import { INPUT_DEBOUNCE_DELAY } from '@/app/lib/constants';
+import { ChangePisteSyottoFormParams } from '../pistesyotto-form';
 
 export const KoeCell = ({
   pisteTiedot,
-  send,
+  updateForm,
   koe,
 }: {
   pisteTiedot: HakemuksenPistetiedot;
-  send: (event: AnyEventObject) => void;
+  updateForm: (params: ChangePisteSyottoFormParams) => void;
   koe: Valintakoe;
 }) => {
   const { t } = useTranslations();
@@ -62,8 +61,7 @@ export const KoeCell = ({
     if (!validationResult.error) {
       debounce(
         () =>
-          send({
-            type: PisteSyottoEvents.ADD_CHANGED_PISTETIETO,
+          updateForm({
             value: event.target.value,
             hakemusOid: pisteTiedot.hakemusOid,
             koeTunniste: koe.tunniste,
@@ -79,8 +77,7 @@ export const KoeCell = ({
 
   const changeSelectArvo = (event: SelectChangeEvent<string>) => {
     setArvo(event.target.value);
-    send({
-      type: PisteSyottoEvents.ADD_CHANGED_PISTETIETO,
+    updateForm({
       value: event.target.value,
       hakemusOid: pisteTiedot.hakemusOid,
       koeTunniste: koe.tunniste,
@@ -92,8 +89,7 @@ export const KoeCell = ({
     event: SelectChangeEvent<ValintakoeOsallistuminen>,
   ) => {
     setOsallistuminen(event.target.value as ValintakoeOsallistuminen);
-    send({
-      type: PisteSyottoEvents.ADD_CHANGED_PISTETIETO,
+    updateForm({
       value: event.target.value,
       hakemusOid: pisteTiedot.hakemusOid,
       koeTunniste: koe.tunniste,
