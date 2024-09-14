@@ -62,9 +62,12 @@ const ConfirmToast = ({ toast }: { toast: Toast }) => {
           pointerEvents: 'all',
           marginBottom: theme.spacing(2),
           maxWidth: '500px',
+          backgroundColor: colors.white,
+          border: `2px solid ${colors.orange4}`,
+          color: colors.orange4,
         }}
       >
-        <Typography sx={{ color: colors.white }}>
+        <Typography sx={{ color: colors.black }}>
           {t(toast.message, toast.messageParams)}
         </Typography>
         <Box
@@ -75,7 +78,11 @@ const ConfirmToast = ({ toast }: { toast: Toast }) => {
             marginTop: theme.spacing(1),
           }}
         >
-          <Button variant="outlined" onClick={() => removeToast(toast.key)}>
+          <Button
+            variant="outlined"
+            sx={{ backgroundColor: colors.white }}
+            onClick={() => removeToast(toast.key)}
+          >
             {t('yleinen.peruuta')}
           </Button>
           <Button
