@@ -1,4 +1,8 @@
 'use client';
+import {
+  buildLinkToPerson,
+  hakijaColumn,
+} from '@/app/components/table/hakija-column';
 import ListTable, {
   makeGenericColumn,
   makeExternalLinkColumn,
@@ -8,12 +12,9 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { Hakemus } from '@/app/lib/types/ataru-types';
 
 const LINK_TO_APPLICATION = 'lomake-editori/applications/search?term=';
-const LINK_TO_PERSON = 'henkilo-ui/oppija/';
 
 const buildLinkToApplication = (hakemusOid: string) =>
   LINK_TO_APPLICATION + hakemusOid;
-const buildLinkToPerson = (personOid: string) => LINK_TO_PERSON + personOid;
-
 export const HakeneetTable = ({
   hakeneet,
   setSort,
@@ -26,14 +27,6 @@ export const HakeneetTable = ({
   isKorkeakouluHaku: boolean;
 }) => {
   const { t } = useTranslations();
-
-  const hakijaColumn = makeExternalLinkColumn<Hakemus>({
-    linkBuilder: buildLinkToPerson,
-    title: 'hakeneet.taulukko.hakija',
-    key: 'hakijanNimi',
-    nameProp: 'hakijanNimi',
-    linkProp: 'hakijaOid',
-  });
 
   const hakukelpoisuusColumn = makeColumnWithValueToTranslate<Hakemus>({
     t,

@@ -1,9 +1,7 @@
 'use client';
 import ListTable, {
   makeColumnWithCustomRender,
-  makeExternalLinkColumn,
 } from '@/app/components/table/list-table';
-import { useTranslations } from '@/app/hooks/useTranslations';
 import { HakemuksenPistetiedot } from '@/app/lib/types/laskenta-types';
 import { Valintakoe } from '@/app/lib/types/valintaperusteet-types';
 import { colors } from '@opetushallitus/oph-design-system';
@@ -11,10 +9,8 @@ import { isNotPartOfThisHakukohde } from '../pistesyotto-utils';
 import { ReadOnlyKoeCell } from './koe-readonly-cell';
 import { KoeCell } from './koe-cell';
 import { ChangePisteSyottoFormParams } from '../pistesyotto-form';
-
-const LINK_TO_PERSON = 'henkilo-ui/oppija/';
-
-const buildLinkToPerson = (personOid: string) => LINK_TO_PERSON + personOid;
+import { hakijaColumn } from '@/app/components/table/hakija-column';
+import { useTranslations } from '@/app/hooks/useTranslations';
 
 const stickyColumnStyle: React.CSSProperties = {
   minWidth: '260px',
@@ -41,17 +37,10 @@ export const PisteSyottoTable = ({
   disabled: boolean;
 }) => {
   const { t } = useTranslations();
-
-  const hakijaColumn = Object.assign(
-    makeExternalLinkColumn<HakemuksenPistetiedot>({
-      linkBuilder: buildLinkToPerson,
-      title: t('hakeneet.taulukko.hakija'),
-      key: 'hakijanNimi',
-      nameProp: 'hakijanNimi',
-      linkProp: 'hakijaOid',
-    }),
-    { style: stickyColumnStyle },
-  );
+  const stickyHakijaColumn = Object.assign(hakijaColumn, {
+    style: stickyColumnStyle,
+    title: t('hakeneet.taulukko.hakija'),
+  });
 
   const koeColumns = kokeet.map((koe) => {
     return makeColumnWithCustomRender<HakemuksenPistetiedot>({
@@ -74,7 +63,7 @@ export const PisteSyottoTable = ({
     });
   });
 
-  const columns = [hakijaColumn, ...koeColumns];
+  const columns = [stickyHakijaColumn, ...koeColumns];
 
   return (
     <ListTable
