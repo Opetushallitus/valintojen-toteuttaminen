@@ -2,13 +2,7 @@ import { test, expect, Page } from '@playwright/test';
 import { checkRow, expectAllSpinnersHidden } from './playwright-utils';
 
 test('displays pistesyotto', async ({ page }) => {
-  await page.goto(
-    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/pistesyotto',
-  );
-  await expectAllSpinnersHidden(page);
-  await expect(page.locator('h1')).toHaveText(
-    '> Tampere University Separate Admission/ Finnish MAOL Competition Route 2024',
-  );
+  await goToPisteSyotto(page);
   const headrow = page.locator('[data-test-id="pistesyotto-form"] thead tr');
   await checkRow(headrow, ['Hakija', 'Nakkikoe, oletko nakkisuojassa?'], 'th');
   const rows = page.locator('[data-test-id="pistesyotto-form"] tbody tr');
@@ -20,10 +14,7 @@ test('displays pistesyotto', async ({ page }) => {
 });
 
 test('displays pistesyotto with all exams', async ({ page }) => {
-  await page.goto(
-    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/pistesyotto',
-  );
-  await expectAllSpinnersHidden(page);
+  await goToPisteSyotto(page);
   await page.getByLabel('Näytä vain laskentaan').click();
   const headrow = page.locator('[data-test-id="pistesyotto-form"] thead tr');
   await checkRow(
@@ -56,10 +47,7 @@ test('displays pistesyotto with all exams', async ({ page }) => {
 });
 
 test('shows success toast when updating value', async ({ page }) => {
-  await page.goto(
-    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/pistesyotto',
-  );
-  await expectAllSpinnersHidden(page);
+  await goToPisteSyotto(page);
   await page.route(
     '*/**/valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105',
     async (route) => await route.fulfill({ status: 204 }),
@@ -76,10 +64,7 @@ test('shows success toast when updating value', async ({ page }) => {
 });
 
 test('shows error toast when updating value', async ({ page }) => {
-  await page.goto(
-    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/pistesyotto',
-  );
-  await expectAllSpinnersHidden(page);
+  await goToPisteSyotto(page);
   await page.route(
     '*/**/valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105',
     async (route) =>
@@ -104,15 +89,35 @@ test('shows error toast when updating value', async ({ page }) => {
   ).toBeHidden();
 });
 
+test('navigating to another view without saving changes asks for confirmation', async ({
+  page,
+}) => {
+  await goToPisteSyotto(page);
+  const huiRow = page.getByRole('row', { name: 'Hui Haamu Valitse' });
+  await huiRow.getByLabel('Valitse...').click();
+  await page.getByRole('option', { name: 'Kyllä' }).click();
+  await page.getByText('Hakijaryhmät').click();
+  const confirmationQuestion = () =>
+    page.getByText(
+      'Olet poistumassa lomakkeelta jolla on tallentamattomia muutoksia. Jatketaanko silti?',
+    );
+  await expect(confirmationQuestion()).toBeVisible();
+  await page.getByRole('button', { name: 'Peruuta' }).click();
+  await expect(confirmationQuestion()).toBeHidden();
+  await expect(page).toHaveURL(/.*pistesyotto/);
+  await page.getByText('Hakeneet').click();
+  await expect(confirmationQuestion()).toBeVisible();
+  await page.getByRole('button', { name: 'Jatka' }).click();
+  await expect(confirmationQuestion()).toBeHidden();
+  await expect(page).toHaveURL(/.*hakeneet/);
+});
+
 test.describe('filters', () => {
   let page: Page;
 
   test.beforeAll(async ({ browser }) => {
     page = await browser.newPage();
-    await page.goto(
-      '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/pistesyotto',
-    );
-    await expectAllSpinnersHidden(page);
+    await goToPisteSyotto(page);
   });
 
   test('filters by name', async () => {
@@ -177,4 +182,14 @@ async function selectTila(page: Page, expectedOption: string) {
   });
   await listbox.getByRole('option', { name: expectedOption }).click();
   await expect(combobox).toContainText(expectedOption);
+}
+
+async function goToPisteSyotto(page: Page) {
+  await page.goto(
+    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/pistesyotto',
+  );
+  await expectAllSpinnersHidden(page);
+  await expect(page.locator('h1')).toHaveText(
+    '> Tampere University Separate Admission/ Finnish MAOL Competition Route 2024',
+  );
 }

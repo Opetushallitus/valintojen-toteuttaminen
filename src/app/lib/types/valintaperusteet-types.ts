@@ -37,8 +37,8 @@ export type Valintakoe = {
   osallistuminenTunniste: string;
   kuvaus: string;
   arvot?: string[];
-  max?: string; //todo: use number?
-  min?: string; //todo: use number?
+  max?: string;
+  min?: string;
   vaatiiOsallistumisen: boolean;
   inputTyyppi: ValintakoeInputTyyppi;
 };
