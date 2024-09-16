@@ -149,7 +149,8 @@
     "laskentaanVaikuttavat": "Näytä vain laskentaan vaikuttavat osallistumistiedot",
     "toisessaHakutoiveessa": "Osallistuminen on toisessa hakutoiveessa",
     "toisellaHakemuksella": "Hyväksytty toisella hakemuksella",
-    "eiKutsuttu": "Hakijaa ei ole kutsuttu kokeeseen"
+    "eiKutsuttu": "Hakijaa ei ole kutsuttu kokeeseen",
+    "ei-tuloksia": "Ei tuloksia. Joko hakukohteessa ei ole valintakokeita tai laskentaa ei ole suoritettu."
   },
   "harkinnanvaraiset": {
     "otsikko": "Harkinnanvaraiset"

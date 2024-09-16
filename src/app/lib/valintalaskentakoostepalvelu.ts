@@ -14,7 +14,8 @@ import {
 } from './types/laskenta-types';
 import { getHakemukset } from './ataru';
 import { getValintakokeet } from './valintaperusteet';
-import { flatMap, indexBy, mapValues, pipe } from 'remeda';
+import { flatMap, indexBy, isEmpty, mapValues, pipe } from 'remeda';
+import { EMPTY_ARRAY } from './common';
 
 const formSearchParamsForStartLaskenta = ({
   laskentaUrl,
@@ -141,9 +142,14 @@ export const getScoresForHakukohde = async (
   hakuOid: string,
   hakukohdeOid: string,
 ): Promise<HakukohteenPistetiedot> => {
-  const [hakemukset, kokeet, { data: pistetiedot }] = await Promise.all([
+  const kokeet = await getValintakokeet(hakukohdeOid);
+
+  if (isEmpty(kokeet)) {
+    return { hakemukset: EMPTY_ARRAY, valintakokeet: EMPTY_ARRAY };
+  }
+
+  const [hakemukset, { data: pistetiedot }] = await Promise.all([
     getHakemukset(hakuOid, hakukohdeOid),
-    getValintakokeet(hakukohdeOid),
     client.get(
       `${configuration.valintalaskentaKoostePalveluUrl}pistesyotto/koostetutPistetiedot/haku/${hakuOid}/hakukohde/${hakukohdeOid}`,
     ),
