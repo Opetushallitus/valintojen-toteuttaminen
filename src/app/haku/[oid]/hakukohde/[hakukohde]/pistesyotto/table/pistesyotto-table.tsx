@@ -11,6 +11,7 @@ import { KoeCell } from './koe-cell';
 import { ChangePisteSyottoFormParams } from '../pistesyotto-form';
 import { hakijaColumn } from '@/app/components/table/hakija-column';
 import { useTranslations } from '@/app/hooks/useTranslations';
+import { useMemo } from 'react';
 
 const stickyColumnStyle: React.CSSProperties = {
   minWidth: '260px',
@@ -37,33 +38,35 @@ export const PisteSyottoTable = ({
   disabled: boolean;
 }) => {
   const { t } = useTranslations();
-  const stickyHakijaColumn = Object.assign(hakijaColumn, {
-    style: stickyColumnStyle,
-    title: t('hakeneet.taulukko.hakija'),
-  });
 
-  const koeColumns = kokeet.map((koe) => {
-    return makeColumnWithCustomRender<HakemuksenPistetiedot>({
-      title: koe.kuvaus,
-      key: koe.tunniste,
-      renderFn: (props) =>
-        isNotPartOfThisHakukohde(
-          props.valintakokeenPisteet.find((p) => p.tunniste === koe.tunniste),
-        ) ? (
-          <ReadOnlyKoeCell pisteTiedot={props} koe={koe} />
-        ) : (
-          <KoeCell
-            pisteTiedot={props}
-            koe={koe}
-            updateForm={updateForm}
-            disabled={disabled}
-          />
-        ),
-      sortable: false,
+  const columns = useMemo(() => {
+    const stickyHakijaColumn = Object.assign(hakijaColumn, {
+      style: stickyColumnStyle,
+      title: t('hakeneet.taulukko.hakija'),
     });
-  });
 
-  const columns = [stickyHakijaColumn, ...koeColumns];
+    const koeColumns = kokeet.map((koe) => {
+      return makeColumnWithCustomRender<HakemuksenPistetiedot>({
+        title: koe.kuvaus,
+        key: koe.tunniste,
+        renderFn: (props) =>
+          isNotPartOfThisHakukohde(
+            props.valintakokeenPisteet.find((p) => p.tunniste === koe.tunniste),
+          ) ? (
+            <ReadOnlyKoeCell pisteTiedot={props} koe={koe} />
+          ) : (
+            <KoeCell
+              pisteTiedot={props}
+              koe={koe}
+              updateForm={updateForm}
+              disabled={disabled}
+            />
+          ),
+        sortable: false,
+      });
+    });
+    return [stickyHakijaColumn, ...koeColumns];
+  }, [kokeet, t, disabled, updateForm]);
 
   return (
     <ListTable
