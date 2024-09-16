@@ -15,6 +15,50 @@ const theme = createODSTheme({
   variant: 'oph',
   overrides: deepmerge(MUI_NEXTJS_OVERRIDES, {
     components: {
+      MuiFormLabel: {
+        styleOverrides: {
+          root: ({ theme }) => ({
+            ...theme.typography.label,
+          }),
+        },
+      },
+      MuiToggleButton: {
+        defaultProps: {
+          disableRipple: true,
+        },
+        styleOverrides: {
+          root: ({ theme }) => ({
+            paddingTop: 0,
+            paddingBottom: 0,
+            color: colors.grey900,
+            borderColor: theme.palette.primary.main,
+            borderWidth: '2px',
+            borderRadius: '2px',
+            '&.Mui-selected': {
+              backgroundColor: theme.palette.primary.main,
+              color: colors.white,
+              '&:hover': {
+                backgroundColor: theme.palette.primary.light,
+                color: colors.white,
+              },
+              '&:active, &.Mui-focusVisible': {
+                backgroundColor: theme.palette.primary.dark,
+              },
+            },
+            '&:hover': {
+              backgroundColor: colors.white,
+              borderColor: theme.palette.primary.light,
+              color: theme.palette.primary.main,
+            },
+            '&.Mui-disabled': {},
+          }),
+        },
+      },
+      MuiCheckbox: {
+        defaultProps: {
+          disableRipple: true,
+        },
+      },
       MuiButtonBase: {
         defaultProps: {
           disableRipple: true,

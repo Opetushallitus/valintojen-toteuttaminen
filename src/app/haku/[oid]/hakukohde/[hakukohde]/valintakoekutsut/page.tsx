@@ -81,7 +81,15 @@ function ValintakoekutsutContent({
           <FormLabel component="legend">
             {t('valintakoekutsut.nayta')}
           </FormLabel>
-          <FormGroup row>
+          <FormGroup
+            row
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              columnGap: 2,
+              marginY: 1,
+            }}
+          >
             <ToggleButtonGroup
               color="primary"
               value={ryhmittely}
