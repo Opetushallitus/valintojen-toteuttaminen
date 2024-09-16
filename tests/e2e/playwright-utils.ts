@@ -37,3 +37,8 @@ export const checkRow = async (
     await expect(cells.nth(index)).toHaveText(value);
   }
 };
+
+export const getHakukohdeNaviLinks = (page: Page) => {
+  const nav = page.getByRole('navigation', { name: 'Hakukohdevalitsin' });
+  return nav.getByRole('link');
+};

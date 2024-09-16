@@ -44,7 +44,7 @@ export const HakukohdeList = ({ hakuOid }: { hakuOid: string }) => {
   const activeHakukohdeTab = useHakukohdeTab();
   const selectedHakukohdeOid = useSelectedHakukohdeOid();
   return (
-    <StyledList tabIndex={0}>
+    <StyledList tabIndex={0} aria-label={t('hakukohde.navigaatio')}>
       <Typography>
         {results.length} {t('haku.hakukohdetta')}
       </Typography>

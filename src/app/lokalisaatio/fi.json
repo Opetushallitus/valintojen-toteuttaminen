@@ -70,6 +70,7 @@
     "suurenna": "Suurenna hakukohteitten listaus"
   },
   "hakukohde": {
+    "navigaatio": "Hakukohdevalitsin",
     "valitse": "Valitse tai hae hakukohde",
     "oid": "Hakukohde oid: "
   },

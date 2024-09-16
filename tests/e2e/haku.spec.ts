@@ -2,6 +2,7 @@ import { test, expect, Page } from '@playwright/test';
 import {
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
+  getHakukohdeNaviLinks,
 } from './playwright-utils';
 
 test('Haku-page accessibility', async ({ page }) => {
@@ -27,13 +28,14 @@ test.describe('hakukohde search', () => {
       name: 'Hae hakukohteita',
     });
     await hakuInput.fill('Natural Sciences');
-    await expect(page.locator('.organizationLabel')).toHaveCount(1);
-    await expect(page.locator('.hakukohdeLabel').first()).toContainText(
+    const hakukohdeNavItems = getHakukohdeNaviLinks(page);
+    await expect(hakukohdeNavItems).toHaveCount(1);
+    await expect(hakukohdeNavItems.first()).toContainText(
       'Finnish MAOL competition route, Natural Sciences and Mathematics',
     );
     await hakuInput.fill('Sustainable Urban');
-    await expect(page.locator('.organizationLabel')).toHaveCount(1);
-    await expect(page.locator('.hakukohdeLabel').first()).toContainText(
+    await expect(hakukohdeNavItems).toHaveCount(1);
+    await expect(hakukohdeNavItems.first()).toContainText(
       'Finnish MAOL competition route, Technology, Sustainable Urban Development',
     );
   });
@@ -43,7 +45,7 @@ test.describe('hakukohde search', () => {
       name: 'Hae hakukohteita',
     });
     await hakuInput.fill('Tekniikan ja luonnontieteiden tiedekunta');
-    await expect(page.locator('.organizationLabel')).toHaveCount(2);
+    await expect(getHakukohdeNaviLinks(page)).toHaveCount(2);
   });
 
   test('filter by hakukohde oid', async () => {
@@ -51,8 +53,10 @@ test.describe('hakukohde search', () => {
       name: 'Hae hakukohteita',
     });
     await hakuInput.fill('1.2.246.562.20.00000000000000045104');
-    await expect(page.locator('.organizationLabel')).toHaveCount(1);
-    await expect(page.locator('.hakukohdeLabel').first()).toContainText(
+
+    const hakukohdeNavItems = getHakukohdeNaviLinks(page);
+    await expect(hakukohdeNavItems).toHaveCount(1);
+    await expect(hakukohdeNavItems.first()).toContainText(
       'Finnish MAOL competition route, Computing and Electrical Engineering',
     );
   });

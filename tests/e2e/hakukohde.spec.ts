@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import {
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
+  getHakukohdeNaviLinks,
 } from './playwright-utils';
 
 type Tab = {
@@ -53,8 +54,9 @@ test('navigates to hakukohde tabs', async ({ page }) => {
   await expect(page.locator('h1')).toHaveText(
     '> Tampere University Separate Admission/ Finnish MAOL Competition Route 2024',
   );
-  await expect(page.locator('.organizationLabel')).toHaveCount(3);
-  await page.locator('.organizationLabel').first().click();
+  const hakukohdeNavItems = getHakukohdeNaviLinks(page);
+  await expect(hakukohdeNavItems).toHaveCount(3);
+  await hakukohdeNavItems.first().click();
   await expect(page.locator('span.organisaatioLabel')).toHaveText(
     'Tampereen yliopisto, Rakennetun ympäristön tiedekunta',
   );
@@ -78,7 +80,8 @@ test.describe('Hakukohde tabs', () => {
       await page.goto(
         '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102',
       );
-      await page.locator('.organizationLabel').first().click();
+
+      await getHakukohdeNaviLinks(page).first().click();
       if (tab.invisibleInTabsForKKHaku) {
         await expect(page.getByText(tab.title)).toBeHidden();
       } else {
