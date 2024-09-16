@@ -78,7 +78,7 @@ const ValintakoeKutsutWrapper = ({
     hakuOid,
     hakukohdeOid,
     ryhmittely,
-    vainKutsuttavat: vainKutsuttavat,
+    vainKutsuttavat,
   });
 
   return (
@@ -87,19 +87,23 @@ const ValintakoeKutsutWrapper = ({
         ? 'TODO: Hakijoittain ryhmittely'
         : pipe(
             entries(valintakoekutsutByTunniste),
-            map(([valintakoeTunniste, valintakoeKutsut]) => (
-              <AccordionBox
-                key={valintakoeTunniste}
-                id="valintakoekutsu"
-                title={valintakoeTunniste}
-              >
-                <PaginatedValintakoekutsut
+            map(([valintakoeTunniste, valintakoeKutsut]) => {
+              const { nimi, kutsut } = valintakoeKutsut;
+
+              return (
+                <AccordionBox
                   key={valintakoeTunniste}
-                  valintakoeTunniste={valintakoeTunniste}
-                  valintakoeKutsut={valintakoeKutsut}
-                />
-              </AccordionBox>
-            )),
+                  id="valintakoekutsu"
+                  title={nimi ?? valintakoeTunniste}
+                >
+                  <PaginatedValintakoekutsut
+                    key={valintakoeTunniste}
+                    valintakoeTunniste={valintakoeTunniste}
+                    valintakoeKutsut={kutsut}
+                  />
+                </AccordionBox>
+              );
+            }),
           )}
     </Box>
   );

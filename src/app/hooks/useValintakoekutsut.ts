@@ -74,9 +74,12 @@ export const useValintakoekutsut = ({
             if (hakutoive.hakukohdeOid === hakukohdeOid) {
               hakutoive.valinnanVaiheet.forEach((valinnanVaihe) => {
                 valinnanVaihe.valintakokeet.forEach((valintakoe) => {
-                  const { valintakoeTunniste } = valintakoe;
+                  const { valintakoeTunniste, nimi } = valintakoe;
                   if (!result[valintakoeTunniste]) {
-                    result[valintakoeTunniste] = [];
+                    result[valintakoeTunniste] = {
+                      nimi,
+                      kutsut: [],
+                    };
                   }
                   const hakemus = hakemuksetByOid[valintakoeTulos.hakemusOid];
 
@@ -87,7 +90,7 @@ export const useValintakoekutsut = ({
                     (vainKutsuttavat && osallistuminen === 'OSALLISTUU') ||
                     !vainKutsuttavat
                   ) {
-                    result[valintakoeTunniste].push({
+                    result[valintakoeTunniste].kutsut.push({
                       hakijaOid: valintakoeTulos.hakijaOid,
                       henkiloOid: hakemus?.hakijaOid,
                       hakijanNimi: hakemus?.hakijanNimi,
@@ -109,7 +112,13 @@ export const useValintakoekutsut = ({
           });
           return result;
         },
-        {} as Record<string, Array<ValintakoeKutsuItem>>,
+        {} as Record<
+          string,
+          {
+            nimi: string;
+            kutsut: Array<ValintakoeKutsuItem>;
+          }
+        >,
       );
     } else {
       // TODO: Toteuta ryhmittely hakijoittain
