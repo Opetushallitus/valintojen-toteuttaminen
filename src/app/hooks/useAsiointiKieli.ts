@@ -4,7 +4,7 @@ import { configuration } from '../lib/configuration';
 import { Language } from '../lib/localization/localization-types';
 
 export const getAsiointiKieli = async (): Promise<Language> => {
-  const response = await client.get(configuration.asiointiKieliUrl);
+  const response = await client.get<Language>(configuration.asiointiKieliUrl);
   return response.data ?? 'fi';
 };
 

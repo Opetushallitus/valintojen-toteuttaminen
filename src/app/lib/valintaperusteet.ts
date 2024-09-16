@@ -31,7 +31,7 @@ export const isLaskentaUsedForValinnanvaihe = (
 export const getValintaryhma = async (
   hakukohdeOid: string,
 ): Promise<Valintaryhma> => {
-  const response = await client.get(
+  const response = await client.get<Valintaryhma>(
     `${configuration.valintaperusteetUrl}hakukohde/${hakukohdeOid}/valintaryhma`,
   );
   return { nimi: response.data.nimi, oid: response.data.oid };
@@ -40,11 +40,8 @@ export const getValintaryhma = async (
 export const getValinnanvaiheet = async (
   hakukohdeOid: string,
 ): Promise<Valinnanvaihe[]> => {
-  const response = await client.get(
-    `${configuration.valintaperusteetUrl}hakukohde/${hakukohdeOid}/valinnanvaihe?withValisijoitteluTieto=true`,
-  );
-  return response.data.map(
-    (vaihe: {
+  const response = await client.get<
+    Array<{
       oid: string;
       nimi: string;
       aktiivinen: boolean;
@@ -61,36 +58,39 @@ export const getValinnanvaiheet = async (
           kaytetaanValintalaskentaa: boolean;
         },
       ];
-    }) => {
-      const tyyppi =
-        vaihe.valinnanVaiheTyyppi == 'VALINTAKOE'
-          ? ValinnanvaiheTyyppi.VALINTAKOE
-          : ValinnanvaiheTyyppi.TAVALLINEN;
-      const jonot: Valintatapajono[] = vaihe.jonot
-        .filter((jono) => jono.aktiivinen)
-        .map((jono) => {
-          const eiLasketaPaivamaaranJalkeen = jono.eiLasketaPaivamaaranJalkeen
-            ? new Date(jono.eiLasketaPaivamaaranJalkeen)
-            : undefined;
-          return {
-            oid: jono.oid,
-            nimi: jono.nimi,
-            prioriteetti: jono.prioriteetti,
-            eiLasketaPaivamaaranJalkeen,
-            kaytetaanValintalaskentaa: jono.kaytetaanValintalaskentaa,
-          };
-        })
-        .sort((j1, j2) => j1.prioriteetti - j2.prioriteetti);
-      return {
-        nimi: vaihe.nimi,
-        aktiivinen: vaihe.aktiivinen,
-        valisijoittelu: vaihe.hasValisijoittelu,
-        tyyppi,
-        oid: vaihe.oid,
-        jonot,
-      };
-    },
+    }>
+  >(
+    `${configuration.valintaperusteetUrl}hakukohde/${hakukohdeOid}/valinnanvaihe?withValisijoitteluTieto=true`,
   );
+  return response.data.map((vaihe) => {
+    const tyyppi =
+      vaihe.valinnanVaiheTyyppi == 'VALINTAKOE'
+        ? ValinnanvaiheTyyppi.VALINTAKOE
+        : ValinnanvaiheTyyppi.TAVALLINEN;
+    const jonot: Valintatapajono[] = vaihe.jonot
+      .filter((jono) => jono.aktiivinen)
+      .map((jono) => {
+        const eiLasketaPaivamaaranJalkeen = jono.eiLasketaPaivamaaranJalkeen
+          ? new Date(jono.eiLasketaPaivamaaranJalkeen)
+          : undefined;
+        return {
+          oid: jono.oid,
+          nimi: jono.nimi,
+          prioriteetti: jono.prioriteetti,
+          eiLasketaPaivamaaranJalkeen,
+          kaytetaanValintalaskentaa: jono.kaytetaanValintalaskentaa,
+        };
+      })
+      .sort((j1, j2) => j1.prioriteetti - j2.prioriteetti);
+    return {
+      nimi: vaihe.nimi,
+      aktiivinen: vaihe.aktiivinen,
+      valisijoittelu: vaihe.hasValisijoittelu,
+      tyyppi,
+      oid: vaihe.oid,
+      jonot,
+    };
+  });
 };
 
 const determineValintaKoeInputTyyppi = (
@@ -119,11 +119,8 @@ const determineValintaKoeInputTyyppi = (
 export const getValintakokeet = async (
   hakukohdeOid: string,
 ): Promise<Valintakoe[]> => {
-  const { data } = await client.get(
-    `${configuration.valintaperusteetUrl}hakukohde/avaimet/${hakukohdeOid}`,
-  );
-  return data.map(
-    (koe: {
+  const { data } = await client.get<
+    Array<{
       tunniste: string;
       arvot: string[] | null;
       kuvaus: string;
@@ -132,22 +129,23 @@ export const getValintakokeet = async (
       osallistuminenTunniste: string;
       vaatiiOsallistumisen: boolean;
       funktiotyyppi: string;
-    }) => {
-      const inputTyyppi = determineValintaKoeInputTyyppi(
-        koe.tunniste,
-        koe.funktiotyyppi,
-        koe.arvot,
-      );
-      return {
-        tunniste: koe.tunniste,
-        osallistuminenTunniste: koe.osallistuminenTunniste,
-        kuvaus: koe.kuvaus,
-        arvot: koe.arvot,
-        max: koe.max,
-        min: koe.min,
-        vaatiiOsallistumisen: koe.vaatiiOsallistumisen,
-        inputTyyppi,
-      };
-    },
-  );
+    }>
+  >(`${configuration.valintaperusteetUrl}hakukohde/avaimet/${hakukohdeOid}`);
+  return data.map((koe) => {
+    const inputTyyppi = determineValintaKoeInputTyyppi(
+      koe.tunniste,
+      koe.funktiotyyppi,
+      koe.arvot,
+    );
+    return {
+      tunniste: koe.tunniste,
+      osallistuminenTunniste: koe.osallistuminenTunniste,
+      kuvaus: koe.kuvaus,
+      arvot: koe.arvot ?? undefined,
+      max: koe.max ?? undefined,
+      min: koe.min ?? undefined,
+      vaatiiOsallistumisen: koe.vaatiiOsallistumisen,
+      inputTyyppi,
+    };
+  });
 };

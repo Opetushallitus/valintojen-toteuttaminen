@@ -9,24 +9,27 @@ import {
   getOrgsForPermission,
 } from '../lib/permissions';
 import { PermissionError } from '../lib/common';
+import { isNonNull } from 'remeda';
 
 const getUserPermissions = async (): Promise<UserPermissions> => {
-  const response = await client.get(configuration.kayttoikeusUrl);
-  const organizations: OrganizationPermissions[] = response.data.organisaatiot
-    .map(
-      (o: {
-        organisaatioOid: string;
-        kayttooikeudet: [{ palvelu: string; oikeus: Permission }];
-      }) => {
+  const response = await client.get<{
+    organisaatiot: Array<{
+      organisaatioOid: string;
+      kayttooikeudet: [{ palvelu: string; oikeus: Permission }];
+    }>;
+    isAdmin: boolean;
+  }>(configuration.kayttoikeusUrl);
+  const organizations: Array<OrganizationPermissions> =
+    response.data.organisaatiot
+      .map((o) => {
         const permissions: Permission[] = o.kayttooikeudet
           .filter((o) => o.palvelu === SERVICE_KEY)
           .map((o) => o.oikeus);
         return permissions.length > 0
           ? { organizationOid: o.organisaatioOid, permissions }
           : null;
-      },
-    )
-    .filter((o: OrganizationPermissions | null) => o !== null);
+      })
+      .filter(isNonNull);
   const userPermissions: UserPermissions = {
     admin: response.data.isAdmin,
     readOrganizations: getOrgsForPermission(organizations, 'READ'),

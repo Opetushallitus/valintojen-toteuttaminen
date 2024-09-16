@@ -25,5 +25,5 @@ export type Hakemus = {
   hakutoiveNumero: number;
   hakukelpoisuus: Hakukelpoisuus;
   maksuvelvollisuus: Maksuvelvollisuus;
-  hakemuksenTila: HakemuksenTila;
+  tila: HakemuksenTila;
 };

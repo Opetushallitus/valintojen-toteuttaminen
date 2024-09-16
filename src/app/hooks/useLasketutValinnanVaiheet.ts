@@ -66,9 +66,9 @@ export const useLasketutValinnanVaiheet = ({
                 ...jonosija,
                 hakijanNimi: hakemus.hakijanNimi,
                 hakutoiveNumero: jonosija.prioriteetti,
-                hakemuksenTila: hakemus.hakemuksenTila,
                 hakemusOid: hakemus.hakemusOid,
                 hakijaOid: hakemus.hakijaOid,
+                hakemuksenTila: hakemus.tila,
                 pisteet: jarjestyskriteeri?.arvo,
                 tuloksenTila: jonosija.tuloksenTila,
                 muutoksenSyy: Object.fromEntries(

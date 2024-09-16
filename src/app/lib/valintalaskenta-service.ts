@@ -24,26 +24,23 @@ import {
 import { Hakemus } from './types/ataru-types';
 import * as R from 'remeda';
 
-export const getLasketutValinnanVaiheet = async (
-  hakukohdeOid: string,
-): Promise<Array<LaskettuValinnanVaihe>> => {
-  const response = await client.get(
+export const getLasketutValinnanVaiheet = async (hakukohdeOid: string) => {
+  const response = await client.get<Array<LaskettuValinnanVaihe>>(
     configuration.lasketutValinnanVaiheetUrl({ hakukohdeOid }),
   );
   return response.data;
 };
 
-export const getLaskennanSeurantaTiedot = async (
-  loadingUrl: string,
-): Promise<SeurantaTiedot> => {
-  const response = await client.get(
+export const getLaskennanSeurantaTiedot = async (loadingUrl: string) => {
+  const response = await client.get<SeurantaTiedot>(
     `${configuration.seurantaUrl}${loadingUrl}`,
   );
+
   return {
     tila: response.data.tila,
-    hakukohteitaYhteensa: response.data.hakukohteitaYhteensa,
-    hakukohteitaValmiina: response.data.hakukohteitaValmiina,
-    hakukohteitaKeskeytetty: response.data.hakukohteitaKeskeytetty,
+    hakukohteitaYhteensa: response.data?.hakukohteitaYhteensa,
+    hakukohteitaValmiina: response.data?.hakukohteitaValmiina,
+    hakukohteitaKeskeytetty: response.data?.hakukohteitaKeskeytetty,
   };
 };
 
@@ -58,10 +55,10 @@ export const muutaSijoittelunStatus = async ({
 }: {
   jono: Pick<LaskettuJonoWithHakijaInfo, 'oid' | 'prioriteetti'>;
   status: boolean;
-}): Promise<Array<MuutaSijoitteluaResponse>> => {
+}) => {
   const valintatapajonoOid = jono.oid;
 
-  const { data: updatedJono } = await client.post(
+  const { data: updatedJono } = await client.post<{ prioriteetti: number }>(
     // Miksi samat parametrit välitetään sekä URL:ssä että bodyssa?
     configuration.automaattinenSiirtoUrl({ valintatapajonoOid, status }),
     {
@@ -78,7 +75,7 @@ export const muutaSijoittelunStatus = async ({
     updatedJono.prioriteetti = jono.prioriteetti;
   }
 
-  const { data } = await client.put(
+  const { data } = await client.put<Array<MuutaSijoitteluaResponse>>(
     configuration.valmisSijoiteltavaksiUrl({ valintatapajonoOid, status }),
     updatedJono,
     {
@@ -110,11 +107,8 @@ export const getHakijaryhmat = async (
     R.filter(R.isDefined),
     R.indexBy((j) => j.oid),
   );
-  const { data } = await client.get(
-    configuration.hakukohdeHakijaryhmatUrl({ hakukohdeOid }),
-  );
-  return data.map(
-    (ryhma: {
+  const { data } = await client.get<
+    Array<{
       nimi: string;
       hakijaryhmaOid: string;
       prioriteetti: number;
@@ -125,7 +119,10 @@ export const getHakijaryhmat = async (
           jarjestyskriteerit: [{ tila: JarjestyskriteeriTila }];
         },
       ];
-    }) => {
+    }>
+  >(configuration.hakukohdeHakijaryhmatUrl({ hakukohdeOid }));
+  return (
+    data?.map((ryhma) => {
       const ryhmanHakijat: HakijaryhmanHakija[] = hakemukset.map((h) => {
         const hakemusSijoittelussa = findHakemusSijoittelussa(
           sijoittelunHakemukset[h.hakemusOid],
@@ -174,7 +171,7 @@ export const getHakijaryhmat = async (
         kiintio: getKiintio(tulokset, ryhma.hakijaryhmaOid),
         hakijat: ryhmanHakijat,
       };
-    },
+    }) ?? []
   );
 };
 

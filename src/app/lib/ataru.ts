@@ -57,9 +57,8 @@ export async function getHakemukset(
   hakukohdeOid: string,
 ): Promise<Hakemus[]> {
   const url = `${configuration.hakemuksetUrl}?hakuOid=${hakuOid}&hakukohdeOid=${hakukohdeOid}`;
-  const response = await client.get(url);
-  return response.data.map(
-    (h: {
+  const response = await client.get<
+    Array<{
       etunimet: string;
       sukunimi: string;
       personOid: string;
@@ -72,27 +71,28 @@ export async function getHakemukset(
           paymentObligation?: string;
         },
       ];
-    }) => {
-      let hakutoiveNumero = 0;
-      const hakutoive = h.hakutoiveet.find((value, index) => {
-        if (value.hakukohdeOid === hakukohdeOid) {
-          hakutoiveNumero = index + 1;
-          return true;
-        }
-        return false;
-      });
-      const fullName = `${h.sukunimi} ${h.etunimet}`;
-      return {
-        hakemusOid: h.oid,
-        hakijaOid: h.personOid,
-        etunimet: h.etunimet,
-        sukunimi: h.sukunimi,
-        hakijanNimi: fullName,
-        hakutoiveNumero,
-        tila: getTila(hakutoive),
-        maksuvelvollisuus: getMaksuvelvollisuus(hakutoive),
-        hakukelpoisuus: getHakukelpoisuus(hakutoive),
-      };
-    },
-  );
+    }>
+  >(url);
+  return response.data?.map((h) => {
+    let hakutoiveNumero = 0;
+    const hakutoive = h.hakutoiveet.find((value, index) => {
+      if (value.hakukohdeOid === hakukohdeOid) {
+        hakutoiveNumero = index + 1;
+        return true;
+      }
+      return false;
+    });
+    const fullName = `${h.sukunimi} ${h.etunimet}`;
+    return {
+      hakemusOid: h.oid,
+      hakijaOid: h.personOid,
+      etunimet: h.etunimet,
+      sukunimi: h.sukunimi,
+      hakijanNimi: fullName,
+      hakutoiveNumero,
+      tila: getTila(hakutoive),
+      maksuvelvollisuus: getMaksuvelvollisuus(hakutoive),
+      hakukelpoisuus: getHakukelpoisuus(hakutoive),
+    };
+  }) ?? [];
 }

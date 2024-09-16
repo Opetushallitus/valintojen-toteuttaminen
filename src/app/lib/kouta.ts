@@ -7,7 +7,7 @@ import { TranslatedName } from './localization/localization-types';
 import { UserPermissions } from './permissions';
 import { HaunAsetukset } from './ohjausparametrit';
 
-const mapToHaku = (h: {
+type HakuResponseData = {
   oid: string;
   nimi: TranslatedName;
   tila: string;
@@ -16,7 +16,9 @@ const mapToHaku = (h: {
   hakukausi: string;
   totalHakukohteet: number;
   kohdejoukkoKoodiUri: string;
-}) => {
+};
+
+const mapToHaku = (h: HakuResponseData) => {
   const haunTila: Tila = Tila[h.tila.toUpperCase() as keyof typeof Tila];
   return {
     oid: h.oid,
@@ -40,8 +42,10 @@ const permissionsToTarjoajat = (userPermissions: UserPermissions): string =>
 
 export async function getHaut(userPermissions: UserPermissions) {
   const tarjoajaOids = permissionsToTarjoajat(userPermissions);
-  const response = await client.get(`${configuration.hautUrl}${tarjoajaOids}`);
-  const haut: Haku[] = response.data.map(mapToHaku);
+  const response = await client.get<Array<HakuResponseData>>(
+    `${configuration.hautUrl}${tarjoajaOids}`,
+  );
+  const haut: Array<Haku> = response.data.map(mapToHaku);
   return haut;
 }
 
@@ -65,40 +69,42 @@ export function isKorkeakouluHaku(haku: Haku): boolean {
 }
 
 export async function getHaku(oid: string): Promise<Haku> {
-  const response = await client.get(`${configuration.hakuUrl}/${oid}`);
+  const response = await client.get<HakuResponseData>(
+    `${configuration.hakuUrl}/${oid}`,
+  );
   return mapToHaku(response.data);
 }
+
+type HakukohdeResponseData = {
+  oid: string;
+  nimi: TranslatedName;
+  organisaatioOid: string;
+  organisaatioNimi: TranslatedName;
+  jarjestyspaikkaHierarkiaNimi: TranslatedName;
+};
 
 export async function getHakukohteet(
   hakuOid: string,
   userPermissions: UserPermissions,
 ): Promise<Hakukohde[]> {
   const tarjoajaOids = permissionsToTarjoajat(userPermissions);
-  const response = await client.get(
+  const response = await client.get<Array<HakukohdeResponseData>>(
     `${configuration.hakukohteetUrl}&haku=${hakuOid}${tarjoajaOids}`,
   );
-  const hakukohteet: Hakukohde[] = response.data.map(
-    (h: {
-      oid: string;
-      nimi: TranslatedName;
-      organisaatioOid: string;
-      organisaatioNimi: TranslatedName;
-      jarjestyspaikkaHierarkiaNimi: TranslatedName;
-    }) => {
-      return {
-        oid: h.oid,
-        nimi: h.nimi,
-        organisaatioNimi: h.organisaatioNimi,
-        organisaatioOid: h.organisaatioOid,
-        jarjestyspaikkaHierarkiaNimi: h.jarjestyspaikkaHierarkiaNimi,
-      };
-    },
-  );
+  const hakukohteet: Hakukohde[] = response.data.map((h) => {
+    return {
+      oid: h.oid,
+      nimi: h.nimi,
+      organisaatioNimi: h.organisaatioNimi,
+      organisaatioOid: h.organisaatioOid,
+      jarjestyspaikkaHierarkiaNimi: h.jarjestyspaikkaHierarkiaNimi,
+    };
+  });
   return hakukohteet;
 }
 
 export async function getHakukohde(hakukohdeOid: string): Promise<Hakukohde> {
-  const response = await client.get(
+  const response = await client.get<HakukohdeResponseData>(
     `${configuration.hakukohdeUrl}/${hakukohdeOid}`,
   );
   return {

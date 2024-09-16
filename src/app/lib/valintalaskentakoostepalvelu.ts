@@ -14,7 +14,14 @@ import {
 } from './types/laskenta-types';
 import { getHakemukset } from './ataru';
 import { getValintakokeet } from './valintaperusteet';
-import { flatMap, indexBy, isEmpty, mapValues, pipe } from 'remeda';
+import {
+  flatMap,
+  indexBy,
+  isEmpty,
+  isNonNullish,
+  mapValues,
+  pipe,
+} from 'remeda';
 import { EMPTY_ARRAY } from './common';
 
 const formSearchParamsForStartLaskenta = ({
@@ -55,6 +62,13 @@ const formSearchParamsForStartLaskenta = ({
   return laskentaUrl;
 };
 
+type LaskentaStatusResponseData = {
+  lisatiedot: {
+    luotiinkoUusiLaskenta: boolean;
+  };
+  latausUrl: string;
+};
+
 export const kaynnistaLaskenta = async (
   haku: Haku,
   hakukohde: Hakukohde,
@@ -74,7 +88,10 @@ export const kaynnistaLaskenta = async (
     valinnanvaihe,
     translateEntity,
   });
-  const response = await client.post(laskentaUrl.toString(), [hakukohde.oid]);
+  const response = await client.post<LaskentaStatusResponseData>(
+    laskentaUrl.toString(),
+    [hakukohde.oid],
+  );
   return {
     startedNewLaskenta: response.data?.lisatiedot?.luotiinkoUusiLaskenta,
     loadingUrl: response.data?.latausUrl,
@@ -96,7 +113,10 @@ export const kaynnistaLaskentaHakukohteenValinnanvaiheille = async (
     sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
     translateEntity,
   });
-  const response = await client.post(laskentaUrl.toString(), [hakukohde.oid]);
+  const response = await client.post<LaskentaStatusResponseData>(
+    laskentaUrl.toString(),
+    [hakukohde.oid],
+  );
   return {
     startedNewLaskenta: response.data?.lisatiedot?.luotiinkoUusiLaskenta,
     loadingUrl: response.data?.latausUrl,
@@ -106,12 +126,17 @@ export const kaynnistaLaskentaHakukohteenValinnanvaiheille = async (
 export const getLaskennanTilaHakukohteelle = async (
   loadingUrl: string,
 ): Promise<LaskentaErrorSummary> => {
-  const response = await client.get(
+  const response = await client.get<{
+    hakukohteet: Array<{
+      hakukohdeOid: string;
+      ilmoitukset: [{ otsikko: string, tyyppi: string }] | null;
+    }>;
+  }>(
     `${configuration.valintalaskentaKoostePalveluUrl}valintalaskentakerralla/status/${loadingUrl}/yhteenveto`,
   );
   return response.data?.hakukohteet
-    ?.filter((hk: { ilmoitukset: [{ tyyppi: string }] }) =>
-      hk.ilmoitukset.some((i) => i.tyyppi === 'VIRHE'),
+    ?.filter((hk) =>
+      hk.ilmoitukset?.some((i) => i.tyyppi === 'VIRHE'),
     )
     .map(
       (hakukohde: {
@@ -130,10 +155,10 @@ export const getHakukohteenValintatuloksetIlmanHakijanTilaa = async (
   hakuOid: string,
   hakukohdeOid: string,
 ): Promise<HenkilonValintaTulos[]> => {
-  const { data } = await client.get(
+  const { data } = await client.get<Array<{ tila: string; hakijaOid: string }>>(
     `${configuration.valintalaskentaKoostePalveluUrl}proxy/valintatulosservice/ilmanhakijantilaa/haku/${hakuOid}/hakukohde/${hakukohdeOid}`,
   );
-  return data.map((t: { tila: string; hakijaOid: string }) => {
+  return data.map((t) => {
     return { tila: t.tila, hakijaOid: t.hakijaOid };
   });
 };
@@ -150,7 +175,16 @@ export const getScoresForHakukohde = async (
 
   const [hakemukset, { data: pistetiedot }] = await Promise.all([
     getHakemukset(hakuOid, hakukohdeOid),
-    client.get(configuration.koostetutPistetiedot({ hakuOid, hakukohdeOid })),
+    client.get<{
+      lastModified?: string;
+      valintapisteet: Array<{
+        applicationAdditionalDataDTO: {
+          oid: string;
+          personOid: string;
+          additionalData: Record<string, string>;
+        };
+      }>;
+    }>(configuration.koostetutPistetiedot({ hakuOid, hakukohdeOid })),
   ]);
   const hakemuksetIndexed = indexBy(hakemukset, (h) => h.hakemusOid);
 
@@ -188,8 +222,9 @@ export const getScoresForHakukohde = async (
       },
     );
 
-  const lastModified =
-    pistetiedot.lastModified && new Date(pistetiedot.lastModified);
+  const lastModified = isNonNullish(pistetiedot.lastModified)
+    ? new Date(pistetiedot.lastModified)
+    : undefined;
   return {
     lastModified,
     valintakokeet: kokeet,

@@ -52,22 +52,19 @@ const retryWithLogin = async (request: Request, loginUrl: string) => {
   return makeBareRequest(request);
 };
 
-const responseToData = async (res: Response) => {
-  if (res.status === 204) {
-    return { data: {} };
-  }
+const responseToData = async <Result = unknown>(res: Response) => {
   const contentType = res.headers.get('Content-Type') ?? 'application/json';
 
   if (contentType?.includes('json')) {
     try {
-      const result = { data: await res.json() };
+      const result = { data: (await res.json()) as Result };
       return result;
     } catch (e) {
       console.error('Parsing fetch response body as JSON failed!');
       return Promise.reject(e);
     }
   } else {
-    return { data: await res.text() };
+    return { data: (await res.text()) as Result };
   }
 };
 
@@ -94,7 +91,7 @@ const LOGIN_MAP = [
   },
 ] as const;
 
-const makeRequest = async (request: Request) => {
+const makeRequest = async <Result>(request: Request) => {
   const originalRequest = request.clone();
   try {
     const response = await makeBareRequest(request);
@@ -105,7 +102,7 @@ const makeRequest = async (request: Request) => {
     ) {
       redirectToLogin();
     }
-    return responseToData(response);
+    return responseToData<Result>(response);
   } catch (error: unknown) {
     if (error instanceof FetchError) {
       if (isUnauthenticated(error.response)) {
@@ -113,7 +110,7 @@ const makeRequest = async (request: Request) => {
           for (const { urlIncludes, loginUrl } of LOGIN_MAP) {
             if (request?.url?.includes(urlIncludes)) {
               const resp = await retryWithLogin(request, loginUrl);
-              return responseToData(resp);
+              return responseToData<Result>(resp);
             }
           }
         } catch (e) {
@@ -126,9 +123,9 @@ const makeRequest = async (request: Request) => {
         isRedirected(error.response) &&
         error.response.url === request.url
       ) {
-        //Some backend services lose the original method and headers, so we need to do retry with cloned request
+        // Some backend services lose the original method and headers, so we need to do retry with cloned request
         const response = await makeBareRequest(originalRequest);
-        return responseToData(response);
+        return responseToData<Result>(response);
       }
     }
     return Promise.reject(error);
@@ -136,10 +133,14 @@ const makeRequest = async (request: Request) => {
 };
 
 export const client = {
-  get: (url: string, options: RequestInit = {}) =>
-    makeRequest(new Request(url, { method: 'GET', ...options })),
-  post: (url: string, body: NonNullable<unknown>, options: RequestInit = {}) =>
-    makeRequest(
+  get: <Result = unknown>(url: string, options: RequestInit = {}) =>
+    makeRequest<Result>(new Request(url, { method: 'GET', ...options })),
+  post: <Result = unknown>(
+    url: string,
+    body: NonNullable<unknown>,
+    options: RequestInit = {},
+  ) =>
+    makeRequest<Result>(
       new Request(url, {
         method: 'POST',
         body: JSON.stringify(body),
@@ -147,8 +148,12 @@ export const client = {
         ...options,
       }),
     ),
-  put: (url: string, body: NonNullable<unknown>, options: RequestInit = {}) =>
-    makeRequest(
+  put: <Result = unknown>(
+    url: string,
+    body: NonNullable<unknown>,
+    options: RequestInit = {},
+  ) =>
+    makeRequest<Result>(
       new Request(url, {
         method: 'PUT',
         body: JSON.stringify(body),

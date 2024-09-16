@@ -10,7 +10,7 @@ export type HaunAsetukset = {
 export const getHaunAsetukset = async (
   hakuOid: string,
 ): Promise<HaunAsetukset> => {
-  const response = await client.get(
+  const response = await client.get<HaunAsetukset>(
     `${configuration.ohjausparametritUrl}/${hakuOid}`,
   );
   return { sijoittelu: response.data.sijoittelu };
