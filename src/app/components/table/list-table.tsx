@@ -3,6 +3,7 @@
 import {
   Box,
   Button,
+  Checkbox,
   Table,
   TableBody,
   TableCell,
@@ -16,8 +17,9 @@ import { getSortParts } from './table-utils';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { TFunction } from 'i18next';
 import { ExternalLink } from '../external-link';
-import React, { Key, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { OphPagination } from './oph-pagination';
+import { map, pipe } from 'remeda';
 
 type KeysMatching<O, T> = {
   [K in keyof O]: O[K] extends T ? K : never;
@@ -189,7 +191,8 @@ const StyledTableBody = styled(TableBody)({
   },
 });
 
-interface ListTableProps<T> extends React.ComponentProps<typeof StyledTable> {
+interface ListTableProps<T extends Row>
+  extends React.ComponentProps<typeof StyledTable> {
   columns?: Array<ListTableColumn<T>>;
   rows?: Array<T>;
   sort?: string;
@@ -201,14 +204,17 @@ interface ListTableProps<T> extends React.ComponentProps<typeof StyledTable> {
     setPage: (page: number) => void;
     pageSize: number;
   };
+  checkboxSelection?: boolean;
+  selection?: Set<string>;
+  onSelectionChange?: (selection: Set<string>) => void;
 }
 
 const SortIcon = ({
   sortValue,
-  colId,
+  colId = '',
 }: {
   sortValue?: string;
-  colId: string;
+  colId?: string;
 }) => {
   switch (sortValue) {
     case `${colId}:asc`:
@@ -228,8 +234,8 @@ const HeaderCell = ({
   setSort,
   sortable,
 }: {
-  colId: string;
-  title?: string;
+  colId?: string;
+  title?: React.ReactNode;
   style?: React.CSSProperties;
   sort?: string;
   setSort?: (sort: string) => void;
@@ -305,14 +311,20 @@ const TablePagination = ({
   );
 };
 
+const EMPTY_SET: Set<string> = new Set();
+const EMPTY_ARRAY: Array<unknown> = [];
+
 export const ListTable = <T extends Row>({
-  columns = [],
-  rows = [],
+  columns = EMPTY_ARRAY as Array<ListTableColumn<T>>,
+  rows = EMPTY_ARRAY as Array<T>,
   sort,
   setSort,
   rowKeyProp,
   translateHeader = true,
   pagination,
+  checkboxSelection,
+  selection = EMPTY_SET,
+  onSelectionChange,
   ...props
 }: ListTableProps<T>) => {
   const { t } = useTranslations();
@@ -330,6 +342,38 @@ export const ListTable = <T extends Row>({
       <StyledTable {...props}>
         <TableHead>
           <TableRow sx={{ borderBottom: `2px solid ${colors.grey200}` }}>
+            {checkboxSelection && (
+              <HeaderCell
+                key="select-all"
+                title={
+                  <Checkbox
+                    checked={selection.size === rows.length}
+                    indeterminate={
+                      selection.size > 0 &&
+                      selection.size !== rows.length &&
+                      selection.size !== 0
+                    }
+                    aria-label={t('yleinen.valitse-kaikki')}
+                    onChange={(
+                      event: React.ChangeEvent<HTMLInputElement>,
+                      checked: boolean,
+                    ) => {
+                      if (checked) {
+                        onSelectionChange?.(
+                          pipe(
+                            rows,
+                            map((item) => item?.[rowKeyProp] as string),
+                            (array) => new Set(array),
+                          ),
+                        );
+                      } else {
+                        onSelectionChange?.(EMPTY_SET);
+                      }
+                    }}
+                  />
+                }
+              />
+            )}
             {columns.map((columnProps) => {
               const { key, title, style, sortable } = columnProps;
               return (
@@ -348,8 +392,29 @@ export const ListTable = <T extends Row>({
         </TableHead>
         <StyledTableBody>
           {pageRows.map((rowProps) => {
+            const rowId = rowProps?.[rowKeyProp] as string;
             return (
-              <TableRow key={rowProps?.[rowKeyProp] as Key}>
+              <TableRow key={rowId}>
+                {checkboxSelection && (
+                  <StyledCell>
+                    <Checkbox
+                      checked={selection.has(rowId)}
+                      onChange={(
+                        event: React.ChangeEvent<HTMLInputElement>,
+                        checked: boolean,
+                      ) => {
+                        const newSelection = new Set(selection);
+                        if (checked) {
+                          newSelection.add(rowId);
+                          onSelectionChange?.(newSelection);
+                        } else {
+                          newSelection.delete(rowId);
+                          onSelectionChange?.(newSelection);
+                        }
+                      }}
+                    />
+                  </StyledCell>
+                )}
                 {columns.map(({ key: columnKey, render, style }) => {
                   return (
                     <StyledCell key={columnKey.toString()} sx={style}>

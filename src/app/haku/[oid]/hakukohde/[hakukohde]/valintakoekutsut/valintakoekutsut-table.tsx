@@ -5,7 +5,7 @@ import ListTable, {
 } from '@/app/components/table/list-table';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { ValintakoeKutsuItem } from '@/app/hooks/useValintakoekutsut';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { prop } from 'remeda';
 
 const TRANSLATIONS_PREFIX = 'valintakoekutsut.taulukko';
@@ -69,6 +69,8 @@ export const ValintakoekutsutTable = ({
     [t, translateEntity],
   );
 
+  const [selection, setSelection] = useState<Set<string>>(() => new Set());
+
   return (
     <ListTable
       rowKeyProp="hakijaOid"
@@ -76,6 +78,9 @@ export const ValintakoekutsutTable = ({
       rows={data}
       sort={sort}
       setSort={setSort}
+      checkboxSelection={true}
+      selection={selection}
+      onSelectionChange={setSelection}
       pagination={{
         page,
         setPage,
