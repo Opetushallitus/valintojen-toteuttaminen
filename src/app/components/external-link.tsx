@@ -13,10 +13,15 @@ export const ExternalLink = ({ name, href, noIcon }: ExternalLinkProps) => {
   const { t } = useTranslations();
   return (
     <Link target="_blank" href={`${DOMAIN}/${href}`}>
-      {name}{' '}
+      {name}
       {!noIcon && (
         <OpenInNew
-          sx={{ verticalAlign: 'middle', width: '20px', height: '20px' }}
+          sx={{
+            verticalAlign: 'middle',
+            width: '20px',
+            height: '20px',
+            marginLeft: 0.5,
+          }}
           aria-label={t('yleinen.ulkoinenlinkki')}
         />
       )}
