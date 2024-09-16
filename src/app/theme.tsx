@@ -96,7 +96,10 @@ const createOphStyled = <T extends Theme>({
     defaultTheme: theme,
   });
 
-  const styled: typeof themeStyled = (tag: Parameters<typeof themeStyled>[0], options: Parameters<typeof themeStyled>[1]) => {
+  const styled: typeof themeStyled = (
+    tag: Parameters<typeof themeStyled>[0],
+    options: Parameters<typeof themeStyled>[1],
+  ) => {
     return themeStyled(tag, {
       ...options,
       shouldForwardProp,

@@ -1,3 +1,5 @@
+import { Language } from '../localization/localization-types';
+
 export enum Maksuvelvollisuus {
   MAKSUVELVOLLINEN = 'hakemus.maksuvelvollisuus.maksuvelvollinen',
   EI_MAKSUVELVOLLINEN = 'hakemus.maksuvelvollisuus.eimaksuvelvollinen',
@@ -26,4 +28,5 @@ export type Hakemus = {
   hakukelpoisuus: Hakukelpoisuus;
   maksuvelvollisuus: Maksuvelvollisuus;
   tila: HakemuksenTila;
+  asiointikieliKoodi: Language;
 };

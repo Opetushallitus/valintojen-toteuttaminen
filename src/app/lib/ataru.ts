@@ -6,6 +6,7 @@ import {
 } from './types/ataru-types';
 import { configuration } from './configuration';
 import { client } from './http-client';
+import { Language } from './localization/localization-types';
 
 const getMaksuvelvollisuus = (toive?: {
   hakukohdeOid: string;
@@ -59,6 +60,10 @@ export async function getHakemukset(
   const url = `${configuration.hakemuksetUrl}?hakuOid=${hakuOid}&hakukohdeOid=${hakukohdeOid}`;
   const response = await client.get<
     Array<{
+      asiointiKieli: {
+        kieliKoodi: string;
+        kieliTyyppi: string;
+      };
       etunimet: string;
       sukunimi: string;
       personOid: string;
@@ -73,26 +78,29 @@ export async function getHakemukset(
       ];
     }>
   >(url);
-  return response.data?.map((h) => {
-    let hakutoiveNumero = 0;
-    const hakutoive = h.hakutoiveet.find((value, index) => {
-      if (value.hakukohdeOid === hakukohdeOid) {
-        hakutoiveNumero = index + 1;
-        return true;
-      }
-      return false;
-    });
-    const fullName = `${h.sukunimi} ${h.etunimet}`;
-    return {
-      hakemusOid: h.oid,
-      hakijaOid: h.personOid,
-      etunimet: h.etunimet,
-      sukunimi: h.sukunimi,
-      hakijanNimi: fullName,
-      hakutoiveNumero,
-      tila: getTila(hakutoive),
-      maksuvelvollisuus: getMaksuvelvollisuus(hakutoive),
-      hakukelpoisuus: getHakukelpoisuus(hakutoive),
-    };
-  }) ?? [];
+  return (
+    response.data?.map((h) => {
+      let hakutoiveNumero = 0;
+      const hakutoive = h.hakutoiveet.find((value, index) => {
+        if (value.hakukohdeOid === hakukohdeOid) {
+          hakutoiveNumero = index + 1;
+          return true;
+        }
+        return false;
+      });
+      const fullName = `${h.sukunimi} ${h.etunimet}`;
+      return {
+        hakemusOid: h.oid,
+        hakijaOid: h.personOid,
+        etunimet: h.etunimet,
+        sukunimi: h.sukunimi,
+        hakijanNimi: fullName,
+        hakutoiveNumero,
+        tila: getTila(hakutoive),
+        maksuvelvollisuus: getMaksuvelvollisuus(hakutoive),
+        hakukelpoisuus: getHakukelpoisuus(hakutoive),
+        asiointikieliKoodi: h.asiointiKieli.kieliKoodi as Language,
+      };
+    }) ?? []
+  );
 }

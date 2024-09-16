@@ -129,15 +129,13 @@ export const getLaskennanTilaHakukohteelle = async (
   const response = await client.get<{
     hakukohteet: Array<{
       hakukohdeOid: string;
-      ilmoitukset: [{ otsikko: string, tyyppi: string }] | null;
+      ilmoitukset: [{ otsikko: string; tyyppi: string }] | null;
     }>;
   }>(
     `${configuration.valintalaskentaKoostePalveluUrl}valintalaskentakerralla/status/${loadingUrl}/yhteenveto`,
   );
   return response.data?.hakukohteet
-    ?.filter((hk) =>
-      hk.ilmoitukset?.some((i) => i.tyyppi === 'VIRHE'),
-    )
+    ?.filter((hk) => hk.ilmoitukset?.some((i) => i.tyyppi === 'VIRHE'))
     .map(
       (hakukohde: {
         hakukohdeOid: string;
@@ -259,4 +257,44 @@ export const updateScoresForHakukohde = async (
     configuration.koostetutPistetiedot({ hakuOid, hakukohdeOid }),
     mappedPistetiedot,
   );
+};
+
+export type Osallistuminen =
+  | 'OSALLISTUU'
+  | 'EI_OSALLISTU'
+  | 'EI_VAADITA'
+  | 'VIRHE';
+
+export const getValintakoeTulokset = async (hakukohdeOid: string) => {
+  const response = await client.get<
+    Array<{
+      hakuOid: string;
+      hakemusOid: string;
+      hakijaOid: string;
+      createdAt: string;
+      hakutoiveet: Array<{
+        hakukohdeOid: string;
+        valinnanVaiheet: Array<{
+          valinnanVaiheOid: string;
+          valinnanVaiheJarjestysluku: number;
+          valintakokeet: Array<{
+            valintakoeOid: string;
+            valintakoeTunniste: string;
+            nimi: string;
+            aktiivinen: boolean;
+            lahetetaankoKoekutsut: boolean;
+            osallistuminenTulos: {
+              osallistuminen: Osallistuminen;
+              kuvaus: {
+                FI?: string;
+                SV?: string;
+                EN?: string;
+              };
+            };
+          }>;
+        }>;
+      }>;
+    }>
+  >(configuration.valintakoeTuloksetUrl({ hakukohdeOid }));
+  return response.data;
 };

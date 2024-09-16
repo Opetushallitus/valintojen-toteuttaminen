@@ -140,8 +140,19 @@
     "valmis": "Laskenta suoritettu onnistuneesti",
     "valmisvalinnanvaihe": "Laskenta suoritettu onnistuneesti valinnanvaiheelle: {{nimi}}"
   },
-  "koekutsut": {
-    "otsikko": "Valintakoekutsut"
+  "valintakoekutsut": {
+    "otsikko": "Valintakoekutsut",
+    "nayta": "Näytä",
+    "kokeittain": "Kokeittain",
+    "hakijoittain": "Hakijoittain",
+    "vain-kutsuttavat": "Vain kutsuttavat",
+    "taulukko": {
+      "hakija": "Hakija",
+      "osallistuminen": "Osallistuminen",
+      "lisatietoja": "Lisätietoja",
+      "laskettuPvm": "Laskettu pvm",
+      "asiointiKieli": "Asiointikieli"
+    }
   },
   "pistesyotto": {
     "otsikko": "Pistesyöttö",
@@ -213,5 +224,16 @@
       "min": "Syötä numero yhtä suuri tai isompi kuin {{min}}",
       "max": "Syötä numero yhtä suuri tai pienempi kuin {{max}}"
     }
+  },
+  "osallistuminen": {
+    "OSALLISTUU": "Kutsutaan",
+    "EI_OSALLISTU": "Ei kutsuta",
+    "EI_VAADITA": "Ei vaadita",
+    "VIRHE": "Virhe"
+  },
+  "kieli": {
+    "fi": "suomi",
+    "sv": "ruotsi",
+    "en": "englanti"
   }
 }

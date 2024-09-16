@@ -46,7 +46,7 @@ const TABS: BasicTab[] = [
   { title: 'perustiedot.otsikko', route: 'perustiedot' },
   { title: 'hakeneet.otsikko', route: 'hakeneet' },
   { title: 'valinnanhallinta.otsikko', route: 'valinnan-hallinta' },
-  { title: 'koekutsut.otsikko', route: 'valintakoekutsut' },
+  { title: 'valintakoekutsut.otsikko', route: 'valintakoekutsut' },
   { title: 'pistesyotto.otsikko', route: 'pistesyotto' },
   {
     title: 'harkinnanvaraiset.otsikko',

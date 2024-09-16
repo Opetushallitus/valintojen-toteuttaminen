@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prepare": "husky",
+    "noop": "",
     "dev": "touch .env.development.local && NODE_EXTRA_CA_CERTS=\"$(mkcert -CAROOT)/rootCA.pem\" node --env-file=.env --env-file=.env.development.local dev-server.mjs",
     "dev-test": "TEST=true APP_URL=https://localhost:3404 VIRKAILIJA_URL=http://localhost:3104 npm run dev",
     "build": "STANDALONE=true next build",
@@ -21,9 +23,7 @@
     "test:coverage": "vitest run --coverage",
     "create-dev-certs": "mkdir -p certificates && cd certificates && mkcert localhost && mkcert -install",
     "create-self-signed-dev-certs": "mkdir -p certificates && openssl req -x509 -newkey rsa:4096 -keyout ./certificates/localhost-key.pem -out ./certificates/localhost.pem -sha256 -days 365 -nodes -subj \"/C=XX/ST=StateName/L=CityName/O=CompanyName/OU=CompanySectionName/CN=CommonNameOrHostname\"",
-    "prepare": "husky",
-    "typecheck": "tsc",
-    "noop": ""
+    "typecheck": "tsc"
   },
   "dependencies": {
     "@emotion/cache": "^11.11.0",
@@ -46,7 +46,7 @@
     "react-dom": "^18",
     "react-error-boundary": "^4.0.13",
     "react-i18next": "^14.1.2",
-    "remeda": "^2.6.0",
+    "remeda": "^2.11.0",
     "xstate": "^5.14.0"
   },
   "devDependencies": {

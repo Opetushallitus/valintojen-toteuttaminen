@@ -149,3 +149,16 @@ export const getValintakokeet = async (
     };
   });
 };
+
+export type ValintakokeetData = Array<{
+  nimi: string;
+  aktiivinen: boolean;
+  lahetetaankoKoekutsut: boolean;
+}>;
+
+export const getHakukohdeValintakokeet = async (hakukohdeOid: string) => {
+  const response = await client.get<ValintakokeetData>(
+    configuration.hakukohdeValintakokeetUrl({ hakukohdeOid }),
+  );
+  return response.data.filter((v) => v.aktiivinen && v.lahetetaankoKoekutsut);
+};
