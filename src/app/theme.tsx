@@ -7,6 +7,7 @@ import { deepmerge } from '@mui/utils';
 import { createODSTheme } from '@opetushallitus/oph-design-system/theme';
 
 import { colors } from '@opetushallitus/oph-design-system';
+import { Theme } from '@mui/material';
 
 export { colors };
 
@@ -80,6 +81,33 @@ export function withDefaultProps<P>(
   return ComponentWithDefaultProps;
 }
 
-export const styled = createStyled({ defaultTheme: theme });
+const withTransientProps = (propName: string) =>
+  // Emotion doesn't support transient props by default so add support manually
+  !propName.startsWith('$');
+
+const createOphStyled = <T extends Theme>({
+  theme,
+  shouldForwardProp,
+}: {
+  theme: T;
+  shouldForwardProp: (prop: string) => boolean;
+}) => {
+  const themeStyled = createStyled<T>({
+    defaultTheme: theme,
+  });
+
+  const styled: typeof themeStyled = (tag: Parameters<typeof themeStyled>[0], options: Parameters<typeof themeStyled>[1]) => {
+    return themeStyled(tag, {
+      ...options,
+      shouldForwardProp,
+    });
+  };
+  return styled;
+};
+
+export const styled = createOphStyled({
+  theme,
+  shouldForwardProp: withTransientProps,
+});
 
 export default theme;
