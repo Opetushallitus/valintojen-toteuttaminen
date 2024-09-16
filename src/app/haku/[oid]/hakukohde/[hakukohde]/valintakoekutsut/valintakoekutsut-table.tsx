@@ -6,7 +6,7 @@ import ListTable, {
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { ValintakoeKutsuItem } from '@/app/hooks/useValintakoekutsut';
 import { useMemo } from 'react';
-import * as R from 'remeda';
+import { prop } from 'remeda';
 
 const TRANSLATIONS_PREFIX = 'valintakoekutsut.taulukko';
 
@@ -23,9 +23,14 @@ const hakijaColumn = makeExternalLinkColumn<ValintakoeKutsuItem>({
 });
 
 export const ValintakoekutsutTable = ({
-  valintakokeenKutsut,
+  data,
+  sort,
+  setSort,
 }: {
-  valintakokeenKutsut: Array<ValintakoeKutsuItem>;
+  valintakoeTunniste: string;
+  data: Array<ValintakoeKutsuItem>;
+  sort: string;
+  setSort: (sort: string) => void;
 }) => {
   const { t, translateEntity } = useTranslations();
 
@@ -47,7 +52,7 @@ export const ValintakoekutsutTable = ({
       {
         title: `${TRANSLATIONS_PREFIX}.laskettuPvm`,
         key: 'laskettuPvm',
-        render: R.prop('laskettuPvm'),
+        render: prop('laskettuPvm'),
       },
       {
         title: `${TRANSLATIONS_PREFIX}.asiointiKieli`,
@@ -62,7 +67,9 @@ export const ValintakoekutsutTable = ({
     <ListTable
       rowKeyProp="hakijaOid"
       columns={columns}
-      rows={valintakokeenKutsut}
+      rows={data}
+      sort={sort}
+      setSort={setSort}
     />
   );
 };

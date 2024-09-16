@@ -1,8 +1,7 @@
 'use client';
 import { Box } from '@mui/material';
 import { LaskettuValinnanVaihe } from '@/app/lib/types/laskenta-types';
-import React from 'react';
-import { ValintatapajonoAccordion } from './valintatapajono-accordion';
+import { AccordionBox } from '@/app/components/accordion-box';
 import { useJonosijatSearch } from '@/app/hooks/useJonosijatSearch';
 import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
 import { LaskettuValintatapajonoTable } from './laskettu-valintatapajono-table';
@@ -89,7 +88,7 @@ export const ValintatapajonoContent = ({
     });
   return (
     <Box key={jono.oid} width="100%">
-      <ValintatapajonoAccordion
+      <AccordionBox
         id={valinnanVaihe.valinnanvaiheoid}
         title={
           <ValintatapajonoAccordionTitle
@@ -106,7 +105,7 @@ export const ValintatapajonoContent = ({
           jonoId={jono.valintatapajonooid}
           jonosijat={jono.jonosijat}
         />
-      </ValintatapajonoAccordion>
+      </AccordionBox>
     </Box>
   );
 };

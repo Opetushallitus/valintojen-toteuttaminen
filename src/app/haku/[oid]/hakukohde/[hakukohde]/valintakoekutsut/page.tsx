@@ -3,8 +3,7 @@
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { TabContainer } from '../tab-container';
 import { ClientSpinner } from '@/app/components/client-spinner';
-import { ValintatapajonoAccordion } from '../valintalaskennan-tulos/valintatapajono-accordion';
-import * as R from 'remeda';
+import { AccordionBox } from '@/app/components/accordion-box';
 import {
   Box,
   Checkbox,
@@ -16,24 +15,95 @@ import {
   ToggleButtonGroup,
 } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { parseAsBoolean, parseAsStringLiteral, useQueryState } from 'nuqs';
-import { useValintakoekutsut } from '@/app/hooks/useValintakoekutsut';
+import {
+  Ryhmittely,
+  useValintakoekutsut,
+  ValintakoeKutsuItem,
+} from '@/app/hooks/useValintakoekutsut';
 import { ValintakoekutsutTable } from './valintakoekutsut-table';
+import {
+  ryhmittelyParser,
+  useValintakoekutsutGlobalSearchParams,
+  useValintakoekutsutPaginated,
+} from './useValintakoekutsutPaginated';
+import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
+import { PageSizeSelector } from '@/app/components/table/page-size-selector';
+import { entries, map, pipe } from 'remeda';
 
 type ValintakoekutsutContentProps = {
   hakuOid: string;
   hakukohdeOid: string;
 };
 
-const DEFAULT_NUQS_OPTIONS = {
-  history: 'push',
-  clearOnDefault: true,
-} as const;
+const PaginatedValintakoekutsut = ({
+  valintakoeTunniste,
+  valintakoeKutsut,
+}: {
+  valintakoeTunniste: string;
+  valintakoeKutsut: Array<ValintakoeKutsuItem>;
+}) => {
+  const { results, pageResults, sort, setSort, pageSize, setPage, page } =
+    useValintakoekutsutPaginated(valintakoeTunniste, valintakoeKutsut);
 
-const ryhmittelyParser = parseAsStringLiteral([
-  'kokeittain',
-  'hakijoittain',
-]).withDefault('kokeittain');
+  return (
+    <TablePaginationWrapper
+      totalCount={results?.length ?? 0}
+      pageSize={pageSize}
+      setPageNumber={setPage}
+      pageNumber={page}
+      countHidden
+    >
+      <ValintakoekutsutTable
+        valintakoeTunniste={valintakoeTunniste}
+        data={pageResults}
+        sort={sort}
+        setSort={setSort}
+      />
+    </TablePaginationWrapper>
+  );
+};
+
+const ValintakoeKutsutWrapper = ({
+  hakuOid,
+  hakukohdeOid,
+  vainKutsuttavat,
+  ryhmittely,
+}: {
+  vainKutsuttavat: boolean;
+  ryhmittely: Ryhmittely;
+  hakuOid: string;
+  hakukohdeOid: string;
+}) => {
+  const valintakoekutsutByTunniste = useValintakoekutsut({
+    hakuOid,
+    hakukohdeOid,
+    ryhmittely,
+    vainKutsuttavat: vainKutsuttavat,
+  });
+
+  return (
+    <Box>
+      {ryhmittely === 'hakijoittain'
+        ? 'TODO: Hakijoittain ryhmittely'
+        : pipe(
+            entries(valintakoekutsutByTunniste),
+            map(([valintakoeTunniste, valintakoeKutsut]) => (
+              <AccordionBox
+                key={valintakoeTunniste}
+                id="valintakoekutsu"
+                title={valintakoeTunniste}
+              >
+                <PaginatedValintakoekutsut
+                  key={valintakoeTunniste}
+                  valintakoeTunniste={valintakoeTunniste}
+                  valintakoeKutsut={valintakoeKutsut}
+                />
+              </AccordionBox>
+            )),
+          )}
+    </Box>
+  );
+};
 
 const parseRyhmittely = (ryhmittelyStr: string) =>
   ryhmittelyParser.parse(ryhmittelyStr);
@@ -42,24 +112,16 @@ function ValintakoekutsutContent({
   hakuOid,
   hakukohdeOid,
 }: ValintakoekutsutContentProps) {
-  const [ryhmittely, setRyhmittely] = useQueryState(
-    'ryhmittely',
-    ryhmittelyParser.withOptions(DEFAULT_NUQS_OPTIONS),
-  );
-
-  const [vainKutsuttavat, setVainKutsuttavat] = useQueryState(
-    'vain-kutsuttavat',
-    parseAsBoolean.withDefault(true).withOptions(DEFAULT_NUQS_OPTIONS),
-  );
-
-  const valintakoekutsut = useValintakoekutsut({
-    hakuOid,
-    hakukohdeOid,
-    ryhmittely,
-    vainKutsuttavat: vainKutsuttavat,
-  });
-
   const { t } = useTranslations();
+
+  const {
+    ryhmittely,
+    setRyhmittely,
+    vainKutsuttavat,
+    setVainKutsuttavat,
+    pageSize,
+    setPageSize,
+  } = useValintakoekutsutGlobalSearchParams();
 
   const handleRyhmittelyChange = (
     _event: React.MouseEvent<HTMLElement>,
@@ -76,61 +138,61 @@ function ValintakoekutsutContent({
 
   return (
     <Box>
-      <Box>
-        <FormControl component="fieldset">
-          <FormLabel component="legend">
-            {t('valintakoekutsut.nayta')}
-          </FormLabel>
-          <FormGroup
-            row
-            sx={{
-              display: 'flex',
-              flexDirection: 'row',
-              columnGap: 2,
-              marginY: 1,
-            }}
-          >
-            <ToggleButtonGroup
-              color="primary"
-              value={ryhmittely}
-              onChange={handleRyhmittelyChange}
-              exclusive
+      <Box display="flex" flexDirection="column">
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="flex-end"
+          marginBottom={1}
+        >
+          <FormControl component="fieldset">
+            <FormLabel component="legend">
+              {t('valintakoekutsut.nayta')}
+            </FormLabel>
+            <FormGroup
+              row
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                columnGap: 2,
+                width: '100%',
+              }}
             >
-              <ToggleButton value="kokeittain">
-                {t('valintakoekutsut.kokeittain')}
-              </ToggleButton>
-              <ToggleButton value="hakijoittain">
-                {t('valintakoekutsut.hakijoittain')}
-              </ToggleButton>
-            </ToggleButtonGroup>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={vainKutsuttavat}
-                  onChange={handleVainKutsuttavatChange}
-                />
-              }
-              label={t('valintakoekutsut.vain-kutsuttavat')}
-            />
-          </FormGroup>
-        </FormControl>
-      </Box>
-      {ryhmittely === 'hakijoittain'
-        ? 'TODO: Hakijoittain ryhmittely'
-        : R.pipe(
-            R.entries(valintakoekutsut),
-            R.map(([valintakoeTunniste, valintakokeenKutsut]) => (
-              <ValintatapajonoAccordion
-                key={valintakoeTunniste}
-                id="valintakoekutsu"
-                title={valintakoeTunniste}
+              <ToggleButtonGroup
+                color="primary"
+                value={ryhmittely}
+                onChange={handleRyhmittelyChange}
+                exclusive
               >
-                <ValintakoekutsutTable
-                  valintakokeenKutsut={valintakokeenKutsut}
-                />
-              </ValintatapajonoAccordion>
-            )),
-          )}
+                <ToggleButton value="kokeittain">
+                  {t('valintakoekutsut.kokeittain')}
+                </ToggleButton>
+                <ToggleButton value="hakijoittain">
+                  {t('valintakoekutsut.hakijoittain')}
+                </ToggleButton>
+              </ToggleButtonGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={vainKutsuttavat}
+                    onChange={handleVainKutsuttavatChange}
+                  />
+                }
+                label={t('valintakoekutsut.vain-kutsuttavat')}
+              />
+            </FormGroup>
+          </FormControl>
+          <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
+        </Box>
+        <QuerySuspenseBoundary suspenseFallback={<ClientSpinner />}>
+          <ValintakoeKutsutWrapper
+            hakuOid={hakuOid}
+            hakukohdeOid={hakukohdeOid}
+            vainKutsuttavat={vainKutsuttavat}
+            ryhmittely={ryhmittely}
+          />
+        </QuerySuspenseBoundary>
+      </Box>
     </Box>
   );
 }

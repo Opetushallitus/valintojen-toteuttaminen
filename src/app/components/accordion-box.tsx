@@ -2,9 +2,8 @@
 import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import { DEFAULT_BOX_BORDER } from '@/app/lib/constants';
 import { ExpandMore } from '@mui/icons-material';
-import React from 'react';
 
-export const ValintatapajonoAccordion = ({
+export const AccordionBox = ({
   id,
   title,
   children,
