@@ -113,7 +113,12 @@ export const createPisteSyottoMachine = (
         ],
       },
       [PisteSyottoStates.UPDATE_COMPLETED]: {
-        always: [{ target: PisteSyottoStates.IDLE }],
+        always: [
+          {
+            target: PisteSyottoStates.IDLE,
+            actions: 'successNotify',
+          },
+        ],
         entry: [
           assign({
             pistetiedot: ({ context }) =>
@@ -127,15 +132,11 @@ export const createPisteSyottoMachine = (
           assign({
             changedPistetiedot: [],
           }),
-          () => {
-            const key = `pistetiedot-updated-for-${hakukohdeOid}`;
-            const message = 'pistesyotto.valmis';
-            addToast({ key, message, type: 'success' });
-          },
         ],
       },
     },
   });
+
   return pisteMachine.provide({
     guards: {
       hasChangedPistetiedot: ({ context }) =>
@@ -147,6 +148,12 @@ export const createPisteSyottoMachine = (
           key: `pistetiedot-update-failed-for-${hakukohdeOid}`,
           message: (params as { message: string }).message,
           type: 'error',
+        }),
+      successNotify: () =>
+        addToast({
+          key: `pistetiedot-updated-for-${hakukohdeOid}`,
+          message: 'pistesyotto.valmis',
+          type: 'success',
         }),
     },
     actors: {
