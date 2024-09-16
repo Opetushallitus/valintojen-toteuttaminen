@@ -11,7 +11,7 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { ClientSpinner } from '@/app/components/client-spinner';
 
-const StyledPanel = styled('div')({
+const StyledPanel = styled('aside')({
   width: '16vw',
   textAlign: 'left',
   minHeight: '85vh',
@@ -39,7 +39,7 @@ const StyledPanel = styled('div')({
   },
 });
 
-export const HakukohdePanel = ({ oid }: { oid: string }) => {
+export const HakukohdePanel = ({ hakuOid }: { hakuOid: string }) => {
   const [minimized, setMinimized] = useState(false);
   const { t } = useTranslations();
 
@@ -56,7 +56,7 @@ export const HakukohdePanel = ({ oid }: { oid: string }) => {
           </IconButton>
           <HakukohdeSearch />
 
-          <HakukohdeList hakuOid={oid} />
+          <HakukohdeList hakuOid={hakuOid} />
         </QuerySuspenseBoundary>
       )}
       {minimized && (
