@@ -1,8 +1,10 @@
 'use client';
 
 import { styled, IconButton, FormLabel } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
+import {
+  Close as CloseIcon,
+  KeyboardDoubleArrowRight as KeyboardDoubleArrowRightIcon,
+} from '@mui/icons-material';
 import HakukohdeList from './hakukohde-list';
 import HakukohdeSearch from './hakukohde-search';
 import { useState } from 'react';

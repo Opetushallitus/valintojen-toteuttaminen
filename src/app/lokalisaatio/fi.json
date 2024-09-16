@@ -26,7 +26,9 @@
     "kylla": "Kyllä",
     "ei": "Ei",
     "tallenna": "Tallenna",
-    "valitsevaihtoehto": "Valitse vaihtoehdoista"
+    "valitsevaihtoehto": "Valitse vaihtoehdoista",
+    "vie-taulukkolaskentaan": "Vie taulukkolaskentaan",
+    "poista-valinta": "Poista valinta"
   },
   "lomake": {
     "jatka": "Jatka",
@@ -146,6 +148,10 @@
     "kokeittain": "Kokeittain",
     "hakijoittain": "Hakijoittain",
     "vain-kutsuttavat": "Vain kutsuttavat",
+    "muodosta-koekutsut": "Muodosta koekutsut",
+    "muodosta-osoitetarrat": "Muodosta osoitetarrat",
+    "valittu-maara": "Hakijoita valittu: {{count}}",
+    "valittu-maara_zero": "Ei hakijoita valittu",
     "taulukko": {
       "hakija": "Hakija",
       "osallistuminen": "Osallistuminen",

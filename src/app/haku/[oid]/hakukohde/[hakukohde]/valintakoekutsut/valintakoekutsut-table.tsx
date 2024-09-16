@@ -1,10 +1,12 @@
 'use client';
+import { DataTableActionBar } from '@/app/components/DataTableActionBar';
 import ListTable, {
   makeExternalLinkColumn,
   ListTableColumn,
 } from '@/app/components/table/list-table';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { ValintakoeKutsuItem } from '@/app/hooks/useValintakoekutsut';
+import { Box } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { prop } from 'remeda';
 
@@ -72,20 +74,26 @@ export const ValintakoekutsutTable = ({
   const [selection, setSelection] = useState<Set<string>>(() => new Set());
 
   return (
-    <ListTable
-      rowKeyProp="hakijaOid"
-      columns={columns}
-      rows={data}
-      sort={sort}
-      setSort={setSort}
-      checkboxSelection={true}
-      selection={selection}
-      onSelectionChange={setSelection}
-      pagination={{
-        page,
-        setPage,
-        pageSize,
-      }}
-    />
+    <Box>
+      <DataTableActionBar
+        selection={selection}
+        resetSelection={() => setSelection(new Set())}
+      />
+      <ListTable
+        rowKeyProp="hakijaOid"
+        columns={columns}
+        rows={data}
+        sort={sort}
+        setSort={setSort}
+        checkboxSelection={true}
+        selection={selection}
+        onSelectionChange={setSelection}
+        pagination={{
+          page,
+          setPage,
+          pageSize,
+        }}
+      />
+    </Box>
   );
 };
