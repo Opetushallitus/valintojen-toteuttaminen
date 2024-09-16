@@ -2,8 +2,15 @@
 import { HakemuksenPistetiedot } from '@/app/lib/types/laskenta-types';
 import { Valintakoe } from '@/app/lib/types/valintaperusteet-types';
 import { NOT_READABLE_REASON_MAP } from '../pistesyotto-utils';
-import { Box, Typography } from '@mui/material';
+import { Box, styled, Typography } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
+
+const StyledCell = styled(Box)({
+  display: 'flex',
+  flexDirection: 'row',
+  columnGap: '0.6rem',
+  minWidth: '220px',
+});
 
 export const ReadOnlyKoeCell = ({
   pisteTiedot,
@@ -22,16 +29,9 @@ export const ReadOnlyKoeCell = ({
     : '';
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'row',
-        columnGap: '0.6rem',
-        minWidth: '220px',
-      }}
-    >
+    <StyledCell>
       <Typography>{pisteet?.arvo}</Typography>
       <Typography>{t(notReadableReason)}</Typography>
-    </Box>
+    </StyledCell>
   );
 };

@@ -150,9 +150,7 @@ export const getScoresForHakukohde = async (
 
   const [hakemukset, { data: pistetiedot }] = await Promise.all([
     getHakemukset(hakuOid, hakukohdeOid),
-    client.get(
-      `${configuration.valintalaskentaKoostePalveluUrl}pistesyotto/koostetutPistetiedot/haku/${hakuOid}/hakukohde/${hakukohdeOid}`,
-    ),
+    client.get(configuration.koostetutPistetiedot({ hakuOid, hakukohdeOid })),
   ]);
   const hakemuksetIndexed = indexBy(hakemukset, (h) => h.hakemusOid);
 
@@ -223,7 +221,7 @@ export const updateScoresForHakukohde = async (
     };
   });
   await client.put(
-    `${configuration.valintalaskentaKoostePalveluUrl}pistesyotto/koostetutPistetiedot/haku/${hakuOid}/hakukohde/${hakukohdeOid}`,
+    configuration.koostetutPistetiedot({ hakuOid, hakukohdeOid }),
     mappedPistetiedot,
   );
 };

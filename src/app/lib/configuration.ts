@@ -33,6 +33,14 @@ export const configuration = {
   ataruEditoriLogin: `${DOMAIN}/lomake-editori/auth/cas`,
   valintalaskentaServiceLogin: `${DOMAIN}/valintalaskenta-laskenta-service/auth/login`,
   valintalaskentaKoostePalveluUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/`,
+  koostetutPistetiedot: ({
+    hakuOid,
+    hakukohdeOid,
+  }: {
+    hakuOid: string;
+    hakukohdeOid: string;
+  }) =>
+    `${DOMAIN}/valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/haku/${hakuOid}/hakukohde/${hakukohdeOid}`,
   valintalaskentaKoostePalveluLogin: `${DOMAIN}/valintalaskentakoostepalvelu/cas/login`,
   lasketutValinnanVaiheetUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
     `${DOMAIN}/valintalaskenta-laskenta-service/resources/hakukohde/${hakukohdeOid}/valinnanvaihe`,

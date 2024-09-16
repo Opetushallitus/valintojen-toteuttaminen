@@ -8,7 +8,6 @@ import {
 } from '@mui/material';
 import { PisteSyottoSearch } from './pistesyotto-search';
 import { OphSelect } from '@/app/components/form/oph-select';
-import theme from '@/app/theme';
 import { Valintakoe } from '@/app/lib/types/valintaperusteet-types';
 import { CheckBoxOutlined } from '@mui/icons-material';
 import { OphFormControl } from '@/app/components/form/oph-form-control';
@@ -41,14 +40,14 @@ export const PisteSyottoControls = ({ kokeet }: { kokeet: Valintakoe[] }) => {
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        columnGap: theme.spacing(2),
+        columnGap: 2,
       }}
     >
       <Box
         sx={{
           display: 'flex',
           flexDirection: 'row',
-          columnGap: theme.spacing(2),
+          columnGap: 2,
         }}
       >
         <PisteSyottoSearch />

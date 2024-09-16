@@ -16,6 +16,7 @@ import { styled } from '@mui/material';
 import { colors } from '@opetushallitus/oph-design-system';
 import { HakukohteenPistetiedot } from '@/app/lib/types/laskenta-types';
 import useConfirmChangesBeforeNavigation from '@/app/hooks/useConfirmChangesBeforeNavigation';
+import theme from '@/app/theme';
 
 type PisteSyottoFormParams = {
   hakuOid: string;
@@ -25,7 +26,7 @@ type PisteSyottoFormParams = {
 
 const StyledForm = styled('form')({
   border: `1px solid ${colors.grey100}`,
-  padding: '1.2rem',
+  padding: theme.spacing(2.5),
   width: '100%',
 });
 

@@ -14,12 +14,16 @@ import {
   ValintakoeInputTyyppi,
 } from '@/app/lib/types/valintaperusteet-types';
 import { ChangeEvent, useState } from 'react';
-import { Box, debounce, SelectChangeEvent } from '@mui/material';
+import { Box, debounce, SelectChangeEvent, styled } from '@mui/material';
 import { OphSelect } from '@/app/components/form/oph-select';
 import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { OphInput } from '@/app/components/form/oph-input';
 import { INPUT_DEBOUNCE_DELAY } from '@/app/lib/constants';
 import { ChangePisteSyottoFormParams } from '../pistesyotto-form';
+
+const StyledSelect = styled(OphSelect)({
+  minWidth: '150px',
+});
 
 export const KoeCell = ({
   pisteTiedot,
@@ -77,10 +81,10 @@ export const KoeCell = ({
     }
   };
 
-  const changeSelectArvo = (event: SelectChangeEvent<string>) => {
-    setArvo(event.target.value);
+  const changeSelectArvo = (event: SelectChangeEvent<string | number>) => {
+    setArvo(event.target.value.toString());
     updateForm({
-      value: event.target.value,
+      value: event.target.value.toString(),
       hakemusOid: pisteTiedot.hakemusOid,
       koeTunniste: koe.tunniste,
       updateArvo: true,
@@ -88,11 +92,11 @@ export const KoeCell = ({
   };
 
   const changeOsallistumisenTila = (
-    event: SelectChangeEvent<ValintakoeOsallistuminen>,
+    event: SelectChangeEvent<string | number>,
   ) => {
     setOsallistuminen(event.target.value as ValintakoeOsallistuminen);
     updateForm({
-      value: event.target.value,
+      value: event.target.value as ValintakoeOsallistuminen,
       hakemusOid: pisteTiedot.hakemusOid,
       koeTunniste: koe.tunniste,
       updateArvo: false,
@@ -138,24 +142,23 @@ export const KoeCell = ({
               value={arvo}
               inputProps={{ 'aria-label': t('validaatio.numero.syota') }}
               onChange={changeArvo}
-              sx={{ width: '5rem' }}
+              sx={{ width: '80px' }}
             />
           )}
         />
       )}
       {koe.inputTyyppi != ValintakoeInputTyyppi.INPUT && (
-        <OphSelect
+        <StyledSelect
           id={arvoId}
           value={arvo}
           options={getArvoOptions()}
           size="small"
           onChange={changeSelectArvo}
-          sx={{ minWidth: '150px' }}
           disabled={disabled}
           clearable
         />
       )}
-      <OphSelect
+      <StyledSelect
         id={`koe-osallistuminen-${pisteTiedot.hakijaOid}-${koe.tunniste}`}
         value={osallistuminen}
         options={[
@@ -178,7 +181,6 @@ export const KoeCell = ({
         ]}
         size="small"
         onChange={changeOsallistumisenTila}
-        sx={{ minWidth: '150px' }}
         disabled={disabled}
       />
     </Box>
