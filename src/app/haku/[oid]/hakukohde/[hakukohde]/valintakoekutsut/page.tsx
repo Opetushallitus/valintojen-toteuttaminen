@@ -16,7 +16,7 @@ import {
   ToggleButtonGroup,
 } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { parseAsStringLiteral, useQueryState } from 'nuqs';
+import { parseAsBoolean, parseAsStringLiteral, useQueryState } from 'nuqs';
 import { useValintakoekutsut } from '@/app/hooks/useValintakoekutsut';
 import { ValintakoekutsutTable } from './valintakoekutsut-table';
 
@@ -24,6 +24,11 @@ type ValintakoekutsutContentProps = {
   hakuOid: string;
   hakukohdeOid: string;
 };
+
+const DEFAULT_NUQS_OPTIONS = {
+  history: 'push',
+  clearOnDefault: true,
+} as const;
 
 const ryhmittelyParser = parseAsStringLiteral([
   'kokeittain',
@@ -39,25 +44,25 @@ function ValintakoekutsutContent({
 }: ValintakoekutsutContentProps) {
   const [ryhmittely, setRyhmittely] = useQueryState(
     'ryhmittely',
-    ryhmittelyParser,
+    ryhmittelyParser.withOptions(DEFAULT_NUQS_OPTIONS),
   );
 
   const [vainKutsuttavat, setVainKutsuttavat] = useQueryState(
     'vain-kutsuttavat',
-    { defaultValue: 'true' },
+    parseAsBoolean.withDefault(true).withOptions(DEFAULT_NUQS_OPTIONS),
   );
 
   const valintakoekutsut = useValintakoekutsut({
     hakuOid,
     hakukohdeOid,
     ryhmittely,
-    vainKutsuttavat: vainKutsuttavat === 'true',
+    vainKutsuttavat: vainKutsuttavat,
   });
 
   const { t } = useTranslations();
 
   const handleRyhmittelyChange = (
-    event: React.MouseEvent<HTMLElement>,
+    _event: React.MouseEvent<HTMLElement>,
     newRyhmittely: string,
   ) => {
     setRyhmittely(parseRyhmittely(newRyhmittely));
@@ -66,7 +71,7 @@ function ValintakoekutsutContent({
   const handleVainKutsuttavatChange = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    setVainKutsuttavat(event.target.checked ? 'true' : 'false');
+    setVainKutsuttavat(event.target.checked);
   };
 
   return (
@@ -93,7 +98,7 @@ function ValintakoekutsutContent({
             <FormControlLabel
               control={
                 <Checkbox
-                  value={vainKutsuttavat}
+                  checked={vainKutsuttavat}
                   onChange={handleVainKutsuttavatChange}
                 />
               }

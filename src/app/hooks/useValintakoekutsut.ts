@@ -82,10 +82,6 @@ export const useValintakoekutsut = ({
 
                   const osallistuminen =
                     valintakoe.osallistuminenTulos.osallistuminen;
-                  console.log({
-                    osallistuminenTulos:
-                      valintakoe?.osallistuminenTulos?.kuvaus,
-                  });
                   // TODO: Ehkä muita ehtoja milloin näytetään? Tarvitseeko oikeasti noutaa valintakokeet?
                   if (
                     (vainKutsuttavat && osallistuminen === 'OSALLISTUU') ||
