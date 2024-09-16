@@ -15,13 +15,6 @@ const theme = createODSTheme({
   variant: 'oph',
   overrides: deepmerge(MUI_NEXTJS_OVERRIDES, {
     components: {
-      MuiFormLabel: {
-        styleOverrides: {
-          root: ({ theme }) => ({
-            ...theme.typography.label,
-          }),
-        },
-      },
       MuiToggleButton: {
         defaultProps: {
           disableRipple: true,

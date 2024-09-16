@@ -16,7 +16,8 @@ import { getSortParts } from './table-utils';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { TFunction } from 'i18next';
 import { ExternalLink } from '../external-link';
-import React, { Key } from 'react';
+import React, { Key, useMemo } from 'react';
+import { OphPagination } from './oph-pagination';
 
 type KeysMatching<O, T> = {
   [K in keyof O]: O[K] extends T ? K : never;
@@ -195,6 +196,11 @@ interface ListTableProps<T> extends React.ComponentProps<typeof StyledTable> {
   setSort?: (sort: string) => void;
   translateHeader?: boolean;
   rowKeyProp: keyof T;
+  pagination?: {
+    page: number;
+    setPage: (page: number) => void;
+    pageSize: number;
+  };
 }
 
 const SortIcon = ({
@@ -260,14 +266,44 @@ const HeaderCell = ({
   );
 };
 
-const TableWrapper = styled(Box)({
+const TableWrapper = styled(Box)(({ theme }) => ({
   position: 'relative',
-  display: 'block',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
   width: '100%',
   overflowX: 'auto',
-});
+  rowGap: theme.spacing(1),
+}));
 
 export type Row<K extends string = string> = Record<K, unknown>;
+
+const TablePagination = ({
+  label,
+  totalCount,
+  pageSize,
+  page,
+  setPage,
+}: {
+  label?: string;
+  totalCount: number;
+  pageSize: number;
+  page: number;
+  setPage: (page: number) => void;
+}) => {
+  const { t } = useTranslations();
+  return (
+    <OphPagination
+      aria-label={label ?? t('yleinen.sivutus')}
+      totalCount={totalCount}
+      pageSize={pageSize}
+      pageNumber={page}
+      setPageNumber={setPage}
+      previousText={t('yleinen.edellinen')}
+      nextText={t('yleinen.seuraava')}
+    />
+  );
+};
 
 export const ListTable = <T extends Row>({
   columns = [],
@@ -276,9 +312,18 @@ export const ListTable = <T extends Row>({
   setSort,
   rowKeyProp,
   translateHeader = true,
+  pagination,
   ...props
 }: ListTableProps<T>) => {
   const { t } = useTranslations();
+
+  const pageRows = useMemo(() => {
+    if (pagination) {
+      const start = pagination?.pageSize * (pagination.page - 1);
+      return rows.slice(start, start + pagination.pageSize);
+    }
+    return rows;
+  }, [rows, pagination]);
 
   return (
     <TableWrapper>
@@ -302,7 +347,7 @@ export const ListTable = <T extends Row>({
           </TableRow>
         </TableHead>
         <StyledTableBody>
-          {rows.map((rowProps) => {
+          {pageRows.map((rowProps) => {
             return (
               <TableRow key={rowProps?.[rowKeyProp] as Key}>
                 {columns.map(({ key: columnKey, render, style }) => {
@@ -317,6 +362,14 @@ export const ListTable = <T extends Row>({
           })}
         </StyledTableBody>
       </StyledTable>
+      {pagination && (
+        <TablePagination
+          page={pagination.page}
+          setPage={pagination.setPage}
+          pageSize={pagination.pageSize}
+          totalCount={rows?.length ?? 0}
+        />
+      )}
     </TableWrapper>
   );
 };

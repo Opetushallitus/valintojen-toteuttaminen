@@ -26,7 +26,6 @@ import {
   useValintakoekutsutGlobalSearchParams,
   useValintakoekutsutPaginated,
 } from './useValintakoekutsutPaginated';
-import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
 import { entries, map, pipe } from 'remeda';
 
@@ -42,24 +41,19 @@ const PaginatedValintakoekutsut = ({
   valintakoeTunniste: string;
   valintakoeKutsut: Array<ValintakoeKutsuItem>;
 }) => {
-  const { results, pageResults, sort, setSort, pageSize, setPage, page } =
+  const { results, sort, setSort, pageSize, setPage, page } =
     useValintakoekutsutPaginated(valintakoeTunniste, valintakoeKutsut);
 
   return (
-    <TablePaginationWrapper
-      totalCount={results?.length ?? 0}
+    <ValintakoekutsutTable
+      valintakoeTunniste={valintakoeTunniste}
+      data={results}
+      sort={sort}
+      setSort={setSort}
+      page={page}
+      setPage={setPage}
       pageSize={pageSize}
-      setPageNumber={setPage}
-      pageNumber={page}
-      countHidden
-    >
-      <ValintakoekutsutTable
-        valintakoeTunniste={valintakoeTunniste}
-        data={pageResults}
-        sort={sort}
-        setSort={setSort}
-      />
-    </TablePaginationWrapper>
+    />
   );
 };
 

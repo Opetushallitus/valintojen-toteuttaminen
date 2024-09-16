@@ -26,11 +26,17 @@ export const ValintakoekutsutTable = ({
   data,
   sort,
   setSort,
+  page,
+  setPage,
+  pageSize,
 }: {
   valintakoeTunniste: string;
   data: Array<ValintakoeKutsuItem>;
   sort: string;
   setSort: (sort: string) => void;
+  page: number;
+  setPage: (page: number) => void;
+  pageSize: number;
 }) => {
   const { t, translateEntity } = useTranslations();
 
@@ -70,6 +76,11 @@ export const ValintakoekutsutTable = ({
       rows={data}
       sort={sort}
       setSort={setSort}
+      pagination={{
+        page,
+        setPage,
+        pageSize,
+      }}
     />
   );
 };
