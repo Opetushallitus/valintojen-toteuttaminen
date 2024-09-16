@@ -1,4 +1,4 @@
-import { OphFormControl } from '@/app/components/oph-form-control';
+import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { useHakeneetSearchParams } from '@/app/hooks/useHakeneetSearch';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Search } from '@mui/icons-material';

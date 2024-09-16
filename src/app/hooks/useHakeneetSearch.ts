@@ -11,13 +11,8 @@ import {
 } from '@/app/lib/constants';
 import { useTranslations } from './useTranslations';
 import { getHakemukset } from '../lib/ataru';
-import { Hakemus } from '../lib/types/ataru-types';
-
-const DEFAULT_NUQS_OPTIONS = {
-  history: 'push',
-  clearOnDefault: true,
-  defaultValue: '',
-} as const;
+import { hakemusFilter } from './filters';
+import { DEFAULT_NUQS_OPTIONS } from './common';
 
 export const useHakeneetSearchParams = () => {
   const [searchPhrase, setSearchPhrase] = useQueryState(
@@ -81,16 +76,7 @@ export const useHakeneetSearchResults = (
   const results = useMemo(() => {
     const { orderBy, direction } = getSortParts(sort);
 
-    const filtered = hakeneet.filter(
-      (hakemus: Hakemus) =>
-        hakemus.hakijanNimi
-          .toLowerCase()
-          .includes(searchPhrase?.toLowerCase() ?? '') ||
-        hakemus.oid.toLowerCase().includes(searchPhrase?.toLowerCase() ?? '') ||
-        hakemus.henkiloOid
-          .toLowerCase()
-          .includes(searchPhrase?.toLowerCase() ?? ''),
-    );
+    const filtered = hakeneet.filter((h) => hakemusFilter(h, searchPhrase));
     return orderBy && direction
       ? filtered.sort(byProp(orderBy, direction, translateEntity))
       : filtered;

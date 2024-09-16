@@ -1,4 +1,8 @@
 'use client';
+import {
+  buildLinkToPerson,
+  hakijaColumn,
+} from '@/app/components/table/hakija-column';
 import ListTable, {
   makeGenericColumn,
   makeExternalLinkColumn,
@@ -8,12 +12,9 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { Hakemus } from '@/app/lib/types/ataru-types';
 
 const LINK_TO_APPLICATION = 'lomake-editori/applications/search?term=';
-const LINK_TO_PERSON = 'henkilo-ui/oppija/';
 
 const buildLinkToApplication = (hakemusOid: string) =>
   LINK_TO_APPLICATION + hakemusOid;
-const buildLinkToPerson = (personOid: string) => LINK_TO_PERSON + personOid;
-
 export const HakeneetTable = ({
   hakeneet,
   setSort,
@@ -26,14 +27,6 @@ export const HakeneetTable = ({
   isKorkeakouluHaku: boolean;
 }) => {
   const { t } = useTranslations();
-
-  const hakijaColumn = makeExternalLinkColumn<Hakemus>({
-    linkBuilder: buildLinkToPerson,
-    title: 'hakeneet.taulukko.hakija',
-    key: 'hakijanNimi',
-    nameProp: 'hakijanNimi',
-    linkProp: 'henkiloOid',
-  });
 
   const hakukelpoisuusColumn = makeColumnWithValueToTranslate<Hakemus>({
     t,
@@ -58,15 +51,15 @@ export const HakeneetTable = ({
   const hakemusOidColumn = makeExternalLinkColumn<Hakemus>({
     linkBuilder: buildLinkToApplication,
     title: 'hakeneet.taulukko.oid',
-    key: 'oid',
-    linkProp: 'oid',
+    key: 'hakemusOid',
+    linkProp: 'hakemusOid',
   });
 
-  const henkiloOidColumn = makeExternalLinkColumn<Hakemus>({
+  const hakijaOidColumn = makeExternalLinkColumn<Hakemus>({
     linkBuilder: buildLinkToPerson,
     title: 'hakeneet.taulukko.henkilooid',
-    key: 'henkiloOid',
-    linkProp: 'henkiloOid',
+    key: 'hakijaOid',
+    linkProp: 'hakijaOid',
   });
 
   const columns = isKorkeakouluHaku
@@ -76,13 +69,13 @@ export const HakeneetTable = ({
         hakutoivenroColumn,
         maksuvelvollisuusColumn,
         hakemusOidColumn,
-        henkiloOidColumn,
+        hakijaOidColumn,
       ]
-    : [hakijaColumn, hakutoivenroColumn, hakemusOidColumn, henkiloOidColumn];
+    : [hakijaColumn, hakutoivenroColumn, hakemusOidColumn, hakijaOidColumn];
 
   return (
     <ListTable
-      rowKeyProp="oid"
+      rowKeyProp="hakemusOid"
       columns={columns}
       rows={hakeneet}
       sort={sort}

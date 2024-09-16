@@ -27,6 +27,7 @@ export type ListTableColumn<P> = {
   key: keyof P;
   render: (props: P) => React.ReactNode;
   style?: React.CSSProperties;
+  sortable?: boolean;
 };
 
 export const makeGenericColumn = <T extends Record<string, unknown>>({
@@ -42,6 +43,23 @@ export const makeGenericColumn = <T extends Record<string, unknown>>({
   key,
   render: (props) => <span>{props[valueProp] as string}</span>,
   style: { width: 'auto' },
+});
+
+export const makeColumnWithCustomRender = <T extends Record<string, unknown>>({
+  title,
+  key,
+  renderFn,
+  sortable = true,
+}: {
+  title: string;
+  key: string;
+  renderFn: (props: T) => React.ReactNode;
+  sortable?: boolean;
+}): ListTableColumn<T> => ({
+  title,
+  key,
+  render: (props) => renderFn(props),
+  sortable,
 });
 
 export const makeBooleanYesNoColumn = <T extends Record<string, unknown>>({
@@ -133,10 +151,18 @@ const StyledTable = styled(Table)({
 
 const StyledCell = styled(TableCell)({
   borderSpacing: '0px',
-  padding: '1rem',
+  padding: '0.6rem 0.8rem',
   textAlign: 'left',
   whiteSpace: 'pre-wrap',
   borderWidth: 0,
+  'button:focus': {
+    color: colors.blue2,
+  },
+});
+
+const StyledHeaderCell = styled(TableCell)({
+  padding: '0.2rem 0.1rem 0.2rem 0.4rem',
+  textAlign: 'left',
   'button:focus': {
     color: colors.blue2,
   },
@@ -146,6 +172,15 @@ const StyledTableBody = styled(TableBody)({
   '& .MuiTableRow-root': {
     '&:nth-of-type(even)': {
       backgroundColor: colors.grey50,
+      '.MuiTableCell-root': {
+        backgroundColor: colors.grey50,
+      },
+    },
+    '&:nth-of-type(odd)': {
+      backgroundColor: colors.white,
+      '.MuiTableCell-root': {
+        backgroundColor: colors.white,
+      },
     },
     '&:hover': {
       backgroundColor: colors.lightBlue2,
@@ -158,6 +193,7 @@ interface ListTableProps<T> extends React.ComponentProps<typeof StyledTable> {
   rows?: Array<T>;
   sort?: string;
   setSort?: (sort: string) => void;
+  translateHeader?: boolean;
   rowKeyProp: keyof T;
 }
 
@@ -184,18 +220,20 @@ const HeaderCell = ({
   style,
   sort,
   setSort,
+  sortable,
 }: {
   colId: string;
   title?: string;
   style?: React.CSSProperties;
   sort?: string;
   setSort?: (sort: string) => void;
+  sortable?: boolean;
 }) => {
   const { direction } = getSortParts(sort, colId);
 
   return (
-    <StyledCell sx={style} sortDirection={direction}>
-      {setSort ? (
+    <StyledHeaderCell sx={style} sortDirection={direction}>
+      {setSort && sortable ? (
         <Button
           sx={{
             color: colors.black,
@@ -218,7 +256,7 @@ const HeaderCell = ({
       ) : (
         <span style={{ fontWeight: 600 }}>{title}</span>
       )}
-    </StyledCell>
+    </StyledHeaderCell>
   );
 };
 
@@ -237,6 +275,7 @@ export const ListTable = <T extends Row>({
   sort,
   setSort,
   rowKeyProp,
+  translateHeader = true,
   ...props
 }: ListTableProps<T>) => {
   const { t } = useTranslations();
@@ -245,17 +284,18 @@ export const ListTable = <T extends Row>({
     <TableWrapper>
       <StyledTable {...props}>
         <TableHead>
-          <TableRow>
+          <TableRow sx={{ borderBottom: `2px solid ${colors.grey200}` }}>
             {columns.map((columnProps) => {
-              const { key, title, style } = columnProps;
+              const { key, title, style, sortable } = columnProps;
               return (
                 <HeaderCell
                   key={key.toString()}
                   colId={key.toString()}
-                  title={t(title ?? '')}
+                  title={translateHeader ? t(title ?? '') : title}
                   style={style}
                   sort={sort}
                   setSort={setSort}
+                  sortable={sortable != false}
                 />
               );
             })}

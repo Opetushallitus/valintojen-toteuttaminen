@@ -1,4 +1,5 @@
 import { SijoittelunTila } from './sijoittelu-types';
+import { Valintakoe } from './valintaperusteet-types';
 
 export type JarjestyskriteeriTila = 'HYLATTY' | 'HYVAKSYTTAVISSA';
 
@@ -6,7 +7,7 @@ export type HakijaryhmanHakija = {
   hakijanNimi: string;
   kuuluuHakijaryhmaan: boolean;
   hakemusOid: string;
-  henkiloOid: string;
+  hakijaOid: string;
   hyvaksyttyHakijaryhmasta: boolean;
   sijoittelunTila?: SijoittelunTila;
   vastaanottoTila?: string;
@@ -79,4 +80,36 @@ export type LaskentaStart = {
 export type LaskentaErrorSummary = {
   hakukohdeOid: string;
   notifications: string[] | undefined;
+};
+
+export enum ValintakoeOsallistuminen {
+  OSALLISTUI = 'OSALLISTUI',
+  EI_OSALLISTUNUT = 'EI_OSALLISTUNUT',
+  MERKITSEMATTA = 'MERKITSEMATTA',
+  EI_VAADITA = 'EI_VAADITA',
+  TOISESSA_HAKUTOIVEESSA = 'TOISESSA_HAKUTOIVEESSA',
+  TOISELLA_HAKEMUKSELLA = 'TOISELLA_HAKEMUKSELLA',
+  EI_KUTSUTTU = 'EI_KUTSUTTU',
+}
+
+export type ValintakokeenPisteet = {
+  tunniste: string;
+  arvo: string;
+  osallistuminen: ValintakoeOsallistuminen;
+  osallistuminenTunniste: string;
+};
+
+export type HakemuksenPistetiedot = {
+  hakijanNimi: string;
+  hakemusOid: string;
+  hakijaOid: string;
+  valintakokeenPisteet: ValintakokeenPisteet[];
+  etunimet: string;
+  sukunimi: string;
+};
+
+export type HakukohteenPistetiedot = {
+  valintakokeet: Valintakoe[];
+  hakemukset: HakemuksenPistetiedot[];
+  lastModified?: Date;
 };

@@ -5,6 +5,8 @@ import { client } from './http-client';
 import {
   Valinnanvaihe,
   ValinnanvaiheTyyppi,
+  Valintakoe,
+  ValintakoeInputTyyppi,
   Valintaryhma,
   Valintatapajono,
 } from './types/valintaperusteet-types';
@@ -15,13 +17,14 @@ export const isLaskentaUsedForValinnanvaihe = (
   return (
     valinnanvaihe.aktiivinen &&
     !valinnanvaihe.valisijoittelu &&
-    valinnanvaihe.jonot.some((jono) => {
-      return (
-        jono.kaytetaanValintalaskentaa &&
-        (!jono.eiLasketaPaivamaaranJalkeen ||
-          jono.eiLasketaPaivamaaranJalkeen.getTime() > new Date().getTime())
-      );
-    })
+    (valinnanvaihe.jonot.length < 1 ||
+      valinnanvaihe.jonot.some((jono) => {
+        return (
+          jono.kaytetaanValintalaskentaa &&
+          (!jono.eiLasketaPaivamaaranJalkeen ||
+            jono.eiLasketaPaivamaaranJalkeen.getTime() > new Date().getTime())
+        );
+      }))
   );
 };
 
@@ -85,6 +88,65 @@ export const getValinnanvaiheet = async (
         tyyppi,
         oid: vaihe.oid,
         jonot,
+      };
+    },
+  );
+};
+
+const determineValintaKoeInputTyyppi = (
+  tunniste: string,
+  funktioTyyppi: string,
+  arvot: string[] | null,
+): ValintakoeInputTyyppi => {
+  if (
+    funktioTyyppi === 'TOTUUSARVOFUNKTIO' ||
+    (arvot &&
+      arvot.length === 2 &&
+      arvot.indexOf('true') != -1 &&
+      arvot.indexOf('false') != -1)
+  ) {
+    if (tunniste.includes('kielikoe')) {
+      return ValintakoeInputTyyppi.BOOLEAN_ACCEPTED;
+    }
+    return ValintakoeInputTyyppi.BOOLEAN;
+  }
+  if (arvot && arvot.length > 0) {
+    return ValintakoeInputTyyppi.SELECT;
+  }
+  return ValintakoeInputTyyppi.INPUT;
+};
+
+export const getValintakokeet = async (
+  hakukohdeOid: string,
+): Promise<Valintakoe[]> => {
+  const { data } = await client.get(
+    `${configuration.valintaperusteetUrl}hakukohde/avaimet/${hakukohdeOid}`,
+  );
+  return data.map(
+    (koe: {
+      tunniste: string;
+      arvot: string[] | null;
+      kuvaus: string;
+      max?: string | null;
+      min?: string | null;
+      osallistuminenTunniste: string;
+      vaatiiOsallistumisen: boolean;
+      funktiotyyppi: string;
+    }) => {
+      const inputTyyppi = determineValintaKoeInputTyyppi(
+        koe.tunniste,
+        koe.funktiotyyppi,
+        koe.arvot,
+      );
+      return {
+        tunniste: koe.tunniste,
+        osallistuminenTunniste: koe.osallistuminenTunniste,
+        kuvaus: koe.kuvaus,
+        arvot: koe.arvot,
+        max: koe.max,
+        min: koe.min,
+        vaatiiOsallistumisen: koe.vaatiiOsallistumisen,
+        inputTyyppi,
       };
     },
   );

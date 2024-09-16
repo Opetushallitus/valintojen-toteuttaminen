@@ -10,6 +10,8 @@ import LASKETUT_HAKIJARYHMAT from './fixtures/lasketut_hakijaryhmat.json';
 import SIJOITTELUAJON_TULOKSET from './fixtures/sijoitteluajon-tulokset.json';
 import HAKUKOHTEEN_VALINTATULOKSET from './fixtures/hakukohteen_valintatulokset.json';
 import { SERVICE_KEY } from '../../src/app/lib/permissions';
+import PISTETIEDOT from './fixtures/pistetiedot.json';
+import KOKEET from './fixtures/valintakokeet.json';
 
 const port = 3104;
 
@@ -97,6 +99,12 @@ export default async function playwrightSetup() {
     ) {
       return modifyResponse(response, HAKUKOHTEEN_VALINTATULOKSET);
     } else if (
+      request.url?.includes(
+        'valintaperusteet-service/resources/hakukohde/avaimet',
+      )
+    ) {
+      return modifyResponse(response, KOKEET);
+    } else if (
       request.url?.includes(`valintaperusteet-service/resources/hakukohde`) &&
       request.url?.includes('valinnanvaihe?withValisijoitteluTieto=true')
     ) {
@@ -120,6 +128,12 @@ export default async function playwrightSetup() {
       request.url?.includes('ohjausparametrit-service/api/v1/rest/parametri')
     ) {
       return modifyResponse(response, { sijoittelu: true });
+    } else if (
+      request.url?.includes(
+        'valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/haku',
+      )
+    ) {
+      return modifyResponse(response, PISTETIEDOT);
     } else {
       console.log('(Backend) mock not implementeded', request.url);
       return;

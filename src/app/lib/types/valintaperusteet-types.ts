@@ -24,3 +24,21 @@ export type Valinnanvaihe = {
   oid: string;
   jonot: Valintatapajono[];
 };
+
+export enum ValintakoeInputTyyppi {
+  BOOLEAN,
+  BOOLEAN_ACCEPTED,
+  SELECT,
+  INPUT,
+}
+
+export type Valintakoe = {
+  tunniste: string;
+  osallistuminenTunniste: string;
+  kuvaus: string;
+  arvot?: string[];
+  max?: string;
+  min?: string;
+  vaatiiOsallistumisen: boolean;
+  inputTyyppi: ValintakoeInputTyyppi;
+};

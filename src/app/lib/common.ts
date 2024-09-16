@@ -32,4 +32,4 @@ export const isEmpty = (value: unknown) => {
   );
 };
 
-export const EMPTY_ARRAY: Array<unknown> = [];
+export const EMPTY_ARRAY = Object.freeze([]) as Array<never>;

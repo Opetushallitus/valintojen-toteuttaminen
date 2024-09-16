@@ -1,6 +1,6 @@
 'use client';
+import { hakijaColumn } from '@/app/components/table/hakija-column';
 import ListTable, {
-  makeExternalLinkColumn,
   ListTableColumn,
   makeBooleanYesNoColumn,
   makeCountColumn,
@@ -14,18 +14,6 @@ import { TFunction } from 'i18next';
 import { useMemo } from 'react';
 
 const TRANSLATIONS_PREFIX = 'hakijaryhmat.taulukko';
-
-const LINK_TO_PERSON = 'henkilo-ui/oppija/';
-
-const buildLinkToPerson = (personOid: string) => LINK_TO_PERSON + personOid;
-
-const hakijaColumn = makeExternalLinkColumn<HakijaryhmanHakija>({
-  linkBuilder: buildLinkToPerson,
-  title: `${TRANSLATIONS_PREFIX}.hakija`,
-  key: 'hakijanNimi',
-  nameProp: 'hakijanNimi',
-  linkProp: 'henkiloOid',
-});
 
 const makeSijoittelunTilaColumn = (
   t: TFunction,

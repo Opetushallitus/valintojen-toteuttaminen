@@ -1,0 +1,53 @@
+{
+  "lastModified": "2024-01-01 12:00:00",
+  "valintapisteet": [
+    {
+      "applicationAdditionalDataDTO": {
+        "oid": "1.2.246.562.11.00000000000001796027",
+        "personOid": "1.2.246.562.24.69259807406",
+        "additionalData": {
+          "nakki": "true",
+          "nakki-osallistuminen": "OSALLISTUI",
+          "koksa": "8",
+          "koksa-osallistuminen": "OSALLISTUI"
+        }
+      }
+    },
+    {
+      "applicationAdditionalDataDTO": {
+        "oid": "1.2.246.562.11.00000000000001793706",
+        "personOid": "1.2.246.562.29.00000000000000045102",
+        "additionalData": {
+          "nakki": "false",
+          "nakki-osallistuminen": "OSALLISTUI",
+          "koksa": null,
+          "koksa-osallistuminen": "MERKITSEMATTA"
+        }
+      }
+    },
+    {
+      "applicationAdditionalDataDTO": {
+        "oid": "1.2.246.562.11.00000000000001790371",
+        "personOid": "1.2.246.562.24.14598775927",
+        "additionalData": {
+          "nakki": null,
+          "nakki-osallistuminen": "MERKITSEMATTA",
+          "koksa": null,
+          "koksa-osallistuminen": "EI_OSALLISTUNUT"
+        }
+      }
+    },
+    {
+      "applicationAdditionalDataDTO": {
+        "oid": "1.2.246.562.11.00000000000001543832",
+        "personOid": "1.2.246.562.24.30476885816",
+        "additionalData": {
+          "nakki": null,
+          "nakki-osallistuminen": "MERKITSEMATTA",
+          "koksa": null,
+          "koksa-osallistuminen": "EI_OSALLISTUNUT"
+        }
+      }
+    }
+  ]
+}

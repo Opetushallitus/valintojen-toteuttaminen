@@ -23,7 +23,11 @@ const TABS_TO_TEST: Tab[] = [
     route: 'valinnan-hallinta',
   },
   { title: 'Valintakoekutsut', route: 'valintakoekutsut' },
-  { title: 'Pistesyöttö', route: 'pistesyotto' },
+  {
+    title: 'Pistesyöttö',
+    textLocator: 'Näytä vain laskentaan vaikuttavat osallistumistiedot',
+    route: 'pistesyotto',
+  },
   {
     title: 'Harkinnanvaraiset',
     route: 'harkinnanvaraiset',

@@ -6,8 +6,8 @@ import {
   FormLabel,
 } from '@mui/material';
 import { useId } from 'react';
-import { EMPTY_ARRAY } from '../lib/common';
-import { styled } from '../theme';
+import { EMPTY_ARRAY } from '../../lib/common';
+import { styled } from '../../theme';
 
 const StyledFormHelperText = styled(FormHelperText)(({ theme }) => ({
   margin: theme.spacing(0.5, 0),
@@ -20,7 +20,7 @@ export const OphFormControl = ({
   errorMessages = EMPTY_ARRAY as Array<string>,
   ...props
 }: Omit<FormControlProps, 'children'> & {
-  label: string;
+  label?: string;
   helperText?: string;
   errorMessages?: Array<string>;
   renderInput: (props: { labelId: string }) => React.ReactNode;
@@ -29,7 +29,7 @@ export const OphFormControl = ({
   const labelId = `OphFormControl-${id}-label`;
   return (
     <FormControl {...props}>
-      <FormLabel id={labelId}>{label}</FormLabel>
+      {label && <FormLabel id={labelId}>{label}</FormLabel>}
       {helperText && (
         <StyledFormHelperText error={false}>{helperText}</StyledFormHelperText>
       )}

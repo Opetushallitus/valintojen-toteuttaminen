@@ -2,8 +2,8 @@
 import React from 'react';
 import { DEFAULT_PAGE_SIZE, PAGE_SIZES } from '@/app/lib/constants';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { OphFormControl } from '@/app/components/oph-form-control';
-import { OphSelect } from '@/app/components/oph-select';
+import { OphFormControl } from '@/app/components/form/oph-form-control';
+import { OphSelect } from '@/app/components/form/oph-select';
 
 const PAGE_SIZE_OPTIONS = PAGE_SIZES.map((size) => ({
   value: size.toString(),

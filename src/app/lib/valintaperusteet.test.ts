@@ -1,12 +1,15 @@
 import { expect, test, vi, describe, afterEach } from 'vitest';
 import {
   getValinnanvaiheet,
+  getValintakokeet,
   isLaskentaUsedForValinnanvaihe,
 } from './valintaperusteet';
 import { client } from './http-client';
 import {
   Valinnanvaihe,
   ValinnanvaiheTyyppi,
+  Valintakoe,
+  ValintakoeInputTyyppi,
 } from './types/valintaperusteet-types';
 
 test('laskenta is used for active valinnanvaihe', () => {
@@ -255,5 +258,94 @@ function buildDummyValinnanvaiheResponse(
         jonot: dummyJonot,
       },
     ],
+  });
+}
+
+describe('Valintaperusteet: getValintakokeet', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  test('returns valintakokeet', async () => {
+    const clientSpy = vi.spyOn(client, 'get');
+    clientSpy.mockImplementationOnce(() => buildDummyValinkoeResponse());
+    const kokeet: Valintakoe[] = await getValintakokeet('hakukohdeOid');
+    expect(kokeet.length).toEqual(1);
+  });
+
+  test('returns valintakokeet with appropriate inputTyyppi', async () => {
+    const clientSpy = vi.spyOn(client, 'get');
+    clientSpy.mockImplementationOnce(() =>
+      buildDummyValinkoeResponse([
+        {
+          tunniste: 'input-tunniste',
+          arvot: null,
+          kuvaus: 'kuvaus',
+          osallistuminenTunniste: 'input-tunniste-osallistuminen',
+          vaatiiOsallistumisen: true,
+          funktiotyyppi: 'MUU',
+        },
+        {
+          tunniste: 'boolean-tunniste',
+          arvot: null,
+          kuvaus: 'kuvaus',
+          osallistuminenTunniste: 'boolean-tunniste-osallistuminen',
+          vaatiiOsallistumisen: true,
+          funktiotyyppi: 'TOTUUSARVOFUNKTIO',
+        },
+        {
+          tunniste: 'boolean-kielikoe-tunniste',
+          arvot: null,
+          kuvaus: 'kuvaus',
+          osallistuminenTunniste: 'boolean-kielikoe-tunniste-osallistuminen',
+          vaatiiOsallistumisen: true,
+          funktiotyyppi: 'TOTUUSARVOFUNKTIO',
+        },
+        {
+          tunniste: 'select-tunniste',
+          arvot: ['nakki', 'peruna', 'sose'],
+          kuvaus: 'kuvaus',
+          osallistuminenTunniste: 'select-tunniste-osallistuminen',
+          vaatiiOsallistumisen: true,
+          funktiotyyppi: 'muu',
+        },
+      ]),
+    );
+    const kokeet: Valintakoe[] = await getValintakokeet('hakukohdeOid');
+    expect(kokeet.length).toEqual(4);
+    expect(kokeet[0].inputTyyppi).toEqual(ValintakoeInputTyyppi.INPUT);
+    expect(kokeet[1].inputTyyppi).toEqual(ValintakoeInputTyyppi.BOOLEAN);
+    expect(kokeet[2].inputTyyppi).toEqual(
+      ValintakoeInputTyyppi.BOOLEAN_ACCEPTED,
+    );
+    expect(kokeet[3].inputTyyppi).toEqual(ValintakoeInputTyyppi.SELECT);
+  });
+});
+
+function buildDummyValinkoeResponse(
+  valintakokeet?: {
+    tunniste: string;
+    arvot: string[] | null;
+    kuvaus: string;
+    max?: string | null;
+    min?: string | null;
+    osallistuminenTunniste: string;
+    vaatiiOsallistumisen: boolean;
+    funktiotyyppi: string;
+  }[],
+) {
+  const dummyKokeet = valintakokeet ?? [
+    {
+      tunniste: 'tunniste',
+      arvot: ['0', '1'],
+      kuvaus: 'kuvaus',
+      osallistuminenTunniste: 'tunniste-osallistuminen',
+      vaatiiOsallistumisen: true,
+      funktiotyyppi: 'MUU',
+    },
+  ];
+
+  return Promise.resolve({
+    data: dummyKokeet,
   });
 }

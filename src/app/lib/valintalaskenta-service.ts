@@ -128,11 +128,11 @@ export const getHakijaryhmat = async (
     }) => {
       const ryhmanHakijat: HakijaryhmanHakija[] = hakemukset.map((h) => {
         const hakemusSijoittelussa = findHakemusSijoittelussa(
-          sijoittelunHakemukset[h.oid],
+          sijoittelunHakemukset[h.hakemusOid],
           tulokset.valintatapajonot,
         );
         const jonosijanTiedot = ryhma.jonosijat.find(
-          (js) => js.hakemusOid === h.oid,
+          (js) => js.hakemusOid === h.hakemusOid,
         );
         const sijoittelunTila = hakemusSijoittelussa?.tila;
         const pisteet = hakemusSijoittelussa?.pisteet;
@@ -147,8 +147,8 @@ export const getHakijaryhmat = async (
             ?.nimi;
         return {
           hakijanNimi: h.hakijanNimi,
-          hakemusOid: h.oid,
-          henkiloOid: h.henkiloOid,
+          hakemusOid: h.hakemusOid,
+          hakijaOid: h.hakijaOid,
           hyvaksyttyHakijaryhmasta: isHyvaksyttyHakijaryhmasta(
             ryhma.hakijaryhmaOid,
             hakemusSijoittelussa,

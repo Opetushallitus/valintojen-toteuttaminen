@@ -24,18 +24,34 @@
     "lisatietoja": "Lisätietoja",
     "prioriteetti": "Prioriteetti",
     "kylla": "Kyllä",
-    "ei": "Ei"
+    "ei": "Ei",
+    "tallenna": "Tallenna",
+    "valitsevaihtoehto": "Valitse vaihtoehdoista"
+  },
+  "lomake": {
+    "jatka": "Jatka",
+    "tallentamaton": "Olet poistumassa lomakkeelta jolla on tallentamattomia muutoksia. Jatketaanko silti?"
   },
   "tuloksenTila": {
     "HYVAKSYTTAVISSA": "Hyväksyttävissä",
     "HYLATTY": "Hylätty",
     "MAARITTELEMATON": "Määrittelemätön"
   },
+  "valintakoe": {
+    "osallistumisenTila": {
+      "OSALLISTUI": "Osallistui",
+      "EI_OSALLISTUNUT": "Ei osallistunut",
+      "MERKITSEMATTA": "Merkitsemättä",
+      "EI_VAADITA": "Ei vaadita"
+    }
+  },
   "virhe": {
     "palvelin": "Palvelinpyyntö epäonnistui!",
     "virhekoodi": "Virhekoodi: ",
     "uudelleenyritys": "Yritä uudelleen",
-    "tuntematon": "Jokin meni vikaan"
+    "tuntematon": "Jokin meni vikaan",
+    "tallennus": "Tietojen tallentamisessa tapahtui virhe.",
+    "eimuutoksia": "Ei muutoksia mitä tallentaa."
   },
   "404": {
     "otsikko": "Sivua ei löytynyt",
@@ -127,7 +143,14 @@
     "otsikko": "Valintakoekutsut"
   },
   "pistesyotto": {
-    "otsikko": "Pistesyöttö"
+    "otsikko": "Pistesyöttö",
+    "koe": "Koe",
+    "valmis": "Tiedot tallennettu.",
+    "laskentaanVaikuttavat": "Näytä vain laskentaan vaikuttavat osallistumistiedot",
+    "toisessaHakutoiveessa": "Osallistuminen on toisessa hakutoiveessa",
+    "toisellaHakemuksella": "Hyväksytty toisella hakemuksella",
+    "eiKutsuttu": "Hakijaa ei ole kutsuttu kokeeseen",
+    "ei-tuloksia": "Ei tuloksia. Joko hakukohteessa ei ole valintakokeita tai laskentaa ei ole suoritettu."
   },
   "harkinnanvaraiset": {
     "otsikko": "Harkinnanvaraiset"
@@ -156,7 +179,6 @@
     "ei-tuloksia": "Ei valintalaskennan tuloksia",
     "taulukko": {
       "jonosija": "Jonosija",
-      "hakija": "Hakija",
       "hakutoive": "Hakutoive",
       "pisteet": "Pisteet",
       "valintatieto": "Valintatieto",
@@ -182,5 +204,13 @@
     "PERUUNTUNUT": "PERUUNTUNUT",
     "PERUNUT": "PERUNUT",
     "PERUUTETTU": "PERUUTETTU"
+  },
+  "validaatio": {
+    "numero": {
+      "syota": "Syötä numero",
+      "minmax": "Syötä numero väliltä {{min}}-{{max}}",
+      "min": "Syötä numero yhtä suuri tai isompi kuin {{min}}",
+      "max": "Syötä numero yhtä suuri tai pienempi kuin {{max}}"
+    }
   }
 }

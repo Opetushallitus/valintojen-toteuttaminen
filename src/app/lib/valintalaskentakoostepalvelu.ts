@@ -4,7 +4,18 @@ import { ValinnanvaiheTyyppi } from './types/valintaperusteet-types';
 import { client } from './http-client';
 import { TranslatedName } from './localization/localization-types';
 import { HenkilonValintaTulos } from './types/sijoittelu-types';
-import { LaskentaErrorSummary, LaskentaStart } from './types/laskenta-types';
+import {
+  HakemuksenPistetiedot,
+  HakukohteenPistetiedot,
+  LaskentaErrorSummary,
+  LaskentaStart,
+  ValintakoeOsallistuminen,
+  ValintakokeenPisteet,
+} from './types/laskenta-types';
+import { getHakemukset } from './ataru';
+import { getValintakokeet } from './valintaperusteet';
+import { flatMap, indexBy, isEmpty, mapValues, pipe } from 'remeda';
+import { EMPTY_ARRAY } from './common';
 
 const formSearchParamsForStartLaskenta = ({
   laskentaUrl,
@@ -32,7 +43,7 @@ const formSearchParamsForStartLaskenta = ({
     'nimi',
     getFullnameOfHakukohde(hakukohde, translateEntity),
   );
-  if (valinnanvaihe) {
+  if (valinnanvaihe && valinnanvaiheTyyppi !== ValinnanvaiheTyyppi.VALINTAKOE) {
     laskentaUrl.searchParams.append('valinnanvaihe', '' + valinnanvaihe);
   }
   if (valinnanvaiheTyyppi) {
@@ -98,17 +109,21 @@ export const getLaskennanTilaHakukohteelle = async (
   const response = await client.get(
     `${configuration.valintalaskentaKoostePalveluUrl}valintalaskentakerralla/status/${loadingUrl}/yhteenveto`,
   );
-  return response.data?.hakukohteet?.map(
-    (hakukohde: {
-      hakukohdeOid: string;
-      ilmoitukset: [{ otsikko: string }] | null;
-    }) => {
-      return {
-        hakukohdeOid: hakukohde.hakukohdeOid,
-        notifications: hakukohde.ilmoitukset?.map((i) => i.otsikko),
-      };
-    },
-  )[0];
+  return response.data?.hakukohteet
+    ?.filter((hk: { ilmoitukset: [{ tyyppi: string }] }) =>
+      hk.ilmoitukset.some((i) => i.tyyppi === 'VIRHE'),
+    )
+    .map(
+      (hakukohde: {
+        hakukohdeOid: string;
+        ilmoitukset: [{ otsikko: string }] | null;
+      }) => {
+        return {
+          hakukohdeOid: hakukohde.hakukohdeOid,
+          notifications: hakukohde.ilmoitukset?.map((i) => i.otsikko),
+        };
+      },
+    )[0];
 };
 
 export const getHakukohteenValintatuloksetIlmanHakijanTilaa = async (
@@ -121,4 +136,92 @@ export const getHakukohteenValintatuloksetIlmanHakijanTilaa = async (
   return data.map((t: { tila: string; hakijaOid: string }) => {
     return { tila: t.tila, hakijaOid: t.hakijaOid };
   });
+};
+
+export const getScoresForHakukohde = async (
+  hakuOid: string,
+  hakukohdeOid: string,
+): Promise<HakukohteenPistetiedot> => {
+  const kokeet = await getValintakokeet(hakukohdeOid);
+
+  if (isEmpty(kokeet)) {
+    return { hakemukset: EMPTY_ARRAY, valintakokeet: EMPTY_ARRAY };
+  }
+
+  const [hakemukset, { data: pistetiedot }] = await Promise.all([
+    getHakemukset(hakuOid, hakukohdeOid),
+    client.get(configuration.koostetutPistetiedot({ hakuOid, hakukohdeOid })),
+  ]);
+  const hakemuksetIndexed = indexBy(hakemukset, (h) => h.hakemusOid);
+
+  const hakemuksetKokeilla: HakemuksenPistetiedot[] =
+    pistetiedot.valintapisteet.map(
+      (p: {
+        applicationAdditionalDataDTO: {
+          oid: string;
+          personOid: string;
+          additionalData: Record<string, string>;
+        };
+      }) => {
+        const hakemus = hakemuksetIndexed[p.applicationAdditionalDataDTO.oid];
+        const kokeenPisteet: ValintakokeenPisteet[] = kokeet.map((k) => {
+          const arvo =
+            p.applicationAdditionalDataDTO.additionalData[k.tunniste];
+          const osallistuminen = p.applicationAdditionalDataDTO.additionalData[
+            k.osallistuminenTunniste
+          ] as ValintakoeOsallistuminen;
+          return {
+            tunniste: k.tunniste,
+            arvo,
+            osallistuminen,
+            osallistuminenTunniste: k.osallistuminenTunniste,
+          };
+        });
+        return {
+          hakemusOid: hakemus.hakemusOid,
+          hakijaOid: hakemus.hakijaOid,
+          hakijanNimi: hakemus.hakijanNimi,
+          etunimet: hakemus.etunimet,
+          sukunimi: hakemus.sukunimi,
+          valintakokeenPisteet: kokeenPisteet,
+        };
+      },
+    );
+
+  const lastModified =
+    pistetiedot.lastModified && new Date(pistetiedot.lastModified);
+  return {
+    lastModified,
+    valintakokeet: kokeet,
+    hakemukset: hakemuksetKokeilla,
+  };
+};
+
+export const updateScoresForHakukohde = async (
+  hakuOid: string,
+  hakukohdeOid: string,
+  pistetiedot: HakemuksenPistetiedot[],
+) => {
+  const mappedPistetiedot = pistetiedot.map((p) => {
+    const additionalData = pipe(
+      p.valintakokeenPisteet,
+      flatMap((vp) => [
+        { key: vp.tunniste, value: vp.arvo },
+        { key: vp.osallistuminenTunniste, value: vp.osallistuminen },
+      ]),
+      indexBy((kv) => kv.key),
+      mapValues((val) => val.value),
+    );
+    return {
+      oid: p.hakemusOid,
+      personOid: p.hakijaOid,
+      firstNames: p.etunimet,
+      lastName: p.sukunimi,
+      additionalData,
+    };
+  });
+  await client.put(
+    configuration.koostetutPistetiedot({ hakuOid, hakukohdeOid }),
+    mappedPistetiedot,
+  );
 };
