@@ -1,5 +1,5 @@
 'use client';
-import React, { ChangeEvent, Suspense, useMemo } from 'react';
+import { ChangeEvent, Suspense, useMemo } from 'react';
 
 import {
   Select,

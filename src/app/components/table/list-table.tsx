@@ -16,7 +16,7 @@ import { getSortParts } from './table-utils';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { TFunction } from 'i18next';
 import { ExternalLink } from '../external-link';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { OphPagination } from './oph-pagination';
 import { map, pipe } from 'remeda';
 import { ophColors } from '@opetushallitus/oph-design-system';

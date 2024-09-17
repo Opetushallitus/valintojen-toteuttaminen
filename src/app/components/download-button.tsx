@@ -2,7 +2,6 @@ import { ButtonProps } from '@mui/material';
 import { UseMutationResult } from '@tanstack/react-query';
 import { SpinnerIcon } from './spinner-icon';
 import { OphButton } from '@opetushallitus/oph-design-system';
-import React from 'react';
 
 export const DownloadButton = ({
   mutation,

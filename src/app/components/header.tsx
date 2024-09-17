@@ -1,5 +1,4 @@
 'use client';
-import React from 'react';
 import { HomeOutlined as HomeOutlinedIcon } from '@mui/icons-material';
 import { Typography } from '@mui/material';
 import { PageContent } from './page-content';
