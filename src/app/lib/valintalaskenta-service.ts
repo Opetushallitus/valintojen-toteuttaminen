@@ -22,7 +22,7 @@ import {
   SijoittelunTila,
 } from './types/sijoittelu-types';
 import { Hakemus } from './types/ataru-types';
-import * as R from 'remeda';
+import { filter, flatMap, groupBy, indexBy, isDefined, pipe } from 'remeda';
 
 export const getLasketutValinnanVaiheet = async (hakukohdeOid: string) => {
   const response = await client.get<Array<LaskettuValinnanVaihe>>(
@@ -96,16 +96,16 @@ export const getHakijaryhmat = async (
     hakuOid,
     hakukohdeOid,
   );
-  const sijoittelunHakemukset = R.pipe(
+  const sijoittelunHakemukset = pipe(
     tulokset?.valintatapajonot,
-    R.filter(R.isDefined),
-    R.flatMap((jono) => jono.hakemukset),
-    R.groupBy((a) => a.hakemusOid),
+    filter(isDefined),
+    flatMap((jono) => jono.hakemukset),
+    groupBy((a) => a.hakemusOid),
   );
-  const valintatapajonotSijoittelusta = R.pipe(
+  const valintatapajonotSijoittelusta = pipe(
     tulokset?.valintatapajonot,
-    R.filter(R.isDefined),
-    R.indexBy((j) => j.oid),
+    filter(isDefined),
+    indexBy((j) => j.oid),
   );
   const { data } = await client.get<
     Array<{

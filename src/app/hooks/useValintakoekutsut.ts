@@ -9,8 +9,8 @@ import {
   Osallistuminen,
   ValintakoekutsutData,
 } from '../lib/valintalaskentakoostepalvelu';
-import * as R from 'remeda';
 import { useMemo } from 'react';
+import { mapKeys, toLowerCase } from 'remeda';
 
 export type ValintakoeKutsuItem = {
   hakemusOid: string;
@@ -73,9 +73,9 @@ export const createValintakoekutsutKokeittain = (
                   hakijanNimi: hakemus?.hakijanNimi,
                   asiointiKieli: hakemus?.asiointikieliKoodi,
                   osallistuminen,
-                  lisatietoja: R.mapKeys(
+                  lisatietoja: mapKeys(
                     valintakoe?.osallistuminenTulos?.kuvaus ?? {},
-                    (k) => R.toLowerCase(k),
+                    (k) => toLowerCase(k),
                   ),
                   laskettuPvm: osallistumistulos.createdAt,
                 });
