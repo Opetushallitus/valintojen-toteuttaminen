@@ -53,15 +53,36 @@ const getTila = (toive?: {
     : HakemuksenTila.AKTIIVINEN;
 };
 
-export async function getHakemukset({
-  hakuOid,
-  hakukohdeOid,
-  hakemusOids,
-}: {
+type AtaruHakemus = {
+  asiointiKieli: {
+    kieliKoodi: string;
+    kieliTyyppi: string;
+  };
+  etunimet: string;
+  sukunimi: string;
+  personOid: string;
+  oid: string;
+  hakutoiveet: [
+    {
+      hakukohdeOid: string;
+      eligibilityState?: string;
+      processingState?: string;
+      paymentObligation?: string;
+    },
+  ];
+};
+
+type GetHakemuksetParams = {
   hakuOid?: string;
   hakukohdeOid?: string;
   hakemusOids?: Array<string>;
-}): Promise<Hakemus[]> {
+};
+
+async function getAtaruHakemukset({
+  hakuOid,
+  hakukohdeOid,
+  hakemusOids,
+}: GetHakemuksetParams) {
   const url = new URL(configuration.hakemuksetUrl);
   if (hakuOid) {
     url.searchParams.append('hakuOid', hakuOid);
@@ -75,49 +96,49 @@ export async function getHakemukset({
     }
   }
 
-  const response = await client.get<
-    Array<{
-      asiointiKieli: {
-        kieliKoodi: string;
-        kieliTyyppi: string;
-      };
-      etunimet: string;
-      sukunimi: string;
-      personOid: string;
-      oid: string;
-      hakutoiveet: [
-        {
-          hakukohdeOid: string;
-          eligibilityState?: string;
-          processingState?: string;
-          paymentObligation?: string;
-        },
-      ];
-    }>
-  >(url);
-  return (
-    response.data?.map((h) => {
-      let hakutoiveNumero = 0;
-      const hakutoive = h.hakutoiveet.find((value, index) => {
-        if (value.hakukohdeOid === hakukohdeOid) {
-          hakutoiveNumero = index + 1;
-          return true;
-        }
-        return false;
-      });
-      const fullName = `${h.sukunimi} ${h.etunimet}`;
-      return {
-        hakemusOid: h.oid,
-        hakijaOid: h.personOid,
-        etunimet: h.etunimet,
-        sukunimi: h.sukunimi,
-        hakijanNimi: fullName,
-        hakutoiveNumero,
-        tila: getTila(hakutoive),
-        maksuvelvollisuus: getMaksuvelvollisuus(hakutoive),
-        hakukelpoisuus: getHakukelpoisuus(hakutoive),
-        asiointikieliKoodi: h.asiointiKieli.kieliKoodi as Language,
-      };
-    }) ?? []
-  );
+  const response = await client.get<Array<AtaruHakemus>>(url);
+
+  return response.data;
+}
+
+const parseHakijaTiedot = (hakemus: AtaruHakemus) => {
+  return {
+    hakemusOid: hakemus.oid,
+    hakijaOid: hakemus.personOid,
+    etunimet: hakemus.etunimet,
+    sukunimi: hakemus.sukunimi,
+    hakijanNimi: `${hakemus.sukunimi} ${hakemus.etunimet}`,
+    asiointikieliKoodi: hakemus.asiointiKieli.kieliKoodi as Language,
+  };
+};
+
+export const getHakijat = async (params: GetHakemuksetParams) => {
+  const ataruHakemukset = await getAtaruHakemukset(params);
+  return ataruHakemukset.map(parseHakijaTiedot);
+};
+
+export async function getHakemukset({
+  hakuOid,
+  hakukohdeOid,
+  hakemusOids,
+}: GetHakemuksetParams): Promise<Hakemus[]> {
+  const data = await getAtaruHakemukset({ hakuOid, hakukohdeOid, hakemusOids });
+
+  return data.map((h) => {
+    let hakutoiveNumero = 0;
+    const hakutoive = h.hakutoiveet.find((value, index) => {
+      if (value.hakukohdeOid === hakukohdeOid) {
+        hakutoiveNumero = index + 1;
+        return true;
+      }
+      return false;
+    });
+    return {
+      ...parseHakijaTiedot(h),
+      hakutoiveNumero,
+      tila: getTila(hakutoive),
+      maksuvelvollisuus: getMaksuvelvollisuus(hakutoive),
+      hakukelpoisuus: getHakukelpoisuus(hakutoive),
+    };
+  });
 }

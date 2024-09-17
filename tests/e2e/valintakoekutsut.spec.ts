@@ -5,7 +5,7 @@ import {
   expectPageAccessibilityOk,
 } from './playwright-utils';
 import VALINTAKOKEET from './fixtures/kutsu-valintakokeet.json';
-import VALINTAKOEKUTSUT from './fixtures/valintakoekutsut.json';
+import VALINTAKOEOSALLISTUMISET from './fixtures/valintakoeosallistumiset.json';
 
 const VALINTAKOEKUTSUT_TABLE_HEADINGS = [
   '',
@@ -23,7 +23,7 @@ test.beforeEach(async ({ page }) => {
   );
   await page.route(
     '**/valintalaskentakoostepalvelu/resources/valintakoe/hakutoive/**',
-    async (route) => await route.fulfill({ json: VALINTAKOEKUTSUT }),
+    async (route) => await route.fulfill({ json: VALINTAKOEOSALLISTUMISET }),
   );
   await page.route(
     '**/valintalaskentakoostepalvelu/resources/valintalaskentaexcel/valintakoekutsut/aktivoi?hakuOid=1.2.246.562.29.00000000000000045102&hakukohdeOid=1.2.246.562.20.00000000000000045105',

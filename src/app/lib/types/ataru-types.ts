@@ -17,16 +17,18 @@ export enum Hakukelpoisuus {
   EHDOLLINEN = 'hakemus.hakukelpoisuus.ehdollinen',
   TARKASTAMATTA = 'hakemus.tarkastamatta',
 }
+export type Hakemus = HakijaInfo & {
+  hakutoiveNumero: number;
+  hakukelpoisuus: Hakukelpoisuus;
+  maksuvelvollisuus: Maksuvelvollisuus;
+  tila: HakemuksenTila;
+};
 
-export type Hakemus = {
+export type HakijaInfo = {
   hakemusOid: string;
   hakijaOid: string;
   etunimet: string;
   sukunimi: string;
   hakijanNimi: string;
-  hakutoiveNumero: number;
-  hakukelpoisuus: Hakukelpoisuus;
-  maksuvelvollisuus: Maksuvelvollisuus;
-  tila: HakemuksenTila;
   asiointikieliKoodi: Language;
 };

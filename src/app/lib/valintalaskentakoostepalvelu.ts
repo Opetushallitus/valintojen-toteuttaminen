@@ -22,14 +22,14 @@ import {
   pipe,
   prop,
 } from 'remeda';
+import { EMPTY_ARRAY, EMPTY_OBJECT } from './common';
+import { getHakemukset, getHakijat } from './ataru';
 import {
   getHakukohdeValintakokeet,
   getValintakokeet,
   ValintakoeData,
 } from './valintaperusteet';
-import { EMPTY_ARRAY, EMPTY_OBJECT } from './common';
-import { getHakemukset } from './ataru';
-import { Hakemus } from './types/ataru-types';
+import { HakijaInfo } from './types/ataru-types';
 
 const formSearchParamsForStartLaskenta = ({
   laskentaUrl,
@@ -304,7 +304,7 @@ type ValintakoeOsallistumistulos = {
 
 export type ValintakoekutsutData = {
   valintakokeetByTunniste: Record<string, ValintakoeData>;
-  hakemuksetByOid: Record<string, Hakemus>;
+  hakemuksetByOid: Record<string, HakijaInfo>;
   valintakoeOsallistumiset: Array<ValintakoeOsallistumistulos>;
 };
 
@@ -338,10 +338,10 @@ export async function getValintakoekutsutData({
 
   const [valintakoeOsallistumiset, hakukohdeHakemukset] = await Promise.all([
     getValintakoeOsallistumiset({ hakukohdeOid }),
-    getHakemukset({ hakuOid, hakukohdeOid }),
+    getHakijat({ hakuOid, hakukohdeOid }),
   ]);
   const valintakoeHakemusOids = valintakoeOsallistumiset.map(
-    ({ hakemusOid }) => hakemusOid,
+    prop('hakemusOid'),
   );
   const hakukohdeHakemusOids = hakukohdeHakemukset.map(prop('hakemusOid'));
   const missingHakemusOids = difference(
@@ -352,7 +352,7 @@ export async function getValintakoekutsutData({
   let allHakemukset = hakukohdeHakemukset;
 
   if (!isEmpty(missingHakemusOids)) {
-    const missingHakemukset = await getHakemukset({
+    const missingHakemukset = await getHakijat({
       hakemusOids: missingHakemusOids,
     });
     allHakemukset = hakukohdeHakemukset.concat(missingHakemukset);

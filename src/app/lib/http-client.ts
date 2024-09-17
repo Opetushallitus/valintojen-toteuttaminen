@@ -154,15 +154,15 @@ const makeRequest = async <Result>(request: Request) => {
   }
 };
 
-type JSON = Record<string, unknown> | Array<unknown>;
+export type JSONData = Record<string, unknown> | Array<unknown>;
 
-const isJson = (val: unknown): val is JSON =>
+const isJson = (val: unknown): val is JSONData =>
   Array.isArray(val) || isPlainObject(val);
 
 const modRequest = <Result = unknown>(
   method: string,
   url: string | URL,
-  body: BodyInit | JSON,
+  body: BodyInit | JSONData,
   options: RequestInit,
 ) => {
   return makeRequest<Result>(
@@ -183,12 +183,12 @@ export const client = {
     makeRequest<Result>(new Request(url, { method: 'GET', ...options })),
   post: <Result = unknown>(
     url: string | URL,
-    body: BodyInit | JSON,
+    body: BodyInit | JSONData,
     options: RequestInit = {},
   ) => modRequest<Result>('POST', url, body, options),
   put: <Result = unknown>(
     url: string | URL,
-    body: BodyInit | JSON,
+    body: BodyInit | JSONData,
     options: RequestInit = {},
   ) => modRequest<Result>('PUT', url, body, options),
 } as const;

@@ -66,7 +66,7 @@ export const useHakeneetSearchResults = (
   const { translateEntity } = useTranslations();
 
   const { data: hakeneet } = useSuspenseQuery({
-    queryKey: ['getHakeneet' + hakukohdeOid],
+    queryKey: ['getHakemukset', hakukohdeOid],
     queryFn: () => getHakemukset({ hakuOid, hakukohdeOid }),
   });
 
