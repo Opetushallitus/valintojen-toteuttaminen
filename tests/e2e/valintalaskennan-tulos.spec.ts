@@ -139,6 +139,6 @@ test('shows error toast when removing jono from sijoittelu fails', async ({
     .click();
 
   await expect(
-    page.getByText('Jonon sijoittelun tilan muuttamisesa tapahtui virhe!'),
+    page.getByText('Jonon sijoittelun tilan muuttamisessa tapahtui virhe!'),
   ).toBeVisible();
 });
