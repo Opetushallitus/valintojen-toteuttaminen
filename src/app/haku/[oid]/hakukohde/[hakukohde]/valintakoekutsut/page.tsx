@@ -15,11 +15,7 @@ import {
   ToggleButtonGroup,
 } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import {
-  Ryhmittely,
-  useValintakoekutsut,
-  ValintakoeKutsuItem,
-} from '@/app/hooks/useValintakoekutsut';
+import { useValintakoekutsut } from '@/app/hooks/useValintakoekutsut';
 import { ValintakoekutsutTable } from './valintakoekutsut-table';
 import {
   ryhmittelyParser,
@@ -31,6 +27,10 @@ import { entries, isEmpty, map, pipe } from 'remeda';
 import { AccordionBoxTitle } from '@/app/components/accordion-box-title';
 import { IconCircle } from '@/app/components/icon-circle';
 import { FolderOutlined } from '@mui/icons-material';
+import {
+  Ryhmittely,
+  ValintakoeKutsuItem,
+} from '@/app/lib/types/valintakoekutsut-types';
 
 type ValintakoekutsutContentProps = {
   hakuOid: string;

@@ -8,7 +8,7 @@ import {
 } from 'nuqs';
 import { byProp, getSortParts } from '@/app/components/table/table-utils';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { ValintakoeKutsuItem } from '@/app/hooks/useValintakoekutsut';
+import { ValintakoeKutsuItem } from '@/app/lib/types/valintakoekutsut-types';
 
 const DEFAULT_PAGE_SIZE = 10;
 

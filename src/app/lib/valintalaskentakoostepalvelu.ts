@@ -30,6 +30,7 @@ import {
   ValintakoeData,
 } from './valintaperusteet';
 import { HakijaInfo } from './types/ataru-types';
+import { Osallistuminen } from './types/valintakoekutsut-types';
 
 const formSearchParamsForStartLaskenta = ({
   laskentaUrl,
@@ -265,12 +266,6 @@ export const updateScoresForHakukohde = async (
     mappedPistetiedot,
   );
 };
-
-export type Osallistuminen =
-  | 'OSALLISTUU'
-  | 'EI_OSALLISTU'
-  | 'EI_VAADITA'
-  | 'VIRHE';
 
 export type ValintakoeOsallistumistulos = {
   hakuOid: string;
