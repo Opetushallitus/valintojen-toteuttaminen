@@ -15,6 +15,7 @@ type ValintatapajonoStatusParams = {
 };
 
 export const configuration = {
+  raamitUrl: `${DOMAIN}/virkailija-raamit/apply-raamit.js`,
   loginUrl: process.env.LOGIN_URL || `${DOMAIN}/cas/login`,
   sessionCookie: process.env.SESSION_COOKIE || 'JSESSIONID',
   kayttoikeusUrl: `${DOMAIN}/kayttooikeus-service/henkilo/current/omattiedot`,

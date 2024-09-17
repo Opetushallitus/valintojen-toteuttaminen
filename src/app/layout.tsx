@@ -9,6 +9,8 @@ import { checkAccessibility } from './lib/checkAccessibility';
 import PermissionProvider from './permission-provider';
 import { CssBaseline } from '@mui/material';
 import { Toaster } from './components/toaster';
+import Script from 'next/script';
+import { configuration } from './lib/configuration';
 
 export const metadata: Metadata = {
   title: 'Valintojen Toteuttaminen',
@@ -22,6 +24,7 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="fi">
+      <Script src={configuration.raamitUrl} />
       <body>
         <AppRouterCacheProvider>
           <ReactQueryClientProvider>
