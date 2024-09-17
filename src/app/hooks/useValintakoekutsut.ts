@@ -10,7 +10,7 @@ import {
   ValintakoekutsutData,
 } from '../lib/valintalaskentakoostepalvelu';
 import { useMemo } from 'react';
-import { mapKeys, toLowerCase } from 'remeda';
+import { forEachObj, mapKeys, toLowerCase } from 'remeda';
 
 export type ValintakoeKutsuItem = {
   hakemusOid: string;
@@ -42,13 +42,14 @@ export const createValintakoekutsutKokeittain = (
     valintakokeetByTunniste,
   }: ValintakoekutsutData,
 ) => {
-  return valintakoeOsallistumiset?.reduce(
+  const kutsutKokeittain = valintakoeOsallistumiset?.reduce(
     (result, osallistumistulos) => {
       osallistumistulos.hakutoiveet.forEach((hakutoive) => {
         if (hakutoive.hakukohdeOid === hakukohdeOid) {
           hakutoive.valinnanVaiheet.forEach((valinnanVaihe) => {
-            valinnanVaihe.valintakokeet.forEach((valintakoe) => {
-              const { valintakoeTunniste, nimi } = valintakoe;
+            valinnanVaihe.valintakokeet.forEach((valintakoeTulos) => {
+              const { valintakoeTunniste, nimi } = valintakoeTulos;
+              const valintakoe = valintakokeetByTunniste[valintakoeTunniste];
               if (!valintakokeetByTunniste[valintakoeTunniste]) {
                 return result;
               }
@@ -62,7 +63,7 @@ export const createValintakoekutsutKokeittain = (
 
               const osallistuminen = valintakoe.kutsutaankoKaikki
                 ? 'OSALLISTUU'
-                : valintakoe.osallistuminenTulos.osallistuminen;
+                : valintakoeTulos.osallistuminenTulos.osallistuminen;
               if (
                 (vainKutsuttavat && osallistuminen === 'OSALLISTUU') ||
                 !vainKutsuttavat
@@ -74,7 +75,7 @@ export const createValintakoekutsutKokeittain = (
                   asiointiKieli: hakemus?.asiointikieliKoodi,
                   osallistuminen,
                   lisatietoja: mapKeys(
-                    valintakoe?.osallistuminenTulos?.kuvaus ?? {},
+                    valintakoeTulos?.osallistuminenTulos?.kuvaus ?? {},
                     (k) => toLowerCase(k),
                   ),
                   laskettuPvm: osallistumistulos.createdAt,
@@ -94,6 +95,18 @@ export const createValintakoekutsutKokeittain = (
       }
     >,
   );
+
+  // Lisätään myös valintakokeet, joille ei ollut kutsuja
+  forEachObj(valintakokeetByTunniste, (valintakoe) => {
+    if (!kutsutKokeittain[valintakoe.selvitettyTunniste]) {
+      kutsutKokeittain[valintakoe.selvitettyTunniste] = {
+        nimi: valintakoe.nimi,
+        kutsut: [],
+      };
+    }
+  });
+
+  return kutsutKokeittain;
 };
 
 export const useValintakoekutsut = ({

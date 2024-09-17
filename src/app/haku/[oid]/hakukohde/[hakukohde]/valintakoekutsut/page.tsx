@@ -2,7 +2,7 @@
 
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { TabContainer } from '../tab-container';
-import { ClientSpinner } from '@/app/components/client-spinner';
+import { FullClientSpinner } from '@/app/components/client-spinner';
 import { AccordionBox } from '@/app/components/accordion-box';
 import {
   Box,
@@ -27,8 +27,10 @@ import {
   useValintakoekutsutPaginated,
 } from './useValintakoekutsutPaginated';
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
-import { entries, map, pipe } from 'remeda';
+import { entries, isEmpty, map, pipe } from 'remeda';
 import { AccordionBoxTitle } from '@/app/components/accordion-box-title';
+import { IconCircle } from '@/app/components/icon-circle';
+import { FolderOutlined } from '@mui/icons-material';
 
 type ValintakoekutsutContentProps = {
   hakuOid: string;
@@ -49,7 +51,16 @@ const PaginatedValintakoekutsut = ({
   const { results, sort, setSort, pageSize, setPage, page } =
     useValintakoekutsutPaginated(valintakoeTunniste, valintakoeKutsut);
 
-  return (
+  const { t } = useTranslations();
+
+  return isEmpty(valintakoeKutsut) ? (
+    <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
+      <IconCircle>
+        <FolderOutlined />
+      </IconCircle>
+      <Box>{t('valintakoekutsut.ei-valintakoekutsuja')}</Box>
+    </Box>
+  ) : (
     <ValintakoekutsutTable
       valintakoeTunniste={valintakoeTunniste}
       hakuOid={hakuOid}
@@ -81,35 +92,42 @@ const ValintakoeKutsutWrapper = ({
     ryhmittely,
     vainKutsuttavat,
   });
+  const { t } = useTranslations();
 
   return (
-    <Box>
-      {ryhmittely === 'hakijoittain'
-        ? 'TODO: Hakijoittain ryhmittely'
-        : pipe(
-            entries(valintakoekutsutByTunniste),
-            map(([valintakoeTunniste, valintakoeKutsut]) => {
-              const { nimi, kutsut } = valintakoeKutsut;
-
-              return (
-                <AccordionBox
+    <Box display="flex" flexDirection="column" rowGap={2}>
+      {ryhmittely === 'hakijoittain' ? (
+        'TODO: Hakijoittain ryhmittely'
+      ) : isEmpty(valintakoekutsutByTunniste) ? (
+        <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
+          <IconCircle>
+            <FolderOutlined />
+          </IconCircle>
+          <Box>{t('valintakoekutsut.ei-valintakokeita')}</Box>
+        </Box>
+      ) : (
+        pipe(
+          entries(valintakoekutsutByTunniste),
+          map(([valintakoeTunniste, valintakoeKutsut]) => {
+            const { nimi, kutsut } = valintakoeKutsut;
+            return (
+              <AccordionBox
+                key={valintakoeTunniste}
+                id="valintakoekutsu"
+                title={<AccordionBoxTitle title={nimi ?? valintakoeTunniste} />}
+              >
+                <PaginatedValintakoekutsut
                   key={valintakoeTunniste}
-                  id="valintakoekutsu"
-                  title={
-                    <AccordionBoxTitle title={nimi ?? valintakoeTunniste} />
-                  }
-                >
-                  <PaginatedValintakoekutsut
-                    key={valintakoeTunniste}
-                    hakuOid={hakuOid}
-                    hakukohdeOid={hakukohdeOid}
-                    valintakoeTunniste={valintakoeTunniste}
-                    valintakoeKutsut={kutsut}
-                  />
-                </AccordionBox>
-              );
-            }),
-          )}
+                  hakuOid={hakuOid}
+                  hakukohdeOid={hakukohdeOid}
+                  valintakoeTunniste={valintakoeTunniste}
+                  valintakoeKutsut={kutsut}
+                />
+              </AccordionBox>
+            );
+          }),
+        )
+      )}
     </Box>
   );
 };
@@ -193,7 +211,7 @@ function ValintakoekutsutContent({
           </FormControl>
           <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
         </Box>
-        <QuerySuspenseBoundary suspenseFallback={<ClientSpinner />}>
+        <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
           <ValintakoeKutsutWrapper
             hakuOid={hakuOid}
             hakukohdeOid={hakukohdeOid}
@@ -213,7 +231,7 @@ export default function ValintakoekutsutPage({
 }) {
   return (
     <TabContainer>
-      <QuerySuspenseBoundary suspenseFallback={<ClientSpinner />}>
+      <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
         <ValintakoekutsutContent
           hakuOid={params.oid}
           hakukohdeOid={params.hakukohde}

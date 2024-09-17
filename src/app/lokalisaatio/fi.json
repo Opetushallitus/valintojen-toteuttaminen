@@ -162,7 +162,9 @@
       "valitse-koekutsu-hakijalle": "Valitse koekutsu hakijalle \"{{hakijanNimi}}\""
     },
     "virhe-vie-taulukkolaskentaan": "Taulukkolaskentaan viemisessä tapahtui virhe!",
-    "virhe-osoitetarrat": "Osoitetarrojen muodostamisessa tapahtui virhe!"
+    "virhe-osoitetarrat": "Osoitetarrojen muodostamisessa tapahtui virhe!",
+    "ei-valintakokeita": "Ei valintakokeita",
+    "ei-valintakoekutsuja": "Ei valintakoekutsuja"
   },
   "pistesyotto": {
     "otsikko": "Pistesyöttö",

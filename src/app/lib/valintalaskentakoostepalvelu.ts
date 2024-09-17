@@ -272,7 +272,7 @@ export type Osallistuminen =
   | 'EI_VAADITA'
   | 'VIRHE';
 
-type ValintakoeOsallistumistulos = {
+export type ValintakoeOsallistumistulos = {
   hakuOid: string;
   hakemusOid: string;
   hakijaOid: string;
