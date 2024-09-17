@@ -28,6 +28,7 @@ import {
 } from './useValintakoekutsutPaginated';
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
 import { entries, map, pipe } from 'remeda';
+import { AccordionBoxTitle } from '@/app/components/accordion-box-title';
 
 type ValintakoekutsutContentProps = {
   hakuOid: string;
@@ -94,7 +95,9 @@ const ValintakoeKutsutWrapper = ({
                 <AccordionBox
                   key={valintakoeTunniste}
                   id="valintakoekutsu"
-                  title={nimi ?? valintakoeTunniste}
+                  title={
+                    <AccordionBoxTitle title={nimi ?? valintakoeTunniste} />
+                  }
                 >
                   <PaginatedValintakoekutsut
                     key={valintakoeTunniste}
