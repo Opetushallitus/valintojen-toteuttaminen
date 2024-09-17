@@ -33,3 +33,15 @@ export const isEmpty = (value: unknown) => {
 };
 
 export const EMPTY_ARRAY = Object.freeze([]) as Array<never>;
+
+export function downloadBlob(fileName: string, data: Blob) {
+  const link = document.createElement('a');
+  const url = window.URL.createObjectURL(data);
+  link.setAttribute('href', url);
+  link.setAttribute('download', fileName);
+  link.setAttribute('style', 'display: none');
+  document.body.appendChild(link);
+  link.click();
+  window.URL.revokeObjectURL(url);
+  link.remove();
+}

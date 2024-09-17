@@ -15,12 +15,25 @@ const theme = createODSTheme({
   variant: 'oph',
   overrides: deepmerge(MUI_NEXTJS_OVERRIDES, {
     components: {
+      MuiFormLabel: {
+        styleOverrides: {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          root: ({ theme }: { theme: any }) => ({
+            ...theme.typography.label,
+            color: colors.black,
+            '&.Mui-focused': {
+              color: colors.black,
+            },
+          }),
+        },
+      },
       MuiToggleButton: {
         defaultProps: {
           disableRipple: true,
         },
         styleOverrides: {
-          root: ({ theme }) => ({
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          root: ({ theme }: { theme: any }) => ({
             paddingTop: 0,
             paddingBottom: 0,
             color: colors.grey900,
@@ -84,18 +97,6 @@ const theme = createODSTheme({
               textDecoration: 'underline',
             },
           },
-        },
-      },
-      MuiFormLabel: {
-        styleOverrides: {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          root: ({ theme }: { theme: any }) => ({
-            ...theme.typography.label,
-            color: colors.black,
-            '&.Mui-focused': {
-              color: colors.black,
-            },
-          }),
         },
       },
     },

@@ -298,3 +298,43 @@ export const getValintakoeTulokset = async (hakukohdeOid: string) => {
   >(configuration.valintakoeTuloksetUrl({ hakukohdeOid }));
   return response.data;
 };
+
+export type GetValintakoeExcelParams = {
+  hakuOid: string;
+  hakukohdeOid: string;
+  hakemusOids?: Array<string>;
+  valintakoeTunniste: string;
+};
+
+export const getValintakoeExcel = async ({
+  hakuOid,
+  hakukohdeOid,
+  hakemusOids,
+  valintakoeTunniste,
+}: GetValintakoeExcelParams) => {
+  const urlWithQuery = new URL(configuration.createValintakoeExcelUrl);
+  urlWithQuery.searchParams.append('hakuOid', hakuOid);
+  urlWithQuery.searchParams.append('hakukohdeOid', hakukohdeOid);
+
+  const createResponse = await client.post<{ id: string }>(urlWithQuery, {
+    hakemusOids,
+    valintakoeTunnisteet: [valintakoeTunniste],
+  });
+  const excelProcessId = createResponse?.data?.id;
+
+  const dokumenttiProsessi = await client.get<{
+    dokumenttiId: string;
+    kasittelyssa: boolean;
+    keskeytetty: false;
+    kokonaistyo: {
+      valmis: boolean;
+    };
+  }>(configuration.dokumenttiProsessiUrl({ id: excelProcessId }));
+
+  const dokumenttiId = dokumenttiProsessi?.data?.dokumenttiId;
+
+  const documentResponse = await client.get<Blob>(
+    configuration.lataaDokumenttiUrl({ dokumenttiId }),
+  );
+  return documentResponse.data;
+};

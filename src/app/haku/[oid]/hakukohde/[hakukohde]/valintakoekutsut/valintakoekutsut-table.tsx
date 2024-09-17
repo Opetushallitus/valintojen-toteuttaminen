@@ -1,5 +1,5 @@
 'use client';
-import { DataTableActionBar } from '@/app/components/DataTableActionBar';
+import { ValintakoekutsutActionBar } from '@/app/components/valintakoekutsut-action-bar';
 import ListTable, {
   makeExternalLinkColumn,
   ListTableColumn,
@@ -25,6 +25,9 @@ const hakijaColumn = makeExternalLinkColumn<ValintakoeKutsuItem>({
 });
 
 export const ValintakoekutsutTable = ({
+  hakuOid,
+  hakukohdeOid,
+  valintakoeTunniste,
   data,
   sort,
   setSort,
@@ -32,6 +35,8 @@ export const ValintakoekutsutTable = ({
   setPage,
   pageSize,
 }: {
+  hakuOid: string;
+  hakukohdeOid: string;
   valintakoeTunniste: string;
   data: Array<ValintakoeKutsuItem>;
   sort: string;
@@ -75,12 +80,15 @@ export const ValintakoekutsutTable = ({
 
   return (
     <Box>
-      <DataTableActionBar
+      <ValintakoekutsutActionBar
+        hakuOid={hakuOid}
+        hakukohdeOid={hakukohdeOid}
+        valintakoeTunniste={valintakoeTunniste}
         selection={selection}
         resetSelection={() => setSelection(new Set())}
       />
       <ListTable
-        rowKeyProp="hakijaOid"
+        rowKeyProp="hakemusOid"
         columns={columns}
         rows={data}
         sort={sort}

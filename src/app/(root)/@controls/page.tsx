@@ -14,9 +14,9 @@ import { Search } from '@mui/icons-material';
 import { useHakuSearchParams } from '@/app/hooks/useHakuSearch';
 import { useHakutavat } from '@/app/hooks/useHakutavat';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { OphFormControl } from '@/app/components/form/oph-form-control';
-import { ClientSpinner } from '@/app/components/client-spinner';
 import { OphSelect } from '@/app/components/form/oph-select';
+import { OphFormControl } from '@/app/components/form/oph-form-control';
+import { SpinnerIcon } from '@/app/components/spinner-icon';
 
 const HakutapaSelect = ({
   labelId,
@@ -52,9 +52,7 @@ const SelectFallback = () => (
     disabled={true}
     startAdornment={
       <InputAdornment position="start">
-        <ClientSpinner
-          sx={{ height: '24px !important', width: '24px !important' }}
-        />
+        <SpinnerIcon />
       </InputAdornment>
     }
   />

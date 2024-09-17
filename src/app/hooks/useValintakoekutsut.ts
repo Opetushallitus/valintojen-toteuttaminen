@@ -16,7 +16,7 @@ import { toFormattedDateTimeString } from '../lib/localization/translation-utils
 import { useMemo } from 'react';
 
 export type ValintakoeKutsuItem = {
-  hakijaOid: string;
+  hakemusOid: string;
   henkiloOid: string;
   hakijanNimi: string;
   asiointiKieli: Language;
@@ -91,8 +91,8 @@ export const useValintakoekutsut = ({
                     !vainKutsuttavat
                   ) {
                     result[valintakoeTunniste].kutsut.push({
-                      hakijaOid: valintakoeTulos.hakijaOid,
                       henkiloOid: hakemus?.hakijaOid,
+                      hakemusOid: hakemus.hakemusOid,
                       hakijanNimi: hakemus?.hakijanNimi,
                       asiointiKieli: hakemus?.asiointikieliKoodi,
                       osallistuminen:

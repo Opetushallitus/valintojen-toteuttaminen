@@ -12,6 +12,5 @@ export const useAsiointiKieli = () =>
   useQuery({
     queryKey: ['getAsiointiKieli'],
     queryFn: getAsiointiKieli,
-
     staleTime: Infinity,
   });

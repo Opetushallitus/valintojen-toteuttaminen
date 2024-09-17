@@ -72,4 +72,9 @@ export const configuration = {
     `${DOMAIN}/valintaperusteet-service/resources/hakukohde/${hakukohdeOid}/valintakoe`,
   valintakoeTuloksetUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintakoe/hakutoive/${hakukohdeOid}`,
+  createValintakoeExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintalaskentaexcel/valintakoekutsut/aktivoi`,
+  dokumenttiProsessiUrl: ({ id }: { id: string }) =>
+    `${DOMAIN}/valintalaskentakoostepalvelu/resources/dokumenttiprosessi/${id}`,
+  lataaDokumenttiUrl: ({ dokumenttiId }: { dokumenttiId: string }) =>
+    `${DOMAIN}/valintalaskentakoostepalvelu/resources/dokumentit/lataa/${dokumenttiId}`,
 } as const;

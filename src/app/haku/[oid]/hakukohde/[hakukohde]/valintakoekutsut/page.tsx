@@ -35,9 +35,13 @@ type ValintakoekutsutContentProps = {
 };
 
 const PaginatedValintakoekutsut = ({
+  hakuOid,
+  hakukohdeOid,
   valintakoeTunniste,
   valintakoeKutsut,
 }: {
+  hakuOid: string;
+  hakukohdeOid: string;
   valintakoeTunniste: string;
   valintakoeKutsut: Array<ValintakoeKutsuItem>;
 }) => {
@@ -47,6 +51,8 @@ const PaginatedValintakoekutsut = ({
   return (
     <ValintakoekutsutTable
       valintakoeTunniste={valintakoeTunniste}
+      hakuOid={hakuOid}
+      hakukohdeOid={hakukohdeOid}
       data={results}
       sort={sort}
       setSort={setSort}
@@ -92,6 +98,8 @@ const ValintakoeKutsutWrapper = ({
                 >
                   <PaginatedValintakoekutsut
                     key={valintakoeTunniste}
+                    hakuOid={hakuOid}
+                    hakukohdeOid={hakukohdeOid}
                     valintakoeTunniste={valintakoeTunniste}
                     valintakoeKutsut={kutsut}
                   />

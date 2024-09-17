@@ -2,6 +2,7 @@ import { getCookies } from './cookie';
 import { redirect } from 'next/navigation';
 import { configuration } from './configuration';
 import { FetchError } from './common';
+import { isPlainObject } from 'remeda';
 
 const doFetch = async (request: Request) => {
   try {
@@ -52,19 +53,29 @@ const retryWithLogin = async (request: Request, loginUrl: string) => {
   return makeBareRequest(request);
 };
 
-const responseToData = async <Result = unknown>(res: Response) => {
-  const contentType = res.headers.get('Content-Type') ?? 'application/json';
+type BodyParser<T> = (res: Response) => Promise<T>;
 
-  if (contentType?.includes('json')) {
-    try {
-      const result = { data: (await res.json()) as Result };
-      return result;
-    } catch (e) {
-      console.error('Parsing fetch response body as JSON failed!');
-      return Promise.reject(e);
-    }
-  } else {
-    return { data: (await res.text()) as Result };
+const DEFAULT_BODY_PARSER = async (res: Response) => await res.text();
+
+const RESPONSE_BODY_PARSERS: Record<string, BodyParser<unknown>> = {
+  'application/json': async (response: Response) => await response.json(),
+  'application/octet-stream': async (response: Response) =>
+    await response.blob(),
+};
+
+const responseToData = async <Result = unknown>(res: Response) => {
+  // Oletetaan JSON-vastaus, jos content-type header puuttuu
+  const contentType =
+    res.headers.get('content-type')?.split(';')?.[0] ?? 'application/json';
+
+  const parseBody = (RESPONSE_BODY_PARSERS?.[contentType] ??
+    DEFAULT_BODY_PARSER) as BodyParser<Result>;
+
+  try {
+    return { data: await parseBody(res) };
+  } catch (e) {
+    console.error(`Parsing fetch response body as "${contentType}" failed!`);
+    return Promise.reject(e);
   }
 };
 
@@ -132,33 +143,41 @@ const makeRequest = async <Result>(request: Request) => {
   }
 };
 
+type JSON = Record<string, unknown> | Array<unknown>;
+
+const isJson = (val: unknown): val is JSON =>
+  Array.isArray(val) || isPlainObject(val);
+
+const modRequest = <Result = unknown>(
+  method: string,
+  url: string | URL,
+  body: BodyInit | JSON,
+  options: RequestInit,
+) => {
+  return makeRequest<Result>(
+    new Request(url, {
+      method,
+      body: isJson(body) ? JSON.stringify(body) : body,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options.headers ?? {}),
+      },
+      ...options,
+    }),
+  );
+};
+
 export const client = {
-  get: <Result = unknown>(url: string, options: RequestInit = {}) =>
+  get: <Result = unknown>(url: URL | string, options: RequestInit = {}) =>
     makeRequest<Result>(new Request(url, { method: 'GET', ...options })),
   post: <Result = unknown>(
-    url: string,
-    body: NonNullable<unknown>,
+    url: string | URL,
+    body: BodyInit | JSON,
     options: RequestInit = {},
-  ) =>
-    makeRequest<Result>(
-      new Request(url, {
-        method: 'POST',
-        body: JSON.stringify(body),
-        headers: { 'Content-Type': 'application/json' },
-        ...options,
-      }),
-    ),
+  ) => modRequest<Result>('POST', url, body, options),
   put: <Result = unknown>(
-    url: string,
-    body: NonNullable<unknown>,
+    url: string | URL,
+    body: BodyInit | JSON,
     options: RequestInit = {},
-  ) =>
-    makeRequest<Result>(
-      new Request(url, {
-        method: 'PUT',
-        body: JSON.stringify(body),
-        headers: { 'Content-Type': 'application/json' },
-        ...options,
-      }),
-    ),
-};
+  ) => modRequest<Result>('PUT', url, body, options),
+} as const;
