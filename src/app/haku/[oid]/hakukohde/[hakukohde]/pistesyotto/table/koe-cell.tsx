@@ -15,13 +15,13 @@ import {
 } from '@/app/lib/types/valintaperusteet-types';
 import { ChangeEvent, useState } from 'react';
 import { Box, debounce, SelectChangeEvent, styled } from '@mui/material';
-import { OphSelect } from '@/app/components/form/oph-select';
 import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { OphInput } from '@/app/components/form/oph-input';
 import { INPUT_DEBOUNCE_DELAY } from '@/app/lib/constants';
 import { ChangePisteSyottoFormParams } from '../pistesyotto-form';
+import { LocalizedSelect } from '@/app/components/localized-select';
 
-const StyledSelect = styled(OphSelect)({
+const StyledSelect = styled(LocalizedSelect)({
   minWidth: '150px',
 });
 

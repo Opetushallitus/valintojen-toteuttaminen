@@ -14,9 +14,9 @@ import { Search } from '@mui/icons-material';
 import { useHakuSearchParams } from '@/app/hooks/useHakuSearch';
 import { useHakutavat } from '@/app/hooks/useHakutavat';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { OphSelect } from '@/app/components/form/oph-select';
 import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { SpinnerIcon } from '@/app/components/spinner-icon';
+import { LocalizedSelect } from '@/app/components/localized-select';
 
 const HakutapaSelect = ({
   labelId,
@@ -36,7 +36,7 @@ const HakutapaSelect = ({
   });
 
   return (
-    <OphSelect
+    <LocalizedSelect
       labelId={labelId}
       id="hakutapa-select"
       value={selectedHakutapa ?? ''}
@@ -155,7 +155,7 @@ export default function HakuControls() {
         }}
         label={t('yleinen.tila')}
         renderInput={({ labelId }) => (
-          <OphSelect
+          <LocalizedSelect
             labelId={labelId}
             value={tila ?? ''}
             onChange={changeTila}
@@ -181,7 +181,7 @@ export default function HakuControls() {
           label={t('haku.alkamiskausi')}
           sx={{ textAlign: 'left', flex: '1 0 180px' }}
           renderInput={({ labelId }) => (
-            <OphSelect
+            <LocalizedSelect
               labelId={labelId}
               value={selectedAlkamisKausi ?? ''}
               onChange={changeAlkamisKausi}
