@@ -21,7 +21,6 @@ import {
   SijoittelunHakemus,
   SijoittelunTila,
 } from './types/sijoittelu-types';
-import { Hakemus } from './types/ataru-types';
 import { filter, flatMap, groupBy, indexBy, isDefined, pipe } from 'remeda';
 
 export const getLasketutValinnanVaiheet = async (hakukohdeOid: string) => {
@@ -90,12 +89,11 @@ export const getHakijaryhmat = async (
   hakuOid: string,
   hakukohdeOid: string,
 ): Promise<HakukohteenHakijaryhma[]> => {
-  const hakemukset: Hakemus[] = await getHakemukset({ hakuOid, hakukohdeOid });
-  const tulokset = await getLatestSijoitteluAjonTulokset(hakuOid, hakukohdeOid);
-  const valintaTulokset = await getHakukohteenValintatuloksetIlmanHakijanTilaa(
-    hakuOid,
-    hakukohdeOid,
-  );
+  const [hakemukset, tulokset, valintaTulokset] = await Promise.all([
+    getHakemukset({ hakuOid, hakukohdeOid }),
+    getLatestSijoitteluAjonTulokset(hakuOid, hakukohdeOid),
+    getHakukohteenValintatuloksetIlmanHakijanTilaa(hakuOid, hakukohdeOid),
+  ]);
   const sijoittelunHakemukset = pipe(
     tulokset?.valintatapajonot,
     filter(isDefined),
