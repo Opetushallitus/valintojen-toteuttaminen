@@ -1,5 +1,9 @@
 import { test, expect, Page } from '@playwright/test';
-import { checkRow, expectAllSpinnersHidden } from './playwright-utils';
+import {
+  checkRow,
+  expectAllSpinnersHidden,
+  getMuiCloseButton,
+} from './playwright-utils';
 
 test('displays pistesyotto', async ({ page }) => {
   await goToPisteSyotto(page);
@@ -50,9 +54,11 @@ test('shows success toast when updating value', async ({ page }) => {
   await goToPisteSyotto(page);
   await page.route(
     '*/**/valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105',
-    async (route) => await route.fulfill({ 
-      contentType: '',
-      status: 204 }),
+    async (route) =>
+      await route.fulfill({
+        contentType: '',
+        status: 204,
+      }),
   );
   const huiRow = page.getByRole('row', { name: 'Hui Haamu Valitse' });
   await huiRow.getByLabel('Valitse...').click();
@@ -61,7 +67,7 @@ test('shows success toast when updating value', async ({ page }) => {
   await page.getByRole('option', { name: 'Osallistui' }).click();
   await page.getByRole('button', { name: 'Tallenna' }).click();
   await expect(page.getByText('Tiedot tallennettu.')).toBeVisible();
-  await page.getByLabel('Close').click();
+  await getMuiCloseButton(page).click();
   await expect(page.getByText('Tiedot tallennettu.')).toBeHidden();
 });
 
@@ -85,7 +91,7 @@ test('shows error toast when updating value', async ({ page }) => {
   await expect(
     page.getByText('Tietojen tallentamisessa tapahtui virhe.'),
   ).toBeVisible();
-  await page.getByLabel('Close').click();
+  await getMuiCloseButton(page).click();
   await expect(
     page.getByText('Tietojen tallentamisessa tapahtui virhe.'),
   ).toBeHidden();

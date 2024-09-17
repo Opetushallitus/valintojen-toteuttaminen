@@ -1,5 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
-import { expectAllSpinnersHidden } from './playwright-utils';
+import { expectAllSpinnersHidden, getMuiCloseButton } from './playwright-utils';
 
 test('displays valinnanvaiheet', async ({ page }) => {
   await page.goto(
@@ -116,7 +116,7 @@ test('shows success toast when laskenta completes', async ({ page }) => {
   await expect(
     page.getByText('Laskenta suoritettu onnistuneesti'),
   ).toBeVisible();
-  await page.getByLabel('Close').click();
+  await getMuiCloseButton(page).click();
   await expect(
     page.getByText('Laskenta suoritettu onnistuneesti'),
   ).toBeHidden();

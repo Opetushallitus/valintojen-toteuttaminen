@@ -1,12 +1,9 @@
 'use client';
 
-import React from 'react';
-
 import { Alert, styled, Box, Typography, Slide } from '@mui/material';
 import { Toast, useToaster } from '@/app/hooks/useToaster';
-import { useTranslations } from '../hooks/useTranslations';
-import { Button, colors } from '@opetushallitus/oph-design-system';
-import theme from '../theme';
+import { useTranslations } from '@/app/hooks/useTranslations';
+import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
 
 const ToasterContainer = styled(Box)(() => ({
   display: 'flex',
@@ -40,9 +37,9 @@ const InfoToast = ({
         onFocus={() => toastEnter(toast.key)}
         onMouseLeave={() => toastLeave(toast.key)}
         onBlur={() => toastLeave(toast.key)}
-        sx={{ pointerEvents: 'all', marginBottom: theme.spacing(2) }}
+        sx={{ pointerEvents: 'all', marginBottom: 2 }}
       >
-        <Typography sx={{ color: colors.white }}>
+        <Typography sx={{ color: ophColors.white }}>
           {t(toast.message, toast.messageParams)}
         </Typography>
       </Alert>
@@ -60,32 +57,32 @@ const ConfirmToast = ({ toast }: { toast: Toast }) => {
         variant="filled"
         sx={{
           pointerEvents: 'all',
-          marginBottom: theme.spacing(2),
+          marginBottom: 2,
           maxWidth: '500px',
-          backgroundColor: colors.white,
-          border: `2px solid ${colors.orange4}`,
-          color: colors.orange4,
+          backgroundColor: ophColors.white,
+          border: `2px solid ${ophColors.orange4}`,
+          color: ophColors.orange4,
         }}
       >
-        <Typography sx={{ color: colors.black }}>
+        <Typography sx={{ color: ophColors.black }}>
           {t(toast.message, toast.messageParams)}
         </Typography>
         <Box
           sx={{
             display: 'flex',
             justifyContent: 'flex-end',
-            columnGap: theme.spacing(1),
-            marginTop: theme.spacing(1),
+            columnGap: 1,
+            marginTop: 1,
           }}
         >
-          <Button
+          <OphButton
             variant="outlined"
-            sx={{ backgroundColor: colors.white }}
+            sx={{ backgroundColor: ophColors.white }}
             onClick={() => removeToast(toast.key)}
           >
             {t('yleinen.peruuta')}
-          </Button>
-          <Button
+          </OphButton>
+          <OphButton
             variant="contained"
             onClick={() => {
               removeToast(toast.key);
@@ -95,7 +92,7 @@ const ConfirmToast = ({ toast }: { toast: Toast }) => {
             }}
           >
             {t('lomake.jatka')}
-          </Button>
+          </OphButton>
         </Box>
       </Alert>
     </Slide>

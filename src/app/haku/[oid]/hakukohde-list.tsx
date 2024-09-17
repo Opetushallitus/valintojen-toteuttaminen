@@ -5,7 +5,7 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { Hakukohde } from '@/app/lib/types/kouta-types';
 import { Link, styled } from '@mui/material';
 import { useHakukohdeTab } from './hakukohde/[hakukohde]/hakukohde-tabs';
-import { colors, Typography } from '@opetushallitus/oph-design-system';
+import { ophColors, OphTypography } from '@opetushallitus/oph-design-system';
 import { useParams } from 'next/navigation';
 
 const StyledList = styled('nav')(({ theme }) => ({
@@ -26,12 +26,12 @@ const StyledItem = styled(Link)(({ theme }) => ({
   padding: theme.spacing(1),
   textDecoration: 'none',
   cursor: 'pointer',
-  color: colors.blue2,
+  color: ophColors.blue2,
   '&:nth-of-type(even)': {
-    backgroundColor: colors.grey50,
+    backgroundColor: ophColors.grey50,
   },
   [`&:hover, &.${SELECTED_CLASS}`]: {
-    backgroundColor: colors.lightBlue2,
+    backgroundColor: ophColors.lightBlue2,
   },
 }));
 
@@ -45,9 +45,9 @@ export const HakukohdeList = ({ hakuOid }: { hakuOid: string }) => {
   const selectedHakukohdeOid = useSelectedHakukohdeOid();
   return (
     <StyledList tabIndex={0} aria-label={t('hakukohde.navigaatio')}>
-      <Typography>
+      <OphTypography>
         {results.length} {t('haku.hakukohdetta')}
-      </Typography>
+      </OphTypography>
       {results?.map((hk: Hakukohde) => (
         <StyledItem
           key={hk.oid}
@@ -55,7 +55,7 @@ export const HakukohdeList = ({ hakuOid }: { hakuOid: string }) => {
           href={`/haku/${hakuOid}/hakukohde/${hk.oid}/${activeHakukohdeTab.route}`}
           tabIndex={0}
         >
-          <Typography
+          <OphTypography
             title={hk.organisaatioOid}
             variant="label"
             color="inherit"
@@ -63,10 +63,10 @@ export const HakukohdeList = ({ hakuOid }: { hakuOid: string }) => {
             {hk.jarjestyspaikkaHierarkiaNimi
               ? translateEntity(hk.jarjestyspaikkaHierarkiaNimi)
               : ''}
-          </Typography>
-          <Typography title={hk.oid} color="inherit">
+          </OphTypography>
+          <OphTypography title={hk.oid} color="inherit">
             {translateEntity(hk.nimi)}
-          </Typography>
+          </OphTypography>
         </StyledItem>
       ))}
     </StyledList>

@@ -1,14 +1,14 @@
 import { styled } from '@/app/theme';
 import { Box, Divider as MuiDivider } from '@mui/material';
-import { Button as OphButton, colors } from '@opetushallitus/oph-design-system';
+import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
 import { withDefaultProps } from '../lib/mui-utils';
 
 export const Button = withDefaultProps(
   styled(OphButton)(({ theme }) => ({
-    color: colors.white,
+    color: ophColors.white,
     padding: theme.spacing(1),
     '&:hover': {
-      color: colors.white,
+      color: ophColors.white,
       backgroundColor: theme.palette.primary.light,
     },
   })),
@@ -27,7 +27,7 @@ export const Container = styled(Box)(({ theme }) => ({
 
 const Divider = withDefaultProps(
   styled(MuiDivider)({
-    backgroundColor: colors.grey400,
+    backgroundColor: ophColors.grey400,
     width: '2px',
   }),
   {

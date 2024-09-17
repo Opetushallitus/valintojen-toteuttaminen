@@ -3,8 +3,7 @@
 import { isLaskentaUsedForValinnanvaihe } from '@/app/lib/valintaperusteet';
 import { Box, CircularProgress, TableCell, TableRow } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { Button } from '@opetushallitus/oph-design-system';
-import theme from '@/app/theme';
+import { OphButton } from '@opetushallitus/oph-design-system';
 import Confirm from './confirm';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
 import ErrorRow from './error-row';
@@ -115,10 +114,10 @@ const HallintaTableRow = ({
                 sx={{
                   display: 'flex',
                   flexDirection: 'column',
-                  rowGap: theme.spacing(1),
+                  rowGap: 1,
                 }}
               >
-                <Button
+                <OphButton
                   variant="outlined"
                   disabled={
                     !state.matches(LaskentaStates.IDLE) || areAllLaskentaRunning
@@ -126,7 +125,7 @@ const HallintaTableRow = ({
                   onClick={() => start()}
                 >
                   {t('valinnanhallinta.kaynnista')}
-                </Button>
+                </OphButton>
                 {state.matches(LaskentaStates.PROCESSING) && (
                   <CircularProgress
                     aria-label={t('valinnanhallinta.lasketaan')}

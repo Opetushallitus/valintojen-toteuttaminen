@@ -1,7 +1,6 @@
 import { Box } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { Button } from '@opetushallitus/oph-design-system';
-import theme from '@/app/theme';
+import { OphButton } from '@opetushallitus/oph-design-system';
 
 type ConfirmParams = {
   confirm: () => void;
@@ -16,7 +15,7 @@ const Confirm = ({ confirm, cancel }: ConfirmParams) => {
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        rowGap: theme.spacing(1),
+        rowGap: 1,
       }}
     >
       <Box>{t('valinnanhallinta.varmista')}</Box>
@@ -24,15 +23,15 @@ const Confirm = ({ confirm, cancel }: ConfirmParams) => {
         sx={{
           display: 'flex',
           flexDirection: 'row',
-          columnGap: theme.spacing(1),
+          columnGap: 1,
         }}
       >
-        <Button variant="outlined" onClick={cancel}>
+        <OphButton variant="outlined" onClick={cancel}>
           {t('yleinen.peruuta')}
-        </Button>
-        <Button variant="contained" onClick={confirm}>
+        </OphButton>
+        <OphButton variant="contained" onClick={confirm}>
           {t('yleinen.ok')}
-        </Button>
+        </OphButton>
       </Box>
     </Box>
   );

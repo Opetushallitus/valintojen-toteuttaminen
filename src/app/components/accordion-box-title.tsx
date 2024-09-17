@@ -1,8 +1,8 @@
 import { Box } from '@mui/material';
-import { Typography } from '@opetushallitus/oph-design-system';
+import { OphTypography } from '@opetushallitus/oph-design-system';
 import { styled } from '@/app/theme';
 
-const BoxHeading = styled(Typography)(({ theme }) => ({
+const BoxHeading = styled(OphTypography)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'row',
   flexWrap: 'nowrap',
@@ -21,9 +21,9 @@ export const AccordionBoxTitle = ({
     <BoxHeading variant="h2" component="h3">
       <Box>{title}</Box>
       {subTitle && (
-        <Typography component="div" variant="body1">
+        <OphTypography component="div" variant="body1">
           {subTitle}
-        </Typography>
+        </OphTypography>
       )}
     </BoxHeading>
   );

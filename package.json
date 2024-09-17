@@ -32,7 +32,7 @@
     "@mui/icons-material": "^5.15.19",
     "@mui/material": "^5.15.19",
     "@mui/material-nextjs": "^5.15.11",
-    "@opetushallitus/oph-design-system": "github:opetushallitus/oph-design-system#v0.0.2",
+    "@opetushallitus/oph-design-system": "github:opetushallitus/oph-design-system#v0.0.3",
     "@tanstack/react-query": "^5.44.0",
     "@tanstack/react-query-devtools": "^5.44.0",
     "@xstate/react": "^4.1.1",
@@ -75,7 +75,7 @@
     "lint-staged": "^15.2.6",
     "postcss": "^8",
     "prettier": "^3.3.2",
-    "typescript": "^5",
+    "typescript": "^5.6.2",
     "vitest": "^2.0.1"
   }
 }

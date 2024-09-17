@@ -42,3 +42,6 @@ export const getHakukohdeNaviLinks = (page: Page) => {
   const nav = page.getByRole('navigation', { name: 'Hakukohdevalitsin' });
   return nav.getByRole('link');
 };
+
+export const getMuiCloseButton = (page: Page) =>
+  page.getByRole('button', { name: 'Sulje' });

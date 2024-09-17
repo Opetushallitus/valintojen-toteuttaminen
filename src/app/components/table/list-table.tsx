@@ -11,7 +11,6 @@ import {
   TableRow,
   styled,
 } from '@mui/material';
-import { colors } from '@/app/theme';
 import { ExpandLess, ExpandMore, UnfoldMore } from '@mui/icons-material';
 import { getSortParts } from './table-utils';
 import { useTranslations } from '@/app/hooks/useTranslations';
@@ -20,6 +19,7 @@ import { ExternalLink } from '../external-link';
 import React, { useMemo } from 'react';
 import { OphPagination } from './oph-pagination';
 import { map, pipe } from 'remeda';
+import { ophColors } from '@opetushallitus/oph-design-system';
 
 type KeysMatching<O, T> = {
   [K in keyof O]: O[K] extends T ? K : never;
@@ -159,7 +159,7 @@ const StyledCell = styled(TableCell)({
   whiteSpace: 'pre-wrap',
   borderWidth: 0,
   'button:focus': {
-    color: colors.blue2,
+    color: ophColors.blue2,
   },
 });
 
@@ -167,26 +167,26 @@ const StyledHeaderCell = styled(TableCell)({
   padding: '0.2rem 0.1rem 0.2rem 0.4rem',
   textAlign: 'left',
   'button:focus': {
-    color: colors.blue2,
+    color: ophColors.blue2,
   },
 });
 
 const StyledTableBody = styled(TableBody)({
   '& .MuiTableRow-root': {
     '&:nth-of-type(even)': {
-      backgroundColor: colors.grey50,
+      backgroundColor: ophColors.grey50,
       '.MuiTableCell-root': {
-        backgroundColor: colors.grey50,
+        backgroundColor: ophColors.grey50,
       },
     },
     '&:nth-of-type(odd)': {
-      backgroundColor: colors.white,
+      backgroundColor: ophColors.white,
       '.MuiTableCell-root': {
-        backgroundColor: colors.white,
+        backgroundColor: ophColors.white,
       },
     },
     '&:hover': {
-      backgroundColor: colors.lightBlue2,
+      backgroundColor: ophColors.lightBlue2,
     },
   },
 });
@@ -248,7 +248,7 @@ const HeaderCell = ({
       {setSort && sortable ? (
         <Button
           sx={{
-            color: colors.black,
+            color: ophColors.black,
           }}
           onClick={() => {
             let newSortValue = '';
@@ -341,7 +341,7 @@ export const ListTable = <T extends Row>({
     <TableWrapper>
       <StyledTable {...props}>
         <TableHead>
-          <TableRow sx={{ borderBottom: `2px solid ${colors.grey200}` }}>
+          <TableRow sx={{ borderBottom: `2px solid ${ophColors.grey200}` }}>
             {checkboxSelection && (
               <HeaderCell
                 key="select-all"

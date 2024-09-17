@@ -8,14 +8,14 @@ import {
   PaginationProps,
   PaginationRenderItemParams,
 } from '@mui/material';
-import { colors } from '@opetushallitus/oph-design-system';
+import { ophColors } from '@opetushallitus/oph-design-system';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 
 const StyledPaginationItem = styled(PaginationItem)(({ theme }) => ({
   ...theme.typography.label,
   color: theme.palette.primary.main,
   '&.Mui-disabled': {
-    color: colors.grey400,
+    color: ophColors.grey400,
     opacity: 1,
   },
   '&.MuiPaginationItem-page, &.MuiPaginationItem-previousNext': {
@@ -34,7 +34,7 @@ const StyledPaginationItem = styled(PaginationItem)(({ theme }) => ({
   },
   '&.Mui-selected': {
     backgroundColor: theme.palette.primary.main,
-    color: colors.white,
+    color: ophColors.white,
     '&:hover': {
       backgroundColor: theme.palette.primary.light,
     },

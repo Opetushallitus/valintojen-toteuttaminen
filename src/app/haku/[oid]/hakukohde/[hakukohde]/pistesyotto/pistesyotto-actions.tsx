@@ -1,6 +1,5 @@
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Box, Button, CircularProgress } from '@mui/material';
-import theme from '@/app/theme';
 import { AnyMachineSnapshot } from 'xstate';
 import { PisteSyottoStates } from './pistesyotto-state';
 
@@ -16,7 +15,7 @@ export const PisteSyottoActions = ({
       sx={{
         display: 'flex',
         flexDirection: 'row',
-        columnGap: theme.spacing(2),
+        columnGap: 2,
       }}
     >
       <Button

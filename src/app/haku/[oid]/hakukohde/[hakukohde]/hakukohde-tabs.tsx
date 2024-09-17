@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation';
 import { Link as MuiLink } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { colors, styled } from '@/app/theme';
+import { ophColors, styled } from '@/app/theme';
 import { DEFAULT_BOX_BORDER } from '@/app/lib/constants';
 import { useHakukohde } from '@/app/hooks/useHakukohde';
 import { useHaku } from '@/app/hooks/useHaku';
@@ -26,13 +26,13 @@ const StyledTabs = styled('nav')(({ theme }) => ({
 }));
 
 const StyledTab = styled(MuiLink)<{ $active: boolean }>(({ $active }) => ({
-  color: colors.blue2,
+  color: ophColors.blue2,
   textDecoration: 'none',
   cursor: 'pointer',
   borderBottom: '3px solid',
-  borderColor: $active ? colors.blue2 : 'transparent',
+  borderColor: $active ? ophColors.blue2 : 'transparent',
   '&:hover': {
-    borderColor: colors.blue2,
+    borderColor: ophColors.blue2,
   },
 }));
 

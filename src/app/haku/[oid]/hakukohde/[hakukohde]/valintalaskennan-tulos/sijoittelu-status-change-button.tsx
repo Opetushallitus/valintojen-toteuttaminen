@@ -1,7 +1,7 @@
 import { OPH_ORGANIZATION_OID } from '@/app/lib/constants';
 import { UserPermissions } from '@/app/lib/permissions';
 import { ButtonProps } from '@mui/material';
-import { Button } from '@opetushallitus/oph-design-system';
+import { OphButton } from '@opetushallitus/oph-design-system';
 import { useSijoitteluStatusMutation } from './useSijoitteluStatusMutation';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { LaskettuJonoWithHakijaInfo } from '@/app/hooks/useLasketutValinnanVaiheet';
@@ -14,13 +14,11 @@ export const SijoitteluButton = ({
   ...props
 }: ButtonProps & { isLoading: boolean }) => {
   return (
-    <Button
+    <OphButton
       {...props}
       disabled={isLoading || disabled}
       variant="outlined"
-      startIcon={
-        isLoading ? <SpinnerIcon /> : startIcon
-      }
+      startIcon={isLoading ? <SpinnerIcon /> : startIcon}
     />
   );
 };

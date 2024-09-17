@@ -1,10 +1,9 @@
 'use client';
 import React from 'react';
 import { HomeOutlined as HomeOutlinedIcon } from '@mui/icons-material';
-import { colors } from '@/app/theme';
 import { Typography } from '@mui/material';
 import { PageContent } from './page-content';
-import { Button } from '@opetushallitus/oph-design-system';
+import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
 import { useTranslations } from '../hooks/useTranslations';
 import { DEFAULT_BOX_BORDER } from '../lib/constants';
 
@@ -19,7 +18,7 @@ export default function Header({ title, isHome = false }: HeaderProps) {
     <header
       style={{
         position: 'relative',
-        backgroundColor: colors.white,
+        backgroundColor: ophColors.white,
         width: '100%',
         border: DEFAULT_BOX_BORDER,
       }}
@@ -33,7 +32,7 @@ export default function Header({ title, isHome = false }: HeaderProps) {
         }}
       >
         {!isHome && (
-          <Button
+          <OphButton
             href="/"
             variant="outlined"
             startIcon={<HomeOutlinedIcon />}

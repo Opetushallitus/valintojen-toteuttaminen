@@ -8,7 +8,7 @@ import {
 import HakukohdeList from './hakukohde-list';
 import HakukohdeSearch from './hakukohde-search';
 import { useState } from 'react';
-import { colors } from '@/app/theme';
+import { ophColors } from '@/app/theme';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { ClientSpinner } from '@/app/components/client-spinner';
@@ -25,7 +25,7 @@ const StyledPanel = styled('aside')({
   alignItems: 'start',
   transition: 'width 300ms ease-in-out',
   ['label, button']: {
-    color: colors.blue2,
+    color: ophColors.blue2,
     maxWidth: '50px',
     alignSelf: 'end',
     marginRight: '15px',

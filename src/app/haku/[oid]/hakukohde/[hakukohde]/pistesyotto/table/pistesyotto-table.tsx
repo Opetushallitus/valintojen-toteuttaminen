@@ -4,7 +4,7 @@ import ListTable, {
 } from '@/app/components/table/list-table';
 import { HakemuksenPistetiedot } from '@/app/lib/types/laskenta-types';
 import { Valintakoe } from '@/app/lib/types/valintaperusteet-types';
-import { colors } from '@opetushallitus/oph-design-system';
+import { ophColors } from '@opetushallitus/oph-design-system';
 import { isNotPartOfThisHakukohde } from '../pistesyotto-utils';
 import { ReadOnlyKoeCell } from './koe-readonly-cell';
 import { KoeCell } from './koe-cell';
@@ -17,9 +17,9 @@ const stickyColumnStyle: React.CSSProperties = {
   minWidth: '260px',
   position: 'sticky',
   left: 0,
-  boxShadow: `0 5px 3px 2px ${colors.grey200}`,
+  boxShadow: `0 5px 3px 2px ${ophColors.grey200}`,
   zIndex: 1,
-  backgroundColor: colors.white,
+  backgroundColor: ophColors.white,
 };
 
 export const PisteSyottoTable = ({

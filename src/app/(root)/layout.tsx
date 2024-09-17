@@ -5,7 +5,7 @@ import { AccessTime as AccessTimeIcon } from '@mui/icons-material';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Box, Typography } from '@mui/material';
 import { PageLayout } from '../components/page-layout';
-import { colors } from '@opetushallitus/oph-design-system';
+import { ophColors } from '@opetushallitus/oph-design-system';
 import { DEFAULT_BOX_BORDER } from '../lib/constants';
 
 const IconHeaderBlock = ({
@@ -20,7 +20,7 @@ const IconHeaderBlock = ({
     <Box
       component="main"
       sx={{
-        backgroundColor: colors.white,
+        backgroundColor: ophColors.white,
       }}
     >
       <Typography
