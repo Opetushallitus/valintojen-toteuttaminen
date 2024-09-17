@@ -27,10 +27,9 @@ import { getHakemukset, getHakijat } from './ataru';
 import {
   getHakukohdeValintakokeet,
   getValintakokeet,
-  ValintakoeData,
 } from './valintaperusteet';
-import { HakijaInfo } from './types/ataru-types';
-import { Osallistuminen } from './types/valintakoekutsut-types';
+import { ValintakoekutsutData } from './types/valintakoekutsut-types';
+import { ValintakoeOsallistumistulos } from './types/valintalaskentakoostepalvelu-types';
 
 const formSearchParamsForStartLaskenta = ({
   laskentaUrl,
@@ -265,42 +264,6 @@ export const updateScoresForHakukohde = async (
     configuration.koostetutPistetiedot({ hakuOid, hakukohdeOid }),
     mappedPistetiedot,
   );
-};
-
-export type ValintakoeOsallistumistulos = {
-  hakuOid: string;
-  hakemusOid: string;
-  hakijaOid: string;
-  createdAt: string;
-  hakutoiveet: Array<{
-    hakukohdeOid: string;
-    valinnanVaiheet: Array<{
-      valinnanVaiheOid: string;
-      valinnanVaiheJarjestysluku: number;
-      valintakokeet: Array<{
-        valintakoeOid: string;
-        valintakoeTunniste: string;
-        nimi: string;
-        aktiivinen: boolean;
-        lahetetaankoKoekutsut: boolean;
-        kutsutaankoKaikki: boolean | null;
-        osallistuminenTulos: {
-          osallistuminen: Osallistuminen;
-          kuvaus: {
-            FI?: string;
-            SV?: string;
-            EN?: string;
-          };
-        };
-      }>;
-    }>;
-  }>;
-};
-
-export type ValintakoekutsutData = {
-  valintakokeetByTunniste: Record<string, ValintakoeData>;
-  hakemuksetByOid: Record<string, HakijaInfo>;
-  valintakoeOsallistumiset: Array<ValintakoeOsallistumistulos>;
 };
 
 const getValintakoeOsallistumiset = async ({

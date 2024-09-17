@@ -1,8 +1,8 @@
 import { forEachObj, mapKeys, pickBy, toLowerCase } from 'remeda';
-import { ValintakoekutsutData } from './valintalaskentakoostepalvelu';
 import {
   GetValintakoekutsutParams,
   ValintakoeKutsuItem,
+  ValintakoekutsutData,
 } from './types/valintakoekutsut-types';
 
 export type ValintakoekutsutKokeittain = Record<

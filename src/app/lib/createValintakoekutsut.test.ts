@@ -2,8 +2,8 @@ import { describe, expect, test } from 'vitest';
 import { indexBy, prop } from 'remeda';
 import VALINTAKOKEET from '@tests/e2e/fixtures/kutsu-valintakokeet.json';
 import VALINTAKOEOSALLISTUMISET from '@tests/e2e/fixtures/valintakoeosallistumiset.json';
-import { ValintakoeOsallistumistulos } from './valintalaskentakoostepalvelu';
 import { createValintakoekutsutKokeittain } from './createValintakoekutsut';
+import { ValintakoeOsallistumistulos } from './types/valintalaskentakoostepalvelu-types';
 
 const HAKEMUKSET_BY_OID = {
   '1.2.246.562.11.00000000000001796027': {
