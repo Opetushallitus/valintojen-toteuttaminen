@@ -5,7 +5,15 @@ import {
   ValintakoeKutsuItem,
 } from './types/valintakoekutsut-types';
 
-export const createValintakoekutsutKokeittain = (
+export type ValintakoekutsutKokeittain = Record<
+  string,
+  {
+    nimi: string;
+    kutsut: Array<ValintakoeKutsuItem>;
+  }
+>;
+
+export function createValintakoekutsutKokeittain(
   {
     hakukohdeOid,
     vainKutsuttavat = false,
@@ -15,7 +23,7 @@ export const createValintakoekutsutKokeittain = (
     hakemuksetByOid,
     valintakokeetByTunniste: allValintakokeetByTunniste,
   }: ValintakoekutsutData,
-) => {
+): ValintakoekutsutKokeittain {
   const valintakokeetByTunniste = pickBy(
     allValintakokeetByTunniste,
     (valintakoe) => valintakoe.aktiivinen && valintakoe.lahetetaankoKoekutsut,
@@ -66,13 +74,7 @@ export const createValintakoekutsutKokeittain = (
       });
       return result;
     },
-    {} as Record<
-      string,
-      {
-        nimi: string;
-        kutsut: Array<ValintakoeKutsuItem>;
-      }
-    >,
+    {} as ValintakoekutsutKokeittain,
   );
 
   // Lisätään myös valintakokeet, joille ei ollut kutsuja
@@ -86,4 +88,4 @@ export const createValintakoekutsutKokeittain = (
   });
 
   return kutsutKokeittain;
-};
+}
