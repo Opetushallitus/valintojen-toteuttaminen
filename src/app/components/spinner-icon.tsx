@@ -1,9 +1,8 @@
 'use client';
-import { styled } from '../theme';
+import { withDefaultProps } from '../lib/mui-utils';
 import { ClientSpinner } from './client-spinner';
 
-export const SpinnerIcon = styled(ClientSpinner)({
+export const SpinnerIcon = withDefaultProps(ClientSpinner, {
   color: 'inherit',
-  width: '24px !important',
-  height: '24px !important',
+  size: '24px',
 });

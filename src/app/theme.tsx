@@ -1,5 +1,4 @@
 'use client';
-import * as React from 'react';
 import { MUI_NEXTJS_OVERRIDES } from '@opetushallitus/oph-design-system/next/theme';
 import { createStyled } from '@mui/system';
 import { deepmerge } from '@mui/utils';
@@ -102,22 +101,6 @@ const theme = createODSTheme({
     },
   }),
 });
-
-// MUI:sta (Emotionista) puuttuu styled-componentsin .attrs
-// Tällä voi asettaa oletus-propsit ilman, että tarvii luoda välikomponenttia
-export function withDefaultProps<P>(
-  Component: React.ComponentType<P>,
-  defaultProps: Partial<P>,
-  displayName = 'ComponentWithDefaultProps',
-) {
-  const ComponentWithDefaultProps = React.forwardRef<
-    React.ComponentRef<React.ComponentType<P>>,
-    P
-  >((props, ref) => <Component {...defaultProps} {...props} ref={ref} />);
-
-  ComponentWithDefaultProps.displayName = displayName;
-  return ComponentWithDefaultProps;
-}
 
 const withTransientProps = (propName: string) =>
   // Emotion doesn't support transient props by default so add support manually

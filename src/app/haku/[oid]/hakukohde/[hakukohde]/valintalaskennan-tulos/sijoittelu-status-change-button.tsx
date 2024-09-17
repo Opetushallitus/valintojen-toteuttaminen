@@ -2,10 +2,10 @@ import { OPH_ORGANIZATION_OID } from '@/app/lib/constants';
 import { UserPermissions } from '@/app/lib/permissions';
 import { ButtonProps } from '@mui/material';
 import { Button } from '@opetushallitus/oph-design-system';
-import { ClientSpinner } from '@/app/components/client-spinner';
 import { useSijoitteluStatusMutation } from './useSijoitteluStatusMutation';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { LaskettuJonoWithHakijaInfo } from '@/app/hooks/useLasketutValinnanVaiheet';
+import { SpinnerIcon } from '@/app/components/spinner-icon';
 
 export const SijoitteluButton = ({
   isLoading,
@@ -19,7 +19,7 @@ export const SijoitteluButton = ({
       disabled={isLoading || disabled}
       variant="outlined"
       startIcon={
-        isLoading ? <ClientSpinner color="inherit" size="24px" /> : startIcon
+        isLoading ? <SpinnerIcon /> : startIcon
       }
     />
   );

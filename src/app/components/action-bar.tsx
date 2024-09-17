@@ -1,6 +1,7 @@
-import { styled, withDefaultProps } from '@/app/theme';
+import { styled } from '@/app/theme';
 import { Box, Divider as MuiDivider } from '@mui/material';
 import { Button as OphButton, colors } from '@opetushallitus/oph-design-system';
+import { withDefaultProps } from '../lib/mui-utils';
 
 export const Button = withDefaultProps(
   styled(OphButton)(({ theme }) => ({

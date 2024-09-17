@@ -308,7 +308,7 @@ export type GetValintakoeExcelParams = {
 
 const getContentFilename = (headers: Headers) => {
   const contentDisposition = headers.get('content-disposition');
-  return contentDisposition?.match(/^attachment; filename="(.*)"$/)?.[1];
+  return contentDisposition?.match(/ filename="(.*)"$/)?.[1];
 };
 
 const downloadProcessDocument = async (processId: string) => {
@@ -365,4 +365,18 @@ export const getValintakoeOsoitetarrat = async ({
   });
   const tarratProcessId = createResponse?.data?.id;
   return await downloadProcessDocument(tarratProcessId);
+};
+
+export const getValintalaskennanTulosExcel = async ({
+  hakukohdeOid,
+}: {
+  hakukohdeOid: string;
+}) => {
+  const { data, headers } = await client.get<Blob>(
+    configuration.valintalaskennanTulosExcelUrl({ hakukohdeOid }),
+  );
+  return {
+    fileName: getContentFilename(headers),
+    blob: data,
+  };
 };

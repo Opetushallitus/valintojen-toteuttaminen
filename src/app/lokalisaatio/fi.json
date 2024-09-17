@@ -203,7 +203,8 @@
       "pisteet": "Pisteet",
       "valintatieto": "Valintatieto",
       "muutoksen-syy": "Muutoksen syy"
-    }
+    },
+    "virhe-vie-kaikki-taulukkolaskentaan": "Taulukkolaskentaan viemisessä tapahtui virhe!"
   },
   "sijoittelun-tulokset": {
     "otsikko": "Sijoittelun tulokset"

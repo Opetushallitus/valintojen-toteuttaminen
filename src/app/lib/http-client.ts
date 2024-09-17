@@ -56,11 +56,13 @@ const retryWithLogin = async (request: Request, loginUrl: string) => {
 type BodyParser<T> = (res: Response) => Promise<T>;
 
 const DEFAULT_BODY_PARSER = async (res: Response) => await res.text();
+const BLOB_PARSER = async (response: Response) => await response.blob();
 
 const RESPONSE_BODY_PARSERS: Record<string, BodyParser<unknown>> = {
   'application/json': async (response: Response) => await response.json(),
-  'application/octet-stream': async (response: Response) =>
-    await response.blob(),
+  'application/octet-stream': BLOB_PARSER,
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+    BLOB_PARSER,
 };
 
 const responseToData = async <Result = unknown>(res: Response) => {

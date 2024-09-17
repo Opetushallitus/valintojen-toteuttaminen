@@ -18,7 +18,6 @@ import {
 import { downloadBlob } from '../lib/common';
 import { useMutation } from '@tanstack/react-query';
 import useToaster from '@/app/hooks/useToaster';
-import { colors } from '@opetushallitus/oph-design-system';
 import { DownloadButton } from './download-button';
 
 type ValintakoekutsutDownloadProps = {
@@ -28,7 +27,7 @@ type ValintakoekutsutDownloadProps = {
   selection: Set<string>;
 };
 
-export const useExcelDownloadMutation = ({
+const useExcelDownloadMutation = ({
   hakuOid,
   hakukohdeOid,
   valintakoeTunniste,
@@ -57,7 +56,7 @@ export const useExcelDownloadMutation = ({
   });
 };
 
-export const useOsoitetarratMutation = ({
+const useOsoitetarratMutation = ({
   hakuOid,
   hakukohdeOid,
   valintakoeTunniste,
@@ -111,7 +110,6 @@ const ExcelDownloadButton = ({
       Component={ActionBar.Button}
       disabled={selection.size === 0}
       mutation={excelMutation}
-      spinnerStyles={{ color: colors.white }}
       startIcon={<FileDownloadOutlined />}
     >
       {t('yleinen.vie-taulukkolaskentaan')}
@@ -144,7 +142,6 @@ const OsoitetarratDownloadButton = ({
       Component={ActionBar.Button}
       disabled={selection.size === 0}
       mutation={osoitetarratMutation}
-      spinnerStyles={{ color: colors.white }}
       startIcon={<NoteOutlined />}
     >
       {t('valintakoekutsut.muodosta-osoitetarrat')}

@@ -1,8 +1,9 @@
 'use client';
 import { styled } from '@mui/material/styles';
 import { Box } from '@mui/material';
-import { colors, withDefaultProps } from '@/app/theme';
+import { colors } from '@/app/theme';
 import { DEFAULT_BOX_BORDER } from '../lib/constants';
+import { withDefaultProps } from '../lib/mui-utils';
 
 export const MainContainer = withDefaultProps(
   styled(Box)(({ theme }) => ({
