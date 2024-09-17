@@ -272,7 +272,7 @@ export type Osallistuminen =
   | 'EI_VAADITA'
   | 'VIRHE';
 
-type ValintakoeTulos = {
+type ValintakoeOsallistumistulos = {
   hakuOid: string;
   hakemusOid: string;
   hakijaOid: string;
@@ -302,37 +302,45 @@ type ValintakoeTulos = {
   }>;
 };
 
-type ValintakoeTuloksetResponse = {
+export type ValintakoekutsutData = {
   valintakokeetByTunniste: Record<string, ValintakoeData>;
   hakemuksetByOid: Record<string, Hakemus>;
-  valintakoeTulokset: Array<ValintakoeTulos>;
+  valintakoeOsallistumiset: Array<ValintakoeOsallistumistulos>;
 };
 
-export async function getValintakoeTulokset({
+const getValintakoeOsallistumiset = async ({
+  hakukohdeOid,
+}: {
+  hakukohdeOid: string;
+}) => {
+  const response = await client.get<Array<ValintakoeOsallistumistulos>>(
+    configuration.valintakoeOsallistumisetUrl({ hakukohdeOid }),
+  );
+  return response.data;
+};
+
+export async function getValintakoekutsutData({
   hakuOid,
   hakukohdeOid,
 }: {
   hakuOid: string;
   hakukohdeOid: string;
-}): Promise<ValintakoeTuloksetResponse> {
+}): Promise<ValintakoekutsutData> {
   const valintakokeet = await getHakukohdeValintakokeet(hakukohdeOid);
 
   if (isEmpty(valintakokeet)) {
     return {
       valintakokeetByTunniste: EMPTY_OBJECT,
       hakemuksetByOid: EMPTY_OBJECT,
-      valintakoeTulokset: EMPTY_ARRAY,
+      valintakoeOsallistumiset: EMPTY_ARRAY,
     };
   }
 
-  const [valintakoeTuloksetResponse, hakukohdeHakemukset] = await Promise.all([
-    client.get<Array<ValintakoeTulos>>(
-      configuration.valintakoeTuloksetUrl({ hakukohdeOid }),
-    ),
+  const [valintakoeOsallistumiset, hakukohdeHakemukset] = await Promise.all([
+    getValintakoeOsallistumiset({ hakukohdeOid }),
     getHakemukset({ hakuOid, hakukohdeOid }),
   ]);
-  const valintakoeTulokset = valintakoeTuloksetResponse.data;
-  const valintakoeHakemusOids = valintakoeTulokset.map(
+  const valintakoeHakemusOids = valintakoeOsallistumiset.map(
     ({ hakemusOid }) => hakemusOid,
   );
   const hakukohdeHakemusOids = hakukohdeHakemukset.map(prop('hakemusOid'));
@@ -360,7 +368,7 @@ export async function getValintakoeTulokset({
       prop('selvitettyTunniste'),
     ),
     hakemuksetByOid,
-    valintakoeTulokset,
+    valintakoeOsallistumiset,
   };
 }
 
