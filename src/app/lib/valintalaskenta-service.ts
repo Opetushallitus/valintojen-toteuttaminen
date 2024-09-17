@@ -90,7 +90,7 @@ export const getHakijaryhmat = async (
   hakuOid: string,
   hakukohdeOid: string,
 ): Promise<HakukohteenHakijaryhma[]> => {
-  const hakemukset: Hakemus[] = await getHakemukset(hakuOid, hakukohdeOid);
+  const hakemukset: Hakemus[] = await getHakemukset({ hakuOid, hakukohdeOid });
   const tulokset = await getLatestSijoitteluAjonTulokset(hakuOid, hakukohdeOid);
   const valintaTulokset = await getHakukohteenValintatuloksetIlmanHakijanTilaa(
     hakuOid,

@@ -1,12 +1,9 @@
 'use client';
-import { useSuspenseQueries } from '@tanstack/react-query';
-import { getHakemukset } from '../lib/ataru';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import {
   Language,
   TranslatedName,
 } from '../lib/localization/localization-types';
-import { Hakemus } from '../lib/types/ataru-types';
-import { getHakukohdeValintakokeet } from '../lib/valintaperusteet';
 import {
   getValintakoeTulokset,
   Osallistuminen,
@@ -37,43 +34,26 @@ export const useValintakoekutsut = ({
   ryhmittely: Ryhmittely;
   vainKutsuttavat: boolean;
 }) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [hakemukset, valintakokeet, valintakoeTulokset] = useSuspenseQueries({
-    queries: [
-      {
-        queryKey: ['getHakemukset', hakuOid, hakukohdeOid],
-        queryFn: () => getHakemukset(hakuOid, hakukohdeOid),
-        staleTime: 120 * 1000,
-        select: (data: Array<Hakemus>) =>
-          data?.reduce(
-            (result, hakemus) => {
-              result[hakemus.hakemusOid] = hakemus;
-              return result;
-            },
-            {} as Record<string, Hakemus>,
-          ),
-      },
-      {
-        queryKey: ['getHakukohdeValintakokeet', hakukohdeOid],
-        queryFn: () => getHakukohdeValintakokeet(hakukohdeOid),
-      },
-      {
-        queryKey: ['getValintakoetulokset', hakukohdeOid],
-        queryFn: () => getValintakoeTulokset(hakukohdeOid),
-      },
-    ],
+  const valintakoeTuloksetData = useSuspenseQuery({
+    queryKey: ['getValintakoetulokset', hakukohdeOid],
+    queryFn: () => getValintakoeTulokset({ hakuOid, hakukohdeOid }),
   });
-  const hakemuksetByOid = hakemukset.data;
+
+  const { valintakokeetByTunniste, valintakoeTulokset, hakemuksetByOid } =
+    valintakoeTuloksetData.data;
 
   return useMemo(() => {
     if (ryhmittely === 'kokeittain') {
-      return valintakoeTulokset.data?.reduce(
+      return valintakoeTulokset?.reduce(
         (result, valintakoeTulos) => {
           valintakoeTulos.hakutoiveet.forEach((hakutoive) => {
             if (hakutoive.hakukohdeOid === hakukohdeOid) {
               hakutoive.valinnanVaiheet.forEach((valinnanVaihe) => {
                 valinnanVaihe.valintakokeet.forEach((valintakoe) => {
                   const { valintakoeTunniste, nimi } = valintakoe;
+                  if (!valintakokeetByTunniste[valintakoeTunniste]) {
+                    return result;
+                  }
                   if (!result[valintakoeTunniste]) {
                     result[valintakoeTunniste] = {
                       nimi,
@@ -82,9 +62,9 @@ export const useValintakoekutsut = ({
                   }
                   const hakemus = hakemuksetByOid[valintakoeTulos.hakemusOid];
 
-                  const osallistuminen =
-                    valintakoe.osallistuminenTulos.osallistuminen;
-                  // TODO: Ehkä muita ehtoja milloin näytetään? Tarvitseeko oikeasti noutaa valintakokeet?
+                  const osallistuminen = valintakoe.kutsutaankoKaikki
+                    ? 'OSALLISTUU'
+                    : valintakoe.osallistuminenTulos.osallistuminen;
                   if (
                     (vainKutsuttavat && osallistuminen === 'OSALLISTUU') ||
                     !vainKutsuttavat
@@ -94,8 +74,7 @@ export const useValintakoekutsut = ({
                       hakemusOid: hakemus.hakemusOid,
                       hakijanNimi: hakemus?.hakijanNimi,
                       asiointiKieli: hakemus?.asiointikieliKoodi,
-                      osallistuminen:
-                        valintakoe.osallistuminenTulos.osallistuminen,
+                      osallistuminen,
                       lisatietoja: R.mapKeys(
                         valintakoe?.osallistuminenTulos?.kuvaus ?? {},
                         (k) => R.toLowerCase(k),
@@ -122,10 +101,11 @@ export const useValintakoekutsut = ({
       return {};
     }
   }, [
-    valintakoeTulokset.data,
+    valintakoeTulokset,
     hakemuksetByOid,
     hakukohdeOid,
     vainKutsuttavat,
     ryhmittely,
+    valintakokeetByTunniste,
   ]);
 };

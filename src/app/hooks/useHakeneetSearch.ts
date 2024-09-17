@@ -67,7 +67,7 @@ export const useHakeneetSearchResults = (
 
   const { data: hakeneet } = useSuspenseQuery({
     queryKey: ['getHakeneet' + hakukohdeOid],
-    queryFn: () => getHakemukset(hakuOid, hakukohdeOid),
+    queryFn: () => getHakemukset({ hakuOid, hakukohdeOid }),
   });
 
   const { searchPhrase, page, setPage, pageSize, setPageSize, sort, setSort } =

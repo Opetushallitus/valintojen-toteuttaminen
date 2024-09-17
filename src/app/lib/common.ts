@@ -32,6 +32,7 @@ export const isEmpty = (value: unknown) => {
   );
 };
 
+export const EMPTY_OBJECT = Object.freeze({});
 export const EMPTY_ARRAY = Object.freeze([]) as Array<never>;
 
 export function downloadBlob(fileName: string, data: Blob) {

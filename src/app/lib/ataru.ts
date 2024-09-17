@@ -53,11 +53,28 @@ const getTila = (toive?: {
     : HakemuksenTila.AKTIIVINEN;
 };
 
-export async function getHakemukset(
-  hakuOid: string,
-  hakukohdeOid: string,
-): Promise<Hakemus[]> {
-  const url = `${configuration.hakemuksetUrl}?hakuOid=${hakuOid}&hakukohdeOid=${hakukohdeOid}`;
+export async function getHakemukset({
+  hakuOid,
+  hakukohdeOid,
+  hakemusOids,
+}: {
+  hakuOid?: string;
+  hakukohdeOid?: string;
+  hakemusOids?: Array<string>;
+}): Promise<Hakemus[]> {
+  const url = new URL(configuration.hakemuksetUrl);
+  if (hakuOid) {
+    url.searchParams.append('hakuOid', hakuOid);
+  }
+  if (hakukohdeOid) {
+    url.searchParams.append('hakukohdeOid', hakukohdeOid);
+  }
+  if (hakemusOids) {
+    for (const hakemusOid of hakemusOids) {
+      url.searchParams.append('hakemusOids', hakemusOid);
+    }
+  }
+
   const response = await client.get<
     Array<{
       asiointiKieli: {

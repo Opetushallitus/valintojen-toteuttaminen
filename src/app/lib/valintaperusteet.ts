@@ -150,14 +150,16 @@ export const getValintakokeet = async (
   });
 };
 
-export type ValintakokeetData = Array<{
+export type ValintakoeData = {
   nimi: string;
   aktiivinen: boolean;
   lahetetaankoKoekutsut: boolean;
-}>;
+  kutsutaankoKaikki: boolean;
+  selvitettyTunniste: string;
+};
 
 export const getHakukohdeValintakokeet = async (hakukohdeOid: string) => {
-  const response = await client.get<ValintakokeetData>(
+  const response = await client.get<Array<ValintakoeData>>(
     configuration.hakukohdeValintakokeetUrl({ hakukohdeOid }),
   );
   return response.data.filter((v) => v.aktiivinen && v.lahetetaankoKoekutsut);

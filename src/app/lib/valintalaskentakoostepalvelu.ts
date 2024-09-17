@@ -12,17 +12,24 @@ import {
   ValintakoeOsallistuminen,
   ValintakokeenPisteet,
 } from './types/laskenta-types';
-import { getHakemukset } from './ataru';
-import { getValintakokeet } from './valintaperusteet';
 import {
+  difference,
   flatMap,
   indexBy,
   isEmpty,
   isNonNullish,
   mapValues,
   pipe,
+  prop,
 } from 'remeda';
-import { EMPTY_ARRAY } from './common';
+import {
+  getHakukohdeValintakokeet,
+  getValintakokeet,
+  ValintakoeData,
+} from './valintaperusteet';
+import { EMPTY_ARRAY, EMPTY_OBJECT } from './common';
+import { getHakemukset } from './ataru';
+import { Hakemus } from './types/ataru-types';
 
 const formSearchParamsForStartLaskenta = ({
   laskentaUrl,
@@ -172,7 +179,7 @@ export const getScoresForHakukohde = async (
   }
 
   const [hakemukset, { data: pistetiedot }] = await Promise.all([
-    getHakemukset(hakuOid, hakukohdeOid),
+    getHakemukset({ hakuOid, hakukohdeOid }),
     client.get<{
       lastModified?: string;
       valintapisteet: Array<{
@@ -265,39 +272,97 @@ export type Osallistuminen =
   | 'EI_VAADITA'
   | 'VIRHE';
 
-export const getValintakoeTulokset = async (hakukohdeOid: string) => {
-  const response = await client.get<
-    Array<{
-      hakuOid: string;
-      hakemusOid: string;
-      hakijaOid: string;
-      createdAt: string;
-      hakutoiveet: Array<{
-        hakukohdeOid: string;
-        valinnanVaiheet: Array<{
-          valinnanVaiheOid: string;
-          valinnanVaiheJarjestysluku: number;
-          valintakokeet: Array<{
-            valintakoeOid: string;
-            valintakoeTunniste: string;
-            nimi: string;
-            aktiivinen: boolean;
-            lahetetaankoKoekutsut: boolean;
-            osallistuminenTulos: {
-              osallistuminen: Osallistuminen;
-              kuvaus: {
-                FI?: string;
-                SV?: string;
-                EN?: string;
-              };
-            };
-          }>;
-        }>;
+type ValintakoeTulos = {
+  hakuOid: string;
+  hakemusOid: string;
+  hakijaOid: string;
+  createdAt: string;
+  hakutoiveet: Array<{
+    hakukohdeOid: string;
+    valinnanVaiheet: Array<{
+      valinnanVaiheOid: string;
+      valinnanVaiheJarjestysluku: number;
+      valintakokeet: Array<{
+        valintakoeOid: string;
+        valintakoeTunniste: string;
+        nimi: string;
+        aktiivinen: boolean;
+        lahetetaankoKoekutsut: boolean;
+        kutsutaankoKaikki: boolean | null;
+        osallistuminenTulos: {
+          osallistuminen: Osallistuminen;
+          kuvaus: {
+            FI?: string;
+            SV?: string;
+            EN?: string;
+          };
+        };
       }>;
-    }>
-  >(configuration.valintakoeTuloksetUrl({ hakukohdeOid }));
-  return response.data;
+    }>;
+  }>;
 };
+
+type ValintakoeTuloksetResponse = {
+  valintakokeetByTunniste: Record<string, ValintakoeData>;
+  hakemuksetByOid: Record<string, Hakemus>;
+  valintakoeTulokset: Array<ValintakoeTulos>;
+};
+
+export async function getValintakoeTulokset({
+  hakuOid,
+  hakukohdeOid,
+}: {
+  hakuOid: string;
+  hakukohdeOid: string;
+}): Promise<ValintakoeTuloksetResponse> {
+  const valintakokeet = await getHakukohdeValintakokeet(hakukohdeOid);
+
+  if (isEmpty(valintakokeet)) {
+    return {
+      valintakokeetByTunniste: EMPTY_OBJECT,
+      hakemuksetByOid: EMPTY_OBJECT,
+      valintakoeTulokset: EMPTY_ARRAY,
+    };
+  }
+
+  const [valintakoeTuloksetResponse, hakukohdeHakemukset] = await Promise.all([
+    client.get<Array<ValintakoeTulos>>(
+      configuration.valintakoeTuloksetUrl({ hakukohdeOid }),
+    ),
+    getHakemukset({ hakuOid, hakukohdeOid }),
+  ]);
+  const valintakoeTulokset = valintakoeTuloksetResponse.data;
+  const valintakoeHakemusOids = valintakoeTulokset.map(
+    ({ hakemusOid }) => hakemusOid,
+  );
+  const hakukohdeHakemusOids = hakukohdeHakemukset.map(prop('hakemusOid'));
+  const missingHakemusOids = difference(
+    valintakoeHakemusOids,
+    hakukohdeHakemusOids,
+  );
+
+  let allHakemukset = hakukohdeHakemukset;
+
+  if (!isEmpty(missingHakemusOids)) {
+    const missingHakemukset = await getHakemukset({
+      hakemusOids: missingHakemusOids,
+    });
+    allHakemukset = hakukohdeHakemukset.concat(missingHakemukset);
+  }
+
+  const hakemuksetByOid = indexBy(allHakemukset, prop('hakemusOid'));
+
+  return {
+    valintakokeetByTunniste: indexBy(
+      valintakokeet.filter(
+        (koe) => koe.aktiivinen && koe.lahetetaankoKoekutsut,
+      ),
+      prop('selvitettyTunniste'),
+    ),
+    hakemuksetByOid,
+    valintakoeTulokset,
+  };
+}
 
 export type GetValintakoeExcelParams = {
   hakuOid: string;
