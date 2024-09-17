@@ -182,7 +182,7 @@ export const getScoresForHakukohde = async (
   const [hakemukset, { data: pistetiedot }] = await Promise.all([
     getHakemukset({ hakuOid, hakukohdeOid }),
     client.get<{
-      lastModified?: string;
+      lastmodified?: string;
       valintapisteet: Array<{
         applicationAdditionalDataDTO: {
           oid: string;
@@ -228,8 +228,8 @@ export const getScoresForHakukohde = async (
       },
     );
 
-  const lastModified = isNonNullish(pistetiedot.lastModified)
-    ? new Date(pistetiedot.lastModified)
+  const lastModified = isNonNullish(pistetiedot.lastmodified)
+    ? new Date(pistetiedot.lastmodified)
     : undefined;
   return {
     lastModified,
