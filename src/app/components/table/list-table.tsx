@@ -282,6 +282,10 @@ const TableWrapper = styled(Box)(({ theme }) => ({
   rowGap: theme.spacing(1),
 }));
 
+const ListCheckbox = styled(Checkbox)({
+  padding: 0,
+});
+
 export type Row<K extends string = string> = Record<K, unknown>;
 
 const TablePagination = ({
@@ -346,7 +350,7 @@ export const ListTable = <T extends Row>({
               <HeaderCell
                 key="select-all"
                 title={
-                  <Checkbox
+                  <ListCheckbox
                     checked={selection.size === rows.length}
                     indeterminate={
                       selection.size > 0 &&
@@ -397,7 +401,7 @@ export const ListTable = <T extends Row>({
               <TableRow key={rowId}>
                 {checkboxSelection && (
                   <StyledCell>
-                    <Checkbox
+                    <ListCheckbox
                       checked={selection.has(rowId)}
                       onChange={(
                         event: React.ChangeEvent<HTMLInputElement>,
