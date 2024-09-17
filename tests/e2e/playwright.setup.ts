@@ -16,13 +16,18 @@ import KOKEET from './fixtures/valintakokeet.json';
 const port = 3104;
 
 const modifyResponse = (response: ServerResponse, body: unknown) => {
+  response.setHeader('content-type', 'application/json');
   response.write(JSON.stringify(body));
   response.end();
 };
 
 export default async function playwrightSetup() {
   const server = await createServer(async (request, response) => {
-    if (request.url?.endsWith(`favicon.ico`)) {
+    if (request.url?.endsWith('apply-raamit.js')) {
+      response.write('');
+      response.end();
+      return;
+    } else if (request.url?.endsWith(`favicon.ico`)) {
       response.writeHead(404);
       response.end();
       return;
@@ -38,7 +43,7 @@ export default async function playwrightSetup() {
         organisaatiot: [ophOrg],
       });
     } else if (request.url?.includes(`henkilo/current/asiointiKieli`)) {
-      response.setHeader('Content-Type', 'text/plain');
+      response.setHeader('content-type', 'text/plain');
       response.write('fi');
       response.end();
       return;

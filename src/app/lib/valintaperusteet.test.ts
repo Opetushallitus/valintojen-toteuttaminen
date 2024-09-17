@@ -347,6 +347,7 @@ function buildDummyValinkoeResponse(
   ];
 
   return Promise.resolve({
+    headers: new Headers(),
     data: dummyKokeet,
   });
 }

@@ -49,7 +49,7 @@ test('displays valintalaskennan tulos', async ({ page }) => {
   );
 
   await expect(
-    page.getByRole('link', { name: 'Vie kaikki taulukkolaskentaan' }),
+    page.getByRole('button', { name: 'Vie kaikki taulukkolaskentaan' }),
   ).toBeVisible();
 
   const jono1HeadingText =

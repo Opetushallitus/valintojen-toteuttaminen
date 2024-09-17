@@ -20,6 +20,7 @@ type HakuResponseData = {
 
 const mapToHaku = (h: HakuResponseData) => {
   const haunTila: Tila = Tila[h.tila.toUpperCase() as keyof typeof Tila];
+
   return {
     oid: h.oid,
     nimi: h.nimi,

@@ -42,8 +42,7 @@ test('starts laskenta', async ({ page }) => {
         latausUrl: '12345abs',
       };
       await route.fulfill({
-        body: JSON.stringify(started),
-        contentType: 'json',
+        json: started,
       });
     },
   );
@@ -57,8 +56,7 @@ test('starts laskenta', async ({ page }) => {
         hakukohteitaKeskeytetty: 0,
       };
       await route.fulfill({
-        body: JSON.stringify(seuranta),
-        contentType: 'json',
+        json: seuranta,
       });
     },
   );
@@ -81,8 +79,7 @@ test('shows success toast when laskenta completes', async ({ page }) => {
         latausUrl: '12345abs',
       };
       await route.fulfill({
-        body: JSON.stringify(started),
-        contentType: 'json',
+        json: started,
       });
     },
   );
@@ -96,8 +93,7 @@ test('shows success toast when laskenta completes', async ({ page }) => {
         hakukohteitaKeskeytetty: 0,
       };
       await route.fulfill({
-        body: JSON.stringify(seuranta),
-        contentType: 'json',
+        json: seuranta,
       });
     },
   );
@@ -105,15 +101,14 @@ test('shows success toast when laskenta completes', async ({ page }) => {
     '*/**/valintalaskentakoostepalvelu/resources/valintalaskentakerralla/status/12345abs/yhteenveto',
     async (route) => {
       await route.fulfill({
-        body: JSON.stringify({
+        json: {
           hakukohteet: [
             {
               hakukohde: '1.2.246.562.20.00000000000000045105',
               ilmoitukset: [],
             },
           ],
-        }),
-        contentType: 'json',
+        },
       });
     },
   );

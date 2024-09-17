@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 import {
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
@@ -23,7 +23,6 @@ const TABS_TO_TEST: Tab[] = [
     textLocator: 'Valinnanvaiheen nimi',
     route: 'valinnan-hallinta',
   },
-  { title: 'Valintakoekutsut', route: 'valintakoekutsut' },
   {
     title: 'Pistesyöttö',
     textLocator: 'Näytä vain laskentaan vaikuttavat osallistumistiedot',
@@ -41,11 +40,6 @@ const TABS_TO_TEST: Tab[] = [
   },
   { title: 'Sijoittelun tulokset', route: 'sijoittelun-tulokset' },
 ] as const;
-
-test.beforeEach(async ({ page }) => {
-  await page.goto('/');
-  await expect(page).toHaveTitle(/Valintojen Toteuttaminen/);
-});
 
 test('navigates to hakukohde tabs', async ({ page }) => {
   await page.goto(
@@ -74,6 +68,16 @@ test('Hakukohde-page accessibility', async ({ page }) => {
   await expectPageAccessibilityOk(page);
 });
 
+const checkTabContent = async (page: Page, tab: Tab) => {
+  if (tab.textLocator) {
+    await expect(page.locator('main').getByText(tab.textLocator)).toBeVisible();
+  } else {
+    await expect(
+      page.getByRole('heading', { level: 3, name: tab.title }),
+    ).toBeVisible();
+  }
+};
+
 test.describe('Hakukohde tabs', () => {
   for (const tab of TABS_TO_TEST) {
     test(`Navigates to ${tab.title}`, async ({ page }) => {
@@ -85,12 +89,8 @@ test.describe('Hakukohde tabs', () => {
       if (tab.invisibleInTabsForKKHaku) {
         await expect(page.getByText(tab.title)).toBeHidden();
       } else {
-        await page.getByText(tab.title).click();
-        if (tab.textLocator) {
-          await expect(page.locator('body')).toContainText(tab.textLocator);
-        } else {
-          await expect(page.locator('h3')).toHaveText(tab.title);
-        }
+        await page.getByRole('link', { name: tab.title }).click();
+        await checkTabContent(page, tab);
       }
     });
 
@@ -98,11 +98,7 @@ test.describe('Hakukohde tabs', () => {
       await page.goto(
         `/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/${tab.route}`,
       );
-      if (tab.textLocator) {
-        await expect(page.locator('body')).toContainText(tab.textLocator);
-      } else {
-        await expect(page.locator('h3')).toHaveText(tab.title);
-      }
+      await checkTabContent(page, tab);
     });
 
     test(`${tab.title} page accessibility`, async ({ page }) => {

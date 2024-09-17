@@ -50,7 +50,9 @@ test('shows success toast when updating value', async ({ page }) => {
   await goToPisteSyotto(page);
   await page.route(
     '*/**/valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105',
-    async (route) => await route.fulfill({ status: 204 }),
+    async (route) => await route.fulfill({ 
+      contentType: '',
+      status: 204 }),
   );
   const huiRow = page.getByRole('row', { name: 'Hui Haamu Valitse' });
   await huiRow.getByLabel('Valitse...').click();

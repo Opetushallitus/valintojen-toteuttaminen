@@ -79,7 +79,7 @@ test('shows harkinnanvarainen column when toisen asteen yhteishaku', async ({
         totalHakukohteet: 1,
         kohdejoukkoKoodiUri: 'haunkohdejoukko_11',
       };
-      await route.fulfill({ body: JSON.stringify(haku), contentType: 'json' });
+      await route.fulfill({ json: haku });
     },
   );
   await page.goto(

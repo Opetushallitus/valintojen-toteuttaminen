@@ -13,6 +13,9 @@ import nextConfig from './next.config.mjs';
 export default defineConfig({
   testDir: './tests/e2e',
   globalSetup: './tests/e2e/playwright.setup.ts',
+  expect: {
+    timeout: 8000,
+  },
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */

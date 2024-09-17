@@ -17,7 +17,7 @@ test('shows only organizations user has permissions to', async ({ page }) => {
           },
         ],
       };
-      await route.fulfill({ body: JSON.stringify(user), contentType: 'json' });
+      await route.fulfill({ json: user });
     },
   );
   await page.goto('/');
@@ -44,7 +44,7 @@ test('shows unauthorized message if user has no proper access rights', async ({
           },
         ],
       };
-      await route.fulfill({ body: JSON.stringify(user), contentType: 'json' });
+      await route.fulfill({ json: user });
     },
   );
   await page.goto('/');

@@ -60,6 +60,18 @@ const ROWS = {
   ],
 };
 
+const getYoAccordionContent = (page: Page) => {
+  return page.getByRole('region', {
+    name: 'Hakijaryhmä: Ensikertalaiset, Todistusvalinta (YO)',
+  });
+};
+
+const getAmmAccordionContent = (page: Page) => {
+  return page.getByRole('region', {
+    name: 'Hakijaryhmä: Ensikertalaiset, Todistusvalinta (AMM)',
+  });
+};
+
 const assertRows = async (rows: Locator, contentToExpect: string[][]) => {
   await expect(rows).toHaveCount(contentToExpect.length);
   for (const [index, content] of contentToExpect.entries()) {
@@ -72,12 +84,14 @@ test('displays hakijaryhmat', async ({ page }) => {
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/hakijaryhmat',
   );
   await expectAllSpinnersHidden(page);
+
   await expect(page.locator('h1')).toHaveText(
     '> Tampere University Separate Admission/ Finnish MAOL Competition Route 2024',
   );
-  const headrow = page.locator(
-    '#ensikertalaiset-hakijaryhma-oid-accordion-content thead:first-child tr',
-  );
+
+  const accordion1Content = getYoAccordionContent(page);
+  const headrow = accordion1Content.locator('thead:first-child tr');
+
   await checkRow(
     headrow,
     [
@@ -90,18 +104,17 @@ test('displays hakijaryhmat', async ({ page }) => {
     ],
     'th',
   );
-  const rows = page.locator(
-    '[data-test-id="ensikertalaiset-hakijaryhma-oid-accordion-content"] tbody tr',
-  );
+
+  const rows = accordion1Content.locator(' tbody tr');
   await assertRows(rows, [
     ROWS.ruhtinas,
     ROWS.kreiviTable1,
     ROWS.purukumiTable1,
     ROWS.haamuTable1,
   ]);
-  const rows2 = page.locator(
-    '[data-test-id="ensikertalaiset-hakijaryhma-oid2-accordion-content"] tbody tr',
-  );
+
+  const accordion2Content = getAmmAccordionContent(page);
+  const rows2 = accordion2Content.locator('tbody tr');
   await assertRows(rows2, [
     ROWS.ruhtinas,
     ROWS.kreiviTable2,
@@ -121,9 +134,9 @@ test('sorts list by sijoittelun tila when header clicked', async ({ page }) => {
   await tilaHeader.getByRole('button').click();
   await expect(tilaHeader).toHaveAttribute('aria-sort', 'ascending');
 
-  let rows = page.locator(
-    '[data-test-id="ensikertalaiset-hakijaryhma-oid-accordion-content"] tbody tr',
-  );
+  const accordion1Content = getYoAccordionContent(page);
+  const rows = accordion1Content.locator('tbody tr');
+
   await assertRows(rows, [
     ROWS.ruhtinas,
     ROWS.kreiviTable1,
@@ -135,9 +148,6 @@ test('sorts list by sijoittelun tila when header clicked', async ({ page }) => {
 
   await expect(tilaHeader).toHaveAttribute('aria-sort', 'descending');
 
-  rows = page.locator(
-    '[data-test-id="ensikertalaiset-hakijaryhma-oid-accordion-content"] tbody tr',
-  );
   await assertRows(rows, [
     ROWS.haamuTable1,
     ROWS.purukumiTable1,
@@ -160,83 +170,57 @@ test.describe('filters', () => {
   test('filters by name', async () => {
     const hakuInput = page.getByLabel('Hae hakijan nimellä tai');
     await hakuInput.fill('Ruht');
-    let rows = page.locator(
-      '[data-test-id="ensikertalaiset-hakijaryhma-oid-accordion-content"] tbody tr',
-    );
+    const rows = getYoAccordionContent(page).locator('tbody tr');
     await assertRows(rows, [ROWS.ruhtinas]);
     await hakuInput.fill('Hui');
-    rows = page.locator(
-      '[data-test-id="ensikertalaiset-hakijaryhma-oid-accordion-content"] tbody tr',
-    );
     await assertRows(rows, [ROWS.haamuTable1]);
   });
 
   test('filters by application oid', async () => {
     const hakuInput = page.getByLabel('Hae hakijan nimellä tai');
     await hakuInput.fill('1.2.246.562.11.00000000000001543832');
-    const rows = page.locator(
-      '[data-test-id="ensikertalaiset-hakijaryhma-oid-accordion-content"] tbody tr',
-    );
+    const rows = getYoAccordionContent(page).locator('tbody tr');
     await assertRows(rows, [ROWS.haamuTable1]);
   });
 
   test('filters henkiloOid', async () => {
     const hakuInput = page.getByLabel('Hae hakijan nimellä tai');
     await hakuInput.fill('1.2.246.562.24.14598775927');
-    const rows = page.locator(
-      '[data-test-id="ensikertalaiset-hakijaryhma-oid-accordion-content"] tbody tr',
-    );
+    const rows = getYoAccordionContent(page).locator('tbody tr');
     await assertRows(rows, [ROWS.purukumiTable1]);
   });
 
   test('filters by sijoittelutila hylätty', async () => {
     await selectTila(page, 'HYLÄTTY');
-    const rows = page.locator(
-      '[data-test-id="ensikertalaiset-hakijaryhma-oid-accordion-content"] tbody tr',
-    );
+    const rows = getYoAccordionContent(page).locator('tbody tr');
     await assertRows(rows, [ROWS.haamuTable1]);
   });
 
   test('filters by sijoittelutila varalla', async () => {
     await selectTila(page, 'VARALLA');
-    const rows = page.locator(
-      '[data-test-id="ensikertalaiset-hakijaryhma-oid-accordion-content"] tbody tr',
-    );
+    const rows = getYoAccordionContent(page).locator('tbody tr');
     await assertRows(rows, [ROWS.kreiviTable1, ROWS.purukumiTable1]);
   });
 
   test('filters by kuuluu hakijaryhmaan', async () => {
     await selectKuuluuRyhmaan(page, 'Kyllä');
-    let rows = page.locator(
-      '[data-test-id="ensikertalaiset-hakijaryhma-oid-accordion-content"] tbody tr',
-    );
+    const rows = getYoAccordionContent(page).locator('tbody tr');
     await expect(rows).toHaveCount(3);
     await selectKuuluuRyhmaan(page, 'Ei');
-    rows = page.locator(
-      '[data-test-id="ensikertalaiset-hakijaryhma-oid-accordion-content"] tbody tr',
-    );
     await assertRows(rows, [ROWS.haamuTable1]);
   });
 
   test('filters by hyvaksytty hakijaryhmasta', async () => {
     await selectHyvaksytty(page, 'Kyllä');
-    let rows = page.locator(
-      '[data-test-id="ensikertalaiset-hakijaryhma-oid-accordion-content"] tbody tr',
-    );
-    await expect(rows).toHaveCount(4);
-    rows = page.locator(
-      '[data-test-id="ensikertalaiset-hakijaryhma-oid2-accordion-content"] tbody tr',
-    );
-    await expect(rows).toHaveCount(1);
+    const yoAccordionContent = getYoAccordionContent(page);
+    const ammAccordionContent = getAmmAccordionContent(page);
+    const yoRows = yoAccordionContent.locator('tbody tr');
+    const ammRows = ammAccordionContent.locator('tbody tr');
+    await expect(yoRows).toHaveCount(4);
+    await expect(ammRows).toHaveCount(1);
     await selectHyvaksytty(page, 'Ei');
-    rows = page.locator(
-      '[data-test-id="ensikertalaiset-hakijaryhma-oid-accordion-content"] tbody tr',
-    );
-    await expect(rows).toHaveCount(0);
-    rows = page.locator(
-      '[data-test-id="ensikertalaiset-hakijaryhma-oid2-accordion-content"] tbody tr',
-    );
-    await expect(rows).toHaveCount(3);
+    await expect(yoRows).toHaveCount(0);
+    await expect(ammRows).toHaveCount(3);
   });
 });
 
