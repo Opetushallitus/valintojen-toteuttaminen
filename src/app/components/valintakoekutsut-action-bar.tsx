@@ -17,16 +17,33 @@ import {
 } from '../lib/valintalaskentakoostepalvelu';
 import { downloadBlob } from '../lib/common';
 import { useMutation } from '@tanstack/react-query';
-import useToaster from '../hooks/useToaster';
-import { SpinnerIcon } from './spinner-icon';
+import useToaster from '@/app/hooks/useToaster';
 import { colors } from '@opetushallitus/oph-design-system';
+import { DownloadButton } from './download-button';
 
-export const useExcelDownloadMutation = () => {
+type ValintakoekutsutDownloadProps = {
+  hakuOid: string;
+  hakukohdeOid: string;
+  valintakoeTunniste: string;
+  selection: Set<string>;
+};
+
+export const useExcelDownloadMutation = ({
+  hakuOid,
+  hakukohdeOid,
+  valintakoeTunniste,
+  selection,
+}: ValintakoekutsutDownloadProps) => {
   const { addToast } = useToaster();
 
   return useMutation({
-    mutationFn: async (props: GetValintakoeExcelParams) => {
-      const { fileName, blob } = await getValintakoeExcel(props);
+    mutationFn: async () => {
+      const { fileName, blob } = await getValintakoeExcel({
+        hakuOid,
+        hakukohdeOid,
+        valintakoeTunniste,
+        hakemusOids: Array.from(selection),
+      });
       downloadBlob(fileName ?? 'valintakoekutsut.xls', blob);
     },
     onError: (e) => {
@@ -40,12 +57,22 @@ export const useExcelDownloadMutation = () => {
   });
 };
 
-export const useOsoitetarratMutation = () => {
+export const useOsoitetarratMutation = ({
+  hakuOid,
+  hakukohdeOid,
+  valintakoeTunniste,
+  selection,
+}: ValintakoekutsutDownloadProps) => {
   const { addToast } = useToaster();
 
   return useMutation({
-    mutationFn: async (props: GetValintakoeExcelParams) => {
-      const { fileName, blob } = await getValintakoeOsoitetarrat(props);
+    mutationFn: async () => {
+      const { fileName, blob } = await getValintakoeOsoitetarrat({
+        hakuOid,
+        hakukohdeOid,
+        valintakoeTunniste,
+        hakemusOids: Array.from(selection),
+      });
       downloadBlob(fileName ?? 'osoitetarrat.pdf', blob);
     },
     onError: (e) => {
@@ -70,33 +97,25 @@ const ExcelDownloadButton = ({
   valintakoeTunniste: string;
   selection: Set<string>;
 }) => {
-  const noSelection = selection.size === 0;
   const { t } = useTranslation();
 
-  const { mutate: downloadExcel, isPending: isExcelPending } =
-    useExcelDownloadMutation();
+  const excelMutation = useExcelDownloadMutation({
+    hakuOid,
+    hakukohdeOid,
+    valintakoeTunniste,
+    selection,
+  });
 
   return (
-    <ActionBar.Button
-      startIcon={
-        isExcelPending ? (
-          <SpinnerIcon sx={{ color: colors.white }} />
-        ) : (
-          <FileDownloadOutlined />
-        )
-      }
-      disabled={isExcelPending || noSelection}
-      onClick={() => {
-        downloadExcel({
-          hakuOid,
-          hakukohdeOid,
-          valintakoeTunniste,
-          hakemusOids: Array.from(selection),
-        });
-      }}
+    <DownloadButton
+      Component={ActionBar.Button}
+      disabled={selection.size === 0}
+      mutation={excelMutation}
+      spinnerStyles={{ color: colors.white }}
+      startIcon={<FileDownloadOutlined />}
     >
       {t('yleinen.vie-taulukkolaskentaan')}
-    </ActionBar.Button>
+    </DownloadButton>
   );
 };
 
@@ -111,32 +130,25 @@ const OsoitetarratDownloadButton = ({
   valintakoeTunniste: string;
   selection: Set<string>;
 }) => {
-  const noSelection = selection.size === 0;
   const { t } = useTranslation();
 
-  const { mutate: downloadOsoitetarrat, isPending } = useOsoitetarratMutation();
+  const osoitetarratMutation = useOsoitetarratMutation({
+    hakuOid,
+    hakukohdeOid,
+    valintakoeTunniste,
+    selection,
+  });
 
   return (
-    <ActionBar.Button
-      startIcon={
-        isPending ? (
-          <SpinnerIcon sx={{ color: colors.white }} />
-        ) : (
-          <NoteOutlined />
-        )
-      }
-      disabled={isPending || noSelection}
-      onClick={() => {
-        downloadOsoitetarrat({
-          hakuOid,
-          hakukohdeOid,
-          valintakoeTunniste,
-          hakemusOids: Array.from(selection),
-        });
-      }}
+    <DownloadButton
+      Component={ActionBar.Button}
+      disabled={selection.size === 0}
+      mutation={osoitetarratMutation}
+      spinnerStyles={{ color: colors.white }}
+      startIcon={<NoteOutlined />}
     >
       {t('valintakoekutsut.muodosta-osoitetarrat')}
-    </ActionBar.Button>
+    </DownloadButton>
   );
 };
 
@@ -151,8 +163,6 @@ export const ValintakoekutsutActionBar = ({
   resetSelection: () => void;
 } & GetValintakoeExcelParams) => {
   const { t } = useTranslation();
-
-  const noSelection = selection.size === 0;
 
   return (
     <ActionBar.Container>
@@ -181,7 +191,7 @@ export const ValintakoekutsutActionBar = ({
       <ActionBar.Divider />
       <ActionBar.Button
         startIcon={<DeselectOutlined />}
-        disabled={noSelection}
+        disabled={selection.size === 0}
         onClick={resetSelection}
       >
         {t('yleinen.poista-valinta')}
