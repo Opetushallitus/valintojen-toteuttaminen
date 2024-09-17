@@ -1,6 +1,10 @@
 'use client';
 import { ophColors } from '@opetushallitus/oph-design-system';
 import { styled as muiStyled } from '@mui/material/styles';
+import {
+  CheckBoxOutlined,
+  IndeterminateCheckBoxOutlined,
+} from '@mui/icons-material';
 
 export { ophColors } from '@opetushallitus/oph-design-system';
 
@@ -37,6 +41,12 @@ export const THEME_OVERRIDES = {
             textDecoration: 'underline',
           },
         },
+      },
+    },
+    MuiCheckbox: {
+      defaultProps: {
+        checkedIcon: <CheckBoxOutlined />,
+        indeterminateIcon: <IndeterminateCheckBoxOutlined />,
       },
     },
   },

@@ -8,7 +8,6 @@ import {
 } from '@mui/material';
 import { PisteSyottoSearch } from './pistesyotto-search';
 import { Valintakoe } from '@/app/lib/types/valintaperusteet-types';
-import { CheckBoxOutlined } from '@mui/icons-material';
 import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { LocalizedSelect } from '@/app/components/localized-select';
 
@@ -114,7 +113,6 @@ export const PisteSyottoControls = ({ kokeet }: { kokeet: Valintakoe[] }) => {
             <Checkbox
               checked={naytaVainLaskentaanVaikuttavat}
               onChange={changeNaytaVainLaskentaanVaikuttavat}
-              checkedIcon={<CheckBoxOutlined />}
             />
           }
           label={t('pistesyotto.laskentaanVaikuttavat')}
