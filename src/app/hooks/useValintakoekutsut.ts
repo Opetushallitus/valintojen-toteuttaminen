@@ -12,7 +12,6 @@ import {
   Osallistuminen,
 } from '../lib/valintalaskentakoostepalvelu';
 import * as R from 'remeda';
-import { toFormattedDateTimeString } from '../lib/localization/translation-utils';
 import { useMemo } from 'react';
 
 export type ValintakoeKutsuItem = {
@@ -101,9 +100,7 @@ export const useValintakoekutsut = ({
                         valintakoe?.osallistuminenTulos?.kuvaus ?? {},
                         (k) => R.toLowerCase(k),
                       ),
-                      laskettuPvm: toFormattedDateTimeString(
-                        valintakoeTulos.createdAt,
-                      ),
+                      laskettuPvm: valintakoeTulos.createdAt,
                     });
                   }
                 });

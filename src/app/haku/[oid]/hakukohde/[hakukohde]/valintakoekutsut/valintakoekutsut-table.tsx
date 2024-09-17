@@ -8,7 +8,7 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { ValintakoeKutsuItem } from '@/app/hooks/useValintakoekutsut';
 import { Box } from '@mui/material';
 import { useMemo, useState } from 'react';
-import { prop } from 'remeda';
+import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
 
 const TRANSLATIONS_PREFIX = 'valintakoekutsut.taulukko';
 
@@ -65,7 +65,7 @@ export const ValintakoekutsutTable = ({
       {
         title: `${TRANSLATIONS_PREFIX}.laskettuPvm`,
         key: 'laskettuPvm',
-        render: prop('laskettuPvm'),
+        render: ({ laskettuPvm }) => toFormattedDateTimeString(laskettuPvm),
       },
       {
         title: `${TRANSLATIONS_PREFIX}.asiointiKieli`,
