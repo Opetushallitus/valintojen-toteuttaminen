@@ -306,6 +306,30 @@ export type GetValintakoeExcelParams = {
   valintakoeTunniste: string;
 };
 
+const getContentFilename = (headers: Headers) => {
+  const contentDisposition = headers.get('content-disposition');
+  return contentDisposition?.match(/^attachment; filename="(.*)"$/)?.[1];
+};
+
+const downloadProcessDocument = async (processId: string) => {
+  const processRes = await client.get<{
+    dokumenttiId: string;
+    kasittelyssa: boolean;
+    keskeytetty: false;
+    kokonaistyo: {
+      valmis: boolean;
+    };
+  }>(configuration.dokumenttiProsessiUrl({ id: processId }));
+  const dokumenttiId = processRes?.data?.dokumenttiId;
+
+  return {
+    fileName: getContentFilename(processRes.headers),
+    blob: (
+      await client.get<Blob>(configuration.lataaDokumenttiUrl({ dokumenttiId }))
+    )?.data,
+  };
+};
+
 export const getValintakoeExcel = async ({
   hakuOid,
   hakukohdeOid,
@@ -321,20 +345,24 @@ export const getValintakoeExcel = async ({
     valintakoeTunnisteet: [valintakoeTunniste],
   });
   const excelProcessId = createResponse?.data?.id;
+  return await downloadProcessDocument(excelProcessId);
+};
 
-  const dokumenttiProsessi = await client.get<{
-    dokumenttiId: string;
-    kasittelyssa: boolean;
-    keskeytetty: false;
-    kokonaistyo: {
-      valmis: boolean;
-    };
-  }>(configuration.dokumenttiProsessiUrl({ id: excelProcessId }));
+export const getValintakoeOsoitetarrat = async ({
+  hakuOid,
+  hakukohdeOid,
+  hakemusOids,
+  valintakoeTunniste,
+}: GetValintakoeExcelParams) => {
+  const urlWithQuery = new URL(configuration.createValintakoeOsoitetarratUrl);
+  urlWithQuery.searchParams.append('hakuOid', hakuOid);
+  urlWithQuery.searchParams.append('hakukohdeOid', hakukohdeOid);
+  urlWithQuery.searchParams.append('valintakoeTunniste', valintakoeTunniste);
 
-  const dokumenttiId = dokumenttiProsessi?.data?.dokumenttiId;
-
-  const documentResponse = await client.get<Blob>(
-    configuration.lataaDokumenttiUrl({ dokumenttiId }),
-  );
-  return documentResponse.data;
+  const createResponse = await client.post<{ id: string }>(urlWithQuery, {
+    hakemusOids,
+    tag: 'valintakoetulos',
+  });
+  const tarratProcessId = createResponse?.data?.id;
+  return await downloadProcessDocument(tarratProcessId);
 };

@@ -72,7 +72,10 @@ const responseToData = async <Result = unknown>(res: Response) => {
     DEFAULT_BODY_PARSER) as BodyParser<Result>;
 
   try {
-    return { data: await parseBody(res) };
+    return {
+      headers: res.headers,
+      data: await parseBody(res),
+    };
   } catch (e) {
     console.error(`Parsing fetch response body as "${contentType}" failed!`);
     return Promise.reject(e);

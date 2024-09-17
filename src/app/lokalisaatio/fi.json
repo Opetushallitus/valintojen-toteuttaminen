@@ -158,7 +158,9 @@
       "lisatietoja": "Lisätietoja",
       "laskettuPvm": "Laskettu pvm",
       "asiointiKieli": "Asiointikieli"
-    }
+    },
+    "virhe-vie-taulukkolaskentaan": "Taulukkolaskentaan viemisessä tapahtui virhe!",
+    "virhe-osoitetarrat": "Osoitetarrojen muodostamisessa tapahtui virhe!"
   },
   "pistesyotto": {
     "otsikko": "Pistesyöttö",
