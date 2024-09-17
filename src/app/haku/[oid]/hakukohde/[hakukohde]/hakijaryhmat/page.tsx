@@ -7,12 +7,11 @@ import { Box, CircularProgress } from '@mui/material';
 import { useSuspenseQueries } from '@tanstack/react-query';
 import { getHakijaryhmat } from '@/app/lib/valintalaskenta-service';
 import { isEmpty } from '@/app/lib/common';
-import { IconCircle } from '@/app/components/icon-circle';
-import { FolderOutlined } from '@mui/icons-material';
 import { HakijaryhmaContent } from './hakijaryhma-content';
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
 import { useHakijaryhmatSearchParams } from '@/app/hooks/useHakijaryhmatSearch';
 import { HakijaryhmatControls } from './hakijaryhmat-controls';
+import { NoResults } from '@/app/components/no-results';
 
 type HakijaryhmatContentParams = {
   hakuOid: string;
@@ -41,12 +40,7 @@ const HakijaryhmatContent = ({
   }
 
   return isEmpty(hakijaryhmatQuery.data) ? (
-    <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
-      <IconCircle>
-        <FolderOutlined />
-      </IconCircle>
-      <Box>{t('hakijaryhmat.ei-tuloksia')}</Box>
-    </Box>
+    <NoResults text={t('hakijaryhmat.ei-tuloksia')} />
   ) : (
     <Box
       display="flex"

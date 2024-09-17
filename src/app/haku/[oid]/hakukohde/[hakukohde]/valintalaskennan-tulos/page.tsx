@@ -7,17 +7,17 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { useLasketutValinnanVaiheet } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { ValintalaskennanTulosSearch } from './valintalaskennan-tulos-search';
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
-import { FileDownloadOutlined, FolderOutlined } from '@mui/icons-material';
+import { FileDownloadOutlined } from '@mui/icons-material';
 import React from 'react';
 import { ValintatapajonoContent } from './valintatapajono-content';
 import { useJonosijatSearchParams } from '@/app/hooks/useJonosijatSearch';
 import { ClientSpinner } from '@/app/components/client-spinner';
 import { downloadBlob, isEmpty } from '@/app/lib/common';
-import { IconCircle } from '@/app/components/icon-circle';
 import { DownloadButton } from '@/app/components/download-button';
 import useToaster from '@/app/hooks/useToaster';
 import { useMutation } from '@tanstack/react-query';
 import { getValintalaskennanTulosExcel } from '@/app/lib/valintalaskentakoostepalvelu';
+import { NoResults } from '@/app/components/no-results';
 
 type LasketutValinnanvaiheetParams = {
   hakuOid: string;
@@ -73,12 +73,7 @@ const LasketutValinnanVaiheetContent = ({
   const { t } = useTranslations();
 
   return isEmpty(valinnanVaiheet) ? (
-    <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
-      <IconCircle>
-        <FolderOutlined />
-      </IconCircle>
-      <Box>{t('valintalaskennan-tulos.ei-tuloksia')}</Box>
-    </Box>
+    <NoResults text={t('valintalaskennan-tulos.ei-tuloksia')} />
   ) : (
     <Box
       display="flex"

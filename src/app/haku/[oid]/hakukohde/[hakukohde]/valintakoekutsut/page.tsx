@@ -25,12 +25,11 @@ import {
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
 import { entries, isEmpty, map, pipe } from 'remeda';
 import { AccordionBoxTitle } from '@/app/components/accordion-box-title';
-import { IconCircle } from '@/app/components/icon-circle';
-import { FolderOutlined } from '@mui/icons-material';
 import {
   Ryhmittely,
   ValintakoeKutsuItem,
 } from '@/app/lib/types/valintakoekutsut-types';
+import { NoResults } from '@/app/components/no-results';
 
 type ValintakoekutsutContentProps = {
   hakuOid: string;
@@ -54,12 +53,7 @@ const PaginatedValintakoekutsut = ({
   const { t } = useTranslations();
 
   return isEmpty(valintakoeKutsut) ? (
-    <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
-      <IconCircle>
-        <FolderOutlined />
-      </IconCircle>
-      <Box>{t('valintakoekutsut.ei-valintakoekutsuja')}</Box>
-    </Box>
+    <NoResults text={t('valintakoekutsut.ei-valintakoekutsuja')} />
   ) : (
     <ValintakoekutsutTable
       valintakoeTunniste={valintakoeTunniste}
@@ -99,12 +93,7 @@ const ValintakoeKutsutWrapper = ({
       {ryhmittely === 'hakijoittain' ? (
         'TODO: Hakijoittain ryhmittely'
       ) : isEmpty(valintakoekutsutByTunniste) ? (
-        <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
-          <IconCircle>
-            <FolderOutlined />
-          </IconCircle>
-          <Box>{t('valintakoekutsut.ei-valintakokeita')}</Box>
-        </Box>
+        <NoResults text={t('valintakoekutsut.ei-valintakokeita')} />
       ) : (
         pipe(
           entries(valintakoekutsutByTunniste),
