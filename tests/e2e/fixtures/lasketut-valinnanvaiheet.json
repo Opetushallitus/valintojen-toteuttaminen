@@ -87,7 +87,7 @@
               {
                 "arvo": 10.0,
                 "tila": "HYVAKSYTTAVISSA",
-                "kuvaus": {},
+                "kuvaus": {"fi": "muutoksen syy"},
                 "prioriteetti": 0,
                 "nimi": "Lukion valintaperusteet, painotettu keskiarvo"
               },

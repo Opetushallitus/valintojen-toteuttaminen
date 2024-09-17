@@ -100,7 +100,7 @@ test('displays valintalaskennan tulos', async ({ page }) => {
     '10 Lisätietoja',
     '2',
     'Hyväksyttävissä',
-    '',
+    'muutoksen syy',
   ]);
 
   await checkRow(jono2Rows.nth(1), [
