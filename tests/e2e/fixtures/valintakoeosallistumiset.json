@@ -128,7 +128,7 @@
                                 "nimi": "Pääsykoe",
                                 "aktiivinen": true,
                                 "osallistuminenTulos": {
-                                    "osallistuminen": "OSALLISTUU",
+                                    "osallistuminen": "EI_OSALLISTU",
                                     "kuvaus": {},
                                     "laskentaTila": "HYVAKSYTTAVISSA",
                                     "laskentaTulos": true

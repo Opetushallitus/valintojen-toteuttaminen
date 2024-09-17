@@ -1,4 +1,4 @@
-import { forEachObj, mapKeys, toLowerCase } from 'remeda';
+import { forEachObj, mapKeys, pickBy, toLowerCase } from 'remeda';
 import { ValintakoekutsutData } from './valintalaskentakoostepalvelu';
 import {
   GetValintakoekutsutParams,
@@ -8,14 +8,19 @@ import {
 export const createValintakoekutsutKokeittain = (
   {
     hakukohdeOid,
-    vainKutsuttavat,
+    vainKutsuttavat = false,
   }: Omit<GetValintakoekutsutParams, 'hakuOid' | 'ryhmittely'>,
   {
     valintakoeOsallistumiset,
     hakemuksetByOid,
-    valintakokeetByTunniste,
+    valintakokeetByTunniste: allValintakokeetByTunniste,
   }: ValintakoekutsutData,
 ) => {
+  const valintakokeetByTunniste = pickBy(
+    allValintakokeetByTunniste,
+    (valintakoe) => valintakoe.aktiivinen && valintakoe.lahetetaankoKoekutsut,
+  );
+
   const kutsutKokeittain = valintakoeOsallistumiset?.reduce(
     (result, osallistumistulos) => {
       osallistumistulos.hakutoiveet.forEach((hakutoive) => {
@@ -24,7 +29,7 @@ export const createValintakoekutsutKokeittain = (
             valinnanVaihe.valintakokeet.forEach((valintakoeTulos) => {
               const { valintakoeTunniste, nimi } = valintakoeTulos;
               const valintakoe = valintakokeetByTunniste[valintakoeTunniste];
-              if (!valintakokeetByTunniste[valintakoeTunniste]) {
+              if (!valintakoe) {
                 return result;
               }
               if (!result[valintakoeTunniste]) {

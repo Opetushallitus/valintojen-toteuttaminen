@@ -162,5 +162,5 @@ export const getHakukohdeValintakokeet = async (hakukohdeOid: string) => {
   const response = await client.get<Array<ValintakoeData>>(
     configuration.hakukohdeValintakokeetUrl({ hakukohdeOid }),
   );
-  return response.data.filter((v) => v.aktiivinen && v.lahetetaankoKoekutsut);
+  return response.data;
 };

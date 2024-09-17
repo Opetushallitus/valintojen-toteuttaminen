@@ -408,6 +408,7 @@ export const ListTable = <T extends Row>({
                       inputProps={{
                         'aria-label': getRowCheckboxLabel?.(rowProps),
                       }}
+                      value={rowId}
                       onChange={(
                         event: React.ChangeEvent<HTMLInputElement>,
                         checked: boolean,
