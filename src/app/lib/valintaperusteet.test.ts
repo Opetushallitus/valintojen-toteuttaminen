@@ -248,6 +248,7 @@ function buildDummyValinnanvaiheResponse(
   ];
 
   return Promise.resolve({
+    headers: new Headers(),
     data: [
       {
         oid: 'vvoid',
