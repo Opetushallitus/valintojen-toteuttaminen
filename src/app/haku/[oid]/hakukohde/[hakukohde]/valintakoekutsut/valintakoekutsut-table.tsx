@@ -70,7 +70,8 @@ export const ValintakoekutsutTable = ({
       {
         title: `${TRANSLATIONS_PREFIX}.asiointiKieli`,
         key: 'asiointiKieli',
-        render: ({ asiointiKieli }) => t(`kieli.${asiointiKieli}`),
+        render: ({ asiointiKieli }) =>
+          asiointiKieli ? t(`kieli.${asiointiKieli}`) : '',
       },
     ],
     [t, translateEntity],
@@ -96,6 +97,11 @@ export const ValintakoekutsutTable = ({
         checkboxSelection={true}
         selection={selection}
         onSelectionChange={setSelection}
+        getRowCheckboxLabel={({ hakijanNimi }) =>
+          t(`${TRANSLATIONS_PREFIX}.valitse-koekutsu-hakijalle`, {
+            hakijanNimi,
+          })
+        }
         pagination={{
           page,
           setPage,

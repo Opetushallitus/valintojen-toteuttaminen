@@ -28,7 +28,8 @@
     "tallenna": "Tallenna",
     "valitsevaihtoehto": "Valitse vaihtoehdoista",
     "vie-taulukkolaskentaan": "Vie taulukkolaskentaan",
-    "poista-valinta": "Poista valinta"
+    "poista-valinta": "Poista valinta",
+    "valitse-kaikki": "Valitse kaikki"
   },
   "lomake": {
     "jatka": "Jatka",
@@ -157,7 +158,8 @@
       "osallistuminen": "Osallistuminen",
       "lisatietoja": "Lisätietoja",
       "laskettuPvm": "Laskettu pvm",
-      "asiointiKieli": "Asiointikieli"
+      "asiointiKieli": "Asiointikieli",
+      "valitse-koekutsu-hakijalle": "Valitse koekutsu hakijalle \"{{hakijanNimi}}\""
     },
     "virhe-vie-taulukkolaskentaan": "Taulukkolaskentaan viemisessä tapahtui virhe!",
     "virhe-osoitetarrat": "Osoitetarrojen muodostamisessa tapahtui virhe!"

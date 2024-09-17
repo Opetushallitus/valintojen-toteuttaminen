@@ -204,6 +204,7 @@ interface ListTableProps<T extends Row>
     setPage: (page: number) => void;
     pageSize: number;
   };
+  getRowCheckboxLabel?: (row: T) => string;
   checkboxSelection?: boolean;
   selection?: Set<string>;
   onSelectionChange?: (selection: Set<string>) => void;
@@ -329,6 +330,7 @@ export const ListTable = <T extends Row>({
   checkboxSelection,
   selection = EMPTY_SET,
   onSelectionChange,
+  getRowCheckboxLabel,
   ...props
 }: ListTableProps<T>) => {
   const { t } = useTranslations();
@@ -357,7 +359,7 @@ export const ListTable = <T extends Row>({
                       selection.size !== rows.length &&
                       selection.size !== 0
                     }
-                    aria-label={t('yleinen.valitse-kaikki')}
+                    inputProps={{ 'aria-label': t('yleinen.valitse-kaikki') }}
                     onChange={(
                       event: React.ChangeEvent<HTMLInputElement>,
                       checked: boolean,
@@ -403,6 +405,9 @@ export const ListTable = <T extends Row>({
                   <StyledCell>
                     <ListCheckbox
                       checked={selection.has(rowId)}
+                      inputProps={{
+                        'aria-label': getRowCheckboxLabel?.(rowProps),
+                      }}
                       onChange={(
                         event: React.ChangeEvent<HTMLInputElement>,
                         checked: boolean,

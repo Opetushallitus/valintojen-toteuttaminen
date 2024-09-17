@@ -2,7 +2,7 @@
   {
     "etunimet": "Ruhtinas",
     "asiointiKieli": {
-      "kieliKoodi": "",
+      "kieliKoodi": "fi",
       "kieliTyyppi": ""
     },
     "sukunimi": "Nukettaja",
@@ -33,7 +33,7 @@
   {
     "etunimet": "Kreivi",
     "asiointiKieli": {
-      "kieliKoodi": "",
+      "kieliKoodi": "sv",
       "kieliTyyppi": ""
     },
     "sukunimi": "Dacula",
@@ -57,7 +57,7 @@
   {
     "etunimet": "Puru",
     "asiointiKieli": {
-      "kieliKoodi": "",
+      "kieliKoodi": "fi",
       "kieliTyyppi": ""
     },
     "sukunimi": "Purukumi",
@@ -81,7 +81,7 @@
   {
     "etunimet": "Haamu",
     "asiointiKieli": {
-      "kieliKoodi": "",
+      "kieliKoodi": "en",
       "kieliTyyppi": ""
     },
     "sukunimi": "Hui",
