@@ -7,16 +7,16 @@ import {
   InsertDriveFileOutlined,
   NoteOutlined,
 } from '@mui/icons-material';
-import { ActionBar } from './action-bar';
+import { ActionBar } from '@/app/components/action-bar';
 import {
   getValintakoeExcel,
   GetValintakoeExcelParams,
   getValintakoeOsoitetarrat,
-} from '../lib/valintalaskentakoostepalvelu';
-import { downloadBlob } from '../lib/common';
+} from '@/app/lib/valintalaskentakoostepalvelu';
+import { downloadBlob } from '@/app/lib/common';
 import { useMutation } from '@tanstack/react-query';
 import useToaster from '@/app/hooks/useToaster';
-import { DownloadButton } from './download-button';
+import { DownloadButton } from '@/app/components/download-button';
 
 type ValintakoekutsutDownloadProps = {
   hakuOid: string;

@@ -1,5 +1,5 @@
 'use client';
-import { ValintakoekutsutActionBar } from '@/app/components/valintakoekutsut-action-bar';
+import { ValintakoekutsutActionBar } from './valintakoekutsut-action-bar';
 import ListTable, {
   ListTableColumn,
   makeColumnWithValueToTranslate,
