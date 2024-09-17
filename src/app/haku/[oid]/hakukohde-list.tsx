@@ -24,13 +24,13 @@ const SELECTED_CLASS = 'hakukohde-list--item-selected';
 const StyledItem = styled(Link)(({ theme }) => ({
   display: 'block',
   padding: theme.spacing(1),
-  textDecoration: 'none',
   cursor: 'pointer',
   color: ophColors.blue2,
   '&:nth-of-type(even)': {
     backgroundColor: ophColors.grey50,
   },
-  [`&:hover, &.${SELECTED_CLASS}`]: {
+  [`&:hover, &:focus, &.${SELECTED_CLASS}`]: {
+    textDecoration: 'none',
     backgroundColor: ophColors.lightBlue2,
   },
 }));

@@ -27,11 +27,11 @@ const StyledTabs = styled('nav')(({ theme }) => ({
 
 const StyledTab = styled(MuiLink)<{ $active: boolean }>(({ $active }) => ({
   color: ophColors.blue2,
-  textDecoration: 'none',
   cursor: 'pointer',
   borderBottom: '3px solid',
   borderColor: $active ? ophColors.blue2 : 'transparent',
-  '&:hover': {
+  '&:hover,&:focus': {
+    textDecoration: 'none',
     borderColor: ophColors.blue2,
   },
 }));
