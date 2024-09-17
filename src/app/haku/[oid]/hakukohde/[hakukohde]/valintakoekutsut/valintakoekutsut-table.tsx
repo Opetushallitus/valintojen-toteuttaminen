@@ -1,28 +1,17 @@
 'use client';
 import { ValintakoekutsutActionBar } from '@/app/components/valintakoekutsut-action-bar';
 import ListTable, {
-  makeExternalLinkColumn,
   ListTableColumn,
+  makeColumnWithValueToTranslate,
 } from '@/app/components/table/list-table';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Box } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
 import { ValintakoeKutsuItem } from '@/app/lib/types/valintakoekutsut-types';
+import { hakijaColumn } from '@/app/components/table/hakija-column';
 
 const TRANSLATIONS_PREFIX = 'valintakoekutsut.taulukko';
-
-const LINK_TO_PERSON = 'henkilo-ui/oppija/';
-
-const buildLinkToPerson = (personOid: string) => LINK_TO_PERSON + personOid;
-
-const hakijaColumn = makeExternalLinkColumn<ValintakoeKutsuItem>({
-  linkBuilder: buildLinkToPerson,
-  title: `${TRANSLATIONS_PREFIX}.hakija`,
-  key: 'hakijanNimi',
-  nameProp: 'hakijanNimi',
-  linkProp: 'henkiloOid',
-});
 
 export const ValintakoekutsutTable = ({
   hakuOid,
@@ -50,13 +39,12 @@ export const ValintakoekutsutTable = ({
   const columns: Array<ListTableColumn<ValintakoeKutsuItem>> = useMemo(
     () => [
       hakijaColumn,
-      {
+      makeColumnWithValueToTranslate({
+        t,
         title: `${TRANSLATIONS_PREFIX}.osallistuminen`,
         key: 'osallistuminen',
-        render: ({ osallistuminen }) => (
-          <span>{t(`osallistuminen.${osallistuminen}`)}</span>
-        ),
-      },
+        valueProp: 'osallistuminen',
+      }),
       {
         title: `${TRANSLATIONS_PREFIX}.lisatietoja`,
         key: 'lisatietoja',

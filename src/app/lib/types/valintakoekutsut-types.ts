@@ -17,7 +17,7 @@ export type GetValintakoekutsutParams = {
 
 export type ValintakoeKutsuItem = {
   hakemusOid: string;
-  henkiloOid: string;
+  hakijaOid: string;
   hakijanNimi: string;
   asiointiKieli: Language;
   osallistuminen: Osallistuminen;

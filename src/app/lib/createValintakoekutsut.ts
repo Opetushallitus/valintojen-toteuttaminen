@@ -57,7 +57,7 @@ export function createValintakoekutsutKokeittain(
               ) {
                 result[valintakoeTunniste].kutsut.push({
                   hakemusOid: hakemus.hakemusOid,
-                  henkiloOid: hakemus?.hakijaOid,
+                  hakijaOid: hakemus?.hakijaOid,
                   hakijanNimi: hakemus?.hakijanNimi,
                   asiointiKieli: hakemus?.asiointikieliKoodi,
                   osallistuminen,
