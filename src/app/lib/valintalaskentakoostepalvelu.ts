@@ -1,7 +1,7 @@
 import { Haku, Hakukohde, getFullnameOfHakukohde } from './types/kouta-types';
 import { configuration } from './configuration';
 import { ValinnanvaiheTyyppi } from './types/valintaperusteet-types';
-import { client } from './http-client';
+import { client, HttpClientResponse } from './http-client';
 import { TranslatedName } from './localization/localization-types';
 import { HenkilonValintaTulos } from './types/sijoittelu-types';
 import {
@@ -384,6 +384,11 @@ const getContentFilename = (headers: Headers) => {
   return contentDisposition?.match(/ filename="(.*)"$/)?.[1];
 };
 
+const createFileResult = async (response: HttpClientResponse<Blob>) => ({
+  fileName: getContentFilename(response.headers),
+  blob: response.data,
+});
+
 const downloadProcessDocument = async (processId: string) => {
   const processRes = await client.get<{
     dokumenttiId: string;
@@ -395,12 +400,10 @@ const downloadProcessDocument = async (processId: string) => {
   }>(configuration.dokumenttiProsessiUrl({ id: processId }));
   const dokumenttiId = processRes?.data?.dokumenttiId;
 
-  return {
-    fileName: getContentFilename(processRes.headers),
-    blob: (
-      await client.get<Blob>(configuration.lataaDokumenttiUrl({ dokumenttiId }))
-    )?.data,
-  };
+  const documentRes = await client.get<Blob>(
+    configuration.lataaDokumenttiUrl({ dokumenttiId }),
+  );
+  return createFileResult(documentRes);
 };
 
 export const getValintakoeExcel = async ({
@@ -418,7 +421,7 @@ export const getValintakoeExcel = async ({
     valintakoeTunnisteet: [valintakoeTunniste],
   });
   const excelProcessId = createResponse?.data?.id;
-  return await downloadProcessDocument(excelProcessId);
+  return downloadProcessDocument(excelProcessId);
 };
 
 export const getValintakoeOsoitetarrat = async ({
@@ -445,11 +448,8 @@ export const getValintalaskennanTulosExcel = async ({
 }: {
   hakukohdeOid: string;
 }) => {
-  const { data, headers } = await client.get<Blob>(
+  const excelRes = await client.get<Blob>(
     configuration.valintalaskennanTulosExcelUrl({ hakukohdeOid }),
   );
-  return {
-    fileName: getContentFilename(headers),
-    blob: data,
-  };
+  return createFileResult(excelRes);
 };

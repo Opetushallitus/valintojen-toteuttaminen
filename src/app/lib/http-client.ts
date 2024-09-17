@@ -4,6 +4,11 @@ import { configuration } from './configuration';
 import { FetchError } from './common';
 import { isPlainObject } from 'remeda';
 
+export type HttpClientResponse<D> = {
+  headers: Headers;
+  data: D;
+};
+
 const doFetch = async (request: Request) => {
   try {
     const response = await fetch(request);
