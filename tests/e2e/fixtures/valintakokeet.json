@@ -1,20 +1,34 @@
 [
-  {
-    "tunniste": "nakki",
-    "arvot": null,
-    "kuvaus": "Nakkikoe, oletko nakkisuojassa?",
-    "funktiotyyppi": "TOTUUSARVOFUNKTIO",
-    "osallistuminenTunniste": "nakki-osallistuminen",
-    "vaatiiOsallistumisen": true
-  },
-  {
-    "tunniste": "koksa",
-    "arvot": null,
-    "kuvaus": "Köksäkokeen arvosana",
-    "funktiotyyppi": "MUU",
-    "osallistuminenTunniste": "koksa-osallistuminen",
-    "vaatiiOsallistumisen": false,
-    "min": "4",
-    "max": "10"
-  }
+    {
+        "tunniste": "{{hakukohde.paasykoe_tunniste}}",
+        "laskentakaavaId": null,
+        "nimi": "Pääsykoe",
+        "kuvaus": "Pääsykoe",
+        "aktiivinen": true,
+        "lahetetaankoKoekutsut": true,
+        "kutsutaankoKaikki": false,
+        "kutsuttavienMaara": null,
+        "kutsunKohde": "YLIN_TOIVE",
+        "kutsunKohdeAvain": null,
+        "oid": "1679913452968-6027331842984315931",
+        "selvitettyTunniste": "1_2_246_562_20_00000000000000045105_paasykoe",
+        "funktiokutsu": null,
+        "peritty": true
+    },
+    {
+        "tunniste": "{{hakukohde.lisanaytto_tunniste}}",
+        "laskentakaavaId": null,
+        "nimi": "Lisänäyttö",
+        "kuvaus": "Lisänäyttö",
+        "aktiivinen": false,
+        "lahetetaankoKoekutsut": true,
+        "kutsutaankoKaikki": false,
+        "kutsuttavienMaara": null,
+        "kutsunKohde": "YLIN_TOIVE",
+        "kutsunKohdeAvain": null,
+        "oid": "16799134529722310147190363688875",
+        "selvitettyTunniste": "1_2_246_562_20_00000000000000045105_lisanaytto",
+        "funktiokutsu": null,
+        "peritty": true
+    }
 ]

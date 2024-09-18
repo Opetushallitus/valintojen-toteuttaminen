@@ -1,0 +1,20 @@
+[
+  {
+    "tunniste": "nakki",
+    "arvot": null,
+    "kuvaus": "Nakkikoe, oletko nakkisuojassa?",
+    "funktiotyyppi": "TOTUUSARVOFUNKTIO",
+    "osallistuminenTunniste": "nakki-osallistuminen",
+    "vaatiiOsallistumisen": true
+  },
+  {
+    "tunniste": "koksa",
+    "arvot": null,
+    "kuvaus": "Köksäkokeen arvosana",
+    "funktiotyyppi": "MUU",
+    "osallistuminenTunniste": "koksa-osallistuminen",
+    "vaatiiOsallistumisen": false,
+    "min": "4",
+    "max": "10"
+  }
+]

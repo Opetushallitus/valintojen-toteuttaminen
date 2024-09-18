@@ -2,7 +2,7 @@ import { afterEach, describe, expect, test, vi } from 'vitest';
 import { client, HttpClientResponse, JSONData } from './http-client';
 import { getValintakoekutsutData } from './valintalaskentakoostepalvelu';
 import { indexBy, prop } from 'remeda';
-import VALINTAKOKEET from '@tests/e2e/fixtures/kutsu-valintakokeet.json';
+import VALINTAKOKEET from '@tests/e2e/fixtures/valintakokeet.json';
 import VALINTAKOEOSALLISTUMISET from '@tests/e2e/fixtures/valintakoeosallistumiset.json';
 import HAKEMUKSET from '@tests/e2e/fixtures/hakeneet.json';
 

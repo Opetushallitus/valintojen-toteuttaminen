@@ -4,7 +4,7 @@ import {
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
 } from './playwright-utils';
-import VALINTAKOKEET from './fixtures/kutsu-valintakokeet.json';
+import VALINTAKOKEET from './fixtures/valintakokeet.json';
 import VALINTAKOEOSALLISTUMISET from './fixtures/valintakoeosallistumiset.json';
 import { difference } from 'remeda';
 

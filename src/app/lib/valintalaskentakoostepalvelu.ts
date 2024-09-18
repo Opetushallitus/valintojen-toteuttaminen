@@ -9,7 +9,7 @@ import {
   HakukohteenPistetiedot,
   LaskentaErrorSummary,
   LaskentaStart,
-  ValintakoeOsallistuminen,
+  ValintakoeOsallistuminenTulos,
   ValintakokeenPisteet,
 } from './types/laskenta-types';
 import {
@@ -25,11 +25,11 @@ import {
 import { EMPTY_ARRAY, EMPTY_OBJECT } from './common';
 import { getHakemukset, getHakijat } from './ataru';
 import {
-  getHakukohdeValintakokeet,
   getValintakokeet,
+  getValintakoeAvaimetHakukohteelle,
 } from './valintaperusteet';
 import { ValintakoekutsutData } from './types/valintakoekutsut-types';
-import { ValintakoeOsallistumistulos } from './types/valintalaskentakoostepalvelu-types';
+import { HakutoiveValintakoeOsallistumiset } from './types/valintalaskentakoostepalvelu-types';
 
 const formSearchParamsForStartLaskenta = ({
   laskentaUrl,
@@ -168,11 +168,11 @@ export const getHakukohteenValintatuloksetIlmanHakijanTilaa = async (
   });
 };
 
-export const getScoresForHakukohde = async (
+export const getPisteetForHakukohde = async (
   hakuOid: string,
   hakukohdeOid: string,
 ): Promise<HakukohteenPistetiedot> => {
-  const kokeet = await getValintakokeet(hakukohdeOid);
+  const kokeet = await getValintakoeAvaimetHakukohteelle(hakukohdeOid);
 
   if (isEmpty(kokeet)) {
     return { hakemukset: EMPTY_ARRAY, valintakokeet: EMPTY_ARRAY };
@@ -208,7 +208,7 @@ export const getScoresForHakukohde = async (
             p.applicationAdditionalDataDTO.additionalData[k.tunniste];
           const osallistuminen = p.applicationAdditionalDataDTO.additionalData[
             k.osallistuminenTunniste
-          ] as ValintakoeOsallistuminen;
+          ] as ValintakoeOsallistuminenTulos;
           return {
             tunniste: k.tunniste,
             arvo,
@@ -237,7 +237,7 @@ export const getScoresForHakukohde = async (
   };
 };
 
-export const updateScoresForHakukohde = async (
+export const updatePisteetForHakukohde = async (
   hakuOid: string,
   hakukohdeOid: string,
   pistetiedot: HakemuksenPistetiedot[],
@@ -271,7 +271,7 @@ const getValintakoeOsallistumiset = async ({
 }: {
   hakukohdeOid: string;
 }) => {
-  const response = await client.get<Array<ValintakoeOsallistumistulos>>(
+  const response = await client.get<Array<HakutoiveValintakoeOsallistumiset>>(
     configuration.valintakoeOsallistumisetUrl({ hakukohdeOid }),
   );
   return response.data;
@@ -284,7 +284,7 @@ export async function getValintakoekutsutData({
   hakuOid: string;
   hakukohdeOid: string;
 }): Promise<ValintakoekutsutData> {
-  const valintakokeet = await getHakukohdeValintakokeet(hakukohdeOid);
+  const valintakokeet = await getValintakokeet(hakukohdeOid);
 
   if (isEmpty(valintakokeet)) {
     return {

@@ -11,7 +11,7 @@ import SIJOITTELUAJON_TULOKSET from './fixtures/sijoitteluajon-tulokset.json';
 import HAKUKOHTEEN_VALINTATULOKSET from './fixtures/hakukohteen_valintatulokset.json';
 import { SERVICE_KEY } from '../../src/app/lib/permissions';
 import PISTETIEDOT from './fixtures/pistetiedot.json';
-import KOKEET from './fixtures/valintakokeet.json';
+import KOKEET from './fixtures/valintakoe-avaimet.json';
 
 const port = 3104;
 

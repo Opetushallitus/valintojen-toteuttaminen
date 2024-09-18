@@ -1,6 +1,6 @@
-import { Osallistuminen } from './valintakoekutsut-types';
+import { ValintakoeOsallistuminen } from './valintakoekutsut-types';
 
-export type ValintakoeOsallistumistulos = {
+export type HakutoiveValintakoeOsallistumiset = {
   hakuOid: string;
   hakemusOid: string;
   hakijaOid: string;
@@ -18,7 +18,7 @@ export type ValintakoeOsallistumistulos = {
         lahetetaankoKoekutsut: boolean;
         kutsutaankoKaikki: boolean | null;
         osallistuminenTulos: {
-          osallistuminen: Osallistuminen;
+          osallistuminen: ValintakoeOsallistuminen;
           kuvaus: {
             FI?: string;
             SV?: string;

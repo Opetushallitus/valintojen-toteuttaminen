@@ -32,7 +32,7 @@ export enum ValintakoeInputTyyppi {
   INPUT,
 }
 
-export type Valintakoe = {
+export type ValintakoeAvaimet = {
   tunniste: string;
   osallistuminenTunniste: string;
   kuvaus: string;
@@ -41,4 +41,12 @@ export type Valintakoe = {
   min?: string;
   vaatiiOsallistumisen: boolean;
   inputTyyppi: ValintakoeInputTyyppi;
+};
+
+export type Valintakoe = {
+  nimi: string;
+  aktiivinen: boolean;
+  lahetetaankoKoekutsut: boolean;
+  kutsutaankoKaikki: boolean;
+  selvitettyTunniste: string;
 };

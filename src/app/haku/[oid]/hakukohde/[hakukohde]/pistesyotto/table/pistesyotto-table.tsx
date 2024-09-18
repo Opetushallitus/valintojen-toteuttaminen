@@ -3,7 +3,7 @@ import ListTable, {
   makeColumnWithCustomRender,
 } from '@/app/components/table/list-table';
 import { HakemuksenPistetiedot } from '@/app/lib/types/laskenta-types';
-import { Valintakoe } from '@/app/lib/types/valintaperusteet-types';
+import { ValintakoeAvaimet } from '@/app/lib/types/valintaperusteet-types';
 import { ophColors } from '@opetushallitus/oph-design-system';
 import { isNotPartOfThisHakukohde } from '../pistesyotto-utils';
 import { ReadOnlyKoeCell } from './koe-readonly-cell';
@@ -33,7 +33,7 @@ export const PisteSyottoTable = ({
   pistetiedot: HakemuksenPistetiedot[];
   sort: string;
   setSort: (sort: string) => void;
-  kokeet: Valintakoe[];
+  kokeet: ValintakoeAvaimet[];
   updateForm: (params: ChangePisteSyottoFormParams) => void;
   disabled: boolean;
 }) => {

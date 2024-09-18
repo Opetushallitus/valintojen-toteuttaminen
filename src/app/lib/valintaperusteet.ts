@@ -5,6 +5,7 @@ import { client } from './http-client';
 import {
   Valinnanvaihe,
   ValinnanvaiheTyyppi,
+  ValintakoeAvaimet,
   Valintakoe,
   ValintakoeInputTyyppi,
   Valintaryhma,
@@ -116,9 +117,9 @@ const determineValintaKoeInputTyyppi = (
   return ValintakoeInputTyyppi.INPUT;
 };
 
-export const getValintakokeet = async (
+export const getValintakoeAvaimetHakukohteelle = async (
   hakukohdeOid: string,
-): Promise<Valintakoe[]> => {
+): Promise<ValintakoeAvaimet[]> => {
   const { data } = await client.get<
     Array<{
       tunniste: string;
@@ -150,16 +151,10 @@ export const getValintakokeet = async (
   });
 };
 
-export type ValintakoeData = {
-  nimi: string;
-  aktiivinen: boolean;
-  lahetetaankoKoekutsut: boolean;
-  kutsutaankoKaikki: boolean;
-  selvitettyTunniste: string;
-};
 
-export const getHakukohdeValintakokeet = async (hakukohdeOid: string) => {
-  const response = await client.get<Array<ValintakoeData>>(
+
+export const getValintakokeet = async (hakukohdeOid: string) => {
+  const response = await client.get<Array<Valintakoe>>(
     configuration.hakukohdeValintakokeetUrl({ hakukohdeOid }),
   );
   return response.data;

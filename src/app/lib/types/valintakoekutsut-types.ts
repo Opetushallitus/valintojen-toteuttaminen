@@ -1,11 +1,11 @@
 import { Language, TranslatedName } from '../localization/localization-types';
-import { ValintakoeData } from '../valintaperusteet';
 import { HakijaInfo } from './ataru-types';
-import { ValintakoeOsallistumistulos } from './valintalaskentakoostepalvelu-types';
+import { HakutoiveValintakoeOsallistumiset } from './valintalaskentakoostepalvelu-types';
+import { Valintakoe } from './valintaperusteet-types';
 
 export type Ryhmittely = 'kokeittain' | 'hakijoittain';
 
-export type Osallistuminen =
+export type ValintakoeOsallistuminen =
   | 'OSALLISTUU'
   | 'EI_OSALLISTU'
   | 'EI_VAADITA'
@@ -23,13 +23,13 @@ export type ValintakoeKutsuItem = {
   hakijaOid: string;
   hakijanNimi: string;
   asiointiKieli: Language;
-  osallistuminen: `osallistuminen.${Osallistuminen}`;
+  osallistuminen: `osallistuminen.${ValintakoeOsallistuminen}`;
   lisatietoja: TranslatedName;
   laskettuPvm: string;
 };
 
 export type ValintakoekutsutData = {
-  valintakokeetByTunniste: Record<string, ValintakoeData>;
+  valintakokeetByTunniste: Record<string, Valintakoe>;
   hakemuksetByOid: Record<string, HakijaInfo>;
-  valintakoeOsallistumiset: Array<ValintakoeOsallistumistulos>;
+  valintakoeOsallistumiset: Array<HakutoiveValintakoeOsallistumiset>;
 };

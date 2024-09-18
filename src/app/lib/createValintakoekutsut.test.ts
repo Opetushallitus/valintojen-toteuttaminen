@@ -1,9 +1,9 @@
 import { describe, expect, test } from 'vitest';
 import { indexBy, prop } from 'remeda';
-import VALINTAKOKEET from '@tests/e2e/fixtures/kutsu-valintakokeet.json';
+import VALINTAKOKEET from '@tests/e2e/fixtures/valintakokeet.json';
 import VALINTAKOEOSALLISTUMISET from '@tests/e2e/fixtures/valintakoeosallistumiset.json';
 import { createValintakoekutsutKokeittain } from './createValintakoekutsut';
-import { ValintakoeOsallistumistulos } from './types/valintalaskentakoostepalvelu-types';
+import { HakutoiveValintakoeOsallistumiset } from './types/valintalaskentakoostepalvelu-types';
 
 const HAKEMUKSET_BY_OID = {
   '1.2.246.562.11.00000000000001796027': {
@@ -54,7 +54,7 @@ describe('createValintakoekutsutKokeittain', () => {
         ),
         hakemuksetByOid: HAKEMUKSET_BY_OID,
         valintakoeOsallistumiset:
-          VALINTAKOEOSALLISTUMISET as Array<ValintakoeOsallistumistulos>,
+          VALINTAKOEOSALLISTUMISET as Array<HakutoiveValintakoeOsallistumiset>,
       },
     );
     expect(result).toEqual({
@@ -115,7 +115,7 @@ describe('createValintakoekutsutKokeittain', () => {
         ),
         hakemuksetByOid: HAKEMUKSET_BY_OID,
         valintakoeOsallistumiset:
-          VALINTAKOEOSALLISTUMISET as Array<ValintakoeOsallistumistulos>,
+          VALINTAKOEOSALLISTUMISET as Array<HakutoiveValintakoeOsallistumiset>,
       },
     );
     expect(result).toEqual({
@@ -193,7 +193,7 @@ describe('createValintakoekutsutKokeittain', () => {
         ),
         hakemuksetByOid: HAKEMUKSET_BY_OID,
         valintakoeOsallistumiset:
-          VALINTAKOEOSALLISTUMISET as Array<ValintakoeOsallistumistulos>,
+          VALINTAKOEOSALLISTUMISET as Array<HakutoiveValintakoeOsallistumiset>,
       },
     );
     expect(result).toEqual({

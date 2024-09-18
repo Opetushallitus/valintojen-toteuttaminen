@@ -4,7 +4,7 @@ import { TabContainer } from '../tab-container';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { ClientSpinner } from '@/app/components/client-spinner';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { getScoresForHakukohde } from '@/app/lib/valintalaskentakoostepalvelu';
+import { getPisteetForHakukohde } from '@/app/lib/valintalaskentakoostepalvelu';
 import { PisteSyottoControls } from './pistesyotto-controls';
 import { Box } from '@mui/material';
 import { PisteSyottoForm } from './pistesyotto-form';
@@ -24,8 +24,8 @@ const PisteSyottoContent = ({
   const { t } = useTranslations();
 
   const { data: pistetulokset } = useSuspenseQuery({
-    queryKey: ['getScoresForHakukohde', hakukohdeOid],
-    queryFn: () => getScoresForHakukohde(hakuOid, hakukohdeOid),
+    queryKey: ['getPisteetForHakukohde', hakukohdeOid],
+    queryFn: () => getPisteetForHakukohde(hakuOid, hakukohdeOid),
   });
 
   return isEmpty(pistetulokset.valintakokeet) ? (
