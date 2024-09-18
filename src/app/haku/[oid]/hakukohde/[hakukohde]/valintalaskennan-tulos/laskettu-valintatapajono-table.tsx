@@ -1,9 +1,10 @@
 'use client';
-import { hakijaColumn } from '@/app/components/table/hakija-column';
-import ListTable, {
+import { ListTable } from '@/app/components/table/list-table';
+import {
+  hakijaColumn,
   makeCountColumn,
   makeGenericColumn,
-} from '@/app/components/table/list-table';
+} from '@/app/components/table/table-columns';
 import { ListTableColumn } from '@/app/components/table/table-types';
 import { JonoSijaWithHakijaInfo } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { useTranslations } from '@/app/hooks/useTranslations';

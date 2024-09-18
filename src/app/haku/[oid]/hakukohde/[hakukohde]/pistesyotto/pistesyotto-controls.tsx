@@ -11,7 +11,11 @@ import { ValintakoeAvaimet } from '@/app/lib/types/valintaperusteet-types';
 import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { LocalizedSelect } from '@/app/components/localized-select';
 
-export const PisteSyottoControls = ({ kokeet }: { kokeet: ValintakoeAvaimet[] }) => {
+export const PisteSyottoControls = ({
+  kokeet,
+}: {
+  kokeet: ValintakoeAvaimet[];
+}) => {
   const {
     valittuKoe,
     setValittukoe,

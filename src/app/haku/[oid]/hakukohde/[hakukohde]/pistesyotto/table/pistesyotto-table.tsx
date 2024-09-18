@@ -1,7 +1,4 @@
 'use client';
-import ListTable, {
-  makeColumnWithCustomRender,
-} from '@/app/components/table/list-table';
 import { HakemuksenPistetiedot } from '@/app/lib/types/laskenta-types';
 import { ValintakoeAvaimet } from '@/app/lib/types/valintaperusteet-types';
 import { ophColors } from '@opetushallitus/oph-design-system';
@@ -9,9 +6,13 @@ import { isNotPartOfThisHakukohde } from '../pistesyotto-utils';
 import { ReadOnlyKoeCell } from './koe-readonly-cell';
 import { KoeCell } from './koe-cell';
 import { ChangePisteSyottoFormParams } from '../pistesyotto-form';
-import { hakijaColumn } from '@/app/components/table/hakija-column';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { useMemo } from 'react';
+import {
+  hakijaColumn,
+  makeColumnWithCustomRender,
+} from '@/app/components/table/table-columns';
+import { ListTable } from '@/app/components/table/list-table';
 
 const stickyColumnStyle: React.CSSProperties = {
   minWidth: '260px',

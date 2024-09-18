@@ -151,8 +151,6 @@ export const getValintakoeAvaimetHakukohteelle = async (
   });
 };
 
-
-
 export const getValintakokeet = async (hakukohdeOid: string) => {
   const response = await client.get<Array<Valintakoe>>(
     configuration.hakukohdeValintakokeetUrl({ hakukohdeOid }),
