@@ -18,7 +18,7 @@ export const AccordionBoxTitle = ({
   subTitle?: string;
 }) => {
   return (
-    <BoxHeading variant="h2" component="h3">
+    <BoxHeading component="div" variant="h2">
       <Box>{title}</Box>
       {subTitle && (
         <OphTypography component="div" variant="body1">

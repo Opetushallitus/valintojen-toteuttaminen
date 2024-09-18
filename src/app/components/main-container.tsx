@@ -1,6 +1,6 @@
 'use client';
 import { styled } from '@mui/material/styles';
-import { Box } from '@mui/material';
+import { Box, BoxProps } from '@mui/material';
 import { ophColors } from '@/app/theme';
 import { DEFAULT_BOX_BORDER } from '../lib/constants';
 import { withDefaultProps } from '../lib/mui-utils';
@@ -13,5 +13,5 @@ export const MainContainer = withDefaultProps(
   })),
   {
     component: 'main',
-  },
-);
+  } as BoxProps,
+) as typeof Box;

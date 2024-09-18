@@ -36,6 +36,7 @@ export function toFormattedDateTimeString(
       timeZone: 'Europe/Helsinki',
     });
   } catch (error) {
+    console.warn(error);
     console.warn(
       'Caught error when trying to format date, returning empty string',
     );

@@ -43,19 +43,29 @@ const HakijaryhmatContent = ({
     <NoResults text={t('hakijaryhmat.ei-tuloksia')} />
   ) : (
     <Box
-      display="flex"
-      flexDirection="column"
-      rowGap={2}
-      alignItems="flex-start"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        rowGap: 2,
+        alignItems: 'flex-start',
+      }}
     >
       <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="flex-end"
-        width="100%"
-        gap={2}
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-end',
+          width: '100%',
+          gap: 2,
+        }}
       >
-        <Box display="flex" alignItems="flex-end" gap={2}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'flex-end',
+            gap: 2,
+          }}
+        >
           <HakijaryhmatControls />
         </Box>
         <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />

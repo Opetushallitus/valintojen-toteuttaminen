@@ -113,13 +113,15 @@ export default function HakuControls() {
 
   return (
     <Box
-      display="flex"
-      flexDirection="row"
-      justifyContent="stretch"
-      gap={2}
-      marginBottom={2}
-      flexWrap="wrap"
-      alignItems="flex-end"
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'stretch',
+        gap: 2,
+        marginBottom: 2,
+        flexWrap: 'wrap',
+        alignItems: 'flex-end',
+      }}
     >
       <OphFormControl
         sx={{
@@ -170,11 +172,13 @@ export default function HakuControls() {
         )}
       />
       <Box
-        display="flex"
-        justifyContent="stretch"
-        gap={2}
-        flex="1 0 400px"
-        alignItems="flex-end"
+        sx={{
+          display: 'flex',
+          justifyContent: 'stretch',
+          gap: 2,
+          flex: '1 0 400px',
+          alignItems: 'flex-end',
+        }}
       >
         <HakutapaInput value={selectedHakutapa} onChange={changeHakutapa} />
         <OphFormControl

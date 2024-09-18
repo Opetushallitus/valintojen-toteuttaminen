@@ -44,7 +44,13 @@ export const TablePaginationWrapper = ({
     <p>{t('yleinen.eiosumia')}</p>
   ) : (
     <>
-      <Box display="flex" justifyContent="space-between" alignItems="center">
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
         {!countHidden && (
           <Typography sx={{ textAlign: 'left' }}>
             {t(countTranslationKey)} {totalCount}
@@ -54,7 +60,14 @@ export const TablePaginationWrapper = ({
           <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
         )}
       </Box>
-      <Box display="flex" flexDirection="column" rowGap={1} alignItems="center">
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          rowGap: 1,
+          alignItems: 'center',
+        }}
+      >
         {children}
         {hasPagination && (
           <OphPagination

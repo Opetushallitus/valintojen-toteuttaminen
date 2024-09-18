@@ -19,7 +19,11 @@ export const HakijaryhmaContent = ({
     useHakijaryhmatSearch(hakijaryhma.oid, hakijaryhma.hakijat);
 
   return (
-    <Box width="100%">
+    <Box
+      sx={{
+        width: '100%',
+      }}
+    >
       <AccordionBox
         id={hakijaryhma.oid}
         title={<HakijaryhmaAccordionTitle hakijaryhma={hakijaryhma} />}
