@@ -23,7 +23,7 @@ export type ValintakoeKutsuItem = {
   hakijaOid: string;
   hakijanNimi: string;
   asiointiKieli: Language;
-  osallistuminen: Osallistuminen;
+  osallistuminen: `osallistuminen.${Osallistuminen}`;
   lisatietoja: TranslatedName;
   laskettuPvm: string;
 };

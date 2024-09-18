@@ -60,7 +60,7 @@ export function createValintakoekutsutKokeittain(
                   hakijaOid: hakemus?.hakijaOid,
                   hakijanNimi: hakemus?.hakijanNimi,
                   asiointiKieli: hakemus?.asiointikieliKoodi,
-                  osallistuminen,
+                  osallistuminen: `osallistuminen.${osallistuminen}`,
                   lisatietoja: mapKeys(
                     valintakoeTulos?.osallistuminenTulos?.kuvaus ?? {},
                     (k) => toLowerCase(k),
