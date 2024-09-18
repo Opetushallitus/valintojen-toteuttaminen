@@ -1,5 +1,4 @@
 'use client';
-import React from 'react';
 import { Typography, Box } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { PageSizeSelector } from './page-size-selector';

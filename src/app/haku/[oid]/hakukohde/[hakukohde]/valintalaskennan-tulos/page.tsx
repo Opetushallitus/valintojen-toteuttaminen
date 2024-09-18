@@ -2,23 +2,62 @@
 
 import { TabContainer } from '../tab-container';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
-import { Button, Box } from '@mui/material';
+import { Box } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { useLasketutValinnanVaiheet } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { ValintalaskennanTulosSearch } from './valintalaskennan-tulos-search';
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
-import { FileDownloadOutlined, FolderOutlined } from '@mui/icons-material';
-import { configuration } from '@/app/lib/configuration';
+import { FileDownloadOutlined } from '@mui/icons-material';
 import React from 'react';
 import { ValintatapajonoContent } from './valintatapajono-content';
 import { useJonosijatSearchParams } from '@/app/hooks/useJonosijatSearch';
 import { ClientSpinner } from '@/app/components/client-spinner';
-import { isEmpty } from '@/app/lib/common';
-import { IconCircle } from '@/app/components/icon-circle';
+import { downloadBlob, isEmpty } from '@/app/lib/common';
+import { DownloadButton } from '@/app/components/download-button';
+import useToaster from '@/app/hooks/useToaster';
+import { useMutation } from '@tanstack/react-query';
+import { getValintalaskennanTulosExcel } from '@/app/lib/valintalaskentakoostepalvelu';
+import { NoResults } from '@/app/components/no-results';
 
 type LasketutValinnanvaiheetParams = {
   hakuOid: string;
   hakukohdeOid: string;
+};
+
+const useExcelDownloadMutation = ({
+  hakukohdeOid,
+}: {
+  hakukohdeOid: string;
+}) => {
+  const { addToast } = useToaster();
+
+  return useMutation({
+    mutationFn: async () => {
+      const { fileName, blob } = await getValintalaskennanTulosExcel({
+        hakukohdeOid,
+      });
+      downloadBlob(fileName ?? 'valintalaskennan-tulos.xls', blob);
+    },
+    onError: (e) => {
+      addToast({
+        key: 'get-valintakoe-excel',
+        message: 'valintalaskennan-tulos.virhe-vie-kaikki-taulukkolaskentaan',
+        type: 'error',
+      });
+      console.error(e);
+    },
+  });
+};
+
+const ExcelDownloadButton = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
+  const mutation = useExcelDownloadMutation({ hakukohdeOid });
+  const { t } = useTranslations();
+
+  return (
+    <DownloadButton startIcon={<FileDownloadOutlined />} mutation={mutation}>
+      {t('valintalaskennan-tulos.vie-kaikki-taulukkolaskentaan')}
+    </DownloadButton>
+  );
 };
 
 const LasketutValinnanVaiheetContent = ({
@@ -34,12 +73,7 @@ const LasketutValinnanVaiheetContent = ({
   const { t } = useTranslations();
 
   return isEmpty(valinnanVaiheet) ? (
-    <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
-      <IconCircle>
-        <FolderOutlined />
-      </IconCircle>
-      <Box>{t('valintalaskennan-tulos.ei-tuloksia')}</Box>
-    </Box>
+    <NoResults text={t('valintalaskennan-tulos.ei-tuloksia')} />
   ) : (
     <Box
       display="flex"
@@ -56,14 +90,7 @@ const LasketutValinnanVaiheetContent = ({
       >
         <Box display="flex" alignItems="flex-end" gap={2}>
           <ValintalaskennanTulosSearch />
-          <Button
-            variant="text"
-            download
-            startIcon={<FileDownloadOutlined />}
-            href={`${configuration.valintalaskennanTulosExcelUrl({ hakukohdeOid })}`}
-          >
-            {t('valintalaskennan-tulos.vie-kaikki-taulukkolaskentaan')}
-          </Button>
+          <ExcelDownloadButton hakukohdeOid={hakukohdeOid} />
         </Box>
         <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
       </Box>

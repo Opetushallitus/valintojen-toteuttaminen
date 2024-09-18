@@ -1,6 +1,4 @@
 'use client';
-import React from 'react';
-
 import { useHakuSearchResults } from '@/app/hooks/useHakuSearch';
 import { TablePaginationWrapper } from '../components/table/table-pagination-wrapper';
 import { HakuTable } from './haku-table';

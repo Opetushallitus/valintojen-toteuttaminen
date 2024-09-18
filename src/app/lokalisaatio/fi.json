@@ -26,7 +26,10 @@
     "kylla": "Kyllä",
     "ei": "Ei",
     "tallenna": "Tallenna",
-    "valitsevaihtoehto": "Valitse vaihtoehdoista"
+    "valitsevaihtoehto": "Valitse vaihtoehdoista",
+    "vie-taulukkolaskentaan": "Vie taulukkolaskentaan",
+    "poista-valinta": "Poista valinta",
+    "valitse-kaikki": "Valitse kaikki"
   },
   "lomake": {
     "jatka": "Jatka",
@@ -70,6 +73,7 @@
     "suurenna": "Suurenna hakukohteitten listaus"
   },
   "hakukohde": {
+    "navigaatio": "Hakukohdevalitsin",
     "valitse": "Valitse tai hae hakukohde",
     "oid": "Hakukohde oid: "
   },
@@ -139,8 +143,28 @@
     "valmis": "Laskenta suoritettu onnistuneesti",
     "valmisvalinnanvaihe": "Laskenta suoritettu onnistuneesti valinnanvaiheelle: {{nimi}}"
   },
-  "koekutsut": {
-    "otsikko": "Valintakoekutsut"
+  "valintakoekutsut": {
+    "otsikko": "Valintakoekutsut",
+    "nayta": "Näytä",
+    "kokeittain": "Kokeittain",
+    "hakijoittain": "Hakijoittain",
+    "vain-kutsuttavat": "Vain kutsuttavat",
+    "muodosta-koekutsut": "Muodosta koekutsut",
+    "muodosta-osoitetarrat": "Muodosta osoitetarrat",
+    "valittu-maara": "Hakijoita valittu: {{count}}",
+    "valittu-maara_zero": "Ei hakijoita valittu",
+    "taulukko": {
+      "hakija": "Hakija",
+      "osallistuminen": "Osallistuminen",
+      "lisatietoja": "Lisätietoja",
+      "laskettuPvm": "Laskettu pvm",
+      "asiointiKieli": "Asiointikieli",
+      "valitse-koekutsu-hakijalle": "Valitse koekutsu hakijalle \"{{hakijanNimi}}\""
+    },
+    "virhe-vie-taulukkolaskentaan": "Taulukkolaskentaan viemisessä tapahtui virhe!",
+    "virhe-osoitetarrat": "Osoitetarrojen muodostamisessa tapahtui virhe!",
+    "ei-valintakokeita": "Ei valintakokeita",
+    "ei-valintakoekutsuja": "Ei valintakoekutsuja"
   },
   "pistesyotto": {
     "otsikko": "Pistesyöttö",
@@ -175,7 +199,7 @@
     "vie-kaikki-taulukkolaskentaan": "Vie kaikki taulukkolaskentaan",
     "poista-jono-sijoittelusta": "Poista jono sijoittelusta",
     "siirra-jono-sijoitteluun": "Siirrä jono sijoitteluun",
-    "virhe-sijoittelu-muutos": "Jonon sijoittelun tilan muuttamisesa tapahtui virhe!",
+    "virhe-sijoittelu-muutos": "Jonon sijoittelun tilan muuttamisessa tapahtui virhe!",
     "ei-tuloksia": "Ei valintalaskennan tuloksia",
     "taulukko": {
       "jonosija": "Jonosija",
@@ -183,7 +207,8 @@
       "pisteet": "Pisteet",
       "valintatieto": "Valintatieto",
       "muutoksen-syy": "Muutoksen syy"
-    }
+    },
+    "virhe-vie-kaikki-taulukkolaskentaan": "Taulukkolaskentaan viemisessä tapahtui virhe!"
   },
   "sijoittelun-tulokset": {
     "otsikko": "Sijoittelun tulokset"
@@ -212,5 +237,16 @@
       "min": "Syötä numero yhtä suuri tai isompi kuin {{min}}",
       "max": "Syötä numero yhtä suuri tai pienempi kuin {{max}}"
     }
+  },
+  "osallistuminen": {
+    "OSALLISTUU": "Kutsutaan",
+    "EI_OSALLISTU": "Ei kutsuta",
+    "EI_VAADITA": "Ei vaadita",
+    "VIRHE": "Virhe"
+  },
+  "kieli": {
+    "fi": "suomi",
+    "sv": "ruotsi",
+    "en": "englanti"
   }
 }

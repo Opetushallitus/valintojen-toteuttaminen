@@ -136,7 +136,7 @@ const buildDummyLaskentaStart = () => {
     latausUrl: 'urlmistatulosladataan',
     lisatiedot: { luotiinkoUusiLaskenta: true },
   };
-  return Promise.resolve({ data: laskenta });
+  return Promise.resolve({ headers: new Headers(), data: laskenta });
 };
 
 const buildSeurantaTiedot = (
@@ -150,5 +150,5 @@ const buildSeurantaTiedot = (
     hakukohteitaValmiina,
     hakukohteitaKeskeytetty,
   };
-  return Promise.resolve({ data: seuranta });
+  return Promise.resolve({ headers: new Headers(), data: seuranta });
 };

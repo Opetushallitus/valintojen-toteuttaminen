@@ -4,14 +4,13 @@ import { TabContainer } from '../tab-container';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { ClientSpinner } from '@/app/components/client-spinner';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { getScoresForHakukohde } from '@/app/lib/valintalaskentakoostepalvelu';
+import { getPisteetForHakukohde } from '@/app/lib/valintalaskentakoostepalvelu';
 import { PisteSyottoControls } from './pistesyotto-controls';
 import { Box } from '@mui/material';
 import { PisteSyottoForm } from './pistesyotto-form';
-import { IconCircle } from '@/app/components/icon-circle';
-import { FolderOutlined } from '@mui/icons-material';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { isEmpty } from '@/app/lib/common';
+import { NoResults } from '@/app/components/no-results';
 
 type PisteSyottoContentParams = {
   hakuOid: string;
@@ -25,17 +24,12 @@ const PisteSyottoContent = ({
   const { t } = useTranslations();
 
   const { data: pistetulokset } = useSuspenseQuery({
-    queryKey: ['getScoresForHakukohde', hakukohdeOid],
-    queryFn: () => getScoresForHakukohde(hakuOid, hakukohdeOid),
+    queryKey: ['getPisteetForHakukohde', hakukohdeOid],
+    queryFn: () => getPisteetForHakukohde(hakuOid, hakukohdeOid),
   });
 
   return isEmpty(pistetulokset.valintakokeet) ? (
-    <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
-      <IconCircle>
-        <FolderOutlined />
-      </IconCircle>
-      <Box>{t('pistesyotto.ei-tuloksia')}</Box>
-    </Box>
+    <NoResults text={t('pistesyotto.ei-tuloksia')} />
   ) : (
     <Box sx={{ width: '100%', position: 'relative' }}>
       <PisteSyottoControls kokeet={pistetulokset.valintakokeet} />

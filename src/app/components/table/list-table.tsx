@@ -2,7 +2,6 @@
 
 import {
   Box,
-  Button,
   Table,
   TableBody,
   TableCell,
@@ -10,139 +9,14 @@ import {
   TableRow,
   styled,
 } from '@mui/material';
-import { colors } from '@/app/theme';
-import { ExpandLess, ExpandMore, UnfoldMore } from '@mui/icons-material';
-import { getSortParts } from './table-utils';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { TFunction } from 'i18next';
-import { ExternalLink } from '../external-link';
-import React, { Key } from 'react';
-
-type KeysMatching<O, T> = {
-  [K in keyof O]: O[K] extends T ? K : never;
-}[keyof O & string];
-
-export type ListTableColumn<P> = {
-  title?: string;
-  key: keyof P;
-  render: (props: P) => React.ReactNode;
-  style?: React.CSSProperties;
-  sortable?: boolean;
-};
-
-export const makeGenericColumn = <T extends Record<string, unknown>>({
-  title,
-  key,
-  valueProp,
-}: {
-  title: string;
-  key: string;
-  valueProp: KeysMatching<T, string | number | undefined>;
-}): ListTableColumn<T> => ({
-  title,
-  key,
-  render: (props) => <span>{props[valueProp] as string}</span>,
-  style: { width: 'auto' },
-});
-
-export const makeColumnWithCustomRender = <T extends Record<string, unknown>>({
-  title,
-  key,
-  renderFn,
-  sortable = true,
-}: {
-  title: string;
-  key: string;
-  renderFn: (props: T) => React.ReactNode;
-  sortable?: boolean;
-}): ListTableColumn<T> => ({
-  title,
-  key,
-  render: (props) => renderFn(props),
-  sortable,
-});
-
-export const makeBooleanYesNoColumn = <T extends Record<string, unknown>>({
-  t,
-  title,
-  key,
-  booleanValueProp,
-}: {
-  t: TFunction;
-  title: string;
-  key: string;
-  booleanValueProp: KeysMatching<T, boolean>;
-}): ListTableColumn<T> => ({
-  title,
-  key,
-  render: (props) => (
-    <span>
-      {(props[booleanValueProp] as boolean)
-        ? t('yleinen.kylla')
-        : t('yleinen.ei')}
-    </span>
-  ),
-  style: { width: 'auto' },
-});
-
-export const makeColumnWithValueToTranslate = <
-  T extends Record<string, unknown>,
->({
-  t,
-  title,
-  key,
-  valueProp,
-}: {
-  t: TFunction;
-  title: string;
-  key: string;
-  valueProp: KeysMatching<T, string>;
-}): ListTableColumn<T> => ({
-  title,
-  key,
-  render: (props) => <span>{t(props[valueProp] as string)}</span>,
-  style: { width: 'auto' },
-});
-
-export const makeCountColumn = <T extends Record<string, unknown>>({
-  title,
-  key,
-  amountProp,
-}: {
-  title: string;
-  key: string;
-  amountProp: KeysMatching<T, number>;
-}): ListTableColumn<T> => ({
-  title,
-  key,
-  render: (props) => <span>{(props[amountProp] ?? 0) as number}</span>,
-  style: { width: 0 },
-});
-
-export const makeExternalLinkColumn = <T extends Record<string, unknown>>({
-  linkBuilder,
-  title,
-  key,
-  nameProp,
-  linkProp,
-}: {
-  linkBuilder: (s: string) => string;
-  title: string;
-  key: string;
-  nameProp?: KeysMatching<T, string>;
-  linkProp: KeysMatching<T, string>;
-}): ListTableColumn<T> => ({
-  title,
-  key,
-  render: (props) => (
-    <ExternalLink
-      noIcon={true}
-      name={props[nameProp ?? linkProp] as string}
-      href={linkBuilder(props[linkProp] as string)}
-    />
-  ),
-  style: { width: 'auto' },
-});
+import { useMemo } from 'react';
+import { OphPagination } from './oph-pagination';
+import { ophColors } from '@opetushallitus/oph-design-system';
+import { TableHeaderCell } from './table-header-cell';
+import { EMPTY_ARRAY, EMPTY_STRING_SET } from '@/app/lib/common';
+import { TableHeaderCheckbox, TableRowCheckbox } from './table-checkboxes';
+import { ListTableColumn, Row } from './table-types';
 
 const StyledTable = styled(Table)({
   width: '100%',
@@ -156,139 +30,132 @@ const StyledCell = styled(TableCell)({
   whiteSpace: 'pre-wrap',
   borderWidth: 0,
   'button:focus': {
-    color: colors.blue2,
-  },
-});
-
-const StyledHeaderCell = styled(TableCell)({
-  padding: '0.2rem 0.1rem 0.2rem 0.4rem',
-  textAlign: 'left',
-  'button:focus': {
-    color: colors.blue2,
+    color: ophColors.blue2,
   },
 });
 
 const StyledTableBody = styled(TableBody)({
   '& .MuiTableRow-root': {
     '&:nth-of-type(even)': {
-      backgroundColor: colors.grey50,
+      backgroundColor: ophColors.grey50,
       '.MuiTableCell-root': {
-        backgroundColor: colors.grey50,
+        backgroundColor: ophColors.grey50,
       },
     },
     '&:nth-of-type(odd)': {
-      backgroundColor: colors.white,
+      backgroundColor: ophColors.white,
       '.MuiTableCell-root': {
-        backgroundColor: colors.white,
+        backgroundColor: ophColors.white,
       },
     },
     '&:hover': {
-      backgroundColor: colors.lightBlue2,
+      backgroundColor: ophColors.lightBlue2,
     },
   },
 });
 
-interface ListTableProps<T> extends React.ComponentProps<typeof StyledTable> {
+interface ListTableProps<T extends Row>
+  extends React.ComponentProps<typeof StyledTable> {
   columns?: Array<ListTableColumn<T>>;
   rows?: Array<T>;
   sort?: string;
   setSort?: (sort: string) => void;
   translateHeader?: boolean;
   rowKeyProp: keyof T;
+  pagination?: {
+    page: number;
+    setPage: (page: number) => void;
+    pageSize: number;
+  };
+  getRowCheckboxLabel?: (row: T) => string;
+  checkboxSelection?: boolean;
+  selection?: Set<string>;
+  onSelectionChange?: (selection: Set<string>) => void;
 }
 
-const SortIcon = ({
-  sortValue,
-  colId,
-}: {
-  sortValue?: string;
-  colId: string;
-}) => {
-  switch (sortValue) {
-    case `${colId}:asc`:
-      return <ExpandLess />;
-    case `${colId}:desc`:
-      return <ExpandMore />;
-    default:
-      return <UnfoldMore />;
-  }
-};
+const TableWrapper = styled(Box)(({ theme }) => ({
+  position: 'relative',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  width: '100%',
+  overflowX: 'auto',
+  rowGap: theme.spacing(1),
+}));
 
-const HeaderCell = ({
-  colId,
-  title,
-  style,
-  sort,
-  setSort,
-  sortable,
+const TablePagination = ({
+  label,
+  totalCount,
+  pageSize,
+  page,
+  setPage,
 }: {
-  colId: string;
-  title?: string;
-  style?: React.CSSProperties;
-  sort?: string;
-  setSort?: (sort: string) => void;
-  sortable?: boolean;
+  label?: string;
+  totalCount: number;
+  pageSize: number;
+  page: number;
+  setPage: (page: number) => void;
 }) => {
-  const { direction } = getSortParts(sort, colId);
-
+  const { t } = useTranslations();
   return (
-    <StyledHeaderCell sx={style} sortDirection={direction}>
-      {setSort && sortable ? (
-        <Button
-          sx={{
-            color: colors.black,
-          }}
-          onClick={() => {
-            let newSortValue = '';
-            if (sort === `${colId}:asc`) {
-              newSortValue = `${colId}:desc`;
-            } else if (sort === `${colId}:desc`) {
-              newSortValue = '';
-            } else {
-              newSortValue = `${colId}:asc`;
-            }
-            setSort(newSortValue);
-          }}
-          endIcon={<SortIcon sortValue={sort} colId={colId} />}
-        >
-          {title}
-        </Button>
-      ) : (
-        <span style={{ fontWeight: 600 }}>{title}</span>
-      )}
-    </StyledHeaderCell>
+    <OphPagination
+      aria-label={label ?? t('yleinen.sivutus')}
+      totalCount={totalCount}
+      pageSize={pageSize}
+      pageNumber={page}
+      setPageNumber={setPage}
+      previousText={t('yleinen.edellinen')}
+      nextText={t('yleinen.seuraava')}
+    />
   );
 };
 
-const TableWrapper = styled(Box)({
-  position: 'relative',
-  display: 'block',
-  width: '100%',
-  overflowX: 'auto',
-});
-
-export type Row<K extends string = string> = Record<K, unknown>;
-
 export const ListTable = <T extends Row>({
-  columns = [],
-  rows = [],
+  columns = EMPTY_ARRAY as Array<ListTableColumn<T>>,
+  rows = EMPTY_ARRAY as Array<T>,
   sort,
   setSort,
   rowKeyProp,
   translateHeader = true,
+  pagination,
+  checkboxSelection,
+  selection = EMPTY_STRING_SET,
+  onSelectionChange,
+  getRowCheckboxLabel,
   ...props
 }: ListTableProps<T>) => {
   const { t } = useTranslations();
+
+  const pageRows = useMemo(() => {
+    if (pagination) {
+      const start = pagination?.pageSize * (pagination.page - 1);
+      return rows.slice(start, start + pagination.pageSize);
+    }
+    return rows;
+  }, [rows, pagination]);
 
   return (
     <TableWrapper>
       <StyledTable {...props}>
         <TableHead>
-          <TableRow sx={{ borderBottom: `2px solid ${colors.grey200}` }}>
+          <TableRow sx={{ borderBottom: `2px solid ${ophColors.grey200}` }}>
+            {checkboxSelection && (
+              <TableHeaderCell
+                key="select-all"
+                title={
+                  <TableHeaderCheckbox
+                    selection={selection}
+                    onSelectionChange={onSelectionChange}
+                    rows={rows}
+                    rowKeyProp={rowKeyProp}
+                  />
+                }
+              />
+            )}
             {columns.map((columnProps) => {
               const { key, title, style, sortable } = columnProps;
               return (
-                <HeaderCell
+                <TableHeaderCell
                   key={key.toString()}
                   colId={key.toString()}
                   title={translateHeader ? t(title ?? '') : title}
@@ -302,9 +169,21 @@ export const ListTable = <T extends Row>({
           </TableRow>
         </TableHead>
         <StyledTableBody>
-          {rows.map((rowProps) => {
+          {pageRows.map((rowProps) => {
+            const rowId = rowProps?.[rowKeyProp] as string;
             return (
-              <TableRow key={rowProps?.[rowKeyProp] as Key}>
+              <TableRow key={rowId}>
+                {checkboxSelection && (
+                  <StyledCell>
+                    <TableRowCheckbox
+                      selection={selection}
+                      onSelectionChange={onSelectionChange}
+                      rowId={rowId}
+                      rowProps={rowProps}
+                      getRowCheckboxLabel={getRowCheckboxLabel}
+                    />
+                  </StyledCell>
+                )}
                 {columns.map(({ key: columnKey, render, style }) => {
                   return (
                     <StyledCell key={columnKey.toString()} sx={style}>
@@ -317,8 +196,14 @@ export const ListTable = <T extends Row>({
           })}
         </StyledTableBody>
       </StyledTable>
+      {pagination && (
+        <TablePagination
+          page={pagination.page}
+          setPage={pagination.setPage}
+          pageSize={pagination.pageSize}
+          totalCount={rows?.length ?? 0}
+        />
+      )}
     </TableWrapper>
   );
 };
-
-export default ListTable;

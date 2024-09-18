@@ -5,6 +5,7 @@ import { getHakemukset } from '../lib/ataru';
 import { TranslatedName } from '../lib/localization/localization-types';
 import { JonoSija, LaskettuValintatapajono } from '../lib/types/laskenta-types';
 import { Hakemus } from '../lib/types/ataru-types';
+import { mapKeys } from 'remeda';
 
 export type JonoSijaWithHakijaInfo = Omit<
   JonoSija,
@@ -34,7 +35,7 @@ export const useLasketutValinnanVaiheet = ({
     queries: [
       {
         queryKey: ['getHakemukset', hakuOid, hakukohdeOid],
-        queryFn: () => getHakemukset(hakuOid, hakukohdeOid),
+        queryFn: () => getHakemukset({ hakuOid, hakukohdeOid }),
       },
       {
         queryKey: ['getLasketutValinnanVaiheet', hakukohdeOid],
@@ -66,15 +67,13 @@ export const useLasketutValinnanVaiheet = ({
                 ...jonosija,
                 hakijanNimi: hakemus.hakijanNimi,
                 hakutoiveNumero: jonosija.prioriteetti,
-                hakemuksenTila: hakemus.hakemuksenTila,
                 hakemusOid: hakemus.hakemusOid,
                 hakijaOid: hakemus.hakijaOid,
+                hakemuksenTila: hakemus.tila,
                 pisteet: jarjestyskriteeri?.arvo,
                 tuloksenTila: jonosija.tuloksenTila,
-                muutoksenSyy: Object.fromEntries(
-                  Object.entries(jarjestyskriteeri?.kuvaus ?? {}).map(
-                    ([key, value]) => [key.toLowerCase(), value],
-                  ),
+                muutoksenSyy: mapKeys(jarjestyskriteeri?.kuvaus ?? {}, (key) =>
+                  key.toLowerCase(),
                 ),
               };
             }),

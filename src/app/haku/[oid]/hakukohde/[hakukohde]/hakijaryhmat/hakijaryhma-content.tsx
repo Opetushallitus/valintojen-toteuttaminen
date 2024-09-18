@@ -1,13 +1,12 @@
 'use client';
 import { Box } from '@mui/material';
 import { HakukohteenHakijaryhma } from '@/app/lib/types/laskenta-types';
-import React from 'react';
-import { HakijaryhmaAccordion } from './hakijaryhma-accordion';
 import { HakijaryhmaAccordionTitle } from './hakijaryhma-accordion-title';
 import { HakijaryhmaTable } from './hakijaryhma-table';
 import { useHakijaryhmatSearch } from '@/app/hooks/useHakijaryhmatSearch';
 import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
 import { useTranslations } from '@/app/hooks/useTranslations';
+import { AccordionBox } from '@/app/components/accordion-box';
 
 export const HakijaryhmaContent = ({
   hakijaryhma,
@@ -21,7 +20,7 @@ export const HakijaryhmaContent = ({
 
   return (
     <Box width="100%">
-      <HakijaryhmaAccordion
+      <AccordionBox
         id={hakijaryhma.oid}
         title={<HakijaryhmaAccordionTitle hakijaryhma={hakijaryhma} />}
       >
@@ -39,7 +38,7 @@ export const HakijaryhmaContent = ({
             setSort={setSort}
           />
         </TablePaginationWrapper>
-      </HakijaryhmaAccordion>
+      </AccordionBox>
     </Box>
   );
 };

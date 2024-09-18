@@ -73,7 +73,7 @@ test('does not show maksuvelvollisuus and hakukelpoisuus columns when not korkea
         totalHakukohteet: 1,
         kohdejoukkoKoodiUri: 'haunkohdejoukko_11',
       };
-      await route.fulfill({ body: JSON.stringify(haku), contentType: 'json' });
+      await route.fulfill({ json: haku });
     },
   );
   await page.goto(

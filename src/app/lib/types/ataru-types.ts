@@ -1,3 +1,5 @@
+import { Language } from '../localization/localization-types';
+
 export enum Maksuvelvollisuus {
   MAKSUVELVOLLINEN = 'hakemus.maksuvelvollisuus.maksuvelvollinen',
   EI_MAKSUVELVOLLINEN = 'hakemus.maksuvelvollisuus.eimaksuvelvollinen',
@@ -15,15 +17,18 @@ export enum Hakukelpoisuus {
   EHDOLLINEN = 'hakemus.hakukelpoisuus.ehdollinen',
   TARKASTAMATTA = 'hakemus.tarkastamatta',
 }
+export type Hakemus = HakijaInfo & {
+  hakutoiveNumero: number;
+  hakukelpoisuus: Hakukelpoisuus;
+  maksuvelvollisuus: Maksuvelvollisuus;
+  tila: HakemuksenTila;
+};
 
-export type Hakemus = {
+export type HakijaInfo = {
   hakemusOid: string;
   hakijaOid: string;
   etunimet: string;
   sukunimi: string;
   hakijanNimi: string;
-  hakutoiveNumero: number;
-  hakukelpoisuus: Hakukelpoisuus;
-  maksuvelvollisuus: Maksuvelvollisuus;
-  hakemuksenTila: HakemuksenTila;
+  asiointikieliKoodi: Language;
 };

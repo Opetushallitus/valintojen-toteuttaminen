@@ -1,25 +1,26 @@
 'use client';
-import ListTable, {
-  makeColumnWithCustomRender,
-} from '@/app/components/table/list-table';
 import { HakemuksenPistetiedot } from '@/app/lib/types/laskenta-types';
-import { Valintakoe } from '@/app/lib/types/valintaperusteet-types';
-import { colors } from '@opetushallitus/oph-design-system';
+import { ValintakoeAvaimet } from '@/app/lib/types/valintaperusteet-types';
+import { ophColors } from '@opetushallitus/oph-design-system';
 import { isNotPartOfThisHakukohde } from '../pistesyotto-utils';
 import { ReadOnlyKoeCell } from './koe-readonly-cell';
 import { KoeCell } from './koe-cell';
 import { ChangePisteSyottoFormParams } from '../pistesyotto-form';
-import { hakijaColumn } from '@/app/components/table/hakija-column';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { useMemo } from 'react';
+import {
+  hakijaColumn,
+  makeColumnWithCustomRender,
+} from '@/app/components/table/table-columns';
+import { ListTable } from '@/app/components/table/list-table';
 
 const stickyColumnStyle: React.CSSProperties = {
   minWidth: '260px',
   position: 'sticky',
   left: 0,
-  boxShadow: `0 5px 3px 2px ${colors.grey200}`,
+  boxShadow: `0 5px 3px 2px ${ophColors.grey200}`,
   zIndex: 1,
-  backgroundColor: colors.white,
+  backgroundColor: ophColors.white,
 };
 
 export const PisteSyottoTable = ({
@@ -33,7 +34,7 @@ export const PisteSyottoTable = ({
   pistetiedot: HakemuksenPistetiedot[];
   sort: string;
   setSort: (sort: string) => void;
-  kokeet: Valintakoe[];
+  kokeet: ValintakoeAvaimet[];
   updateForm: (params: ChangePisteSyottoFormParams) => void;
   disabled: boolean;
 }) => {

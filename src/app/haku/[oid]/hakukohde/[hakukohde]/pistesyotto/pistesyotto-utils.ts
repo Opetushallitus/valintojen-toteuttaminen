@@ -1,5 +1,5 @@
 import {
-  ValintakoeOsallistuminen,
+  ValintakoeOsallistuminenTulos,
   ValintakokeenPisteet,
 } from '@/app/lib/types/laskenta-types';
 
@@ -11,20 +11,20 @@ export const isNotPartOfThisHakukohde = (
   }
   const osallistuminen = pisteet.osallistuminen;
   return (
-    osallistuminen === ValintakoeOsallistuminen.EI_KUTSUTTU ||
-    osallistuminen === ValintakoeOsallistuminen.TOISELLA_HAKEMUKSELLA ||
-    osallistuminen === ValintakoeOsallistuminen.TOISESSA_HAKUTOIVEESSA
+    osallistuminen === ValintakoeOsallistuminenTulos.EI_KUTSUTTU ||
+    osallistuminen === ValintakoeOsallistuminenTulos.TOISELLA_HAKEMUKSELLA ||
+    osallistuminen === ValintakoeOsallistuminenTulos.TOISESSA_HAKUTOIVEESSA
   );
 };
 
 export const NOT_READABLE_REASON_MAP = {
-  [ValintakoeOsallistuminen.EI_KUTSUTTU]: 'pistesyotto.eiKutsuttu',
-  [ValintakoeOsallistuminen.TOISELLA_HAKEMUKSELLA]:
+  [ValintakoeOsallistuminenTulos.EI_KUTSUTTU]: 'pistesyotto.eiKutsuttu',
+  [ValintakoeOsallistuminenTulos.TOISELLA_HAKEMUKSELLA]:
     'pistesyotto.toisellaHakemuksella',
-  [ValintakoeOsallistuminen.TOISESSA_HAKUTOIVEESSA]:
+  [ValintakoeOsallistuminenTulos.TOISESSA_HAKUTOIVEESSA]:
     'pistesyotto.toisessaHakutoiveessa',
-  [ValintakoeOsallistuminen.EI_OSALLISTUNUT]: '',
-  [ValintakoeOsallistuminen.MERKITSEMATTA]: '',
-  [ValintakoeOsallistuminen.OSALLISTUI]: '',
-  [ValintakoeOsallistuminen.EI_VAADITA]: '',
+  [ValintakoeOsallistuminenTulos.EI_OSALLISTUNUT]: '',
+  [ValintakoeOsallistuminenTulos.MERKITSEMATTA]: '',
+  [ValintakoeOsallistuminenTulos.OSALLISTUI]: '',
+  [ValintakoeOsallistuminenTulos.EI_VAADITA]: '',
 } as const;

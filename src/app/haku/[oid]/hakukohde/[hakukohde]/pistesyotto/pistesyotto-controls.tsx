@@ -7,12 +7,15 @@ import {
   FormControlLabel,
 } from '@mui/material';
 import { PisteSyottoSearch } from './pistesyotto-search';
-import { OphSelect } from '@/app/components/form/oph-select';
-import { Valintakoe } from '@/app/lib/types/valintaperusteet-types';
-import { CheckBoxOutlined } from '@mui/icons-material';
+import { ValintakoeAvaimet } from '@/app/lib/types/valintaperusteet-types';
 import { OphFormControl } from '@/app/components/form/oph-form-control';
+import { LocalizedSelect } from '@/app/components/localized-select';
 
-export const PisteSyottoControls = ({ kokeet }: { kokeet: Valintakoe[] }) => {
+export const PisteSyottoControls = ({
+  kokeet,
+}: {
+  kokeet: ValintakoeAvaimet[];
+}) => {
   const {
     valittuKoe,
     setValittukoe,
@@ -59,7 +62,7 @@ export const PisteSyottoControls = ({ kokeet }: { kokeet: Valintakoe[] }) => {
           }}
           label={t('pistesyotto.koe')}
           renderInput={({ labelId }) => (
-            <OphSelect
+            <LocalizedSelect
               id="koe-select"
               labelId={labelId}
               value={valittuKoe}
@@ -80,7 +83,7 @@ export const PisteSyottoControls = ({ kokeet }: { kokeet: Valintakoe[] }) => {
           }}
           label={t('yleinen.tila')}
           renderInput={({ labelId }) => (
-            <OphSelect
+            <LocalizedSelect
               id="osallistumisen-tila-select"
               labelId={labelId}
               value={osallistumisenTila}
@@ -114,7 +117,6 @@ export const PisteSyottoControls = ({ kokeet }: { kokeet: Valintakoe[] }) => {
             <Checkbox
               checked={naytaVainLaskentaanVaikuttavat}
               onChange={changeNaytaVainLaskentaanVaikuttavat}
-              checkedIcon={<CheckBoxOutlined />}
             />
           }
           label={t('pistesyotto.laskentaanVaikuttavat')}

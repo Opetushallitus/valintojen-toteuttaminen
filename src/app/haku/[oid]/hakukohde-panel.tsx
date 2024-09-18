@@ -1,17 +1,19 @@
 'use client';
 
 import { styled, IconButton, FormLabel } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
+import {
+  Close as CloseIcon,
+  KeyboardDoubleArrowRight as KeyboardDoubleArrowRightIcon,
+} from '@mui/icons-material';
 import HakukohdeList from './hakukohde-list';
 import HakukohdeSearch from './hakukohde-search';
 import { useState } from 'react';
-import { colors } from '@/app/theme';
+import { ophColors } from '@/app/theme';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { ClientSpinner } from '@/app/components/client-spinner';
 
-const StyledPanel = styled('div')({
+const StyledPanel = styled('aside')({
   width: '16vw',
   textAlign: 'left',
   minHeight: '85vh',
@@ -23,7 +25,7 @@ const StyledPanel = styled('div')({
   alignItems: 'start',
   transition: 'width 300ms ease-in-out',
   ['label, button']: {
-    color: colors.blue2,
+    color: ophColors.blue2,
     maxWidth: '50px',
     alignSelf: 'end',
     marginRight: '15px',
@@ -39,7 +41,7 @@ const StyledPanel = styled('div')({
   },
 });
 
-export const HakukohdePanel = ({ oid }: { oid: string }) => {
+export const HakukohdePanel = ({ hakuOid }: { hakuOid: string }) => {
   const [minimized, setMinimized] = useState(false);
   const { t } = useTranslations();
 
@@ -56,7 +58,7 @@ export const HakukohdePanel = ({ oid }: { oid: string }) => {
           </IconButton>
           <HakukohdeSearch />
 
-          <HakukohdeList hakuOid={oid} />
+          <HakukohdeList hakuOid={hakuOid} />
         </QuerySuspenseBoundary>
       )}
       {minimized && (

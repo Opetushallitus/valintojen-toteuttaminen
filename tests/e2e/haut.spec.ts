@@ -3,6 +3,7 @@ import {
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
   expectUrlParamToEqual,
+  getHakukohdeNaviLinks,
 } from './playwright-utils';
 
 async function selectHakutapa(page: Page, expectedOption: string) {
@@ -139,7 +140,7 @@ test('navigates to haku page', async ({ page }) => {
   await expect(page.locator('h1')).toHaveText(
     '> Tampere University Separate Admission/ Finnish MAOL Competition Route 2024',
   );
-  await expect(page.locator('.organizationLabel')).toHaveCount(3);
+  await expect(getHakukohdeNaviLinks(page)).toHaveCount(3);
 });
 
 test('navigates to haku page with no hakukohde', async ({ page }) => {
@@ -150,5 +151,5 @@ test('navigates to haku page with no hakukohde', async ({ page }) => {
   await expect(page.locator('h1')).toHaveText(
     '> Hausjärven lukio jatkuva haku',
   );
-  await expect(page.locator('.organizationLabel')).toHaveCount(0);
+  await expect(getHakukohdeNaviLinks(page)).toHaveCount(0);
 });

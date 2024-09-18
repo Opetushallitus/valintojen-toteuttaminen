@@ -16,7 +16,7 @@ export default function HakuLayout({
       <MainContainer
         sx={{ display: 'flex', flexDirection: 'row', textAlign: 'left' }}
       >
-        <HakukohdePanel oid={params.oid} />
+        <HakukohdePanel hakuOid={params.oid} />
         {children}
       </MainContainer>
     </PageLayout>

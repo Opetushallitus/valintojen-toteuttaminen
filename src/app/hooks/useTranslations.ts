@@ -18,5 +18,5 @@ export const useTranslations = () => {
     [i18n],
   );
 
-  return { t, translateEntity };
+  return { t, translateEntity, language: i18n.language as Language };
 };

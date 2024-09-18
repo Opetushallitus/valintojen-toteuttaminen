@@ -1,14 +1,14 @@
 'use client';
-import { hakijaColumn } from '@/app/components/table/hakija-column';
-import ListTable, {
-  ListTableColumn,
+import { ListTable } from '@/app/components/table/list-table';
+import {
+  hakijaColumn,
   makeBooleanYesNoColumn,
   makeCountColumn,
   makeGenericColumn,
-} from '@/app/components/table/list-table';
+} from '@/app/components/table/table-columns';
+import { ListTableColumn } from '@/app/components/table/table-types';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { HakijaryhmanHakija } from '@/app/lib/types/laskenta-types';
-import theme from '@/app/theme';
 import { Box } from '@mui/material';
 import { TFunction } from 'i18next';
 import { useMemo } from 'react';
@@ -25,7 +25,7 @@ const makeSijoittelunTilaColumn = (
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        rowGap: theme.spacing(1),
+        rowGap: 1,
       }}
     >
       {props.jononNimi && (

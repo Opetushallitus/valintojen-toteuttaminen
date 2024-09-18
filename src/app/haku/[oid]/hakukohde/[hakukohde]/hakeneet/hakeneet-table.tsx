@@ -1,13 +1,13 @@
 'use client';
+
+import { ListTable } from '@/app/components/table/list-table';
 import {
   buildLinkToPerson,
   hakijaColumn,
-} from '@/app/components/table/hakija-column';
-import ListTable, {
-  makeGenericColumn,
-  makeExternalLinkColumn,
   makeColumnWithValueToTranslate,
-} from '@/app/components/table/list-table';
+  makeExternalLinkColumn,
+  makeGenericColumn,
+} from '@/app/components/table/table-columns';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Hakemus } from '@/app/lib/types/ataru-types';
 

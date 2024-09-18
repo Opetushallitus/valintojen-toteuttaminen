@@ -18,10 +18,8 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
 import HallintaTableRow from './hallinta-table-row';
 import { HaunAsetukset } from '@/app/lib/ohjausparametrit';
-import { Button, Typography } from '@opetushallitus/oph-design-system';
 import { sijoitellaankoHaunHakukohteetLaskennanYhteydessa } from '@/app/lib/kouta';
 import Confirm from './confirm';
-import theme from '@/app/theme';
 import { getLasketutValinnanVaiheet } from '@/app/lib/valintalaskenta-service';
 import ErrorRow from './error-row';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
@@ -33,6 +31,7 @@ import {
 import { useMachine } from '@xstate/react';
 import { useMemo } from 'react';
 import { useToaster } from '@/app/hooks/useToaster';
+import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 
 type HallintaTableParams = {
   haku: Haku;
@@ -102,8 +101,8 @@ const HallintaTable = ({
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          rowGap: theme.spacing(2),
-          marginBottom: theme.spacing(2),
+          rowGap: 2,
+          marginBottom: 2,
         }}
       >
         <Table>
@@ -137,16 +136,16 @@ const HallintaTable = ({
         <Box
           sx={{
             textAlign: 'right',
-            paddingRight: theme.spacing(2),
+            paddingRight: 2,
             maxWidth: '400px',
             alignSelf: 'flex-end',
             display: 'flex',
             flexDirection: 'column',
-            rowGap: theme.spacing(1),
+            rowGap: 2,
           }}
         >
           {!state.matches(LaskentaStates.WAITING_CONFIRMATION) && (
-            <Button
+            <OphButton
               variant="contained"
               onClick={start}
               disabled={
@@ -158,7 +157,7 @@ const HallintaTable = ({
               }
             >
               {t('valinnanhallinta.kaynnistakaikki')}
-            </Button>
+            </OphButton>
           )}
           {state.matches(LaskentaStates.WAITING_CONFIRMATION) && (
             <Confirm cancel={cancel} confirm={confirm} />
@@ -167,18 +166,18 @@ const HallintaTable = ({
             <CircularProgress aria-label={t('valinnanhallinta.lasketaan')} />
           )}
           {containsValisijoittelu && (
-            <Typography>
+            <OphTypography>
               {t('valinnanhallinta.onvalisijoittelusuoritakaikki')}
-            </Typography>
+            </OphTypography>
           )}
           {state.context.laskenta.calculatedTime && (
-            <Typography>
+            <OphTypography>
               {t('valinnanhallinta.laskettuviimeksi', {
                 pvm: toFormattedDateTimeString(
                   state.context.laskenta.calculatedTime,
                 ),
               })}
-            </Typography>
+            </OphTypography>
           )}
         </Box>
         {(state.context.laskenta.errorMessage != null ||

@@ -1,0 +1,172 @@
+[
+    {
+        "hakuOid": "1.2.246.562.29.00000000000000045102",
+        "hakemusOid": "1.2.246.562.11.00000000000001796027",
+        "hakijaOid": "1.2.246.562.24.69259807406",
+        "etunimi": null,
+        "sukunimi": null,
+        "createdAt": "2024-01-09T07:50:59.998+00:00",
+        "hakutoiveet": [
+            {
+                "hakukohdeOid": "1.2.246.562.20.00000000000000045105",
+                "valinnanVaiheet": [
+                    {
+                        "valinnanVaiheOid": "16799134528699217680578788780531",
+                        "valinnanVaiheJarjestysluku": 1,
+                        "valintakokeet": [
+                            {
+                                "valintakoeOid": "1679913452968-6027331842984315931",
+                                "valintakoeTunniste": "1_2_246_562_20_00000000000000045105_paasykoe",
+                                "nimi": "Pääsykoe",
+                                "aktiivinen": true,
+                                "osallistuminenTulos": {
+                                    "osallistuminen": "OSALLISTUU",
+                                    "kuvaus": {},
+                                    "laskentaTila": "HYVAKSYTTAVISSA",
+                                    "laskentaTulos": true
+                                },
+                                "lahetetaankoKoekutsut": true,
+                                "kutsutaankoKaikki": null,
+                                "kutsuttavienMaara": null
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "hakuOid": "1.2.246.562.29.00000000000000045102",
+        "hakemusOid": "1.2.246.562.11.00000000000001793706",
+        "hakijaOid": "1.2.246.562.24.25732574711",
+        "etunimi": null,
+        "sukunimi": null,
+        "createdAt": "2024-01-09T07:51:00.190+00:00",
+        "hakutoiveet": [
+            {
+                "hakukohdeOid": "1.2.246.562.20.00000000000000045105",
+                "valinnanVaiheet": [
+                    {
+                        "valinnanVaiheOid": "16799134528699217680578788780531",
+                        "valinnanVaiheJarjestysluku": 1,
+                        "valintakokeet": [
+                            {
+                                "valintakoeOid": "1679913452968-6027331842984315931",
+                                "valintakoeTunniste": "1_2_246_562_20_00000000000000045105_paasykoe",
+                                "nimi": "Pääsykoe",
+                                "aktiivinen": true,
+                                "osallistuminenTulos": {
+                                    "osallistuminen": "OSALLISTUU",
+                                    "kuvaus": {},
+                                    "laskentaTila": "HYVAKSYTTAVISSA",
+                                    "laskentaTulos": true
+                                },
+                                "lahetetaankoKoekutsut": true,
+                                "kutsutaankoKaikki": null,
+                                "kutsuttavienMaara": null
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "hakuOid": "1.2.246.562.29.00000000000000045102",
+        "hakemusOid": "1.2.246.562.11.00000000000001790371",
+        "hakijaOid": "1.2.246.562.24.14598775927",
+        "etunimi": null,
+        "sukunimi": null,
+        "createdAt": "2024-01-09T07:51:00.115+00:00",
+        "hakutoiveet": [
+            {
+                "hakukohdeOid": "1.2.246.562.20.00000000000000045105",
+                "valinnanVaiheet": [
+                    {
+                        "valinnanVaiheOid": "16799134528699217680578788780531",
+                        "valinnanVaiheJarjestysluku": 1,
+                        "valintakokeet": [
+                            {
+                                "valintakoeOid": "1679913452968-6027331842984315931",
+                                "valintakoeTunniste": "1_2_246_562_20_00000000000000045105_paasykoe",
+                                "nimi": "Pääsykoe",
+                                "aktiivinen": true,
+                                "osallistuminenTulos": {
+                                    "osallistuminen": "OSALLISTUU",
+                                    "kuvaus": {},
+                                    "laskentaTila": "HYVAKSYTTAVISSA",
+                                    "laskentaTulos": true
+                                },
+                                "lahetetaankoKoekutsut": true,
+                                "kutsutaankoKaikki": null,
+                                "kutsuttavienMaara": null
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "hakuOid": "1.2.246.562.29.00000000000000045102",
+        "hakemusOid": "1.2.246.562.11.00000000000001543832",
+        "hakijaOid": "1.2.246.562.24.30476885816",
+        "etunimi": null,
+        "sukunimi": null,
+        "createdAt": "2024-01-09T07:51:00.060+00:00",
+        "hakutoiveet": [
+            {
+                "hakukohdeOid": "1.2.246.562.20.00000000000000045105",
+                "valinnanVaiheet": [
+                    {
+                        "valinnanVaiheOid": "16799135196586519763047605559397",
+                        "valinnanVaiheJarjestysluku": 1,
+                        "valintakokeet": [
+                            {
+                                "valintakoeOid": "1679913519694-4490265202292919817",
+                                "valintakoeTunniste": "1_2_246_562_20_00000000000000045105_paasykoe",
+                                "nimi": "Pääsykoe",
+                                "aktiivinen": true,
+                                "osallistuminenTulos": {
+                                    "osallistuminen": "EI_OSALLISTU",
+                                    "kuvaus": {},
+                                    "laskentaTila": "HYVAKSYTTAVISSA",
+                                    "laskentaTulos": true
+                                },
+                                "lahetetaankoKoekutsut": true,
+                                "kutsutaankoKaikki": null,
+                                "kutsuttavienMaara": null
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "hakukohdeOid": "1.2.246.562.20.00000000000000045109",
+                "valinnanVaiheet": [
+                    {
+                        "valinnanVaiheOid": "16799134528699217680578788780531",
+                        "valinnanVaiheJarjestysluku": 1,
+                        "valintakokeet": [
+                            {
+                                "valintakoeOid": "1679913452968-6027331842984315931",
+                                "valintakoeTunniste": "1_2_246_562_20_00000000000000045109_paasykoe",
+                                "nimi": "Pääsykoe",
+                                "aktiivinen": true,
+                                "osallistuminenTulos": {
+                                    "osallistuminen": "OSALLISTUU",
+                                    "kuvaus": {},
+                                    "laskentaTila": "HYVAKSYTTAVISSA",
+                                    "laskentaTulos": true
+                                },
+                                "lahetetaankoKoekutsut": true,
+                                "kutsutaankoKaikki": null,
+                                "kutsuttavienMaara": null
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+]

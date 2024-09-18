@@ -22,15 +22,14 @@ test('Uses finnish, then english, then swedish if missing translation', () => {
 
 test('formats date from number to finnish datetime format', () => {
   const millis = 1719384408989;
-  expect(toFormattedDateTimeString(millis)).toBe('26.6.2024 09:46');
+  expect(toFormattedDateTimeString(millis)).toBe('26.6.2024 09:46:48');
 });
 
 test('formats date to finnish datetime format', () => {
   const date = new Date(1719304408989);
-  expect(toFormattedDateTimeString(date)).toBe('25.6.2024 11:33');
+  expect(toFormattedDateTimeString(date)).toBe('25.6.2024 11:33:28');
 });
 
 test('returns empty string if formatting date fails', () => {
-  // @ts-expect-error: Testing formatting with bad parameter
   expect(toFormattedDateTimeString('älämölö')).toBe('');
 });

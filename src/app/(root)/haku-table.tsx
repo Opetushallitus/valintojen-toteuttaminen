@@ -1,12 +1,11 @@
 'use client';
-import ListTable, {
-  ListTableColumn,
-  makeCountColumn,
-} from '../components/table/list-table';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { HakuListItem } from '@/app/hooks/useHakuSearch';
 import { Link } from '@mui/material';
 import { useMemo } from 'react';
+import { ListTableColumn } from '../components/table/table-types';
+import { makeCountColumn } from '../components/table/table-columns';
+import { ListTable } from '../components/table/list-table';
 
 export const HakuTable = ({
   haut,

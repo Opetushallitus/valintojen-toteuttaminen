@@ -49,7 +49,7 @@ test('displays valintalaskennan tulos', async ({ page }) => {
   );
 
   await expect(
-    page.getByRole('link', { name: 'Vie kaikki taulukkolaskentaan' }),
+    page.getByRole('button', { name: 'Vie kaikki taulukkolaskentaan' }),
   ).toBeVisible();
 
   const jono1HeadingText =
@@ -100,7 +100,7 @@ test('displays valintalaskennan tulos', async ({ page }) => {
     '10 Lisätietoja',
     '2',
     'Hyväksyttävissä',
-    '',
+    'muutoksen syy',
   ]);
 
   await checkRow(jono2Rows.nth(1), [
@@ -139,6 +139,6 @@ test('shows error toast when removing jono from sijoittelu fails', async ({
     .click();
 
   await expect(
-    page.getByText('Jonon sijoittelun tilan muuttamisesa tapahtui virhe!'),
+    page.getByText('Jonon sijoittelun tilan muuttamisessa tapahtui virhe!'),
   ).toBeVisible();
 });

@@ -1,6 +1,6 @@
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 
-import React from 'react';
+import { useLayoutEffect, useMemo, useRef } from 'react';
 
 export const debounce = <T extends (...args: any[]) => any>(
   callback: T,
@@ -18,11 +18,11 @@ export const debounce = <T extends (...args: any[]) => any>(
 };
 
 export function useDebounce(callback: any, delay: number) {
-  const callbackRef = React.useRef(callback);
-  React.useLayoutEffect(() => {
+  const callbackRef = useRef(callback);
+  useLayoutEffect(() => {
     callbackRef.current = callback;
   });
-  return React.useMemo(
+  return useMemo(
     () => debounce((...args) => callbackRef.current(...args), delay),
     [delay],
   );

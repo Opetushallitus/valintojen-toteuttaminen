@@ -10,9 +10,9 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { aliasColors } from '@opetushallitus/oph-design-system';
+import { ophColors } from '@opetushallitus/oph-design-system';
 import { useState } from 'react';
-import theme, { styled } from '@/app/theme';
+import { styled } from '@/app/theme';
 import { ArrowRight, ErrorOutline } from '@mui/icons-material';
 
 type ErrorRowParams = {
@@ -37,7 +37,7 @@ const ErrorRow = ({ errorMessage }: ErrorRowParams) => {
       <TableCell
         colSpan={4}
         sx={{
-          color: aliasColors.error,
+          color: ophColors.alias.error,
           fontWeight: 600,
           wordBreak: 'break-word',
         }}
@@ -46,7 +46,7 @@ const ErrorRow = ({ errorMessage }: ErrorRowParams) => {
           sx={{
             display: 'flex',
             flexDirection: 'row',
-            columnGap: theme.spacing(2),
+            columnGap: 2,
           }}
         >
           <ErrorOutline />
@@ -57,7 +57,7 @@ const ErrorRow = ({ errorMessage }: ErrorRowParams) => {
               alignItems: 'left',
             }}
           >
-            <Typography sx={{ color: aliasColors.error }}>
+            <Typography sx={{ color: ophColors.alias.error }}>
               {t('valinnanhallinta.virhe')}
             </Typography>
             <Accordion sx={{ backgroundColor: 'rgba(255, 255, 255, 0)' }}>

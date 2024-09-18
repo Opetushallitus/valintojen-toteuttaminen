@@ -1,14 +1,14 @@
-import React from 'react';
 import type { Metadata } from 'next';
 import ReactQueryClientProvider from './components/react-query-client-provider';
 import LocalizationProvider from './localization-provider';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter';
-import { ThemeProvider } from '@mui/material/styles';
-import theme from '@/app/theme';
 import { checkAccessibility } from './lib/checkAccessibility';
 import PermissionProvider from './permission-provider';
-import { CssBaseline } from '@mui/material';
 import { Toaster } from './components/toaster';
+import Script from 'next/script';
+import { configuration } from './lib/configuration';
+import { LocalizedThemeProvider } from './localized-theme-provider';
+import { OphNextJsThemeProvider } from '@opetushallitus/oph-design-system/next/theme';
 
 export const metadata: Metadata = {
   title: 'Valintojen Toteuttaminen',
@@ -22,19 +22,22 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="fi">
+      <Script src={configuration.raamitUrl} />
       <body>
         <AppRouterCacheProvider>
-          <ReactQueryClientProvider>
-            <ThemeProvider theme={theme}>
-              <CssBaseline />
+          {/* Initialisoidaan ensin lokalisoimaton teema, jotta ensimmäisten spinnereiden tyylit tulee oikein. */}
+          <OphNextJsThemeProvider variant="oph">
+            <ReactQueryClientProvider>
               <PermissionProvider>
                 <LocalizationProvider>
-                  <Toaster />
-                  {children}
+                  <LocalizedThemeProvider>
+                    <Toaster />
+                    {children}
+                  </LocalizedThemeProvider>
                 </LocalizationProvider>
               </PermissionProvider>
-            </ThemeProvider>
-          </ReactQueryClientProvider>
+            </ReactQueryClientProvider>
+          </OphNextJsThemeProvider>
         </AppRouterCacheProvider>
       </body>
     </html>

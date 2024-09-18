@@ -1,10 +1,9 @@
 'use client';
 
-import { styled } from '@mui/material';
 import { usePathname } from 'next/navigation';
 import { Link as MuiLink } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { colors } from '@/app/theme';
+import { ophColors, styled } from '@/app/theme';
 import { DEFAULT_BOX_BORDER } from '@/app/lib/constants';
 import { useHakukohde } from '@/app/hooks/useHakukohde';
 import { useHaku } from '@/app/hooks/useHaku';
@@ -20,16 +19,20 @@ const StyledHeader = styled('div')({
   textAlign: 'left',
 });
 
-const StyledTabs = styled('div')(({ theme }) => ({
+const StyledTabs = styled('nav')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'row',
   columnGap: theme.spacing(2),
-  '.hakukohde-tab': {
-    cursor: 'pointer',
-    '&--active': {
-      borderBottom: '3px solid',
-      borderColor: colors.blue2,
-    },
+}));
+
+const StyledTab = styled(MuiLink)<{ $active: boolean }>(({ $active }) => ({
+  color: ophColors.blue2,
+  cursor: 'pointer',
+  borderBottom: '3px solid',
+  borderColor: $active ? ophColors.blue2 : 'transparent',
+  '&:hover,&:focus': {
+    textDecoration: 'none',
+    borderColor: ophColors.blue2,
   },
 }));
 
@@ -43,7 +46,7 @@ const TABS: BasicTab[] = [
   { title: 'perustiedot.otsikko', route: 'perustiedot' },
   { title: 'hakeneet.otsikko', route: 'hakeneet' },
   { title: 'valinnanhallinta.otsikko', route: 'valinnan-hallinta' },
-  { title: 'koekutsut.otsikko', route: 'valintakoekutsut' },
+  { title: 'valintakoekutsut.otsikko', route: 'valintakoekutsut' },
   { title: 'pistesyotto.otsikko', route: 'pistesyotto' },
   {
     title: 'harkinnanvaraiset.otsikko',
@@ -97,17 +100,13 @@ const HakukohdeTabs = ({
       </StyledHeader>
       <StyledTabs>
         {TABS.filter((t) => !t.visibleFn || t.visibleFn(haku)).map((tab) => (
-          <MuiLink
+          <StyledTab
             href={tab.route}
             key={'hakukohde-tab-' + tab.route}
-            className={
-              tab.title === activeTab.title
-                ? 'hakukohde-tab hakukohde-tab--active'
-                : 'hakukohde-tab'
-            }
+            $active={tab.title === activeTab.title}
           >
             {t(tab.title)}
-          </MuiLink>
+          </StyledTab>
         ))}
       </StyledTabs>
     </StyledContainer>

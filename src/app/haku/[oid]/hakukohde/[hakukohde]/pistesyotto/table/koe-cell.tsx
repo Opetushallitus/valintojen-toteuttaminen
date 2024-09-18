@@ -6,22 +6,22 @@ import {
 import { useTranslations } from '@/app/hooks/useTranslations';
 import {
   HakemuksenPistetiedot,
-  ValintakoeOsallistuminen,
+  ValintakoeOsallistuminenTulos,
   ValintakokeenPisteet,
 } from '@/app/lib/types/laskenta-types';
 import {
-  Valintakoe,
+  ValintakoeAvaimet,
   ValintakoeInputTyyppi,
 } from '@/app/lib/types/valintaperusteet-types';
 import { ChangeEvent, useState } from 'react';
 import { Box, debounce, SelectChangeEvent, styled } from '@mui/material';
-import { OphSelect } from '@/app/components/form/oph-select';
 import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { OphInput } from '@/app/components/form/oph-input';
 import { INPUT_DEBOUNCE_DELAY } from '@/app/lib/constants';
 import { ChangePisteSyottoFormParams } from '../pistesyotto-form';
+import { LocalizedSelect } from '@/app/components/localized-select';
 
-const StyledSelect = styled(OphSelect)({
+const StyledSelect = styled(LocalizedSelect)({
   minWidth: '150px',
 });
 
@@ -33,7 +33,7 @@ export const KoeCell = ({
 }: {
   pisteTiedot: HakemuksenPistetiedot;
   updateForm: (params: ChangePisteSyottoFormParams) => void;
-  koe: Valintakoe;
+  koe: ValintakoeAvaimet;
   disabled: boolean;
 }) => {
   const { t } = useTranslations();
@@ -52,9 +52,9 @@ export const KoeCell = ({
     findMatchingKoePisteet()?.arvo ?? '',
   );
   const [osallistuminen, setOsallistuminen] =
-    useState<ValintakoeOsallistuminen>(
+    useState<ValintakoeOsallistuminenTulos>(
       findMatchingKoePisteet()?.osallistuminen ??
-        ValintakoeOsallistuminen.MERKITSEMATTA,
+        ValintakoeOsallistuminenTulos.MERKITSEMATTA,
     );
 
   const [arvoValid, setArvoValid] = useState<boolean>(true);
@@ -94,9 +94,9 @@ export const KoeCell = ({
   const changeOsallistumisenTila = (
     event: SelectChangeEvent<string | number>,
   ) => {
-    setOsallistuminen(event.target.value as ValintakoeOsallistuminen);
+    setOsallistuminen(event.target.value as ValintakoeOsallistuminenTulos);
     updateForm({
-      value: event.target.value as ValintakoeOsallistuminen,
+      value: event.target.value as ValintakoeOsallistuminenTulos,
       hakemusOid: pisteTiedot.hakemusOid,
       koeTunniste: koe.tunniste,
       updateArvo: false,
@@ -163,19 +163,19 @@ export const KoeCell = ({
         value={osallistuminen}
         options={[
           {
-            value: ValintakoeOsallistuminen.OSALLISTUI,
+            value: ValintakoeOsallistuminenTulos.OSALLISTUI,
             label: t('valintakoe.osallistumisenTila.OSALLISTUI'),
           },
           {
-            value: ValintakoeOsallistuminen.EI_OSALLISTUNUT,
+            value: ValintakoeOsallistuminenTulos.EI_OSALLISTUNUT,
             label: t('valintakoe.osallistumisenTila.EI_OSALLISTUNUT'),
           },
           {
-            value: ValintakoeOsallistuminen.MERKITSEMATTA,
+            value: ValintakoeOsallistuminenTulos.MERKITSEMATTA,
             label: t('valintakoe.osallistumisenTila.MERKITSEMATTA'),
           },
           {
-            value: ValintakoeOsallistuminen.EI_VAADITA,
+            value: ValintakoeOsallistuminenTulos.EI_VAADITA,
             label: t('valintakoe.osallistumisenTila.EI_VAADITA'),
           },
         ]}

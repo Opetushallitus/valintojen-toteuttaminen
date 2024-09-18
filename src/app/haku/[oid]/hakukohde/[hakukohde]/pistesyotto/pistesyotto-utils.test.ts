@@ -1,11 +1,11 @@
 import { expect, test } from 'vitest';
 import { isNotPartOfThisHakukohde } from './pistesyotto-utils';
-import { ValintakoeOsallistuminen } from '@/app/lib/types/laskenta-types';
+import { ValintakoeOsallistuminenTulos } from '@/app/lib/types/laskenta-types';
 
 test('is not part of the current hakukohde', () => {
   expect(
     isNotPartOfThisHakukohde({
-      osallistuminen: ValintakoeOsallistuminen.EI_KUTSUTTU,
+      osallistuminen: ValintakoeOsallistuminenTulos.EI_KUTSUTTU,
       tunniste: 'koe-1',
       osallistuminenTunniste: 'koe-1-osallistuminen',
       arvo: '',
@@ -13,7 +13,7 @@ test('is not part of the current hakukohde', () => {
   ).toBeTruthy();
   expect(
     isNotPartOfThisHakukohde({
-      osallistuminen: ValintakoeOsallistuminen.TOISELLA_HAKEMUKSELLA,
+      osallistuminen: ValintakoeOsallistuminenTulos.TOISELLA_HAKEMUKSELLA,
       tunniste: 'koe-1',
       osallistuminenTunniste: 'koe-1-osallistuminen',
       arvo: '',
@@ -21,7 +21,7 @@ test('is not part of the current hakukohde', () => {
   ).toBeTruthy();
   expect(
     isNotPartOfThisHakukohde({
-      osallistuminen: ValintakoeOsallistuminen.TOISESSA_HAKUTOIVEESSA,
+      osallistuminen: ValintakoeOsallistuminenTulos.TOISESSA_HAKUTOIVEESSA,
       tunniste: 'koe-1',
       osallistuminenTunniste: 'koe-1-osallistuminen',
       arvo: '',
@@ -32,7 +32,7 @@ test('is not part of the current hakukohde', () => {
 test('is part of the current hakukohde', () => {
   expect(
     isNotPartOfThisHakukohde({
-      osallistuminen: ValintakoeOsallistuminen.MERKITSEMATTA,
+      osallistuminen: ValintakoeOsallistuminenTulos.MERKITSEMATTA,
       tunniste: 'koe-1',
       osallistuminenTunniste: 'koe-1-osallistuminen',
       arvo: '',
@@ -40,7 +40,7 @@ test('is part of the current hakukohde', () => {
   ).toBeFalsy();
   expect(
     isNotPartOfThisHakukohde({
-      osallistuminen: ValintakoeOsallistuminen.OSALLISTUI,
+      osallistuminen: ValintakoeOsallistuminenTulos.OSALLISTUI,
       tunniste: 'koe-1',
       osallistuminenTunniste: 'koe-1-osallistuminen',
       arvo: '',
@@ -48,7 +48,7 @@ test('is part of the current hakukohde', () => {
   ).toBeFalsy();
   expect(
     isNotPartOfThisHakukohde({
-      osallistuminen: ValintakoeOsallistuminen.EI_OSALLISTUNUT,
+      osallistuminen: ValintakoeOsallistuminenTulos.EI_OSALLISTUNUT,
       tunniste: 'koe-1',
       osallistuminenTunniste: 'koe-1-osallistuminen',
       arvo: '',
@@ -56,7 +56,7 @@ test('is part of the current hakukohde', () => {
   ).toBeFalsy();
   expect(
     isNotPartOfThisHakukohde({
-      osallistuminen: ValintakoeOsallistuminen.EI_VAADITA,
+      osallistuminen: ValintakoeOsallistuminenTulos.EI_VAADITA,
       tunniste: 'koe-1',
       osallistuminenTunniste: 'koe-1-osallistuminen',
       arvo: '',

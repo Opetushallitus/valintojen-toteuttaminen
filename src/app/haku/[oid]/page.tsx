@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { colors } from '@/app/theme';
+import { ophColors } from '@/app/theme';
 import { ListAlt } from '@mui/icons-material';
 import { styled } from '@/app/theme';
 
@@ -19,7 +19,7 @@ export default function HakuPage() {
       <ListAlt
         sx={{
           borderRadius: '45px',
-          backgroundColor: colors.grey50,
+          backgroundColor: ophColors.grey50,
           padding: '15px',
           boxSizing: 'content-box',
         }}

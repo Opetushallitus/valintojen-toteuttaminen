@@ -1,12 +1,10 @@
 'use client';
-import { Box } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { LaskettuValinnanVaihe } from '@/app/lib/types/laskenta-types';
-import { Typography } from '@opetushallitus/oph-design-system';
-import React from 'react';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
 import { LaskettuJonoWithHakijaInfo } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { getJonoNimi } from './get-jono-nimi';
+import { AccordionBoxTitle } from '@/app/components/accordion-box-title';
 
 export const ValintatapajonoAccordionTitle = ({
   valinnanVaihe,
@@ -17,30 +15,16 @@ export const ValintatapajonoAccordionTitle = ({
 }) => {
   const { t } = useTranslations();
 
-  const jonoSubHeader = `(${toFormattedDateTimeString(valinnanVaihe.createdAt)} | 
-  ${t('yleinen.prioriteetti')}: ${jono.prioriteetti})`;
-
   return (
-    <Typography
-      variant="h2"
-      component="h3"
-      sx={{
-        display: 'flex',
-        flexDirection: 'row',
-        flexWrap: 'nowrap',
-        columnGap: 2,
-        alignItems: 'center',
-      }}
-    >
-      <Box>
-        {getJonoNimi({
-          valinnanVaiheNimi: valinnanVaihe.nimi,
-          jonoNimi: jono.nimi,
-        })}
-      </Box>
-      <Typography component="div" variant="body1">
-        {jonoSubHeader}
-      </Typography>
-    </Typography>
+    <AccordionBoxTitle
+      title={getJonoNimi({
+        valinnanVaiheNimi: valinnanVaihe.nimi,
+        jonoNimi: jono.nimi,
+      })}
+      subTitle={
+        `(${toFormattedDateTimeString(valinnanVaihe.createdAt)}` +
+        ` | ${t('yleinen.prioriteetti')}: ${jono.prioriteetti})`
+      }
+    />
   );
 };

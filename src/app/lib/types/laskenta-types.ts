@@ -1,5 +1,5 @@
 import { SijoittelunTila } from './sijoittelu-types';
-import { Valintakoe } from './valintaperusteet-types';
+import { ValintakoeAvaimet } from './valintaperusteet-types';
 
 export type JarjestyskriteeriTila = 'HYLATTY' | 'HYVAKSYTTAVISSA';
 
@@ -82,7 +82,7 @@ export type LaskentaErrorSummary = {
   notifications: string[] | undefined;
 };
 
-export enum ValintakoeOsallistuminen {
+export enum ValintakoeOsallistuminenTulos {
   OSALLISTUI = 'OSALLISTUI',
   EI_OSALLISTUNUT = 'EI_OSALLISTUNUT',
   MERKITSEMATTA = 'MERKITSEMATTA',
@@ -95,7 +95,7 @@ export enum ValintakoeOsallistuminen {
 export type ValintakokeenPisteet = {
   tunniste: string;
   arvo: string;
-  osallistuminen: ValintakoeOsallistuminen;
+  osallistuminen: ValintakoeOsallistuminenTulos;
   osallistuminenTunniste: string;
 };
 
@@ -109,7 +109,7 @@ export type HakemuksenPistetiedot = {
 };
 
 export type HakukohteenPistetiedot = {
-  valintakokeet: Valintakoe[];
+  valintakokeet: ValintakoeAvaimet[];
   hakemukset: HakemuksenPistetiedot[];
   lastModified?: Date;
 };

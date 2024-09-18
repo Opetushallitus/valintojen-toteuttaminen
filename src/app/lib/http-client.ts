@@ -2,6 +2,12 @@ import { getCookies } from './cookie';
 import { redirect } from 'next/navigation';
 import { configuration } from './configuration';
 import { FetchError } from './common';
+import { isPlainObject } from 'remeda';
+
+export type HttpClientResponse<D> = {
+  headers: Headers;
+  data: D;
+};
 
 const doFetch = async (request: Request) => {
   try {
@@ -52,22 +58,35 @@ const retryWithLogin = async (request: Request, loginUrl: string) => {
   return makeBareRequest(request);
 };
 
-const responseToData = async (res: Response) => {
-  if (res.status === 204) {
-    return { data: {} };
-  }
-  const contentType = res.headers.get('Content-Type') ?? 'application/json';
+type BodyParser<T> = (res: Response) => Promise<T>;
 
-  if (contentType?.includes('json')) {
-    try {
-      const result = { data: await res.json() };
-      return result;
-    } catch (e) {
-      console.error('Parsing fetch response body as JSON failed!');
-      return Promise.reject(e);
-    }
-  } else {
-    return { data: await res.text() };
+const TEXT_PARSER = async (res: Response) => await res.text();
+const BLOB_PARSER = async (response: Response) => await response.blob();
+
+const RESPONSE_BODY_PARSERS: Record<string, BodyParser<unknown>> = {
+  'application/json': async (response: Response) => await response.json(),
+  'application/octet-stream': BLOB_PARSER,
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+    BLOB_PARSER,
+  'text/plain': TEXT_PARSER,
+};
+
+const responseToData = async <Result = unknown>(res: Response) => {
+  // Oletetaan JSON-vastaus, jos content-type header puuttuu
+  const contentType =
+    res.headers.get('content-type')?.split(';')?.[0] ?? 'text/plain';
+
+  const parseBody = (RESPONSE_BODY_PARSERS?.[contentType] ??
+    TEXT_PARSER) as BodyParser<Result>;
+
+  try {
+    return {
+      headers: res.headers,
+      data: await parseBody(res),
+    };
+  } catch (e) {
+    console.error(`Parsing fetch response body as "${contentType}" failed!`);
+    return Promise.reject(e);
   }
 };
 
@@ -94,7 +113,7 @@ const LOGIN_MAP = [
   },
 ] as const;
 
-const makeRequest = async (request: Request) => {
+const makeRequest = async <Result>(request: Request) => {
   const originalRequest = request.clone();
   try {
     const response = await makeBareRequest(request);
@@ -105,7 +124,7 @@ const makeRequest = async (request: Request) => {
     ) {
       redirectToLogin();
     }
-    return responseToData(response);
+    return responseToData<Result>(response);
   } catch (error: unknown) {
     if (error instanceof FetchError) {
       if (isUnauthenticated(error.response)) {
@@ -113,7 +132,7 @@ const makeRequest = async (request: Request) => {
           for (const { urlIncludes, loginUrl } of LOGIN_MAP) {
             if (request?.url?.includes(urlIncludes)) {
               const resp = await retryWithLogin(request, loginUrl);
-              return responseToData(resp);
+              return responseToData<Result>(resp);
             }
           }
         } catch (e) {
@@ -126,34 +145,50 @@ const makeRequest = async (request: Request) => {
         isRedirected(error.response) &&
         error.response.url === request.url
       ) {
-        //Some backend services lose the original method and headers, so we need to do retry with cloned request
+        // Some backend services lose the original method and headers, so we need to do retry with cloned request
         const response = await makeBareRequest(originalRequest);
-        return responseToData(response);
+        return responseToData<Result>(response);
       }
     }
     return Promise.reject(error);
   }
 };
 
-export const client = {
-  get: (url: string, options: RequestInit = {}) =>
-    makeRequest(new Request(url, { method: 'GET', ...options })),
-  post: (url: string, body: NonNullable<unknown>, options: RequestInit = {}) =>
-    makeRequest(
-      new Request(url, {
-        method: 'POST',
-        body: JSON.stringify(body),
-        headers: { 'Content-Type': 'application/json' },
-        ...options,
-      }),
-    ),
-  put: (url: string, body: NonNullable<unknown>, options: RequestInit = {}) =>
-    makeRequest(
-      new Request(url, {
-        method: 'PUT',
-        body: JSON.stringify(body),
-        headers: { 'Content-Type': 'application/json' },
-        ...options,
-      }),
-    ),
+export type JSONData = Record<string, unknown> | Array<unknown>;
+
+const isJson = (val: unknown): val is JSONData =>
+  Array.isArray(val) || isPlainObject(val);
+
+const modRequest = <Result = unknown>(
+  method: string,
+  url: string | URL,
+  body: BodyInit | JSONData,
+  options: RequestInit,
+) => {
+  return makeRequest<Result>(
+    new Request(url, {
+      method,
+      body: isJson(body) ? JSON.stringify(body) : body,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options.headers ?? {}),
+      },
+      ...options,
+    }),
+  );
 };
+
+export const client = {
+  get: <Result = unknown>(url: URL | string, options: RequestInit = {}) =>
+    makeRequest<Result>(new Request(url, { method: 'GET', ...options })),
+  post: <Result = unknown>(
+    url: string | URL,
+    body: BodyInit | JSONData,
+    options: RequestInit = {},
+  ) => modRequest<Result>('POST', url, body, options),
+  put: <Result = unknown>(
+    url: string | URL,
+    body: BodyInit | JSONData,
+    options: RequestInit = {},
+  ) => modRequest<Result>('PUT', url, body, options),
+} as const;

@@ -17,7 +17,7 @@ export const OphFormControl = ({
   label,
   renderInput,
   helperText,
-  errorMessages = EMPTY_ARRAY as Array<string>,
+  errorMessages = EMPTY_ARRAY,
   ...props
 }: Omit<FormControlProps, 'children'> & {
   label?: string;

@@ -1,7 +1,7 @@
 import { Haku, Hakukohde, getFullnameOfHakukohde } from './types/kouta-types';
 import { configuration } from './configuration';
 import { ValinnanvaiheTyyppi } from './types/valintaperusteet-types';
-import { client } from './http-client';
+import { client, HttpClientResponse } from './http-client';
 import { TranslatedName } from './localization/localization-types';
 import { HenkilonValintaTulos } from './types/sijoittelu-types';
 import {
@@ -9,13 +9,27 @@ import {
   HakukohteenPistetiedot,
   LaskentaErrorSummary,
   LaskentaStart,
-  ValintakoeOsallistuminen,
+  ValintakoeOsallistuminenTulos,
   ValintakokeenPisteet,
 } from './types/laskenta-types';
-import { getHakemukset } from './ataru';
-import { getValintakokeet } from './valintaperusteet';
-import { flatMap, indexBy, isEmpty, mapValues, pipe } from 'remeda';
-import { EMPTY_ARRAY } from './common';
+import {
+  difference,
+  flatMap,
+  indexBy,
+  isEmpty,
+  isNonNullish,
+  mapValues,
+  pipe,
+  prop,
+} from 'remeda';
+import { EMPTY_ARRAY, EMPTY_OBJECT } from './common';
+import { getHakemukset, getHakijat } from './ataru';
+import {
+  getValintakokeet,
+  getValintakoeAvaimetHakukohteelle,
+} from './valintaperusteet';
+import { ValintakoekutsutData } from './types/valintakoekutsut-types';
+import { HakutoiveValintakoeOsallistumiset } from './types/valintalaskentakoostepalvelu-types';
 
 const formSearchParamsForStartLaskenta = ({
   laskentaUrl,
@@ -55,6 +69,13 @@ const formSearchParamsForStartLaskenta = ({
   return laskentaUrl;
 };
 
+type LaskentaStatusResponseData = {
+  lisatiedot: {
+    luotiinkoUusiLaskenta: boolean;
+  };
+  latausUrl: string;
+};
+
 export const kaynnistaLaskenta = async (
   haku: Haku,
   hakukohde: Hakukohde,
@@ -74,7 +95,10 @@ export const kaynnistaLaskenta = async (
     valinnanvaihe,
     translateEntity,
   });
-  const response = await client.post(laskentaUrl.toString(), [hakukohde.oid]);
+  const response = await client.post<LaskentaStatusResponseData>(
+    laskentaUrl.toString(),
+    [hakukohde.oid],
+  );
   return {
     startedNewLaskenta: response.data?.lisatiedot?.luotiinkoUusiLaskenta,
     loadingUrl: response.data?.latausUrl,
@@ -96,7 +120,10 @@ export const kaynnistaLaskentaHakukohteenValinnanvaiheille = async (
     sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
     translateEntity,
   });
-  const response = await client.post(laskentaUrl.toString(), [hakukohde.oid]);
+  const response = await client.post<LaskentaStatusResponseData>(
+    laskentaUrl.toString(),
+    [hakukohde.oid],
+  );
   return {
     startedNewLaskenta: response.data?.lisatiedot?.luotiinkoUusiLaskenta,
     loadingUrl: response.data?.latausUrl,
@@ -106,13 +133,16 @@ export const kaynnistaLaskentaHakukohteenValinnanvaiheille = async (
 export const getLaskennanTilaHakukohteelle = async (
   loadingUrl: string,
 ): Promise<LaskentaErrorSummary> => {
-  const response = await client.get(
+  const response = await client.get<{
+    hakukohteet: Array<{
+      hakukohdeOid: string;
+      ilmoitukset: [{ otsikko: string; tyyppi: string }] | null;
+    }>;
+  }>(
     `${configuration.valintalaskentaKoostePalveluUrl}valintalaskentakerralla/status/${loadingUrl}/yhteenveto`,
   );
   return response.data?.hakukohteet
-    ?.filter((hk: { ilmoitukset: [{ tyyppi: string }] }) =>
-      hk.ilmoitukset.some((i) => i.tyyppi === 'VIRHE'),
-    )
+    ?.filter((hk) => hk.ilmoitukset?.some((i) => i.tyyppi === 'VIRHE'))
     .map(
       (hakukohde: {
         hakukohdeOid: string;
@@ -130,27 +160,36 @@ export const getHakukohteenValintatuloksetIlmanHakijanTilaa = async (
   hakuOid: string,
   hakukohdeOid: string,
 ): Promise<HenkilonValintaTulos[]> => {
-  const { data } = await client.get(
+  const { data } = await client.get<Array<{ tila: string; hakijaOid: string }>>(
     `${configuration.valintalaskentaKoostePalveluUrl}proxy/valintatulosservice/ilmanhakijantilaa/haku/${hakuOid}/hakukohde/${hakukohdeOid}`,
   );
-  return data.map((t: { tila: string; hakijaOid: string }) => {
+  return data.map((t) => {
     return { tila: t.tila, hakijaOid: t.hakijaOid };
   });
 };
 
-export const getScoresForHakukohde = async (
+export const getPisteetForHakukohde = async (
   hakuOid: string,
   hakukohdeOid: string,
 ): Promise<HakukohteenPistetiedot> => {
-  const kokeet = await getValintakokeet(hakukohdeOid);
+  const kokeet = await getValintakoeAvaimetHakukohteelle(hakukohdeOid);
 
   if (isEmpty(kokeet)) {
     return { hakemukset: EMPTY_ARRAY, valintakokeet: EMPTY_ARRAY };
   }
 
   const [hakemukset, { data: pistetiedot }] = await Promise.all([
-    getHakemukset(hakuOid, hakukohdeOid),
-    client.get(configuration.koostetutPistetiedot({ hakuOid, hakukohdeOid })),
+    getHakemukset({ hakuOid, hakukohdeOid }),
+    client.get<{
+      lastmodified?: string;
+      valintapisteet: Array<{
+        applicationAdditionalDataDTO: {
+          oid: string;
+          personOid: string;
+          additionalData: Record<string, string>;
+        };
+      }>;
+    }>(configuration.koostetutPistetiedot({ hakuOid, hakukohdeOid })),
   ]);
   const hakemuksetIndexed = indexBy(hakemukset, (h) => h.hakemusOid);
 
@@ -169,7 +208,7 @@ export const getScoresForHakukohde = async (
             p.applicationAdditionalDataDTO.additionalData[k.tunniste];
           const osallistuminen = p.applicationAdditionalDataDTO.additionalData[
             k.osallistuminenTunniste
-          ] as ValintakoeOsallistuminen;
+          ] as ValintakoeOsallistuminenTulos;
           return {
             tunniste: k.tunniste,
             arvo,
@@ -188,8 +227,9 @@ export const getScoresForHakukohde = async (
       },
     );
 
-  const lastModified =
-    pistetiedot.lastModified && new Date(pistetiedot.lastModified);
+  const lastModified = isNonNullish(pistetiedot.lastmodified)
+    ? new Date(pistetiedot.lastmodified)
+    : undefined;
   return {
     lastModified,
     valintakokeet: kokeet,
@@ -197,7 +237,7 @@ export const getScoresForHakukohde = async (
   };
 };
 
-export const updateScoresForHakukohde = async (
+export const updatePisteetForHakukohde = async (
   hakuOid: string,
   hakukohdeOid: string,
   pistetiedot: HakemuksenPistetiedot[],
@@ -224,4 +264,150 @@ export const updateScoresForHakukohde = async (
     configuration.koostetutPistetiedot({ hakuOid, hakukohdeOid }),
     mappedPistetiedot,
   );
+};
+
+const getValintakoeOsallistumiset = async ({
+  hakukohdeOid,
+}: {
+  hakukohdeOid: string;
+}) => {
+  const response = await client.get<Array<HakutoiveValintakoeOsallistumiset>>(
+    configuration.valintakoeOsallistumisetUrl({ hakukohdeOid }),
+  );
+  return response.data;
+};
+
+export async function getValintakoekutsutData({
+  hakuOid,
+  hakukohdeOid,
+}: {
+  hakuOid: string;
+  hakukohdeOid: string;
+}): Promise<ValintakoekutsutData> {
+  const valintakokeet = await getValintakokeet(hakukohdeOid);
+
+  if (isEmpty(valintakokeet)) {
+    return {
+      valintakokeetByTunniste: EMPTY_OBJECT,
+      hakemuksetByOid: EMPTY_OBJECT,
+      valintakoeOsallistumiset: EMPTY_ARRAY,
+    };
+  }
+
+  const [valintakoeOsallistumiset, hakukohdeHakemukset] = await Promise.all([
+    getValintakoeOsallistumiset({ hakukohdeOid }),
+    getHakijat({ hakuOid, hakukohdeOid }),
+  ]);
+  const valintakoeHakemusOids = valintakoeOsallistumiset.map(
+    prop('hakemusOid'),
+  );
+  const hakukohdeHakemusOids = hakukohdeHakemukset.map(prop('hakemusOid'));
+  const missingHakemusOids = difference(
+    valintakoeHakemusOids,
+    hakukohdeHakemusOids,
+  );
+
+  let allHakemukset = hakukohdeHakemukset;
+
+  if (!isEmpty(missingHakemusOids)) {
+    const missingHakemukset = await getHakijat({
+      hakemusOids: missingHakemusOids,
+    });
+    allHakemukset = hakukohdeHakemukset.concat(missingHakemukset);
+  }
+
+  const hakemuksetByOid = indexBy(allHakemukset, prop('hakemusOid'));
+
+  return {
+    valintakokeetByTunniste: indexBy(
+      valintakokeet.filter(
+        (koe) => koe.aktiivinen && koe.lahetetaankoKoekutsut,
+      ),
+      prop('selvitettyTunniste'),
+    ),
+    hakemuksetByOid,
+    valintakoeOsallistumiset,
+  };
+}
+
+export type GetValintakoeExcelParams = {
+  hakuOid: string;
+  hakukohdeOid: string;
+  hakemusOids?: Array<string>;
+  valintakoeTunniste: string;
+};
+
+const getContentFilename = (headers: Headers) => {
+  const contentDisposition = headers.get('content-disposition');
+  return contentDisposition?.match(/ filename="(.*)"$/)?.[1];
+};
+
+const createFileResult = async (response: HttpClientResponse<Blob>) => ({
+  fileName: getContentFilename(response.headers),
+  blob: response.data,
+});
+
+const downloadProcessDocument = async (processId: string) => {
+  const processRes = await client.get<{
+    dokumenttiId: string;
+    kasittelyssa: boolean;
+    keskeytetty: false;
+    kokonaistyo: {
+      valmis: boolean;
+    };
+  }>(configuration.dokumenttiProsessiUrl({ id: processId }));
+  const dokumenttiId = processRes?.data?.dokumenttiId;
+
+  const documentRes = await client.get<Blob>(
+    configuration.lataaDokumenttiUrl({ dokumenttiId }),
+  );
+  return createFileResult(documentRes);
+};
+
+export const getValintakoeExcel = async ({
+  hakuOid,
+  hakukohdeOid,
+  hakemusOids,
+  valintakoeTunniste,
+}: GetValintakoeExcelParams) => {
+  const urlWithQuery = new URL(configuration.createValintakoeExcelUrl);
+  urlWithQuery.searchParams.append('hakuOid', hakuOid);
+  urlWithQuery.searchParams.append('hakukohdeOid', hakukohdeOid);
+
+  const createResponse = await client.post<{ id: string }>(urlWithQuery, {
+    hakemusOids,
+    valintakoeTunnisteet: [valintakoeTunniste],
+  });
+  const excelProcessId = createResponse?.data?.id;
+  return downloadProcessDocument(excelProcessId);
+};
+
+export const getValintakoeOsoitetarrat = async ({
+  hakuOid,
+  hakukohdeOid,
+  hakemusOids,
+  valintakoeTunniste,
+}: GetValintakoeExcelParams) => {
+  const urlWithQuery = new URL(configuration.createValintakoeOsoitetarratUrl);
+  urlWithQuery.searchParams.append('hakuOid', hakuOid);
+  urlWithQuery.searchParams.append('hakukohdeOid', hakukohdeOid);
+  urlWithQuery.searchParams.append('valintakoeTunniste', valintakoeTunniste);
+
+  const createResponse = await client.post<{ id: string }>(urlWithQuery, {
+    hakemusOids,
+    tag: 'valintakoetulos',
+  });
+  const tarratProcessId = createResponse?.data?.id;
+  return await downloadProcessDocument(tarratProcessId);
+};
+
+export const getValintalaskennanTulosExcel = async ({
+  hakukohdeOid,
+}: {
+  hakukohdeOid: string;
+}) => {
+  const excelRes = await client.get<Blob>(
+    configuration.valintalaskennanTulosExcelUrl({ hakukohdeOid }),
+  );
+  return createFileResult(excelRes);
 };

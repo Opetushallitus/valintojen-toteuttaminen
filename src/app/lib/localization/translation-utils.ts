@@ -27,10 +27,12 @@ export function isTranslatedName(value: unknown): value is TranslatedName {
   );
 }
 
-export function toFormattedDateTimeString(value: number | Date): string {
+export function toFormattedDateTimeString(
+  value: number | Date | string,
+): string {
   try {
     const zonedDate = toZonedTime(new Date(value), 'Europe/Helsinki');
-    return format(zonedDate, 'd.M.yyyy HH:mm', {
+    return format(zonedDate, 'd.M.yyyy HH:mm:ss', {
       timeZone: 'Europe/Helsinki',
     });
   } catch (error) {

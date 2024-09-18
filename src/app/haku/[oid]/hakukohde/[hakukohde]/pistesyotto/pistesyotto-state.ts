@@ -1,9 +1,9 @@
 import { Toast } from '@/app/hooks/useToaster';
 import {
   HakemuksenPistetiedot,
-  ValintakoeOsallistuminen,
+  ValintakoeOsallistuminenTulos,
 } from '@/app/lib/types/laskenta-types';
-import { updateScoresForHakukohde } from '@/app/lib/valintalaskentakoostepalvelu';
+import { updatePisteetForHakukohde } from '@/app/lib/valintalaskentakoostepalvelu';
 import { assign, createMachine, fromPromise } from 'xstate';
 
 export type PisteSyottoContext = {
@@ -60,7 +60,7 @@ export const createPisteSyottoMachine = (
                     koe.arvo = event.value;
                   } else {
                     koe.osallistuminen =
-                      event.value as ValintakoeOsallistuminen;
+                      event.value as ValintakoeOsallistuminenTulos;
                   }
                   if (existing) {
                     return context.changedPistetiedot.map((h) =>
@@ -159,7 +159,7 @@ export const createPisteSyottoMachine = (
     actors: {
       updatePistetiedot: fromPromise(
         ({ input }: { input: HakemuksenPistetiedot[] }) => {
-          return updateScoresForHakukohde(hakuOid, hakukohdeOid, input);
+          return updatePisteetForHakukohde(hakuOid, hakukohdeOid, input);
         },
       ),
     },

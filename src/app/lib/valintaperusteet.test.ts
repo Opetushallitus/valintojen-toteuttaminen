@@ -1,14 +1,14 @@
 import { expect, test, vi, describe, afterEach } from 'vitest';
 import {
   getValinnanvaiheet,
-  getValintakokeet,
+  getValintakoeAvaimetHakukohteelle,
   isLaskentaUsedForValinnanvaihe,
 } from './valintaperusteet';
 import { client } from './http-client';
 import {
   Valinnanvaihe,
   ValinnanvaiheTyyppi,
-  Valintakoe,
+  ValintakoeAvaimet,
   ValintakoeInputTyyppi,
 } from './types/valintaperusteet-types';
 
@@ -248,6 +248,7 @@ function buildDummyValinnanvaiheResponse(
   ];
 
   return Promise.resolve({
+    headers: new Headers(),
     data: [
       {
         oid: 'vvoid',
@@ -269,7 +270,8 @@ describe('Valintaperusteet: getValintakokeet', () => {
   test('returns valintakokeet', async () => {
     const clientSpy = vi.spyOn(client, 'get');
     clientSpy.mockImplementationOnce(() => buildDummyValinkoeResponse());
-    const kokeet: Valintakoe[] = await getValintakokeet('hakukohdeOid');
+    const kokeet: ValintakoeAvaimet[] =
+      await getValintakoeAvaimetHakukohteelle('hakukohdeOid');
     expect(kokeet.length).toEqual(1);
   });
 
@@ -311,7 +313,8 @@ describe('Valintaperusteet: getValintakokeet', () => {
         },
       ]),
     );
-    const kokeet: Valintakoe[] = await getValintakokeet('hakukohdeOid');
+    const kokeet: ValintakoeAvaimet[] =
+      await getValintakoeAvaimetHakukohteelle('hakukohdeOid');
     expect(kokeet.length).toEqual(4);
     expect(kokeet[0].inputTyyppi).toEqual(ValintakoeInputTyyppi.INPUT);
     expect(kokeet[1].inputTyyppi).toEqual(ValintakoeInputTyyppi.BOOLEAN);
@@ -346,6 +349,7 @@ function buildDummyValinkoeResponse(
   ];
 
   return Promise.resolve({
+    headers: new Headers(),
     data: dummyKokeet,
   });
 }

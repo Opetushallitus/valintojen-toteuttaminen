@@ -21,29 +21,25 @@ import {
   SijoittelunHakemus,
   SijoittelunTila,
 } from './types/sijoittelu-types';
-import { Hakemus } from './types/ataru-types';
-import * as R from 'remeda';
+import { filter, flatMap, groupBy, indexBy, isDefined, pipe } from 'remeda';
 
-export const getLasketutValinnanVaiheet = async (
-  hakukohdeOid: string,
-): Promise<Array<LaskettuValinnanVaihe>> => {
-  const response = await client.get(
+export const getLasketutValinnanVaiheet = async (hakukohdeOid: string) => {
+  const response = await client.get<Array<LaskettuValinnanVaihe>>(
     configuration.lasketutValinnanVaiheetUrl({ hakukohdeOid }),
   );
   return response.data;
 };
 
-export const getLaskennanSeurantaTiedot = async (
-  loadingUrl: string,
-): Promise<SeurantaTiedot> => {
-  const response = await client.get(
+export const getLaskennanSeurantaTiedot = async (loadingUrl: string) => {
+  const response = await client.get<SeurantaTiedot>(
     `${configuration.seurantaUrl}${loadingUrl}`,
   );
+
   return {
     tila: response.data.tila,
-    hakukohteitaYhteensa: response.data.hakukohteitaYhteensa,
-    hakukohteitaValmiina: response.data.hakukohteitaValmiina,
-    hakukohteitaKeskeytetty: response.data.hakukohteitaKeskeytetty,
+    hakukohteitaYhteensa: response.data?.hakukohteitaYhteensa,
+    hakukohteitaValmiina: response.data?.hakukohteitaValmiina,
+    hakukohteitaKeskeytetty: response.data?.hakukohteitaKeskeytetty,
   };
 };
 
@@ -58,10 +54,10 @@ export const muutaSijoittelunStatus = async ({
 }: {
   jono: Pick<LaskettuJonoWithHakijaInfo, 'oid' | 'prioriteetti'>;
   status: boolean;
-}): Promise<Array<MuutaSijoitteluaResponse>> => {
+}) => {
   const valintatapajonoOid = jono.oid;
 
-  const { data: updatedJono } = await client.post(
+  const { data: updatedJono } = await client.post<{ prioriteetti: number }>(
     // Miksi samat parametrit välitetään sekä URL:ssä että bodyssa?
     configuration.automaattinenSiirtoUrl({ valintatapajonoOid, status }),
     {
@@ -78,7 +74,7 @@ export const muutaSijoittelunStatus = async ({
     updatedJono.prioriteetti = jono.prioriteetti;
   }
 
-  const { data } = await client.put(
+  const { data } = await client.put<Array<MuutaSijoitteluaResponse>>(
     configuration.valmisSijoiteltavaksiUrl({ valintatapajonoOid, status }),
     updatedJono,
     {
@@ -93,28 +89,24 @@ export const getHakijaryhmat = async (
   hakuOid: string,
   hakukohdeOid: string,
 ): Promise<HakukohteenHakijaryhma[]> => {
-  const hakemukset: Hakemus[] = await getHakemukset(hakuOid, hakukohdeOid);
-  const tulokset = await getLatestSijoitteluAjonTulokset(hakuOid, hakukohdeOid);
-  const valintaTulokset = await getHakukohteenValintatuloksetIlmanHakijanTilaa(
-    hakuOid,
-    hakukohdeOid,
-  );
-  const sijoittelunHakemukset = R.pipe(
+  const [hakemukset, tulokset, valintaTulokset] = await Promise.all([
+    getHakemukset({ hakuOid, hakukohdeOid }),
+    getLatestSijoitteluAjonTulokset(hakuOid, hakukohdeOid),
+    getHakukohteenValintatuloksetIlmanHakijanTilaa(hakuOid, hakukohdeOid),
+  ]);
+  const sijoittelunHakemukset = pipe(
     tulokset?.valintatapajonot,
-    R.filter(R.isDefined),
-    R.flatMap((jono) => jono.hakemukset),
-    R.groupBy((a) => a.hakemusOid),
+    filter(isDefined),
+    flatMap((jono) => jono.hakemukset),
+    groupBy((a) => a.hakemusOid),
   );
-  const valintatapajonotSijoittelusta = R.pipe(
+  const valintatapajonotSijoittelusta = pipe(
     tulokset?.valintatapajonot,
-    R.filter(R.isDefined),
-    R.indexBy((j) => j.oid),
+    filter(isDefined),
+    indexBy((j) => j.oid),
   );
-  const { data } = await client.get(
-    configuration.hakukohdeHakijaryhmatUrl({ hakukohdeOid }),
-  );
-  return data.map(
-    (ryhma: {
+  const { data } = await client.get<
+    Array<{
       nimi: string;
       hakijaryhmaOid: string;
       prioriteetti: number;
@@ -125,57 +117,58 @@ export const getHakijaryhmat = async (
           jarjestyskriteerit: [{ tila: JarjestyskriteeriTila }];
         },
       ];
-    }) => {
-      const ryhmanHakijat: HakijaryhmanHakija[] = hakemukset.map((h) => {
-        const hakemusSijoittelussa = findHakemusSijoittelussa(
-          sijoittelunHakemukset[h.hakemusOid],
-          tulokset.valintatapajonot,
-        );
-        const jonosijanTiedot = ryhma.jonosijat.find(
-          (js) => js.hakemusOid === h.hakemusOid,
-        );
-        const sijoittelunTila = hakemusSijoittelussa?.tila;
-        const pisteet = hakemusSijoittelussa?.pisteet;
-        const vastaanottoTila = findVastaanottotila(
-          valintaTulokset,
-          hakemusSijoittelussa,
-        );
-        const kuuluuRyhmaan =
-          jonosijanTiedot?.jarjestyskriteerit[0]?.tila === 'HYVAKSYTTAVISSA';
-        const jononNimi =
-          valintatapajonotSijoittelusta[hakemusSijoittelussa.valintatapajonoOid]
-            ?.nimi;
-        return {
-          hakijanNimi: h.hakijanNimi,
-          hakemusOid: h.hakemusOid,
-          hakijaOid: h.hakijaOid,
-          hyvaksyttyHakijaryhmasta: isHyvaksyttyHakijaryhmasta(
-            ryhma.hakijaryhmaOid,
-            hakemusSijoittelussa,
-          ),
-          kuuluuHakijaryhmaan: kuuluuRyhmaan,
-          sijoittelunTila,
-          pisteet: pisteet ?? 0,
-          vastaanottoTila,
-          jononNimi,
-          varasijanNumero: hakemusSijoittelussa.varasijanNumero,
-        };
-      });
-      const ryhmanValintatapajonoNimi = tulokset.valintatapajonot.find(
-        (jono) => jono.oid === ryhma.valintatapajonoOid,
-      )?.nimi;
-      const nimi =
-        ryhma.nimi +
-        (ryhmanValintatapajonoNimi ? `, ${ryhmanValintatapajonoNimi}` : '');
+    }>
+  >(configuration.hakukohdeHakijaryhmatUrl({ hakukohdeOid }));
+  return data.map((ryhma) => {
+    const ryhmanHakijat: HakijaryhmanHakija[] = hakemukset.map((h) => {
+      const hakemusSijoittelussa = findHakemusSijoittelussa(
+        sijoittelunHakemukset[h.hakemusOid],
+        tulokset.valintatapajonot,
+      );
+      const jonosijanTiedot = ryhma.jonosijat.find(
+        (js) => js.hakemusOid === h.hakemusOid,
+      );
+      const sijoittelunTila = hakemusSijoittelussa?.tila;
+      const pisteet = hakemusSijoittelussa?.pisteet;
+      const vastaanottoTila = findVastaanottotila(
+        valintaTulokset,
+        hakemusSijoittelussa,
+      );
+      const kuuluuRyhmaan =
+        jonosijanTiedot?.jarjestyskriteerit[0]?.tila === 'HYVAKSYTTAVISSA';
+      const jononNimi =
+        valintatapajonotSijoittelusta[hakemusSijoittelussa.valintatapajonoOid]
+          ?.nimi;
       return {
-        nimi,
-        oid: ryhma.hakijaryhmaOid,
-        prioriteetti: ryhma.prioriteetti,
-        kiintio: getKiintio(tulokset, ryhma.hakijaryhmaOid),
-        hakijat: ryhmanHakijat,
+        hakijanNimi: h.hakijanNimi,
+        hakemusOid: h.hakemusOid,
+        hakijaOid: h.hakijaOid,
+        hyvaksyttyHakijaryhmasta: isHyvaksyttyHakijaryhmasta(
+          ryhma.hakijaryhmaOid,
+          hakemusSijoittelussa,
+        ),
+        kuuluuHakijaryhmaan: kuuluuRyhmaan,
+        sijoittelunTila,
+        pisteet: pisteet ?? 0,
+        vastaanottoTila,
+        jononNimi,
+        varasijanNumero: hakemusSijoittelussa.varasijanNumero,
       };
-    },
-  );
+    });
+    const ryhmanValintatapajonoNimi = tulokset.valintatapajonot.find(
+      (jono) => jono.oid === ryhma.valintatapajonoOid,
+    )?.nimi;
+    const nimi =
+      ryhma.nimi +
+      (ryhmanValintatapajonoNimi ? `, ${ryhmanValintatapajonoNimi}` : '');
+    return {
+      nimi,
+      oid: ryhma.hakijaryhmaOid,
+      prioriteetti: ryhma.prioriteetti,
+      kiintio: getKiintio(tulokset, ryhma.hakijaryhmaOid),
+      hakijat: ryhmanHakijat,
+    };
+  });
 };
 
 const findVastaanottotila = (

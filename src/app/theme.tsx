@@ -1,85 +1,53 @@
 'use client';
-import * as React from 'react';
-import { MUI_NEXTJS_OVERRIDES } from '@opetushallitus/oph-design-system/next/theme';
-import { createStyled } from '@mui/system';
-import { deepmerge } from '@mui/utils';
+import { ophColors } from '@opetushallitus/oph-design-system';
+import { styled as muiStyled } from '@mui/material/styles';
+import {
+  CheckBoxOutlined,
+  IndeterminateCheckBoxOutlined,
+} from '@mui/icons-material';
 
-import { createODSTheme } from '@opetushallitus/oph-design-system/theme';
+export { ophColors } from '@opetushallitus/oph-design-system';
 
-import { colors } from '@opetushallitus/oph-design-system';
+const withTransientProps = (propName: string) =>
+  // Emotion doesn't support transient props by default so add support manually
+  !propName.startsWith('$');
 
-export { colors };
+export const styled: typeof muiStyled = (
+  tag: Parameters<typeof muiStyled>[0],
+  options: Parameters<typeof muiStyled>[1] = {},
+) => {
+  return muiStyled(tag, {
+    shouldForwardProp: withTransientProps,
+    ...options,
+  });
+};
 
-const theme = createODSTheme({
-  variant: 'oph',
-  overrides: deepmerge(MUI_NEXTJS_OVERRIDES, {
-    components: {
-      MuiButtonBase: {
-        defaultProps: {
-          disableRipple: true,
-        },
-      },
-      MuiAccordion: {
-        defaultProps: {
-          disableGutters: true,
-        },
-        styleOverrides: {
-          root: {
-            boxShadow: 'none',
-          },
-        },
-      },
-      MuiInputBase: {
-        styleOverrides: {
-          root: {
-            borderColor: colors.grey800,
-            borderRadius: '2px',
-            height: '48px',
-          },
-        },
-      },
-      MuiLink: {
-        styleOverrides: {
-          root: {
-            textDecoration: 'none',
-            '&:hover, &:focus': {
-              textDecoration: 'underline',
-            },
-          },
-        },
-      },
-      MuiFormLabel: {
-        styleOverrides: {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          root: ({ theme }: { theme: any }) => ({
-            ...theme.typography.label,
-            color: colors.black,
-            '&.Mui-focused': {
-              color: colors.black,
-            },
-          }),
+export const THEME_OVERRIDES = {
+  components: {
+    MuiInputBase: {
+      styleOverrides: {
+        root: {
+          borderColor: ophColors.grey800,
+          borderRadius: '2px',
+          height: '48px',
         },
       },
     },
-  }),
-});
-
-// MUI:sta (Emotionista) puuttuu styled-componentsin .attrs
-// Tällä voi asettaa oletus-propsit ilman, että tarvii luoda välikomponenttia
-export function withDefaultProps<P>(
-  Component: React.ComponentType<P>,
-  defaultProps: Partial<P>,
-  displayName = 'ComponentWithDefaultProps',
-) {
-  const ComponentWithDefaultProps = React.forwardRef<
-    React.ComponentRef<React.ComponentType<P>>,
-    P
-  >((props, ref) => <Component {...defaultProps} {...props} ref={ref} />);
-
-  ComponentWithDefaultProps.displayName = displayName;
-  return ComponentWithDefaultProps;
-}
-
-export const styled = createStyled({ defaultTheme: theme });
-
-export default theme;
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          textDecoration: 'none',
+          '&:hover, &:focus': {
+            textDecoration: 'underline',
+          },
+        },
+      },
+    },
+    MuiCheckbox: {
+      defaultProps: {
+        checkedIcon: <CheckBoxOutlined />,
+        indeterminateIcon: <IndeterminateCheckBoxOutlined />,
+      },
+    },
+  },
+};

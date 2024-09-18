@@ -4,7 +4,7 @@ import { Box, SelectChangeEvent } from '@mui/material';
 import { HakijaryhmatSearch } from './hakijaryhmat-search';
 import { SijoittelunTila } from '@/app/lib/types/sijoittelu-types';
 import { OphFormControl } from '@/app/components/form/oph-form-control';
-import { OphSelect } from '@/app/components/form/oph-select';
+import { LocalizedSelect } from '@/app/components/localized-select';
 
 export const HakijaryhmatControls = () => {
   const {
@@ -50,7 +50,7 @@ export const HakijaryhmatControls = () => {
         }}
         label={t('hakijaryhmat.taulukko.kuuluminen')}
         renderInput={({ labelId }) => (
-          <OphSelect
+          <LocalizedSelect
             id="kuuluu-ryhmaan-select"
             labelId={labelId}
             value={kuuluuRyhmaan}
@@ -71,7 +71,7 @@ export const HakijaryhmatControls = () => {
         }}
         label={t('hakijaryhmat.taulukko.sijoittelun-tila')}
         renderInput={({ labelId }) => (
-          <OphSelect
+          <LocalizedSelect
             id="sijoittelun-tila-select"
             labelId={labelId}
             value={sijoittelunTila}
@@ -90,7 +90,7 @@ export const HakijaryhmatControls = () => {
         }}
         label={t('hakijaryhmat.taulukko.hyvaksytty')}
         renderInput={({ labelId }) => (
-          <OphSelect
+          <LocalizedSelect
             id="hyvaksytty-ryhmasta-select"
             labelId={labelId}
             value={hyvaksyttyRyhmasta}
