@@ -119,58 +119,56 @@ export const getHakijaryhmat = async (
       ];
     }>
   >(configuration.hakukohdeHakijaryhmatUrl({ hakukohdeOid }));
-  return (
-    data?.map((ryhma) => {
-      const ryhmanHakijat: HakijaryhmanHakija[] = hakemukset.map((h) => {
-        const hakemusSijoittelussa = findHakemusSijoittelussa(
-          sijoittelunHakemukset[h.hakemusOid],
-          tulokset.valintatapajonot,
-        );
-        const jonosijanTiedot = ryhma.jonosijat.find(
-          (js) => js.hakemusOid === h.hakemusOid,
-        );
-        const sijoittelunTila = hakemusSijoittelussa?.tila;
-        const pisteet = hakemusSijoittelussa?.pisteet;
-        const vastaanottoTila = findVastaanottotila(
-          valintaTulokset,
-          hakemusSijoittelussa,
-        );
-        const kuuluuRyhmaan =
-          jonosijanTiedot?.jarjestyskriteerit[0]?.tila === 'HYVAKSYTTAVISSA';
-        const jononNimi =
-          valintatapajonotSijoittelusta[hakemusSijoittelussa.valintatapajonoOid]
-            ?.nimi;
-        return {
-          hakijanNimi: h.hakijanNimi,
-          hakemusOid: h.hakemusOid,
-          hakijaOid: h.hakijaOid,
-          hyvaksyttyHakijaryhmasta: isHyvaksyttyHakijaryhmasta(
-            ryhma.hakijaryhmaOid,
-            hakemusSijoittelussa,
-          ),
-          kuuluuHakijaryhmaan: kuuluuRyhmaan,
-          sijoittelunTila,
-          pisteet: pisteet ?? 0,
-          vastaanottoTila,
-          jononNimi,
-          varasijanNumero: hakemusSijoittelussa.varasijanNumero,
-        };
-      });
-      const ryhmanValintatapajonoNimi = tulokset.valintatapajonot.find(
-        (jono) => jono.oid === ryhma.valintatapajonoOid,
-      )?.nimi;
-      const nimi =
-        ryhma.nimi +
-        (ryhmanValintatapajonoNimi ? `, ${ryhmanValintatapajonoNimi}` : '');
+  return data.map((ryhma) => {
+    const ryhmanHakijat: HakijaryhmanHakija[] = hakemukset.map((h) => {
+      const hakemusSijoittelussa = findHakemusSijoittelussa(
+        sijoittelunHakemukset[h.hakemusOid],
+        tulokset.valintatapajonot,
+      );
+      const jonosijanTiedot = ryhma.jonosijat.find(
+        (js) => js.hakemusOid === h.hakemusOid,
+      );
+      const sijoittelunTila = hakemusSijoittelussa?.tila;
+      const pisteet = hakemusSijoittelussa?.pisteet;
+      const vastaanottoTila = findVastaanottotila(
+        valintaTulokset,
+        hakemusSijoittelussa,
+      );
+      const kuuluuRyhmaan =
+        jonosijanTiedot?.jarjestyskriteerit[0]?.tila === 'HYVAKSYTTAVISSA';
+      const jononNimi =
+        valintatapajonotSijoittelusta[hakemusSijoittelussa.valintatapajonoOid]
+          ?.nimi;
       return {
-        nimi,
-        oid: ryhma.hakijaryhmaOid,
-        prioriteetti: ryhma.prioriteetti,
-        kiintio: getKiintio(tulokset, ryhma.hakijaryhmaOid),
-        hakijat: ryhmanHakijat,
+        hakijanNimi: h.hakijanNimi,
+        hakemusOid: h.hakemusOid,
+        hakijaOid: h.hakijaOid,
+        hyvaksyttyHakijaryhmasta: isHyvaksyttyHakijaryhmasta(
+          ryhma.hakijaryhmaOid,
+          hakemusSijoittelussa,
+        ),
+        kuuluuHakijaryhmaan: kuuluuRyhmaan,
+        sijoittelunTila,
+        pisteet: pisteet ?? 0,
+        vastaanottoTila,
+        jononNimi,
+        varasijanNumero: hakemusSijoittelussa.varasijanNumero,
       };
-    }) ?? []
-  );
+    });
+    const ryhmanValintatapajonoNimi = tulokset.valintatapajonot.find(
+      (jono) => jono.oid === ryhma.valintatapajonoOid,
+    )?.nimi;
+    const nimi =
+      ryhma.nimi +
+      (ryhmanValintatapajonoNimi ? `, ${ryhmanValintatapajonoNimi}` : '');
+    return {
+      nimi,
+      oid: ryhma.hakijaryhmaOid,
+      prioriteetti: ryhma.prioriteetti,
+      kiintio: getKiintio(tulokset, ryhma.hakijaryhmaOid),
+      hakijat: ryhmanHakijat,
+    };
+  });
 };
 
 const findVastaanottotila = (

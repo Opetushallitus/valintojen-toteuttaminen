@@ -25,7 +25,7 @@ export default async function RootLayout({
       <Script src={configuration.raamitUrl} />
       <body>
         <AppRouterCacheProvider>
-          {/* Initialisoidaan ensin lokalisoimaton teema, jotta spinnerin tyylit tulee oikein ensimmäisissä providereissa */}
+          {/* Initialisoidaan ensin lokalisoimaton teema, jotta ensimmäisten spinnereiden tyylit tulee oikein. */}
           <OphNextJsThemeProvider variant="oph">
             <ReactQueryClientProvider>
               <PermissionProvider>
