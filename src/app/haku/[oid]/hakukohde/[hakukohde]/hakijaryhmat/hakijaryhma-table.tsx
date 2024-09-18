@@ -1,11 +1,11 @@
 'use client';
 import { hakijaColumn } from '@/app/components/table/hakija-column';
 import ListTable, {
-  ListTableColumn,
   makeBooleanYesNoColumn,
   makeCountColumn,
   makeGenericColumn,
 } from '@/app/components/table/list-table';
+import { ListTableColumn } from '@/app/components/table/table-types';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { HakijaryhmanHakija } from '@/app/lib/types/laskenta-types';
 import { Box } from '@mui/material';

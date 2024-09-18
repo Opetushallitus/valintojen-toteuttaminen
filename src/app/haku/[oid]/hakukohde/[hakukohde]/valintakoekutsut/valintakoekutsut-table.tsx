@@ -1,7 +1,6 @@
 'use client';
 import { ValintakoekutsutActionBar } from './valintakoekutsut-action-bar';
 import ListTable, {
-  ListTableColumn,
   makeColumnWithValueToTranslate,
 } from '@/app/components/table/list-table';
 import { useTranslations } from '@/app/hooks/useTranslations';
@@ -10,6 +9,7 @@ import { useMemo, useState } from 'react';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
 import { ValintakoeKutsuItem } from '@/app/lib/types/valintakoekutsut-types';
 import { hakijaColumn } from '@/app/components/table/hakija-column';
+import { ListTableColumn } from '@/app/components/table/table-types';
 
 const TRANSLATIONS_PREFIX = 'valintakoekutsut.taulukko';
 

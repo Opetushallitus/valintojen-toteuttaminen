@@ -3,8 +3,8 @@ import { hakijaColumn } from '@/app/components/table/hakija-column';
 import ListTable, {
   makeCountColumn,
   makeGenericColumn,
-  ListTableColumn,
 } from '@/app/components/table/list-table';
+import { ListTableColumn } from '@/app/components/table/table-types';
 import { JonoSijaWithHakijaInfo } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { configuration } from '@/app/lib/configuration';
