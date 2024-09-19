@@ -1,7 +1,7 @@
 'use client';
 import { HakemuksenPistetiedot } from '@/app/lib/types/laskenta-types';
 import { ValintakoeAvaimet } from '@/app/lib/types/valintaperusteet-types';
-import { NOT_READABLE_REASON_MAP } from '../pistesyotto-utils';
+import { NOT_READABLE_REASON_MAP } from '../../lib/pistesyotto-utils';
 import { Box, styled, Typography } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
 

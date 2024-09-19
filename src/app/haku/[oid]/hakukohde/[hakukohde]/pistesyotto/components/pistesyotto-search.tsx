@@ -1,4 +1,4 @@
-import { usePisteSyottoSearchParams } from '@/app/hooks/usePisteSyottoSearch';
+import { usePisteSyottoSearchParams } from '../hooks/usePisteSyottoSearch';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Search } from '@mui/icons-material';
 import {

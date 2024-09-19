@@ -1,5 +1,5 @@
 import { OphFormControl } from '@/app/components/form/oph-form-control';
-import { useHakijaryhmatSearchParams } from '@/app/hooks/useHakijaryhmatSearch';
+import { useHakijaryhmatSearchParams } from '../hooks/useHakijaryhmatSearch';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Search } from '@mui/icons-material';
 import { InputAdornment, OutlinedInput } from '@mui/material';

@@ -9,7 +9,7 @@ import { getHakijaryhmat } from '@/app/lib/valintalaskenta-service';
 import { isEmpty } from '@/app/lib/common';
 import { HakijaryhmaContent } from './components/hakijaryhma-content';
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
-import { useHakijaryhmatSearchParams } from '@/app/hooks/useHakijaryhmatSearch';
+import { useHakijaryhmatSearchParams } from './hooks/useHakijaryhmatSearch';
 import { HakijaryhmatControls } from './components/hakijaryhmat-controls';
 import { NoResults } from '@/app/components/no-results';
 

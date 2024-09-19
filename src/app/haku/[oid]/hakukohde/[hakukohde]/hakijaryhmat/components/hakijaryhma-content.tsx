@@ -3,7 +3,7 @@ import { Box } from '@mui/material';
 import { HakukohteenHakijaryhma } from '@/app/lib/types/laskenta-types';
 import { HakijaryhmaAccordionTitle } from './hakijaryhma-accordion-title';
 import { HakijaryhmaTable } from './hakijaryhma-table';
-import { useHakijaryhmatSearch } from '@/app/hooks/useHakijaryhmatSearch';
+import { useHakijaryhmatSearch } from '../hooks/useHakijaryhmatSearch';
 import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { AccordionBox } from '@/app/components/accordion-box';

@@ -1,4 +1,4 @@
-import { useHakijaryhmatSearchParams } from '@/app/hooks/useHakijaryhmatSearch';
+import { useHakijaryhmatSearchParams } from '../hooks/useHakijaryhmatSearch';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Box, SelectChangeEvent } from '@mui/material';
 import { HakijaryhmatSearch } from './hakijaryhmat-search';

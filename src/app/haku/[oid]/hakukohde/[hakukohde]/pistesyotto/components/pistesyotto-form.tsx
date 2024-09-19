@@ -2,7 +2,7 @@
 
 import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
 import { PisteSyottoTable } from './table/pistesyotto-table';
-import { usePisteSyottoSearchResults } from '@/app/hooks/usePisteSyottoSearch';
+import { usePisteSyottoSearchResults } from '../hooks/usePisteSyottoSearch';
 import { FormEvent, useMemo, useState } from 'react';
 import useToaster from '@/app/hooks/useToaster';
 import {
