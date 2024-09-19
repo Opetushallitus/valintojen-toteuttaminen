@@ -3,18 +3,15 @@ import { useEffect, useMemo } from 'react';
 import { useDebounce } from '@/app/hooks/useDebounce';
 import { parseAsBoolean, parseAsInteger, useQueryState } from 'nuqs';
 import { useHasChanged } from '@/app/hooks/useHasChanged';
-import {
-  byProp,
-  getSortParts,
-} from '../../../../../../components/table/table-utils';
+import { byProp, getSortParts } from '@/app/components/table/table-utils';
 import {
   DEFAULT_PAGE_SIZE,
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
 } from '@/app/lib/constants';
-import { useTranslations } from '../../../../../../hooks/useTranslations';
-import { HakukohteenPistetiedot } from '../../../../../../lib/types/laskenta-types';
-import { hakemusFilter } from '../../../../../../hooks/filters';
-import { DEFAULT_NUQS_OPTIONS } from '../../../../../../hooks/common';
+import { useTranslations } from '@/app/hooks/useTranslations';
+import { HakukohteenPistetiedot } from '@/app/lib/types/laskenta-types';
+import { hakemusFilter } from '@/app/hooks/filters';
+import { DEFAULT_NUQS_OPTIONS } from '@/app/hooks/common';
 
 export const usePisteSyottoSearchParams = () => {
   const [searchPhrase, setSearchPhrase] = useQueryState(
