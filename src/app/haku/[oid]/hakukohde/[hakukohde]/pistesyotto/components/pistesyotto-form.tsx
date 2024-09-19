@@ -9,7 +9,7 @@ import {
   createPisteSyottoMachine,
   PisteSyottoEvents,
   PisteSyottoStates,
-} from './pistesyotto-state';
+} from '../lib/pistesyotto-state';
 import { useMachine } from '@xstate/react';
 import { PisteSyottoActions } from './pistesyotto-actions';
 import { styled } from '@mui/material';

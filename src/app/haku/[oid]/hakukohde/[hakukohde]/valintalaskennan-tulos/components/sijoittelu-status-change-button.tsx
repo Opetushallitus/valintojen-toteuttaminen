@@ -2,7 +2,7 @@ import { OPH_ORGANIZATION_OID } from '@/app/lib/constants';
 import { UserPermissions } from '@/app/lib/permissions';
 import { ButtonProps } from '@mui/material';
 import { OphButton } from '@opetushallitus/oph-design-system';
-import { useSijoitteluStatusMutation } from './useSijoitteluStatusMutation';
+import { useSijoitteluStatusMutation } from '../hooks/useSijoitteluStatusMutation';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { LaskettuJonoWithHakijaInfo } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { SpinnerIcon } from '@/app/components/spinner-icon';

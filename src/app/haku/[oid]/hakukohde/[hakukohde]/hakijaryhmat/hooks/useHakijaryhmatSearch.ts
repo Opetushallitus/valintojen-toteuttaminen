@@ -7,16 +7,16 @@ import {
   byProp,
   getSortParts,
   SortDirection,
-} from '../components/table/table-utils';
+} from '../../../../../../components/table/table-utils';
 import { HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY } from '@/app/lib/constants';
-import { useTranslations } from './useTranslations';
-import { HakijaryhmanHakija } from '../lib/types/laskenta-types';
+import { useTranslations } from '../../../../../../hooks/useTranslations';
+import { HakijaryhmanHakija } from '../../../../../../lib/types/laskenta-types';
 import {
   SijoittelunTila,
   SijoittelunTilaOrdinals,
-} from '../lib/types/sijoittelu-types';
-import { hakemusFilter } from './filters';
-import { DEFAULT_NUQS_OPTIONS } from './common';
+} from '../../../../../../lib/types/sijoittelu-types';
+import { hakemusFilter } from '../../../../../../hooks/filters';
+import { DEFAULT_NUQS_OPTIONS } from '../../../../../../hooks/common';
 
 const DEFAULT_PAGE_SIZE = 10;
 

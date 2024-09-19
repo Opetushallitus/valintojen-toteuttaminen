@@ -7,7 +7,7 @@ import { TablePaginationWrapper } from '@/app/components/table/table-pagination-
 import { LaskettuValintatapajonoTable } from './laskettu-valintatapajono-table';
 import { ValintatapajonoAccordionTitle } from './valintatapajono-accordion-title';
 import { SijoitteluStatusChangeButton } from './sijoittelu-status-change-button';
-import { useSijoitteluStatusMutation } from './useSijoitteluStatusMutation';
+import { useSijoitteluStatusMutation } from '../hooks/useSijoitteluStatusMutation';
 import { useHakukohde } from '@/app/hooks/useHakukohde';
 import { useUserPermissions } from '@/app/hooks/useUserPermissions';
 import {
@@ -15,7 +15,7 @@ import {
   LaskettuJonoWithHakijaInfo,
 } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { getJonoNimi } from './get-jono-nimi';
+import { getJonoNimi } from '../lib/get-jono-nimi';
 
 const PaginatedValintatapajonoTable = ({
   label,

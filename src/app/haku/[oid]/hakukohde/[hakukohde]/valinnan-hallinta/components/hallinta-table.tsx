@@ -27,7 +27,7 @@ import {
   LaskentaEvents,
   LaskentaStates,
   createLaskentaMachine,
-} from './laskenta-state';
+} from '../lib/laskenta-state';
 import { useMachine } from '@xstate/react';
 import { useMemo } from 'react';
 import { useToaster } from '@/app/hooks/useToaster';

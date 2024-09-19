@@ -1,7 +1,7 @@
 'use client';
 
 import { getHaku, getHakukohde } from '@/app/lib/kouta';
-import HallintaTable from './hallinta-table';
+import HallintaTable from './components/hallinta-table';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { useSuspenseQueries } from '@tanstack/react-query';

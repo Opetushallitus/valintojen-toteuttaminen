@@ -16,12 +16,12 @@ import {
 } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { useValintakoekutsut } from '@/app/hooks/useValintakoekutsut';
-import { ValintakoekutsutTable } from './valintakoekutsut-table';
+import { ValintakoekutsutTable } from './components/valintakoekutsut-table';
 import {
   ryhmittelyParser,
   useValintakoekutsutGlobalSearchParams,
   useValintakoekutsutPaginated,
-} from './useValintakoekutsutPaginated';
+} from './hooks/useValintakoekutsutPaginated';
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
 import { entries, isEmpty, map, pipe } from 'remeda';
 import { AccordionBoxTitle } from '@/app/components/accordion-box-title';

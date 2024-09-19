@@ -1,7 +1,7 @@
 import { describe, expect, test, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { SijoitteluStatusChangeButton } from './sijoittelu-status-change-button';
-import { useSijoitteluStatusMutation } from './useSijoitteluStatusMutation';
+import { useSijoitteluStatusMutation } from '../hooks/useSijoitteluStatusMutation';
 import { UserPermissions } from '@/app/lib/permissions';
 import { OPH_ORGANIZATION_OID } from '@/app/lib/constants';
 import { LaskettuJonoWithHakijaInfo } from '@/app/hooks/useLasketutValinnanVaiheet';

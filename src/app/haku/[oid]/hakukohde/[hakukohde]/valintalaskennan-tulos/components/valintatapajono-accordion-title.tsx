@@ -3,7 +3,7 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { LaskettuValinnanVaihe } from '@/app/lib/types/laskenta-types';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
 import { LaskettuJonoWithHakijaInfo } from '@/app/hooks/useLasketutValinnanVaiheet';
-import { getJonoNimi } from './get-jono-nimi';
+import { getJonoNimi } from '../lib/get-jono-nimi';
 import { AccordionBoxTitle } from '@/app/components/accordion-box-title';
 
 export const ValintatapajonoAccordionTitle = ({

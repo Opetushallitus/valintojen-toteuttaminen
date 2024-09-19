@@ -1,7 +1,7 @@
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Box, Button, CircularProgress } from '@mui/material';
 import { AnyMachineSnapshot } from 'xstate';
-import { PisteSyottoStates } from './pistesyotto-state';
+import { PisteSyottoStates } from '../lib/pistesyotto-state';
 
 export const PisteSyottoActions = ({
   state,

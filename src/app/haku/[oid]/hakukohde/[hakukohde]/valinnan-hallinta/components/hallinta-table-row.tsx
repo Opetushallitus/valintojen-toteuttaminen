@@ -12,7 +12,7 @@ import {
   LaskentaEvents,
   LaskentaStates,
   createLaskentaMachine,
-} from './laskenta-state';
+} from '../lib/laskenta-state';
 import { useMemo } from 'react';
 import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
 import { sijoitellaankoHaunHakukohteetLaskennanYhteydessa } from '@/app/lib/kouta';
