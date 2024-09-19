@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation';
 import { Link as MuiLink } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { ophColors, styled } from '@/app/theme';
+import { ophColors, styled } from '@/app/lib/theme';
 import { DEFAULT_BOX_BORDER } from '@/app/lib/constants';
 import { useHakukohde } from '@/app/hooks/useHakukohde';
 import { useHaku } from '@/app/hooks/useHaku';

@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
 import { OphTypography } from '@opetushallitus/oph-design-system';
-import { styled } from '@/app/theme';
+import { styled } from '@/app/lib/theme';
 
 const BoxHeading = styled(OphTypography)(({ theme }) => ({
   display: 'flex',

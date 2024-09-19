@@ -7,7 +7,7 @@ import {
 } from '@mui/material';
 import { useId } from 'react';
 import { EMPTY_ARRAY } from '@/app/lib/common';
-import { styled } from '@/app/theme';
+import { styled } from '@/app/lib/theme';
 
 const StyledFormHelperText = styled(FormHelperText)(({ theme }) => ({
   margin: theme.spacing(0.5, 0),

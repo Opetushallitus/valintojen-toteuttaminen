@@ -12,7 +12,7 @@ import {
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { ophColors } from '@opetushallitus/oph-design-system';
 import { useState } from 'react';
-import { styled } from '@/app/theme';
+import { styled } from '@/app/lib/theme';
 import { ArrowRight, ErrorOutline } from '@mui/icons-material';
 
 type ErrorRowParams = {

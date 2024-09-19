@@ -2,7 +2,7 @@
 
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { OphNextJsThemeProvider } from '@opetushallitus/oph-design-system/next/theme';
-import { THEME_OVERRIDES } from './theme';
+import { THEME_OVERRIDES } from '../lib/theme';
 
 export const LocalizedThemeProvider = ({
   children,

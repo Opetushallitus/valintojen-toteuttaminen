@@ -1,4 +1,4 @@
-import { styled } from '@/app/theme';
+import { styled } from '@/app/lib/theme';
 import { Box, Divider as MuiDivider } from '@mui/material';
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
 import { withDefaultProps } from '../lib/mui-utils';

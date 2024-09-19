@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { TabContainer } from '../tab-container';
+import { TabContainer } from '../components/tab-container';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { Box, CircularProgress } from '@mui/material';
 import { useSuspenseQueries } from '@tanstack/react-query';

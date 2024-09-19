@@ -7,7 +7,7 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { useSuspenseQueries } from '@tanstack/react-query';
 import { CircularProgress } from '@mui/material';
 import { getHaunAsetukset } from '@/app/lib/ohjausparametrit';
-import { TabContainer } from '../tab-container';
+import { TabContainer } from '../components/tab-container';
 
 type ValinnanHallintaContentParams = {
   hakuOid: string;

@@ -1,7 +1,7 @@
 'use client';
 
 import { useHakukohde } from '@/app/hooks/useHakukohde';
-import { TabContainer } from '../tab-container';
+import { TabContainer } from '../components/tab-container';
 
 export default function SijoittelunTuloksetPage({
   params,

@@ -1,7 +1,7 @@
 'use client';
 
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
-import { TabContainer } from '../tab-container';
+import { TabContainer } from '../components/tab-container';
 import { FullClientSpinner } from '@/app/components/client-spinner';
 import { AccordionBox } from '@/app/components/accordion-box';
 import {

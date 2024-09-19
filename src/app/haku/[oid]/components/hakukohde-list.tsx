@@ -4,7 +4,7 @@ import { useHakukohdeSearchResults } from '@/app/hooks/useHakukohdeSearch';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Hakukohde } from '@/app/lib/types/kouta-types';
 import { Link, styled } from '@mui/material';
-import { useHakukohdeTab } from '../hakukohde/[hakukohde]/hakukohde-tabs';
+import { useHakukohdeTab } from '../hakukohde/[hakukohde]/components/hakukohde-tabs';
 import { ophColors, OphTypography } from '@opetushallitus/oph-design-system';
 import { useParams } from 'next/navigation';
 

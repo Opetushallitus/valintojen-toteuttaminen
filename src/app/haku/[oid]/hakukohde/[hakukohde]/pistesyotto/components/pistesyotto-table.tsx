@@ -2,9 +2,8 @@
 import { HakemuksenPistetiedot } from '@/app/lib/types/laskenta-types';
 import { ValintakoeAvaimet } from '@/app/lib/types/valintaperusteet-types';
 import { ophColors } from '@opetushallitus/oph-design-system';
-import { isNotPartOfThisHakukohde } from '../../lib/pistesyotto-utils';
 import { ReadOnlyKoeCell } from './koe-readonly-cell';
-import { KoeCell } from './koe-cell';
+import { ChangePisteSyottoFormParams } from './pistesyotto-form';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { useMemo } from 'react';
 import {
@@ -12,7 +11,8 @@ import {
   makeColumnWithCustomRender,
 } from '@/app/components/table/table-columns';
 import { ListTable } from '@/app/components/table/list-table';
-import { ChangePisteSyottoFormParams } from '../pistesyotto-form';
+import { isNotPartOfThisHakukohde } from '../lib/pistesyotto-utils';
+import { KoeCell } from './koe-cell';
 
 const stickyColumnStyle: React.CSSProperties = {
   minWidth: '260px',

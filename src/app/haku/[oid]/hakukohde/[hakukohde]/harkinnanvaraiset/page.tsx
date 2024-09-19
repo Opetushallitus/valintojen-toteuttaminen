@@ -1,6 +1,6 @@
 'use client';
 
-import { TabContainer } from '../tab-container';
+import { TabContainer } from '../components/tab-container';
 import { useHakukohde } from '@/app/hooks/useHakukohde';
 
 export default function HarkinnanvaraisetPage({

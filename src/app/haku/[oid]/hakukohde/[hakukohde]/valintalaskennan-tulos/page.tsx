@@ -1,6 +1,6 @@
 'use client';
 
-import { TabContainer } from '../tab-container';
+import { TabContainer } from '../components/tab-container';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { Box } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';

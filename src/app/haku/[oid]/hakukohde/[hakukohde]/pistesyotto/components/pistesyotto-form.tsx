@@ -1,7 +1,7 @@
 'use client';
 
 import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
-import { PisteSyottoTable } from './table/pistesyotto-table';
+import { PisteSyottoTable } from './pistesyotto-table';
 import { usePisteSyottoSearchResults } from '../hooks/usePisteSyottoSearch';
 import { FormEvent, useMemo, useState } from 'react';
 import useToaster from '@/app/hooks/useToaster';

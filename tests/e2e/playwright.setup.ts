@@ -9,7 +9,7 @@ import VALINNANVAIHE from './fixtures/valinnanvaiheet.json';
 import LASKETUT_HAKIJARYHMAT from './fixtures/lasketut_hakijaryhmat.json';
 import SIJOITTELUAJON_TULOKSET from './fixtures/sijoitteluajon-tulokset.json';
 import HAKUKOHTEEN_VALINTATULOKSET from './fixtures/hakukohteen_valintatulokset.json';
-import { SERVICE_KEY } from '../../src/app/lib/permissions';
+import { SERVICE_KEY } from '@/app/lib/permissions';
 import PISTETIEDOT from './fixtures/pistetiedot.json';
 import KOKEET from './fixtures/valintakoe-avaimet.json';
 

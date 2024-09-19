@@ -1,6 +1,6 @@
 'use client';
 
-import { TabContainer } from '../tab-container';
+import { TabContainer } from '../components/tab-container';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { ClientSpinner } from '@/app/components/client-spinner';
 import { useSuspenseQuery } from '@tanstack/react-query';

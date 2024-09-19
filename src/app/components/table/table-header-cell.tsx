@@ -1,7 +1,7 @@
 import { ExpandLess, ExpandMore, UnfoldMore } from '@mui/icons-material';
 import { getSortParts } from './table-utils';
 import { ophColors } from '@opetushallitus/oph-design-system';
-import { styled } from '@/app/theme';
+import { styled } from '@/app/lib/theme';
 import { Button, TableCell } from '@mui/material';
 
 const SortIcon = ({

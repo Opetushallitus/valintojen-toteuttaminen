@@ -18,8 +18,8 @@ import { Box, debounce, SelectChangeEvent, styled } from '@mui/material';
 import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { OphInput } from '@/app/components/form/oph-input';
 import { INPUT_DEBOUNCE_DELAY } from '@/app/lib/constants';
-import { ChangePisteSyottoFormParams } from '../pistesyotto-form';
 import { LocalizedSelect } from '@/app/components/localized-select';
+import { ChangePisteSyottoFormParams } from './pistesyotto-form';
 
 const StyledSelect = styled(LocalizedSelect)({
   minWidth: '150px',
