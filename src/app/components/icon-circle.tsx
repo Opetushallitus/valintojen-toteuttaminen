@@ -1,5 +1,5 @@
 import { Avatar } from '@mui/material';
-import { styled, ophColors } from '@/app/theme';
+import { styled, ophColors } from '@/app/lib/theme';
 
 export const IconCircle = styled(Avatar)({
   backgroundColor: ophColors.grey100,

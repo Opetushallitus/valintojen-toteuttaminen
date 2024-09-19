@@ -1,10 +1,10 @@
 'use client';
 
 import { getSijoittelunTulokset } from '@/app/lib/valinta-tulos-service';
-import { TabContainer } from '../tab-container';
-import BasicInfo from './basic-info';
+import { TabContainer } from '../components/tab-container';
+import BasicInfo from './components/basic-info';
 import { useSuspenseQueries } from '@tanstack/react-query';
-import { ValintatapajonotTable } from './valintatapajonot-table';
+import { ValintatapajonotTable } from './components/valintatapajonot-table';
 import { getHaku } from '@/app/lib/kouta';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';

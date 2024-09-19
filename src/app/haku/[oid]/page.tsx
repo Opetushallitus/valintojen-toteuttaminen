@@ -1,9 +1,9 @@
 'use client';
 
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { ophColors } from '@/app/theme';
+import { ophColors } from '@/app/lib/theme';
 import { ListAlt } from '@mui/icons-material';
-import { styled } from '@/app/theme';
+import { styled } from '@/app/lib/theme';
 
 export default function HakuPage() {
   const { t } = useTranslations();

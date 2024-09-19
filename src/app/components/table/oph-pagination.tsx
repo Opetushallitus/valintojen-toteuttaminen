@@ -1,5 +1,5 @@
 'use client';
-import { styled } from '@/app/theme';
+import { styled } from '@/app/lib/theme';
 import {
   Button,
   Pagination,

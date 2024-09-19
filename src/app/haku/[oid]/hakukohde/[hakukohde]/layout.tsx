@@ -1,4 +1,4 @@
-import HakukohdeTabs from './hakukohde-tabs';
+import HakukohdeTabs from './components/hakukohde-tabs';
 import { MainContainer } from '@/app/components/main-container';
 
 export default function HakuLayout({

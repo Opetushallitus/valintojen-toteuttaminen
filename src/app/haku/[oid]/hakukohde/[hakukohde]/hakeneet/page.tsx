@@ -1,10 +1,10 @@
 'use client';
 
-import { TabContainer } from '../tab-container';
+import { TabContainer } from '../components/tab-container';
 import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
 import { useHakeneetSearchResults } from '@/app/hooks/useHakeneetSearch';
-import { HakeneetTable } from './hakeneet-table';
-import HakeneetSearch from './hakeneet-search';
+import { HakeneetTable } from './components/hakeneet-table';
+import HakeneetSearch from './components/hakeneet-search';
 import { isKorkeakouluHaku } from '@/app/lib/kouta';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { Haku } from '@/app/lib/types/kouta-types';

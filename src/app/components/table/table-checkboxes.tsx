@@ -1,6 +1,6 @@
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { EMPTY_STRING_SET } from '@/app/lib/common';
-import { styled } from '@/app/theme';
+import { styled } from '@/app/lib/theme';
 import { Checkbox } from '@mui/material';
 import { map, pipe } from 'remeda';
 

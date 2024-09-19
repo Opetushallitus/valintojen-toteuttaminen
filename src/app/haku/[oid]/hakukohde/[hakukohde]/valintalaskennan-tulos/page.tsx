@@ -1,15 +1,15 @@
 'use client';
 
-import { TabContainer } from '../tab-container';
+import { TabContainer } from '../components/tab-container';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { Box } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { useLasketutValinnanVaiheet } from '@/app/hooks/useLasketutValinnanVaiheet';
-import { ValintalaskennanTulosSearch } from './valintalaskennan-tulos-search';
+import { ValintalaskennanTulosSearch } from './components/valintalaskennan-tulos-search';
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
 import { FileDownloadOutlined } from '@mui/icons-material';
 import React from 'react';
-import { ValintatapajonoContent } from './valintatapajono-content';
+import { ValintatapajonoContent } from './components/valintatapajono-content';
 import { useJonosijatSearchParams } from '@/app/hooks/useJonosijatSearch';
 import { ClientSpinner } from '@/app/components/client-spinner';
 import { downloadBlob, isEmpty } from '@/app/lib/common';

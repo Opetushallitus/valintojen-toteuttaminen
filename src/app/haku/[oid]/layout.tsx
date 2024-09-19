@@ -1,4 +1,4 @@
-import HakukohdePanel from './hakukohde-panel';
+import HakukohdePanel from './components/hakukohde-panel';
 import { MainContainer } from '@/app/components/main-container';
 import { PageLayout } from '@/app/components/page-layout';
 
