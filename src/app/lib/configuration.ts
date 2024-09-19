@@ -75,6 +75,7 @@ export const configuration = {
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintakoe/hakutoive/${hakukohdeOid}`,
   createValintakoeExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintalaskentaexcel/valintakoekutsut/aktivoi`,
   createValintakoeOsoitetarratUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/osoitetarrat/aktivoi`,
+  createPistesyottoExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/pistesyotto/vienti`,
   dokumenttiProsessiUrl: ({ id }: { id: string }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/dokumenttiprosessi/${id}`,
   lataaDokumenttiUrl: ({ dokumenttiId }: { dokumenttiId: string }) =>

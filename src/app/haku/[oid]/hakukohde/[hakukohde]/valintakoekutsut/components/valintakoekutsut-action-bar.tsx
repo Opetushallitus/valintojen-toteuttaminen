@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { Box } from '@mui/material';
 import {
   DeselectOutlined,
-  FileDownloadOutlined,
   InsertDriveFileOutlined,
   NoteOutlined,
 } from '@mui/icons-material';
@@ -108,7 +107,6 @@ const ExcelDownloadButton = ({
       Component={ActionBar.Button}
       disabled={selection.size === 0}
       mutation={excelMutation}
-      startIcon={<FileDownloadOutlined />}
     >
       {t('yleinen.vie-taulukkolaskentaan')}
     </DownloadButton>

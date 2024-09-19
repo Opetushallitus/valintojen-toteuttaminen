@@ -351,12 +351,21 @@ const downloadProcessDocument = async (processId: string) => {
   const processRes = await client.get<{
     dokumenttiId: string;
     kasittelyssa: boolean;
-    keskeytetty: false;
+    keskeytetty: boolean;
     kokonaistyo: {
       valmis: boolean;
     };
+    poikkeukset: Array<{
+      viesti: string;
+    }>;
   }>(configuration.dokumenttiProsessiUrl({ id: processId }));
-  const dokumenttiId = processRes?.data?.dokumenttiId;
+
+  const { dokumenttiId, poikkeukset } = processRes.data;
+
+  if (!isEmpty(poikkeukset)) {
+    const errorMessages = poikkeukset.map(prop('viesti')).join('\n');
+    throw Error(errorMessages);
+  }
 
   const documentRes = await client.get<Blob>(
     configuration.lataaDokumenttiUrl({ dokumenttiId }),
@@ -410,4 +419,23 @@ export const getValintalaskennanTulosExcel = async ({
     configuration.valintalaskennanTulosExcelUrl({ hakukohdeOid }),
   );
   return createFileResult(excelRes);
+};
+
+export const getPistesyottoExcel = async ({
+  hakuOid,
+  hakukohdeOid,
+}: {
+  hakuOid: string;
+  hakukohdeOid: string;
+}) => {
+  const urlWithQuery = new URL(configuration.createPistesyottoExcelUrl);
+  urlWithQuery.searchParams.append('hakuOid', hakuOid);
+  urlWithQuery.searchParams.append('hakukohdeOid', hakukohdeOid);
+  const createResponse = await client.post<{ id: string }>(
+    urlWithQuery.toString(),
+    '',
+  );
+  const excelProcessId = createResponse?.data?.id;
+
+  return await downloadProcessDocument(excelProcessId);
 };
