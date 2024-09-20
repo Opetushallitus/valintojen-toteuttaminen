@@ -3,14 +3,17 @@
 import { TabContainer } from '../components/tab-container';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { ClientSpinner } from '@/app/components/client-spinner';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { getPisteetForHakukohde } from '@/app/lib/valintalaskentakoostepalvelu';
 import { PisteSyottoControls } from './components/pistesyotto-controls';
 import { Box } from '@mui/material';
 import { PisteSyottoForm } from './components/pistesyotto-form';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { isEmpty } from '@/app/lib/common';
 import { NoResults } from '@/app/components/no-results';
+import {
+  pisteTuloksetOptions,
+  usePisteTulokset,
+} from './hooks/usePisteTulokset';
+import { useQueryClient } from '@tanstack/react-query';
 
 type PisteSyottoContentParams = {
   hakuOid: string;
@@ -23,10 +26,7 @@ const PisteSyottoContent = ({
 }: PisteSyottoContentParams) => {
   const { t } = useTranslations();
 
-  const { data: pistetulokset } = useSuspenseQuery({
-    queryKey: ['getPisteetForHakukohde', hakukohdeOid],
-    queryFn: () => getPisteetForHakukohde(hakuOid, hakukohdeOid),
-  });
+  const { data: pistetulokset } = usePisteTulokset({ hakuOid, hakukohdeOid });
 
   return isEmpty(pistetulokset.valintakokeet) ? (
     <NoResults text={t('pistesyotto.ei-tuloksia')} />
@@ -47,6 +47,13 @@ export default function PisteSyottoPage({
 }: {
   params: { oid: string; hakukohde: string };
 }) {
+  const queryClient = useQueryClient();
+  queryClient.prefetchQuery(
+    pisteTuloksetOptions({
+      hakuOid: params.oid,
+      hakukohdeOid: params.hakukohde,
+    }),
+  );
   return (
     <TabContainer>
       <QuerySuspenseBoundary suspenseFallback={<ClientSpinner />}>

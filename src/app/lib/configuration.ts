@@ -73,11 +73,12 @@ export const configuration = {
     `${DOMAIN}/valintaperusteet-service/resources/hakukohde/${hakukohdeOid}/valintakoe`,
   valintakoeOsallistumisetUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintakoe/hakutoive/${hakukohdeOid}`,
-  createValintakoeExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintalaskentaexcel/valintakoekutsut/aktivoi`,
-  createValintakoeOsoitetarratUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/osoitetarrat/aktivoi`,
-  createPistesyottoExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/pistesyotto/vienti`,
+  startExportValintakoeExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintalaskentaexcel/valintakoekutsut/aktivoi`,
+  startExportValintakoeOsoitetarratUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/osoitetarrat/aktivoi`,
+  startExportPistesyottoExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/pistesyotto/vienti`,
   dokumenttiProsessiUrl: ({ id }: { id: string }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/dokumenttiprosessi/${id}`,
   lataaDokumenttiUrl: ({ dokumenttiId }: { dokumenttiId: string }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/dokumentit/lataa/${dokumenttiId}`,
+  startImportPistesyottoUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/pistesyotto/tuonti`,
 } as const;

@@ -1,7 +1,7 @@
 import { Haku, Hakukohde, getFullnameOfHakukohde } from './types/kouta-types';
 import { configuration } from './configuration';
 import { ValinnanvaiheTyyppi } from './types/valintaperusteet-types';
-import { client, HttpClientResponse } from './http-client';
+import { abortableClient, client, HttpClientResponse } from './http-client';
 import { TranslatedName } from './localization/localization-types';
 import { HenkilonValintaTulos } from './types/sijoittelu-types';
 import {
@@ -22,7 +22,7 @@ import {
   pipe,
   prop,
 } from 'remeda';
-import { EMPTY_ARRAY, EMPTY_OBJECT } from './common';
+import { ApiError, EMPTY_ARRAY, EMPTY_OBJECT } from './common';
 import { getHakemukset, getHakijat } from './ataru';
 import {
   getValintakokeet,
@@ -172,24 +172,29 @@ export const getPisteetForHakukohde = async (
   hakuOid: string,
   hakukohdeOid: string,
 ): Promise<HakukohteenPistetiedot> => {
-  const kokeet = await getValintakoeAvaimetHakukohteelle(hakukohdeOid);
+  const kokeetPromise = getValintakoeAvaimetHakukohteelle(hakukohdeOid);
+  const hakemuksetPromise = getHakemukset({ hakuOid, hakukohdeOid });
+  const pisteTiedotFetch = abortableClient.get<{
+    lastmodified?: string;
+    valintapisteet: Array<{
+      applicationAdditionalDataDTO: {
+        oid: string;
+        personOid: string;
+        additionalData: Record<string, string>;
+      };
+    }>;
+  }>(configuration.koostetutPistetiedot({ hakuOid, hakukohdeOid }));
+
+  const kokeet = await kokeetPromise;
 
   if (isEmpty(kokeet)) {
+    pisteTiedotFetch.abort('Ei kokeita, perutaan pistetietojen haku');
     return { hakemukset: EMPTY_ARRAY, valintakokeet: EMPTY_ARRAY };
   }
 
   const [hakemukset, { data: pistetiedot }] = await Promise.all([
-    getHakemukset({ hakuOid, hakukohdeOid }),
-    client.get<{
-      lastmodified?: string;
-      valintapisteet: Array<{
-        applicationAdditionalDataDTO: {
-          oid: string;
-          personOid: string;
-          additionalData: Record<string, string>;
-        };
-      }>;
-    }>(configuration.koostetutPistetiedot({ hakuOid, hakukohdeOid })),
+    hakemuksetPromise,
+    pisteTiedotFetch.promise,
   ]);
   const hakemuksetIndexed = indexBy(hakemukset, (h) => h.hakemusOid);
 
@@ -379,7 +384,7 @@ export const getValintakoeExcel = async ({
   hakemusOids,
   valintakoeTunniste,
 }: GetValintakoeExcelParams) => {
-  const urlWithQuery = new URL(configuration.createValintakoeExcelUrl);
+  const urlWithQuery = new URL(configuration.startExportValintakoeExcelUrl);
   urlWithQuery.searchParams.append('hakuOid', hakuOid);
   urlWithQuery.searchParams.append('hakukohdeOid', hakukohdeOid);
 
@@ -397,7 +402,9 @@ export const getValintakoeOsoitetarrat = async ({
   hakemusOids,
   valintakoeTunniste,
 }: GetValintakoeExcelParams) => {
-  const urlWithQuery = new URL(configuration.createValintakoeOsoitetarratUrl);
+  const urlWithQuery = new URL(
+    configuration.startExportValintakoeOsoitetarratUrl,
+  );
   urlWithQuery.searchParams.append('hakuOid', hakuOid);
   urlWithQuery.searchParams.append('hakukohdeOid', hakukohdeOid);
   urlWithQuery.searchParams.append('valintakoeTunniste', valintakoeTunniste);
@@ -428,7 +435,7 @@ export const getPistesyottoExcel = async ({
   hakuOid: string;
   hakukohdeOid: string;
 }) => {
-  const urlWithQuery = new URL(configuration.createPistesyottoExcelUrl);
+  const urlWithQuery = new URL(configuration.startExportPistesyottoExcelUrl);
   urlWithQuery.searchParams.append('hakuOid', hakuOid);
   urlWithQuery.searchParams.append('hakukohdeOid', hakukohdeOid);
   const createResponse = await client.post<{ id: string }>(
@@ -438,4 +445,36 @@ export const getPistesyottoExcel = async ({
   const excelProcessId = createResponse?.data?.id;
 
   return await downloadProcessDocument(excelProcessId);
+};
+
+export const putPistesyottoExcel = async ({
+  hakuOid,
+  hakukohdeOid,
+  excelFile,
+}: {
+  hakuOid: string;
+  hakukohdeOid: string;
+  excelFile: File;
+}) => {
+  const urlWithQuery = new URL(configuration.startImportPistesyottoUrl);
+  urlWithQuery.searchParams.append('hakuOid', hakuOid);
+  urlWithQuery.searchParams.append('hakukohdeOid', hakukohdeOid);
+
+  const res = await client.post<
+    Array<{ applicationOID: string; errorMessage: string }> | ''
+  >(urlWithQuery.toString(), await excelFile.arrayBuffer(), {
+    headers: {
+      'content-type': 'application/octet-stream',
+    },
+  });
+
+  const { data } = res;
+
+  if (Array.isArray(data)) {
+    throw new ApiError(
+      res,
+      'Kaikkien pistetietojen tuominen taulukkolaskennasta ei onnistunut',
+    );
+  }
+  return data;
 };
