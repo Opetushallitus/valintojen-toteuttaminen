@@ -14,8 +14,9 @@ import useToaster from '@/app/hooks/useToaster';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useId, useRef } from 'react';
 import { FileUploadOutlined } from '@mui/icons-material';
-import { SpinnerIcon } from '@/app/components/spinner-icon';
 import { pisteTuloksetOptions } from '../hooks/usePisteTulokset';
+import { OphModalDialog } from '@/app/components/OphModalDialog';
+import { FullClientSpinner } from '@/app/components/client-spinner';
 
 const useExcelDownloadMutation = ({
   hakuOid,
@@ -67,7 +68,7 @@ const useExcelUploadMutation = ({
     onError: (e) => {
       addToast({
         key: 'put-pistesyotto-excel-error',
-        message: 'pistesyottos.virhe-tuo-taulukkolaskennasta',
+        message: 'pistesyotto.virhe-tuo-taulukkolaskennasta',
         type: 'error',
       });
       console.error(e);
@@ -122,9 +123,16 @@ const ExcelUploadButton = ({
           }
         }}
       />
+      <OphModalDialog
+        titleAlign="center"
+        open={isPending}
+        title={t('pistesyotto.tuodaan-pistetietoja-taulukkolaskennasta')}
+      >
+        <FullClientSpinner />
+      </OphModalDialog>
       <OphButton
         disabled={isPending}
-        startIcon={isPending ? <SpinnerIcon /> : <FileUploadOutlined />}
+        startIcon={<FileUploadOutlined />}
         onClick={() => {
           // Avataan tiedostovalitsin kohdistamalla input-kenttään
           inputRef?.current?.click();

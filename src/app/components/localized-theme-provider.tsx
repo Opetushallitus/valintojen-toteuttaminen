@@ -14,7 +14,8 @@ export const LocalizedThemeProvider = ({
     <OphNextJsThemeProvider
       lang={language}
       variant="oph"
-      overrides={THEME_OVERRIDES}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      overrides={THEME_OVERRIDES as any}
     >
       {children}
     </OphNextJsThemeProvider>

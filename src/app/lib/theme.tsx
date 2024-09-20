@@ -49,5 +49,52 @@ export const THEME_OVERRIDES = {
         indeterminateIcon: <IndeterminateCheckBoxOutlined />,
       },
     },
+    MuiDialog: {
+      defaultProps: {
+        fullWidth: true,
+      },
+      styleOverrides: {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        paper: ({ theme }: any) => ({
+          minHeight: '200px',
+          borderTop: `4px solid ${ophColors.cyan1}`,
+          borderRadius: '2px',
+          boxShadow: '2px 2px 8px 0px rgba(0,0,0,0.17)',
+          padding: theme.spacing(3),
+        }),
+      },
+    },
+    MuiDialogTitle: {
+      defaultProps: {
+        variant: 'h2',
+      },
+      styleOverrides: {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        root: ({ theme }: any) => ({
+          padding: theme.spacing(0, 0, 2, 0),
+        }),
+      },
+    },
+    MuiDialogContent: {
+      styleOverrides: {
+        root: {
+          padding: 0,
+        },
+      },
+    },
+    MuiDialogActions: {
+      styleOverrides: {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        root: ({ theme }: any) => ({
+          padding: theme.spacing(2, 0, 0, 0),
+        }),
+      },
+    },
+    MuiCircularProgress: {
+      defaultProps: {
+        size: 50,
+        thickness: 4.5,
+      },
+    },
   },
 };

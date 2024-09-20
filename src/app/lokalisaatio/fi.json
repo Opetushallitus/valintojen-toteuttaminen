@@ -178,7 +178,8 @@
     "ei-tuloksia": "Ei tuloksia. Joko hakukohteessa ei ole valintakokeita tai laskentaa ei ole suoritettu.",
     "virhe-vie-taulukkolaskentaan": "Pistetietojen vieminen taulukkolaskentaan epäonnistui!",
     "virhe-tuo-taulukkolaskennasta": "Pistetietojen tuominen taulukkolaskennasta epäonnistui!",
-    "tuo-taulukkolaskennasta-onnistui": "Pistetietojen tuominen taulukkolaskennasta onnistui!"
+    "tuo-taulukkolaskennasta-onnistui": "Pistetietojen tuominen taulukkolaskennasta onnistui!",
+    "tuodaan-pistetietoja-taulukkolaskennasta": "Tuodaan pistetietoja taulukkolaskennasta"
   },
   "harkinnanvaraiset": {
     "otsikko": "Harkinnanvaraiset"
