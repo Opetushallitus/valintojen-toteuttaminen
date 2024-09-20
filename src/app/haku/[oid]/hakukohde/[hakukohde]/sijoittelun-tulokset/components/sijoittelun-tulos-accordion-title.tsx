@@ -1,19 +1,29 @@
 'use client';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { AccordionBoxTitle } from '@/app/components/accordion-box-title';
-import { SijoitteluajonValintatapajono } from '@/app/lib/types/sijoittelu-types';
+import { SijoitteluajonValintatapajonoEnriched } from '@/app/lib/types/sijoittelu-types';
 
 export const SijoittelunTulosAccordionTitle = ({
   valintatapajono,
 }: {
-  valintatapajono: SijoitteluajonValintatapajono;
+  valintatapajono: SijoitteluajonValintatapajonoEnriched;
 }) => {
   const { t } = useTranslations();
 
   return (
     <AccordionBoxTitle
-      title={`${t('sijoittelun-tulos.taulukko.otsikko')}: ${valintatapajono.nimi}`}
-      subTitle={t('sijoittelun-tulos.taulukko.alaotsikko', {})}
+      title={valintatapajono.nimi}
+      subTitle={t('sijoittelun-tulokset.taulukko.alaotsikko', {
+        aloituspaikat: valintatapajono.aloituspaikat,
+        sijoittelunAloituspaikat: 0, //TODO
+        tasasijasaanto: t(
+          'sijoittelu.tasasijasaanto.' + valintatapajono.tasasijasaanto,
+        ),
+        varasijataytto: valintatapajono.varasijataytto
+          ? t('sijoittelu.varasijataytto')
+          : t('sijoittelu.ei-varasijatayttoa'),
+        prioriteetti: valintatapajono.prioriteetti,
+      })}
     />
   );
 };

@@ -48,6 +48,8 @@ export type SijoittelunHakemusEnriched = {
   hyvaksyttyHakijaryhmista: string[];
   varasijanNumero: number;
   hakijanNimi: string;
+  jonosija: number;
+  tasasijaJonosija: number;
 };
 
 export type SijoitteluajonValintatapajono = {
@@ -64,6 +66,9 @@ export type SijoitteluajonValintatapajonoEnriched = {
   hakemukset: SijoittelunHakemusEnriched[];
   prioriteetti: number;
   accepted?: string;
+  aloituspaikat: number;
+  tasasijasaanto: 'YLITAYTTO'; //TODO muut
+  varasijataytto: boolean;
 };
 
 export type SijoittelunHakijaryhmat = {

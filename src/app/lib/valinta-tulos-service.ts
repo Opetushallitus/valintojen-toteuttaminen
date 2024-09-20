@@ -7,6 +7,7 @@ import { client } from './http-client';
 import {
   SijoitteluajonTulokset,
   SijoitteluajonTuloksetEnriched,
+  SijoitteluajonValintatapajonoEnriched,
   SijoittelunHakemus,
   SijoittelunHakemusEnriched,
   SijoittelunTila,
@@ -57,6 +58,9 @@ type SijoitteluajonTuloksetResponseData = {
     oid: string;
     nimi: string;
     prioriteetti: number;
+    aloituspaikat: number;
+    tasasijasaanto: 'YLITAYTTO'; //TODO muut
+    eiVarasijatayttoa: boolean;
     hakemukset: [
       {
         hakijaOid: string;
@@ -66,6 +70,8 @@ type SijoitteluajonTuloksetResponseData = {
         valintatapajonoOid: string;
         hyvaksyttyHakijaryhmista: string[];
         varasijanNumero: number;
+        jonosija: number;
+        tasasijaJonosija: number;
       },
     ];
   }>;
@@ -86,32 +92,38 @@ export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
   );
   const hakemukset = await getHakemukset({ hakuOid, hakukohdeOid });
   const hakemuksetIndexed = indexBy(hakemukset, (h) => h.hakemusOid);
-  const sijoitteluajonTulokset = data.valintatapajonot.map((jono) => {
-    const hakemukset: Array<SijoittelunHakemusEnriched> = jono.hakemukset.map(
-      (h) => {
-        return {
-          hakijaOid: h.hakijaOid,
-          hakemusOid: h.hakemusOid,
-          hakijanNimi:
-            hakemuksetIndexed && hakemuksetIndexed[h.hakemusOid]?.hakijanNimi,
-          pisteet: h.pisteet,
-          tila: h.tila,
-          valintatapajonoOid: h.valintatapajonoOid,
-          hyvaksyttyHakijaryhmista: h.hyvaksyttyHakijaryhmista,
-          varasijanNumero: h.varasijanNumero,
-        };
-      },
-    );
-    return {
-      oid: jono.oid,
-      nimi: jono.nimi,
-      hakemukset,
-      prioriteetti: jono.prioriteetti,
-      accepted: data.valintaesitys?.find(
-        (e) => e.valintatapajonoOid === jono.oid,
-      )?.hyvaksytty,
-    };
-  });
+  const sijoitteluajonTulokset: Array<SijoitteluajonValintatapajonoEnriched> =
+    data.valintatapajonot.map((jono) => {
+      const hakemukset: Array<SijoittelunHakemusEnriched> = jono.hakemukset.map(
+        (h) => {
+          return {
+            hakijaOid: h.hakijaOid,
+            hakemusOid: h.hakemusOid,
+            hakijanNimi:
+              hakemuksetIndexed && hakemuksetIndexed[h.hakemusOid]?.hakijanNimi,
+            pisteet: h.pisteet,
+            tila: h.tila,
+            valintatapajonoOid: h.valintatapajonoOid,
+            hyvaksyttyHakijaryhmista: h.hyvaksyttyHakijaryhmista,
+            varasijanNumero: h.varasijanNumero,
+            jonosija: h.jonosija,
+            tasasijaJonosija: h.tasasijaJonosija,
+          };
+        },
+      );
+      return {
+        oid: jono.oid,
+        nimi: jono.nimi,
+        hakemukset,
+        prioriteetti: jono.prioriteetti,
+        accepted: data.valintaesitys?.find(
+          (e) => e.valintatapajonoOid === jono.oid,
+        )?.hyvaksytty,
+        varasijataytto: !jono.eiVarasijatayttoa,
+        aloituspaikat: jono.aloituspaikat,
+        tasasijasaanto: jono.tasasijasaanto,
+      };
+    });
   const hakijaryhmat = data.hakijaryhmat.map((ryhma) => {
     return { oid: ryhma.oid, kiintio: ryhma.kiintio };
   });
