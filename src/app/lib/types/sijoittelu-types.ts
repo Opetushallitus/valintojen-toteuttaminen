@@ -50,6 +50,8 @@ export type SijoittelunHakemusEnriched = {
   hakijanNimi: string;
   jonosija: number;
   tasasijaJonosija: number;
+  hakutoive: number;
+  sija?: number;
 };
 
 export type SijoitteluajonValintatapajono = {

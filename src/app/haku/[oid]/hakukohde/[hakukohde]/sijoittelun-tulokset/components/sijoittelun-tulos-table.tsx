@@ -1,10 +1,13 @@
 'use client';
 import { ophColors } from '@opetushallitus/oph-design-system';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { useMemo } from 'react';
-import { hakijaColumn } from '@/app/components/table/table-columns';
+import {
+  hakijaColumn,
+  makeCountColumn,
+} from '@/app/components/table/table-columns';
 import { ListTable } from '@/app/components/table/list-table';
 import { SijoittelunHakemusEnriched } from '@/app/lib/types/sijoittelu-types';
+import { useMemo } from 'react';
 
 const stickyColumnStyle: React.CSSProperties = {
   minWidth: '260px',
@@ -14,6 +17,8 @@ const stickyColumnStyle: React.CSSProperties = {
   zIndex: 1,
   backgroundColor: ophColors.white,
 };
+
+const TRANSLATIONS_PREFIX = 'sijoittelun-tulokset.taulukko';
 
 export const SijoittelunTulosTable = ({
   hakemukset,
@@ -31,8 +36,24 @@ export const SijoittelunTulosTable = ({
       style: stickyColumnStyle,
       title: t('hakeneet.taulukko.hakija'),
     });
-
-    return [stickyHakijaColumn];
+    return [
+      makeCountColumn<SijoittelunHakemusEnriched>({
+        title: `${TRANSLATIONS_PREFIX}.jonosija`,
+        key: 'jonosija',
+        amountProp: 'jonosija',
+      }),
+      stickyHakijaColumn,
+      makeCountColumn<SijoittelunHakemusEnriched>({
+        title: `${TRANSLATIONS_PREFIX}.hakutoive`,
+        key: 'hakutoive',
+        amountProp: 'hakutoive',
+      }),
+      makeCountColumn<SijoittelunHakemusEnriched>({
+        title: `${TRANSLATIONS_PREFIX}.pisteet`,
+        key: 'pisteet',
+        amountProp: 'pisteet',
+      }),
+    ];
   }, [t]);
 
   return (

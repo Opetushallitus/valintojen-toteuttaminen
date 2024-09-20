@@ -72,6 +72,7 @@ type SijoitteluajonTuloksetResponseData = {
         varasijanNumero: number;
         jonosija: number;
         tasasijaJonosija: number;
+        prioriteetti: number;
       },
     ];
   }>;
@@ -108,9 +109,24 @@ export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
             varasijanNumero: h.varasijanNumero,
             jonosija: h.jonosija,
             tasasijaJonosija: h.tasasijaJonosija,
+            hakutoive: h.prioriteetti,
           };
         },
       );
+      hakemukset.sort((a, b) =>
+        a.jonosija === b.jonosija
+          ? a.tasasijaJonosija - b.tasasijaJonosija
+          : a.jonosija - b.jonosija,
+      );
+      hakemukset
+        .filter(function (hakemus) {
+          return (
+            hakemus.tila === 'HYVAKSYTTY' ||
+            hakemus.tila === 'VARASIJALTA_HYVAKSYTTY' ||
+            hakemus.tila === 'VARALLA'
+          );
+        })
+        .forEach((hakemus, i) => (hakemus.sija = i + 1));
       return {
         oid: jono.oid,
         nimi: jono.nimi,

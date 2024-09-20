@@ -223,7 +223,15 @@
   },
   "sijoittelun-tulokset": {
     "taulukko": {
-      "alaotsikko": "(Aloituspaikat: {{aloituspaikat}} | Sijoittelun aloituspaikat: {{sijoittelunAloituspaikat}} | Tasasijasääntö: {{tasasijasaanto}} | {{varasijataytto}} | Prioriteetti: {{prioriteetti}}"
+      "alaotsikko": "(Aloituspaikat: {{aloituspaikat}} | Sijoittelun aloituspaikat: {{sijoittelunAloituspaikat}} | Tasasijasääntö: {{tasasijasaanto}} | {{varasijataytto}} | Prioriteetti: {{prioriteetti}}",
+      "jonosija": "Jonosija",
+      "hakutoive": "Hakutoive",
+      "pisteet": "Pisteet",
+      "tila": "Sijoittelun tila",
+      "vastaanottotieto": "Vastaanottotieto",
+      "ilmoittautumistieto": "Ilmoittautumistieto",
+      "maksun-tila": "Maksun tila",
+      "toiminnot": "Toiminnot"
     }
   },
   "sijoittelu": {
