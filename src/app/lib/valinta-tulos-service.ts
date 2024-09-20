@@ -66,6 +66,21 @@ type SijoitteluajonTuloksetResponseData = {
     ];
   }>;
   hakijaryhmat: Array<{ oid: string; kiintio: number }>;
+  valintaesitys?: Array<{
+    hakukohdeOid: string;
+    valintatapajonoOid: string;
+    hyvaksytty: string;
+  }>;
+};
+
+export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
+  hakuOid: string,
+  hakukohdeOid: string,
+): Promise<SijoitteluajonTulokset> => {
+  const { data } = await client.get<SijoitteluajonTuloksetResponseData>(
+    `${configuration.valintaTulosServiceUrl}sijoitteluntulos/${hakuOid}/sijoitteluajo/latest/hakukohde/${hakukohdeOid}`,
+  );
+  return getSijoitteluntuloksetFromResponse(data);
 };
 
 export const getLatestSijoitteluAjonTulokset = async (
@@ -75,6 +90,12 @@ export const getLatestSijoitteluAjonTulokset = async (
   const { data } = await client.get<SijoitteluajonTuloksetResponseData>(
     `${configuration.valintaTulosServiceUrl}sijoittelu/${hakuOid}/sijoitteluajo/latest/hakukohde/${hakukohdeOid}`,
   );
+  return getSijoitteluntuloksetFromResponse(data);
+};
+
+const getSijoitteluntuloksetFromResponse = (
+  data: SijoitteluajonTuloksetResponseData,
+): SijoitteluajonTulokset => {
   const sijoitteluajonTulokset = data.valintatapajonot.map((jono) => {
     const hakemukset: Array<SijoittelunHakemus> = jono.hakemukset.map((h) => {
       return {
@@ -92,6 +113,9 @@ export const getLatestSijoitteluAjonTulokset = async (
       nimi: jono.nimi,
       hakemukset,
       prioriteetti: jono.prioriteetti,
+      accepted: data.valintaesitys?.find(
+        (e) => e.valintatapajonoOid === jono.oid,
+      )?.hyvaksytty,
     };
   });
   const hakijaryhmat = data.hakijaryhmat.map((ryhma) => {

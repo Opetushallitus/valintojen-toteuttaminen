@@ -43,6 +43,7 @@ export type SijoitteluajonValintatapajono = {
   nimi: string;
   hakemukset: SijoittelunHakemus[];
   prioriteetti: number;
+  accepted?: string | null;
 };
 
 export type SijoittelunHakijaryhmat = {
