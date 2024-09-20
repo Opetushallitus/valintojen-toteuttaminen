@@ -15,6 +15,7 @@ const LINK_TO_APPLICATION = 'lomake-editori/applications/search?term=';
 
 const buildLinkToApplication = (hakemusOid: string) =>
   LINK_TO_APPLICATION + hakemusOid;
+
 export const HakeneetTable = ({
   hakeneet,
   setSort,

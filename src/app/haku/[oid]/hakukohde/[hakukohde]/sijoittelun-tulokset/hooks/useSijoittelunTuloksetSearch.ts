@@ -10,8 +10,8 @@ import {
 } from '@/app/components/table/table-utils';
 import { HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY } from '@/app/lib/constants';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { HakijaryhmanHakija } from '@/app/lib/types/laskenta-types';
 import {
+  SijoittelunHakemusEnriched,
   SijoittelunTila,
   SijoittelunTilaOrdinals,
 } from '@/app/lib/types/sijoittelu-types';
@@ -77,8 +77,8 @@ export const useSijoittelunTulosSearchParams = (
 };
 
 export const useSijoittelunTulosSearch = (
-  hakijaryhmaOid: string,
-  hakijaryhmanHakijat: HakijaryhmanHakija[],
+  valintatapajonoOid: string,
+  hakemukset: SijoittelunHakemusEnriched[],
 ) => {
   const { translateEntity } = useTranslations();
 
@@ -91,25 +91,24 @@ export const useSijoittelunTulosSearch = (
     sort,
     setSort,
     sijoittelunTila,
-  } = useSijoittelunTulosSearchParams(hakijaryhmaOid);
+  } = useSijoittelunTulosSearchParams(valintatapajonoOid);
 
   const results = useMemo(() => {
     const { orderBy, direction } = getSortParts(sort);
 
-    const filtered = hakijaryhmanHakijat.filter(
-      (hakija) =>
-        (sijoittelunTila.length < 1 ||
-          hakija.sijoittelunTila === sijoittelunTila) &&
-        hakemusFilter(hakija, searchPhrase),
+    const filtered = hakemukset.filter(
+      (hakemus) =>
+        (sijoittelunTila.length < 1 || hakemus.tila === sijoittelunTila) &&
+        hakemusFilter(hakemus, searchPhrase),
     );
 
     const sortHakijat = (orderBy: string, direction: SortDirection) => {
       if (orderBy === 'sijoittelunTila') {
         const asc = direction === 'asc';
         return filtered.sort((a, b) => {
-          if (a.sijoittelunTila && b.sijoittelunTila) {
-            const aOrdinal = SijoittelunTilaOrdinals[a.sijoittelunTila];
-            const bOrdinal = SijoittelunTilaOrdinals[b.sijoittelunTila];
+          if (a.tila && b.tila) {
+            const aOrdinal = SijoittelunTilaOrdinals[a.tila];
+            const bOrdinal = SijoittelunTilaOrdinals[b.tila];
             if (
               aOrdinal === bOrdinal &&
               aOrdinal === SijoittelunTilaOrdinals[SijoittelunTila.VARALLA] &&
@@ -136,28 +135,14 @@ export const useSijoittelunTulosSearch = (
                   : 1
                 : 0;
           }
-          return a.sijoittelunTila
-            ? asc
-              ? 1
-              : -1
-            : b.sijoittelunTila
-              ? asc
-                ? -1
-                : 1
-              : 0;
+          return a.tila ? (asc ? 1 : -1) : b.tila ? (asc ? -1 : 1) : 0;
         });
       }
       return filtered.sort(byProp(orderBy, direction, translateEntity));
     };
 
     return orderBy && direction ? sortHakijat(orderBy, direction) : filtered;
-  }, [
-    hakijaryhmanHakijat,
-    searchPhrase,
-    sort,
-    translateEntity,
-    sijoittelunTila,
-  ]);
+  }, [hakemukset, searchPhrase, sort, translateEntity, sijoittelunTila]);
 
   const pageResults = useMemo(() => {
     const start = pageSize * (page - 1);

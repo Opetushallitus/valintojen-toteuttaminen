@@ -1,10 +1,14 @@
 'use client';
 
+import { indexBy } from 'remeda';
+import { getHakemukset } from './ataru';
 import { configuration } from './configuration';
 import { client } from './http-client';
 import {
   SijoitteluajonTulokset,
+  SijoitteluajonTuloksetEnriched,
   SijoittelunHakemus,
+  SijoittelunHakemusEnriched,
   SijoittelunTila,
   ValintatapajonoTulos,
 } from './types/sijoittelu-types';
@@ -76,11 +80,42 @@ type SijoitteluajonTuloksetResponseData = {
 export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
   hakuOid: string,
   hakukohdeOid: string,
-): Promise<SijoitteluajonTulokset> => {
+): Promise<SijoitteluajonTuloksetEnriched> => {
   const { data } = await client.get<SijoitteluajonTuloksetResponseData>(
     `${configuration.valintaTulosServiceUrl}sijoitteluntulos/${hakuOid}/sijoitteluajo/latest/hakukohde/${hakukohdeOid}`,
   );
-  return getSijoitteluntuloksetFromResponse(data);
+  const hakemukset = await getHakemukset({ hakuOid, hakukohdeOid });
+  const hakemuksetIndexed = indexBy(hakemukset, (h) => h.hakemusOid);
+  const sijoitteluajonTulokset = data.valintatapajonot.map((jono) => {
+    const hakemukset: Array<SijoittelunHakemusEnriched> = jono.hakemukset.map(
+      (h) => {
+        return {
+          hakijaOid: h.hakijaOid,
+          hakemusOid: h.hakemusOid,
+          hakijanNimi:
+            hakemuksetIndexed && hakemuksetIndexed[h.hakemusOid]?.hakijanNimi,
+          pisteet: h.pisteet,
+          tila: h.tila,
+          valintatapajonoOid: h.valintatapajonoOid,
+          hyvaksyttyHakijaryhmista: h.hyvaksyttyHakijaryhmista,
+          varasijanNumero: h.varasijanNumero,
+        };
+      },
+    );
+    return {
+      oid: jono.oid,
+      nimi: jono.nimi,
+      hakemukset,
+      prioriteetti: jono.prioriteetti,
+      accepted: data.valintaesitys?.find(
+        (e) => e.valintatapajonoOid === jono.oid,
+      )?.hyvaksytty,
+    };
+  });
+  const hakijaryhmat = data.hakijaryhmat.map((ryhma) => {
+    return { oid: ryhma.oid, kiintio: ryhma.kiintio };
+  });
+  return { valintatapajonot: sijoitteluajonTulokset, hakijaryhmat };
 };
 
 export const getLatestSijoitteluAjonTulokset = async (
@@ -90,12 +125,7 @@ export const getLatestSijoitteluAjonTulokset = async (
   const { data } = await client.get<SijoitteluajonTuloksetResponseData>(
     `${configuration.valintaTulosServiceUrl}sijoittelu/${hakuOid}/sijoitteluajo/latest/hakukohde/${hakukohdeOid}`,
   );
-  return getSijoitteluntuloksetFromResponse(data);
-};
 
-const getSijoitteluntuloksetFromResponse = (
-  data: SijoitteluajonTuloksetResponseData,
-): SijoitteluajonTulokset => {
   const sijoitteluajonTulokset = data.valintatapajonot.map((jono) => {
     const hakemukset: Array<SijoittelunHakemus> = jono.hakemukset.map((h) => {
       return {
@@ -113,9 +143,6 @@ const getSijoitteluntuloksetFromResponse = (
       nimi: jono.nimi,
       hakemukset,
       prioriteetti: jono.prioriteetti,
-      accepted: data.valintaesitys?.find(
-        (e) => e.valintatapajonoOid === jono.oid,
-      )?.hyvaksytty,
     };
   });
   const hakijaryhmat = data.hakijaryhmat.map((ryhma) => {

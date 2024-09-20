@@ -36,6 +36,18 @@ export type SijoittelunHakemus = {
   valintatapajonoOid: string;
   hyvaksyttyHakijaryhmista: string[];
   varasijanNumero: number;
+  hakijanNimi?: string;
+};
+
+export type SijoittelunHakemusEnriched = {
+  hakijaOid: string;
+  hakemusOid: string;
+  pisteet: number;
+  tila: SijoittelunTila;
+  valintatapajonoOid: string;
+  hyvaksyttyHakijaryhmista: string[];
+  varasijanNumero: number;
+  hakijanNimi: string;
 };
 
 export type SijoitteluajonValintatapajono = {
@@ -46,6 +58,14 @@ export type SijoitteluajonValintatapajono = {
   accepted?: string | null;
 };
 
+export type SijoitteluajonValintatapajonoEnriched = {
+  oid: string;
+  nimi: string;
+  hakemukset: SijoittelunHakemusEnriched[];
+  prioriteetti: number;
+  accepted?: string;
+};
+
 export type SijoittelunHakijaryhmat = {
   oid: string;
   kiintio: number;
@@ -53,6 +73,11 @@ export type SijoittelunHakijaryhmat = {
 
 export type SijoitteluajonTulokset = {
   valintatapajonot: SijoitteluajonValintatapajono[];
+  hakijaryhmat: SijoittelunHakijaryhmat[];
+};
+
+export type SijoitteluajonTuloksetEnriched = {
+  valintatapajonot: SijoitteluajonValintatapajonoEnriched[];
   hakijaryhmat: SijoittelunHakijaryhmat[];
 };
 
