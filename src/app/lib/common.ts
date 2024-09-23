@@ -16,9 +16,12 @@ export class FetchError extends CustomError {
   }
 }
 
-export class ApiError<D> extends CustomError {
+export class OphApiError<D> extends CustomError {
   response: HttpClientResponse<D>;
-  constructor(response: HttpClientResponse<D>, message: string = 'API error') {
+  constructor(
+    response: HttpClientResponse<D>,
+    message: string = 'OPH API error',
+  ) {
     super(message);
     this.response = response;
   }

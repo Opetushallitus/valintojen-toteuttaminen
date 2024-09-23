@@ -30,7 +30,8 @@
     "vie-taulukkolaskentaan": "Vie taulukkolaskentaan",
     "poista-valinta": "Poista valinta",
     "valitse-kaikki": "Valitse kaikki",
-    "tuo-taulukkolaskennasta": "Tuo taulukkolaskennasta"
+    "tuo-taulukkolaskennasta": "Tuo taulukkolaskennasta",
+    "sulje": "Sulje"
   },
   "lomake": {
     "jatka": "Jatka",
@@ -179,7 +180,11 @@
     "virhe-vie-taulukkolaskentaan": "Pistetietojen vieminen taulukkolaskentaan epäonnistui!",
     "virhe-tuo-taulukkolaskennasta": "Pistetietojen tuominen taulukkolaskennasta epäonnistui!",
     "tuo-taulukkolaskennasta-onnistui": "Pistetietojen tuominen taulukkolaskennasta onnistui!",
-    "tuodaan-pistetietoja-taulukkolaskennasta": "Tuodaan pistetietoja taulukkolaskennasta"
+    "tuodaan-pistetietoja-taulukkolaskennasta": "Tuodaan pistetietoja taulukkolaskennasta",
+    "tuonti-tulos-taulukko": {
+      "virhe": "Virhe",
+      "hakemus-oid": "Hakemuksen tekninen tunniste (OID)"
+    }
   },
   "harkinnanvaraiset": {
     "otsikko": "Harkinnanvaraiset"

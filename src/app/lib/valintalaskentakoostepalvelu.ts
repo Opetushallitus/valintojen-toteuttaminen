@@ -22,7 +22,7 @@ import {
   pipe,
   prop,
 } from 'remeda';
-import { ApiError, EMPTY_ARRAY, EMPTY_OBJECT } from './common';
+import { OphApiError, EMPTY_ARRAY, EMPTY_OBJECT } from './common';
 import { getHakemukset, getHakijat } from './ataru';
 import {
   getValintakokeet,
@@ -471,7 +471,7 @@ export const putPistesyottoExcel = async ({
   const { data } = res;
 
   if (Array.isArray(data)) {
-    throw new ApiError(
+    throw new OphApiError(
       res,
       'Kaikkien pistetietojen tuominen taulukkolaskennasta ei onnistunut',
     );
