@@ -222,6 +222,7 @@
     "virhe-vie-kaikki-taulukkolaskentaan": "Taulukkolaskentaan viemisessä tapahtui virhe!"
   },
   "sijoittelun-tulokset": {
+    "otsikko": "Sijoittelun tulokset",
     "taulukko": {
       "alaotsikko": "(Aloituspaikat: {{aloituspaikat}} | Sijoittelun aloituspaikat: {{sijoittelunAloituspaikat}} | Tasasijasääntö: {{tasasijasaanto}} | {{varasijataytto}} | Prioriteetti: {{prioriteetti}}",
       "jonosija": "Jonosija",

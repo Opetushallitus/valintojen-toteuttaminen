@@ -5,13 +5,8 @@ import { InputAdornment, OutlinedInput } from '@mui/material';
 import { ChangeEvent } from 'react';
 import { useSijoittelunTulosSearchParams } from '../hooks/useSijoittelunTuloksetSearch';
 
-export const SijoittelunTulosSearch = ({
-  valintatapajonoOid,
-}: {
-  valintatapajonoOid: string;
-}) => {
-  const { searchPhrase, setSearchPhrase } =
-    useSijoittelunTulosSearchParams(valintatapajonoOid);
+export const SijoittelunTulosSearch = () => {
+  const { searchPhrase, setSearchPhrase } = useSijoittelunTulosSearchParams();
   const { t } = useTranslations();
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchPhrase(e.target.value);

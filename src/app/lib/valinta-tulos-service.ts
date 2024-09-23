@@ -77,26 +77,57 @@ type SijoitteluajonTuloksetResponseData = {
     ];
   }>;
   hakijaryhmat: Array<{ oid: string; kiintio: number }>;
-  valintaesitys?: Array<{
+};
+
+type SijoitteluajonTuloksetWithValintaEsitysResponseData = {
+  valintatulokset: Array<{
+    valintatapajonoOid: string;
+    hakemusOid: string;
+    henkiloOid: string;
+    pisteet: number;
+    valinnantila: 'VARALLA' | 'HYLATTY' | 'HYVAKSYTTY';
+    ehdollisestiHyvaksyttavissa: boolean;
+    julkaistavissa: boolean;
+    hyvaksyttyVarasijalta: boolean;
+    hyvaksyPeruuntunut: boolean;
+    hyvaksyttyHakijaryhmista: string[];
+    varasijanNumero: number;
+    jonosija: number;
+    tasasijaJonosija: number;
+    prioriteetti: number;
+    vastaanottotila: 'KESKEN';
+    ilmoittautumistila: 'EI_TEHTY';
+    //valinnantilanKuvaauksenTekstiFI |SV | EN
+  }>;
+  hakijaryhmat: Array<{ oid: string; kiintio: number }>;
+  valintaesitys: Array<{
     hakukohdeOid: string;
     valintatapajonoOid: string;
     hyvaksytty: string;
   }>;
+  lastModified: string;
+  sijoittelunTulokset: Omit<SijoitteluajonTuloksetResponseData, 'hakijaryhmat'>;
 };
 
 export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
   hakuOid: string,
   hakukohdeOid: string,
 ): Promise<SijoitteluajonTuloksetEnriched> => {
-  const { data } = await client.get<SijoitteluajonTuloksetResponseData>(
-    `${configuration.valintaTulosServiceUrl}sijoitteluntulos/${hakuOid}/sijoitteluajo/latest/hakukohde/${hakukohdeOid}`,
-  );
+  const { data } =
+    await client.get<SijoitteluajonTuloksetWithValintaEsitysResponseData>(
+      `${configuration.valintaTulosServiceUrl}sijoitteluntulos/${hakuOid}/sijoitteluajo/latest/hakukohde/${hakukohdeOid}`,
+    );
   const hakemukset = await getHakemukset({ hakuOid, hakukohdeOid });
   const hakemuksetIndexed = indexBy(hakemukset, (h) => h.hakemusOid);
+  const valintatuloksetIndexed = indexBy(
+    data.valintatulokset,
+    (vt) => vt.hakemusOid,
+  );
   const sijoitteluajonTulokset: Array<SijoitteluajonValintatapajonoEnriched> =
-    data.valintatapajonot.map((jono) => {
+    data.sijoittelunTulokset.valintatapajonot.map((jono) => {
       const hakemukset: Array<SijoittelunHakemusEnriched> = jono.hakemukset.map(
         (h) => {
+          const valintatulos = valintatuloksetIndexed[h.hakemusOid];
           return {
             hakijaOid: h.hakijaOid,
             hakemusOid: h.hakemusOid,
@@ -110,6 +141,10 @@ export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
             jonosija: h.jonosija,
             tasasijaJonosija: h.tasasijaJonosija,
             hakutoive: h.prioriteetti,
+            ilmoittautumisTila:
+              valintatuloksetIndexed[h.hakemusOid].ilmoittautumistila,
+            julkaistavissa: valintatulos.julkaistavissa,
+            vastaanottotila: valintatulos.vastaanottotila,
           };
         },
       );
@@ -140,10 +175,10 @@ export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
         tasasijasaanto: jono.tasasijasaanto,
       };
     });
-  const hakijaryhmat = data.hakijaryhmat.map((ryhma) => {
-    return { oid: ryhma.oid, kiintio: ryhma.kiintio };
-  });
-  return { valintatapajonot: sijoitteluajonTulokset, hakijaryhmat };
+  return {
+    valintatapajonot: sijoitteluajonTulokset,
+    lastModified: data.lastModified,
+  };
 };
 
 export const getLatestSijoitteluAjonTulokset = async (

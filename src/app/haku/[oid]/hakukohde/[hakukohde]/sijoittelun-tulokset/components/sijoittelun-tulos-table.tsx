@@ -3,6 +3,7 @@ import { ophColors } from '@opetushallitus/oph-design-system';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import {
   hakijaColumn,
+  makeColumnWithCustomRender,
   makeCountColumn,
 } from '@/app/components/table/table-columns';
 import { ListTable } from '@/app/components/table/list-table';
@@ -38,20 +39,27 @@ export const SijoittelunTulosTable = ({
     });
     return [
       makeCountColumn<SijoittelunHakemusEnriched>({
-        title: `${TRANSLATIONS_PREFIX}.jonosija`,
+        title: t(`${TRANSLATIONS_PREFIX}.jonosija`),
         key: 'jonosija',
         amountProp: 'jonosija',
       }),
       stickyHakijaColumn,
       makeCountColumn<SijoittelunHakemusEnriched>({
-        title: `${TRANSLATIONS_PREFIX}.hakutoive`,
+        title: t(`${TRANSLATIONS_PREFIX}.hakutoive`),
         key: 'hakutoive',
         amountProp: 'hakutoive',
       }),
       makeCountColumn<SijoittelunHakemusEnriched>({
-        title: `${TRANSLATIONS_PREFIX}.pisteet`,
+        title: t(`${TRANSLATIONS_PREFIX}.pisteet`),
         key: 'pisteet',
         amountProp: 'pisteet',
+      }),
+      makeColumnWithCustomRender<SijoittelunHakemusEnriched>({
+        title: t(`${TRANSLATIONS_PREFIX}.tila`),
+        key: 'sijoittelunTila',
+        renderFn: (props) => (
+          <span>{props.tila && <>{t(`sijoitteluntila.${props.tila}`)}</>}</span>
+        ),
       }),
     ];
   }, [t]);

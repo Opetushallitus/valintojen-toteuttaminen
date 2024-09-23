@@ -8,7 +8,7 @@ import { SijoitteluajonValintatapajonoEnriched } from '@/app/lib/types/sijoittel
 import { SijoittelunTulosAccordionTitle } from './sijoittelun-tulos-accordion-title';
 import { SijoittelunTulosTable } from './sijoittelun-tulos-table';
 
-export const HakijaryhmaContent = ({
+export const SijoittelunTulosContent = ({
   valintatapajono,
 }: {
   valintatapajono: SijoitteluajonValintatapajonoEnriched;
@@ -31,7 +31,7 @@ export const HakijaryhmaContent = ({
         }
       >
         <TablePaginationWrapper
-          label={`${t('yleinen.sivutus')} ${t('hakijaryhmat.taulukko.otsikko')}: ${valintatapajono.nimi}`}
+          label={`${t('yleinen.sivutus')} ${valintatapajono.nimi}`}
           totalCount={results?.length ?? 0}
           pageSize={pageSize}
           setPageNumber={setPage}

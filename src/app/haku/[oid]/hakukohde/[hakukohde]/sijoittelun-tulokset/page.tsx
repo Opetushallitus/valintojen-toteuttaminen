@@ -10,6 +10,8 @@ import { isEmpty } from '@/app/lib/common';
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
 import { NoResults } from '@/app/components/no-results';
 import { useSijoittelunTulosSearchParams } from './hooks/useSijoittelunTuloksetSearch';
+import { SijoittelunTulosContent } from './components/sijoittelun-tulos-content';
+import { SijoittelunTulosControls } from './components/sijoittelun-tulos-controls';
 
 type SijoitteluContentParams = {
   hakuOid: string;
@@ -71,11 +73,13 @@ const SijoitteluContent = ({
             alignItems: 'flex-end',
             gap: 2,
           }}
-        ></Box>
+        >
+          <SijoittelunTulosControls />
+        </Box>
         <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
       </Box>
       {tuloksetQuery.data.valintatapajonot.map((jono) => (
-        <Box key={`jono-${jono.oid}`}>{jono.nimi}</Box>
+        <SijoittelunTulosContent valintatapajono={jono} key={jono.oid} />
       ))}
     </Box>
   );

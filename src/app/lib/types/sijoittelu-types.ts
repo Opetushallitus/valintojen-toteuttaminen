@@ -52,6 +52,9 @@ export type SijoittelunHakemusEnriched = {
   tasasijaJonosija: number;
   hakutoive: number;
   sija?: number;
+  julkaistavissa: boolean;
+  ilmoittautumisTila: 'EI_TEHTY';
+  vastaanottotila: 'KESKEN';
 };
 
 export type SijoitteluajonValintatapajono = {
@@ -85,7 +88,7 @@ export type SijoitteluajonTulokset = {
 
 export type SijoitteluajonTuloksetEnriched = {
   valintatapajonot: SijoitteluajonValintatapajonoEnriched[];
-  hakijaryhmat: SijoittelunHakijaryhmat[];
+  lastModified: string;
 };
 
 export type HenkilonValintaTulos = {

@@ -6,13 +6,9 @@ import { LocalizedSelect } from '@/app/components/localized-select';
 import { useSijoittelunTulosSearchParams } from '../hooks/useSijoittelunTuloksetSearch';
 import { SijoittelunTulosSearch } from './sijoittelun-tulos-search';
 
-export const SijoittelunTulosControls = ({
-  valintatapajonoOid,
-}: {
-  valintatapajonoOid: string;
-}) => {
+export const SijoittelunTulosControls = () => {
   const { sijoittelunTila, setSijoittelunTila } =
-    useSijoittelunTulosSearchParams(valintatapajonoOid);
+    useSijoittelunTulosSearchParams();
 
   const { t } = useTranslations();
 
@@ -32,7 +28,7 @@ export const SijoittelunTulosControls = ({
         columnGap: 2,
       }}
     >
-      <SijoittelunTulosSearch valintatapajonoOid={valintatapajonoOid} />
+      <SijoittelunTulosSearch />
       <OphFormControl
         sx={{
           width: 'auto',
