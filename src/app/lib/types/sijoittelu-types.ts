@@ -28,6 +28,16 @@ export const SijoittelunTilaOrdinals: Record<string, number> = Object.keys(
   .map((key, index) => ({ [key]: index }))
   .reduce((a, b) => ({ ...a, ...b }));
 
+export enum VastaanottoTila {
+  KESKEN = 'KESKEN',
+  EHDOLLISESTI_VASTAANOTTANUT = 'EHDOLLISESTI_VASTAANOTTANUT', //kk only?
+  VASTAANOTTANUT_SITOVASTI = 'VASTAANOTTANUT_SITOVASTI',
+  EI_VASTAANOTETTU_MAARA_AIKANA = 'EI_VASTAANOTETTU_MAARA_AIKANA',
+  PERUNUT = 'PERUNUT',
+  PERUUTETTU = 'PERUUTETTU',
+  OTTANUT_VASTAAN_TOISEN_PAIKAN = 'OTTANUT_VASTAAN_TOISEN_PAIKAN', //kk only?
+}
+
 export type SijoittelunHakemus = {
   hakijaOid: string;
   hakemusOid: string;

@@ -223,6 +223,8 @@
   },
   "sijoittelun-tulokset": {
     "otsikko": "Sijoittelun tulokset",
+    "julkaistavissa": "Julkaistavissa",
+    "hakijalle-naytetaan": "Hakijalle näytetään:",
     "taulukko": {
       "alaotsikko": "(Aloituspaikat: {{aloituspaikat}} | Sijoittelun aloituspaikat: {{sijoittelunAloituspaikat}} | Tasasijasääntö: {{tasasijasaanto}} | {{varasijataytto}} | Prioriteetti: {{prioriteetti}}",
       "jonosija": "Jonosija",
@@ -259,6 +261,15 @@
     "PERUUNTUNUT": "PERUUNTUNUT",
     "PERUNUT": "PERUNUT",
     "PERUUTETTU": "PERUUTETTU"
+  },
+  "vastaanottotila": {
+    "KESKEN": "Kesken",
+    "EHDOLLISESTI_VASTAANOTTANUT": "Ehdollisesti vastaanottanut",
+    "VASTAANOTTANUT_SITOVASTI": "Vastaanottanut sitovasti",
+    "EI_VASTAANOTETTU_MAARA_AIKANA": "Ei vastaanotettu määräaikana",
+    "PERUNUT": "Perunut",
+    "PERUUTETTU": "Peruutettu",
+    "OTTANUT_VASTAAN_TOISEN_PAIKAN": "Ottanut vastaan toisen paikan"
   },
   "validaatio": {
     "numero": {
