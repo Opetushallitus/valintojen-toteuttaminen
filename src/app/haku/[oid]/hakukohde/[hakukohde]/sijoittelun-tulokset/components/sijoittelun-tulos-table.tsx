@@ -7,6 +7,7 @@ import {
 } from '@/app/components/table/table-columns';
 import { ListTable } from '@/app/components/table/list-table';
 import {
+  IlmoittautumisTila,
   SijoittelunHakemusEnriched,
   VastaanottoTila,
 } from '@/app/lib/types/sijoittelu-types';
@@ -58,6 +59,28 @@ const VastaanOttoCell = ({
   );
 };
 
+const IlmoittautumisCell = ({
+  hakemus,
+}: {
+  hakemus: SijoittelunHakemusEnriched;
+}) => {
+  const { t } = useTranslations();
+
+  const ilmoittautumistilaOptions = Object.values(IlmoittautumisTila).map(
+    (tila) => {
+      return { value: tila as string, label: t(`ilmoittautumistila.${tila}`) };
+    },
+  );
+
+  return (
+    <LocalizedSelect
+      value={hakemus.ilmoittautumisTila}
+      onChange={() => ''}
+      options={ilmoittautumistilaOptions}
+    />
+  );
+};
+
 export const SijoittelunTulosTable = ({
   hakemukset,
   setSort,
@@ -101,7 +124,7 @@ export const SijoittelunTulosTable = ({
       makeColumnWithCustomRender<SijoittelunHakemusEnriched>({
         title: t(`${TRANSLATIONS_PREFIX}.ilmoittautumistieto`),
         key: 'ilmoittautumisTila',
-        renderFn: (props) => <span>{props.ilmoittautumisTila}</span>,
+        renderFn: (props) => <IlmoittautumisCell hakemus={props} />,
       }),
       makeColumnWithCustomRender<SijoittelunHakemusEnriched>({
         title: t(`${TRANSLATIONS_PREFIX}.maksuntila`),

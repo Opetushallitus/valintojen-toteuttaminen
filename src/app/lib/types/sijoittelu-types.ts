@@ -38,6 +38,17 @@ export enum VastaanottoTila {
   OTTANUT_VASTAAN_TOISEN_PAIKAN = 'OTTANUT_VASTAAN_TOISEN_PAIKAN', //kk only?
 }
 
+export enum IlmoittautumisTila {
+  EI_TEHTY = 'EI_TEHTY',
+  LASNA_KOKO_LUKUVUOSI = 'LASNA_KOKO_LUKUVUOSI',
+  POISSA_KOKO_LUKUVUOSI = 'POISSA_KOKO_LUKUVUOSI',
+  EI_ILMOITTAUTUNUT = 'EI_ILMOITTAUTUNUT',
+  LASNA_SYKSY = 'LASNA_SYKSY',
+  POISSA_SYKSY = 'POISSA_SYKSY',
+  LASNA = 'LASNA',
+  POISSA = 'POISSA',
+}
+
 export type SijoittelunHakemus = {
   hakijaOid: string;
   hakemusOid: string;
@@ -63,8 +74,8 @@ export type SijoittelunHakemusEnriched = {
   hakutoive: number;
   sija?: number;
   julkaistavissa: boolean;
-  ilmoittautumisTila: 'EI_TEHTY';
-  vastaanottotila: 'KESKEN';
+  ilmoittautumisTila: IlmoittautumisTila;
+  vastaanottotila: VastaanottoTila;
 };
 
 export type SijoitteluajonValintatapajono = {

@@ -5,6 +5,7 @@ import { getHakemukset } from './ataru';
 import { configuration } from './configuration';
 import { client } from './http-client';
 import {
+  IlmoittautumisTila,
   SijoitteluajonTulokset,
   SijoitteluajonTuloksetEnriched,
   SijoitteluajonValintatapajonoEnriched,
@@ -12,6 +13,7 @@ import {
   SijoittelunHakemusEnriched,
   SijoittelunTila,
   ValintatapajonoTulos,
+  VastaanottoTila,
 } from './types/sijoittelu-types';
 
 type SijoittelunTulosResponseData = {
@@ -95,8 +97,8 @@ type SijoitteluajonTuloksetWithValintaEsitysResponseData = {
     jonosija: number;
     tasasijaJonosija: number;
     prioriteetti: number;
-    vastaanottotila: 'KESKEN';
-    ilmoittautumistila: 'EI_TEHTY';
+    vastaanottotila: VastaanottoTila;
+    ilmoittautumistila: IlmoittautumisTila;
     //valinnantilanKuvaauksenTekstiFI |SV | EN
   }>;
   hakijaryhmat: Array<{ oid: string; kiintio: number }>;
