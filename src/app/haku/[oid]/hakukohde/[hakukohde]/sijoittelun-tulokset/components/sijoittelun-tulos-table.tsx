@@ -1,23 +1,13 @@
 'use client';
-import { ophColors } from '@opetushallitus/oph-design-system';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import {
-  hakijaColumn,
+  createStickyHakijaColumn,
   makeColumnWithCustomRender,
   makeCountColumn,
 } from '@/app/components/table/table-columns';
 import { ListTable } from '@/app/components/table/list-table';
 import { SijoittelunHakemusEnriched } from '@/app/lib/types/sijoittelu-types';
 import { useMemo } from 'react';
-
-const stickyColumnStyle: React.CSSProperties = {
-  minWidth: '260px',
-  position: 'sticky',
-  left: 0,
-  boxShadow: `0 5px 3px 2px ${ophColors.grey200}`,
-  zIndex: 1,
-  backgroundColor: ophColors.white,
-};
 
 const TRANSLATIONS_PREFIX = 'sijoittelun-tulokset.taulukko';
 
@@ -33,10 +23,7 @@ export const SijoittelunTulosTable = ({
   const { t } = useTranslations();
 
   const columns = useMemo(() => {
-    const stickyHakijaColumn = Object.assign(hakijaColumn, {
-      style: stickyColumnStyle,
-      title: t('hakeneet.taulukko.hakija'),
-    });
+    const stickyHakijaColumn = createStickyHakijaColumn('sijoittelun-tulos', t);
     return [
       makeCountColumn<SijoittelunHakemusEnriched>({
         title: t(`${TRANSLATIONS_PREFIX}.jonosija`),
@@ -57,9 +44,27 @@ export const SijoittelunTulosTable = ({
       makeColumnWithCustomRender<SijoittelunHakemusEnriched>({
         title: t(`${TRANSLATIONS_PREFIX}.tila`),
         key: 'sijoittelunTila',
-        renderFn: (props) => (
-          <span>{props.tila && <>{t(`sijoitteluntila.${props.tila}`)}</>}</span>
-        ),
+        renderFn: (props) => <span>{t(`sijoitteluntila.${props.tila}`)}</span>,
+      }),
+      makeColumnWithCustomRender<SijoittelunHakemusEnriched>({
+        title: t(`${TRANSLATIONS_PREFIX}.vastaanottotieto`),
+        key: 'vastaanottotila',
+        renderFn: (props) => <span>{props.vastaanottotila}</span>,
+      }),
+      makeColumnWithCustomRender<SijoittelunHakemusEnriched>({
+        title: t(`${TRANSLATIONS_PREFIX}.ilmoittautumistieto`),
+        key: 'ilmoittautumisTila',
+        renderFn: (props) => <span>{props.ilmoittautumisTila}</span>,
+      }),
+      makeColumnWithCustomRender<SijoittelunHakemusEnriched>({
+        title: t(`${TRANSLATIONS_PREFIX}.maksuntila`),
+        key: 'maksuntila',
+        renderFn: () => <span></span>,
+      }),
+      makeColumnWithCustomRender<SijoittelunHakemusEnriched>({
+        title: t(`${TRANSLATIONS_PREFIX}.toiminnot`),
+        key: 'toiminnot',
+        renderFn: () => <span>...</span>,
       }),
     ];
   }, [t]);
@@ -73,6 +78,7 @@ export const SijoittelunTulosTable = ({
       setSort={setSort}
       translateHeader={false}
       sx={{ overflowX: 'auto', width: 'unset' }}
+      wrapperStyle={{ display: 'block' }}
     />
   );
 };

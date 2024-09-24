@@ -1,7 +1,7 @@
 'use client';
 import { ListTable } from '@/app/components/table/list-table';
 import {
-  hakijaColumn,
+  createHakijaColumn,
   makeBooleanYesNoColumn,
   makeCountColumn,
   makeGenericColumn,
@@ -57,7 +57,7 @@ export const HakijaryhmaTable = ({
 
   const columns: Array<ListTableColumn<HakijaryhmanHakija>> = useMemo(
     () => [
-      hakijaColumn,
+      createHakijaColumn('hakijaryhmat'),
       makeBooleanYesNoColumn<HakijaryhmanHakija>({
         t,
         title: `${TRANSLATIONS_PREFIX}.kuuluminen`,

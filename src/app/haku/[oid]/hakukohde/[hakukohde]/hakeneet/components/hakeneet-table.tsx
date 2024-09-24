@@ -3,7 +3,7 @@
 import { ListTable } from '@/app/components/table/list-table';
 import {
   buildLinkToPerson,
-  hakijaColumn,
+  createHakijaColumn,
   makeColumnWithValueToTranslate,
   makeExternalLinkColumn,
   makeGenericColumn,
@@ -28,6 +28,8 @@ export const HakeneetTable = ({
   isKorkeakouluHaku: boolean;
 }) => {
   const { t } = useTranslations();
+
+  const hakijaColumn = createHakijaColumn('hakeneet');
 
   const hakukelpoisuusColumn = makeColumnWithValueToTranslate<Hakemus>({
     t,
