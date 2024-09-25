@@ -27,11 +27,7 @@ export default async function RootLayout({
       <body>
         <AppRouterCacheProvider>
           {/* Initialisoidaan ensin lokalisoimaton teema, jotta ensimmäisten spinnereiden tyylit tulee oikein. */}
-          <OphNextJsThemeProvider
-            variant="oph"
-            /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-            overrides={THEME_OVERRIDES as any}
-          >
+          <OphNextJsThemeProvider variant="oph" overrides={THEME_OVERRIDES}>
             <ReactQueryClientProvider>
               <PermissionProvider>
                 <LocalizationProvider>

@@ -1,10 +1,6 @@
 'use client';
 import { ophColors } from '@opetushallitus/oph-design-system';
-import { styled as muiStyled } from '@mui/material/styles';
-import {
-  CheckBoxOutlined,
-  IndeterminateCheckBoxOutlined,
-} from '@mui/icons-material';
+import { styled as muiStyled, ThemeOptions } from '@mui/material/styles';
 
 export { ophColors } from '@opetushallitus/oph-design-system';
 
@@ -22,7 +18,7 @@ export const styled: typeof muiStyled = (
   });
 };
 
-export const THEME_OVERRIDES = {
+export const THEME_OVERRIDES: ThemeOptions = {
   components: {
     MuiInputBase: {
       styleOverrides: {
@@ -43,19 +39,12 @@ export const THEME_OVERRIDES = {
         },
       },
     },
-    MuiCheckbox: {
-      defaultProps: {
-        checkedIcon: <CheckBoxOutlined />,
-        indeterminateIcon: <IndeterminateCheckBoxOutlined />,
-      },
-    },
     MuiDialog: {
       defaultProps: {
         fullWidth: true,
       },
       styleOverrides: {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        paper: ({ theme }: any) => ({
+        paper: ({ theme }) => ({
           minHeight: '200px',
           borderTop: `4px solid ${ophColors.cyan1}`,
           borderRadius: '2px',
@@ -69,8 +58,7 @@ export const THEME_OVERRIDES = {
         variant: 'h2',
       },
       styleOverrides: {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        root: ({ theme }: any) => ({
+        root: ({ theme }) => ({
           padding: theme.spacing(0, 0, 2, 0),
         }),
       },
@@ -84,8 +72,7 @@ export const THEME_OVERRIDES = {
     },
     MuiDialogActions: {
       styleOverrides: {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        root: ({ theme }: any) => ({
+        root: ({ theme }) => ({
           padding: theme.spacing(2, 0, 0, 0),
         }),
       },
