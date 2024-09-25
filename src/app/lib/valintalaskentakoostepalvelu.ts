@@ -473,7 +473,7 @@ export const putPistesyottoExcel = async ({
   if (Array.isArray(data)) {
     throw new OphApiError(
       res,
-      'Kaikkien pistetietojen tuominen taulukkolaskennasta ei onnistunut',
+      'pistesyotto.virhe-tuo-taulukkolaskennasta-epaonnistui-osittain',
     );
   }
   return data;

@@ -13,7 +13,7 @@ const doFetch = async (request: Request) => {
   try {
     const response = await fetch(request);
     return response.status >= 400
-      ? Promise.reject(new FetchError(response))
+      ? Promise.reject(new FetchError(response, (await response.text()) ?? ''))
       : Promise.resolve(response);
   } catch (e) {
     return Promise.reject(e);
@@ -72,7 +72,6 @@ const RESPONSE_BODY_PARSERS: Record<string, BodyParser<unknown>> = {
 };
 
 const responseToData = async <Result = unknown>(res: Response) => {
-  // Oletetaan JSON-vastaus, jos content-type header puuttuu
   const contentType =
     res.headers.get('content-type')?.split(';')?.[0] ?? 'text/plain';
 
