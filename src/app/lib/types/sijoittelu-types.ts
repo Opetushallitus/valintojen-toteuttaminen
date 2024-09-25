@@ -78,6 +78,8 @@ export type SijoittelunHakemusEnriched = {
   ilmoittautumisTila: IlmoittautumisTila;
   vastaanottotila: VastaanottoTila;
   maksuntila?: MaksunTila;
+  ehdollisestiHyvaksyttavissa: boolean;
+  hyvaksyttyVarasijalta: boolean;
 };
 
 export type SijoitteluajonValintatapajono = {

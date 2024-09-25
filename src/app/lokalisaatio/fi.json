@@ -225,6 +225,8 @@
     "otsikko": "Sijoittelun tulokset",
     "julkaistavissa": "Julkaistavissa",
     "hakijalle-naytetaan": "Hakijalle näytetään:",
+    "ehdollinen": "Ehdollinen valinta",
+    "varasijalta": "Hyväksytään varasijalta",
     "taulukko": {
       "alaotsikko": "(Aloituspaikat: {{aloituspaikat}} | Sijoittelun aloituspaikat: {{sijoittelunAloituspaikat}} | Tasasijasääntö: {{tasasijasaanto}} | {{varasijataytto}} | Prioriteetti: {{prioriteetti}}",
       "jonosija": "Jonosija",

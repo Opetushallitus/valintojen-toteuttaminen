@@ -157,6 +157,9 @@ export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
             julkaistavissa: valintatulos.julkaistavissa,
             vastaanottotila: valintatulos.vastaanottotila,
             maksuntila: maksuntila || undefined,
+            ehdollisestiHyvaksyttavissa:
+              valintatulos.ehdollisestiHyvaksyttavissa,
+            hyvaksyttyVarasijalta: valintatulos.hyvaksyttyVarasijalta,
           };
         },
       );

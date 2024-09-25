@@ -9,6 +9,7 @@ import { ListTable } from '@/app/components/table/list-table';
 import {
   IlmoittautumisTila,
   SijoittelunHakemusEnriched,
+  SijoittelunTila,
   VastaanottoTila,
 } from '@/app/lib/types/sijoittelu-types';
 import { useMemo } from 'react';
@@ -19,11 +20,56 @@ import { MaksunTila } from '@/app/lib/types/ataru-types';
 
 const TRANSLATIONS_PREFIX = 'sijoittelun-tulokset.taulukko';
 
-const VastaanOttoCellStyled = styled(Box)({
+const StyledCell = styled(Box)({
   display: 'flex',
   flexDirection: 'column',
   rowGap: 1,
+  minWidth: '240px',
 });
+
+const showHyvaksyVarasijalta = (hakemus: SijoittelunHakemusEnriched) =>
+  hakemus.tila === SijoittelunTila.VARALLA ||
+  (hakemus.hyvaksyttyVarasijalta &&
+    [
+      SijoittelunTila.HYVAKSYTTY,
+      SijoittelunTila.PERUUNTUNUT,
+      SijoittelunTila.VARALLA,
+      SijoittelunTila.VARASIJALTA_HYVAKSYTTY,
+    ].includes(hakemus.tila));
+
+const SijoittelunTilaCell = ({
+  hakemus,
+}: {
+  hakemus: SijoittelunHakemusEnriched;
+}) => {
+  const { t } = useTranslations();
+
+  return (
+    <StyledCell>
+      <span>{t(`sijoitteluntila.${hakemus.tila}`)}</span>
+      {showHyvaksyVarasijalta(hakemus) && (
+        <FormControlLabel
+          label={t('sijoittelun-tulokset.varasijalta')}
+          control={
+            <Checkbox
+              checked={hakemus.hyvaksyttyVarasijalta}
+              onChange={() => ''}
+            />
+          }
+        />
+      )}
+      <FormControlLabel
+        label={t('sijoittelun-tulokset.ehdollinen')}
+        control={
+          <Checkbox
+            checked={hakemus.ehdollisestiHyvaksyttavissa}
+            onChange={() => ''}
+          />
+        }
+      />
+    </StyledCell>
+  );
+};
 
 const VastaanOttoCell = ({
   hakemus,
@@ -37,7 +83,7 @@ const VastaanOttoCell = ({
   });
 
   return (
-    <VastaanOttoCellStyled>
+    <StyledCell>
       <FormControlLabel
         label={t('sijoittelun-tulokset.julkaistavissa')}
         control={
@@ -56,7 +102,7 @@ const VastaanOttoCell = ({
           />
         )}
       />
-    </VastaanOttoCellStyled>
+    </StyledCell>
   );
 };
 
@@ -133,7 +179,7 @@ export const SijoittelunTulosTable = ({
       makeColumnWithCustomRender<SijoittelunHakemusEnriched>({
         title: t(`${TRANSLATIONS_PREFIX}.tila`),
         key: 'sijoittelunTila',
-        renderFn: (props) => <span>{t(`sijoitteluntila.${props.tila}`)}</span>,
+        renderFn: (props) => <SijoittelunTilaCell hakemus={props} />,
       }),
       makeColumnWithCustomRender<SijoittelunHakemusEnriched>({
         title: t(`${TRANSLATIONS_PREFIX}.vastaanottotieto`),

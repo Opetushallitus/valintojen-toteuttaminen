@@ -21,32 +21,34 @@ export const SijoittelunTulosControls = () => {
   });
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'row',
-        columnGap: 2,
-      }}
-    >
-      <SijoittelunTulosSearch />
-      <OphFormControl
+    <>
+      <Box
         sx={{
-          width: 'auto',
-          minWidth: '140px',
-          textAlign: 'left',
+          display: 'flex',
+          flexDirection: 'row',
+          columnGap: 2,
         }}
-        label={t('hakijaryhmat.taulukko.sijoittelun-tila')}
-        renderInput={({ labelId }) => (
-          <LocalizedSelect
-            id="sijoittelun-tila-select"
-            labelId={labelId}
-            value={sijoittelunTila}
-            onChange={changeSijoittelunTila}
-            options={sijoitteluntilaOptions}
-            clearable
-          />
-        )}
-      />
-    </Box>
+      >
+        <SijoittelunTulosSearch />
+        <OphFormControl
+          sx={{
+            width: 'auto',
+            minWidth: '140px',
+            textAlign: 'left',
+          }}
+          label={t('hakijaryhmat.taulukko.sijoittelun-tila')}
+          renderInput={({ labelId }) => (
+            <LocalizedSelect
+              id="sijoittelun-tila-select"
+              labelId={labelId}
+              value={sijoittelunTila}
+              onChange={changeSijoittelunTila}
+              options={sijoitteluntilaOptions}
+              clearable
+            />
+          )}
+        />
+      </Box>
+    </>
   );
 };
