@@ -262,6 +262,11 @@
     "LASNA": "Läsnä, keväällä alkava koulutus",
     "POISSA": "Poissa, keväällä alkava koulutus"
   },
+  "maksuntila": {
+    "MAKSAMATTA": "Maksamatta",
+    "MAKSETTU": "Maksettu",
+    "VAPAUTETTU": "Vapautettu"
+  },
   "sijoitteluntila": {
     "HYVAKSYTTY": "HYVÄKSYTTY",
     "VARASIJALTA_HYVAKSYTTY": "VARASIJALTA HYVÄKSYTTY",

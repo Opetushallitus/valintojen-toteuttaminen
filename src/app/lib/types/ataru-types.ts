@@ -17,6 +17,7 @@ export enum Hakukelpoisuus {
   EHDOLLINEN = 'hakemus.hakukelpoisuus.ehdollinen',
   TARKASTAMATTA = 'hakemus.tarkastamatta',
 }
+
 export type Hakemus = HakijaInfo & {
   hakutoiveNumero: number;
   hakukelpoisuus: Hakukelpoisuus;
@@ -32,3 +33,9 @@ export type HakijaInfo = {
   hakijanNimi: string;
   asiointikieliKoodi: Language;
 };
+
+export enum MaksunTila {
+  MAKSAMATTA = 'MAKSAMATTA',
+  MAKSETTU = 'MAKSETTU',
+  VAPAUTETTU = 'VAPAUTETTU',
+}

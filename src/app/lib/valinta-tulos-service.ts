@@ -15,6 +15,7 @@ import {
   ValintatapajonoTulos,
   VastaanottoTila,
 } from './types/sijoittelu-types';
+import { MaksunTila, Maksuvelvollisuus } from './types/ataru-types';
 
 type SijoittelunTulosResponseData = {
   valintatapajonoNimi: string;
@@ -109,6 +110,7 @@ type SijoitteluajonTuloksetWithValintaEsitysResponseData = {
   }>;
   lastModified: string;
   sijoittelunTulokset: Omit<SijoitteluajonTuloksetResponseData, 'hakijaryhmat'>;
+  lukuvuosimaksut: Array<{ personOid: string; maksuntila: MaksunTila }>;
 };
 
 export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
@@ -121,6 +123,10 @@ export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
     );
   const hakemukset = await getHakemukset({ hakuOid, hakukohdeOid });
   const hakemuksetIndexed = indexBy(hakemukset, (h) => h.hakemusOid);
+  const lukuvuosimaksutIndexed = indexBy(
+    data.lukuvuosimaksut,
+    (m) => m.personOid,
+  );
   const valintatuloksetIndexed = indexBy(
     data.valintatulokset,
     (vt) => vt.hakemusOid,
@@ -129,12 +135,15 @@ export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
     data.sijoittelunTulokset.valintatapajonot.map((jono) => {
       const hakemukset: Array<SijoittelunHakemusEnriched> = jono.hakemukset.map(
         (h) => {
+          const hakemus = hakemuksetIndexed[h.hakemusOid];
           const valintatulos = valintatuloksetIndexed[h.hakemusOid];
+          const maksuntila =
+            hakemus.maksuvelvollisuus === Maksuvelvollisuus.MAKSUVELVOLLINEN &&
+            lukuvuosimaksutIndexed[h.hakijaOid]?.maksuntila;
           return {
             hakijaOid: h.hakijaOid,
             hakemusOid: h.hakemusOid,
-            hakijanNimi:
-              hakemuksetIndexed && hakemuksetIndexed[h.hakemusOid]?.hakijanNimi,
+            hakijanNimi: hakemus?.hakijanNimi,
             pisteet: h.pisteet,
             tila: h.tila,
             valintatapajonoOid: h.valintatapajonoOid,
@@ -147,6 +156,7 @@ export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
               valintatuloksetIndexed[h.hakemusOid].ilmoittautumistila,
             julkaistavissa: valintatulos.julkaistavissa,
             vastaanottotila: valintatulos.vastaanottotila,
+            maksuntila: maksuntila || undefined,
           };
         },
       );

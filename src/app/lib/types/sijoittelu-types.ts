@@ -1,3 +1,5 @@
+import { MaksunTila } from './ataru-types';
+
 export type ValintatapajonoTulos = {
   nimi: string;
   oid: string;
@@ -35,7 +37,6 @@ export enum VastaanottoTila {
   EI_VASTAANOTETTU_MAARA_AIKANA = 'EI_VASTAANOTETTU_MAARA_AIKANA',
   PERUNUT = 'PERUNUT',
   PERUUTETTU = 'PERUUTETTU',
-  OTTANUT_VASTAAN_TOISEN_PAIKAN = 'OTTANUT_VASTAAN_TOISEN_PAIKAN', //kk only?
 }
 
 export enum IlmoittautumisTila {
@@ -76,6 +77,7 @@ export type SijoittelunHakemusEnriched = {
   julkaistavissa: boolean;
   ilmoittautumisTila: IlmoittautumisTila;
   vastaanottotila: VastaanottoTila;
+  maksuntila?: MaksunTila;
 };
 
 export type SijoitteluajonValintatapajono = {

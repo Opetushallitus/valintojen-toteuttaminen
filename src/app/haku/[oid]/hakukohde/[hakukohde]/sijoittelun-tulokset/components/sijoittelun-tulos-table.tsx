@@ -15,6 +15,7 @@ import { useMemo } from 'react';
 import { Box, Checkbox, FormControlLabel, styled } from '@mui/material';
 import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { LocalizedSelect } from '@/app/components/localized-select';
+import { MaksunTila } from '@/app/lib/types/ataru-types';
 
 const TRANSLATIONS_PREFIX = 'sijoittelun-tulokset.taulukko';
 
@@ -81,6 +82,24 @@ const IlmoittautumisCell = ({
   );
 };
 
+const MaksuCell = ({ hakemus }: { hakemus: SijoittelunHakemusEnriched }) => {
+  const { t } = useTranslations();
+
+  const maksuntilaOptions = Object.values(MaksunTila).map((tila) => {
+    return { value: tila as string, label: t(`maksuntila.${tila}`) };
+  });
+
+  return hakemus.maksuntila ? (
+    <LocalizedSelect
+      value={hakemus.maksuntila}
+      onChange={() => ''}
+      options={maksuntilaOptions}
+    />
+  ) : (
+    <></>
+  );
+};
+
 export const SijoittelunTulosTable = ({
   hakemukset,
   setSort,
@@ -129,7 +148,7 @@ export const SijoittelunTulosTable = ({
       makeColumnWithCustomRender<SijoittelunHakemusEnriched>({
         title: t(`${TRANSLATIONS_PREFIX}.maksuntila`),
         key: 'maksuntila',
-        renderFn: () => <span></span>,
+        renderFn: (props) => <MaksuCell hakemus={props} />,
       }),
       makeColumnWithCustomRender<SijoittelunHakemusEnriched>({
         title: t(`${TRANSLATIONS_PREFIX}.toiminnot`),
