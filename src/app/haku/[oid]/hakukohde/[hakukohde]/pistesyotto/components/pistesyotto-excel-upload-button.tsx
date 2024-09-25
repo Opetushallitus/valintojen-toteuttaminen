@@ -1,11 +1,10 @@
-import { OphModalDialog } from '@/app/components/oph-modal-dialog';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import {
   QueryClient,
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query';
-import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import { forwardRef, useImperativeHandle, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { pisteTuloksetOptions } from '../hooks/usePisteTulokset';
 import { FullClientSpinner } from '@/app/components/client-spinner';
@@ -13,7 +12,7 @@ import { PistesyottoTuontiError } from './pistesyotto-excel-upload-error';
 import { FileUploadOutlined } from '@mui/icons-material';
 import useToaster from '@/app/hooks/useToaster';
 import { putPistesyottoExcel } from '@/app/lib/valintalaskentakoostepalvelu';
-import { OphApiError } from '@/app/lib/common';
+import useModalDialog from '@/app/hooks/useModalDialog';
 
 const refetchPisteTulokset = ({
   queryClient,
@@ -32,18 +31,26 @@ const refetchPisteTulokset = ({
 const useExcelUploadMutation = ({
   hakuOid,
   hakukohdeOid,
-  showErrorModal,
 }: {
   hakuOid: string;
   hakukohdeOid: string;
-  showErrorModal: (e: Error) => void;
 }) => {
   const { addToast } = useToaster();
+
+  const { t, i18n } = useTranslation();
+
+  const { showModal, hideModal } = useModalDialog();
 
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({ file }: { file: File }) => {
+      showModal({
+        title: t('pistesyotto.tuodaan-pistetietoja-taulukkolaskennasta'),
+        titleAlign: 'center',
+        maxWidth: 'md',
+        children: <FullClientSpinner />,
+      });
       return await putPistesyottoExcel({
         hakuOid,
         hakukohdeOid,
@@ -51,13 +58,26 @@ const useExcelUploadMutation = ({
       });
     },
     onError: (e) => {
-      showErrorModal(e);
-      if (e instanceof OphApiError) {
-        // Onnistui osittain -> noudetaan pistetiedot
+      const onClose = () => {
         refetchPisteTulokset({ queryClient, hakuOid, hakukohdeOid });
-      }
+        hideModal();
+      };
+      showModal({
+        title:
+          e?.message && i18n.exists(e.message)
+            ? t(e.message)
+            : t('pistesyotto.virhe-tuo-taulukkolaskennasta'),
+        children: <PistesyottoTuontiError error={e} />,
+        actions: (
+          <OphButton variant="outlined" onClick={onClose}>
+            {t('yleinen.sulje')}
+          </OphButton>
+        ),
+        onClose,
+      });
     },
     onSuccess: () => {
+      hideModal();
       addToast({
         key: 'put-pistesyotto-excel-success',
         message: 'pistesyotto.tuo-valintalaskennasta-onnistui',
@@ -114,13 +134,11 @@ export const ExcelUploadButton = ({
   hakuOid: string;
   hakukohdeOid: string;
 }) => {
-  const { t, i18n } = useTranslation();
-  const [uploadError, setUploadError] = useState<Error | null>(null);
+  const { t } = useTranslation();
 
   const { mutate, isPending } = useExcelUploadMutation({
     hakuOid,
     hakukohdeOid,
-    showErrorModal: (e) => setUploadError(e),
   });
 
   const fileSelectorRef = useRef<FileSelectorRef>(null);
@@ -131,32 +149,6 @@ export const ExcelUploadButton = ({
         ref={fileSelectorRef}
         onFileSelect={(file) => mutate({ file })}
       />
-      <OphModalDialog
-        title={
-          uploadError?.message && i18n.exists(uploadError.message)
-            ? t(uploadError.message)
-            : t('pistesyotto.virhe-tuo-taulukkolaskennasta')
-        }
-        fullWidth={true}
-        maxWidth="lg"
-        open={Boolean(uploadError)}
-        onClose={() => setUploadError(null)}
-        actions={
-          <OphButton variant="outlined" onClick={() => setUploadError(null)}>
-            {t('yleinen.sulje')}
-          </OphButton>
-        }
-      >
-        {uploadError && <PistesyottoTuontiError error={uploadError} />}
-      </OphModalDialog>
-      <OphModalDialog
-        titleAlign="center"
-        maxWidth="md"
-        open={isPending}
-        title={t('pistesyotto.tuodaan-pistetietoja-taulukkolaskennasta')}
-      >
-        <FullClientSpinner />
-      </OphModalDialog>
       <OphButton
         disabled={isPending}
         startIcon={<FileUploadOutlined />}

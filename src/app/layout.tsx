@@ -10,6 +10,7 @@ import { LocalizedThemeProvider } from './components/localized-theme-provider';
 import { OphNextJsThemeProvider } from '@opetushallitus/oph-design-system/next/theme';
 import PermissionProvider from './components/permission-provider';
 import { THEME_OVERRIDES } from './lib/theme';
+import { GlobalModal } from './components/global-modal';
 
 export const metadata: Metadata = {
   title: 'Valintojen Toteuttaminen',
@@ -33,6 +34,7 @@ export default async function RootLayout({
                 <LocalizationProvider>
                   <LocalizedThemeProvider>
                     <Toaster />
+                    <GlobalModal />
                     {children}
                   </LocalizedThemeProvider>
                 </LocalizationProvider>
