@@ -107,7 +107,7 @@ export const PisteSyottoControls = ({
           )}
         />
       </Box>
-      <Box>
+      <Box sx={{ marginY: 1 }}>
         <OphCheckbox
           checked={naytaVainLaskentaanVaikuttavat}
           onChange={changeNaytaVainLaskentaanVaikuttavat}
