@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
 import { useDebounce } from '@/app/hooks/useDebounce';
-import { parseAsInteger, useQueryState } from 'nuqs';
+import { parseAsBoolean, parseAsInteger, useQueryState } from 'nuqs';
 import { useHasChanged } from '@/app/hooks/useHasChanged';
 import {
   byProp,
@@ -38,6 +38,11 @@ export const useSijoittelunTulosSearchParams = (
     DEFAULT_NUQS_OPTIONS,
   );
 
+  const [showOnlyEhdolliset, setShowOnlyEhdolliset] = useQueryState<boolean>(
+    'ehdolliset',
+    parseAsBoolean.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(false),
+  );
+
   const [page, setPage] = useQueryState<number>(
     `page-${valintatapajonoOid}`,
     parseAsInteger.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(1),
@@ -56,11 +61,13 @@ export const useSijoittelunTulosSearchParams = (
 
   const tilaChanged = useHasChanged(sijoittelunTila);
 
+  const ehdollisetChanged = useHasChanged(showOnlyEhdolliset);
+
   useEffect(() => {
-    if (searchPhraseChanged || tilaChanged) {
+    if (searchPhraseChanged || tilaChanged || ehdollisetChanged) {
       setPage(1);
     }
-  }, [searchPhraseChanged, setPage, tilaChanged]);
+  }, [searchPhraseChanged, setPage, tilaChanged, ehdollisetChanged]);
 
   return {
     searchPhrase,
@@ -73,6 +80,8 @@ export const useSijoittelunTulosSearchParams = (
     setSort,
     sijoittelunTila,
     setSijoittelunTila,
+    showOnlyEhdolliset,
+    setShowOnlyEhdolliset,
   };
 };
 
@@ -91,6 +100,7 @@ export const useSijoittelunTulosSearch = (
     sort,
     setSort,
     sijoittelunTila,
+    showOnlyEhdolliset,
   } = useSijoittelunTulosSearchParams(valintatapajonoOid);
 
   const results = useMemo(() => {
@@ -99,6 +109,7 @@ export const useSijoittelunTulosSearch = (
     const filtered = hakemukset.filter(
       (hakemus) =>
         (sijoittelunTila.length < 1 || hakemus.tila === sijoittelunTila) &&
+        (!showOnlyEhdolliset || hakemus.ehdollisestiHyvaksyttavissa) &&
         hakemusFilter(hakemus, searchPhrase),
     );
 
@@ -142,7 +153,14 @@ export const useSijoittelunTulosSearch = (
     };
 
     return orderBy && direction ? sortHakijat(orderBy, direction) : filtered;
-  }, [hakemukset, searchPhrase, sort, translateEntity, sijoittelunTila]);
+  }, [
+    hakemukset,
+    searchPhrase,
+    sort,
+    translateEntity,
+    sijoittelunTila,
+    showOnlyEhdolliset,
+  ]);
 
   const pageResults = useMemo(() => {
     const start = pageSize * (page - 1);

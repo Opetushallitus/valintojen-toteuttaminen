@@ -1,5 +1,5 @@
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { Box, SelectChangeEvent } from '@mui/material';
+import { Box, Checkbox, SelectChangeEvent } from '@mui/material';
 import { SijoittelunTila } from '@/app/lib/types/sijoittelu-types';
 import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { LocalizedSelect } from '@/app/components/localized-select';
@@ -7,13 +7,21 @@ import { useSijoittelunTulosSearchParams } from '../hooks/useSijoittelunTulokset
 import { SijoittelunTulosSearch } from './sijoittelun-tulos-search';
 
 export const SijoittelunTulosControls = () => {
-  const { sijoittelunTila, setSijoittelunTila } =
-    useSijoittelunTulosSearchParams();
+  const {
+    sijoittelunTila,
+    setSijoittelunTila,
+    showOnlyEhdolliset,
+    setShowOnlyEhdolliset,
+  } = useSijoittelunTulosSearchParams();
 
   const { t } = useTranslations();
 
   const changeSijoittelunTila = (e: SelectChangeEvent) => {
     setSijoittelunTila(e.target.value);
+  };
+
+  const changeShowOnlyEhdolliset = () => {
+    setShowOnlyEhdolliset(!showOnlyEhdolliset);
   };
 
   const sijoitteluntilaOptions = Object.values(SijoittelunTila).map((tila) => {
@@ -49,6 +57,16 @@ export const SijoittelunTulosControls = () => {
           )}
         />
       </Box>
+      <OphFormControl
+        label="Näytä vain ehdolliset"
+        renderInput={({ labelId }) => (
+          <Checkbox
+            id={labelId}
+            checked={showOnlyEhdolliset}
+            onChange={changeShowOnlyEhdolliset}
+          />
+        )}
+      />
     </>
   );
 };
