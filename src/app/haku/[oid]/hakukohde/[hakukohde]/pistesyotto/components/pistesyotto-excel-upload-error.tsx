@@ -1,6 +1,8 @@
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { OphApiError } from '@/app/lib/common';
+import { Error } from '@mui/icons-material';
 import {
+  Box,
   Table,
   TableBody,
   TableCell,
@@ -9,6 +11,17 @@ import {
   TableRow,
 } from '@mui/material';
 import { OphTypography } from '@opetushallitus/oph-design-system';
+
+const ErrorWithIcon = ({ children }: { children: string }) => {
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <Error color="error" />
+      <Box component="span" sx={{ paddingLeft: 1 }}>
+        {children}
+      </Box>
+    </Box>
+  );
+};
 
 export const PistesyottoTuontiError = ({ error }: { error: Error }) => {
   const { t } = useTranslations();
@@ -35,7 +48,9 @@ export const PistesyottoTuontiError = ({ error }: { error: Error }) => {
               return (
                 <TableRow key={applicationOID}>
                   <TableCell>{applicationOID}</TableCell>
-                  <TableCell>{errorMessage}</TableCell>
+                  <TableCell>
+                    <ErrorWithIcon>{errorMessage}</ErrorWithIcon>
+                  </TableCell>
                 </TableRow>
               );
             })}
@@ -44,6 +59,10 @@ export const PistesyottoTuontiError = ({ error }: { error: Error }) => {
       </TableContainer>
     );
   } else {
-    return <OphTypography>{error.message}</OphTypography>;
+    return (
+      <OphTypography>
+        <ErrorWithIcon>{error.message}</ErrorWithIcon>
+      </OphTypography>
+    );
   }
 };
