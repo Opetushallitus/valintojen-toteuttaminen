@@ -13,7 +13,7 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 
 export type OphModalDialogProps = Pick<
   DialogProps,
-  'open' | 'children' | 'maxWidth' | 'fullWidth'
+  'TransitionProps' | 'open' | 'children' | 'maxWidth' | 'fullWidth'
 > & {
   titleAlign?: 'center' | 'left';
   contentAlign?: 'center' | 'left';
@@ -36,6 +36,7 @@ export const OphModalDialog = ({
   maxWidth,
   fullWidth = true,
   onClose,
+  TransitionProps,
 }: OphModalDialogProps) => {
   const modalId = useId();
   const modalTitleId = `${modalId}-title`;
@@ -48,6 +49,7 @@ export const OphModalDialog = ({
       open={open}
       aria-labelledby={modalTitleId}
       onClose={onClose}
+      TransitionProps={TransitionProps}
     >
       <DialogTitle
         sx={{

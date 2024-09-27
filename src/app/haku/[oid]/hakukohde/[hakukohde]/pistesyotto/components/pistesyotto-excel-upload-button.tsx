@@ -5,14 +5,21 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { forwardRef, useImperativeHandle, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
 import { pisteTuloksetOptions } from '../hooks/usePisteTulokset';
 import { FullClientSpinner } from '@/app/components/client-spinner';
 import { PistesyottoTuontiError } from './pistesyotto-excel-upload-error';
 import { FileUploadOutlined } from '@mui/icons-material';
 import useToaster from '@/app/hooks/useToaster';
 import { putPistesyottoExcel } from '@/app/lib/valintalaskentakoostepalvelu';
-import useModalDialog from '@/app/hooks/useModalDialog';
+import { OphModalDialog } from '@/app/components/oph-modal-dialog';
+import { useTranslations } from '@/app/hooks/useTranslations';
+import { OphApiError } from '@/app/lib/common';
+import {
+  createModal,
+  hideModal,
+  showModal,
+  useOphModalProps,
+} from '@/app/components/global-modal';
 
 const refetchPisteTulokset = ({
   queryClient,
@@ -28,6 +35,45 @@ const refetchPisteTulokset = ({
   queryClient.invalidateQueries(options);
 };
 
+const SpinnerModalDialog = createModal(() => {
+  const { open, TransitionProps } = useOphModalProps();
+  const { t } = useTranslations();
+  return (
+    <OphModalDialog
+      open={open}
+      TransitionProps={TransitionProps}
+      title={t('pistesyotto.tuodaan-pistetietoja-taulukkolaskennasta')}
+      maxWidth="md"
+      titleAlign="center"
+    >
+      <FullClientSpinner />
+    </OphModalDialog>
+  );
+});
+
+const ErrorModalDialog = createModal(({ error }: { error: Error }) => {
+  const modalProps = useOphModalProps();
+  const { t, i18n } = useTranslations();
+  return (
+    <OphModalDialog
+      {...modalProps}
+      title={
+        error?.message && i18n.exists(error.message)
+          ? t(error.message)
+          : t('pistesyotto.virhe-tuo-taulukkolaskennasta')
+      }
+      maxWidth="md"
+      actions={
+        <OphButton variant="outlined" onClick={modalProps.onClose}>
+          {t('yleinen.sulje')}
+        </OphButton>
+      }
+    >
+      <PistesyottoTuontiError error={error} />
+    </OphModalDialog>
+  );
+});
+
 const useExcelUploadMutation = ({
   hakuOid,
   hakukohdeOid,
@@ -37,55 +83,34 @@ const useExcelUploadMutation = ({
 }) => {
   const { addToast } = useToaster();
 
-  const { t, i18n } = useTranslation();
-
-  const { showModal, hideModal } = useModalDialog();
-
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({ file }: { file: File }) => {
-      showModal({
-        title: t('pistesyotto.tuodaan-pistetietoja-taulukkolaskennasta'),
-        titleAlign: 'center',
-        maxWidth: 'md',
-        children: <FullClientSpinner />,
-      });
+      showModal(SpinnerModalDialog);
       return await putPistesyottoExcel({
         hakuOid,
         hakukohdeOid,
         excelFile: file,
       });
     },
-    onError: (e) => {
-      const onClose = () => {
+    onError: (error) => {
+      hideModal(SpinnerModalDialog);
+      // Tuonti onnistui osittain -> ladataan muuttuneet pistetulokset
+      if (error instanceof OphApiError) {
         refetchPisteTulokset({ queryClient, hakuOid, hakukohdeOid });
-        hideModal();
-      };
-      showModal({
-        title:
-          e?.message && i18n.exists(e.message)
-            ? t(e.message)
-            : t('pistesyotto.virhe-tuo-taulukkolaskennasta'),
-        children: <PistesyottoTuontiError error={e} />,
-        actions: (
-          <OphButton variant="outlined" onClick={onClose}>
-            {t('yleinen.sulje')}
-          </OphButton>
-        ),
-        onClose,
-      });
+      }
+      showModal(ErrorModalDialog, { error });
     },
     onSuccess: () => {
-      hideModal();
+      // Ladataan muuttuneet pistetulokset
+      refetchPisteTulokset({ queryClient, hakuOid, hakukohdeOid });
+      hideModal(SpinnerModalDialog);
       addToast({
         key: 'put-pistesyotto-excel-success',
         message: 'pistesyotto.tuo-valintalaskennasta-onnistui',
         type: 'success',
       });
-
-      // Ladataan muuttuneet pistetulokset
-      refetchPisteTulokset({ queryClient, hakuOid, hakukohdeOid });
     },
   });
 };
@@ -134,7 +159,7 @@ export const ExcelUploadButton = ({
   hakuOid: string;
   hakukohdeOid: string;
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslations();
 
   const { mutate, isPending } = useExcelUploadMutation({
     hakuOid,
