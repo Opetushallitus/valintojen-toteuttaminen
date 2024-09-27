@@ -7,7 +7,6 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { useLasketutValinnanVaiheet } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { ValintalaskennanTulosSearch } from './components/valintalaskennan-tulos-search';
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
-import { FileDownloadOutlined } from '@mui/icons-material';
 import React from 'react';
 import { ValintatapajonoContent } from './components/valintatapajono-content';
 import { useJonosijatSearchParams } from '@/app/hooks/useJonosijatSearch';
@@ -54,7 +53,7 @@ const ExcelDownloadButton = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
   const { t } = useTranslations();
 
   return (
-    <DownloadButton startIcon={<FileDownloadOutlined />} mutation={mutation}>
+    <DownloadButton mutation={mutation}>
       {t('valintalaskennan-tulos.vie-kaikki-taulukkolaskentaan')}
     </DownloadButton>
   );

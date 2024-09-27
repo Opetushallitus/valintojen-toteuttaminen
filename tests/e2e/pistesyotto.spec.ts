@@ -4,6 +4,8 @@ import {
   expectAllSpinnersHidden,
   getMuiCloseButton,
 } from './playwright-utils';
+import path from 'path';
+import { readFile } from 'fs/promises';
 
 test('displays pistesyotto', async ({ page }) => {
   await goToPisteSyotto(page);
@@ -17,8 +19,31 @@ test('displays pistesyotto', async ({ page }) => {
   await checkRow(rows.nth(3), ['Purukumi Puru', 'Valitse...Merkitsemättä']);
 });
 
+async function selectTila(page: Page, expectedOption: string) {
+  const combobox = page.getByRole('combobox', {
+    name: 'Tila',
+  });
+  await combobox.click();
+  const listbox = page.getByRole('listbox', {
+    name: 'Tila',
+  });
+  await listbox.getByRole('option', { name: expectedOption }).click();
+  await expect(combobox).toContainText(expectedOption);
+}
+
+async function goToPisteSyotto(page: Page) {
+  await page.goto(
+    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/pistesyotto',
+  );
+  await expectAllSpinnersHidden(page);
+  await expect(page.locator('h1')).toHaveText(
+    '> Tampere University Separate Admission/ Finnish MAOL Competition Route 2024',
+  );
+}
+
+test.beforeEach(async ({ page }) => await goToPisteSyotto(page));
+
 test('displays pistesyotto with all exams', async ({ page }) => {
-  await goToPisteSyotto(page);
   await page.getByLabel('Näytä vain laskentaan').click();
   const headrow = page.locator('[data-test-id="pistesyotto-form"] thead tr');
   await checkRow(
@@ -51,7 +76,6 @@ test('displays pistesyotto with all exams', async ({ page }) => {
 });
 
 test('shows success toast when updating value', async ({ page }) => {
-  await goToPisteSyotto(page);
   await page.route(
     '*/**/valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105',
     async (route) =>
@@ -71,7 +95,6 @@ test('shows success toast when updating value', async ({ page }) => {
 });
 
 test('shows error toast when updating value', async ({ page }) => {
-  await goToPisteSyotto(page);
   await page.route(
     '*/**/valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105',
     async (route) =>
@@ -99,7 +122,6 @@ test('shows error toast when updating value', async ({ page }) => {
 test('navigating to another view without saving changes asks for confirmation', async ({
   page,
 }) => {
-  await goToPisteSyotto(page);
   const huiRow = page.getByRole('row', { name: 'Hui Haamu Valitse' });
   await huiRow.getByLabel('Valitse...').click();
   await page.getByRole('option', { name: 'Kyllä' }).click();
@@ -120,14 +142,7 @@ test('navigating to another view without saving changes asks for confirmation', 
 });
 
 test.describe('filters', () => {
-  let page: Page;
-
-  test.beforeAll(async ({ browser }) => {
-    page = await browser.newPage();
-    await goToPisteSyotto(page);
-  });
-
-  test('filters by name', async () => {
+  test('filters by name', async ({ page }) => {
     const hakuInput = page.getByRole('textbox', {
       name: 'Hae hakijan nimellä tai tunnisteilla',
     });
@@ -141,7 +156,7 @@ test.describe('filters', () => {
     await checkRow(rows.nth(0), ['Hui Haamu', 'Valitse...Merkitsemättä']);
   });
 
-  test('filters by application oid', async () => {
+  test('filters by application oid', async ({ page }) => {
     const hakuInput = page.getByRole('textbox', {
       name: 'Hae hakijan nimellä tai tunnisteilla',
     });
@@ -151,7 +166,7 @@ test.describe('filters', () => {
     await checkRow(rows.nth(0), ['Hui Haamu', 'Valitse...Merkitsemättä']);
   });
 
-  test('filters henkiloOid', async () => {
+  test('filters henkiloOid', async ({ page }) => {
     const hakuInput = page.getByRole('textbox', {
       name: 'Hae hakijan nimellä tai tunnisteilla',
     });
@@ -161,7 +176,7 @@ test.describe('filters', () => {
     await checkRow(rows.nth(0), ['Purukumi Puru', 'Valitse...Merkitsemättä']);
   });
 
-  test('filters by osallistumisentila Merkitsemättä', async () => {
+  test('filters by osallistumisentila Merkitsemättä', async ({ page }) => {
     await selectTila(page, 'Merkitsemättä');
     const rows = page.locator('[data-test-id="pistesyotto-form"] tbody tr');
     await expect(rows).toHaveCount(2);
@@ -169,7 +184,7 @@ test.describe('filters', () => {
     await checkRow(rows.nth(1), ['Purukumi Puru', 'Valitse...Merkitsemättä']);
   });
 
-  test('filters by osallistumisentila Osallistui', async () => {
+  test('filters by osallistumisentila Osallistui', async ({ page }) => {
     await selectTila(page, 'Osallistui');
     const rows = page.locator('[data-test-id="pistesyotto-form"] tbody tr');
     await expect(rows).toHaveCount(2);
@@ -179,24 +194,140 @@ test.describe('filters', () => {
   });
 });
 
-async function selectTila(page: Page, expectedOption: string) {
-  const combobox = page.getByRole('combobox', {
-    name: 'Tila',
-  });
-  await combobox.click();
-  const listbox = page.getByRole('listbox', {
-    name: 'Tila',
-  });
-  await listbox.getByRole('option', { name: expectedOption }).click();
-  await expect(combobox).toContainText(expectedOption);
-}
+test.describe('Excel export', () => {
+  test('Downloads excel on button press and no errors', async ({ page }) => {
+    await page.route(
+      (url) =>
+        url.pathname.includes(
+          '/valintalaskentakoostepalvelu/resources/pistesyotto/vienti',
+        ),
+      async (route) => {
+        await route.fulfill({
+          json: { id: 'proc_id' },
+        });
+      },
+    );
 
-async function goToPisteSyotto(page: Page) {
-  await page.goto(
-    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/pistesyotto',
-  );
-  await expectAllSpinnersHidden(page);
-  await expect(page.locator('h1')).toHaveText(
-    '> Tampere University Separate Admission/ Finnish MAOL Competition Route 2024',
-  );
-}
+    await page.route(
+      (url) =>
+        url.pathname.includes(
+          '/valintalaskentakoostepalvelu/resources/dokumenttiprosessi/proc_id',
+        ),
+      async (route) => {
+        await route.fulfill({
+          json: { dokumenttiId: 'doc_id' },
+        });
+      },
+    );
+    await page.route(
+      (url) =>
+        url.pathname.includes(
+          'valintalaskentakoostepalvelu/resources/dokumentit/lataa/doc_id',
+        ),
+      async (route) => {
+        await route.fulfill({
+          headers: { 'content-type': 'application/octet-stream' },
+          body: await readFile(path.join(__dirname, './fixtures/empty.xls')),
+        });
+      },
+    );
+    const downloadPromise = page.waitForEvent('download');
+    await page
+      .getByRole('button', {
+        name: 'Vie taulukkolaskentaan',
+      })
+      .click();
+
+    await expectAllSpinnersHidden(page);
+    const download = await downloadPromise;
+    await expect(download.suggestedFilename()).toEqual('pistesyotto.xls');
+  });
+
+  test('Shows error toast when download fails', async ({ page }) => {
+    await page.route(
+      (url) =>
+        url.pathname.includes(
+          '/valintalaskentakoostepalvelu/resources/pistesyotto/vienti',
+        ),
+      async (route) => await route.fulfill({ status: 500 }),
+    );
+    await page
+      .getByRole('button', {
+        name: 'Vie taulukkolaskentaan',
+      })
+      .click();
+    await expectAllSpinnersHidden(page);
+    await expect(
+      page.getByText('Pistetietojen vieminen taulukkolaskentaan epäonnistui'),
+    ).toBeVisible();
+  });
+});
+
+const startExcelImport = async (page: Page) => {
+  const fileChooserPromise = page.waitForEvent('filechooser');
+  await page
+    .getByRole('button', {
+      name: 'Tuo taulukkolaskennasta',
+    })
+    .click();
+
+  const fileChooser = await fileChooserPromise;
+  await fileChooser.setFiles(path.join(__dirname, './fixtures/empty.xls'));
+};
+
+test.describe('Excel import', () => {
+  test('Shows error modal when upload fails completely', async ({ page }) => {
+    await page.route(
+      (url) =>
+        url.pathname.includes(
+          'valintalaskentakoostepalvelu/resources/pistesyotto/tuonti',
+        ),
+      async (route) => await route.fulfill({ status: 500 }),
+    );
+    await startExcelImport(page);
+
+    await expect(
+      page.getByText('Tuodaan pistetietoja taulukkolaskennasta'),
+    ).toBeVisible();
+    await expectAllSpinnersHidden(page);
+    await expect(
+      page.getByText('Pistetietojen tuominen taulukkolaskennasta epäonnistui!'),
+    ).toBeVisible();
+  });
+
+  test('Shows error modal when upload fails partially', async ({ page }) => {
+    await page.route(
+      (url) =>
+        url.pathname.includes(
+          'valintalaskentakoostepalvelu/resources/pistesyotto/tuonti',
+        ),
+      async (route) =>
+        await route.fulfill({
+          json: [
+            {
+              applicationOID: '1234',
+              errorMessage: 'Yritettiin kirjoittaa yli uudempaa pistetietoa',
+            },
+          ],
+        }),
+    );
+    await startExcelImport(page);
+
+    await expect(
+      page.getByText('Tuodaan pistetietoja taulukkolaskennasta'),
+    ).toBeVisible();
+    await expectAllSpinnersHidden(page);
+
+    const modalContent = page.getByRole('dialog', {
+      name: 'Pistetietojen tuominen taulukkolaskennasta epäonnistui osittain!',
+    });
+
+    await expect(modalContent).toBeVisible();
+
+    await expect(
+      modalContent.getByText('Yritettiin kirjoittaa yli uudempaa pistetietoa'),
+    ).toBeVisible();
+
+    await modalContent.getByRole('button', { name: 'Sulje' }).first().click();
+  });
+});

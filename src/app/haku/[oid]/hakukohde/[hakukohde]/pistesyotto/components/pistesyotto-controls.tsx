@@ -1,15 +1,11 @@
 import { usePisteSyottoSearchParams } from '../hooks/usePisteSyottoSearch';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import {
-  Box,
-  SelectChangeEvent,
-  Checkbox,
-  FormControlLabel,
-} from '@mui/material';
+import { Box, SelectChangeEvent } from '@mui/material';
 import { PisteSyottoSearch } from './pistesyotto-search';
 import { ValintakoeAvaimet } from '@/app/lib/types/valintaperusteet-types';
 import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { LocalizedSelect } from '@/app/components/localized-select';
+import { OphCheckbox } from '@opetushallitus/oph-design-system';
 
 export const PisteSyottoControls = ({
   kokeet,
@@ -111,14 +107,10 @@ export const PisteSyottoControls = ({
           )}
         />
       </Box>
-      <Box>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={naytaVainLaskentaanVaikuttavat}
-              onChange={changeNaytaVainLaskentaanVaikuttavat}
-            />
-          }
+      <Box sx={{ marginY: 1 }}>
+        <OphCheckbox
+          checked={naytaVainLaskentaanVaikuttavat}
+          onChange={changeNaytaVainLaskentaanVaikuttavat}
           label={t('pistesyotto.laskentaanVaikuttavat')}
         />
       </Box>

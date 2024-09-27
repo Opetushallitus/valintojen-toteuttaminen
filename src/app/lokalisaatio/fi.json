@@ -29,7 +29,9 @@
     "valitsevaihtoehto": "Valitse vaihtoehdoista",
     "vie-taulukkolaskentaan": "Vie taulukkolaskentaan",
     "poista-valinta": "Poista valinta",
-    "valitse-kaikki": "Valitse kaikki"
+    "valitse-kaikki": "Valitse kaikki",
+    "tuo-taulukkolaskennasta": "Tuo taulukkolaskennasta",
+    "sulje": "Sulje"
   },
   "lomake": {
     "jatka": "Jatka",
@@ -174,7 +176,16 @@
     "toisessaHakutoiveessa": "Osallistuminen on toisessa hakutoiveessa",
     "toisellaHakemuksella": "Hyväksytty toisella hakemuksella",
     "eiKutsuttu": "Hakijaa ei ole kutsuttu kokeeseen",
-    "ei-tuloksia": "Ei tuloksia. Joko hakukohteessa ei ole valintakokeita tai laskentaa ei ole suoritettu."
+    "ei-tuloksia": "Ei tuloksia. Joko hakukohteessa ei ole valintakokeita tai laskentaa ei ole suoritettu.",
+    "virhe-vie-taulukkolaskentaan": "Pistetietojen vieminen taulukkolaskentaan epäonnistui!",
+    "virhe-tuo-taulukkolaskennasta": "Pistetietojen tuominen taulukkolaskennasta epäonnistui!",
+    "tuo-taulukkolaskennasta-onnistui": "Pistetietojen tuominen taulukkolaskennasta onnistui!",
+    "tuodaan-pistetietoja-taulukkolaskennasta": "Tuodaan pistetietoja taulukkolaskennasta",
+    "virhe-tuo-taulukkolaskennasta-epaonnistui-osittain": "Pistetietojen tuominen taulukkolaskennasta epäonnistui osittain!",
+    "tuonti-tulos-taulukko": {
+      "virhe": "Virhe",
+      "hakemus-oid": "Hakemuksen tekninen tunniste (OID)"
+    }
   },
   "harkinnanvaraiset": {
     "otsikko": "Harkinnanvaraiset"

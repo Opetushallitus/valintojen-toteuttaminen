@@ -6,9 +6,7 @@ import { FullClientSpinner } from '@/app/components/client-spinner';
 import { AccordionBox } from '@/app/components/accordion-box';
 import {
   Box,
-  Checkbox,
   FormControl,
-  FormControlLabel,
   FormGroup,
   FormLabel,
   ToggleButton,
@@ -30,6 +28,7 @@ import {
   ValintakoeKutsuItem,
 } from '@/app/lib/types/valintakoekutsut-types';
 import { NoResults } from '@/app/components/no-results';
+import { OphCheckbox } from '@opetushallitus/oph-design-system';
 
 type ValintakoekutsutContentProps = {
   hakuOid: string;
@@ -200,13 +199,9 @@ function ValintakoekutsutContent({
                   {t('valintakoekutsut.hakijoittain')}
                 </ToggleButton>
               </ToggleButtonGroup>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={vainKutsuttavat}
-                    onChange={handleVainKutsuttavatChange}
-                  />
-                }
+              <OphCheckbox
+                checked={vainKutsuttavat}
+                onChange={handleVainKutsuttavatChange}
                 label={t('valintakoekutsut.vain-kutsuttavat')}
               />
             </FormGroup>

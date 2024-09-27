@@ -92,7 +92,11 @@ export const PisteSyottoForm = ({
       onSubmit={submitChanges}
       data-test-id="pistesyotto-form"
     >
-      <PisteSyottoActions state={state} />
+      <PisteSyottoActions
+        state={state}
+        hakuOid={hakuOid}
+        hakukohdeOid={hakukohdeOid}
+      />
       <TablePaginationWrapper
         totalCount={results?.length ?? 0}
         pageSize={pageSize}

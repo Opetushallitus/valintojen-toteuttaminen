@@ -9,6 +9,8 @@ import { configuration } from './lib/configuration';
 import { LocalizedThemeProvider } from './components/localized-theme-provider';
 import { OphNextJsThemeProvider } from '@opetushallitus/oph-design-system/next/theme';
 import PermissionProvider from './components/permission-provider';
+import { THEME_OVERRIDES } from './lib/theme';
+import { GlobalModalProvider } from './components/global-modal';
 
 export const metadata: Metadata = {
   title: 'Valintojen Toteuttaminen',
@@ -26,13 +28,13 @@ export default async function RootLayout({
       <body>
         <AppRouterCacheProvider>
           {/* Initialisoidaan ensin lokalisoimaton teema, jotta ensimmäisten spinnereiden tyylit tulee oikein. */}
-          <OphNextJsThemeProvider variant="oph">
+          <OphNextJsThemeProvider variant="oph" overrides={THEME_OVERRIDES}>
             <ReactQueryClientProvider>
               <PermissionProvider>
                 <LocalizationProvider>
                   <LocalizedThemeProvider>
                     <Toaster />
-                    {children}
+                    <GlobalModalProvider>{children}</GlobalModalProvider>
                   </LocalizedThemeProvider>
                 </LocalizationProvider>
               </PermissionProvider>

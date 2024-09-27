@@ -64,7 +64,7 @@ const tryAndParseError = async <T>(wrappedFn: () => Promise<T>) => {
     return await wrappedFn();
   } catch (e) {
     if (e instanceof FetchError) {
-      const message = await e.response.text();
+      const message = e.message;
       throw message;
     }
     throw e;

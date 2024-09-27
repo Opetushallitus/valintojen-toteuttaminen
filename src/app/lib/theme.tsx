@@ -1,10 +1,6 @@
 'use client';
 import { ophColors } from '@opetushallitus/oph-design-system';
-import { styled as muiStyled } from '@mui/material/styles';
-import {
-  CheckBoxOutlined,
-  IndeterminateCheckBoxOutlined,
-} from '@mui/icons-material';
+import { styled as muiStyled, ThemeOptions } from '@mui/material/styles';
 
 export { ophColors } from '@opetushallitus/oph-design-system';
 
@@ -22,7 +18,7 @@ export const styled: typeof muiStyled = (
   });
 };
 
-export const THEME_OVERRIDES = {
+export const THEME_OVERRIDES: ThemeOptions = {
   components: {
     MuiInputBase: {
       styleOverrides: {
@@ -43,10 +39,48 @@ export const THEME_OVERRIDES = {
         },
       },
     },
-    MuiCheckbox: {
+    MuiDialog: {
       defaultProps: {
-        checkedIcon: <CheckBoxOutlined />,
-        indeterminateIcon: <IndeterminateCheckBoxOutlined />,
+        fullWidth: true,
+      },
+      styleOverrides: {
+        paper: ({ theme }) => ({
+          minHeight: '200px',
+          borderTop: `4px solid ${ophColors.cyan1}`,
+          borderRadius: '2px',
+          boxShadow: '2px 2px 8px 0px rgba(0,0,0,0.17)',
+          padding: theme.spacing(3),
+        }),
+      },
+    },
+    MuiDialogTitle: {
+      defaultProps: {
+        variant: 'h2',
+      },
+      styleOverrides: {
+        root: ({ theme }) => ({
+          padding: theme.spacing(0, 0, 2, 0),
+        }),
+      },
+    },
+    MuiDialogContent: {
+      styleOverrides: {
+        root: {
+          padding: 0,
+        },
+      },
+    },
+    MuiDialogActions: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          padding: theme.spacing(2, 0, 0, 0),
+        }),
+      },
+    },
+    MuiCircularProgress: {
+      defaultProps: {
+        size: 50,
+        thickness: 4.5,
       },
     },
   },

@@ -11,5 +11,5 @@ export const ClientSpinner = (props: CircularProgressProps) => {
 
 export const FullClientSpinner = () => {
   const { t } = useTranslations();
-  return <FullSpinner ariaLabel={t('yleinen-ladataan')} />;
+  return <FullSpinner ariaLabel={t('yleinen.ladataan')} />;
 };

@@ -13,7 +13,7 @@ const doFetch = async (request: Request) => {
   try {
     const response = await fetch(request);
     return response.status >= 400
-      ? Promise.reject(new FetchError(response))
+      ? Promise.reject(new FetchError(response, (await response.text()) ?? ''))
       : Promise.resolve(response);
   } catch (e) {
     return Promise.reject(e);
@@ -72,7 +72,6 @@ const RESPONSE_BODY_PARSERS: Record<string, BodyParser<unknown>> = {
 };
 
 const responseToData = async <Result = unknown>(res: Response) => {
-  // Oletetaan JSON-vastaus, jos content-type header puuttuu
   const contentType =
     res.headers.get('content-type')?.split(';')?.[0] ?? 'text/plain';
 
@@ -154,6 +153,9 @@ const makeRequest = async <Result>(request: Request) => {
   }
 };
 
+type BodyType = BodyInit | JSONData;
+type UrlType = string | URL;
+
 export type JSONData = Record<string, unknown> | Array<unknown>;
 
 const isJson = (val: unknown): val is JSONData =>
@@ -161,8 +163,8 @@ const isJson = (val: unknown): val is JSONData =>
 
 const modRequest = <Result = unknown>(
   method: string,
-  url: string | URL,
-  body: BodyInit | JSONData,
+  url: UrlType,
+  body: BodyType,
   options: RequestInit,
 ) => {
   return makeRequest<Result>(
@@ -170,7 +172,7 @@ const modRequest = <Result = unknown>(
       method,
       body: isJson(body) ? JSON.stringify(body) : body,
       headers: {
-        'Content-Type': 'application/json',
+        ...(isJson(body) ? { 'content-type': 'application/json' } : {}),
         ...(options.headers ?? {}),
       },
       ...options,
@@ -179,16 +181,54 @@ const modRequest = <Result = unknown>(
 };
 
 export const client = {
-  get: <Result = unknown>(url: URL | string, options: RequestInit = {}) =>
+  get: <Result = unknown>(url: UrlType, options: RequestInit = {}) =>
     makeRequest<Result>(new Request(url, { method: 'GET', ...options })),
   post: <Result = unknown>(
-    url: string | URL,
-    body: BodyInit | JSONData,
+    url: UrlType,
+    body: BodyType,
     options: RequestInit = {},
   ) => modRequest<Result>('POST', url, body, options),
   put: <Result = unknown>(
-    url: string | URL,
-    body: BodyInit | JSONData,
+    url: UrlType,
+    body: BodyType,
     options: RequestInit = {},
   ) => modRequest<Result>('PUT', url, body, options),
+} as const;
+
+const makeAbortable = <D>(
+  makePromise: (signal: AbortSignal) => Promise<HttpClientResponse<D>>,
+) => {
+  const abortController = new AbortController();
+  const { signal } = abortController;
+  return {
+    promise: makePromise(signal),
+    abort(reason?: string) {
+      abortController.abort(reason);
+    },
+  };
+};
+
+export const abortableClient = {
+  get: <Result = unknown>(url: UrlType, options: RequestInit = {}) =>
+    makeAbortable((signal) =>
+      makeRequest<Result>(
+        new Request(url, { method: 'GET', ...options, signal }),
+      ),
+    ),
+  post: <Result = unknown>(
+    url: UrlType,
+    body: BodyType,
+    options: RequestInit = {},
+  ) =>
+    makeAbortable((signal) =>
+      modRequest<Result>('POST', url, body, { ...options, signal }),
+    ),
+  put: <Result = unknown>(
+    url: UrlType,
+    body: BodyType,
+    options: RequestInit = {},
+  ) =>
+    makeAbortable((signal) =>
+      modRequest<Result>('PUT', url, body, { ...options, signal }),
+    ),
 } as const;
