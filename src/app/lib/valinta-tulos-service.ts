@@ -76,6 +76,7 @@ type SijoitteluajonTuloksetResponseData = {
         jonosija: number;
         tasasijaJonosija: number;
         prioriteetti: number;
+        onkoMuuttunutViimeSijoittelussa: boolean;
       },
     ];
   }>;
@@ -160,6 +161,7 @@ export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
             ehdollisestiHyvaksyttavissa:
               valintatulos.ehdollisestiHyvaksyttavissa,
             hyvaksyttyVarasijalta: valintatulos.hyvaksyttyVarasijalta,
+            onkoMuuttunutViimeSijoittelussa: h.onkoMuuttunutViimeSijoittelussa,
           };
         },
       );

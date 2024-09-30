@@ -43,6 +43,14 @@ export const useSijoittelunTulosSearchParams = (
     parseAsBoolean.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(false),
   );
 
+  const [
+    showOnlyMuuttuneetViimeSijoittelussa,
+    setShowOnlyMuuttuneetViimeSijoittelussa,
+  ] = useQueryState<boolean>(
+    'muuttuneetViimeSijoittelussa',
+    parseAsBoolean.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(false),
+  );
+
   const [page, setPage] = useQueryState<number>(
     `page-${valintatapajonoOid}`,
     parseAsInteger.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(1),
@@ -63,11 +71,24 @@ export const useSijoittelunTulosSearchParams = (
 
   const ehdollisetChanged = useHasChanged(showOnlyEhdolliset);
 
+  const muuttuneetChanged = useHasChanged(showOnlyMuuttuneetViimeSijoittelussa);
+
   useEffect(() => {
-    if (searchPhraseChanged || tilaChanged || ehdollisetChanged) {
+    if (
+      searchPhraseChanged ||
+      tilaChanged ||
+      ehdollisetChanged ||
+      muuttuneetChanged
+    ) {
       setPage(1);
     }
-  }, [searchPhraseChanged, setPage, tilaChanged, ehdollisetChanged]);
+  }, [
+    searchPhraseChanged,
+    setPage,
+    tilaChanged,
+    ehdollisetChanged,
+    muuttuneetChanged,
+  ]);
 
   return {
     searchPhrase,
@@ -82,6 +103,8 @@ export const useSijoittelunTulosSearchParams = (
     setSijoittelunTila,
     showOnlyEhdolliset,
     setShowOnlyEhdolliset,
+    showOnlyMuuttuneetViimeSijoittelussa,
+    setShowOnlyMuuttuneetViimeSijoittelussa,
   };
 };
 
@@ -101,6 +124,7 @@ export const useSijoittelunTulosSearch = (
     setSort,
     sijoittelunTila,
     showOnlyEhdolliset,
+    showOnlyMuuttuneetViimeSijoittelussa,
   } = useSijoittelunTulosSearchParams(valintatapajonoOid);
 
   const results = useMemo(() => {
@@ -109,6 +133,8 @@ export const useSijoittelunTulosSearch = (
     const filtered = hakemukset.filter(
       (hakemus) =>
         (sijoittelunTila.length < 1 || hakemus.tila === sijoittelunTila) &&
+        (!showOnlyMuuttuneetViimeSijoittelussa ||
+          hakemus.onkoMuuttunutViimeSijoittelussa) &&
         (!showOnlyEhdolliset || hakemus.ehdollisestiHyvaksyttavissa) &&
         hakemusFilter(hakemus, searchPhrase),
     );
@@ -160,6 +186,7 @@ export const useSijoittelunTulosSearch = (
     translateEntity,
     sijoittelunTila,
     showOnlyEhdolliset,
+    showOnlyMuuttuneetViimeSijoittelussa,
   ]);
 
   const pageResults = useMemo(() => {

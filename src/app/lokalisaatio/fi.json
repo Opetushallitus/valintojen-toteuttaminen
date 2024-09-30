@@ -227,6 +227,8 @@
     "hakijalle-naytetaan": "Hakijalle näytetään:",
     "ehdollinen": "Ehdollinen valinta",
     "varasijalta": "Hyväksytään varasijalta",
+    "nayta-ehdolliset": "Näytä vain ehdollisesti hyväksytyt hakijat",
+    "nayta-muuttuneet": "Näytä vain edellisestä sijoitteluajosta muuttuneet tiedot",
     "taulukko": {
       "alaotsikko": "(Aloituspaikat: {{aloituspaikat}} | Sijoittelun aloituspaikat: {{sijoittelunAloituspaikat}} | Tasasijasääntö: {{tasasijasaanto}} | {{varasijataytto}} | Prioriteetti: {{prioriteetti}}",
       "jonosija": "Jonosija",

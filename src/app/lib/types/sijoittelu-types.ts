@@ -80,6 +80,7 @@ export type SijoittelunHakemusEnriched = {
   maksuntila?: MaksunTila;
   ehdollisestiHyvaksyttavissa: boolean;
   hyvaksyttyVarasijalta: boolean;
+  onkoMuuttunutViimeSijoittelussa: boolean;
 };
 
 export type SijoitteluajonValintatapajono = {
