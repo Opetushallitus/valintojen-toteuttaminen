@@ -81,6 +81,10 @@ export type SijoittelunHakemusEnriched = {
   ehdollisestiHyvaksyttavissa: boolean;
   hyvaksyttyVarasijalta: boolean;
   onkoMuuttunutViimeSijoittelussa: boolean;
+  ehdollisenHyvaksymisenEhtoKoodi?: string;
+  ehdollisenHyvaksymisenEhtoFI?: string;
+  ehdollisenHyvaksymisenEhtoSV?: string;
+  ehdollisenHyvaksymisenEhtoEN?: string;
 };
 
 export type SijoitteluajonValintatapajono = {

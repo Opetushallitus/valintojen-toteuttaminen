@@ -101,7 +101,10 @@ type SijoitteluajonTuloksetWithValintaEsitysResponseData = {
     prioriteetti: number;
     vastaanottotila: VastaanottoTila;
     ilmoittautumistila: IlmoittautumisTila;
-    //valinnantilanKuvaauksenTekstiFI |SV | EN
+    ehdollisenHyvaksymisenEhtoKoodi?: string;
+    ehdollisenHyvaksymisenEhtoFI?: string;
+    ehdollisenHyvaksymisenEhtoSV?: string;
+    ehdollisenHyvaksymisenEhtoEN?: string;
   }>;
   hakijaryhmat: Array<{ oid: string; kiintio: number }>;
   valintaesitys: Array<{
@@ -162,6 +165,14 @@ export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
               valintatulos.ehdollisestiHyvaksyttavissa,
             hyvaksyttyVarasijalta: valintatulos.hyvaksyttyVarasijalta,
             onkoMuuttunutViimeSijoittelussa: h.onkoMuuttunutViimeSijoittelussa,
+            ehdollisenHyvaksymisenEhtoKoodi:
+              valintatulos.ehdollisenHyvaksymisenEhtoKoodi,
+            ehdollisenHyvaksymisenEhtoFI:
+              valintatulos.ehdollisenHyvaksymisenEhtoFI,
+            ehdollisenHyvaksymisenEhtoSV:
+              valintatulos.ehdollisenHyvaksymisenEhtoSV,
+            ehdollisenHyvaksymisenEhtoEN:
+              valintatulos.ehdollisenHyvaksymisenEhtoEN,
           };
         },
       );
