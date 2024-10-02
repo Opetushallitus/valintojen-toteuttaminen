@@ -104,7 +104,8 @@ export type SijoitteluajonValintatapajonoEnriched = {
   prioriteetti: number;
   accepted?: string;
   aloituspaikat: number;
-  tasasijasaanto: 'YLITAYTTO'; //TODO muut
+  alkuperaisetAloituspaikat?: number;
+  tasasijasaanto: 'YLITAYTTO' | 'ARVONtA' | 'ALITAYTTO';
   varasijataytto: boolean;
 };
 

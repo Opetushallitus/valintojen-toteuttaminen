@@ -62,7 +62,8 @@ type SijoitteluajonTuloksetResponseData = {
     nimi: string;
     prioriteetti: number;
     aloituspaikat: number;
-    tasasijasaanto: 'YLITAYTTO'; //TODO muut
+    alkuperaisetAloituspaikat?: number;
+    tasasijasaanto: 'YLITAYTTO' | 'ARVONtA' | 'ALITAYTTO';
     eiVarasijatayttoa: boolean;
     hakemukset: [
       {
@@ -205,6 +206,7 @@ export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
         )?.hyvaksytty,
         varasijataytto: !jono.eiVarasijatayttoa,
         aloituspaikat: jono.aloituspaikat,
+        alkuperaisetAloituspaikat: jono.alkuperaisetAloituspaikat,
         tasasijasaanto: jono.tasasijasaanto,
       };
     });

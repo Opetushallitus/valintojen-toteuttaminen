@@ -231,7 +231,8 @@
     "nayta-muuttuneet": "Näytä vain edellisestä sijoitteluajosta muuttuneet tiedot",
     "vastaanottoaikaraja": "Aikaraja",
     "taulukko": {
-      "alaotsikko": "(Aloituspaikat: {{aloituspaikat}} | Sijoittelun aloituspaikat: {{sijoittelunAloituspaikat}} | Tasasijasääntö: {{tasasijasaanto}} | {{varasijataytto}} | Prioriteetti: {{prioriteetti}}",
+      "alaotsikko": "(<b>Aloituspaikat</b>: {{aloituspaikat}} | <b>Sijoittelun aloituspaikat</b>: {{sijoittelunAloituspaikat}} | <b>Tasasijasääntö</b>: {{tasasijasaanto}} | <b>{{varasijataytto}}</b> | <b>Prioriteetti</b>: {{prioriteetti}} )",
+      "alaotsikkoperus": "(<b>Sijoittelun aloituspaikat</b>: {{sijoittelunAloituspaikat}} | <b>Tasasijasääntö</b>: {{tasasijasaanto}} | <b>{{varasijataytto}}</b> | <b>Prioriteetti</b>: {{prioriteetti}} )",
       "jonosija": "Jonosija",
       "hakutoive": "Hakutoive",
       "pisteet": "Pisteet",
@@ -245,7 +246,8 @@
   "sijoittelu": {
     "tasasijasaanto": {
       "ARVONTA": "Arvonta",
-      "YLITAYTTO": "Ylitäyttö"
+      "YLITAYTTO": "Ylitäyttö",
+      "ALITAYTTO": "Alitäyttö"
     },
     "varasijataytto": "Varasijatäyttö",
     "ei-varasijatayttoa": "Ei varasijatäyttöä"

@@ -12,16 +12,15 @@ import { NoResults } from '@/app/components/no-results';
 import { useSijoittelunTulosSearchParams } from './hooks/useSijoittelunTuloksetSearch';
 import { SijoittelunTulosContent } from './components/sijoittelun-tulos-content';
 import { SijoittelunTulosControls } from './components/sijoittelun-tulos-controls';
+import { useHaku } from '@/app/hooks/useHaku';
+import { Haku } from '@/app/lib/types/kouta-types';
 
 type SijoitteluContentParams = {
-  hakuOid: string;
+  haku: Haku;
   hakukohdeOid: string;
 };
 
-const SijoitteluContent = ({
-  hakuOid,
-  hakukohdeOid,
-}: SijoitteluContentParams) => {
+const SijoitteluContent = ({ haku, hakukohdeOid }: SijoitteluContentParams) => {
   const { t } = useTranslations();
 
   const { pageSize, setPageSize } = useSijoittelunTulosSearchParams();
@@ -31,12 +30,12 @@ const SijoitteluContent = ({
       {
         queryKey: [
           'getLatestSijoitteluAjonTuloksetWithValintaEsitys',
-          hakuOid,
+          haku.oid,
           hakukohdeOid,
         ],
         queryFn: () =>
           getLatestSijoitteluAjonTuloksetWithValintaEsitys(
-            hakuOid,
+            haku.oid,
             hakukohdeOid,
           ),
       },
@@ -79,7 +78,11 @@ const SijoitteluContent = ({
         <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
       </Box>
       {tuloksetQuery.data.valintatapajonot.map((jono) => (
-        <SijoittelunTulosContent valintatapajono={jono} key={jono.oid} />
+        <SijoittelunTulosContent
+          valintatapajono={jono}
+          key={jono.oid}
+          haku={haku}
+        />
       ))}
     </Box>
   );
@@ -92,6 +95,8 @@ export default function SijoittelunTuloksetPage({
 }) {
   const { t } = useTranslations();
 
+  const { data: haku } = useHaku({ hakuOid: params.oid });
+
   return (
     <TabContainer>
       <QuerySuspenseBoundary
@@ -99,10 +104,7 @@ export default function SijoittelunTuloksetPage({
           <CircularProgress aria-label={t('yleinen.ladataan')} />
         }
       >
-        <SijoitteluContent
-          hakuOid={params.oid}
-          hakukohdeOid={params.hakukohde}
-        />
+        <SijoitteluContent haku={haku} hakukohdeOid={params.hakukohde} />
       </QuerySuspenseBoundary>
     </TabContainer>
   );

@@ -7,11 +7,14 @@ import { AccordionBox } from '@/app/components/accordion-box';
 import { SijoitteluajonValintatapajonoEnriched } from '@/app/lib/types/sijoittelu-types';
 import { SijoittelunTulosAccordionTitle } from './sijoittelun-tulos-accordion-title';
 import { SijoittelunTulosTable } from './sijoittelun-tulos-table';
+import { Haku } from '@/app/lib/types/kouta-types';
 
 export const SijoittelunTulosContent = ({
   valintatapajono,
+  haku,
 }: {
   valintatapajono: SijoitteluajonValintatapajonoEnriched;
+  haku: Haku;
 }) => {
   const { t } = useTranslations();
 
@@ -27,7 +30,10 @@ export const SijoittelunTulosContent = ({
       <AccordionBox
         id={valintatapajono.oid}
         title={
-          <SijoittelunTulosAccordionTitle valintatapajono={valintatapajono} />
+          <SijoittelunTulosAccordionTitle
+            valintatapajono={valintatapajono}
+            haku={haku}
+          />
         }
       >
         <TablePaginationWrapper
@@ -39,6 +45,7 @@ export const SijoittelunTulosContent = ({
           countHidden={true}
         >
           <SijoittelunTulosTable
+            haku={haku}
             hakemukset={pageResults}
             sort={sort}
             setSort={setSort}

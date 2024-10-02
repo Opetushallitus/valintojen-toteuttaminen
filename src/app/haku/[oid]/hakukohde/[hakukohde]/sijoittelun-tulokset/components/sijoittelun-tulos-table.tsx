@@ -16,6 +16,8 @@ import { MaksuCell } from './maksu-cell';
 import { IlmoittautumisCell } from './ilmoittautumis-cell';
 import { VastaanOttoCell } from './vastaanotto-cell';
 import { SijoittelunTilaCell } from './sijoittelun-tila-cell';
+import { Haku } from '@/app/lib/types/kouta-types';
+import { isKorkeakouluHaku } from '@/app/lib/kouta';
 
 export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
   title,
@@ -35,10 +37,12 @@ export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
 const TRANSLATIONS_PREFIX = 'sijoittelun-tulokset.taulukko';
 
 export const SijoittelunTulosTable = ({
+  haku,
   hakemukset,
   setSort,
   sort,
 }: {
+  haku: Haku;
   hakemukset: SijoittelunHakemusEnriched[];
   sort: string;
   setSort: (sort: string) => void;
@@ -79,18 +83,20 @@ export const SijoittelunTulosTable = ({
         key: 'ilmoittautumisTila',
         renderFn: (props) => <IlmoittautumisCell hakemus={props} />,
       }),
-      makeColumnWithCustomRender<SijoittelunHakemusEnriched>({
-        title: t(`${TRANSLATIONS_PREFIX}.maksuntila`),
-        key: 'maksuntila',
-        renderFn: (props) => <MaksuCell hakemus={props} />,
-      }),
+      isKorkeakouluHaku(haku)
+        ? makeColumnWithCustomRender<SijoittelunHakemusEnriched>({
+            title: t(`${TRANSLATIONS_PREFIX}.maksuntila`),
+            key: 'maksuntila',
+            renderFn: (props) => <MaksuCell hakemus={props} />,
+          })
+        : null,
       makeColumnWithCustomRender<SijoittelunHakemusEnriched>({
         title: t(`${TRANSLATIONS_PREFIX}.toiminnot`),
         key: 'toiminnot',
         renderFn: () => <span>...</span>,
       }),
-    ];
-  }, [t]);
+    ].filter((a) => a !== null);
+  }, [t, haku]);
 
   return (
     <ListTable
