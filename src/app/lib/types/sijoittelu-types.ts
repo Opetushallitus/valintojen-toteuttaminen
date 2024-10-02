@@ -85,6 +85,8 @@ export type SijoittelunHakemusEnriched = {
   ehdollisenHyvaksymisenEhtoFI?: string;
   ehdollisenHyvaksymisenEhtoSV?: string;
   ehdollisenHyvaksymisenEhtoEN?: string;
+  vastaanottoDeadlineMennyt?: boolean;
+  vastaanottoDeadline?: string;
 };
 
 export type SijoitteluajonValintatapajono = {

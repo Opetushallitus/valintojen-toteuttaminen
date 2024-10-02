@@ -105,6 +105,8 @@ type SijoitteluajonTuloksetWithValintaEsitysResponseData = {
     ehdollisenHyvaksymisenEhtoFI?: string;
     ehdollisenHyvaksymisenEhtoSV?: string;
     ehdollisenHyvaksymisenEhtoEN?: string;
+    vastaanottoDeadlineMennyt?: boolean;
+    vastaanottoDeadline?: string;
   }>;
   hakijaryhmat: Array<{ oid: string; kiintio: number }>;
   valintaesitys: Array<{
@@ -143,7 +145,8 @@ export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
           const valintatulos = valintatuloksetIndexed[h.hakemusOid];
           const maksuntila =
             hakemus.maksuvelvollisuus === Maksuvelvollisuus.MAKSUVELVOLLINEN &&
-            lukuvuosimaksutIndexed[h.hakijaOid]?.maksuntila;
+            (lukuvuosimaksutIndexed[h.hakijaOid]?.maksuntila ??
+              MaksunTila.MAKSAMATTA);
           return {
             hakijaOid: h.hakijaOid,
             hakemusOid: h.hakemusOid,
@@ -173,6 +176,8 @@ export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
               valintatulos.ehdollisenHyvaksymisenEhtoSV,
             ehdollisenHyvaksymisenEhtoEN:
               valintatulos.ehdollisenHyvaksymisenEhtoEN,
+            vastaanottoDeadlineMennyt: valintatulos.vastaanottoDeadlineMennyt,
+            vastaanottoDeadline: valintatulos.vastaanottoDeadline,
           };
         },
       );

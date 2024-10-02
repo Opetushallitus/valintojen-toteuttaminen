@@ -229,6 +229,7 @@
     "varasijalta": "Hyväksytään varasijalta",
     "nayta-ehdolliset": "Näytä vain ehdollisesti hyväksytyt hakijat",
     "nayta-muuttuneet": "Näytä vain edellisestä sijoitteluajosta muuttuneet tiedot",
+    "vastaanottoaikaraja": "Aikaraja",
     "taulukko": {
       "alaotsikko": "(Aloituspaikat: {{aloituspaikat}} | Sijoittelun aloituspaikat: {{sijoittelunAloituspaikat}} | Tasasijasääntö: {{tasasijasaanto}} | {{varasijataytto}} | Prioriteetti: {{prioriteetti}}",
       "jonosija": "Jonosija",

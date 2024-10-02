@@ -13,12 +13,19 @@ import {
   VastaanottoTila,
 } from '@/app/lib/types/sijoittelu-types';
 import { useMemo, useState } from 'react';
-import { Box, Checkbox, FormControlLabel, styled } from '@mui/material';
+import {
+  Box,
+  Checkbox,
+  FormControlLabel,
+  styled,
+  Typography,
+} from '@mui/material';
 import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { LocalizedSelect } from '@/app/components/localized-select';
 import { MaksunTila } from '@/app/lib/types/ataru-types';
 import { useHyvaksynnanEhdot } from '../hooks/useHyvaksynnanEhdot';
 import { OphInput } from '@/app/components/form/oph-input';
+import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
 
 const TRANSLATIONS_PREFIX = 'sijoittelun-tulokset.taulukko';
 
@@ -128,6 +135,12 @@ const VastaanOttoCell = ({
           <Checkbox checked={hakemus.julkaistavissa} onChange={() => ''} />
         }
       />
+      {hakemus.vastaanottoDeadline && (
+        <Typography>
+          {t('sijoittelun-tulokset.vastaanottoaikaraja')}:{' '}
+          {toFormattedDateTimeString(hakemus.vastaanottoDeadline)}
+        </Typography>
+      )}
       <OphFormControl
         label={t('sijoittelun-tulokset.hakijalle-naytetaan')}
         sx={{ fontWeight: 400 }}
