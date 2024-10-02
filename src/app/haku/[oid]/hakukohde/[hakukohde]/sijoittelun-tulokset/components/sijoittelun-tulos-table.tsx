@@ -26,6 +26,25 @@ import { MaksunTila } from '@/app/lib/types/ataru-types';
 import { useHyvaksynnanEhdot } from '../hooks/useHyvaksynnanEhdot';
 import { OphInput } from '@/app/components/form/oph-input';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
+import {
+  KeysMatching,
+  ListTableColumn,
+} from '@/app/components/table/table-types';
+
+export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
+  title,
+  key,
+  amountProp,
+}: {
+  title: string;
+  key: string;
+  amountProp: KeysMatching<T, number | undefined>;
+}): ListTableColumn<T> => ({
+  title,
+  key,
+  render: (props) => <span>{props[amountProp] as number}</span>,
+  style: { width: 0 },
+});
 
 const TRANSLATIONS_PREFIX = 'sijoittelun-tulokset.taulukko';
 
@@ -211,10 +230,10 @@ export const SijoittelunTulosTable = ({
   const columns = useMemo(() => {
     const stickyHakijaColumn = createStickyHakijaColumn('sijoittelun-tulos', t);
     return [
-      makeCountColumn<SijoittelunHakemusEnriched>({
+      makeEmptyCountColumn<SijoittelunHakemusEnriched>({
         title: t(`${TRANSLATIONS_PREFIX}.jonosija`),
-        key: 'jonosija',
-        amountProp: 'jonosija',
+        key: 'sija',
+        amountProp: 'sija',
       }),
       stickyHakijaColumn,
       makeCountColumn<SijoittelunHakemusEnriched>({

@@ -175,6 +175,14 @@ export const useSijoittelunTulosSearch = (
           return a.tila ? (asc ? 1 : -1) : b.tila ? (asc ? -1 : 1) : 0;
         });
       }
+      if (orderBy === 'sija') {
+        return filtered.sort((a, b) => {
+          const asc = direction === 'asc';
+          const aVal = a.sija ?? Number.MAX_VALUE;
+          const bVal = b.sija ?? Number.MAX_VALUE;
+          return asc ? bVal - aVal : aVal - bVal;
+        });
+      }
       return filtered.sort(byProp(orderBy, direction, translateEntity));
     };
 
