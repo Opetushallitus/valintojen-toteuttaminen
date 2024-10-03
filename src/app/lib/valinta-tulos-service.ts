@@ -108,6 +108,7 @@ type SijoitteluajonTuloksetWithValintaEsitysResponseData = {
     ehdollisenHyvaksymisenEhtoEN?: string;
     vastaanottoDeadlineMennyt?: boolean;
     vastaanottoDeadline?: string;
+    hyvaksyttyHarkinnanvaraisesti: boolean;
   }>;
   hakijaryhmat: Array<{ oid: string; kiintio: number }>;
   valintaesitys: Array<{
@@ -188,6 +189,8 @@ export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
             vastaanottoDeadlineMennyt: valintatulos.vastaanottoDeadlineMennyt,
             vastaanottoDeadline: valintatulos.vastaanottoDeadline,
             naytetaanVastaanottoTieto: showVastaanottoTieto(h.tila),
+            hyvaksyttyHarkinnanvaraisesti:
+              valintatulos.hyvaksyttyHarkinnanvaraisesti,
           };
         },
       );

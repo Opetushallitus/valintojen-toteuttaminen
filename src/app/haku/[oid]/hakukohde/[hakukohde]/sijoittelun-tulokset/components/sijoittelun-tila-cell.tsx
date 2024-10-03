@@ -1,5 +1,6 @@
 import { useTranslations } from '@/app/hooks/useTranslations';
 import {
+  isHyvaksyttyHarkinnanvaraisesti,
   SijoittelunHakemusEnriched,
   SijoittelunTila,
 } from '@/app/lib/types/sijoittelu-types';
@@ -39,13 +40,18 @@ export const SijoittelunTilaCell = ({
   const [ehdollinen, setEhdollinen] = useState<boolean>(
     hakemus.ehdollisestiHyvaksyttavissa,
   );
+
   const [ehdollinenSyy, setEhdollinenSyy] = useState(
     hakemus.ehdollisenHyvaksymisenEhtoKoodi,
   );
 
+  const hakemuksenTila = isHyvaksyttyHarkinnanvaraisesti(hakemus)
+    ? t('sijoitteluntila.HARKINNANVARAISESTI_HYVAKSYTTY')
+    : t(`sijoitteluntila.${hakemus.tila}`);
+
   return (
     <SijoittelunTulosStyledCell>
-      <span>{t(`sijoitteluntila.${hakemus.tila}`)}</span>
+      <span>{hakemuksenTila}</span>
       {showHyvaksyVarasijalta(hakemus) && (
         <FormControlLabel
           label={t('sijoittelun-tulokset.varasijalta')}

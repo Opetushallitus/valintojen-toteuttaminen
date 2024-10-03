@@ -73,7 +73,7 @@ const SijoitteluContent = ({ haku, hakukohdeOid }: SijoitteluContentParams) => {
             gap: 2,
           }}
         >
-          <SijoittelunTulosControls />
+          <SijoittelunTulosControls haku={haku} />
         </Box>
         <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
       </Box>

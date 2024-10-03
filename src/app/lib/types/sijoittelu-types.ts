@@ -88,7 +88,16 @@ export type SijoittelunHakemusEnriched = {
   vastaanottoDeadlineMennyt?: boolean;
   vastaanottoDeadline?: string;
   naytetaanVastaanottoTieto: boolean;
+  hyvaksyttyHarkinnanvaraisesti: boolean;
 };
+
+export const isHyvaksyttyHarkinnanvaraisesti = (
+  hakemus: SijoittelunHakemusEnriched,
+): boolean =>
+  hakemus.hyvaksyttyHarkinnanvaraisesti &&
+  [SijoittelunTila.HYVAKSYTTY, SijoittelunTila.VARASIJALTA_HYVAKSYTTY].includes(
+    hakemus.tila,
+  );
 
 export type SijoitteluajonValintatapajono = {
   oid: string;

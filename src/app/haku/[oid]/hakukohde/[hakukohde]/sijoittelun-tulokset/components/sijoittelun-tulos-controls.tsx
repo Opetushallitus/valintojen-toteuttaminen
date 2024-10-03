@@ -6,8 +6,10 @@ import { LocalizedSelect } from '@/app/components/localized-select';
 import { useSijoittelunTulosSearchParams } from '../hooks/useSijoittelunTuloksetSearch';
 import { SijoittelunTulosSearch } from './sijoittelun-tulos-search';
 import { OphCheckbox } from '@opetushallitus/oph-design-system';
+import { Haku } from '@/app/lib/types/kouta-types';
+import { isKorkeakouluHaku } from '@/app/lib/kouta';
 
-export const SijoittelunTulosControls = () => {
+export const SijoittelunTulosControls = ({ haku }: { haku: Haku }) => {
   const {
     sijoittelunTila,
     setSijoittelunTila,
@@ -72,11 +74,13 @@ export const SijoittelunTulosControls = () => {
           onChange={changeShowOnlyMuuttuneetViimeSijoittelussa}
           label={t('sijoittelun-tulokset.nayta-muuttuneet')}
         />
-        <OphCheckbox
-          checked={showOnlyEhdolliset}
-          onChange={changeShowOnlyEhdolliset}
-          label={t('sijoittelun-tulokset.nayta-ehdolliset')}
-        />
+        {isKorkeakouluHaku(haku) && (
+          <OphCheckbox
+            checked={showOnlyEhdolliset}
+            onChange={changeShowOnlyEhdolliset}
+            label={t('sijoittelun-tulokset.nayta-ehdolliset')}
+          />
+        )}
       </Box>
     </Box>
   );

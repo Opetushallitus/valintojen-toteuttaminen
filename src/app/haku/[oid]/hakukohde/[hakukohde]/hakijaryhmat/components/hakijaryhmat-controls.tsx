@@ -29,9 +29,11 @@ export const HakijaryhmatControls = () => {
     setSijoittelunTila(e.target.value);
   };
 
-  const sijoitteluntilaOptions = Object.values(SijoittelunTila).map((tila) => {
-    return { value: tila as string, label: t(`sijoitteluntila.${tila}`) };
-  });
+  const sijoitteluntilaOptions = Object.values(SijoittelunTila)
+    .filter((tila) => tila !== SijoittelunTila.HARKINNANVARAISESTI_HYVAKSYTTY)
+    .map((tila) => {
+      return { value: tila as string, label: t(`sijoitteluntila.${tila}`) };
+    });
 
   return (
     <Box

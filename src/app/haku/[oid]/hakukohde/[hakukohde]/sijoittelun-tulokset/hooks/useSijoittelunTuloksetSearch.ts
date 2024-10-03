@@ -11,6 +11,7 @@ import {
 import { HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY } from '@/app/lib/constants';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import {
+  isHyvaksyttyHarkinnanvaraisesti,
   SijoittelunHakemusEnriched,
   SijoittelunTila,
   SijoittelunTilaOrdinals,
@@ -108,6 +109,20 @@ export const useSijoittelunTulosSearchParams = (
   };
 };
 
+const filterBySijoittelunTila = (
+  hakemus: SijoittelunHakemusEnriched,
+  tila: string,
+) => {
+  const harkinnanvaraisestiHyvaksytty =
+    isHyvaksyttyHarkinnanvaraisesti(hakemus);
+  return (
+    tila.length < 1 ||
+    hakemus.tila === tila ||
+    (tila === SijoittelunTila.HARKINNANVARAISESTI_HYVAKSYTTY &&
+      harkinnanvaraisestiHyvaksytty)
+  );
+};
+
 export const useSijoittelunTulosSearch = (
   valintatapajonoOid: string,
   hakemukset: SijoittelunHakemusEnriched[],
@@ -132,7 +147,7 @@ export const useSijoittelunTulosSearch = (
 
     const filtered = hakemukset.filter(
       (hakemus) =>
-        (sijoittelunTila.length < 1 || hakemus.tila === sijoittelunTila) &&
+        filterBySijoittelunTila(hakemus, sijoittelunTila) &&
         (!showOnlyMuuttuneetViimeSijoittelussa ||
           hakemus.onkoMuuttunutViimeSijoittelussa) &&
         (!showOnlyEhdolliset || hakemus.ehdollisestiHyvaksyttavissa) &&
