@@ -15,17 +15,15 @@ export const AccordionBoxTitle = ({
   subTitle,
 }: {
   title: string;
-  subTitle?: string | TrustedHTML;
+  subTitle?: string | React.ReactNode;
 }) => {
   return (
     <BoxHeading component="div" variant="h2">
       <Box>{title}</Box>
       {subTitle && (
-        <OphTypography
-          component="div"
-          variant="body1"
-          dangerouslySetInnerHTML={{ __html: subTitle }}
-        />
+        <OphTypography component="div" variant="body1">
+          {subTitle}
+        </OphTypography>
       )}
     </BoxHeading>
   );

@@ -231,8 +231,12 @@
     "nayta-muuttuneet": "Näytä vain edellisestä sijoitteluajosta muuttuneet tiedot",
     "vastaanottoaikaraja": "Aikaraja",
     "taulukko": {
-      "alaotsikko": "(<b>Aloituspaikat</b>: {{aloituspaikat}} | <b>Sijoittelun aloituspaikat</b>: {{sijoittelunAloituspaikat}} | <b>Tasasijasääntö</b>: {{tasasijasaanto}} | <b>{{varasijataytto}}</b> | <b>Prioriteetti</b>: {{prioriteetti}} )",
-      "alaotsikkoperus": "(<b>Sijoittelun aloituspaikat</b>: {{sijoittelunAloituspaikat}} | <b>Tasasijasääntö</b>: {{tasasijasaanto}} | <b>{{varasijataytto}}</b> | <b>Prioriteetti</b>: {{prioriteetti}} )",
+      "alaotsikko": {
+        "aloituspaikat": "Aloituspaikat",
+        "sijoittelun-aloituspaikat": "Sijoittelun aloituspaikat",
+        "tasasijasaanto": "Tasasijasääntö",
+        "prioriteetti": "Prioriteetti"
+      },
       "jonosija": "Jonosija",
       "hakutoive": "Hakutoive",
       "pisteet": "Pisteet",

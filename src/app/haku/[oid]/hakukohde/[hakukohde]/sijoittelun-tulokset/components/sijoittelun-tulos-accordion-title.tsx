@@ -4,6 +4,18 @@ import { AccordionBoxTitle } from '@/app/components/accordion-box-title';
 import { SijoitteluajonValintatapajonoEnriched } from '@/app/lib/types/sijoittelu-types';
 import { Haku } from '@/app/lib/types/kouta-types';
 import { isKorkeakouluHaku } from '@/app/lib/kouta';
+import { styled, Typography } from '@mui/material';
+
+const Bolded = styled(Typography)(() => ({
+  fontWeight: 700,
+  display: 'inline',
+}));
+
+const Inline = styled(Typography)(() => ({
+  display: 'inline',
+}));
+
+const TRANSLATIONS_PREFIX = 'sijoittelun-tulokset.taulukko.alaotsikko.';
 
 export const SijoittelunTulosAccordionTitle = ({
   valintatapajono,
@@ -14,26 +26,36 @@ export const SijoittelunTulosAccordionTitle = ({
 }) => {
   const { t } = useTranslations();
 
-  const translationSubTitle = isKorkeakouluHaku(haku)
-    ? 'sijoittelun-tulokset.taulukko.alaotsikko'
-    : 'sijoittelun-tulokset.taulukko.alaotsikkoperus';
+  const varasijataytto = valintatapajono.varasijataytto
+    ? t('sijoittelu.varasijataytto')
+    : t('sijoittelu.ei-varasijatayttoa');
 
-  const subTitleParams = {
-    aloituspaikat: valintatapajono.alkuperaisetAloituspaikat,
-    sijoittelunAloituspaikat: valintatapajono.aloituspaikat,
-    tasasijasaanto: t(
-      'sijoittelu.tasasijasaanto.' + valintatapajono.tasasijasaanto,
-    ),
-    varasijataytto: valintatapajono.varasijataytto
-      ? t('sijoittelu.varasijataytto')
-      : t('sijoittelu.ei-varasijatayttoa'),
-    prioriteetti: valintatapajono.prioriteetti,
-  };
-
-  return (
-    <AccordionBoxTitle
-      title={valintatapajono.nimi}
-      subTitle={t(translationSubTitle, subTitleParams)}
-    />
+  const subtitle = (
+    <Typography display="inline">
+      (
+      {isKorkeakouluHaku(haku) && (
+        <Inline>
+          <Bolded>{t(`${TRANSLATIONS_PREFIX}aloituspaikat`)}</Bolded>:{' '}
+          {valintatapajono.alkuperaisetAloituspaikat} |&nbsp;
+        </Inline>
+      )}
+      <Inline>
+        <Bolded>{t(`${TRANSLATIONS_PREFIX}sijoittelun-aloituspaikat`)}</Bolded>:{' '}
+        {valintatapajono.aloituspaikat} |&nbsp;
+      </Inline>
+      <Inline>
+        <Bolded>{t(`${TRANSLATIONS_PREFIX}tasasijasaanto`)}</Bolded>:{' '}
+        {t(`sijoittelu.tasasijasaanto.${valintatapajono.tasasijasaanto}`)}{' '}
+        |&nbsp;
+      </Inline>
+      <Bolded>{varasijataytto}</Bolded>
+      <Inline>
+        &nbsp;|&nbsp;<Bolded>{t(`${TRANSLATIONS_PREFIX}prioriteetti`)}</Bolded>:{' '}
+        {valintatapajono.prioriteetti}
+      </Inline>
+      )
+    </Typography>
   );
+
+  return <AccordionBoxTitle title={valintatapajono.nimi} subTitle={subtitle} />;
 };
