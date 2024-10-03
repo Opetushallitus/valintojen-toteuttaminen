@@ -9,6 +9,8 @@ import { SijoittelunTulosStyledCell } from './sijoittelun-tulos-styled-cell';
 import { Box, Checkbox, FormControlLabel } from '@mui/material';
 import { LocalizedSelect } from '@/app/components/localized-select';
 import { OphInput } from '@/app/components/form/oph-input';
+import { isKorkeakouluHaku } from '@/app/lib/kouta';
+import { Haku } from '@/app/lib/types/kouta-types';
 
 const showHyvaksyVarasijalta = (hakemus: SijoittelunHakemusEnriched) =>
   hakemus.tila === SijoittelunTila.VARALLA ||
@@ -22,8 +24,10 @@ const showHyvaksyVarasijalta = (hakemus: SijoittelunHakemusEnriched) =>
 
 export const SijoittelunTilaCell = ({
   hakemus,
+  haku,
 }: {
   hakemus: SijoittelunHakemusEnriched;
+  haku: Haku;
 }) => {
   const { t, translateEntity } = useTranslations();
   const { data: hyvaksynnanEhdot } = useHyvaksynnanEhdot();
@@ -53,16 +57,18 @@ export const SijoittelunTilaCell = ({
           }
         />
       )}
-      <FormControlLabel
-        label={t('sijoittelun-tulokset.ehdollinen')}
-        control={
-          <Checkbox
-            checked={ehdollinen}
-            onChange={() => setEhdollinen(!ehdollinen)}
-          />
-        }
-      />
-      {ehdollinen && (
+      {isKorkeakouluHaku(haku) && (
+        <FormControlLabel
+          label={t('sijoittelun-tulokset.ehdollinen')}
+          control={
+            <Checkbox
+              checked={ehdollinen}
+              onChange={() => setEhdollinen(!ehdollinen)}
+            />
+          }
+        />
+      )}
+      {ehdollinen && isKorkeakouluHaku(haku) && (
         <LocalizedSelect
           sx={{ maxWidth: '300px' }}
           value={ehdollinenSyy}
@@ -70,7 +76,7 @@ export const SijoittelunTilaCell = ({
           options={ehtoOptions}
         />
       )}
-      {ehdollinen && ehdollinenSyy === 'muu' && (
+      {ehdollinen && isKorkeakouluHaku(haku) && ehdollinenSyy === 'muu' && (
         <Box>
           <OphInput
             value={hakemus.ehdollisenHyvaksymisenEhtoFI ?? ''}

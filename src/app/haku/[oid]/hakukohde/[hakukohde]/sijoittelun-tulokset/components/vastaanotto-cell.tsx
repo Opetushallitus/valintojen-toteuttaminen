@@ -6,8 +6,8 @@ import {
 import { SijoittelunTulosStyledCell } from './sijoittelun-tulos-styled-cell';
 import { Checkbox, FormControlLabel, Typography } from '@mui/material';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
-import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { LocalizedSelect } from '@/app/components/localized-select';
+import { useState } from 'react';
 
 export const VastaanOttoCell = ({
   hakemus,
@@ -15,6 +15,8 @@ export const VastaanOttoCell = ({
   hakemus: SijoittelunHakemusEnriched;
 }) => {
   const { t } = useTranslations();
+
+  const [julkaistavissa, setJulkaistavissa] = useState(hakemus.julkaistavissa);
 
   const vastaanottotilaOptions = Object.values(VastaanottoTila).map((tila) => {
     return { value: tila as string, label: t(`vastaanottotila.${tila}`) };
@@ -25,7 +27,10 @@ export const VastaanOttoCell = ({
       <FormControlLabel
         label={t('sijoittelun-tulokset.julkaistavissa')}
         control={
-          <Checkbox checked={hakemus.julkaistavissa} onChange={() => ''} />
+          <Checkbox
+            checked={julkaistavissa}
+            onChange={() => setJulkaistavissa(!julkaistavissa)}
+          />
         }
       />
       {hakemus.vastaanottoDeadline && (
@@ -34,18 +39,13 @@ export const VastaanOttoCell = ({
           {toFormattedDateTimeString(hakemus.vastaanottoDeadline)}
         </Typography>
       )}
-      <OphFormControl
-        label={t('sijoittelun-tulokset.hakijalle-naytetaan')}
-        sx={{ fontWeight: 400 }}
-        renderInput={({ labelId }) => (
-          <LocalizedSelect
-            labelId={labelId}
-            value={hakemus.vastaanottotila}
-            onChange={() => ''}
-            options={vastaanottotilaOptions}
-          />
-        )}
-      />
+      {hakemus.naytetaanVastaanottoTieto && julkaistavissa && (
+        <LocalizedSelect
+          value={hakemus.vastaanottotila}
+          onChange={() => ''}
+          options={vastaanottotilaOptions}
+        />
+      )}
     </SijoittelunTulosStyledCell>
   );
 };

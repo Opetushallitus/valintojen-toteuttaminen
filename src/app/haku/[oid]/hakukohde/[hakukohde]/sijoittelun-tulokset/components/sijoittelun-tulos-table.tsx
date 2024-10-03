@@ -71,7 +71,9 @@ export const SijoittelunTulosTable = ({
       makeColumnWithCustomRender<SijoittelunHakemusEnriched>({
         title: t(`${TRANSLATIONS_PREFIX}.tila`),
         key: 'sijoittelunTila',
-        renderFn: (props) => <SijoittelunTilaCell hakemus={props} />,
+        renderFn: (props) => (
+          <SijoittelunTilaCell hakemus={props} haku={haku} />
+        ),
       }),
       makeColumnWithCustomRender<SijoittelunHakemusEnriched>({
         title: t(`${TRANSLATIONS_PREFIX}.vastaanottotieto`),

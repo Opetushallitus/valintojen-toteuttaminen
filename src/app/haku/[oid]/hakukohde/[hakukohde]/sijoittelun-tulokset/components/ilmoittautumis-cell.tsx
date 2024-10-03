@@ -3,6 +3,7 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import {
   IlmoittautumisTila,
   SijoittelunHakemusEnriched,
+  VastaanottoTila,
 } from '@/app/lib/types/sijoittelu-types';
 
 export const IlmoittautumisCell = ({
@@ -18,11 +19,22 @@ export const IlmoittautumisCell = ({
     },
   );
 
+  const showSelect =
+    hakemus.naytetaanVastaanottoTieto &&
+    [
+      VastaanottoTila.VASTAANOTTANUT_SITOVASTI,
+      VastaanottoTila.EHDOLLISESTI_VASTAANOTTANUT,
+    ].includes(hakemus.vastaanottotila);
+
   return (
-    <LocalizedSelect
-      value={hakemus.ilmoittautumisTila}
-      onChange={() => ''}
-      options={ilmoittautumistilaOptions}
-    />
+    <>
+      {showSelect && (
+        <LocalizedSelect
+          value={hakemus.ilmoittautumisTila}
+          onChange={() => ''}
+          options={ilmoittautumistilaOptions}
+        />
+      )}
+    </>
   );
 };

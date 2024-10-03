@@ -87,6 +87,7 @@ export type SijoittelunHakemusEnriched = {
   ehdollisenHyvaksymisenEhtoEN?: string;
   vastaanottoDeadlineMennyt?: boolean;
   vastaanottoDeadline?: string;
+  naytetaanVastaanottoTieto: boolean;
 };
 
 export type SijoitteluajonValintatapajono = {

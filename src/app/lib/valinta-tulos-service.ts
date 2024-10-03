@@ -120,6 +120,14 @@ type SijoitteluajonTuloksetWithValintaEsitysResponseData = {
   lukuvuosimaksut: Array<{ personOid: string; maksuntila: MaksunTila }>;
 };
 
+const showVastaanottoTieto = (hakemuksenTila: SijoittelunTila) =>
+  [
+    SijoittelunTila.HYVAKSYTTY,
+    SijoittelunTila.VARASIJALTA_HYVAKSYTTY,
+    SijoittelunTila.PERUNUT,
+    SijoittelunTila.PERUUTETTU,
+  ].includes(hakemuksenTila);
+
 export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
   hakuOid: string,
   hakukohdeOid: string,
@@ -179,6 +187,7 @@ export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
               valintatulos.ehdollisenHyvaksymisenEhtoEN,
             vastaanottoDeadlineMennyt: valintatulos.vastaanottoDeadlineMennyt,
             vastaanottoDeadline: valintatulos.vastaanottoDeadline,
+            naytetaanVastaanottoTieto: showVastaanottoTieto(h.tila),
           };
         },
       );
