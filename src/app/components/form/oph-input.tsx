@@ -1,6 +1,11 @@
 'use client';
 import React from 'react';
-import { OutlinedInput, InputProps } from '@mui/material';
+import { OutlinedInput, InputProps, styled } from '@mui/material';
+import { ophColors } from '@opetushallitus/oph-design-system';
+
+const WhiteInput = styled(OutlinedInput)(() => ({
+  backgroundColor: ophColors.white,
+}));
 
 export const OphInput = ({
   value,
@@ -12,6 +17,6 @@ export const OphInput = ({
   helperText?: string[];
 }) => {
   return (
-    <OutlinedInput value={value} size="small" onChange={onChange} {...props} />
+    <WhiteInput value={value} size="small" onChange={onChange} {...props} />
   );
 };

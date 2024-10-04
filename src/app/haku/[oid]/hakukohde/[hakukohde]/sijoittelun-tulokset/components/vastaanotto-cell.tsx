@@ -4,10 +4,11 @@ import {
   VastaanottoTila,
 } from '@/app/lib/types/sijoittelu-types';
 import { SijoittelunTulosStyledCell } from './sijoittelun-tulos-styled-cell';
-import { Checkbox, FormControlLabel, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
 import { LocalizedSelect } from '@/app/components/localized-select';
 import { useState } from 'react';
+import { StyledOphCheckBox } from '@/app/components/form/styled-oph-checkbox';
 
 export const VastaanOttoCell = ({
   hakemus,
@@ -24,14 +25,10 @@ export const VastaanOttoCell = ({
 
   return (
     <SijoittelunTulosStyledCell>
-      <FormControlLabel
+      <StyledOphCheckBox
+        checked={julkaistavissa}
+        onChange={() => setJulkaistavissa(!julkaistavissa)}
         label={t('sijoittelun-tulokset.julkaistavissa')}
-        control={
-          <Checkbox
-            checked={julkaistavissa}
-            onChange={() => setJulkaistavissa(!julkaistavissa)}
-          />
-        }
       />
       {hakemus.vastaanottoDeadline && (
         <Typography>

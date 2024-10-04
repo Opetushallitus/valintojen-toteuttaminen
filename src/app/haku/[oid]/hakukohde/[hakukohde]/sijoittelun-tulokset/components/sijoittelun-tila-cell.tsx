@@ -7,11 +7,28 @@ import {
 import { useHyvaksynnanEhdot } from '../hooks/useHyvaksynnanEhdot';
 import { useState } from 'react';
 import { SijoittelunTulosStyledCell } from './sijoittelun-tulos-styled-cell';
-import { Box, Checkbox, FormControlLabel } from '@mui/material';
+import { Box, InputAdornment, styled } from '@mui/material';
 import { LocalizedSelect } from '@/app/components/localized-select';
 import { OphInput } from '@/app/components/form/oph-input';
 import { isKorkeakouluHaku } from '@/app/lib/kouta';
 import { Haku } from '@/app/lib/types/kouta-types';
+import { ophColors } from '@opetushallitus/oph-design-system';
+import { StyledOphCheckBox } from '@/app/components/form/styled-oph-checkbox';
+
+const LanguageAdornment = styled(InputAdornment)(() => ({
+  backgroundColor: ophColors.grey200,
+  p: {
+    color: ophColors.black,
+  },
+  height: '100%',
+  width: '3rem',
+  maxHeight: 'unset',
+  justifyContent: 'center',
+}));
+
+const StyledInput = styled(OphInput)(() => ({
+  paddingLeft: 0,
+}));
 
 const showHyvaksyVarasijalta = (hakemus: SijoittelunHakemusEnriched) =>
   hakemus.tila === SijoittelunTila.VARALLA ||
@@ -53,25 +70,17 @@ export const SijoittelunTilaCell = ({
     <SijoittelunTulosStyledCell>
       <span>{hakemuksenTila}</span>
       {showHyvaksyVarasijalta(hakemus) && (
-        <FormControlLabel
+        <StyledOphCheckBox
+          checked={hakemus.hyvaksyttyVarasijalta}
+          onChange={() => ''}
           label={t('sijoittelun-tulokset.varasijalta')}
-          control={
-            <Checkbox
-              checked={hakemus.hyvaksyttyVarasijalta}
-              onChange={() => ''}
-            />
-          }
         />
       )}
       {isKorkeakouluHaku(haku) && (
-        <FormControlLabel
+        <StyledOphCheckBox
+          checked={ehdollinen}
+          onChange={() => setEhdollinen(!ehdollinen)}
           label={t('sijoittelun-tulokset.ehdollinen')}
-          control={
-            <Checkbox
-              checked={ehdollinen}
-              onChange={() => setEhdollinen(!ehdollinen)}
-            />
-          }
         />
       )}
       {ehdollinen && isKorkeakouluHaku(haku) && (
@@ -83,18 +92,27 @@ export const SijoittelunTilaCell = ({
         />
       )}
       {ehdollinen && isKorkeakouluHaku(haku) && ehdollinenSyy === 'muu' && (
-        <Box>
-          <OphInput
+        <Box sx={{ display: 'flex', flexDirection: 'column', rowGap: 1 }}>
+          <StyledInput
             value={hakemus.ehdollisenHyvaksymisenEhtoFI ?? ''}
             onChange={() => ''}
+            startAdornment={
+              <LanguageAdornment position="start">FI</LanguageAdornment>
+            }
           />
-          <OphInput
+          <StyledInput
             value={hakemus.ehdollisenHyvaksymisenEhtoSV ?? ''}
             onChange={() => ''}
+            startAdornment={
+              <LanguageAdornment position="start">SV</LanguageAdornment>
+            }
           />
-          <OphInput
+          <StyledInput
             value={hakemus.ehdollisenHyvaksymisenEhtoEN ?? ''}
             onChange={() => ''}
+            startAdornment={
+              <LanguageAdornment position="start">EN</LanguageAdornment>
+            }
           />
         </Box>
       )}
