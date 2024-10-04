@@ -230,6 +230,9 @@
     "nayta-ehdolliset": "Näytä vain ehdollisesti hyväksytyt hakijat",
     "nayta-muuttuneet": "Näytä vain edellisestä sijoitteluajosta muuttuneet tiedot",
     "vastaanottoaikaraja": "Aikaraja",
+    "muu-syy-aria-fi": "Ehdollisuuden syy suomeksi",
+    "muu-syy-aria-sv": "Ehdollisuuden syy ruotsiksi",
+    "muu-syy-aria-en": "Ehdollisuuden syy englanniksi",
     "taulukko": {
       "alaotsikko": {
         "aloituspaikat": "Aloituspaikat",

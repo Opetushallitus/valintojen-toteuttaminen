@@ -99,6 +99,7 @@ export const SijoittelunTilaCell = ({
             startAdornment={
               <LanguageAdornment position="start">FI</LanguageAdornment>
             }
+            aria-label={t('sijoittelun-tulokset.muu-syy-aria-fi')}
           />
           <StyledInput
             value={hakemus.ehdollisenHyvaksymisenEhtoSV ?? ''}
@@ -106,6 +107,7 @@ export const SijoittelunTilaCell = ({
             startAdornment={
               <LanguageAdornment position="start">SV</LanguageAdornment>
             }
+            aria-label={t('sijoittelun-tulokset.muu-syy-aria-sv')}
           />
           <StyledInput
             value={hakemus.ehdollisenHyvaksymisenEhtoEN ?? ''}
@@ -113,6 +115,7 @@ export const SijoittelunTilaCell = ({
             startAdornment={
               <LanguageAdornment position="start">EN</LanguageAdornment>
             }
+            aria-label={t('sijoittelun-tulokset.muu-syy-aria-en')}
           />
         </Box>
       )}
