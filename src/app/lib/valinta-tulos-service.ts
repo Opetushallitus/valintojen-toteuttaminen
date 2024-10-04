@@ -110,11 +110,10 @@ type SijoitteluajonTuloksetWithValintaEsitysResponseData = {
     vastaanottoDeadline?: string;
     hyvaksyttyHarkinnanvaraisesti: boolean;
   }>;
-  hakijaryhmat: Array<{ oid: string; kiintio: number }>;
   valintaesitys: Array<{
     hakukohdeOid: string;
     valintatapajonoOid: string;
-    hyvaksytty: string;
+    hyvaksytty?: string;
   }>;
   lastModified: string;
   sijoittelunTulokset: Omit<SijoitteluajonTuloksetResponseData, 'hakijaryhmat'>;
