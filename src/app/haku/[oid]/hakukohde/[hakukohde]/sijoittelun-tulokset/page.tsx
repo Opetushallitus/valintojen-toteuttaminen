@@ -3,8 +3,8 @@
 import { TabContainer } from '../components/tab-container';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
-import { Box, CircularProgress } from '@mui/material';
-import { useSuspenseQueries } from '@tanstack/react-query';
+import { Box } from '@mui/material';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { getLatestSijoitteluAjonTuloksetWithValintaEsitys } from '@/app/lib/valinta-tulos-service';
 import { isEmpty } from '@/app/lib/common';
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
@@ -14,6 +14,7 @@ import { SijoittelunTulosContent } from './components/sijoittelun-tulos-content'
 import { SijoittelunTulosControls } from './components/sijoittelun-tulos-controls';
 import { useHaku } from '@/app/hooks/useHaku';
 import { Haku } from '@/app/lib/types/kouta-types';
+import { ClientSpinner } from '@/app/components/client-spinner';
 
 type SijoitteluContentParams = {
   haku: Haku;
@@ -25,28 +26,17 @@ const SijoitteluContent = ({ haku, hakukohdeOid }: SijoitteluContentParams) => {
 
   const { pageSize, setPageSize } = useSijoittelunTulosSearchParams();
 
-  const [tuloksetQuery] = useSuspenseQueries({
-    queries: [
-      {
-        queryKey: [
-          'getLatestSijoitteluAjonTuloksetWithValintaEsitys',
-          haku.oid,
-          hakukohdeOid,
-        ],
-        queryFn: () =>
-          getLatestSijoitteluAjonTuloksetWithValintaEsitys(
-            haku.oid,
-            hakukohdeOid,
-          ),
-      },
+  const { data: tulokset } = useSuspenseQuery({
+    queryKey: [
+      'getLatestSijoitteluAjonTuloksetWithValintaEsitys',
+      haku.oid,
+      hakukohdeOid,
     ],
+    queryFn: () =>
+      getLatestSijoitteluAjonTuloksetWithValintaEsitys(haku.oid, hakukohdeOid),
   });
 
-  if (tuloksetQuery.error) {
-    throw tuloksetQuery.error;
-  }
-
-  return isEmpty(tuloksetQuery.data) ? (
+  return isEmpty(tulokset) ? (
     <NoResults text={t('hakijaryhmat.ei-tuloksia')} />
   ) : (
     <Box
@@ -77,7 +67,7 @@ const SijoitteluContent = ({ haku, hakukohdeOid }: SijoitteluContentParams) => {
         </Box>
         <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
       </Box>
-      {tuloksetQuery.data.valintatapajonot.map((jono) => (
+      {tulokset.valintatapajonot.map((jono) => (
         <SijoittelunTulosContent
           valintatapajono={jono}
           key={jono.oid}
@@ -93,17 +83,11 @@ export default function SijoittelunTuloksetPage({
 }: {
   params: { oid: string; hakukohde: string };
 }) {
-  const { t } = useTranslations();
-
   const { data: haku } = useHaku({ hakuOid: params.oid });
 
   return (
     <TabContainer>
-      <QuerySuspenseBoundary
-        suspenseFallback={
-          <CircularProgress aria-label={t('yleinen.ladataan')} />
-        }
-      >
+      <QuerySuspenseBoundary suspenseFallback={<ClientSpinner />}>
         <SijoitteluContent haku={haku} hakukohdeOid={params.hakukohde} />
       </QuerySuspenseBoundary>
     </TabContainer>

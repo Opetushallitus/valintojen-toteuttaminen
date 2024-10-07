@@ -50,6 +50,8 @@ export const SijoittelunTilaCell = ({
   const { t, translateEntity } = useTranslations();
   const { data: hyvaksynnanEhdot } = useHyvaksynnanEhdot();
 
+  console.log('SIjoittelun tila', hakemus);
+
   const ehtoOptions = hyvaksynnanEhdot.map((ehto) => {
     return { value: ehto.koodiArvo, label: translateEntity(ehto.nimi) };
   });
@@ -68,7 +70,12 @@ export const SijoittelunTilaCell = ({
 
   return (
     <SijoittelunTulosStyledCell>
-      <span>{hakemuksenTila}</span>
+      <span>
+        {hakemuksenTila}
+        {hakemuksenTila === SijoittelunTila.VARALLA
+          ? `(${hakemus.varasijanNumero})`
+          : ''}
+      </span>
       {showHyvaksyVarasijalta(hakemus) && (
         <StyledOphCheckBox
           checked={hakemus.hyvaksyttyVarasijalta}

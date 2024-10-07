@@ -1,0 +1,176 @@
+{
+  "valintaesitys": [
+    {
+      "hakukohdeOid": "1.2.246.562.20.00000000000000045105",
+      "valintatapajono": "valintatapajono-yo"
+    },
+    {
+      "hakukohdeOid": "1.2.246.562.20.00000000000000045105",
+      "valintatapajono": "valintatapajono-amm"
+    }
+  ],
+  "valintatulokset": [
+    {
+      "valintatapajonoOid": "valintatapajono-yo",
+      "hakemusOid": "1.2.246.562.11.00000000000001796027",
+      "henkiloOid": "1.2.246.562.24.69259807406",
+      "pisteet": 100,
+      "valinnantila": "HYVAKSYTTY",
+      "ehdollisestiHyvaksyttavissa": false,
+      "julkaistavissa": true,
+      "hyvaksyttyVarasijalta": false,
+      "hyvaksyPeruuntunut": false,
+      "hyvaksyttyHakijaryhmista": [],
+      "varasijanNumero": 0,
+      "jonosija": 1,
+      "tasasijaJonosija": 1,
+      "prioriteetti": 0,
+      "vastaanottotila": "VASTAANOTTANUT_SITOVASTI",
+      "ilmoittautumistila": "LASNA_KOKO_LUKUVUOSI",
+      "hyvaksyttyHarkinnanvaraisesti": false
+    },
+    {
+      "valintatapajonoOid": "valintatapajono-yo",
+      "hakemusOid": "1.2.246.562.11.00000000000001793706",
+      "henkiloOid": "1.2.246.562.24.25732574711",
+      "pisteet": 78,
+      "valinnantila": "HYVAKSYTTY",
+      "ehdollisestiHyvaksyttavissa": false,
+      "julkaistavissa": true,
+      "hyvaksyttyVarasijalta": false,
+      "hyvaksyPeruuntunut": false,
+      "hyvaksyttyHakijaryhmista": [],
+      "varasijanNumero": 0,
+      "jonosija": 2,
+      "tasasijaJonosija": 1,
+      "prioriteetti": 0,
+      "vastaanottotila": "VASTAANOTTANUT_SITOVASTI",
+      "ilmoittautumistila": "LASNA_SYKSY",
+      "hyvaksyttyHarkinnanvaraisesti": false
+    },
+    {
+      "valintatapajonoOid": "valintatapajono-yo",
+      "hakemusOid": "1.2.246.562.11.00000000000001790371",
+      "henkiloOid": "1.2.246.562.24.14598775927",
+      "pisteet": 49,
+      "valinnantila": "VARASIJALTA_HYVAKSYTTY",
+      "ehdollisestiHyvaksyttavissa": true,
+      "julkaistavissa": true,
+      "hyvaksyttyVarasijalta": true,
+      "hyvaksyPeruuntunut": false,
+      "hyvaksyttyHakijaryhmista": [],
+      "varasijanNumero": 1,
+      "jonosija": 3,
+      "tasasijaJonosija": 1,
+      "prioriteetti": 0,
+      "vastaanottotila": "KESKEN",
+      "ilmoittautumistila": "EI_TEHTY",
+      "ehdollisenHyvaksymisenEhtoKoodi": "MUU",
+      "ehdollisenHyvaksymisenEhtoFI": "PURE!",
+      "ehdollisenHyvaksymisenEhtoSV": "SOV",
+      "ehdollisenHyvaksymisenEhtoEN": "BITE!",
+      "hyvaksyttyHarkinnanvaraisesti": false,
+      "vastaanottoDeadlineMennyt": true,
+      "vastaanottoDeadline": "2024-03-11 12:50:00"
+    },
+    {
+      "valintatapajonoOid": "valintatapajono-amm",
+      "hakemusOid": "1.2.246.562.11.00000000000001543832",
+      "henkiloOid": "1.2.246.562.24.30476885816",
+      "pisteet": 0,
+      "valinnantila": "HYLATTY",
+      "ehdollisestiHyvaksyttavissa": false,
+      "julkaistavissa": false,
+      "hyvaksyttyVarasijalta": false,
+      "hyvaksyPeruuntunut": false,
+      "hyvaksyttyHakijaryhmista": [],
+      "varasijanNumero": 0,
+      "jonosija": 0,
+      "tasasijaJonosija": 0,
+      "prioriteetti": 0,
+      "vastaanottotila": "KESKEN",
+      "ilmoittautumistila": "EI_TEHTY",
+      "hyvaksyttyHarkinnanvaraisesti": false
+    }
+  ],
+  "sijoittelunTulokset": {
+    "valintatapajonot": [
+      {
+        "oid": "valintatapajono-yo",
+        "nimi": "Todistusvalinta (YO)",
+        "prioriteetti": 0,
+        "aloituspaikat": 2,
+        "alkuperaisetAloituspaikat": 1,
+        "tasasijasaanto": "ARVONTA",
+        "eiVarasijatayttoa": false,
+        "hakemukset": [
+          {
+            "hakijaOid": "1.2.246.562.24.69259807406",
+            "hakemusOid": "1.2.246.562.11.00000000000001796027",
+            "pisteet": 100,
+            "tila": "HYVAKSYTTY",
+            "valintatapajonoOid": "valintatapajono-yo",
+            "hyvaksyttyHakijaryhmista": [],
+            "varasijanNumero": 0,
+            "jonosija": 1,
+            "tasasijaJonosija": 1,
+            "prioriteetti": 0,
+            "onkoMuuttunutViimeSijoittelussa": false
+          },
+          {
+            "hakijaOid": "1.2.246.562.24.25732574711",
+            "hakemusOid": "1.2.246.562.11.00000000000001793706",
+            "pisteet": 78,
+            "tila": "HYVAKSYTTY",
+            "valintatapajonoOid": "valintatapajono-yo",
+            "hyvaksyttyHakijaryhmista": [],
+            "varasijanNumero": 0,
+            "jonosija": 2,
+            "tasasijaJonosija": 1,
+            "prioriteetti": 0,
+            "onkoMuuttunutViimeSijoittelussa": false
+          },
+          {
+            "hakijaOid": "1.2.246.562.24.14598775927",
+            "hakemusOid": "1.2.246.562.11.00000000000001790371",
+            "pisteet": 49,
+            "tila": "VARALLA",
+            "valintatapajonoOid": "valintatapajono-yo",
+            "hyvaksyttyHakijaryhmista": [],
+            "varasijanNumero": 1,
+            "jonosija": 3,
+            "tasasijaJonosija": 1,
+            "prioriteetti": 0,
+            "onkoMuuttunutViimeSijoittelussa": false
+          }
+        ]
+      },
+      {
+        "oid": "valintatapajono-amm",
+        "nimi": "Todistusvalinta (AMM)",
+        "prioriteetti": 1,
+        "aloituspaikat": 1,
+        "alkuperaisetAloituspaikat": 1,
+        "tasasijasaanto": "YLITAYTTO",
+        "eiVarasijatayttoa": false,
+        "hakemukset": [
+          {
+            "hakijaOid": "1.2.246.562.24.30476885816",
+            "hakemusOid": "1.2.246.562.11.00000000000001543832",
+            "pisteet": 0,
+            "tila": "HYLATTY",
+            "valintatapajonoOid": "valintatapajono-amm",
+            "hyvaksyttyHakijaryhmista": [],
+            "varasijanNumero": 0,
+            "jonosija": 0,
+            "tasasijaJonosija": 0,
+            "prioriteetti": 0,
+            "onkoMuuttunutViimeSijoittelussa": true
+          }
+        ]
+      }
+    ]
+  },
+  "lastModified": "2024-01-01 12:00:00",
+  "lukuvuosimaksut": []
+}

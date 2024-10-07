@@ -63,7 +63,7 @@ type SijoitteluajonTuloksetResponseData = {
     prioriteetti: number;
     aloituspaikat: number;
     alkuperaisetAloituspaikat?: number;
-    tasasijasaanto: 'YLITAYTTO' | 'ARVONtA' | 'ALITAYTTO';
+    tasasijasaanto: 'YLITAYTTO' | 'ARVONTA' | 'ALITAYTTO';
     eiVarasijatayttoa: boolean;
     hakemukset: [
       {
@@ -168,8 +168,7 @@ export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
             jonosija: h.jonosija,
             tasasijaJonosija: h.tasasijaJonosija,
             hakutoive: h.prioriteetti,
-            ilmoittautumisTila:
-              valintatuloksetIndexed[h.hakemusOid].ilmoittautumistila,
+            ilmoittautumisTila: valintatulos.ilmoittautumistila,
             julkaistavissa: valintatulos.julkaistavissa,
             vastaanottotila: valintatulos.vastaanottotila,
             maksuntila: maksuntila || undefined,

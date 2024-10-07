@@ -38,7 +38,12 @@ const TABS_TO_TEST: Tab[] = [
     textLocator: 'Hae hakijan nimellä tai tunnisteilla',
     route: 'hakijaryhmat',
   },
-  { title: 'Sijoittelun tulokset', route: 'sijoittelun-tulokset' },
+  {
+    title: 'Sijoittelun tulokset',
+    textLocator:
+      '(Aloituspaikat: 1 | Sijoittelun aloituspaikat: 2 | Tasasijasääntö: Arvonta | Varasijatäyttö | Prioriteetti: 0)',
+    route: 'sijoittelun-tulokset',
+  },
 ] as const;
 
 test('navigates to hakukohde tabs', async ({ page }) => {

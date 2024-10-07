@@ -6,12 +6,12 @@ import { Haku } from '@/app/lib/types/kouta-types';
 import { isKorkeakouluHaku } from '@/app/lib/kouta';
 import { styled, Typography } from '@mui/material';
 
-const Bolded = styled(Typography)(() => ({
+const Bolded = styled('span')(() => ({
   fontWeight: 700,
   display: 'inline',
 }));
 
-const Inline = styled(Typography)(() => ({
+const Inline = styled('span')(() => ({
   display: 'inline',
 }));
 
@@ -26,12 +26,14 @@ export const SijoittelunTulosAccordionTitle = ({
 }) => {
   const { t } = useTranslations();
 
+  console.log('JOPAS JOTAKIN', valintatapajono);
+
   const varasijataytto = valintatapajono.varasijataytto
     ? t('sijoittelu.varasijataytto')
     : t('sijoittelu.ei-varasijatayttoa');
 
   const subtitle = (
-    <Typography display="inline">
+    <Typography component="div" display="inline">
       (
       {isKorkeakouluHaku(haku) && (
         <Inline>

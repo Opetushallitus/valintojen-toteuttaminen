@@ -31,10 +31,15 @@ export const checkRow = async (
   row: Locator,
   expectedValues: string[],
   cellType: 'th' | 'td' = 'td',
+  exact: boolean = true,
 ) => {
   const cells = row.locator(cellType);
   for (const [index, value] of expectedValues.entries()) {
-    await expect(cells.nth(index)).toHaveText(value);
+    if (exact) {
+      await expect(cells.nth(index)).toHaveText(value);
+    } else {
+      await expect(cells.nth(index)).toContainText(value);
+    }
   }
 };
 
