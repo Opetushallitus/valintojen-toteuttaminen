@@ -26,8 +26,6 @@ export const SijoittelunTulosAccordionTitle = ({
 }) => {
   const { t } = useTranslations();
 
-  console.log('JOPAS JOTAKIN', valintatapajono);
-
   const varasijataytto = valintatapajono.varasijataytto
     ? t('sijoittelu.varasijataytto')
     : t('sijoittelu.ei-varasijatayttoa');

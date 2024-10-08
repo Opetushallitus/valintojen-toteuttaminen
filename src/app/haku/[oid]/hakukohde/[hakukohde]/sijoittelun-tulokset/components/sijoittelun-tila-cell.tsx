@@ -50,8 +50,6 @@ export const SijoittelunTilaCell = ({
   const { t, translateEntity } = useTranslations();
   const { data: hyvaksynnanEhdot } = useHyvaksynnanEhdot();
 
-  console.log('SIjoittelun tila', hakemus);
-
   const ehtoOptions = hyvaksynnanEhdot.map((ehto) => {
     return { value: ehto.koodiArvo, label: translateEntity(ehto.nimi) };
   });

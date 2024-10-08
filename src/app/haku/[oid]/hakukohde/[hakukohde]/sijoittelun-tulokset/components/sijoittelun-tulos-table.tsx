@@ -49,8 +49,6 @@ export const SijoittelunTulosTable = ({
 }) => {
   const { t } = useTranslations();
 
-  console.log('MITÄS TÄÄ ON', hakemukset[0] ?? 'TYHJÄ?!');
-
   const columns = useMemo(() => {
     const stickyHakijaColumn = createStickyHakijaColumn('sijoittelun-tulos', t);
     return [
