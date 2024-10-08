@@ -92,6 +92,26 @@ test('displays sijoittelun tulokset', async ({ page }) => {
   );
 });
 
+test('shows other selection options for ehdollisuuden syy', async ({
+  page,
+}) => {
+  const ammSection = page.getByLabel('Todistusvalinta (AMM)(');
+  await ammSection.getByLabel('Ehdollinen valinta').click();
+  await expect(ammSection.getByLabel('Valitse vaihtoehdoista')).toBeVisible();
+  await ammSection.getByLabel('Valitse vaihtoehdoista').click();
+  await expect(page.getByRole('option', { name: 'Muu' })).toBeVisible();
+  await page.getByRole('option', { name: 'Muu' }).click();
+  await expect(
+    ammSection.getByLabel('Ehdollisuuden syy suomeksi'),
+  ).toBeVisible();
+  await expect(
+    ammSection.getByLabel('Ehdollisuuden syy ruotsiksi'),
+  ).toBeVisible();
+  await expect(
+    ammSection.getByLabel('Ehdollisuuden syy englanniksi'),
+  ).toBeVisible();
+});
+
 test.describe('filters', () => {
   test('filters by name', async ({ page }) => {
     const hakuInput = page.getByRole('textbox', {
