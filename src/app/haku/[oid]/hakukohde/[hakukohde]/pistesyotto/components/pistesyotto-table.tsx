@@ -1,27 +1,17 @@
 'use client';
 import { HakemuksenPistetiedot } from '@/app/lib/types/laskenta-types';
 import { ValintakoeAvaimet } from '@/app/lib/types/valintaperusteet-types';
-import { ophColors } from '@opetushallitus/oph-design-system';
 import { ReadOnlyKoeCell } from './koe-readonly-cell';
 import { ChangePisteSyottoFormParams } from './pistesyotto-form';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { useMemo } from 'react';
 import {
-  hakijaColumn,
+  createStickyHakijaColumn,
   makeColumnWithCustomRender,
 } from '@/app/components/table/table-columns';
 import { ListTable } from '@/app/components/table/list-table';
 import { isNotPartOfThisHakukohde } from '../lib/pistesyotto-utils';
 import { KoeCell } from './koe-cell';
-
-const stickyColumnStyle: React.CSSProperties = {
-  minWidth: '260px',
-  position: 'sticky',
-  left: 0,
-  boxShadow: `0 5px 3px 2px ${ophColors.grey200}`,
-  zIndex: 1,
-  backgroundColor: ophColors.white,
-};
 
 export const PisteSyottoTable = ({
   pistetiedot,
@@ -41,10 +31,7 @@ export const PisteSyottoTable = ({
   const { t } = useTranslations();
 
   const columns = useMemo(() => {
-    const stickyHakijaColumn = Object.assign(hakijaColumn, {
-      style: stickyColumnStyle,
-      title: t('hakeneet.taulukko.hakija'),
-    });
+    const stickyHakijaColumn = createStickyHakijaColumn('pistesyotto', t);
 
     const koeColumns = kokeet.map((koe) => {
       return makeColumnWithCustomRender<HakemuksenPistetiedot>({
@@ -78,6 +65,7 @@ export const PisteSyottoTable = ({
       setSort={setSort}
       translateHeader={false}
       sx={{ overflowX: 'auto', width: 'unset' }}
+      wrapperStyle={{ display: 'block' }}
     />
   );
 };

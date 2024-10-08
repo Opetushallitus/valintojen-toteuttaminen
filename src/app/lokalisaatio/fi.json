@@ -222,7 +222,42 @@
     "virhe-vie-kaikki-taulukkolaskentaan": "Taulukkolaskentaan viemisessä tapahtui virhe!"
   },
   "sijoittelun-tulokset": {
-    "otsikko": "Sijoittelun tulokset"
+    "otsikko": "Sijoittelun tulokset",
+    "julkaistavissa": "Julkaistavissa",
+    "hakijalle-naytetaan": "Hakijalle näytetään:",
+    "ehdollinen": "Ehdollinen valinta",
+    "varasijalta": "Hyväksytään varasijalta",
+    "nayta-ehdolliset": "Näytä vain ehdollisesti hyväksytyt hakijat",
+    "nayta-muuttuneet": "Näytä vain edellisestä sijoitteluajosta muuttuneet tiedot",
+    "vastaanottoaikaraja": "Aikaraja",
+    "muu-syy-aria-fi": "Ehdollisuuden syy suomeksi",
+    "muu-syy-aria-sv": "Ehdollisuuden syy ruotsiksi",
+    "muu-syy-aria-en": "Ehdollisuuden syy englanniksi",
+    "taulukko": {
+      "alaotsikko": {
+        "aloituspaikat": "Aloituspaikat",
+        "sijoittelun-aloituspaikat": "Sijoittelun aloituspaikat",
+        "tasasijasaanto": "Tasasijasääntö",
+        "prioriteetti": "Prioriteetti"
+      },
+      "jonosija": "Jonosija",
+      "hakutoive": "Hakutoive",
+      "pisteet": "Pisteet",
+      "tila": "Sijoittelun tila",
+      "vastaanottotieto": "Vastaanottotieto",
+      "ilmoittautumistieto": "Ilmoittautumistieto",
+      "maksuntila": "Maksun tila",
+      "toiminnot": "Toiminnot"
+    }
+  },
+  "sijoittelu": {
+    "tasasijasaanto": {
+      "ARVONTA": "Arvonta",
+      "YLITAYTTO": "Ylitäyttö",
+      "ALITAYTTO": "Alitäyttö"
+    },
+    "varasijataytto": "Varasijatäyttö",
+    "ei-varasijatayttoa": "Ei varasijatäyttöä"
   },
   "valinnanvaihe": {
     "nimi": "Valinnanvaiheen nimi",
@@ -230,6 +265,21 @@
       "valintakoe": "Valintakoevalinnanvaihe",
       "tavallinen": "Valinnanvaihe"
     }
+  },
+  "ilmoittautumistila": {
+    "EI_TEHTY": "Ei tehty",
+    "LASNA_KOKO_LUKUVUOSI": "Läsnä (koko lukuvuosi)",
+    "POISSA_KOKO_LUKUVUOSI": "Poissa (koko lukuvuosi)",
+    "EI_ILMOITTAUTUNUT": "Ei ilmoittautunut",
+    "LASNA_SYKSY": "Läsnä syksy, poissa kevät",
+    "POISSA_SYKSY": "Poissa syksy, läsnä kevät",
+    "LASNA": "Läsnä, keväällä alkava koulutus",
+    "POISSA": "Poissa, keväällä alkava koulutus"
+  },
+  "maksuntila": {
+    "MAKSAMATTA": "Maksamatta",
+    "MAKSETTU": "Maksettu",
+    "VAPAUTETTU": "Vapautettu"
   },
   "sijoitteluntila": {
     "HYVAKSYTTY": "HYVÄKSYTTY",
@@ -240,6 +290,15 @@
     "PERUUNTUNUT": "PERUUNTUNUT",
     "PERUNUT": "PERUNUT",
     "PERUUTETTU": "PERUUTETTU"
+  },
+  "vastaanottotila": {
+    "KESKEN": "Kesken",
+    "EHDOLLISESTI_VASTAANOTTANUT": "Ehdollisesti vastaanottanut",
+    "VASTAANOTTANUT_SITOVASTI": "Vastaanottanut sitovasti",
+    "EI_VASTAANOTETTU_MAARA_AIKANA": "Ei vastaanotettu määräaikana",
+    "PERUNUT": "Perunut",
+    "PERUUTETTU": "Peruutettu",
+    "OTTANUT_VASTAAN_TOISEN_PAIKAN": "Ottanut vastaan toisen paikan"
   },
   "validaatio": {
     "numero": {

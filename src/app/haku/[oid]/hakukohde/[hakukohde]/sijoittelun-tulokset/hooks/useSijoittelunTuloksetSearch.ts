@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
 import { useDebounce } from '@/app/hooks/useDebounce';
-import { parseAsInteger, useQueryState } from 'nuqs';
+import { parseAsBoolean, parseAsInteger, useQueryState } from 'nuqs';
 import { useHasChanged } from '@/app/hooks/useHasChanged';
 import {
   byProp,
@@ -10,7 +10,11 @@ import {
 } from '@/app/components/table/table-utils';
 import { HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY } from '@/app/lib/constants';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { HakijaryhmanHakija } from '@/app/lib/types/laskenta-types';
+import {
+  isHyvaksyttyHarkinnanvaraisesti,
+  SijoittelunHakemusValintatiedoilla,
+  SijoittelunTila,
+} from '@/app/lib/types/sijoittelu-types';
 import { hakemusFilter } from '@/app/hooks/filters';
 import {
   DEFAULT_NUQS_OPTIONS,
@@ -19,7 +23,9 @@ import {
 
 const DEFAULT_PAGE_SIZE = 10;
 
-export const useHakijaryhmatSearchParams = (hakijaryhmaOid?: string) => {
+export const useSijoittelunTulosSearchParams = (
+  valintatapajonoOid?: string,
+) => {
   const [searchPhrase, setSearchPhrase] = useQueryState(
     `search`,
     DEFAULT_NUQS_OPTIONS,
@@ -30,23 +36,26 @@ export const useHakijaryhmatSearchParams = (hakijaryhmaOid?: string) => {
     HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
   );
 
-  const [kuuluuRyhmaan, setKuuluuRyhmaan] = useQueryState(
-    'kuuluu',
-    DEFAULT_NUQS_OPTIONS,
-  );
-
-  const [hyvaksyttyRyhmasta, setHyvaksyttyRyhmasta] = useQueryState(
-    'hyvaksytty',
-    DEFAULT_NUQS_OPTIONS,
-  );
-
   const [sijoittelunTila, setSijoittelunTila] = useQueryState(
     'tila',
     DEFAULT_NUQS_OPTIONS,
   );
 
+  const [showOnlyEhdolliset, setShowOnlyEhdolliset] = useQueryState<boolean>(
+    'ehdolliset',
+    parseAsBoolean.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(false),
+  );
+
+  const [
+    showOnlyMuuttuneetViimeSijoittelussa,
+    setShowOnlyMuuttuneetViimeSijoittelussa,
+  ] = useQueryState<boolean>(
+    'muuttuneetViimeSijoittelussa',
+    parseAsBoolean.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(false),
+  );
+
   const [page, setPage] = useQueryState<number>(
-    `page-${hakijaryhmaOid}`,
+    `page-${valintatapajonoOid}`,
     parseAsInteger.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(1),
   );
 
@@ -61,27 +70,27 @@ export const useHakijaryhmatSearchParams = (hakijaryhmaOid?: string) => {
 
   const searchPhraseChanged = useHasChanged(searchPhrase);
 
-  const kuuluuChanged = useHasChanged(kuuluuRyhmaan);
-
-  const hyvaksyttyChanged = useHasChanged(hyvaksyttyRyhmasta);
-
   const tilaChanged = useHasChanged(sijoittelunTila);
+
+  const ehdollisetChanged = useHasChanged(showOnlyEhdolliset);
+
+  const muuttuneetChanged = useHasChanged(showOnlyMuuttuneetViimeSijoittelussa);
 
   useEffect(() => {
     if (
       searchPhraseChanged ||
-      kuuluuChanged ||
-      hyvaksyttyChanged ||
-      tilaChanged
+      tilaChanged ||
+      ehdollisetChanged ||
+      muuttuneetChanged
     ) {
       setPage(1);
     }
   }, [
     searchPhraseChanged,
-    kuuluuChanged,
     setPage,
-    hyvaksyttyChanged,
     tilaChanged,
+    ehdollisetChanged,
+    muuttuneetChanged,
   ]);
 
   return {
@@ -93,18 +102,32 @@ export const useHakijaryhmatSearchParams = (hakijaryhmaOid?: string) => {
     setPageSize,
     sort,
     setSort,
-    kuuluuRyhmaan,
-    setKuuluuRyhmaan,
-    hyvaksyttyRyhmasta,
-    setHyvaksyttyRyhmasta,
     sijoittelunTila,
     setSijoittelunTila,
+    showOnlyEhdolliset,
+    setShowOnlyEhdolliset,
+    showOnlyMuuttuneetViimeSijoittelussa,
+    setShowOnlyMuuttuneetViimeSijoittelussa,
   };
 };
 
-export const useHakijaryhmatSearch = (
-  hakijaryhmaOid: string,
-  hakijaryhmanHakijat: HakijaryhmanHakija[],
+const filterBySijoittelunTila = (
+  hakemus: SijoittelunHakemusValintatiedoilla,
+  tila: string,
+) => {
+  const harkinnanvaraisestiHyvaksytty =
+    isHyvaksyttyHarkinnanvaraisesti(hakemus);
+  return (
+    tila.length < 1 ||
+    hakemus.tila === tila ||
+    (tila === SijoittelunTila.HARKINNANVARAISESTI_HYVAKSYTTY &&
+      harkinnanvaraisestiHyvaksytty)
+  );
+};
+
+export const useSijoittelunTulosSearch = (
+  valintatapajonoOid: string,
+  hakemukset: SijoittelunHakemusValintatiedoilla[],
 ) => {
   const { translateEntity } = useTranslations();
 
@@ -116,46 +139,47 @@ export const useHakijaryhmatSearch = (
     setPageSize,
     sort,
     setSort,
-    kuuluuRyhmaan,
-    hyvaksyttyRyhmasta,
     sijoittelunTila,
-  } = useHakijaryhmatSearchParams(hakijaryhmaOid);
+    showOnlyEhdolliset,
+    showOnlyMuuttuneetViimeSijoittelussa,
+  } = useSijoittelunTulosSearchParams(valintatapajonoOid);
 
   const results = useMemo(() => {
     const { orderBy, direction } = getSortParts(sort);
 
-    const parsedKuuluuRyhmaan: boolean | null =
-      kuuluuRyhmaan.length > 0 ? JSON.parse(kuuluuRyhmaan) : null;
-    const parsedHyvaksytty: boolean | null =
-      hyvaksyttyRyhmasta.length > 0 ? JSON.parse(hyvaksyttyRyhmasta) : null;
-
-    const filtered = hakijaryhmanHakijat.filter(
-      (hakija) =>
-        (parsedKuuluuRyhmaan == null ||
-          hakija.kuuluuHakijaryhmaan === parsedKuuluuRyhmaan) &&
-        (parsedHyvaksytty == null ||
-          hakija.hyvaksyttyHakijaryhmasta === parsedHyvaksytty) &&
-        (sijoittelunTila.length < 1 ||
-          hakija.sijoittelunTila === sijoittelunTila) &&
-        hakemusFilter(hakija, searchPhrase),
+    const filtered = hakemukset.filter(
+      (hakemus) =>
+        filterBySijoittelunTila(hakemus, sijoittelunTila) &&
+        (!showOnlyMuuttuneetViimeSijoittelussa ||
+          hakemus.onkoMuuttunutViimeSijoittelussa) &&
+        (!showOnlyEhdolliset || hakemus.ehdollisestiHyvaksyttavissa) &&
+        hakemusFilter(hakemus, searchPhrase),
     );
 
     const sortHakijat = (orderBy: string, direction: SortDirection) => {
       if (orderBy === 'sijoittelunTila') {
         return sortBySijoittelunTila(direction, filtered);
       }
+      if (orderBy === 'sija') {
+        return filtered.sort((a, b) => {
+          const asc = direction === 'asc';
+          const aVal = a.sija ?? Number.MAX_VALUE;
+          const bVal = b.sija ?? Number.MAX_VALUE;
+          return asc ? bVal - aVal : aVal - bVal;
+        });
+      }
       return filtered.sort(byProp(orderBy, direction, translateEntity));
     };
 
     return orderBy && direction ? sortHakijat(orderBy, direction) : filtered;
   }, [
-    hakijaryhmanHakijat,
+    hakemukset,
     searchPhrase,
     sort,
     translateEntity,
-    kuuluuRyhmaan,
-    hyvaksyttyRyhmasta,
     sijoittelunTila,
+    showOnlyEhdolliset,
+    showOnlyMuuttuneetViimeSijoittelussa,
   ]);
 
   const pageResults = useMemo(() => {

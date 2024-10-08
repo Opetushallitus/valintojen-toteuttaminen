@@ -1,7 +1,7 @@
 'use client';
 import { ListTable } from '@/app/components/table/list-table';
 import {
-  hakijaColumn,
+  createHakijaColumn,
   makeCountColumn,
   makeGenericColumn,
 } from '@/app/components/table/table-columns';
@@ -42,7 +42,7 @@ export const LaskettuValintatapajonoTable = ({
   const columns: Array<ListTableColumn<JonoSijaWithHakijaInfo>> = useMemo(
     () => [
       jonosijaColumn,
-      hakijaColumn,
+      createHakijaColumn('valintalaskennan-tulos'),
       {
         title: `${TRANSLATIONS_PREFIX}.pisteet`,
         key: 'pisteet',

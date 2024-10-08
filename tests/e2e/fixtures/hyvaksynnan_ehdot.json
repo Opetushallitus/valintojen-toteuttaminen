@@ -1,0 +1,106 @@
+[
+  {
+    "koodiUri": "hyvaksynnanehdot_1",
+    "metadata": [
+      {
+        "nimi": "Condition: Submit your final qualification certificate by the deadline",
+        "lyhytNimi": "",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "Ehdollinen: lopullinen tutkintotodistus toimitettava määräaikaan mennessä",
+        "lyhytNimi": "",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Villkor: lämna in ditt slutliga examensbetyg inom utsatt tid",
+        "lyhytNimi": "",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "ltt"
+  },
+  {
+    "koodiUri": "hyvaksynnanehdot_muu",
+    "metadata": [
+      {
+        "nimi": "Annan",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Muu",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Other",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "muu"
+  },
+  {
+    "koodiUri": "hyvaksynnanehdot_2",
+    "metadata": [
+      {
+        "nimi": "Ehdollinen: lukuvuosimaksu maksettava määräaikaan mennessä, ennen kuin voit ilmoittautua",
+        "lyhytNimi": "",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Villkor: betala läsårsavgiften inom utsatt tid för att du ska kunna anmäla dig",
+        "lyhytNimi": "",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Condition: You have to pay the tuition fee by the deadline before you can enroll as a student",
+        "lyhytNimi": "",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "lvm"
+  },
+  {
+    "koodiUri": "hyvaksynnanehdot_sora",
+    "metadata": [
+      {
+        "nimi": "Condition: The study place is conditional until your health and functional capacity has been evaluated.",
+        "kieli": "EN"
+      },
+      {
+        "nimi": "Villkor: Studieplatsen är villkorlig tills utredningen om ditt hälsotillstånd och din funktionsförmåga har bedömts.",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Ehdollinen: Opiskelupaikka on ehdollinen, kunnes selvitys terveydentilastasi ja toimintakyvystäsi on arvioitu.",
+        "kieli": "FI"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "sora"
+  },
+  {
+    "koodiUri": "hyvaksynnanehdot_3",
+    "metadata": [
+      {
+        "nimi": "Villkor: lämna in kopia av examensbetyget för den examen som du använt som ansökningsgrund inom utsatt",
+        "lyhytNimi": "",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Ehdollinen: tutkintotodistuskopio hakuperusteena olleesta tutkinnosta toimitettava määräaikaan mennessä",
+        "lyhytNimi": "",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Condition: Submit a copy of the qualification certificate of the qualification you used to prove your eligibility by the deadline",
+        "lyhytNimi": "",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 1,
+    "koodiArvo": "ttk"
+  }
+]

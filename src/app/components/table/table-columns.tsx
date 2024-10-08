@@ -1,6 +1,7 @@
 import { TFunction } from 'i18next';
 import { KeysMatching, ListTableColumn } from './table-types';
 import { ExternalLink } from '../external-link';
+import { ophColors } from '@opetushallitus/oph-design-system';
 
 export const makeGenericColumn = <T extends Record<string, unknown>>({
   title,
@@ -126,10 +127,26 @@ type HakijaColumnType = {
   hakijaOid: string;
 };
 
-export const hakijaColumn = makeExternalLinkColumn<HakijaColumnType>({
-  linkBuilder: buildLinkToPerson,
-  title: 'hakeneet.taulukko.hakija',
-  key: 'hakijanNimi',
-  nameProp: 'hakijanNimi',
-  linkProp: 'hakijaOid',
-});
+export const createHakijaColumn = (keyPrefix: string) =>
+  makeExternalLinkColumn<HakijaColumnType>({
+    linkBuilder: buildLinkToPerson,
+    title: 'hakeneet.taulukko.hakija',
+    key: `${keyPrefix}'-hakijanNimi`,
+    nameProp: 'hakijanNimi',
+    linkProp: 'hakijaOid',
+  });
+
+const stickyColumnStyle: React.CSSProperties = {
+  minWidth: '260px',
+  position: 'sticky',
+  left: 0,
+  boxShadow: `0 5px 3px 2px ${ophColors.grey200}`,
+  zIndex: 1,
+  backgroundColor: ophColors.white,
+};
+
+export const createStickyHakijaColumn = (keyPrefix: string, t: TFunction) =>
+  Object.assign(createHakijaColumn('pistesyotto'), {
+    style: stickyColumnStyle,
+    title: t('hakeneet.taulukko.hakija'),
+  });

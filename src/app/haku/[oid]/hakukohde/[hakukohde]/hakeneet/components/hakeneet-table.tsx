@@ -3,7 +3,7 @@
 import { ListTable } from '@/app/components/table/list-table';
 import {
   buildLinkToPerson,
-  hakijaColumn,
+  createHakijaColumn,
   makeColumnWithValueToTranslate,
   makeExternalLinkColumn,
   makeGenericColumn,
@@ -15,6 +15,7 @@ const LINK_TO_APPLICATION = 'lomake-editori/applications/search?term=';
 
 const buildLinkToApplication = (hakemusOid: string) =>
   LINK_TO_APPLICATION + hakemusOid;
+
 export const HakeneetTable = ({
   hakeneet,
   setSort,
@@ -27,6 +28,8 @@ export const HakeneetTable = ({
   isKorkeakouluHaku: boolean;
 }) => {
   const { t } = useTranslations();
+
+  const hakijaColumn = createHakijaColumn('hakeneet');
 
   const hakukelpoisuusColumn = makeColumnWithValueToTranslate<Hakemus>({
     t,

@@ -7,7 +7,7 @@ import { toFormattedDateTimeString } from '@/app/lib/localization/translation-ut
 import { ValintakoeKutsuItem } from '@/app/lib/types/valintakoekutsut-types';
 import { ListTableColumn } from '@/app/components/table/table-types';
 import {
-  hakijaColumn,
+  createHakijaColumn,
   makeColumnWithValueToTranslate,
 } from '@/app/components/table/table-columns';
 import { ListTable } from '@/app/components/table/list-table';
@@ -39,7 +39,7 @@ export const ValintakoekutsutTable = ({
 
   const columns: Array<ListTableColumn<ValintakoeKutsuItem>> = useMemo(
     () => [
-      hakijaColumn,
+      createHakijaColumn('koekutsut'),
       makeColumnWithValueToTranslate({
         t,
         title: `${TRANSLATIONS_PREFIX}.osallistuminen`,

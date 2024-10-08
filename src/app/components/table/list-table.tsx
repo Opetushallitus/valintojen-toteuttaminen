@@ -10,7 +10,7 @@ import {
   styled,
 } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { OphPagination } from './oph-pagination';
 import { ophColors } from '@opetushallitus/oph-design-system';
 import { TableHeaderCell } from './table-header-cell';
@@ -71,6 +71,7 @@ interface ListTableProps<T extends Row>
   checkboxSelection?: boolean;
   selection?: Set<string>;
   onSelectionChange?: (selection: Set<string>) => void;
+  wrapperStyle?: React.CSSProperties;
 }
 
 const TableWrapper = styled(Box)(({ theme }) => ({
@@ -122,6 +123,7 @@ export const ListTable = <T extends Row>({
   selection = EMPTY_STRING_SET,
   onSelectionChange,
   getRowCheckboxLabel,
+  wrapperStyle,
   ...props
 }: ListTableProps<T>) => {
   const { t } = useTranslations();
@@ -135,7 +137,7 @@ export const ListTable = <T extends Row>({
   }, [rows, pagination]);
 
   return (
-    <TableWrapper>
+    <TableWrapper sx={wrapperStyle ?? {}}>
       <StyledTable {...props}>
         <TableHead>
           <TableRow sx={{ borderBottom: `2px solid ${ophColors.grey200}` }}>

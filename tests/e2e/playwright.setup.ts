@@ -8,10 +8,12 @@ import HAKENEET from './fixtures/hakeneet.json';
 import VALINNANVAIHE from './fixtures/valinnanvaiheet.json';
 import LASKETUT_HAKIJARYHMAT from './fixtures/lasketut_hakijaryhmat.json';
 import SIJOITTELUAJON_TULOKSET from './fixtures/sijoitteluajon-tulokset.json';
+import SIJOITTELUN_TULOS_HAKUKOHTEELLE from './fixtures/sijoittelun-tulos.json';
 import HAKUKOHTEEN_VALINTATULOKSET from './fixtures/hakukohteen_valintatulokset.json';
 import { SERVICE_KEY } from '@/app/lib/permissions';
 import PISTETIEDOT from './fixtures/pistetiedot.json';
 import KOKEET from './fixtures/valintakoe-avaimet.json';
+import EHDOT from './fixtures/hyvaksynnan_ehdot.json';
 
 const port = 3104;
 
@@ -61,6 +63,12 @@ export default async function playwrightSetup() {
       request.url?.includes(`koodisto-service/rest/codeelement/codes/hakutapa`)
     ) {
       return modifyResponse(response, HAKUTAPA_CODES);
+    } else if (
+      request.url?.includes(
+        `koodisto-service/rest/codeelement/codes/hyvaksynnanehdot`,
+      )
+    ) {
+      return modifyResponse(response, EHDOT);
     } else if (request.url?.includes('kouta-internal/hakukohde/search')) {
       const hakuId = request.url.split('&haku=')[1];
       return modifyResponse(
@@ -92,6 +100,11 @@ export default async function playwrightSetup() {
       request.url?.includes('/hakijaryhma')
     ) {
       return modifyResponse(response, LASKETUT_HAKIJARYHMAT);
+    } else if (
+      request.url?.includes(`valinta-tulos-service/auth/sijoitteluntulos`) &&
+      request.url?.includes('sijoitteluajo/latest/hakukohde')
+    ) {
+      return modifyResponse(response, SIJOITTELUN_TULOS_HAKUKOHTEELLE);
     } else if (
       request.url?.includes(`valinta-tulos-service/auth/sijoittelu`) &&
       request.url?.includes('sijoitteluajo/latest/hakukohde')

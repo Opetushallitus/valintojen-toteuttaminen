@@ -15,7 +15,7 @@ export const AccordionBoxTitle = ({
   subTitle,
 }: {
   title: string;
-  subTitle?: string;
+  subTitle?: string | React.ReactNode;
 }) => {
   return (
     <BoxHeading component="div" variant="h2">
