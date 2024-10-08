@@ -14,10 +14,12 @@ import {
   isHyvaksyttyHarkinnanvaraisesti,
   SijoittelunHakemusEnriched,
   SijoittelunTila,
-  SijoittelunTilaOrdinals,
 } from '@/app/lib/types/sijoittelu-types';
 import { hakemusFilter } from '@/app/hooks/filters';
-import { DEFAULT_NUQS_OPTIONS } from '@/app/hooks/common';
+import {
+  DEFAULT_NUQS_OPTIONS,
+  sortBySijoittelunTila,
+} from '@/app/hooks/common';
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -156,39 +158,7 @@ export const useSijoittelunTulosSearch = (
 
     const sortHakijat = (orderBy: string, direction: SortDirection) => {
       if (orderBy === 'sijoittelunTila') {
-        const asc = direction === 'asc';
-        return filtered.sort((a, b) => {
-          if (a.tila && b.tila) {
-            const aOrdinal = SijoittelunTilaOrdinals[a.tila];
-            const bOrdinal = SijoittelunTilaOrdinals[b.tila];
-            if (
-              aOrdinal === bOrdinal &&
-              aOrdinal === SijoittelunTilaOrdinals[SijoittelunTila.VARALLA] &&
-              a.varasijanNumero &&
-              b.varasijanNumero
-            ) {
-              return a.varasijanNumero > b.varasijanNumero
-                ? asc
-                  ? 1
-                  : -1
-                : b.varasijanNumero > a.varasijanNumero
-                  ? asc
-                    ? -1
-                    : 1
-                  : 0;
-            }
-            return aOrdinal > bOrdinal
-              ? asc
-                ? 1
-                : -1
-              : bOrdinal > aOrdinal
-                ? asc
-                  ? -1
-                  : 1
-                : 0;
-          }
-          return a.tila ? (asc ? 1 : -1) : b.tila ? (asc ? -1 : 1) : 0;
-        });
+        return sortBySijoittelunTila(direction, filtered);
       }
       if (orderBy === 'sija') {
         return filtered.sort((a, b) => {

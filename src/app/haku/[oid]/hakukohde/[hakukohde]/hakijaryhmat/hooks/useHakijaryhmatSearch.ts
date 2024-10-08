@@ -11,12 +11,11 @@ import {
 import { HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY } from '@/app/lib/constants';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { HakijaryhmanHakija } from '@/app/lib/types/laskenta-types';
-import {
-  SijoittelunTila,
-  SijoittelunTilaOrdinals,
-} from '@/app/lib/types/sijoittelu-types';
 import { hakemusFilter } from '@/app/hooks/filters';
-import { DEFAULT_NUQS_OPTIONS } from '@/app/hooks/common';
+import {
+  DEFAULT_NUQS_OPTIONS,
+  sortBySijoittelunTila,
+} from '@/app/hooks/common';
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -143,47 +142,7 @@ export const useHakijaryhmatSearch = (
 
     const sortHakijat = (orderBy: string, direction: SortDirection) => {
       if (orderBy === 'sijoittelunTila') {
-        const asc = direction === 'asc';
-        return filtered.sort((a, b) => {
-          if (a.sijoittelunTila && b.sijoittelunTila) {
-            const aOrdinal = SijoittelunTilaOrdinals[a.sijoittelunTila];
-            const bOrdinal = SijoittelunTilaOrdinals[b.sijoittelunTila];
-            if (
-              aOrdinal === bOrdinal &&
-              aOrdinal === SijoittelunTilaOrdinals[SijoittelunTila.VARALLA] &&
-              a.varasijanNumero &&
-              b.varasijanNumero
-            ) {
-              return a.varasijanNumero > b.varasijanNumero
-                ? asc
-                  ? 1
-                  : -1
-                : b.varasijanNumero > a.varasijanNumero
-                  ? asc
-                    ? -1
-                    : 1
-                  : 0;
-            }
-            return aOrdinal > bOrdinal
-              ? asc
-                ? 1
-                : -1
-              : bOrdinal > aOrdinal
-                ? asc
-                  ? -1
-                  : 1
-                : 0;
-          }
-          return a.sijoittelunTila
-            ? asc
-              ? 1
-              : -1
-            : b.sijoittelunTila
-              ? asc
-                ? -1
-                : 1
-              : 0;
-        });
+        return sortBySijoittelunTila(direction, filtered);
       }
       return filtered.sort(byProp(orderBy, direction, translateEntity));
     };
