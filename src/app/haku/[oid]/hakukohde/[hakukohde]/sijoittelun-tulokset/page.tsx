@@ -56,15 +56,7 @@ const SijoitteluContent = ({ haku, hakukohdeOid }: SijoitteluContentParams) => {
           gap: 2,
         }}
       >
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'flex-end',
-            gap: 2,
-          }}
-        >
-          <SijoittelunTulosControls haku={haku} />
-        </Box>
+        <SijoittelunTulosControls haku={haku} />
         <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
       </Box>
       {tulokset.valintatapajonot.map((jono) => (
