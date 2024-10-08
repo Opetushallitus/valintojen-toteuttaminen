@@ -2,8 +2,8 @@ import { expect, test, vi, describe, afterEach } from 'vitest';
 import { client } from './http-client';
 import {
   IlmoittautumisTila,
-  SijoitteluajonTuloksetEnriched,
-  SijoittelunHakemusEnriched,
+  SijoitteluajonTuloksetValintatiedoilla,
+  SijoittelunHakemusValintatiedoilla,
   SijoittelunTila,
   VastaanottoTila,
 } from './types/sijoittelu-types';
@@ -16,7 +16,8 @@ describe('Valinta-tulos-service: getLatestSijoitteluAjonTuloksetWithValintaEsity
   });
 
   test('returns tulokset', async () => {
-    const tulokset: SijoitteluajonTuloksetEnriched = await getTulokset();
+    const tulokset: SijoitteluajonTuloksetValintatiedoilla =
+      await getTulokset();
     expect(tulokset.valintatapajonot.length).toEqual(1);
     const jono = tulokset.valintatapajonot[0];
     expect(jono.nimi).toEqual('Todistusvalinta (YO)');
@@ -56,7 +57,8 @@ describe('Valinta-tulos-service: getLatestSijoitteluAjonTuloksetWithValintaEsity
   });
 
   test('tulokset are sorted by sija', async () => {
-    const tulokset: SijoitteluajonTuloksetEnriched = await getTulokset();
+    const tulokset: SijoitteluajonTuloksetValintatiedoilla =
+      await getTulokset();
     const hakemukset = tulokset.valintatapajonot[0].hakemukset;
     expect(hakemukset[0].hakemusOid).toEqual('hakemus2');
     expect(hakemukset[0].sija).toEqual(1);
@@ -68,7 +70,7 @@ describe('Valinta-tulos-service: getLatestSijoitteluAjonTuloksetWithValintaEsity
 });
 
 function assertHakemus(
-  hakemus: SijoittelunHakemusEnriched,
+  hakemus: SijoittelunHakemusValintatiedoilla,
   oidNumber: number,
   nimi: string,
   pisteet: number,

@@ -12,7 +12,7 @@ import { HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY } from '@/app/lib/constants';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import {
   isHyvaksyttyHarkinnanvaraisesti,
-  SijoittelunHakemusEnriched,
+  SijoittelunHakemusValintatiedoilla,
   SijoittelunTila,
 } from '@/app/lib/types/sijoittelu-types';
 import { hakemusFilter } from '@/app/hooks/filters';
@@ -112,7 +112,7 @@ export const useSijoittelunTulosSearchParams = (
 };
 
 const filterBySijoittelunTila = (
-  hakemus: SijoittelunHakemusEnriched,
+  hakemus: SijoittelunHakemusValintatiedoilla,
   tila: string,
 ) => {
   const harkinnanvaraisestiHyvaksytty =
@@ -127,7 +127,7 @@ const filterBySijoittelunTila = (
 
 export const useSijoittelunTulosSearch = (
   valintatapajonoOid: string,
-  hakemukset: SijoittelunHakemusEnriched[],
+  hakemukset: SijoittelunHakemusValintatiedoilla[],
 ) => {
   const { translateEntity } = useTranslations();
 

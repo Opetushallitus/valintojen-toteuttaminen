@@ -4,7 +4,7 @@ import { useSijoittelunTulosSearch } from '../hooks/useSijoittelunTuloksetSearch
 import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { AccordionBox } from '@/app/components/accordion-box';
-import { SijoitteluajonValintatapajonoEnriched } from '@/app/lib/types/sijoittelu-types';
+import { SijoitteluajonValintatapajonoValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
 import { SijoittelunTulosAccordionTitle } from './sijoittelun-tulos-accordion-title';
 import { SijoittelunTulosTable } from './sijoittelun-tulos-table';
 import { Haku } from '@/app/lib/types/kouta-types';
@@ -13,7 +13,7 @@ export const SijoittelunTulosContent = ({
   valintatapajono,
   haku,
 }: {
-  valintatapajono: SijoitteluajonValintatapajonoEnriched;
+  valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
   haku: Haku;
 }) => {
   const { t } = useTranslations();

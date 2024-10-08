@@ -7,10 +7,10 @@ import { client } from './http-client';
 import {
   IlmoittautumisTila,
   SijoitteluajonTulokset,
-  SijoitteluajonTuloksetEnriched,
-  SijoitteluajonValintatapajonoEnriched,
+  SijoitteluajonTuloksetValintatiedoilla,
+  SijoitteluajonValintatapajonoValintatiedoilla,
   SijoittelunHakemus,
-  SijoittelunHakemusEnriched,
+  SijoittelunHakemusValintatiedoilla,
   SijoittelunTila,
   ValintatapajonoTulos,
   VastaanottoTila,
@@ -131,7 +131,7 @@ const showVastaanottoTieto = (hakemuksenTila: SijoittelunTila) =>
 export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
   hakuOid: string,
   hakukohdeOid: string,
-): Promise<SijoitteluajonTuloksetEnriched> => {
+): Promise<SijoitteluajonTuloksetValintatiedoilla> => {
   const { data } =
     await client.get<SijoitteluajonTuloksetWithValintaEsitysResponseData>(
       `${configuration.valintaTulosServiceUrl}sijoitteluntulos/${hakuOid}/sijoitteluajo/latest/hakukohde/${hakukohdeOid}`,
@@ -146,10 +146,10 @@ export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
     data.valintatulokset,
     (vt) => vt.hakemusOid,
   );
-  const sijoitteluajonTulokset: Array<SijoitteluajonValintatapajonoEnriched> =
+  const sijoitteluajonTulokset: Array<SijoitteluajonValintatapajonoValintatiedoilla> =
     data.sijoittelunTulokset.valintatapajonot.map((jono) => {
-      const hakemukset: Array<SijoittelunHakemusEnriched> = jono.hakemukset.map(
-        (h) => {
+      const hakemukset: Array<SijoittelunHakemusValintatiedoilla> =
+        jono.hakemukset.map((h) => {
           const hakemus = hakemuksetIndexed[h.hakemusOid];
           const valintatulos = valintatuloksetIndexed[h.hakemusOid];
           const maksuntila =
@@ -190,8 +190,7 @@ export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
             hyvaksyttyHarkinnanvaraisesti:
               valintatulos.hyvaksyttyHarkinnanvaraisesti,
           };
-        },
-      );
+        });
       hakemukset.sort((a, b) =>
         a.jonosija === b.jonosija
           ? a.tasasijaJonosija - b.tasasijaJonosija

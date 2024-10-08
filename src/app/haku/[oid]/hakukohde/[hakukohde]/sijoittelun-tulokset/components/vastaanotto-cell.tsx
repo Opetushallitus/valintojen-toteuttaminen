@@ -1,6 +1,6 @@
 import { useTranslations } from '@/app/hooks/useTranslations';
 import {
-  SijoittelunHakemusEnriched,
+  SijoittelunHakemusValintatiedoilla,
   VastaanottoTila,
 } from '@/app/lib/types/sijoittelu-types';
 import { SijoittelunTulosStyledCell } from './sijoittelun-tulos-styled-cell';
@@ -13,7 +13,7 @@ import { StyledOphCheckBox } from '@/app/components/form/styled-oph-checkbox';
 export const VastaanOttoCell = ({
   hakemus,
 }: {
-  hakemus: SijoittelunHakemusEnriched;
+  hakemus: SijoittelunHakemusValintatiedoilla;
 }) => {
   const { t } = useTranslations();
 

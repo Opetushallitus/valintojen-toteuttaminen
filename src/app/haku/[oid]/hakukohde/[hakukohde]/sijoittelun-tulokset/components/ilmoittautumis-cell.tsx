@@ -2,14 +2,14 @@ import { LocalizedSelect } from '@/app/components/localized-select';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import {
   IlmoittautumisTila,
-  SijoittelunHakemusEnriched,
+  SijoittelunHakemusValintatiedoilla,
   VastaanottoTila,
 } from '@/app/lib/types/sijoittelu-types';
 
 export const IlmoittautumisCell = ({
   hakemus,
 }: {
-  hakemus: SijoittelunHakemusEnriched;
+  hakemus: SijoittelunHakemusValintatiedoilla;
 }) => {
   const { t } = useTranslations();
 

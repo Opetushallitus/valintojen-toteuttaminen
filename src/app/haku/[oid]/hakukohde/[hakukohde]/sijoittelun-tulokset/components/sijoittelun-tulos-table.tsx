@@ -6,7 +6,7 @@ import {
   makeCountColumn,
 } from '@/app/components/table/table-columns';
 import { ListTable } from '@/app/components/table/list-table';
-import { SijoittelunHakemusEnriched } from '@/app/lib/types/sijoittelu-types';
+import { SijoittelunHakemusValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
 import { useMemo } from 'react';
 import {
   KeysMatching,
@@ -43,7 +43,7 @@ export const SijoittelunTulosTable = ({
   sort,
 }: {
   haku: Haku;
-  hakemukset: SijoittelunHakemusEnriched[];
+  hakemukset: SijoittelunHakemusValintatiedoilla[];
   sort: string;
   setSort: (sort: string) => void;
 }) => {
@@ -52,47 +52,47 @@ export const SijoittelunTulosTable = ({
   const columns = useMemo(() => {
     const stickyHakijaColumn = createStickyHakijaColumn('sijoittelun-tulos', t);
     return [
-      makeEmptyCountColumn<SijoittelunHakemusEnriched>({
+      makeEmptyCountColumn<SijoittelunHakemusValintatiedoilla>({
         title: t(`${TRANSLATIONS_PREFIX}.jonosija`),
         key: 'sija',
         amountProp: 'sija',
       }),
       stickyHakijaColumn,
-      makeCountColumn<SijoittelunHakemusEnriched>({
+      makeCountColumn<SijoittelunHakemusValintatiedoilla>({
         title: t(`${TRANSLATIONS_PREFIX}.hakutoive`),
         key: 'hakutoive',
         amountProp: 'hakutoive',
       }),
-      makeCountColumn<SijoittelunHakemusEnriched>({
+      makeCountColumn<SijoittelunHakemusValintatiedoilla>({
         title: t(`${TRANSLATIONS_PREFIX}.pisteet`),
         key: 'pisteet',
         amountProp: 'pisteet',
       }),
-      makeColumnWithCustomRender<SijoittelunHakemusEnriched>({
+      makeColumnWithCustomRender<SijoittelunHakemusValintatiedoilla>({
         title: t(`${TRANSLATIONS_PREFIX}.tila`),
         key: 'sijoittelunTila',
         renderFn: (props) => (
           <SijoittelunTilaCell hakemus={props} haku={haku} />
         ),
       }),
-      makeColumnWithCustomRender<SijoittelunHakemusEnriched>({
+      makeColumnWithCustomRender<SijoittelunHakemusValintatiedoilla>({
         title: t(`${TRANSLATIONS_PREFIX}.vastaanottotieto`),
         key: 'vastaanottotila',
         renderFn: (props) => <VastaanOttoCell hakemus={props} />,
       }),
-      makeColumnWithCustomRender<SijoittelunHakemusEnriched>({
+      makeColumnWithCustomRender<SijoittelunHakemusValintatiedoilla>({
         title: t(`${TRANSLATIONS_PREFIX}.ilmoittautumistieto`),
         key: 'ilmoittautumisTila',
         renderFn: (props) => <IlmoittautumisCell hakemus={props} />,
       }),
       isKorkeakouluHaku(haku)
-        ? makeColumnWithCustomRender<SijoittelunHakemusEnriched>({
+        ? makeColumnWithCustomRender<SijoittelunHakemusValintatiedoilla>({
             title: t(`${TRANSLATIONS_PREFIX}.maksuntila`),
             key: 'maksuntila',
             renderFn: (props) => <MaksuCell hakemus={props} />,
           })
         : null,
-      makeColumnWithCustomRender<SijoittelunHakemusEnriched>({
+      makeColumnWithCustomRender<SijoittelunHakemusValintatiedoilla>({
         title: t(`${TRANSLATIONS_PREFIX}.toiminnot`),
         key: 'toiminnot',
         renderFn: () => <span>...</span>,

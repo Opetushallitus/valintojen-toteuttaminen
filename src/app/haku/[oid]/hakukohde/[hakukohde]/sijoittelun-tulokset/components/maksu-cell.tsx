@@ -1,12 +1,12 @@
 import { LocalizedSelect } from '@/app/components/localized-select';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { MaksunTila } from '@/app/lib/types/ataru-types';
-import { SijoittelunHakemusEnriched } from '@/app/lib/types/sijoittelu-types';
+import { SijoittelunHakemusValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
 
 export const MaksuCell = ({
   hakemus,
 }: {
-  hakemus: SijoittelunHakemusEnriched;
+  hakemus: SijoittelunHakemusValintatiedoilla;
 }) => {
   const { t } = useTranslations();
 

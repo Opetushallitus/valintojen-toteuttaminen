@@ -61,7 +61,7 @@ export type SijoittelunHakemus = {
   hakijanNimi?: string;
 };
 
-export type SijoittelunHakemusEnriched = {
+export type SijoittelunHakemusValintatiedoilla = {
   hakijaOid: string;
   hakemusOid: string;
   pisteet: number;
@@ -92,7 +92,7 @@ export type SijoittelunHakemusEnriched = {
 };
 
 export const isHyvaksyttyHarkinnanvaraisesti = (
-  hakemus: SijoittelunHakemusEnriched,
+  hakemus: SijoittelunHakemusValintatiedoilla,
 ): boolean =>
   hakemus.hyvaksyttyHarkinnanvaraisesti &&
   [SijoittelunTila.HYVAKSYTTY, SijoittelunTila.VARASIJALTA_HYVAKSYTTY].includes(
@@ -107,10 +107,10 @@ export type SijoitteluajonValintatapajono = {
   accepted?: string | null;
 };
 
-export type SijoitteluajonValintatapajonoEnriched = {
+export type SijoitteluajonValintatapajonoValintatiedoilla = {
   oid: string;
   nimi: string;
-  hakemukset: SijoittelunHakemusEnriched[];
+  hakemukset: SijoittelunHakemusValintatiedoilla[];
   prioriteetti: number;
   accepted?: string;
   aloituspaikat: number;
@@ -129,8 +129,8 @@ export type SijoitteluajonTulokset = {
   hakijaryhmat: SijoittelunHakijaryhmat[];
 };
 
-export type SijoitteluajonTuloksetEnriched = {
-  valintatapajonot: SijoitteluajonValintatapajonoEnriched[];
+export type SijoitteluajonTuloksetValintatiedoilla = {
+  valintatapajonot: SijoitteluajonValintatapajonoValintatiedoilla[];
   lastModified: string;
 };
 

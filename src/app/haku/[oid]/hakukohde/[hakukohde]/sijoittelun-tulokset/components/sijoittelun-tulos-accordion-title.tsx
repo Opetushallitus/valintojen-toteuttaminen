@@ -1,7 +1,7 @@
 'use client';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { AccordionBoxTitle } from '@/app/components/accordion-box-title';
-import { SijoitteluajonValintatapajonoEnriched } from '@/app/lib/types/sijoittelu-types';
+import { SijoitteluajonValintatapajonoValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
 import { Haku } from '@/app/lib/types/kouta-types';
 import { isKorkeakouluHaku } from '@/app/lib/kouta';
 import { styled, Typography } from '@mui/material';
@@ -21,7 +21,7 @@ export const SijoittelunTulosAccordionTitle = ({
   valintatapajono,
   haku,
 }: {
-  valintatapajono: SijoitteluajonValintatapajonoEnriched;
+  valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
   haku: Haku;
 }) => {
   const { t } = useTranslations();

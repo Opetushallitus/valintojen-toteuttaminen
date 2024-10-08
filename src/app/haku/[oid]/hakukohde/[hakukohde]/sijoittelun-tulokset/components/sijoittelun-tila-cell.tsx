@@ -1,7 +1,7 @@
 import { useTranslations } from '@/app/hooks/useTranslations';
 import {
   isHyvaksyttyHarkinnanvaraisesti,
-  SijoittelunHakemusEnriched,
+  SijoittelunHakemusValintatiedoilla,
   SijoittelunTila,
 } from '@/app/lib/types/sijoittelu-types';
 import { useHyvaksynnanEhdot } from '../hooks/useHyvaksynnanEhdot';
@@ -30,7 +30,7 @@ const StyledInput = styled(OphInput)(() => ({
   paddingLeft: 0,
 }));
 
-const showHyvaksyVarasijalta = (hakemus: SijoittelunHakemusEnriched) =>
+const showHyvaksyVarasijalta = (hakemus: SijoittelunHakemusValintatiedoilla) =>
   hakemus.tila === SijoittelunTila.VARALLA ||
   (hakemus.hyvaksyttyVarasijalta &&
     [
@@ -44,7 +44,7 @@ export const SijoittelunTilaCell = ({
   hakemus,
   haku,
 }: {
-  hakemus: SijoittelunHakemusEnriched;
+  hakemus: SijoittelunHakemusValintatiedoilla;
   haku: Haku;
 }) => {
   const { t, translateEntity } = useTranslations();
