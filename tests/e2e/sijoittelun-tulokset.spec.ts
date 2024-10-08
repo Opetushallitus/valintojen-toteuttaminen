@@ -92,6 +92,47 @@ test('displays sijoittelun tulokset', async ({ page }) => {
   );
 });
 
+test('does not show accept conditionally or payment column when toisen asteen yhteishaku', async ({
+  page,
+}) => {
+  await page.route(
+    '*/**/kouta-internal/haku/1.2.246.562.29.00000000000000045102*',
+    async (route) => {
+      const haku = {
+        oid: '1.2.246.562.29.00000000000000045102',
+        tila: 'julkaistu',
+        hakutapaKoodiUri: 'hakutapa_01',
+        hakuVuosi: '2024',
+        hakukausi: 'kausi_s',
+        totalHakukohteet: 1,
+        kohdejoukkoKoodiUri: 'haunkohdejoukko_11',
+      };
+      await route.fulfill({ json: haku });
+    },
+  );
+  await page.goto(
+    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/sijoittelun-tulokset',
+  );
+  await expectAllSpinnersHidden(page);
+  const headrow = page.locator('thead tr').first();
+  await checkRow(
+    headrow,
+    [
+      'Jonosija',
+      'Hakija',
+      'Hakutoive',
+      'Pisteet',
+      'Sijoittelun tila',
+      'Vastaanottotieto',
+      'Ilmoittautumistieto',
+      'Toiminnot',
+    ],
+    'th',
+  );
+  await expect(page.getByLabel('Ehdollinen valinta')).toBeHidden();
+  await expect(page.getByLabel('Ehdollisuuden syy suomeksi')).toBeHidden();
+});
+
 test('shows other selection options for ehdollisuuden syy', async ({
   page,
 }) => {
@@ -159,6 +200,22 @@ test.describe('filters', () => {
     const rows = page.locator('tbody tr');
     await expect(rows).toHaveCount(1);
     await checkRow(rows.nth(0), ['', 'Hui Haamu']);
+  });
+
+  test('filters by showing only changed applications', async ({ page }) => {
+    await page.getByLabel('Näytä vain edellisestä').click();
+    const rows = page.locator('tbody tr');
+    await expect(rows).toHaveCount(1);
+    await checkRow(rows.nth(0), ['', 'Hui Haamu']);
+  });
+
+  test('filters by showing only conditionally accepted applications', async ({
+    page,
+  }) => {
+    await page.getByLabel('Näytä vain ehdollisesti hyvä').click();
+    const rows = page.locator('tbody tr');
+    await expect(rows).toHaveCount(1);
+    await checkRow(rows.nth(0), ['3', 'Purukumi Puru']);
   });
 });
 
