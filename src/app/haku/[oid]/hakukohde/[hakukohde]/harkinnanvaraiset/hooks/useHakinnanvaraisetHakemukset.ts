@@ -4,7 +4,7 @@ import { getHakemukset } from '@/app/lib/ataru';
 import { Hakemus } from '@/app/lib/types/ataru-types';
 import {
   getHarkinnanvaraisetTilat,
-  HarkinnanvaraisuusTila,
+  HarkinnanvarainenTila,
 } from '@/app/lib/valintalaskenta-service';
 import {
   getHarkinnanvaraisuudetHakemuksille,
@@ -20,7 +20,7 @@ import { indexBy, prop } from 'remeda';
 
 export type HakemuksenHarkinnanvaraisuus = Hakemus & {
   harkinnanvaraisuudenSyy?: `harkinnanvaraisuuden-syy.${HarkinnanvaraisuudenSyy}`;
-  harkinnanvarainenTila?: HarkinnanvaraisuusTila;
+  harkinnanvarainenTila: HarkinnanvarainenTila;
 };
 
 type UsePisteTuloksetProps = {
@@ -72,9 +72,10 @@ export const useHarkinnanvaraisetHakemukset = ({
   return useMemo(() => {
     const result: Array<HakemuksenHarkinnanvaraisuus> = [];
     harkinnanvaraisuudetHakemuksille.forEach((h) => {
-      const harkinnanvarainenTila = harkinnanvaraisestiHyvaksytyt.find(
-        (tilaTieto) => tilaTieto.hakemusOid === h.hakemusOid,
-      )?.harkinnanvaraisuusTila;
+      const harkinnanvarainenTila =
+        harkinnanvaraisestiHyvaksytyt.find(
+          (tilaTieto) => tilaTieto.hakemusOid === h.hakemusOid,
+        )?.harkinnanvaraisuusTila ?? null;
       const harkinnanvaraisuudenSyy = h.hakutoiveet.find(
         (toive) => toive.hakukohdeOid === hakukohdeOid,
       )?.harkinnanvaraisuudenSyy;

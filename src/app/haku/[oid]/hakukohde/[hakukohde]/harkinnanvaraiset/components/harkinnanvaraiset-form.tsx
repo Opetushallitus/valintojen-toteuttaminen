@@ -1,29 +1,29 @@
 import { FormBox } from '@/app/components/form-box';
-import { useHasChanged } from '@/app/hooks/useHasChanged';
-import { OphButton } from '@opetushallitus/oph-design-system';
-import { useCallback, useEffect, useState } from 'react';
-import { HarkinnanvaraisetActionBar } from './harkinnanvaraiset-action-bar';
 import { SpinnerIcon } from '@/app/components/spinner-icon';
-import { SaveOutlined } from '@mui/icons-material';
+import useConfirmChangesBeforeNavigation from '@/app/hooks/useConfirmChangesBeforeNavigation';
+import { useHasChanged } from '@/app/hooks/useHasChanged';
+import useToaster from '@/app/hooks/useToaster';
+import { useTranslations } from '@/app/hooks/useTranslations';
+import { EMPTY_OBJECT, EMPTY_STRING_SET } from '@/app/lib/common';
 import {
   HarkinnanvarainenTilaValue,
-  HarkinnanvaraisetTable,
   HarkinnanvaraisetTilatByHakemusOids,
-} from './harkinnanvaraiset-table';
-import { useTranslations } from '@/app/hooks/useTranslations';
-import {
-  HakemuksenHarkinnanvaraisuus,
-  harkinnanvaraisetTilatOptions,
-} from '../hooks/useHakinnanvaraisetHakemukset';
-import { EMPTY_OBJECT, EMPTY_STRING_SET } from '@/app/lib/common';
+} from '@/app/lib/types/harkinnanvaraiset-types';
 import {
   HarkinnanvaraisestiHyvaksytty,
   setHarkinnanvaraisetTilat,
 } from '@/app/lib/valintalaskenta-service';
+import { SaveOutlined } from '@mui/icons-material';
+import { OphButton } from '@opetushallitus/oph-design-system';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import useToaster from '@/app/hooks/useToaster';
-import useConfirmChangesBeforeNavigation from '@/app/hooks/useConfirmChangesBeforeNavigation';
+import { useCallback, useEffect, useState } from 'react';
 import { isEmpty } from 'remeda';
+import {
+  HakemuksenHarkinnanvaraisuus,
+  harkinnanvaraisetTilatOptions,
+} from '../hooks/useHakinnanvaraisetHakemukset';
+import { HarkinnanvaraisetActionBar } from './harkinnanvaraiset-action-bar';
+import { HarkinnanvaraisetTable } from './harkinnanvaraiset-table';
 
 const useTallennaMutation = ({
   hakuOid,
@@ -62,8 +62,7 @@ const useTallennaMutation = ({
             return value.harkinnanvaraisuusTila != null;
           }) as Array<HarkinnanvaraisestiHyvaksytty>;
 
-          const newValues = unchangedOldValues.concat(changedValues);
-          return newValues;
+          return unchangedOldValues.concat(changedValues);
         },
       );
     },

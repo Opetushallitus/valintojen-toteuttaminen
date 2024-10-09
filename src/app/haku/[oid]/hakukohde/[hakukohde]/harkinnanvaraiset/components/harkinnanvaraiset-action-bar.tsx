@@ -12,7 +12,7 @@ import useToaster from '@/app/hooks/useToaster';
 import { DownloadButton } from '@/app/components/download-button';
 import { getOsoitetarratHakemuksille } from '@/app/lib/valintalaskentakoostepalvelu';
 import { downloadBlob } from '@/app/lib/common';
-import { HarkinnanvaraisetTilatByHakemusOids } from './harkinnanvaraiset-table';
+import { HarkinnanvaraisetTilatByHakemusOids } from '@/app/lib/types/harkinnanvaraiset-types';
 
 const useOsoitetarratMutation = ({ selection }: { selection: Set<string> }) => {
   const { addToast } = useToaster();

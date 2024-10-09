@@ -8,7 +8,7 @@ import { DEFAULT_PAGE_SIZE } from '@/app/lib/constants';
 import { useHarkinnanvaraisetSearchParams } from './useHarkinnanvaraisetSearchParams';
 import { hakemusFilter } from '@/app/hooks/filters';
 
-export const usePaginationQueryParams = (paginationId: string) => {
+const usePaginationQueryParams = (paginationId: string) => {
   const [page, setPage] = useQueryState<number>(
     `page-${paginationId}`,
     parseAsInteger.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(1),

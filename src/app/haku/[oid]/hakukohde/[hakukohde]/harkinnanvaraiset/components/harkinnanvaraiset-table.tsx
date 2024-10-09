@@ -11,18 +11,14 @@ import {
 import { ListTable } from '@/app/components/table/list-table';
 import { HakemuksenHarkinnanvaraisuus } from '../hooks/useHakinnanvaraisetHakemukset';
 import { useHarkinanvaraisetPaginated } from '../hooks/useHarkinnanvaraisetPaginated';
-import { LocalizedSelect } from '@/app/components/localized-select';
-import { HarkinnanvaraisuusTila } from '@/app/lib/valintalaskenta-service';
-import { ophColors } from '@opetushallitus/oph-design-system';
-import { isDefined } from 'remeda';
-const TRANSLATIONS_PREFIX = 'harkinnanvaraiset.taulukko';
-
-export type HarkinnanvarainenTilaValue = HarkinnanvaraisuusTila | '';
-
-export type HarkinnanvaraisetTilatByHakemusOids = Record<
-  string,
-  HarkinnanvarainenTilaValue
->;
+import {
+  HarkinnanvarainenTilaSelect,
+  TRANSLATIONS_PREFIX,
+} from './harkinnanvarainen-tila-select';
+import {
+  HarkinnanvarainenTilaValue,
+  HarkinnanvaraisetTilatByHakemusOids,
+} from '@/app/lib/types/harkinnanvaraiset-types';
 
 export const HarkinnanvaraisetTable = ({
   data,
@@ -57,46 +53,12 @@ export const HarkinnanvaraisetTable = ({
         title: `${TRANSLATIONS_PREFIX}.harkinnanvarainen-tila`,
         key: 'harkinnanvarainenTila',
         renderFn: (props) => {
-          const isDirty = isDefined(harkinnanvaraisetTilat[props.hakemusOid]);
           return (
-            <LocalizedSelect
-              sx={{
-                minWidth: '150px',
-                '& .MuiOutlinedInput-notchedOutline': isDirty
-                  ? {
-                      borderColor: ophColors.yellow1,
-                      borderWidth: '2px',
-                    }
-                  : {},
-              }}
-              clearable={true}
-              inputProps={{
-                'aria-label': t(
-                  `${TRANSLATIONS_PREFIX}.harkinnanvarainen-tila`,
-                ),
-              }}
-              placeholder={t('harkinnanvaraiset.tila-placeholder')}
-              options={[
-                {
-                  label: t('harkinnanvaraiset.hyvaksytty'),
-                  value: 'HYVAKSYTTY',
-                },
-                {
-                  label: t('harkinnanvaraiset.ei-hyvaksytty'),
-                  value: 'EI_HYVAKSYTTY',
-                },
-              ]}
-              value={
-                harkinnanvaraisetTilat[props.hakemusOid] ??
-                props.harkinnanvarainenTila ??
-                ''
-              }
-              onChange={(e) => {
-                onHarkinnanvaraisetTilatChange?.({
-                  [props.hakemusOid]: e.target
-                    .value as HarkinnanvarainenTilaValue,
-                });
-              }}
+            <HarkinnanvarainenTilaSelect
+              hakemusOid={props.hakemusOid}
+              harkinnanvarainenTila={props.harkinnanvarainenTila}
+              harkinnanvaraisetTilat={harkinnanvaraisetTilat}
+              onHarkinnanvaraisetTilatChange={onHarkinnanvaraisetTilatChange}
             />
           );
         },
