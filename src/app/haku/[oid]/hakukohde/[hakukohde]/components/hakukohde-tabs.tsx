@@ -8,20 +8,27 @@ import { useHaku } from '@/app/hooks/useHaku';
 import { getVisibleTabs } from '@/app/haku/[oid]/lib/hakukohde-tab-utils';
 import { useHakukohdeTab } from '@/app/haku/[oid]/hooks/useHakukohdeTab';
 import { HakukohdeTabLink } from '@/app/haku/[oid]/components/hakukohde-tab-link';
+import { OphTypography } from '@opetushallitus/oph-design-system';
 
 const StyledContainer = styled('div')(({ theme }) => ({
   padding: theme.spacing(2, 3, 0),
   borderBottom: DEFAULT_BOX_BORDER,
 }));
 
-const StyledHeader = styled('div')({
+const StyledHeader = styled('div')(({ theme }) => ({
   textAlign: 'left',
-});
+  marginBottom: theme.spacing(2),
+  '& .hakukohdeLabel': {
+    fontWeight: 'normal',
+  },
+}));
 
 const StyledTabs = styled('nav')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'row',
   columnGap: theme.spacing(2),
+  rowGap: theme.spacing(1),
+  flexWrap: 'wrap',
 }));
 
 const StyledTab = styled(HakukohdeTabLink)<{ $active: boolean }>(
@@ -53,7 +60,7 @@ const HakukohdeTabs = ({
   return (
     <StyledContainer>
       <StyledHeader>
-        <h2>
+        <OphTypography variant="h3" component="h2">
           <span className="organisaatioLabel">
             {translateEntity(hakukohde.jarjestyspaikkaHierarkiaNimi)}
           </span>
@@ -61,7 +68,7 @@ const HakukohdeTabs = ({
           <span className="hakukohdeLabel">
             {translateEntity(hakukohde.nimi)}
           </span>
-        </h2>
+        </OphTypography>
       </StyledHeader>
       <StyledTabs>
         {getVisibleTabs({ haku, hakukohde }).map((tab) => (
