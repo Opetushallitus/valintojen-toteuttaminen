@@ -3,6 +3,7 @@ import {
   checkRow,
   expectAllSpinnersHidden,
   getMuiCloseButton,
+  selectOption,
 } from './playwright-utils';
 import path from 'path';
 import { readFile } from 'fs/promises';
@@ -20,15 +21,7 @@ test('displays pistesyotto', async ({ page }) => {
 });
 
 async function selectTila(page: Page, expectedOption: string) {
-  const combobox = page.getByRole('combobox', {
-    name: 'Tila',
-  });
-  await combobox.click();
-  const listbox = page.getByRole('listbox', {
-    name: 'Tila',
-  });
-  await listbox.getByRole('option', { name: expectedOption }).click();
-  await expect(combobox).toContainText(expectedOption);
+  await selectOption(page, 'Tila', expectedOption);
 }
 
 async function goToPisteSyotto(page: Page) {

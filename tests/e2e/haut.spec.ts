@@ -4,50 +4,28 @@ import {
   expectPageAccessibilityOk,
   expectUrlParamToEqual,
   getHakukohdeNaviLinks,
+  selectOption,
 } from './playwright-utils';
 
 async function selectHakutapa(page: Page, expectedOption: string) {
-  const combobox = page.getByRole('combobox', { name: 'Hakutapa' });
-  await combobox.click();
-  const listbox = page.getByRole('listbox', { name: 'Hakutapa' });
-  await listbox.getByRole('option', { name: expectedOption }).click();
-  await expect(combobox).toContainText(expectedOption);
+  await selectOption(page, 'Hakutapa', expectedOption);
 }
 
 async function selectKausi(page: Page, expectedOption: string) {
-  const combobox = page.getByRole('combobox', {
-    name: 'Koulutuksen alkamiskausi',
-  });
-  await combobox.click();
-  const listbox = page.getByRole('listbox', {
-    name: 'Koulutuksen alkamiskausi',
-  });
-  await listbox.getByRole('option', { name: expectedOption }).click();
-  await expect(combobox).toContainText(expectedOption);
+  await selectOption(page, 'Koulutuksen alkamiskausi', expectedOption);
 }
 
 async function selectTila(page: Page, expectedOption: string) {
-  const combobox = page.getByRole('combobox', {
-    name: 'Tila',
-  });
-  await combobox.click();
-  const listbox = page.getByRole('listbox', {
-    name: 'Tila',
-  });
-  await listbox.getByRole('option', { name: expectedOption }).click();
-  await expect(combobox).toContainText(expectedOption);
+  await selectOption(page, 'Tila', expectedOption);
 }
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
-  await expect(page).toHaveTitle(/Valintojen Toteuttaminen/);
 });
 
-test('Haku-page accessibility', async ({ page }) => {
-  await page.goto(
-    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000046872',
-  );
+test('Haut-page accessibility', async ({ page }) => {
   await expectAllSpinnersHidden(page);
+  await expect(page).toHaveTitle(/Valintojen Toteuttaminen/);
   await expectPageAccessibilityOk(page);
 });
 

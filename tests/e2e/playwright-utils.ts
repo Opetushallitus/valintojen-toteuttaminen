@@ -66,11 +66,10 @@ export const fixtureFromFile = (fileName: string) => {
 
 export async function selectOption(
   page: Page,
-  row: Locator,
   name: string,
   expectedOption: string,
 ) {
-  const combobox = row.getByRole('combobox', {
+  const combobox = page.getByRole('combobox', {
     name,
   });
   const contentId = await combobox.getAttribute('aria-controls');

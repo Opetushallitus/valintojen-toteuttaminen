@@ -1,8 +1,8 @@
 import { test, expect, Page } from '@playwright/test';
 import {
+  getHakukohdeNaviLinks,
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
-  getHakukohdeNaviLinks,
 } from './playwright-utils';
 
 type Tab = {
@@ -12,6 +12,11 @@ type Tab = {
 };
 
 const TABS_TO_TEST: Tab[] = [
+  {
+    title: 'Perustiedot',
+    textLocator: 'Valintatapajonot',
+    route: 'perustiedot',
+  },
   {
     title: 'Hakeneet',
     textLocator: 'Hae hakijan nimellä tai tunnisteilla',
@@ -59,14 +64,6 @@ test('navigates to hakukohde tabs', async ({ page }) => {
   await expect(page.locator('h3')).toHaveText('Valintatapajonot');
 });
 
-test('Hakukohde-page accessibility', async ({ page }) => {
-  await page.goto(
-    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/perustiedot',
-  );
-  await expectAllSpinnersHidden(page);
-  await expectPageAccessibilityOk(page);
-});
-
 const checkTabContent = async (page: Page, tab: Tab) => {
   if (tab.textLocator) {
     await expect(page.locator('main').getByText(tab.textLocator)).toBeVisible();
@@ -86,13 +83,6 @@ test.describe('Hakukohde tabs', () => {
 
       await getHakukohdeNaviLinks(page).first().click();
       await page.getByRole('link', { name: tab.title }).click();
-      await checkTabContent(page, tab);
-    });
-
-    test(`Navigates directly to ${tab.title}`, async ({ page }) => {
-      await page.goto(
-        `/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/${tab.route}`,
-      );
       await checkTabContent(page, tab);
     });
 

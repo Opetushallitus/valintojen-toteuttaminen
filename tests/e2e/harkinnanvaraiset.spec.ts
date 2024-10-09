@@ -12,7 +12,6 @@ async function goToHarkinnanvaraiset(page: Page) {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000021303/hakukohde/1.2.246.562.20.00000000000000024094/harkinnanvaraiset',
   );
-  await expectAllSpinnersHidden(page);
 }
 
 test.beforeEach(async ({ page }) => {
@@ -134,7 +133,8 @@ test('"Valitse kaikki", "Poista valinta" and "Aseta valitut hyväksytyiksi" cont
   }
 });
 
-const HARKINNANVARAINEN_INPUT_NAME = 'Harkinnanvarainen tila';
+const HARKINNANVARAINEN_INPUT_NAME =
+  'Harkinnanvarainen tila hakijan "Hui Haamu" hakemukselle';
 
 test('shows success toast when successfully updating harkinnanvarainen tila', async ({
   page,
@@ -147,13 +147,7 @@ test('shows success toast when successfully updating harkinnanvarainen tila', as
       }
     },
   );
-  const contentRows = page.locator('tbody tr');
-  await selectOption(
-    page,
-    contentRows.last(),
-    HARKINNANVARAINEN_INPUT_NAME,
-    'Hyväksytty',
-  );
+  await selectOption(page, HARKINNANVARAINEN_INPUT_NAME, 'Hyväksytty');
   await page.getByRole('button', { name: 'Tallenna' }).click();
   const errorDialog = page.getByRole('alert').filter({
     hasText: 'Harkinnanvaraisten tilojen tallentamisessa tapahtui virhe!',
@@ -174,13 +168,7 @@ test('shows error toast when failed updating harkinnanvarainen tila', async ({
     },
   );
 
-  const contentRows = page.locator('tbody tr');
-  await selectOption(
-    page,
-    contentRows.last(),
-    HARKINNANVARAINEN_INPUT_NAME,
-    'Hyväksytty',
-  );
+  await selectOption(page, HARKINNANVARAINEN_INPUT_NAME, 'Hyväksytty');
   await page.getByRole('button', { name: 'Tallenna' }).click();
 
   const successDialog = page.getByRole('alert').filter({
@@ -192,13 +180,7 @@ test('shows error toast when failed updating harkinnanvarainen tila', async ({
 test('asks for confirmation before navigating to another view without saving changes', async ({
   page,
 }) => {
-  const contentRows = page.locator('tbody tr');
-  await selectOption(
-    page,
-    contentRows.last(),
-    HARKINNANVARAINEN_INPUT_NAME,
-    'Hyväksytty',
-  );
+  await selectOption(page, HARKINNANVARAINEN_INPUT_NAME, 'Hyväksytty');
   const confirmationDialog = page.getByRole('alert').filter({
     hasText:
       'Olet poistumassa lomakkeelta jolla on tallentamattomia muutoksia. Jatketaanko silti?',
