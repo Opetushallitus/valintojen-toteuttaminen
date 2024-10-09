@@ -16,9 +16,6 @@ export type SearchInputProps = {
   setSearchPhrase: (s: string) => void;
   label?: string;
   sx?: React.CSSProperties;
-  labelHidden?: boolean;
-  ariaLabel?: string;
-  placeholder?: string;
 };
 
 export const SearchInput = ({
@@ -27,9 +24,6 @@ export const SearchInput = ({
   setSearchPhrase,
   label,
   sx,
-  labelHidden,
-  ariaLabel,
-  placeholder,
 }: SearchInputProps) => {
   const { t } = useTranslations();
 
@@ -41,15 +35,14 @@ export const SearchInput = ({
     <StyledContol
       key={searchPhrase}
       sx={sx ?? {}}
-      label={labelHidden ? '' : t(label ?? 'hakeneet.hae')}
+      label={t(label ?? 'hakeneet.hae')}
       renderInput={({ labelId }) => (
         <OutlinedInput
           id={name}
           name={name}
-          inputProps={{ 'aria-labelledby': ariaLabel ?? labelId }}
+          inputProps={{ 'aria-labelledby': labelId }}
           defaultValue={searchPhrase}
           onChange={handleSearchChange}
-          placeholder={placeholder ? t(placeholder) : ''}
           autoFocus={true}
           type="text"
           endAdornment={
