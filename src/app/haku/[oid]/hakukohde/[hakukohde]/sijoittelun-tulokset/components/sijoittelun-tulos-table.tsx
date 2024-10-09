@@ -7,7 +7,7 @@ import {
 } from '@/app/components/table/table-columns';
 import { ListTable } from '@/app/components/table/list-table';
 import { SijoittelunHakemusValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   KeysMatching,
   ListTableColumn,
@@ -18,6 +18,7 @@ import { VastaanOttoCell } from './vastaanotto-cell';
 import { SijoittelunTilaCell } from './sijoittelun-tila-cell';
 import { Haku } from '@/app/lib/types/kouta-types';
 import { isKorkeakouluHaku } from '@/app/lib/kouta';
+import { SijoittelunTuloksetActionBar } from './sijoittelun-tulos-action-bar';
 
 export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
   title,
@@ -100,16 +101,32 @@ export const SijoittelunTulosTable = ({
     ].filter((a) => a !== null);
   }, [t, haku]);
 
+  const [selection, setSelection] = useState<Set<string>>(() => new Set());
+
   return (
-    <ListTable
-      rowKeyProp="hakijaOid"
-      columns={columns}
-      rows={hakemukset}
-      sort={sort}
-      setSort={setSort}
-      translateHeader={false}
-      sx={{ overflowX: 'auto', width: 'unset' }}
-      wrapperStyle={{ display: 'block' }}
-    />
+    <>
+      <SijoittelunTuloksetActionBar
+        selection={selection}
+        resetSelection={() => setSelection(new Set())}
+      />
+      <ListTable
+        rowKeyProp="hakemusOid"
+        columns={columns}
+        rows={hakemukset}
+        sort={sort}
+        setSort={setSort}
+        checkboxSelection={true}
+        selection={selection}
+        onSelectionChange={setSelection}
+        translateHeader={false}
+        sx={{ overflowX: 'auto', width: 'unset' }}
+        wrapperStyle={{ display: 'block' }}
+        getRowCheckboxLabel={({ hakijanNimi }) =>
+          t(`${TRANSLATIONS_PREFIX}.valitse-hakemus`, {
+            hakijanNimi,
+          })
+        }
+      />
+    </>
   );
 };

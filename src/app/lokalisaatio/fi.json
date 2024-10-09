@@ -247,7 +247,8 @@
       "vastaanottotieto": "Vastaanottotieto",
       "ilmoittautumistieto": "Ilmoittautumistieto",
       "maksuntila": "Maksun tila",
-      "toiminnot": "Toiminnot"
+      "toiminnot": "Toiminnot",
+      "valitse-hakemus": "Valitse hakijan {{hakijanNimi}} hakemus"
     }
   },
   "sijoittelu": {
