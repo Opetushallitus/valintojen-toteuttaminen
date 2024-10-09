@@ -1,22 +1,16 @@
 'use client';
-import { ChangeEvent, Suspense, useMemo } from 'react';
+import { Suspense, useMemo } from 'react';
 
-import {
-  Select,
-  SelectChangeEvent,
-  OutlinedInput,
-  Box,
-  InputAdornment,
-} from '@mui/material';
+import { Select, SelectChangeEvent, Box, InputAdornment } from '@mui/material';
 
 import { Tila, getHakuAlkamisKaudet } from '@/app/lib/types/kouta-types';
-import { Search } from '@mui/icons-material';
 import { useHakuSearchParams } from '@/app/hooks/useHakuSearch';
 import { useHakutavat } from '@/app/hooks/useHakutavat';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { SpinnerIcon } from '@/app/components/spinner-icon';
 import { LocalizedSelect } from '@/app/components/localized-select';
+import { SearchInput } from '@/app/components/search-input';
 
 const HakutapaSelect = ({
   labelId,
@@ -95,10 +89,6 @@ export default function HakuControls() {
 
   const { t } = useTranslations();
 
-  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearchPhrase(e.target.value);
-  };
-
   const changeTila = (e: SelectChangeEvent) => {
     setTila(e.target.value);
   };
@@ -123,32 +113,13 @@ export default function HakuControls() {
         alignItems: 'flex-end',
       }}
     >
-      <OphFormControl
-        sx={{
-          flexGrow: 4,
-          minWidth: '180px',
-          textAlign: 'left',
-        }}
-        label={t('haku.hae')}
-        renderInput={({ labelId }) => {
-          return (
-            <OutlinedInput
-              name="haku-search"
-              inputProps={{ 'aria-labelledby': labelId }}
-              defaultValue={searchPhrase}
-              onChange={handleSearchChange}
-              autoFocus={true}
-              type="text"
-              placeholder={t('haku.hae')}
-              endAdornment={
-                <InputAdornment position="end">
-                  <Search />
-                </InputAdornment>
-              }
-            />
-          );
-        }}
-      ></OphFormControl>
+      <SearchInput
+        searchPhrase={searchPhrase}
+        setSearchPhrase={setSearchPhrase}
+        name="haku-search"
+        sx={{ flexGrow: 4, minWidth: '180px' }}
+        label="haku.hae"
+      />
       <OphFormControl
         sx={{
           width: 'auto',

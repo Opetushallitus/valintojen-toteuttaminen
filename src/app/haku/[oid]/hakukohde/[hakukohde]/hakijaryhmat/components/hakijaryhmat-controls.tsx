@@ -1,13 +1,15 @@
 import { useHakijaryhmatSearchParams } from '../hooks/useHakijaryhmatSearch';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Box, SelectChangeEvent } from '@mui/material';
-import { HakijaryhmatSearch } from './hakijaryhmat-search';
 import { SijoittelunTila } from '@/app/lib/types/sijoittelu-types';
 import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { LocalizedSelect } from '@/app/components/localized-select';
+import { SearchInput } from '@/app/components/search-input';
 
 export const HakijaryhmatControls = () => {
   const {
+    searchPhrase,
+    setSearchPhrase,
     kuuluuRyhmaan,
     setKuuluuRyhmaan,
     hyvaksyttyRyhmasta,
@@ -43,7 +45,11 @@ export const HakijaryhmatControls = () => {
         columnGap: 2,
       }}
     >
-      <HakijaryhmatSearch />
+      <SearchInput
+        searchPhrase={searchPhrase}
+        setSearchPhrase={setSearchPhrase}
+        name="hakijaryhmat-search"
+      />
       <OphFormControl
         sx={{
           width: 'auto',

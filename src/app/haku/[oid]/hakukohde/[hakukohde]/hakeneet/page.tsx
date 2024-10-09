@@ -2,14 +2,17 @@
 
 import { TabContainer } from '../components/tab-container';
 import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
-import { useHakeneetSearchResults } from '@/app/hooks/useHakeneetSearch';
+import {
+  useHakeneetSearchParams,
+  useHakeneetSearchResults,
+} from '@/app/hooks/useHakeneetSearch';
 import { HakeneetTable } from './components/hakeneet-table';
-import HakeneetSearch from './components/hakeneet-search';
 import { isKorkeakouluHaku } from '@/app/lib/kouta';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { Haku } from '@/app/lib/types/kouta-types';
 import { ClientSpinner } from '@/app/components/client-spinner';
 import { useHaku } from '@/app/hooks/useHaku';
+import { SearchInput } from '@/app/components/search-input';
 
 type HakeneetParams = {
   haku: Haku;
@@ -28,9 +31,16 @@ const HakeneetContent = ({ haku, hakukohdeOid }: HakeneetParams) => {
     setSort,
   } = useHakeneetSearchResults(haku.oid, hakukohdeOid);
 
+  const { searchPhrase, setSearchPhrase } = useHakeneetSearchParams();
+
   return (
     <>
-      <HakeneetSearch />
+      <SearchInput
+        searchPhrase={searchPhrase}
+        setSearchPhrase={setSearchPhrase}
+        name="hakeneet-search"
+        sx={{ flexGrow: 4 }}
+      />
       <TablePaginationWrapper
         totalCount={results?.length ?? 0}
         pageSize={pageSize}

@@ -6,12 +6,12 @@ import {
   KeyboardDoubleArrowRight as KeyboardDoubleArrowRightIcon,
 } from '@mui/icons-material';
 import HakukohdeList from './hakukohde-list';
-import HakukohdeSearch from './hakukohde-search';
 import { useState } from 'react';
 import { ophColors } from '@/app/lib/theme';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { ClientSpinner } from '@/app/components/client-spinner';
+import HakukohdeSearch from './hakukohde-search';
 
 const StyledPanel = styled('aside')({
   width: '16vw',
@@ -57,7 +57,6 @@ export const HakukohdePanel = ({ hakuOid }: { hakuOid: string }) => {
             <CloseIcon />
           </IconButton>
           <HakukohdeSearch />
-
           <HakukohdeList hakuOid={hakuOid} />
         </QuerySuspenseBoundary>
       )}
