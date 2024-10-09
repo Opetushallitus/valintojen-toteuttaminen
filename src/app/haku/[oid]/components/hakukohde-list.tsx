@@ -6,8 +6,8 @@ import { Hakukohde } from '@/app/lib/types/kouta-types';
 import { ophColors, OphTypography } from '@opetushallitus/oph-design-system';
 import { useParams } from 'next/navigation';
 import { useHakukohdeTab } from '../hooks/useHakukohdeTab';
-import { HakukohdeTabLink } from '@/app/components/hakukohde-tab-link';
 import { styled } from '@/app/lib/theme';
+import { HakukohdeTabLink } from './hakukohde-tab-link';
 
 const StyledList = styled('nav')(({ theme }) => ({
   display: 'flex',

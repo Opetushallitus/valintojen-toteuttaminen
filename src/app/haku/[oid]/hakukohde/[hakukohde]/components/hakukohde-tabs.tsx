@@ -7,7 +7,7 @@ import { useHakukohde } from '@/app/hooks/useHakukohde';
 import { useHaku } from '@/app/hooks/useHaku';
 import { getVisibleTabs } from '@/app/haku/[oid]/lib/hakukohde-tab-utils';
 import { useHakukohdeTab } from '@/app/haku/[oid]/hooks/useHakukohdeTab';
-import { HakukohdeTabLink } from '@/app/components/hakukohde-tab-link';
+import { HakukohdeTabLink } from '@/app/haku/[oid]/components/hakukohde-tab-link';
 
 const StyledContainer = styled('div')(({ theme }) => ({
   padding: theme.spacing(2, 3, 0),
