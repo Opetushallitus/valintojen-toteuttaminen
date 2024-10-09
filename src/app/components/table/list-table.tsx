@@ -38,19 +38,19 @@ const StyledCell = styled(TableCell)({
 const StyledTableBody = styled(TableBody)({
   '& .MuiTableRow-root': {
     '&:nth-of-type(even)': {
-      backgroundColor: ophColors.grey50,
       '.MuiTableCell-root': {
         backgroundColor: ophColors.grey50,
       },
     },
     '&:nth-of-type(odd)': {
-      backgroundColor: ophColors.white,
       '.MuiTableCell-root': {
         backgroundColor: ophColors.white,
       },
     },
     '&:hover': {
-      backgroundColor: ophColors.lightBlue2,
+      '.MuiTableCell-root': {
+        backgroundColor: ophColors.lightBlue2,
+      },
     },
   },
 });
