@@ -22,6 +22,8 @@ import {
 } from '@/app/lib/valintalaskenta-service';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import useToaster from '@/app/hooks/useToaster';
+import useConfirmChangesBeforeNavigation from '@/app/hooks/useConfirmChangesBeforeNavigation';
+import { isEmpty } from 'remeda';
 
 const useTallennaMutation = ({
   hakuOid,
@@ -100,6 +102,10 @@ export const HarkinnanvaraisetForm = ({
 
   const [harkinnanvaraisetTilat, setHarkinnanvaraisetTilat] =
     useState<HarkinnanvaraisetTilatByHakemusOids>(() => EMPTY_OBJECT);
+
+  const isDirty = !isEmpty(harkinnanvaraisetTilat);
+
+  useConfirmChangesBeforeNavigation(isDirty);
 
   const { mutate, isPending } = useTallennaMutation({ hakuOid, hakukohdeOid });
 

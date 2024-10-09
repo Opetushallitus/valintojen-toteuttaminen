@@ -1,7 +1,7 @@
 'use client';
 
 import { useSelector } from '@xstate/react';
-import { useMemo } from 'react';
+import { useCallback } from 'react';
 import {
   assign,
   createActor,
@@ -125,18 +125,24 @@ const toasterActor = createActor(toasterMachine).start();
 export const useToaster = () => {
   const toasts = useSelector(toasterActor, ({ context }) => context.toasts);
 
-  const addToast = useMemo(
-    () => (toast: Toast) =>
+  const addToast = useCallback(
+    (toast: Toast) =>
       toasterActor.send({ type: ToastEvents.ADD, toast: toast }),
     [],
   );
-  const removeToast = (key: string) =>
-    toasterActor.send({ type: ToastEvents.REMOVE, key });
+  const removeToast = useCallback(
+    (key: string) => toasterActor.send({ type: ToastEvents.REMOVE, key }),
+    [],
+  );
 
-  const toastEnter = (key: string) =>
-    toasterActor.send({ type: ToastEvents.ENTER, key });
-  const toastLeave = (key: string) =>
-    toasterActor.send({ type: ToastEvents.LEAVE, key });
+  const toastEnter = useCallback(
+    (key: string) => toasterActor.send({ type: ToastEvents.ENTER, key }),
+    [],
+  );
+  const toastLeave = useCallback(
+    (key: string) => toasterActor.send({ type: ToastEvents.LEAVE, key }),
+    [],
+  );
   return {
     toasts,
     addToast,

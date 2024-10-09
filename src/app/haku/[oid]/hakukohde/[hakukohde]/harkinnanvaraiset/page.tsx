@@ -3,7 +3,7 @@
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { TabContainer } from '../components/tab-container';
 import { FullClientSpinner } from '@/app/components/client-spinner';
-import { Box } from '@mui/material';
+import { Stack } from '@mui/material';
 import { useHarkinnanvaraisetHakemukset } from './hooks/useHakinnanvaraisetHakemukset';
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
 import { useHarkinnanvaraisetPaginationQueryParams } from './hooks/useHarkinnanvaraisetPaginated';
@@ -25,17 +25,17 @@ const HarkinnanvaraisetContent = ({
   const { pageSize, setPageSize } = useHarkinnanvaraisetPaginationQueryParams();
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', rowGap: 2 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+    <Stack spacing={2}>
+      <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
         <HarkinnanvaraisetSearchInput />
         <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
-      </Box>
+      </Stack>
       <HarkinnanvaraisetForm
         hakuOid={hakuOid}
         hakukohdeOid={hakukohdeOid}
         harkinnanvaraisetHakemukset={harkinnanvaraisetHakemukset}
       />
-    </Box>
+    </Stack>
   );
 };
 
