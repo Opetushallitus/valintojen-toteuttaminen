@@ -13,6 +13,8 @@ import { HakemuksenHarkinnanvaraisuus } from '../hooks/useHakinnanvaraisetHakemu
 import { useHarkinanvaraisetPaginated } from '../hooks/useHarkinnanvaraisetPaginated';
 import { LocalizedSelect } from '@/app/components/localized-select';
 import { HarkinnanvaraisuusTila } from '@/app/lib/valintalaskenta-service';
+import { ophColors } from '@opetushallitus/oph-design-system';
+import { isDefined } from 'remeda';
 const TRANSLATIONS_PREFIX = 'harkinnanvaraiset.taulukko';
 
 export type HarkinnanvarainenTilaValue = HarkinnanvaraisuusTila | '';
@@ -55,9 +57,18 @@ export const HarkinnanvaraisetTable = ({
         title: `${TRANSLATIONS_PREFIX}.harkinnanvarainen-tila`,
         key: 'harkinnanvarainenTila',
         renderFn: (props) => {
+          const isDirty = isDefined(harkinnanvaraisetTilat[props.hakemusOid]);
           return (
             <LocalizedSelect
-              sx={{ minWidth: '150px' }}
+              sx={{
+                minWidth: '150px',
+                '& .MuiOutlinedInput-notchedOutline': isDirty
+                  ? {
+                      borderColor: ophColors.yellow1,
+                      borderWidth: '2px',
+                    }
+                  : {},
+              }}
               clearable={true}
               placeholder="(ei valintaa)"
               name={`${props.hakemusOid}_harkinnanvarainenTila`}
