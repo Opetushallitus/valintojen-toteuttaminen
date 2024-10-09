@@ -70,7 +70,7 @@ export const HarkinnanvaraisetTable = ({
                   : {},
               }}
               clearable={true}
-              placeholder="(ei valintaa)"
+              placeholder={t('harkinnanvaraiset.tila-placeholder')}
               options={[
                 {
                   label: 'Hyväksytty',

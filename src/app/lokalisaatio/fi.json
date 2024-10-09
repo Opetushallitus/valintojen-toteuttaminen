@@ -196,6 +196,7 @@
     "valittu-maara_zero": "Ei hakijoita valittu",
     "virhe-tallenna": "Harkinnanvaraisten tilojen tallentamisessa tapahtui virhe!",
     "tallennettu": "Harkinnanvaraisten tilojen tallentaminen onnistui",
+    "tila-placeholder": "\u2013",
     "taulukko": {
       "harkinnanvaraisuuden-syy": "Harkinnanvaraisuuden syy",
       "harkinnanvarainen-tila": "Harkinnanvarainen tila",
