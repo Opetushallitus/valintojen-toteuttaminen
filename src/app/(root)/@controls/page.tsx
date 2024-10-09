@@ -117,8 +117,8 @@ export default function HakuControls() {
         searchPhrase={searchPhrase}
         setSearchPhrase={setSearchPhrase}
         name="haku-search"
-        flexGrow={4}
-        labelLocalizationKey="haku.hae"
+        sx={{ flexGrow: 4, minWidth: '180px' }}
+        label="haku.hae"
       />
       <OphFormControl
         sx={{

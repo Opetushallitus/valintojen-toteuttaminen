@@ -39,7 +39,7 @@ const HakeneetContent = ({ haku, hakukohdeOid }: HakeneetParams) => {
         searchPhrase={searchPhrase}
         setSearchPhrase={setSearchPhrase}
         name="hakeneet-search"
-        flexGrow={4}
+        sx={{ flexGrow: 4 }}
       />
       <TablePaginationWrapper
         totalCount={results?.length ?? 0}

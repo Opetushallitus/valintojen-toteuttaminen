@@ -1,24 +1,36 @@
 import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Search } from '@mui/icons-material';
-import { InputAdornment, OutlinedInput } from '@mui/material';
+import { InputAdornment, OutlinedInput, styled } from '@mui/material';
 import { ChangeEvent } from 'react';
 
-export type SearchParams = {
+const StyledContol = styled(OphFormControl)(() => ({
+  flexGrow: 0,
+  minWidth: '380px',
+  textAlign: 'left',
+}));
+
+export type SearchInputProps = {
   name: string;
   searchPhrase: string;
   setSearchPhrase: (s: string) => void;
-  labelLocalizationKey?: string;
-  flexGrow?: number;
+  label?: string;
+  sx?: React.CSSProperties;
+  labelHidden?: boolean;
+  ariaLabel?: string;
+  placeholder?: string;
 };
 
 export const SearchInput = ({
   name,
   searchPhrase,
   setSearchPhrase,
-  labelLocalizationKey,
-  flexGrow,
-}: SearchParams) => {
+  label,
+  sx,
+  labelHidden,
+  ariaLabel,
+  placeholder,
+}: SearchInputProps) => {
   const { t } = useTranslations();
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -26,20 +38,18 @@ export const SearchInput = ({
   };
 
   return (
-    <OphFormControl
+    <StyledContol
       key={searchPhrase}
-      sx={{
-        flexGrow: flexGrow ?? 0,
-        minWidth: '380px',
-        textAlign: 'left',
-      }}
-      label={t(labelLocalizationKey ?? 'hakeneet.hae')}
+      sx={sx ?? {}}
+      label={labelHidden ? '' : t(label ?? 'hakeneet.hae')}
       renderInput={({ labelId }) => (
         <OutlinedInput
+          id={name}
           name={name}
-          inputProps={{ 'aria-labelledby': labelId }}
+          inputProps={{ 'aria-labelledby': ariaLabel ?? labelId }}
           defaultValue={searchPhrase}
           onChange={handleSearchChange}
+          placeholder={placeholder ? t(placeholder) : ''}
           autoFocus={true}
           type="text"
           endAdornment={

@@ -55,7 +55,7 @@ export const PisteSyottoControls = ({
           searchPhrase={searchPhrase}
           setSearchPhrase={setSearchPhrase}
           name="pistesyotto-search"
-          flexGrow={4}
+          sx={{ flexGrow: 4 }}
         />
         <OphFormControl
           sx={{

@@ -6,12 +6,13 @@ import {
   KeyboardDoubleArrowRight as KeyboardDoubleArrowRightIcon,
 } from '@mui/icons-material';
 import HakukohdeList from './hakukohde-list';
-import HakukohdeSearch from './hakukohde-search';
 import { useState } from 'react';
 import { ophColors } from '@/app/lib/theme';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { ClientSpinner } from '@/app/components/client-spinner';
+import { SearchInput } from '@/app/components/search-input';
+import { useHakukohdeSearchParams } from '@/app/hooks/useHakukohdeSearch';
 
 const StyledPanel = styled('aside')({
   width: '16vw',
@@ -42,6 +43,7 @@ const StyledPanel = styled('aside')({
 });
 
 export const HakukohdePanel = ({ hakuOid }: { hakuOid: string }) => {
+  const { searchPhrase, setSearchPhrase } = useHakukohdeSearchParams();
   const [minimized, setMinimized] = useState(false);
   const { t } = useTranslations();
 
@@ -56,8 +58,15 @@ export const HakukohdePanel = ({ hakuOid }: { hakuOid: string }) => {
           >
             <CloseIcon />
           </IconButton>
-          <HakukohdeSearch />
-
+          <SearchInput
+            searchPhrase={searchPhrase}
+            setSearchPhrase={setSearchPhrase}
+            name="hakukohde-search"
+            sx={{ minWidth: '180px' }}
+            labelHidden={true}
+            placeholder="haku.haehakukohde"
+            ariaLabel="haku.haehakukohde"
+          />
           <HakukohdeList hakuOid={hakuOid} />
         </QuerySuspenseBoundary>
       )}
