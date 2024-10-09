@@ -9,7 +9,6 @@ type Tab = {
   title: string;
   textLocator?: string;
   route: string;
-  invisibleInTabsForKKHaku?: boolean;
 };
 
 const TABS_TO_TEST: Tab[] = [
@@ -27,11 +26,6 @@ const TABS_TO_TEST: Tab[] = [
     title: 'Pistesyöttö',
     textLocator: 'Näytä vain laskentaan vaikuttavat osallistumistiedot',
     route: 'pistesyotto',
-  },
-  {
-    title: 'Harkinnanvaraiset',
-    route: 'harkinnanvaraiset',
-    invisibleInTabsForKKHaku: true,
   },
   {
     title: 'Hakijaryhmät',
@@ -91,12 +85,8 @@ test.describe('Hakukohde tabs', () => {
       );
 
       await getHakukohdeNaviLinks(page).first().click();
-      if (tab.invisibleInTabsForKKHaku) {
-        await expect(page.getByText(tab.title)).toBeHidden();
-      } else {
-        await page.getByRole('link', { name: tab.title }).click();
-        await checkTabContent(page, tab);
-      }
+      await page.getByRole('link', { name: tab.title }).click();
+      await checkTabContent(page, tab);
     });
 
     test(`Navigates directly to ${tab.title}`, async ({ page }) => {

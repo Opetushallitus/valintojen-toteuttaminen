@@ -67,7 +67,9 @@
     "totalHakukohteet": 0,
     "valintakokeet": [],
     "muokkaaja": "1.2.246.562.24.10327979532",
-    "kielivalinta": ["fi"],
+    "kielivalinta": [
+      "fi"
+    ],
     "modified": "2023-11-02T12:27:41"
   },
   {
@@ -142,7 +144,9 @@
     "totalHakukohteet": 0,
     "valintakokeet": [],
     "muokkaaja": "1.2.246.562.24.61168703071",
-    "kielivalinta": ["fi"],
+    "kielivalinta": [
+      "fi"
+    ],
     "modified": "2022-01-05T16:32:06"
   },
   {
@@ -170,7 +174,9 @@
     "totalHakukohteet": 0,
     "valintakokeet": [],
     "muokkaaja": "1.2.246.562.24.78053256082",
-    "kielivalinta": ["fi"],
+    "kielivalinta": [
+      "fi"
+    ],
     "modified": "2022-06-27T13:47:36"
   },
   {
@@ -236,7 +242,9 @@
     "totalHakukohteet": 0,
     "valintakokeet": [],
     "muokkaaja": "1.2.246.562.24.65467286208",
-    "kielivalinta": ["fi"],
+    "kielivalinta": [
+      "fi"
+    ],
     "modified": "2023-01-07T12:56:02"
   },
   {
@@ -270,7 +278,9 @@
     "hakukohdeOids": [],
     "valintakokeet": [],
     "muokkaaja": "1.2.246.562.24.80913193985",
-    "kielivalinta": ["fi"],
+    "kielivalinta": [
+      "fi"
+    ],
     "modified": "2023-11-14T13:23:41"
   },
   {
@@ -319,7 +329,61 @@
     ],
     "valintakokeet": [],
     "muokkaaja": "1.2.246.562.24.57549617509",
-    "kielivalinta": ["en"],
+    "kielivalinta": [
+      "en"
+    ],
     "modified": "2023-10-30T10:34:31"
+  },
+  {
+    "oid": "1.2.246.562.29.00000000000000021303",
+    "totalHakukohteet": 1,
+    "tila": "arkistoitu",
+    "nimi": {
+      "en": "Joint application to upper secondary education and preparatory education 2023",
+      "fi": "Perusopetuksen jälkeisen koulutuksen yhteishaku 2023",
+      "sv": "Gemensam ansökan till utbildning efter den grundläggande utbildningen 2023"
+    },
+    "hakutapaKoodiUri": "hakutapa_01",
+    "hakukohteenLiittamisenTakaraja": "2023-02-17T23:59:00",
+    "hakukohteenMuokkaamisenTakaraja": "2023-06-05T23:59:00",
+    "alkamiskausiKoodiUri": "kausi_s",
+    "alkamisvuosi": "2023",
+    "kohdejoukkoKoodiUri": "haunkohdejoukko_11#1",
+    "hakulomaketyyppi": "ataru",
+    "hakulomakeAtaruId": "b1646055-f5a4-428d-9ffa-838512e10a44",
+    "hakulomakeKuvaus": {},
+    "hakulomakeLinkki": {
+      "fi": "https://untuvaopintopolku.fi/hakemus/haku/1.2.246.562.29.00000000000000021303?lang=fi",
+      "sv": "https://untuvaopintopolku.fi/hakemus/haku/1.2.246.562.29.00000000000000021303?lang=sv",
+      "en": "https://untuvaopintopolku.fi/hakemus/haku/1.2.246.562.29.00000000000000021303?lang=en"
+    },
+    "hakuvuosi": 2023,
+    "hakukausi": "kausi_k#1",
+    "metadata": {
+      "yhteyshenkilot": [],
+      "tulevaisuudenAikataulu": [],
+      "koulutuksenAlkamiskausi": {
+        "alkamiskausityyppi": "alkamiskausi ja -vuosi",
+        "koulutuksenAlkamiskausi": {
+          "koodiUri": "kausi_s"
+        },
+        "koulutuksenAlkamisvuosi": "2023"
+      }
+    },
+    "organisaatioOid": "1.2.246.562.10.00000000001",
+    "hakuajat": [
+      {
+        "alkaa": "2023-02-21T08:00:00",
+        "paattyy": "2023-03-21T15:00:00"
+      }
+    ],
+    "valintakokeet": [],
+    "muokkaaja": "1.2.246.562.24.83473302831",
+    "kielivalinta": [
+      "fi",
+      "sv",
+      "en"
+    ],
+    "modified": "2023-12-04T10:58:21"
   }
 ]

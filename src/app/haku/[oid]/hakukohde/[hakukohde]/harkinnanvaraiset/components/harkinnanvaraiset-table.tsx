@@ -4,7 +4,7 @@ import { Box } from '@mui/material';
 import { useMemo } from 'react';
 import { ListTableColumn } from '@/app/components/table/table-types';
 import {
-  hakijaColumn,
+  createHakijaColumn,
   makeColumnWithCustomRender,
   makeColumnWithValueToTranslate,
 } from '@/app/components/table/table-columns';
@@ -46,7 +46,7 @@ export const HarkinnanvaraisetTable = ({
 
   const columns: Array<ListTableColumn<HakemuksenHarkinnanvaraisuus>> = useMemo(
     () => [
-      hakijaColumn,
+      createHakijaColumn('harkinnanvaraiset'),
       makeColumnWithValueToTranslate<HakemuksenHarkinnanvaraisuus>({
         t,
         title: `${TRANSLATIONS_PREFIX}.harkinnanvaraisuuden-syy`,
@@ -70,6 +70,11 @@ export const HarkinnanvaraisetTable = ({
                   : {},
               }}
               clearable={true}
+              inputProps={{
+                'aria-label': t(
+                  `${TRANSLATIONS_PREFIX}.harkinnanvarainen-tila`,
+                ),
+              }}
               placeholder={t('harkinnanvaraiset.tila-placeholder')}
               options={[
                 {

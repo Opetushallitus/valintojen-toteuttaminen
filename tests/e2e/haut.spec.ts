@@ -74,10 +74,10 @@ test('filters haku by archived state', async ({ page }) => {
   const tableRows = getTableRows(page);
   await selectTila(page, 'Arkistoitu');
 
-  await expect(tableRows).toHaveCount(3);
+  await expect(tableRows).toHaveCount(4);
   const hakuInput = page.getByRole('textbox', { name: 'Hae hakuja' });
   await hakuInput.fill('hak');
-  await expect(tableRows).toHaveCount(3);
+  await expect(tableRows).toHaveCount(4);
   await hakuInput.fill('Leppä');
   await expect(tableRows).toHaveCount(1);
   await expect(tableRows).toContainText('Leppävirran lukio - Jatkuva haku');
