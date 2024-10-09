@@ -71,7 +71,6 @@ export const HarkinnanvaraisetTable = ({
               }}
               clearable={true}
               placeholder="(ei valintaa)"
-              name={`${props.hakemusOid}_harkinnanvarainenTila`}
               options={[
                 {
                   label: 'Hyväksytty',
