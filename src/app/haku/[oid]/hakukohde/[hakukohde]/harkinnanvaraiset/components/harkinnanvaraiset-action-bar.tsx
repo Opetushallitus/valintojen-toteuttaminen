@@ -12,13 +12,7 @@ import useToaster from '@/app/hooks/useToaster';
 import { DownloadButton } from '@/app/components/download-button';
 import { getOsoitetarratHakemuksille } from '@/app/lib/valintalaskentakoostepalvelu';
 import { downloadBlob } from '@/app/lib/common';
-
-export type HarkinnanvaraisetDownloadProps = {
-  hakuOid: string;
-  hakukohdeOid: string;
-  selection: Set<string>;
-  resetSelection: () => void;
-};
+import { HarkinnanvaraisetTilatByHakemusOids } from './harkinnanvaraiset-table';
 
 const useOsoitetarratMutation = ({ selection }: { selection: Set<string> }) => {
   const { addToast } = useToaster();
@@ -44,10 +38,12 @@ const useOsoitetarratMutation = ({ selection }: { selection: Set<string> }) => {
 
 const HyvaksyValitutButton = ({
   selection,
+  onHarkinnanvaraisetTilatChange,
 }: {
-  hakuOid: string;
-  hakukohdeOid: string;
   selection: Set<string>;
+  onHarkinnanvaraisetTilatChange: (
+    harkinnanvaraisetTilat: HarkinnanvaraisetTilatByHakemusOids,
+  ) => void;
 }) => {
   const { t } = useTranslation();
 
@@ -55,6 +51,13 @@ const HyvaksyValitutButton = ({
     <ActionBar.Button
       disabled={selection.size === 0}
       startIcon={<CheckOutlined />}
+      onClick={() => {
+        const newTilat: HarkinnanvaraisetTilatByHakemusOids = {};
+        selection.forEach((hakemusOid) => {
+          newTilat[hakemusOid] = 'HYVAKSYTTY';
+        });
+        onHarkinnanvaraisetTilatChange(newTilat);
+      }}
     >
       {t('harkinnanvaraiset.hyvaksy-valitut')}
     </ActionBar.Button>
@@ -85,13 +88,16 @@ const OsoitetarratDownloadButton = ({
 };
 
 export const HarkinnanvaraisetActionBar = ({
-  hakuOid,
-  hakukohdeOid,
   selection,
   resetSelection,
+  onHarkinnanvaraisetTilatChange,
 }: {
+  selection: Set<string>;
   resetSelection: () => void;
-} & HarkinnanvaraisetDownloadProps) => {
+  onHarkinnanvaraisetTilatChange: (
+    harkinnanvaraisetTilat: HarkinnanvaraisetTilatByHakemusOids,
+  ) => void;
+}) => {
   const { t } = useTranslation();
 
   return (
@@ -105,9 +111,8 @@ export const HarkinnanvaraisetActionBar = ({
       </Box>
       <ActionBar.Divider />
       <HyvaksyValitutButton
-        hakuOid={hakuOid}
-        hakukohdeOid={hakukohdeOid}
         selection={selection}
+        onHarkinnanvaraisetTilatChange={onHarkinnanvaraisetTilatChange}
       />
       <ActionBar.Divider />
       <OsoitetarratDownloadButton selection={selection} />

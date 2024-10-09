@@ -13,24 +13,29 @@ import { HakemuksenHarkinnanvaraisuus } from '../hooks/useHakinnanvaraisetHakemu
 import { useHarkinanvaraisetPaginated } from '../hooks/useHarkinnanvaraisetPaginated';
 import { LocalizedSelect } from '@/app/components/localized-select';
 import { HarkinnanvaraisuusTila } from '@/app/lib/valintalaskenta-service';
-
 const TRANSLATIONS_PREFIX = 'harkinnanvaraiset.taulukko';
 
 export type HarkinnanvarainenTilaValue = HarkinnanvaraisuusTila | '';
+
+export type HarkinnanvaraisetTilatByHakemusOids = Record<
+  string,
+  HarkinnanvarainenTilaValue
+>;
 
 export const HarkinnanvaraisetTable = ({
   data,
   selection,
   setSelection,
-  onFormDataChange,
+  onHarkinnanvaraisetTilatChange,
+  harkinnanvaraisetTilat,
 }: {
   data: Array<HakemuksenHarkinnanvaraisuus>;
   selection: Set<string>;
   setSelection: (selection: Set<string>) => void;
-  onFormDataChange?: (
-    hakemusOid: string,
-    harkinnanvarainenTila: HarkinnanvarainenTilaValue,
+  onHarkinnanvaraisetTilatChange?: (
+    harkinnanvaraisetTilaChanges: HarkinnanvaraisetTilatByHakemusOids,
   ) => void;
+  harkinnanvaraisetTilat: Record<string, HarkinnanvarainenTilaValue>;
 }) => {
   const { t } = useTranslations();
 
@@ -49,36 +54,41 @@ export const HarkinnanvaraisetTable = ({
       makeColumnWithCustomRender({
         title: `${TRANSLATIONS_PREFIX}.harkinnanvarainen-tila`,
         key: 'harkinnanvarainenTila',
-        renderFn: (props) => (
-          <LocalizedSelect
-            sx={{ minWidth: '150px' }}
-            clearable={true}
-            placeholder="(ei valintaa)"
-            name={`${props.hakemusOid}_harkinnanvarainenTila`}
-            options={[
-              {
-                label: 'Hyväksytty',
-                value: 'HYVAKSYTTY',
-              },
-              {
-                label: 'Ei hyväksytty',
-                value: 'EI_HYVAKSYTTY',
-              },
-            ]}
-            defaultValue={props.harkinnanvarainenTila ?? ''}
-            onChange={(e) => {
-              console.log({ e });
-              onFormDataChange?.(
-                props.hakemusOid,
-                e.target.value as HarkinnanvarainenTilaValue,
-              );
-            }}
-          />
-        ),
+        renderFn: (props) => {
+          return (
+            <LocalizedSelect
+              sx={{ minWidth: '150px' }}
+              clearable={true}
+              placeholder="(ei valintaa)"
+              name={`${props.hakemusOid}_harkinnanvarainenTila`}
+              options={[
+                {
+                  label: 'Hyväksytty',
+                  value: 'HYVAKSYTTY',
+                },
+                {
+                  label: 'Ei hyväksytty',
+                  value: 'EI_HYVAKSYTTY',
+                },
+              ]}
+              value={
+                harkinnanvaraisetTilat[props.hakemusOid] ??
+                props.harkinnanvarainenTila ??
+                ''
+              }
+              onChange={(e) => {
+                onHarkinnanvaraisetTilatChange?.({
+                  [props.hakemusOid]: e.target
+                    .value as HarkinnanvarainenTilaValue,
+                });
+              }}
+            />
+          );
+        },
         sortable: false,
       }),
     ],
-    [t, onFormDataChange],
+    [t, onHarkinnanvaraisetTilatChange, harkinnanvaraisetTilat],
   );
 
   return (

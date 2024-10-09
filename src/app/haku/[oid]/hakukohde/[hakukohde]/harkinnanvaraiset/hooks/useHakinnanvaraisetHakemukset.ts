@@ -10,7 +10,11 @@ import {
   getHarkinnanvaraisuudetHakemuksille,
   HarkinnanvaraisuudenSyy,
 } from '@/app/lib/valintalaskentakoostepalvelu';
-import { useSuspenseQueries, useSuspenseQuery } from '@tanstack/react-query';
+import {
+  queryOptions,
+  useSuspenseQueries,
+  useSuspenseQuery,
+} from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { indexBy, prop } from 'remeda';
 
@@ -18,6 +22,20 @@ export type HakemuksenHarkinnanvaraisuus = Hakemus & {
   harkinnanvaraisuudenSyy?: `harkinnanvaraisuuden-syy.${HarkinnanvaraisuudenSyy}`;
   harkinnanvarainenTila?: HarkinnanvaraisuusTila;
 };
+
+type UsePisteTuloksetProps = {
+  hakuOid: string;
+  hakukohdeOid: string;
+};
+
+export const harkinnanvaraisetTilatOptions = ({
+  hakuOid,
+  hakukohdeOid,
+}: UsePisteTuloksetProps) =>
+  queryOptions({
+    queryKey: ['getHarkinnanvaraisetTilat', hakuOid, hakukohdeOid],
+    queryFn: () => getHarkinnanvaraisetTilat({ hakuOid, hakukohdeOid }),
+  });
 
 export const useHarkinnanvaraisetHakemukset = ({
   hakuOid,
@@ -47,10 +65,7 @@ export const useHarkinnanvaraisetHakemukset = ({
         queryKey: ['getHarkinnanvaraisuudetHakemuksille', hakemusOids],
         queryFn: () => getHarkinnanvaraisuudetHakemuksille({ hakemusOids }),
       },
-      {
-        queryKey: ['getHarkinnanvaraisetTilat', hakuOid, hakukohdeOid],
-        queryFn: () => getHarkinnanvaraisetTilat({ hakuOid, hakukohdeOid }),
-      },
+      harkinnanvaraisetTilatOptions({ hakuOid, hakukohdeOid }),
     ],
   });
 

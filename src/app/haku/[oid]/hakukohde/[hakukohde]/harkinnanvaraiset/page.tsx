@@ -6,16 +6,18 @@ import { FullClientSpinner } from '@/app/components/client-spinner';
 import { Box, InputAdornment, OutlinedInput } from '@mui/material';
 import {
   HakemuksenHarkinnanvaraisuus,
+  harkinnanvaraisetTilatOptions,
   useHarkinnanvaraisetHakemukset,
 } from './hooks/useHakinnanvaraisetHakemukset';
 import {
   HarkinnanvarainenTilaValue,
   HarkinnanvaraisetTable,
+  HarkinnanvaraisetTilatByHakemusOids,
 } from './components/harkinnanvaraiset-table';
 import { FormBox } from '@/app/components/form-box';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { ChangeEvent, useCallback, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { useHarkinnanvaraisetSearchParams } from './hooks/useHarkinnanvaraisetSearchParams';
 import { SaveOutlined, Search } from '@mui/icons-material';
@@ -23,10 +25,14 @@ import { PageSizeSelector } from '@/app/components/table/page-size-selector';
 import { useHarkinnanvaraisetPaginationQueryParams } from './hooks/useHarkinnanvaraisetPaginated';
 import { HarkinnanvaraisetActionBar } from './components/harkinnanvaraiset-action-bar';
 import { EMPTY_OBJECT, EMPTY_STRING_SET } from '@/app/lib/common';
-import { setHarkinnanvaraisetTilat } from '@/app/lib/valintalaskenta-service';
-import { useMutation } from '@tanstack/react-query';
+import {
+  HarkinnanvaraisestiHyvaksytty,
+  setHarkinnanvaraisetTilat,
+} from '@/app/lib/valintalaskenta-service';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import useToaster from '@/app/hooks/useToaster';
 import { SpinnerIcon } from '@/app/components/spinner-icon';
+import { useHasChanged } from '@/app/hooks/useHasChanged';
 
 export const HarkinnanvaraisetSearch = () => {
   const { searchPhrase, setSearchPhrase } = useHarkinnanvaraisetSearchParams();
@@ -67,8 +73,10 @@ const useTallennaMutation = ({
 }) => {
   const { addToast } = useToaster();
 
+  const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: (
+    mutationFn: async (
       harkinnanvaraisetTilat: Record<string, HarkinnanvarainenTilaValue>,
     ) => {
       const harkinnanvaraisetValues = Object.entries(
@@ -79,7 +87,24 @@ const useTallennaMutation = ({
         hakemusOid,
         harkinnanvaraisuusTila: tila === '' ? undefined : tila,
       }));
-      return setHarkinnanvaraisetTilat(harkinnanvaraisetValues);
+      await setHarkinnanvaraisetTilat(harkinnanvaraisetValues);
+      queryClient.setQueryData(
+        harkinnanvaraisetTilatOptions({ hakuOid, hakukohdeOid }).queryKey,
+        (oldData) => {
+          const unchangedOldValues = (oldData ?? []).filter(
+            (old) =>
+              harkinnanvaraisetTilat[old.hakemusOid] ===
+              (old.harkinnanvaraisuusTila ?? ''),
+          );
+
+          const changedValues = harkinnanvaraisetValues.filter((value) => {
+            return value.harkinnanvaraisuusTila != null;
+          }) as Array<HarkinnanvaraisestiHyvaksytty>;
+
+          const newValues = unchangedOldValues.concat(changedValues);
+          return newValues;
+        },
+      );
     },
     onError: (e) => {
       addToast({
@@ -114,21 +139,42 @@ const HarkinnanvaraisetForm = ({
     () => EMPTY_STRING_SET,
   );
 
-  const [harkinnanvaraisetTilat, setHarkinnanvaraisetTilat] = useState<
-    Record<string, HarkinnanvarainenTilaValue>
-  >(() => EMPTY_OBJECT);
+  const [harkinnanvaraisetTilat, setHarkinnanvaraisetTilat] =
+    useState<HarkinnanvaraisetTilatByHakemusOids>(() => EMPTY_OBJECT);
 
   const { mutate, isPending } = useTallennaMutation({ hakuOid, hakukohdeOid });
 
-  const onFormDataChange = useCallback(
-    (hakemusOid: string, harkinnanvarainenTila: HarkinnanvarainenTilaValue) => {
-      setHarkinnanvaraisetTilat({
+  const onHarkinnanvaraisetTilatChange = useCallback(
+    (harkinnanvaraisetTilaChanges: HarkinnanvaraisetTilatByHakemusOids) => {
+      const newTilat = {
         ...harkinnanvaraisetTilat,
-        [hakemusOid]: harkinnanvarainenTila,
+        ...harkinnanvaraisetTilaChanges,
+      };
+      harkinnanvaraisetHakemukset.forEach((hakemus) => {
+        if (
+          newTilat[hakemus.hakemusOid] === (hakemus.harkinnanvarainenTila ?? '')
+        ) {
+          delete newTilat[hakemus.hakemusOid];
+        }
       });
+      setHarkinnanvaraisetTilat(newTilat);
     },
-    [setHarkinnanvaraisetTilat, harkinnanvaraisetTilat],
+    [
+      setHarkinnanvaraisetTilat,
+      harkinnanvaraisetTilat,
+      harkinnanvaraisetHakemukset,
+    ],
   );
+
+  const harkinnanvaraisetHakemuksetChanged = useHasChanged(
+    harkinnanvaraisetHakemukset,
+  );
+
+  useEffect(() => {
+    if (harkinnanvaraisetHakemuksetChanged) {
+      onHarkinnanvaraisetTilatChange({});
+    }
+  }, [harkinnanvaraisetHakemuksetChanged, onHarkinnanvaraisetTilatChange]);
 
   return (
     <FormBox
@@ -149,16 +195,16 @@ const HarkinnanvaraisetForm = ({
         {t('yleinen.tallenna')}
       </OphButton>
       <HarkinnanvaraisetActionBar
-        hakuOid={hakuOid}
-        hakukohdeOid={hakukohdeOid}
         selection={selection}
+        onHarkinnanvaraisetTilatChange={onHarkinnanvaraisetTilatChange}
         resetSelection={() => setSelection(EMPTY_STRING_SET)}
       />
       <HarkinnanvaraisetTable
         data={harkinnanvaraisetHakemukset}
         selection={selection}
         setSelection={setSelection}
-        onFormDataChange={onFormDataChange}
+        onHarkinnanvaraisetTilatChange={onHarkinnanvaraisetTilatChange}
+        harkinnanvaraisetTilat={harkinnanvaraisetTilat}
       />
     </FormBox>
   );

@@ -8,7 +8,7 @@ import { useHasChanged } from '@/app/hooks/useHasChanged';
 
 export const useHarkinnanvaraisetSearchParams = () => {
   const [searchPhrase, setSearchPhrase] = useQueryState(
-    'harkinnanvaraisetSearch',
+    'search-harkinnanvaraiset',
     DEFAULT_NUQS_OPTIONS,
   );
 

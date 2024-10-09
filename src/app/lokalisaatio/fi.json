@@ -190,7 +190,7 @@
   "harkinnanvaraiset": {
     "hae": "Hae hakijan nimellä tai tunnisteilla",
     "otsikko": "Harkinnanvaraiset",
-    "hyvaksy-valitut": "Hyväksy valitut",
+    "hyvaksy-valitut": "Aseta valitut hyväksytyiksi",
     "muodosta-osoitetarrat": "Muodosta osoitetarrat",
     "valittu-maara": "Hakijoita valittu: {{count}}",
     "valittu-maara_zero": "Ei hakijoita valittu",
