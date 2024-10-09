@@ -13,13 +13,15 @@ export const TRANSLATIONS_PREFIX = 'harkinnanvaraiset.taulukko';
 export const TILA_LABEL_TRANSLATION_KEY = `${TRANSLATIONS_PREFIX}.harkinnanvarainen-tila`;
 
 export const HarkinnanvarainenTilaSelect = ({
-  harkinnanvarainenTila,
   hakemusOid,
+  hakijanNimi,
+  harkinnanvarainenTila,
   harkinnanvaraisetTilat,
   onHarkinnanvaraisetTilatChange,
 }: {
-  harkinnanvarainenTila: HarkinnanvarainenTila;
   hakemusOid: string;
+  hakijanNimi: string;
+  harkinnanvarainenTila: HarkinnanvarainenTila;
   harkinnanvaraisetTilat: HarkinnanvaraisetTilatByHakemusOids;
   onHarkinnanvaraisetTilatChange?: (
     harkinnanvaraisetTilaChanges: HarkinnanvaraisetTilatByHakemusOids,
@@ -40,7 +42,10 @@ export const HarkinnanvarainenTilaSelect = ({
       }}
       clearable={true}
       inputProps={{
-        'aria-label': t(`${TRANSLATIONS_PREFIX}.harkinnanvarainen-tila`),
+        'aria-label': t(
+          `${TRANSLATIONS_PREFIX}.harkinnanvarainen-tila-hakijalle`,
+          { hakijanNimi },
+        ),
       }}
       placeholder={t('harkinnanvaraiset.tila-placeholder')}
       options={[

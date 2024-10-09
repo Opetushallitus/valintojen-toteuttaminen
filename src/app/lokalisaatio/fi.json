@@ -203,7 +203,8 @@
     "taulukko": {
       "harkinnanvaraisuuden-syy": "Harkinnanvaraisuuden syy",
       "harkinnanvarainen-tila": "Harkinnanvarainen tila",
-      "valitse-harkinnanvarainen-hakemus": "Valitse harkinnanvarainen hakemus hakijalle \"{{hakijanNimi}}\""
+      "harkinnanvarainen-tila-hakijalle": "Harkinnanvarainen tila hakijan \"{{hakijanNimi}}\" hakemukselle",
+      "valitse-harkinnanvarainen-hakemus": "Valitse hakijan \"{{hakijanNimi}}\" hakemus"
     }
   },
   "hakijaryhmat": {

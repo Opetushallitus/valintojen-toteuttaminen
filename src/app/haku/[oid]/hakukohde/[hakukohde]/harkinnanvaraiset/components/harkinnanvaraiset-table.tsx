@@ -56,6 +56,7 @@ export const HarkinnanvaraisetTable = ({
           return (
             <HarkinnanvarainenTilaSelect
               hakemusOid={props.hakemusOid}
+              hakijanNimi={props.hakijanNimi}
               harkinnanvarainenTila={props.harkinnanvarainenTila}
               harkinnanvaraisetTilat={harkinnanvaraisetTilat}
               onHarkinnanvaraisetTilatChange={onHarkinnanvaraisetTilatChange}
