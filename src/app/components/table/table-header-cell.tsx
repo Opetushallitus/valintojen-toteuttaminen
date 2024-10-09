@@ -21,13 +21,13 @@ const SortIcon = ({
   }
 };
 
-const StyledHeaderCell = styled(TableCell)({
-  padding: '0.2rem 0.1rem 0.2rem 0.4rem',
+const StyledHeaderCell = styled(TableCell)(({ theme }) => ({
+  padding: theme.spacing(0, 2),
   textAlign: 'left',
   'button:focus': {
     color: ophColors.blue2,
   },
-});
+}));
 
 export const TableHeaderCell = ({
   colId,
@@ -52,6 +52,8 @@ export const TableHeaderCell = ({
         <Button
           sx={{
             color: ophColors.black,
+            border: 0,
+            padding: (theme) => theme.spacing(1, 0),
           }}
           onClick={() => {
             let newSortValue = '';

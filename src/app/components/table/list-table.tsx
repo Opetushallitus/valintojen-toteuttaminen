@@ -24,16 +24,17 @@ const StyledTable = styled(Table)({
   borderSpacing: '0px',
 });
 
-const StyledCell = styled(TableCell)({
-  borderSpacing: '0px',
-  padding: '0.6rem 0.8rem',
+const StyledCell = styled(TableCell)(({ theme }) => ({
+  borderSpacing: 0,
+  padding: theme.spacing(1, 2),
   textAlign: 'left',
   whiteSpace: 'pre-wrap',
+  height: '64px',
   borderWidth: 0,
   'button:focus': {
     color: ophColors.blue2,
   },
-});
+}));
 
 const StyledTableBody = styled(TableBody)({
   '& .MuiTableRow-root': {
