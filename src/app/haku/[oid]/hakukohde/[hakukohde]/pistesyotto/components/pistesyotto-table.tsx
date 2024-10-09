@@ -64,8 +64,6 @@ export const PisteSyottoTable = ({
       sort={sort}
       setSort={setSort}
       translateHeader={false}
-      sx={{ overflowX: 'auto', width: 'unset' }}
-      wrapperStyle={{ display: 'block' }}
     />
   );
 };

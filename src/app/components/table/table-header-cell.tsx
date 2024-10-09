@@ -22,7 +22,10 @@ const SortIcon = ({
 };
 
 const StyledHeaderCell = styled(TableCell)(({ theme }) => ({
-  padding: theme.spacing(0, 2),
+  padding: theme.spacing(0, 0, 0, 2),
+  '&:last-child': {
+    paddingRight: theme.spacing(2),
+  },
   textAlign: 'left',
   'button:focus': {
     color: ophColors.blue2,

@@ -26,7 +26,7 @@ const StyledTable = styled(Table)({
 
 const StyledCell = styled(TableCell)(({ theme }) => ({
   borderSpacing: 0,
-  padding: theme.spacing(1, 2),
+  padding: theme.spacing(1, 0, 1, 2),
   textAlign: 'left',
   whiteSpace: 'pre-wrap',
   height: '64px',
@@ -73,14 +73,11 @@ interface ListTableProps<T extends Row>
   checkboxSelection?: boolean;
   selection?: Set<string>;
   onSelectionChange?: (selection: Set<string>) => void;
-  wrapperStyle?: React.CSSProperties;
 }
 
 const TableWrapper = styled(Box)(({ theme }) => ({
   position: 'relative',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
+  display: 'block',
   width: '100%',
   overflowX: 'auto',
   rowGap: theme.spacing(1),
@@ -125,7 +122,6 @@ export const ListTable = <T extends Row>({
   selection = EMPTY_STRING_SET,
   onSelectionChange,
   getRowCheckboxLabel,
-  wrapperStyle,
   ...props
 }: ListTableProps<T>) => {
   const { t } = useTranslations();
@@ -139,7 +135,7 @@ export const ListTable = <T extends Row>({
   }, [rows, pagination]);
 
   return (
-    <TableWrapper sx={wrapperStyle ?? {}}>
+    <TableWrapper>
       <StyledTable {...props}>
         <TableHead>
           <TableRow sx={{ borderBottom: DEFAULT_BOX_BORDER }}>
