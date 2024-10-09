@@ -9,6 +9,9 @@ import { PageSizeSelector } from '@/app/components/table/page-size-selector';
 import { useHarkinnanvaraisetPaginationQueryParams } from './hooks/useHarkinnanvaraisetPaginated';
 import { HarkinnanvaraisetForm } from './components/harkinnanvaraiset-form';
 import { HarkinnanvaraisetSearchInput } from './components/harkinnanvaraiset-search-input';
+import { NoResults } from '@/app/components/no-results';
+import { isEmpty } from 'remeda';
+import { useTranslations } from '@/app/hooks/useTranslations';
 
 const HarkinnanvaraisetContent = ({
   hakuOid,
@@ -23,8 +26,11 @@ const HarkinnanvaraisetContent = ({
   });
 
   const { pageSize, setPageSize } = useHarkinnanvaraisetPaginationQueryParams();
+  const { t } = useTranslations();
 
-  return (
+  return isEmpty(harkinnanvaraisetHakemukset) ? (
+    <NoResults text={t('harkinnanvaraiset.ei-harkinnanvaraisia-hakemuksia')} />
+  ) : (
     <Stack spacing={2}>
       <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
         <HarkinnanvaraisetSearchInput />
