@@ -73,11 +73,11 @@ export const HarkinnanvaraisetTable = ({
               placeholder={t('harkinnanvaraiset.tila-placeholder')}
               options={[
                 {
-                  label: 'Hyväksytty',
+                  label: t('harkinnanvaraiset.hyvaksytty'),
                   value: 'HYVAKSYTTY',
                 },
                 {
-                  label: 'Ei hyväksytty',
+                  label: t('harkinnanvaraiset.ei-hyvaksytty'),
                   value: 'EI_HYVAKSYTTY',
                 },
               ]}

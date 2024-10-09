@@ -197,6 +197,8 @@
     "virhe-tallenna": "Harkinnanvaraisten tilojen tallentamisessa tapahtui virhe!",
     "tallennettu": "Harkinnanvaraisten tilojen tallentaminen onnistui",
     "tila-placeholder": "\u2013",
+    "hyvaksytty": "Hyväksytty",
+    "ei-hyvaksytty": "Ei hyväksytty",
     "taulukko": {
       "harkinnanvaraisuuden-syy": "Harkinnanvaraisuuden syy",
       "harkinnanvarainen-tila": "Harkinnanvarainen tila",
