@@ -5,5 +5,5 @@ export const TabContainer = styled('div')(({ theme }) => ({
   paddingLeft: theme.spacing(2),
   paddingRight: theme.spacing(1),
   paddingBottom: theme.spacing(2),
-  maxWidth: '75vw',
+  maxWidth: '100%',
 }));
