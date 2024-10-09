@@ -1,6 +1,5 @@
 'use client';
 
-import { Link as MuiLink } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { ophColors, styled } from '@/app/lib/theme';
 import { DEFAULT_BOX_BORDER } from '@/app/lib/constants';
@@ -8,6 +7,7 @@ import { useHakukohde } from '@/app/hooks/useHakukohde';
 import { useHaku } from '@/app/hooks/useHaku';
 import { getVisibleTabs } from '@/app/haku/[oid]/lib/hakukohde-tab-utils';
 import { useHakukohdeTab } from '@/app/haku/[oid]/hooks/useHakukohdeTab';
+import { HakukohdeTabLink } from '@/app/components/hakukohde-tab-link';
 
 const StyledContainer = styled('div')(({ theme }) => ({
   padding: theme.spacing(2, 3, 0),
@@ -24,16 +24,18 @@ const StyledTabs = styled('nav')(({ theme }) => ({
   columnGap: theme.spacing(2),
 }));
 
-const StyledTab = styled(MuiLink)<{ $active: boolean }>(({ $active }) => ({
-  color: ophColors.blue2,
-  cursor: 'pointer',
-  borderBottom: '3px solid',
-  borderColor: $active ? ophColors.blue2 : 'transparent',
-  '&:hover,&:focus': {
+const StyledTab = styled(HakukohdeTabLink)<{ $active: boolean }>(
+  ({ $active }) => ({
+    color: ophColors.blue2,
+    cursor: 'pointer',
+    borderBottom: '3px solid',
+    borderColor: $active ? ophColors.blue2 : 'transparent',
     textDecoration: 'none',
-    borderColor: ophColors.blue2,
-  },
-}));
+    '&:hover,&:focus': {
+      borderColor: ophColors.blue2,
+    },
+  }),
+);
 
 const HakukohdeTabs = ({
   hakuOid,
@@ -64,8 +66,10 @@ const HakukohdeTabs = ({
       <StyledTabs>
         {getVisibleTabs({ haku, hakukohde }).map((tab) => (
           <StyledTab
-            href={tab.route}
             key={'hakukohde-tab-' + tab.route}
+            hakuOid={hakuOid}
+            hakukohdeOid={hakukohdeOid}
+            tabRoute={tab.route}
             $active={tab.title === activeTab.title}
           >
             {t(tab.title)}

@@ -3,10 +3,11 @@
 import { useHakukohdeSearchResults } from '@/app/hooks/useHakukohdeSearch';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Hakukohde } from '@/app/lib/types/kouta-types';
-import { Link, styled } from '@mui/material';
 import { ophColors, OphTypography } from '@opetushallitus/oph-design-system';
 import { useParams } from 'next/navigation';
 import { useHakukohdeTab } from '../hooks/useHakukohdeTab';
+import { HakukohdeTabLink } from '@/app/components/hakukohde-tab-link';
+import { styled } from '@/app/lib/theme';
 
 const StyledList = styled('nav')(({ theme }) => ({
   display: 'flex',
@@ -22,16 +23,16 @@ const StyledList = styled('nav')(({ theme }) => ({
 
 const SELECTED_CLASS = 'hakukohde-list--item-selected';
 
-const StyledItem = styled(Link)(({ theme }) => ({
+const StyledLinkItem = styled(HakukohdeTabLink)(({ theme }) => ({
   display: 'block',
   padding: theme.spacing(1),
   cursor: 'pointer',
   color: ophColors.blue2,
+  textDecoration: 'none',
   '&:nth-of-type(even)': {
     backgroundColor: ophColors.grey50,
   },
   [`&:hover, &:focus, &.${SELECTED_CLASS}`]: {
-    textDecoration: 'none',
     backgroundColor: ophColors.lightBlue2,
   },
 }));
@@ -51,10 +52,12 @@ export const HakukohdeList = ({ hakuOid }: { hakuOid: string }) => {
       </OphTypography>
       <StyledList tabIndex={0} aria-label={t('hakukohde.navigaatio')}>
         {results?.map((hk: Hakukohde) => (
-          <StyledItem
+          <StyledLinkItem
             key={hk.oid}
+            hakuOid={hakuOid}
+            hakukohdeOid={hk.oid}
+            tabRoute={activeHakukohdeTab.route}
             className={selectedHakukohdeOid === hk.oid ? SELECTED_CLASS : ''}
-            href={`/haku/${hakuOid}/hakukohde/${hk.oid}/${activeHakukohdeTab.route}`}
             tabIndex={0}
           >
             <OphTypography
@@ -69,7 +72,7 @@ export const HakukohdeList = ({ hakuOid }: { hakuOid: string }) => {
             <OphTypography title={hk.oid} color="inherit">
               {translateEntity(hk.nimi)}
             </OphTypography>
-          </StyledItem>
+          </StyledLinkItem>
         ))}
       </StyledList>
     </>
