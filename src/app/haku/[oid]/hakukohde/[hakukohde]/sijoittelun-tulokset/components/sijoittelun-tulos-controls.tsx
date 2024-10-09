@@ -4,13 +4,15 @@ import { SijoittelunTila } from '@/app/lib/types/sijoittelu-types';
 import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { LocalizedSelect } from '@/app/components/localized-select';
 import { useSijoittelunTulosSearchParams } from '../hooks/useSijoittelunTuloksetSearch';
-import { SijoittelunTulosSearch } from './sijoittelun-tulos-search';
 import { OphCheckbox } from '@opetushallitus/oph-design-system';
 import { Haku } from '@/app/lib/types/kouta-types';
 import { isKorkeakouluHaku } from '@/app/lib/kouta';
+import { SearchInput } from '@/app/components/search-input';
 
 export const SijoittelunTulosControls = ({ haku }: { haku: Haku }) => {
   const {
+    searchPhrase,
+    setSearchPhrase,
     sijoittelunTila,
     setSijoittelunTila,
     showOnlyEhdolliset,
@@ -48,7 +50,11 @@ export const SijoittelunTulosControls = ({ haku }: { haku: Haku }) => {
           columnGap: 2,
         }}
       >
-        <SijoittelunTulosSearch />
+        <SearchInput
+          searchPhrase={searchPhrase}
+          setSearchPhrase={setSearchPhrase}
+          name="sijoittelun-tulos-search"
+        />
         <OphFormControl
           sx={{
             width: 'auto',

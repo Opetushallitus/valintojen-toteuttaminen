@@ -1,28 +1,42 @@
 import { OphFormControl } from '@/app/components/form/oph-form-control';
-import { useHakijaryhmatSearchParams } from '../hooks/useHakijaryhmatSearch';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Search } from '@mui/icons-material';
 import { InputAdornment, OutlinedInput } from '@mui/material';
 import { ChangeEvent } from 'react';
 
-export const HakijaryhmatSearch = () => {
-  const { searchPhrase, setSearchPhrase } = useHakijaryhmatSearchParams();
+export type SearchParams = {
+  name: string;
+  searchPhrase: string;
+  setSearchPhrase: (s: string) => void;
+  labelLocalizationKey?: string;
+  flexGrow?: number;
+};
+
+export const SearchInput = ({
+  name,
+  searchPhrase,
+  setSearchPhrase,
+  labelLocalizationKey,
+  flexGrow,
+}: SearchParams) => {
   const { t } = useTranslations();
+
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchPhrase(e.target.value);
   };
 
   return (
     <OphFormControl
+      key={searchPhrase}
       sx={{
-        flexGrow: 0,
+        flexGrow: flexGrow ?? 0,
         minWidth: '380px',
         textAlign: 'left',
       }}
-      label={t('hakeneet.hae')}
+      label={t(labelLocalizationKey ?? 'hakeneet.hae')}
       renderInput={({ labelId }) => (
         <OutlinedInput
-          name="hakijaryhmat-search"
+          name={name}
           inputProps={{ 'aria-labelledby': labelId }}
           defaultValue={searchPhrase}
           onChange={handleSearchChange}

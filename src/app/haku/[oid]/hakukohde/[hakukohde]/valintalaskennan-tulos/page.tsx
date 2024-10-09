@@ -5,7 +5,6 @@ import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary'
 import { Box } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { useLasketutValinnanVaiheet } from '@/app/hooks/useLasketutValinnanVaiheet';
-import { ValintalaskennanTulosSearch } from './components/valintalaskennan-tulos-search';
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
 import React from 'react';
 import { ValintatapajonoContent } from './components/valintatapajono-content';
@@ -17,6 +16,7 @@ import useToaster from '@/app/hooks/useToaster';
 import { useMutation } from '@tanstack/react-query';
 import { getValintalaskennanTulosExcel } from '@/app/lib/valintalaskentakoostepalvelu';
 import { NoResults } from '@/app/components/no-results';
+import { SearchInput } from '@/app/components/search-input';
 
 type LasketutValinnanvaiheetParams = {
   hakuOid: string;
@@ -68,7 +68,8 @@ const LasketutValinnanVaiheetContent = ({
     hakukohdeOid,
   });
 
-  const { pageSize, setPageSize } = useJonosijatSearchParams();
+  const { searchPhrase, setSearchPhrase, pageSize, setPageSize } =
+    useJonosijatSearchParams();
   const { t } = useTranslations();
 
   return isEmpty(valinnanVaiheet) ? (
@@ -98,7 +99,11 @@ const LasketutValinnanVaiheetContent = ({
             gap: 2,
           }}
         >
-          <ValintalaskennanTulosSearch />
+          <SearchInput
+            searchPhrase={searchPhrase}
+            setSearchPhrase={setSearchPhrase}
+            name="valintalaskennan-tulos-search"
+          />
           <ExcelDownloadButton hakukohdeOid={hakukohdeOid} />
         </Box>
         <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
