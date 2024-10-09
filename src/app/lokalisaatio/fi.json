@@ -188,7 +188,12 @@
     }
   },
   "harkinnanvaraiset": {
-    "otsikko": "Harkinnanvaraiset"
+    "hae": "Hae hakijan nimellä tai tunnisteilla",
+    "otsikko": "Harkinnanvaraiset",
+    "taulukko": {
+      "harkinnanvaraisuuden-syy": "Harkinnanvaraisuuden syy",
+      "harkinnanvarainen-tila": "Harkinnanvarainen tila"
+    }
   },
   "hakijaryhmat": {
     "otsikko": "Hakijaryhmät",

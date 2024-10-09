@@ -7,7 +7,6 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  styled,
 } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import React, { useMemo } from 'react';
@@ -17,6 +16,8 @@ import { TableHeaderCell } from './table-header-cell';
 import { EMPTY_ARRAY, EMPTY_STRING_SET } from '@/app/lib/common';
 import { TableHeaderCheckbox, TableRowCheckbox } from './table-checkboxes';
 import { ListTableColumn, Row } from './table-types';
+import { styled } from '@/app/lib/theme';
+import { DEFAULT_BOX_BORDER } from '@/app/lib/constants';
 
 const StyledTable = styled(Table)({
   width: '100%',
@@ -140,7 +141,7 @@ export const ListTable = <T extends Row>({
     <TableWrapper sx={wrapperStyle ?? {}}>
       <StyledTable {...props}>
         <TableHead>
-          <TableRow sx={{ borderBottom: `2px solid ${ophColors.grey200}` }}>
+          <TableRow sx={{ borderBottom: DEFAULT_BOX_BORDER }}>
             {checkboxSelection && (
               <TableHeaderCell
                 key="select-all"

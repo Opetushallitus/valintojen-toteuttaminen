@@ -81,4 +81,13 @@ export const configuration = {
   lataaDokumenttiUrl: ({ dokumenttiId }: { dokumenttiId: string }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/dokumentit/lataa/${dokumenttiId}`,
   startImportPistesyottoUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/pistesyotto/tuonti`,
+  harkinnanvaraisuudetHakemuksilleUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/harkinnanvaraisuus/hakemuksille`,
+  harkinnanvaraisetTilatUrl: ({
+    hakuOid,
+    hakukohdeOid,
+  }: {
+    hakuOid: string;
+    hakukohdeOid: string;
+  }) =>
+    `${DOMAIN}/valintalaskenta-laskenta-service/resources/harkinnanvarainenhyvaksynta/haku/${hakuOid}/hakukohde/${hakukohdeOid}`,
 } as const;

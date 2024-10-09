@@ -69,7 +69,7 @@ export const makeColumnWithValueToTranslate = <
   t: TFunction;
   title: string;
   key: string;
-  valueProp: KeysMatching<T, string>;
+  valueProp: KeysMatching<T, string | undefined>;
 }): ListTableColumn<T> => ({
   title,
   key,

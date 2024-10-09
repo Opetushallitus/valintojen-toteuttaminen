@@ -232,3 +232,25 @@ const getKiintio = (
 ): number =>
   sijoittelunTulos?.hakijaryhmat?.find((r) => r.oid === hakijaryhmaOid)
     ?.kiintio ?? 0;
+
+export type HarkinnanvaraisuusTila = 'HYVAKSYTTY' | 'EI_HYVAKSYTTY';
+
+type HarkinnanvaraisestiHyvaksytty = {
+  hakuOid: string;
+  hakukohdeOid: string;
+  hakemusOid: string;
+  harkinnanvaraisuusTila: HarkinnanvaraisuusTila;
+};
+
+export const getHarkinnanvaraisetTilat = async ({
+  hakuOid,
+  hakukohdeOid,
+}: {
+  hakuOid: string;
+  hakukohdeOid: string;
+}) => {
+  const { data } = await client.get<Array<HarkinnanvaraisestiHyvaksytty>>(
+    configuration.harkinnanvaraisetTilatUrl({ hakuOid, hakukohdeOid }),
+  );
+  return data;
+};
