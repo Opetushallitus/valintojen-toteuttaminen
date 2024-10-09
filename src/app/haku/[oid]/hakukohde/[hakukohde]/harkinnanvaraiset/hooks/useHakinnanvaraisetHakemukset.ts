@@ -15,7 +15,7 @@ import { useMemo } from 'react';
 import { indexBy, prop } from 'remeda';
 
 export type HakemuksenHarkinnanvaraisuus = Hakemus & {
-  harkinnanvaraisuudenSyy?: HarkinnanvaraisuudenSyy;
+  harkinnanvaraisuudenSyy?: `harkinnanvaraisuuden-syy.${HarkinnanvaraisuudenSyy}`;
   harkinnanvarainenTila?: HarkinnanvaraisuusTila;
 };
 
@@ -66,7 +66,9 @@ export const useHarkinnanvaraisetHakemukset = ({
       if (harkinnanvaraisuudenSyy !== 'EI_HARKINNANVARAINEN') {
         result.push({
           ...hakemuksetByOid[h.hakemusOid],
-          harkinnanvaraisuudenSyy,
+          harkinnanvaraisuudenSyy: harkinnanvaraisuudenSyy
+            ? `harkinnanvaraisuuden-syy.${harkinnanvaraisuudenSyy}`
+            : undefined,
           harkinnanvarainenTila,
         });
       }

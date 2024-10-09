@@ -1,7 +1,7 @@
 'use client';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Box } from '@mui/material';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { ListTableColumn } from '@/app/components/table/table-types';
 import {
   hakijaColumn,
@@ -12,13 +12,25 @@ import { ListTable } from '@/app/components/table/list-table';
 import { HakemuksenHarkinnanvaraisuus } from '../hooks/useHakinnanvaraisetHakemukset';
 import { useHarkinanvaraisetPaginated } from '../hooks/useHarkinnanvaraisetPaginated';
 import { LocalizedSelect } from '@/app/components/localized-select';
+import { HarkinnanvaraisuusTila } from '@/app/lib/valintalaskenta-service';
 
 const TRANSLATIONS_PREFIX = 'harkinnanvaraiset.taulukko';
 
+export type HarkinnanvarainenTilaValue = HarkinnanvaraisuusTila | '';
+
 export const HarkinnanvaraisetTable = ({
   data,
+  selection,
+  setSelection,
+  onFormDataChange,
 }: {
   data: Array<HakemuksenHarkinnanvaraisuus>;
+  selection: Set<string>;
+  setSelection: (selection: Set<string>) => void;
+  onFormDataChange?: (
+    hakemusOid: string,
+    harkinnanvarainenTila: HarkinnanvarainenTilaValue,
+  ) => void;
 }) => {
   const { t } = useTranslations();
 
@@ -41,7 +53,8 @@ export const HarkinnanvaraisetTable = ({
           <LocalizedSelect
             sx={{ minWidth: '150px' }}
             clearable={true}
-            placeholder="(tyhjä)"
+            placeholder="(ei valintaa)"
+            name={`${props.hakemusOid}_harkinnanvarainenTila`}
             options={[
               {
                 label: 'Hyväksytty',
@@ -52,16 +65,21 @@ export const HarkinnanvaraisetTable = ({
                 value: 'EI_HYVAKSYTTY',
               },
             ]}
-            value={props.harkinnanvarainenTila}
+            defaultValue={props.harkinnanvarainenTila ?? ''}
+            onChange={(e) => {
+              console.log({ e });
+              onFormDataChange?.(
+                props.hakemusOid,
+                e.target.value as HarkinnanvarainenTilaValue,
+              );
+            }}
           />
         ),
         sortable: false,
       }),
     ],
-    [t],
+    [t, onFormDataChange],
   );
-
-  const [selection, setSelection] = useState<Set<string>>(() => new Set());
 
   return (
     <Box>

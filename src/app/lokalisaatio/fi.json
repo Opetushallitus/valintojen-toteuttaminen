@@ -1,4 +1,8 @@
 {
+  "404": {
+    "otsikko": "Sivua ei löytynyt",
+    "teksti": "Linkki on virheellinen tai vanhentunut."
+  },
   "otsikko": "Valintojen toteuttaminen",
   "julkaistu": "Julkaistu",
   "arkistoitu": "Arkistoitu",
@@ -57,10 +61,6 @@
     "tuntematon": "Jokin meni vikaan",
     "tallennus": "Tietojen tallentamisessa tapahtui virhe.",
     "eimuutoksia": "Ei muutoksia mitä tallentaa."
-  },
-  "404": {
-    "otsikko": "Sivua ei löytynyt",
-    "teksti": "Linkki on virheellinen tai vanhentunut."
   },
   "haku": {
     "otsikko": "Haut",
@@ -190,9 +190,16 @@
   "harkinnanvaraiset": {
     "hae": "Hae hakijan nimellä tai tunnisteilla",
     "otsikko": "Harkinnanvaraiset",
+    "hyvaksy-valitut": "Hyväksy valitut",
+    "muodosta-osoitetarrat": "Muodosta osoitetarrat",
+    "valittu-maara": "Hakijoita valittu: {{count}}",
+    "valittu-maara_zero": "Ei hakijoita valittu",
+    "virhe-tallenna": "Harkinnanvaraisten tilojen tallentamisessa tapahtui virhe!",
+    "tallennettu": "Harkinnanvaraisten tilojen tallentaminen onnistui",
     "taulukko": {
       "harkinnanvaraisuuden-syy": "Harkinnanvaraisuuden syy",
-      "harkinnanvarainen-tila": "Harkinnanvarainen tila"
+      "harkinnanvarainen-tila": "Harkinnanvarainen tila",
+      "valitse-harkinnanvarainen-hakemus": "Valitse harkinnanvarainen hakemus hakijalle \"{{hakijanNimi}}\""
     }
   },
   "hakijaryhmat": {
@@ -323,5 +330,18 @@
     "fi": "suomi",
     "sv": "ruotsi",
     "en": "englanti"
+  },
+  "harkinnanvaraisuuden-syy": {
+    "SURE_YKS_MAT_AI": "SURE_YKS_MAT_AI",
+    "SURE_EI_PAATTOTODISTUSTA": "Ei päättötodistusta (SURE)",
+    "ATARU_YKS_MAT_AI": "ATARU_YKS_MAT_AI",
+    "ATARU_ULKOMAILLA_OPISKELTU": "ATARU_ULKOMAILLA_OPISKELTU",
+    "ATARU_EI_PAATTOTODISTUSTA": "Ei päättötodistusta (ATARU)",
+    "ATARU_SOSIAALISET_SYYT": "Sosiaaliset syyt",
+    "ATARU_OPPIMISVAIKEUDET": "Oppimisvaikeudet",
+    "ATARU_KOULUTODISTUSTEN_VERTAILUVAIKEUDET": "Koulututodistusten vertailuvaikeudet",
+    "ATARU_RIITTAMATON_TUTKINTOKIELEN_TAITO": "Riittämätön tutkintokielen taito",
+    "EI_HARKINNANVARAINEN": "Ei harkinnanvarainen",
+    "EI_HARKINNANVARAINEN_HAKUKOHDE": "Ei harkinnanvarainen hakukohde"
   }
 }

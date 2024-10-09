@@ -235,7 +235,7 @@ const getKiintio = (
 
 export type HarkinnanvaraisuusTila = 'HYVAKSYTTY' | 'EI_HYVAKSYTTY';
 
-type HarkinnanvaraisestiHyvaksytty = {
+export type HarkinnanvaraisestiHyvaksytty = {
   hakuOid: string;
   hakukohdeOid: string;
   hakemusOid: string;
@@ -250,7 +250,20 @@ export const getHarkinnanvaraisetTilat = async ({
   hakukohdeOid: string;
 }) => {
   const { data } = await client.get<Array<HarkinnanvaraisestiHyvaksytty>>(
-    configuration.harkinnanvaraisetTilatUrl({ hakuOid, hakukohdeOid }),
+    configuration.getHarkinnanvaraisetTilatUrl({ hakuOid, hakukohdeOid }),
   );
   return data;
+};
+
+export const setHarkinnanvaraisetTilat = async (
+  harkinnanvaraisetTilat: Array<
+    Omit<HarkinnanvaraisestiHyvaksytty, 'harkinnanvaraisuusTila'> & {
+      harkinnanvaraisuusTila: HarkinnanvaraisuusTila | undefined;
+    }
+  >,
+) => {
+  return client.post<unknown>(
+    configuration.setHarkinnanvaraisetTilatUrl,
+    harkinnanvaraisetTilat,
+  );
 };

@@ -75,6 +75,7 @@ export const configuration = {
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintakoe/hakutoive/${hakukohdeOid}`,
   startExportValintakoeExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintalaskentaexcel/valintakoekutsut/aktivoi`,
   startExportValintakoeOsoitetarratUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/osoitetarrat/aktivoi`,
+  startExportOsoitetarratHakemuksilleUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/osoitetarrat/hakemuksille/aktivoi`,
   startExportPistesyottoExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/pistesyotto/vienti`,
   dokumenttiProsessiUrl: ({ id }: { id: string }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/dokumenttiprosessi/${id}`,
@@ -82,7 +83,7 @@ export const configuration = {
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/dokumentit/lataa/${dokumenttiId}`,
   startImportPistesyottoUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/pistesyotto/tuonti`,
   harkinnanvaraisuudetHakemuksilleUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/harkinnanvaraisuus/hakemuksille`,
-  harkinnanvaraisetTilatUrl: ({
+  getHarkinnanvaraisetTilatUrl: ({
     hakuOid,
     hakukohdeOid,
   }: {
@@ -90,4 +91,5 @@ export const configuration = {
     hakukohdeOid: string;
   }) =>
     `${DOMAIN}/valintalaskenta-laskenta-service/resources/harkinnanvarainenhyvaksynta/haku/${hakuOid}/hakukohde/${hakukohdeOid}`,
+  setHarkinnanvaraisetTilatUrl: `${DOMAIN}/valintalaskenta-laskenta-service/resources/harkinnanvarainenhyvaksynta`,
 } as const;

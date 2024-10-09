@@ -409,12 +409,30 @@ export const getValintakoeOsoitetarrat = async ({
   urlWithQuery.searchParams.append('hakukohdeOid', hakukohdeOid);
   urlWithQuery.searchParams.append('valintakoeTunniste', valintakoeTunniste);
 
-  const createResponse = await client.post<{ id: string }>(urlWithQuery, {
+  const startProcessResponse = await client.post<{ id: string }>(urlWithQuery, {
     hakemusOids,
     tag: 'valintakoetulos',
   });
-  const tarratProcessId = createResponse?.data?.id;
-  return await downloadProcessDocument(tarratProcessId);
+  const tarratProcessId = startProcessResponse?.data?.id;
+  return downloadProcessDocument(tarratProcessId);
+};
+
+export const getOsoitetarratHakemuksille = async ({
+  tag,
+  hakemusOids,
+}: {
+  tag: string;
+  hakemusOids: Array<string>;
+}) => {
+  const startProcessResponse = await client.post<{ id: string }>(
+    configuration.startExportOsoitetarratHakemuksilleUrl,
+    {
+      hakemusOids,
+      tag,
+    },
+  );
+  const tarratProcessId = startProcessResponse?.data?.id;
+  return downloadProcessDocument(tarratProcessId);
 };
 
 export const getValintalaskennanTulosExcel = async ({
