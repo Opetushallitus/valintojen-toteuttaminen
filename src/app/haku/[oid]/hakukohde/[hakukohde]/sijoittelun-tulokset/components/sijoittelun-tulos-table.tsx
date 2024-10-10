@@ -107,6 +107,7 @@ export const SijoittelunTulosTable = ({
   return (
     <>
       <SijoittelunTuloksetActionBar
+        hakemukset={hakemukset}
         selection={selection}
         resetSelection={() => setSelection(new Set())}
       />

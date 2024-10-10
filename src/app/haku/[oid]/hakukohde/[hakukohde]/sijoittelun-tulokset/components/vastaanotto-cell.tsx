@@ -9,6 +9,7 @@ import { toFormattedDateTimeString } from '@/app/lib/localization/translation-ut
 import { LocalizedSelect } from '@/app/components/localized-select';
 import { useState } from 'react';
 import { StyledOphCheckBox } from '@/app/components/form/styled-oph-checkbox';
+import { hakemukselleNaytetaanVastaanottoTila } from '../lib/sijoittelun-tulokset-utils';
 
 export const VastaanOttoCell = ({
   hakemus,
@@ -36,7 +37,7 @@ export const VastaanOttoCell = ({
           {toFormattedDateTimeString(hakemus.vastaanottoDeadline)}
         </Typography>
       )}
-      {hakemus.naytetaanVastaanottoTieto && julkaistavissa && (
+      {hakemukselleNaytetaanVastaanottoTila(hakemus) && (
         <LocalizedSelect
           value={hakemus.vastaanottotila}
           onChange={() => ''}
