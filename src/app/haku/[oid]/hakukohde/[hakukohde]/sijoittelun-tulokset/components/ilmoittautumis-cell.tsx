@@ -3,8 +3,8 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import {
   IlmoittautumisTila,
   SijoittelunHakemusValintatiedoilla,
-  VastaanottoTila,
 } from '@/app/lib/types/sijoittelu-types';
+import { hakemukselleNaytetaanIlmoittautumisTila } from '../lib/sijoittelun-tulokset-utils';
 
 export const IlmoittautumisCell = ({
   hakemus,
@@ -19,12 +19,7 @@ export const IlmoittautumisCell = ({
     },
   );
 
-  const showSelect =
-    hakemus.naytetaanVastaanottoTieto &&
-    [
-      VastaanottoTila.VASTAANOTTANUT_SITOVASTI,
-      VastaanottoTila.EHDOLLISESTI_VASTAANOTTANUT,
-    ].includes(hakemus.vastaanottotila);
+  const showSelect = hakemukselleNaytetaanIlmoittautumisTila(hakemus);
 
   return (
     <>
