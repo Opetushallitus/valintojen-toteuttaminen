@@ -5,11 +5,16 @@ import {
   SijoittelunHakemusValintatiedoilla,
 } from '@/app/lib/types/sijoittelu-types';
 import { hakemukselleNaytetaanIlmoittautumisTila } from '../lib/sijoittelun-tulokset-utils';
+import { SijoittelunTuloksetChangeEvent } from '../lib/sijoittelun-tulokset-state';
 
 export const IlmoittautumisCell = ({
   hakemus,
+  disabled,
+  updateForm,
 }: {
   hakemus: SijoittelunHakemusValintatiedoilla;
+  disabled: boolean;
+  updateForm: (params: SijoittelunTuloksetChangeEvent) => void;
 }) => {
   const { t } = useTranslations();
 
@@ -26,8 +31,14 @@ export const IlmoittautumisCell = ({
       {showSelect && (
         <LocalizedSelect
           value={hakemus.ilmoittautumisTila}
-          onChange={() => ''}
+          onChange={(event) =>
+            updateForm({
+              hakemusOid: hakemus.hakemusOid,
+              ilmoittautumisTila: event.target.value as IlmoittautumisTila,
+            })
+          }
           options={ilmoittautumistilaOptions}
+          disabled={disabled}
         />
       )}
     </>

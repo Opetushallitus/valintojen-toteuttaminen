@@ -10,11 +10,16 @@ import { LocalizedSelect } from '@/app/components/localized-select';
 import { useState } from 'react';
 import { StyledOphCheckBox } from '@/app/components/form/styled-oph-checkbox';
 import { hakemukselleNaytetaanVastaanottoTila } from '../lib/sijoittelun-tulokset-utils';
+import { SijoittelunTuloksetChangeEvent } from '../lib/sijoittelun-tulokset-state';
 
 export const VastaanOttoCell = ({
   hakemus,
+  disabled,
+  updateForm,
 }: {
   hakemus: SijoittelunHakemusValintatiedoilla;
+  disabled: boolean;
+  updateForm: (params: SijoittelunTuloksetChangeEvent) => void;
 }) => {
   const { t } = useTranslations();
 
@@ -28,8 +33,15 @@ export const VastaanOttoCell = ({
     <SijoittelunTulosStyledCell>
       <StyledOphCheckBox
         checked={julkaistavissa}
-        onChange={() => setJulkaistavissa(!julkaistavissa)}
+        onChange={() => {
+          setJulkaistavissa(!julkaistavissa);
+          updateForm({
+            hakemusOid: hakemus.hakemusOid,
+            julkaistavissa: !julkaistavissa,
+          });
+        }}
         label={t('sijoittelun-tulokset.julkaistavissa')}
+        disabled={disabled}
       />
       {hakemus.vastaanottoDeadline && (
         <Typography>
@@ -42,6 +54,7 @@ export const VastaanOttoCell = ({
           value={hakemus.vastaanottotila}
           onChange={() => ''}
           options={vastaanottotilaOptions}
+          disabled={disabled}
         />
       )}
     </SijoittelunTulosStyledCell>
