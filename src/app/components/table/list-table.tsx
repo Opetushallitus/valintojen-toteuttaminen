@@ -2,6 +2,7 @@
 
 import {
   Box,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -78,9 +79,9 @@ interface ListTableProps<T extends Row>
 const TableWrapper = styled(Box)(({ theme }) => ({
   position: 'relative',
   display: 'block',
-  width: '100%',
   overflowX: 'auto',
   rowGap: theme.spacing(1),
+  alignSelf: 'stretch',
 }));
 
 const TablePagination = ({
@@ -135,67 +136,69 @@ export const ListTable = <T extends Row>({
   }, [rows, pagination]);
 
   return (
-    <TableWrapper tabIndex={0}>
-      <StyledTable {...props}>
-        <TableHead>
-          <TableRow sx={{ borderBottom: DEFAULT_BOX_BORDER }}>
-            {checkboxSelection && (
-              <TableHeaderCell
-                key="select-all"
-                title={
-                  <TableHeaderCheckbox
-                    selection={selection}
-                    onSelectionChange={onSelectionChange}
-                    rows={rows}
-                    rowKeyProp={rowKeyProp}
-                  />
-                }
-              />
-            )}
-            {columns.map((columnProps) => {
-              const { key, title, style, sortable } = columnProps;
-              return (
+    <Stack gap={1} sx={{ alignItems: 'center', width: '100%' }}>
+      <TableWrapper tabIndex={0}>
+        <StyledTable {...props}>
+          <TableHead>
+            <TableRow sx={{ borderBottom: DEFAULT_BOX_BORDER }}>
+              {checkboxSelection && (
                 <TableHeaderCell
-                  key={key.toString()}
-                  colId={key.toString()}
-                  title={translateHeader ? t(title ?? '') : title}
-                  style={style}
-                  sort={sort}
-                  setSort={setSort}
-                  sortable={sortable != false}
-                />
-              );
-            })}
-          </TableRow>
-        </TableHead>
-        <StyledTableBody>
-          {pageRows.map((rowProps) => {
-            const rowId = rowProps?.[rowKeyProp] as string;
-            return (
-              <TableRow key={rowId}>
-                {checkboxSelection && (
-                  <StyledCell>
-                    <TableRowCheckbox
+                  key="select-all"
+                  title={
+                    <TableHeaderCheckbox
                       selection={selection}
                       onSelectionChange={onSelectionChange}
-                      rowId={rowId}
-                      rowProps={rowProps}
-                      getRowCheckboxLabel={getRowCheckboxLabel}
+                      rows={rows}
+                      rowKeyProp={rowKeyProp}
                     />
-                  </StyledCell>
-                )}
-                {columns.map(({ key: columnKey, render, style }) => {
-                  return (
-                    <StyledCell key={columnKey.toString()} sx={style}>
-                      {render({ ...rowProps })}
+                  }
+                />
+              )}
+              {columns.map((columnProps) => {
+                const { key, title, style, sortable } = columnProps;
+                return (
+                  <TableHeaderCell
+                    key={key.toString()}
+                    colId={key.toString()}
+                    title={translateHeader ? t(title ?? '') : title}
+                    style={style}
+                    sort={sort}
+                    setSort={setSort}
+                    sortable={sortable != false}
+                  />
+                );
+              })}
+            </TableRow>
+          </TableHead>
+          <StyledTableBody>
+            {pageRows.map((rowProps) => {
+              const rowId = rowProps?.[rowKeyProp] as string;
+              return (
+                <TableRow key={rowId}>
+                  {checkboxSelection && (
+                    <StyledCell>
+                      <TableRowCheckbox
+                        selection={selection}
+                        onSelectionChange={onSelectionChange}
+                        rowId={rowId}
+                        rowProps={rowProps}
+                        getRowCheckboxLabel={getRowCheckboxLabel}
+                      />
                     </StyledCell>
-                  );
-                })}
-              </TableRow>
-            );
-          })}
-        </StyledTableBody>
-      </StyledTable>
+                  )}
+                  {columns.map(({ key: columnKey, render, style }) => {
+                    return (
+                      <StyledCell key={columnKey.toString()} sx={style}>
+                        {render({ ...rowProps })}
+                      </StyledCell>
+                    );
+                  })}
+                </TableRow>
+              );
+            })}
+          </StyledTableBody>
+        </StyledTable>
+      </TableWrapper>
       {pagination && (
         <TablePagination
           page={pagination.page}
@@ -204,6 +207,6 @@ export const ListTable = <T extends Row>({
           totalCount={rows?.length ?? 0}
         />
       )}
-    </TableWrapper>
+    </Stack>
   );
 };
