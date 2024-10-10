@@ -13,7 +13,6 @@ import {
   HarkinnanvaraisestiHyvaksytty,
   setHarkinnanvaraisetTilat,
 } from '@/app/lib/valintalaskenta-service';
-import { SaveOutlined } from '@mui/icons-material';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useState } from 'react';
@@ -154,7 +153,7 @@ export const HarkinnanvaraisetForm = ({
         type="submit"
         sx={{ alignSelf: 'flex-start' }}
         disabled={isPending}
-        startIcon={isPending ? <SpinnerIcon /> : <SaveOutlined />}
+        startIcon={isPending ? <SpinnerIcon /> : null}
       >
         {t('yleinen.tallenna')}
       </OphButton>
