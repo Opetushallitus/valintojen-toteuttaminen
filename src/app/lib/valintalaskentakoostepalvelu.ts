@@ -409,12 +409,30 @@ export const getValintakoeOsoitetarrat = async ({
   urlWithQuery.searchParams.append('hakukohdeOid', hakukohdeOid);
   urlWithQuery.searchParams.append('valintakoeTunniste', valintakoeTunniste);
 
-  const createResponse = await client.post<{ id: string }>(urlWithQuery, {
+  const startProcessResponse = await client.post<{ id: string }>(urlWithQuery, {
     hakemusOids,
     tag: 'valintakoetulos',
   });
-  const tarratProcessId = createResponse?.data?.id;
-  return await downloadProcessDocument(tarratProcessId);
+  const tarratProcessId = startProcessResponse?.data?.id;
+  return downloadProcessDocument(tarratProcessId);
+};
+
+export const getOsoitetarratHakemuksille = async ({
+  tag,
+  hakemusOids,
+}: {
+  tag: string;
+  hakemusOids: Array<string>;
+}) => {
+  const startProcessResponse = await client.post<{ id: string }>(
+    configuration.startExportOsoitetarratHakemuksilleUrl,
+    {
+      hakemusOids,
+      tag,
+    },
+  );
+  const tarratProcessId = startProcessResponse?.data?.id;
+  return downloadProcessDocument(tarratProcessId);
 };
 
 export const getValintalaskennanTulosExcel = async ({
@@ -477,4 +495,37 @@ export const putPistesyottoExcel = async ({
     );
   }
   return data;
+};
+
+export type HarkinnanvaraisuudenSyy =
+  | 'SURE_YKS_MAT_AI'
+  | 'SURE_EI_PAATTOTODISTUSTA'
+  | 'ATARU_YKS_MAT_AI'
+  | 'ATARU_ULKOMAILLA_OPISKELTU'
+  | 'ATARU_EI_PAATTOTODISTUSTA'
+  | 'ATARU_SOSIAALISET_SYYT'
+  | 'ATARU_OPPIMISVAIKEUDET'
+  | 'ATARU_KOULUTODISTUSTEN_VERTAILUVAIKEUDET'
+  | 'ATARU_RIITTAMATON_TUTKINTOKIELEN_TAITO'
+  | 'EI_HARKINNANVARAINEN'
+  | 'EI_HARKINNANVARAINEN_HAKUKOHDE';
+
+export type HakemuksenHarkinnanvaraisuustiedot = {
+  hakemusOid: string;
+  hakutoiveet: Array<{
+    hakukohdeOid: string;
+    harkinnanvaraisuudenSyy: HarkinnanvaraisuudenSyy;
+  }>;
+};
+
+export const getHarkinnanvaraisuudetHakemuksille = async ({
+  hakemusOids,
+}: {
+  hakemusOids: Array<string>;
+}) => {
+  const res = await client.post<Array<HakemuksenHarkinnanvaraisuustiedot>>(
+    configuration.harkinnanvaraisuudetHakemuksilleUrl,
+    hakemusOids,
+  );
+  return res.data;
 };

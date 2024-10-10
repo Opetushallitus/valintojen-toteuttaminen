@@ -16,6 +16,7 @@ export default function HakuLayout({
         flexDirection: 'column',
         padding: 0,
         width: '100%',
+        overflow: 'hidden',
       }}
     >
       <HakukohdeTabs hakuOid={params.oid} hakukohdeOid={params.hakukohde} />

@@ -6,6 +6,7 @@ import { client } from './http-client';
 import { TranslatedName } from './localization/localization-types';
 import { UserPermissions } from './permissions';
 import { HaunAsetukset } from './ohjausparametrit';
+import { pick } from 'remeda';
 
 type HakuResponseData = {
   oid: string;
@@ -69,6 +70,10 @@ export function isKorkeakouluHaku(haku: Haku): boolean {
   return haku.kohdejoukkoKoodiUri.startsWith('haunkohdejoukko_12');
 }
 
+export function isHarkinnanvarainenHakukohde(hakukohde: Hakukohde): boolean {
+  return hakukohde.voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita;
+}
+
 export async function getHaku(oid: string): Promise<Haku> {
   const response = await client.get<HakuResponseData>(
     `${configuration.hakuUrl}/${oid}`,
@@ -82,7 +87,18 @@ type HakukohdeResponseData = {
   organisaatioOid: string;
   organisaatioNimi: TranslatedName;
   jarjestyspaikkaHierarkiaNimi: TranslatedName;
+  voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita: boolean;
 };
+
+const mapToHakukohde = (hakukohdeData: HakukohdeResponseData) =>
+  pick(hakukohdeData, [
+    'oid',
+    'nimi',
+    'organisaatioOid',
+    'organisaatioNimi',
+    'jarjestyspaikkaHierarkiaNimi',
+    'voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita',
+  ]);
 
 export async function getHakukohteet(
   hakuOid: string,
@@ -92,27 +108,13 @@ export async function getHakukohteet(
   const response = await client.get<Array<HakukohdeResponseData>>(
     `${configuration.hakukohteetUrl}&haku=${hakuOid}${tarjoajaOids}`,
   );
-  const hakukohteet: Hakukohde[] = response.data.map((h) => {
-    return {
-      oid: h.oid,
-      nimi: h.nimi,
-      organisaatioNimi: h.organisaatioNimi,
-      organisaatioOid: h.organisaatioOid,
-      jarjestyspaikkaHierarkiaNimi: h.jarjestyspaikkaHierarkiaNimi,
-    };
-  });
-  return hakukohteet;
+  return response.data.map(mapToHakukohde);
 }
 
 export async function getHakukohde(hakukohdeOid: string): Promise<Hakukohde> {
   const response = await client.get<HakukohdeResponseData>(
     `${configuration.hakukohdeUrl}/${hakukohdeOid}`,
   );
-  return {
-    oid: response.data.oid,
-    nimi: response.data.nimi,
-    organisaatioNimi: response.data.organisaatioNimi,
-    organisaatioOid: response.data.organisaatioOid,
-    jarjestyspaikkaHierarkiaNimi: response.data.jarjestyspaikkaHierarkiaNimi,
-  };
+
+  return mapToHakukohde(response.data);
 }

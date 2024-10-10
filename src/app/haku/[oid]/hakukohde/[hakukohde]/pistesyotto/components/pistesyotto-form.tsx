@@ -12,22 +12,15 @@ import {
 } from '../lib/pistesyotto-state';
 import { useMachine } from '@xstate/react';
 import { PisteSyottoActions } from './pistesyotto-actions';
-import { styled } from '@mui/material';
-import { ophColors } from '@opetushallitus/oph-design-system';
 import { HakukohteenPistetiedot } from '@/app/lib/types/laskenta-types';
 import useConfirmChangesBeforeNavigation from '@/app/hooks/useConfirmChangesBeforeNavigation';
+import { FormBox } from '@/app/components/form-box';
 
 type PisteSyottoFormParams = {
   hakuOid: string;
   hakukohdeOid: string;
   pistetulokset: HakukohteenPistetiedot;
 };
-
-const StyledForm = styled('form')(({ theme }) => ({
-  border: `1px solid ${ophColors.grey100}`,
-  padding: theme.spacing(2.5),
-  width: '100%',
-}));
 
 export type ChangePisteSyottoFormParams = {
   value: string;
@@ -87,7 +80,7 @@ export const PisteSyottoForm = ({
   };
 
   return (
-    <StyledForm
+    <FormBox
       autoComplete="off"
       onSubmit={submitChanges}
       data-test-id="pistesyotto-form"
@@ -114,6 +107,6 @@ export const PisteSyottoForm = ({
           disabled={!state.matches(PisteSyottoStates.IDLE)}
         />
       </TablePaginationWrapper>
-    </StyledForm>
+    </FormBox>
   );
 };

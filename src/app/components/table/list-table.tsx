@@ -7,7 +7,6 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  styled,
 } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import React, { useMemo } from 'react';
@@ -17,39 +16,42 @@ import { TableHeaderCell } from './table-header-cell';
 import { EMPTY_ARRAY, EMPTY_STRING_SET } from '@/app/lib/common';
 import { TableHeaderCheckbox, TableRowCheckbox } from './table-checkboxes';
 import { ListTableColumn, Row } from './table-types';
+import { styled } from '@/app/lib/theme';
+import { DEFAULT_BOX_BORDER } from '@/app/lib/constants';
 
 const StyledTable = styled(Table)({
   width: '100%',
   borderSpacing: '0px',
 });
 
-const StyledCell = styled(TableCell)({
-  borderSpacing: '0px',
-  padding: '0.6rem 0.8rem',
+const StyledCell = styled(TableCell)(({ theme }) => ({
+  borderSpacing: 0,
+  padding: theme.spacing(1, 0, 1, 2),
   textAlign: 'left',
   whiteSpace: 'pre-wrap',
+  height: '64px',
   borderWidth: 0,
   'button:focus': {
     color: ophColors.blue2,
   },
-});
+}));
 
 const StyledTableBody = styled(TableBody)({
   '& .MuiTableRow-root': {
     '&:nth-of-type(even)': {
-      backgroundColor: ophColors.grey50,
       '.MuiTableCell-root': {
         backgroundColor: ophColors.grey50,
       },
     },
     '&:nth-of-type(odd)': {
-      backgroundColor: ophColors.white,
       '.MuiTableCell-root': {
         backgroundColor: ophColors.white,
       },
     },
     '&:hover': {
-      backgroundColor: ophColors.lightBlue2,
+      '.MuiTableCell-root': {
+        backgroundColor: ophColors.lightBlue2,
+      },
     },
   },
 });
@@ -71,14 +73,11 @@ interface ListTableProps<T extends Row>
   checkboxSelection?: boolean;
   selection?: Set<string>;
   onSelectionChange?: (selection: Set<string>) => void;
-  wrapperStyle?: React.CSSProperties;
 }
 
 const TableWrapper = styled(Box)(({ theme }) => ({
   position: 'relative',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
+  display: 'block',
   width: '100%',
   overflowX: 'auto',
   rowGap: theme.spacing(1),
@@ -123,7 +122,6 @@ export const ListTable = <T extends Row>({
   selection = EMPTY_STRING_SET,
   onSelectionChange,
   getRowCheckboxLabel,
-  wrapperStyle,
   ...props
 }: ListTableProps<T>) => {
   const { t } = useTranslations();
@@ -137,10 +135,10 @@ export const ListTable = <T extends Row>({
   }, [rows, pagination]);
 
   return (
-    <TableWrapper sx={wrapperStyle ?? {}}>
+    <TableWrapper tabIndex={0}>
       <StyledTable {...props}>
         <TableHead>
-          <TableRow sx={{ borderBottom: `2px solid ${ophColors.grey200}` }}>
+          <TableRow sx={{ borderBottom: DEFAULT_BOX_BORDER }}>
             {checkboxSelection && (
               <TableHeaderCell
                 key="select-all"

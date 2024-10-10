@@ -5,16 +5,17 @@ import { Toast, useToaster } from '@/app/hooks/useToaster';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
 
-const ToasterContainer = styled(Box)(() => ({
+const ToasterContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   width: 'auto',
   minWidth: '260px',
   maxWidth: '80%',
-  position: 'absolute',
-  top: '150px',
-  right: '150px',
-  zIndex: 2,
+  position: 'fixed',
+  top: theme.spacing(4),
+  right: theme.spacing(4),
+  bottom: 0,
+  zIndex: 100,
   pointerEvents: 'none',
 }));
 

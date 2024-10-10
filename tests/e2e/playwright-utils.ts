@@ -1,5 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
-import { Locator, Page, expect } from '@playwright/test';
+import { Locator, Page, Route, expect } from '@playwright/test';
+import path from 'path';
+import cssEscape from 'css.escape';
 
 export const expectPageAccessibilityOk = async (page: Page) => {
   const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
@@ -30,7 +32,7 @@ export const expectUrlParamToEqual = async (
 export const checkRow = async (
   row: Locator,
   expectedValues: string[],
-  cellType: 'th' | 'td' = 'td',
+  cellType: 'th' | 'td' | 'th,td' = 'th,td',
   exact: boolean = true,
 ) => {
   const cells = row.locator(cellType);
@@ -50,3 +52,33 @@ export const getHakukohdeNaviLinks = (page: Page) => {
 
 export const getMuiCloseButton = (page: Page) =>
   page.getByRole('button', { name: 'Sulje' });
+
+const FIXTURES_PATH = path.resolve(__dirname, './fixtures');
+
+export const getFixturePath = (fileName: string) =>
+  path.resolve(FIXTURES_PATH, fileName);
+
+export const fixtureFromFile = (fileName: string) => {
+  return (route: Route) => {
+    return route.fulfill({ path: getFixturePath(fileName) });
+  };
+};
+
+export async function selectOption(
+  page: Page,
+  name: string,
+  expectedOption: string,
+) {
+  const combobox = page.getByRole('combobox', {
+    name,
+  });
+  const contentId = await combobox.getAttribute('aria-controls');
+  await combobox.click();
+  const contentIdSelector = contentId ? `#${cssEscape(contentId)}` : '';
+  const listbox = page.locator(contentIdSelector);
+
+  await listbox
+    .getByRole('option', { name: expectedOption, exact: true })
+    .click();
+  await expect(combobox).toContainText(expectedOption);
+}

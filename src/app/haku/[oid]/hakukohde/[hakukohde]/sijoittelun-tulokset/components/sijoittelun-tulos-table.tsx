@@ -96,6 +96,7 @@ export const SijoittelunTulosTable = ({
         title: t(`${TRANSLATIONS_PREFIX}.toiminnot`),
         key: 'toiminnot',
         renderFn: () => <span>...</span>,
+        sortable: false,
       }),
     ].filter((a) => a !== null);
   }, [t, haku]);
@@ -108,8 +109,6 @@ export const SijoittelunTulosTable = ({
       sort={sort}
       setSort={setSort}
       translateHeader={false}
-      sx={{ overflowX: 'auto', width: 'unset' }}
-      wrapperStyle={{ display: 'block' }}
     />
   );
 };

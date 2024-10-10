@@ -1,8 +1,19 @@
 'use client';
-
 import { useEffect } from 'react';
 import useToaster from './useToaster';
 import { useRouter } from 'next/navigation';
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
+
+const onBeforeUnload = (event: BeforeUnloadEvent) => {
+  event.preventDefault();
+  return true;
+};
+
+const restoreOriginalPush = (router: AppRouterInstance) => {
+  window.removeEventListener('beforeunload', onBeforeUnload);
+  // @ts-expect-error setting back original push function to router
+  router.push = router.originalPush;
+};
 
 export default function useConfirmChangesBeforeNavigation(isDirty: boolean) {
   const { addToast } = useToaster();
@@ -14,12 +25,6 @@ export default function useConfirmChangesBeforeNavigation(isDirty: boolean) {
       router.originalPush = router.push;
     }
 
-    const onBeforeUnload = (event: BeforeUnloadEvent) => {
-      if (isDirty) {
-        event.preventDefault();
-        return true;
-      }
-    };
     if (isDirty && router.push.name !== 'patched') {
       router.push = function patched(...args) {
         addToast({
@@ -27,18 +32,14 @@ export default function useConfirmChangesBeforeNavigation(isDirty: boolean) {
           message: 'lomake.tallentamaton',
           type: 'confirm',
           confirmFn: () => {
-            window.removeEventListener('beforeunload', onBeforeUnload);
-            // @ts-expect-error setting back original push function to router
-            router.push = router.originalPush;
+            restoreOriginalPush(router);
             router.push(...args);
           },
         });
       };
       window.addEventListener('beforeunload', onBeforeUnload);
     } else if (router.push.name === 'patched' && !isDirty) {
-      window.removeEventListener('beforeunload', onBeforeUnload);
-      // @ts-expect-error setting back original push function to router
-      router.push = router.originalPush;
-    } // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isDirty]);
+      restoreOriginalPush(router);
+    }
+  }, [addToast, isDirty, router]);
 }

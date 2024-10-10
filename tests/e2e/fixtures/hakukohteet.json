@@ -262,5 +262,123 @@
       "fi": "Tampereen yliopisto, Tekniikan ja luonnontieteiden tiedekunta",
       "en": "Tampere University, Faculty of Engineering and Natural Sciences"
     }
+  },
+  {
+    "oid": "1.2.246.562.20.00000000000000024094",
+    "toteutusOid": "1.2.246.562.17.00000000000000009996",
+    "hakuOid": "1.2.246.562.29.00000000000000021303",
+    "tila": "arkistoitu",
+    "nimi": {
+      "fi": "Ajoneuvoalan perustutkinto"
+    },
+    "kaytetaanHaunAlkamiskautta": true,
+    "hakulomakeKuvaus": {},
+    "hakulomakeLinkki": {
+      "fi": "https://untuvaopintopolku.fi/hakemus/hakukohde/1.2.246.562.20.00000000000000024094?lang=fi",
+      "sv": "https://untuvaopintopolku.fi/hakemus/hakukohde/1.2.246.562.20.00000000000000024094?lang=sv",
+      "en": "https://untuvaopintopolku.fi/hakemus/hakukohde/1.2.246.562.20.00000000000000024094?lang=en"
+    },
+    "kaytetaanHaunHakulomaketta": true,
+    "aloituspaikat": 32,
+    "painotetutArvosanat": [],
+    "pohjakoulutusvaatimusKoodiUrit": [
+      "pohjakoulutusvaatimuskouta_er#1"
+    ],
+    "muuPohjakoulutusvaatimus": {},
+    "toinenAsteOnkoKaksoistutkinto": true,
+    "kaytetaanHaunAikataulua": true,
+    "valintaperusteId": "2306d148-9fa9-451b-9a1e-0c6ca0ca5d3f",
+    "valintaperusteValintakokeet": [],
+    "yhdenPaikanSaanto": {
+      "voimassa": false,
+      "syy": "Ei korkeakoulutus koulutusta"
+    },
+    "koulutustyyppikoodi": "koulutustyyppi_26",
+    "salliikoHakukohdeHarkinnanvaraisuudenKysymisen": true,
+    "voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita": true,
+    "liitteetOnkoSamaToimitusaika": true,
+    "liitteetOnkoSamaToimitusosoite": true,
+    "liitteidenToimitusaika": "2023-03-31T14:00:00",
+    "liitteidenToimitustapa": "osoite",
+    "liitteidenToimitusosoite": {
+      "osoite": {
+        "osoite": {
+          "fi": "Ammattiopisto Lappia/Haku\nUrheilukatu 6"
+        },
+        "postinumero": {}
+      },
+      "verkkosivu": "https://secure.lappia.fi "
+    },
+    "liitteet": [
+      {
+        "id": "f0dd4c0c-09e9-4d20-9b79-e4f494014483",
+        "tyyppi": {
+          "koodiUri": "liitetyypitamm_6#1",
+          "nimi": {
+            "fi": "Harkintaan perustuvan valinnan liite",
+            "sv": "Antagning enligt prövning bilaga"
+          }
+        },
+        "nimi": {
+          "fi": "Lausunto tai todistus"
+        },
+        "kuvaus": {
+          "fi": "<p><strong>Muut kuin harkintaan perustuvan valinnan kautta hakevat:</strong></p><ul><li>Hakuun ei tarvita lausuntoa tai todistusta.</li></ul><p><strong>Harkintaan perustuvan valinnan kautta hakevat:</strong></p><p></p><p>Hakijalla voi olla jokin erityinen henkilökohtainen syy, jonka vuoksi hän hakee harkintaan perustuvassa valinnassa (oppimisvaikeudet, sosiaaliset syyt tai riittämätön tutkintokielen kielitaito) ammatilliseen koulutukseen.</p><p></p><p>Oppilaitokset voivat edellyttää hakijalta liitteitä perusopetuksen jälkeisessä haussa. Jos liitteet ovat arkaluonteisia (esim. harkinnanvaraisen haun perustelut), hakijan tulee toimittaa ne Lappian turvasähköpostilla <strong><a href=\"https://secure.lappia.fi/\" rel=\"noopener noreferrer\" target=\"_blank\">https://secure.lappia.fi</a></strong> osoitteeseen haku(at)lappia.fi tai kirjepostina oppilaitokseen.</p><p></p><p>Kaikki perustelut ja todistukset on lähetettävä hakuaikana kaikkiin niihin oppilaitoksiin, joihin hakija hakee harkintaan perustuvan valinnan menettelyllä. Liitteiden mukana tulee lähettää hakemusnumero ja hakijan nimi.</p>"
+        },
+        "toimitustapa": "osoite",
+        "toimitusosoite": {
+          "osoite": {
+            "osoite": {
+              "fi": "Ammattiopisto Lappia/Haku\nUrheilukatu 6"
+            },
+            "postinumero": {}
+          }
+        }
+      }
+    ],
+    "valintakokeet": [
+      {
+        "id": "45c40498-5e08-4bc3-aacb-33f38b8731e1",
+        "tyyppi": "valintakokeentyyppi_7#1",
+        "tilaisuudet": []
+      },
+      {
+        "id": "77511c45-1152-4f95-b8a5-bc942672f0e9",
+        "tyyppi": "valintakokeentyyppi_9#1",
+        "tilaisuudet": []
+      }
+    ],
+    "hakuajat": [],
+    "muokkaaja": "1.2.246.562.24.82629301289",
+    "tarjoaja": "1.2.246.562.10.28054987509",
+    "organisaatioOid": "1.2.246.562.10.93483820481",
+    "organisaatioNimi": {
+      "sv": "Ammattiopisto Lappia",
+      "fi": "Ammattiopisto Lappia",
+      "en": "Ammattiopisto Lappia"
+    },
+    "kielivalinta": [
+      "fi"
+    ],
+    "modified": "2024-06-05T16:18:44",
+    "jarjestaaUrheilijanAmmKoulutusta": false,
+    "uudenOpiskelijanUrl": {},
+    "hakukohde": {
+      "koodiUri": "hakukohteetperusopetuksenjalkeinenyhteishaku_1027#1"
+    },
+    "paateltyAlkamiskausi": {
+      "alkamiskausityyppi": "alkamiskausi ja -vuosi",
+      "source": "1.2.246.562.29.00000000000000021303",
+      "kausiUri": "kausi_s#1",
+      "vuosi": "2023"
+    },
+    "jarjestyspaikkaHierarkiaNimi": {
+      "sv": "Ammattiopisto Lappia, Kemi (Kivikangas)",
+      "fi": "Ammattiopisto Lappia, Kemi (Kivikangas)",
+      "en": "Ammattiopisto Lappia, Kemi (Kivikangas)"
+    },
+    "opetuskieliKoodiUrit": [
+      "oppilaitoksenopetuskieli_1#2"
+    ]
   }
 ]

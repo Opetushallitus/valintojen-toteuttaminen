@@ -1,5 +1,9 @@
 import { test, expect, Page } from '@playwright/test';
-import { checkRow, expectAllSpinnersHidden } from './playwright-utils';
+import {
+  checkRow,
+  expectAllSpinnersHidden,
+  selectOption,
+} from './playwright-utils';
 
 test.beforeEach(async ({ page }) => await goToSijoittelunTulokset(page));
 
@@ -230,13 +234,5 @@ async function goToSijoittelunTulokset(page: Page) {
 }
 
 async function selectTila(page: Page, expectedOption: string) {
-  const combobox = page.getByRole('combobox', {
-    name: 'Sijoittelun tila',
-  });
-  await combobox.click();
-  const listbox = page.getByRole('listbox', {
-    name: 'Sijoittelun tila',
-  });
-  await listbox.getByRole('option', { name: expectedOption }).click();
-  await expect(combobox).toContainText(expectedOption);
+  await selectOption(page, 'Sijoittelun tila', expectedOption);
 }
