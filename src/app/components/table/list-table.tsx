@@ -135,7 +135,7 @@ export const ListTable = <T extends Row>({
   }, [rows, pagination]);
 
   return (
-    <TableWrapper>
+    <TableWrapper tabIndex={0}>
       <StyledTable {...props}>
         <TableHead>
           <TableRow sx={{ borderBottom: DEFAULT_BOX_BORDER }}>
