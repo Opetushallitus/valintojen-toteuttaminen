@@ -64,6 +64,7 @@ const SijoitteluContent = ({ haku, hakukohdeOid }: SijoitteluContentParams) => {
           valintatapajono={jono}
           key={jono.oid}
           haku={haku}
+          hakukohdeOid={hakukohdeOid}
         />
       ))}
     </Box>

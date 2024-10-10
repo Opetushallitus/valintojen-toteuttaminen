@@ -14,6 +14,7 @@ import { isKorkeakouluHaku } from '@/app/lib/kouta';
 import { Haku } from '@/app/lib/types/kouta-types';
 import { ophColors } from '@opetushallitus/oph-design-system';
 import { StyledOphCheckBox } from '@/app/components/form/styled-oph-checkbox';
+import { SijoittelunTuloksetChangeEvent } from '../lib/sijoittelun-tulokset-state';
 
 const LanguageAdornment = styled(InputAdornment)(() => ({
   backgroundColor: ophColors.grey200,
@@ -43,9 +44,13 @@ const showHyvaksyVarasijalta = (hakemus: SijoittelunHakemusValintatiedoilla) =>
 export const SijoittelunTilaCell = ({
   hakemus,
   haku,
+  disabled,
+  updateForm,
 }: {
   hakemus: SijoittelunHakemusValintatiedoilla;
   haku: Haku;
+  disabled: boolean;
+  updateForm: (params: SijoittelunTuloksetChangeEvent) => void;
 }) => {
   const { t, translateEntity } = useTranslations();
   const { data: hyvaksynnanEhdot } = useHyvaksynnanEhdot();
@@ -79,13 +84,21 @@ export const SijoittelunTilaCell = ({
           checked={hakemus.hyvaksyttyVarasijalta}
           onChange={() => ''}
           label={t('sijoittelun-tulokset.varasijalta')}
+          disabled={disabled}
         />
       )}
       {isKorkeakouluHaku(haku) && (
         <StyledOphCheckBox
           checked={ehdollinen}
-          onChange={() => setEhdollinen(!ehdollinen)}
+          onChange={() => {
+            setEhdollinen(!ehdollinen);
+            updateForm({
+              hakemusOid: hakemus.hakemusOid,
+              ehdollisestiHyvaksyttavissa: !ehdollinen,
+            });
+          }}
           label={t('sijoittelun-tulokset.ehdollinen')}
+          disabled={disabled}
         />
       )}
       {ehdollinen && isKorkeakouluHaku(haku) && (
@@ -94,6 +107,7 @@ export const SijoittelunTilaCell = ({
           value={ehdollinenSyy}
           onChange={(event) => setEhdollinenSyy(event.target.value)}
           options={ehtoOptions}
+          disabled={disabled}
         />
       )}
       {ehdollinen && isKorkeakouluHaku(haku) && ehdollinenSyy === 'muu' && (
@@ -107,6 +121,7 @@ export const SijoittelunTilaCell = ({
             inputProps={{
               'aria-label': t('sijoittelun-tulokset.muu-syy-aria-fi'),
             }}
+            disabled={disabled}
           />
           <StyledInput
             value={hakemus.ehdollisenHyvaksymisenEhtoSV ?? ''}
@@ -117,6 +132,7 @@ export const SijoittelunTilaCell = ({
             inputProps={{
               'aria-label': t('sijoittelun-tulokset.muu-syy-aria-sv'),
             }}
+            disabled={disabled}
           />
           <StyledInput
             value={hakemus.ehdollisenHyvaksymisenEhtoEN ?? ''}
@@ -127,6 +143,7 @@ export const SijoittelunTilaCell = ({
             inputProps={{
               'aria-label': t('sijoittelun-tulokset.muu-syy-aria-en'),
             }}
+            disabled={disabled}
           />
         </Box>
       )}
