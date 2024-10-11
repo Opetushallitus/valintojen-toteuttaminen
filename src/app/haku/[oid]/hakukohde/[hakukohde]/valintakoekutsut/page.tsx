@@ -31,6 +31,8 @@ import { ValintakoeKutsuItem } from '@/app/lib/types/valintakoekutsut-types';
 import { NoResults } from '@/app/components/no-results';
 import { OphCheckbox } from '@opetushallitus/oph-design-system';
 import { ValintakoekutsutHakijoittainTable } from './components/valintakoekutsut-hakijoittain-table';
+import { FormBox } from '@/app/components/form-box';
+import { ValintakoekutsutExcelDownloadButton } from './components/valintakoekutsut-excel-download-button';
 
 type ValintakoekutsutContentProps = {
   hakuOid: string;
@@ -96,15 +98,24 @@ const ValintakoekutsutHakijoittain = ({
   return isEmpty(valintakoekutsutHakijoittain) ? (
     <NoResults text={t('valintakoekutsut.ei-valintakoekutsuja')} />
   ) : (
-    <ValintakoekutsutHakijoittainTable
-      data={results}
-      sort={sort}
-      kokeet={valintakoekutsutHakijoittain.kokeet}
-      setSort={setSort}
-      page={page}
-      setPage={setPage}
-      pageSize={pageSize}
-    />
+    <FormBox>
+      <ValintakoekutsutExcelDownloadButton
+        hakuOid={hakuOid}
+        hakukohdeOid={hakukohdeOid}
+        valintakoeTunniste={valintakoekutsutHakijoittain.kokeet.map(
+          (k) => k.selvitettyTunniste,
+        )}
+      />
+      <ValintakoekutsutHakijoittainTable
+        data={results}
+        sort={sort}
+        kokeet={valintakoekutsutHakijoittain.kokeet}
+        setSort={setSort}
+        page={page}
+        setPage={setPage}
+        pageSize={pageSize}
+      />
+    </FormBox>
   );
 };
 

@@ -335,7 +335,7 @@ export type GetValintakoeExcelParams = {
   hakuOid: string;
   hakukohdeOid: string;
   hakemusOids?: Array<string>;
-  valintakoeTunniste: string;
+  valintakoeTunniste: Array<string>;
 };
 
 const getContentFilename = (headers: Headers) => {
@@ -379,17 +379,24 @@ export const getValintakoeExcel = async ({
   hakukohdeOid,
   hakemusOids,
   valintakoeTunniste,
-}: GetValintakoeExcelParams) => {
+}: GetValintakoeExcelParams & { valintakoeTunniste: Array<string> }) => {
   const urlWithQuery = new URL(configuration.startExportValintakoeExcelUrl);
   urlWithQuery.searchParams.append('hakuOid', hakuOid);
   urlWithQuery.searchParams.append('hakukohdeOid', hakukohdeOid);
 
   const createResponse = await client.post<{ id: string }>(urlWithQuery, {
     hakemusOids,
-    valintakoeTunnisteet: [valintakoeTunniste],
+    valintakoeTunnisteet: valintakoeTunniste,
   });
   const excelProcessId = createResponse?.data?.id;
   return downloadProcessDocument(excelProcessId);
+};
+
+type GetValintakoeOsoitetarratParams = {
+  hakuOid: string;
+  hakukohdeOid: string;
+  hakemusOids?: Array<string>;
+  valintakoeTunniste: string;
 };
 
 export const getValintakoeOsoitetarrat = async ({
@@ -397,13 +404,15 @@ export const getValintakoeOsoitetarrat = async ({
   hakukohdeOid,
   hakemusOids,
   valintakoeTunniste,
-}: GetValintakoeExcelParams) => {
+}: GetValintakoeOsoitetarratParams) => {
   const urlWithQuery = new URL(
     configuration.startExportValintakoeOsoitetarratUrl,
   );
   urlWithQuery.searchParams.append('hakuOid', hakuOid);
   urlWithQuery.searchParams.append('hakukohdeOid', hakukohdeOid);
-  urlWithQuery.searchParams.append('valintakoeTunniste', valintakoeTunniste);
+  if (valintakoeTunniste) {
+    urlWithQuery.searchParams.append('valintakoeTunniste', valintakoeTunniste);
+  }
 
   const startProcessResponse = await client.post<{ id: string }>(urlWithQuery, {
     hakemusOids,

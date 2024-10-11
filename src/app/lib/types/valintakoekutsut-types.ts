@@ -33,3 +33,10 @@ export type ValintakoekutsutData = {
   hakemuksetByOid: Record<string, HakijaInfo>;
   valintakoeOsallistumiset: Array<HakutoiveValintakoeOsallistumiset>;
 };
+
+export type ValintakoekutsutDownloadProps = {
+  hakuOid: string;
+  hakukohdeOid: string;
+  valintakoeTunniste: Array<string>;
+  selection?: Set<string>;
+};
