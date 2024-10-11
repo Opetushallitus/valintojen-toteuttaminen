@@ -107,7 +107,7 @@ export const HarkinnanvaraisetForm = ({
 
   const { mutate, isPending } = useTallennaMutation({ hakuOid, hakukohdeOid });
 
-  const onHarkinnanvaraisetTilatChange = useCallback(
+  const handleHarkinnanvaraisetTilatChange = useCallback(
     (harkinnanvaraisetTilaChanges: HarkinnanvaraisetTilatByHakemusOids) => {
       const newTilat = {
         ...harkinnanvaraisetTilat,
@@ -135,9 +135,9 @@ export const HarkinnanvaraisetForm = ({
 
   useEffect(() => {
     if (harkinnanvaraisetHakemuksetChanged) {
-      onHarkinnanvaraisetTilatChange({});
+      handleHarkinnanvaraisetTilatChange({});
     }
-  }, [harkinnanvaraisetHakemuksetChanged, onHarkinnanvaraisetTilatChange]);
+  }, [harkinnanvaraisetHakemuksetChanged, handleHarkinnanvaraisetTilatChange]);
 
   return (
     <FormBox
@@ -159,14 +159,14 @@ export const HarkinnanvaraisetForm = ({
       </OphButton>
       <HarkinnanvaraisetActionBar
         selection={selection}
-        onHarkinnanvaraisetTilatChange={onHarkinnanvaraisetTilatChange}
+        onHarkinnanvaraisetTilatChange={handleHarkinnanvaraisetTilatChange}
         resetSelection={() => setSelection(EMPTY_STRING_SET)}
       />
       <HarkinnanvaraisetTable
         data={harkinnanvaraisetHakemukset}
         selection={selection}
         setSelection={setSelection}
-        onHarkinnanvaraisetTilatChange={onHarkinnanvaraisetTilatChange}
+        onHarkinnanvaraisetTilatChange={handleHarkinnanvaraisetTilatChange}
         harkinnanvaraisetTilat={harkinnanvaraisetTilat}
       />
     </FormBox>
