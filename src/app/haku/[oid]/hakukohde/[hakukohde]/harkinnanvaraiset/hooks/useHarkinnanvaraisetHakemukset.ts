@@ -1,15 +1,9 @@
 'use client';
 
 import { getHakemukset } from '@/app/lib/ataru';
-import { Hakemus } from '@/app/lib/types/ataru-types';
-import {
-  getHarkinnanvaraisetTilat,
-  HarkinnanvarainenTila,
-} from '@/app/lib/valintalaskenta-service';
-import {
-  getHarkinnanvaraisuudetHakemuksille,
-  HarkinnanvaraisuudenSyy,
-} from '@/app/lib/valintalaskentakoostepalvelu';
+import { HakemuksenHarkinnanvaraisuus } from '@/app/lib/types/harkinnanvaraiset-types';
+import { getHarkinnanvaraisetTilat } from '@/app/lib/valintalaskenta-service';
+import { getHarkinnanvaraisuudetHakemuksille } from '@/app/lib/valintalaskentakoostepalvelu';
 import {
   queryOptions,
   useSuspenseQueries,
@@ -17,11 +11,6 @@ import {
 } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { indexBy, prop } from 'remeda';
-
-export type HakemuksenHarkinnanvaraisuus = Hakemus & {
-  harkinnanvaraisuudenSyy?: `harkinnanvaraisuuden-syy.${HarkinnanvaraisuudenSyy}`;
-  harkinnanvarainenTila: HarkinnanvarainenTila;
-};
 
 type UsePisteTuloksetProps = {
   hakuOid: string;

@@ -6,21 +6,17 @@ import useToaster from '@/app/hooks/useToaster';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { EMPTY_OBJECT, EMPTY_STRING_SET } from '@/app/lib/common';
 import {
+  HakemuksenHarkinnanvaraisuus,
   HarkinnanvarainenTilaValue,
+  HarkinnanvaraisestiHyvaksytty,
   HarkinnanvaraisetTilatByHakemusOids,
 } from '@/app/lib/types/harkinnanvaraiset-types';
-import {
-  HarkinnanvaraisestiHyvaksytty,
-  setHarkinnanvaraisetTilat,
-} from '@/app/lib/valintalaskenta-service';
+import { setHarkinnanvaraisetTilat } from '@/app/lib/valintalaskenta-service';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useState } from 'react';
 import { isEmpty } from 'remeda';
-import {
-  HakemuksenHarkinnanvaraisuus,
-  harkinnanvaraisetTilatOptions,
-} from '../hooks/useHakinnanvaraisetHakemukset';
+import { harkinnanvaraisetTilatOptions } from '../hooks/useHarkinnanvaraisetHakemukset';
 import { HarkinnanvaraisetActionBar } from './harkinnanvaraiset-action-bar';
 import { HarkinnanvaraisetTable } from './harkinnanvaraiset-table';
 

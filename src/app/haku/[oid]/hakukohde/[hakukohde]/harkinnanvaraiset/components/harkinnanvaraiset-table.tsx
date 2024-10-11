@@ -9,13 +9,13 @@ import {
   makeColumnWithValueToTranslate,
 } from '@/app/components/table/table-columns';
 import { ListTable } from '@/app/components/table/list-table';
-import { HakemuksenHarkinnanvaraisuus } from '../hooks/useHakinnanvaraisetHakemukset';
 import { useHarkinanvaraisetPaginated } from '../hooks/useHarkinnanvaraisetPaginated';
 import {
   HarkinnanvarainenTilaSelect,
   TRANSLATIONS_PREFIX,
 } from './harkinnanvarainen-tila-select';
 import {
+  HakemuksenHarkinnanvaraisuus,
   HarkinnanvarainenTilaValue,
   HarkinnanvaraisetTilatByHakemusOids,
 } from '@/app/lib/types/harkinnanvaraiset-types';

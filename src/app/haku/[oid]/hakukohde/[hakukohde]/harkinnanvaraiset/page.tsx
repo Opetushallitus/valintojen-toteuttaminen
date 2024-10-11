@@ -4,7 +4,7 @@ import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary'
 import { TabContainer } from '../components/tab-container';
 import { FullClientSpinner } from '@/app/components/client-spinner';
 import { Stack } from '@mui/material';
-import { useHarkinnanvaraisetHakemukset } from './hooks/useHakinnanvaraisetHakemukset';
+import { useHarkinnanvaraisetHakemukset } from './hooks/useHarkinnanvaraisetHakemukset';
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
 import { useHarkinnanvaraisetPaginationQueryParams } from './hooks/useHarkinnanvaraisetPaginated';
 import { HarkinnanvaraisetForm } from './components/harkinnanvaraiset-form';

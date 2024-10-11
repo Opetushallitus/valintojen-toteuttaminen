@@ -1,5 +1,4 @@
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { HakemuksenHarkinnanvaraisuus } from './useHakinnanvaraisetHakemukset';
 import { useMemo } from 'react';
 import { byProp, getSortParts } from '@/app/components/table/table-utils';
 import { parseAsInteger, useQueryState } from 'nuqs';
@@ -7,6 +6,7 @@ import { DEFAULT_NUQS_OPTIONS } from '@/app/hooks/common';
 import { DEFAULT_PAGE_SIZE } from '@/app/lib/constants';
 import { useHarkinnanvaraisetSearchParams } from './useHarkinnanvaraisetSearchParams';
 import { hakemusFilter } from '@/app/hooks/filters';
+import { HakemuksenHarkinnanvaraisuus } from '@/app/lib/types/harkinnanvaraiset-types';
 
 const usePaginationQueryParams = (paginationId: string) => {
   const [page, setPage] = useQueryState<number>(

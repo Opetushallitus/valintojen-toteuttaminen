@@ -1,9 +1,9 @@
 import { LocalizedSelect } from '@/app/components/localized-select';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { isDefined } from 'remeda';
-import { HarkinnanvarainenTila } from '@/app/lib/valintalaskenta-service';
 import { ophColors } from '@opetushallitus/oph-design-system';
 import {
+  HarkinnanvarainenTila,
   HarkinnanvarainenTilaValue,
   HarkinnanvaraisetTilatByHakemusOids,
 } from '@/app/lib/types/harkinnanvaraiset-types';

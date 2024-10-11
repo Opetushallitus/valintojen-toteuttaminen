@@ -22,6 +22,10 @@ import {
   SijoittelunTila,
 } from './types/sijoittelu-types';
 import { filter, flatMap, groupBy, indexBy, isDefined, pipe } from 'remeda';
+import {
+  HarkinnanvarainenTila,
+  HarkinnanvaraisestiHyvaksytty,
+} from './types/harkinnanvaraiset-types';
 
 export const getLasketutValinnanVaiheet = async (hakukohdeOid: string) => {
   const response = await client.get<Array<LaskettuValinnanVaihe>>(
@@ -43,7 +47,7 @@ export const getLaskennanSeurantaTiedot = async (loadingUrl: string) => {
   };
 };
 
-export type MuutaSijoitteluaResponse = {
+type MuutaSijoitteluaResponse = {
   prioriteetti: number;
   [x: string]: string | number | boolean | null;
 };
@@ -232,15 +236,6 @@ const getKiintio = (
 ): number =>
   sijoittelunTulos?.hakijaryhmat?.find((r) => r.oid === hakijaryhmaOid)
     ?.kiintio ?? 0;
-
-export type HarkinnanvarainenTila = 'HYVAKSYTTY' | 'EI_HYVAKSYTTY' | null;
-
-export type HarkinnanvaraisestiHyvaksytty = {
-  hakuOid: string;
-  hakukohdeOid: string;
-  hakemusOid: string;
-  harkinnanvaraisuusTila: HarkinnanvarainenTila;
-};
 
 export const getHarkinnanvaraisetTilat = async ({
   hakuOid,
