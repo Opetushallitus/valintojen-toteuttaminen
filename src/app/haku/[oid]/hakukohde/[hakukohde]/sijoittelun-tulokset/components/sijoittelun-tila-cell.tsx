@@ -5,9 +5,9 @@ import {
   SijoittelunTila,
 } from '@/app/lib/types/sijoittelu-types';
 import { useHyvaksynnanEhdot } from '../hooks/useHyvaksynnanEhdot';
-import { useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import { SijoittelunTulosStyledCell } from './sijoittelun-tulos-styled-cell';
-import { Box, InputAdornment, styled } from '@mui/material';
+import { Box, InputAdornment, SelectChangeEvent, styled } from '@mui/material';
 import { LocalizedSelect } from '@/app/components/localized-select';
 import { OphInput } from '@/app/components/form/oph-input';
 import { isKorkeakouluHaku } from '@/app/lib/kouta';
@@ -59,6 +59,10 @@ export const SijoittelunTilaCell = ({
     return { value: ehto.koodiArvo, label: translateEntity(ehto.nimi) };
   });
 
+  const [hyvaksyttyVarasijalta, setHyvaksyttyVarasijalta] = useState<boolean>(
+    hakemus.hyvaksyttyVarasijalta,
+  );
+
   const [ehdollinen, setEhdollinen] = useState<boolean>(
     hakemus.ehdollisestiHyvaksyttavissa,
   );
@@ -67,9 +71,53 @@ export const SijoittelunTilaCell = ({
     hakemus.ehdollisenHyvaksymisenEhtoKoodi,
   );
 
+  const [ehdollisuudenMuuSyyt, setEhdollisuudenMuuSyyt] = useState({
+    fi: hakemus.ehdollisenHyvaksymisenEhtoFI,
+    sv: hakemus.ehdollisenHyvaksymisenEhtoSV,
+    en: hakemus.ehdollisenHyvaksymisenEhtoEN,
+  });
+
   const hakemuksenTila = isHyvaksyttyHarkinnanvaraisesti(hakemus)
     ? t('sijoitteluntila.HARKINNANVARAISESTI_HYVAKSYTTY')
     : t(`sijoitteluntila.${hakemus.tila}`);
+
+  const updateEhdollinen = () => {
+    setEhdollinen(!ehdollinen);
+    updateForm({
+      hakemusOid: hakemus.hakemusOid,
+      ehdollisestiHyvaksyttavissa: !ehdollinen,
+    });
+  };
+
+  const updateHyvaksyttyVarasijalta = () => {
+    setHyvaksyttyVarasijalta(!hyvaksyttyVarasijalta);
+    updateForm({
+      hakemusOid: hakemus.hakemusOid,
+      hyvaksyttyVarasijalta: !hyvaksyttyVarasijalta,
+    });
+  };
+
+  const updateEhdollisuudenSyy = (event: SelectChangeEvent<string>) => {
+    setEhdollinenSyy(event.target.value);
+    updateForm({
+      hakemusOid: hakemus.hakemusOid,
+      ehdollisuudenSyy: event.target.value,
+    });
+  };
+
+  const updateEhdollisuudenMuuSyy = (
+    event: ChangeEvent<HTMLInputElement>,
+    kieli: 'fi' | 'en' | 'sv',
+  ) => {
+    const syy = Object.assign(ehdollisuudenMuuSyyt, {
+      [kieli]: event.target.value,
+    });
+    setEhdollisuudenMuuSyyt(syy);
+    updateForm({
+      hakemusOid: hakemus.hakemusOid,
+      ehdollisuudenSyyKieli: syy,
+    });
+  };
 
   return (
     <SijoittelunTulosStyledCell>
@@ -81,8 +129,8 @@ export const SijoittelunTilaCell = ({
       </span>
       {showHyvaksyVarasijalta(hakemus) && (
         <StyledOphCheckBox
-          checked={hakemus.hyvaksyttyVarasijalta}
-          onChange={() => ''}
+          checked={hyvaksyttyVarasijalta}
+          onChange={updateHyvaksyttyVarasijalta}
           label={t('sijoittelun-tulokset.varasijalta')}
           disabled={disabled}
         />
@@ -90,13 +138,7 @@ export const SijoittelunTilaCell = ({
       {isKorkeakouluHaku(haku) && (
         <StyledOphCheckBox
           checked={ehdollinen}
-          onChange={() => {
-            setEhdollinen(!ehdollinen);
-            updateForm({
-              hakemusOid: hakemus.hakemusOid,
-              ehdollisestiHyvaksyttavissa: !ehdollinen,
-            });
-          }}
+          onChange={updateEhdollinen}
           label={t('sijoittelun-tulokset.ehdollinen')}
           disabled={disabled}
         />
@@ -105,16 +147,19 @@ export const SijoittelunTilaCell = ({
         <LocalizedSelect
           sx={{ maxWidth: '300px' }}
           value={ehdollinenSyy}
-          onChange={(event) => setEhdollinenSyy(event.target.value)}
+          onChange={updateEhdollisuudenSyy}
           options={ehtoOptions}
           disabled={disabled}
+          required={true}
         />
       )}
       {ehdollinen && isKorkeakouluHaku(haku) && ehdollinenSyy === 'muu' && (
         <Box sx={{ display: 'flex', flexDirection: 'column', rowGap: 1 }}>
           <StyledInput
-            value={hakemus.ehdollisenHyvaksymisenEhtoFI ?? ''}
-            onChange={() => ''}
+            value={ehdollisuudenMuuSyyt.fi ?? ''}
+            onChange={(event: ChangeEvent<HTMLInputElement>) =>
+              updateEhdollisuudenMuuSyy(event, 'fi')
+            }
             startAdornment={
               <LanguageAdornment position="start">FI</LanguageAdornment>
             }
@@ -122,10 +167,13 @@ export const SijoittelunTilaCell = ({
               'aria-label': t('sijoittelun-tulokset.muu-syy-aria-fi'),
             }}
             disabled={disabled}
+            required={true}
           />
           <StyledInput
-            value={hakemus.ehdollisenHyvaksymisenEhtoSV ?? ''}
-            onChange={() => ''}
+            value={ehdollisuudenMuuSyyt.sv ?? ''}
+            onChange={(event: ChangeEvent<HTMLInputElement>) =>
+              updateEhdollisuudenMuuSyy(event, 'sv')
+            }
             startAdornment={
               <LanguageAdornment position="start">SV</LanguageAdornment>
             }
@@ -133,10 +181,13 @@ export const SijoittelunTilaCell = ({
               'aria-label': t('sijoittelun-tulokset.muu-syy-aria-sv'),
             }}
             disabled={disabled}
+            required={true}
           />
           <StyledInput
-            value={hakemus.ehdollisenHyvaksymisenEhtoEN ?? ''}
-            onChange={() => ''}
+            value={ehdollisuudenMuuSyyt.en ?? ''}
+            onChange={(event: ChangeEvent<HTMLInputElement>) =>
+              updateEhdollisuudenMuuSyy(event, 'en')
+            }
             startAdornment={
               <LanguageAdornment position="start">EN</LanguageAdornment>
             }
@@ -144,6 +195,7 @@ export const SijoittelunTilaCell = ({
               'aria-label': t('sijoittelun-tulokset.muu-syy-aria-en'),
             }}
             disabled={disabled}
+            required={true}
           />
         </Box>
       )}
