@@ -1,18 +1,15 @@
-import {
-  forEachObj,
-  indexBy,
-  isEmpty,
-  mapKeys,
-  prop,
-  toLowerCase,
-} from 'remeda';
+import { indexBy, isEmpty, mapKeys, prop, toLowerCase } from 'remeda';
 import {
   GetValintakoekutsutParams,
   ValintakoeKutsuItem,
   ValintakoekutsutData,
+  ValintakoeOsallistuminen,
 } from './types/valintakoekutsut-types';
 import { Valintakoe } from './types/valintaperusteet-types';
-import { HakutoiveValintakoe } from './types/valintalaskentakoostepalvelu-types';
+import {
+  HakutoiveValintakoe,
+  HakutoiveValintakoeOsallistumiset,
+} from './types/valintalaskentakoostepalvelu-types';
 
 export type ValintakoekutsutKokeittain = Record<
   string,
@@ -40,22 +37,61 @@ export type ValintakoekutsutHakijoittain = {
   kutsut: Array<ValintakoekutsuHakijoittain>;
 };
 
-const filterVisibleValintakokeet = (valintakokeet: Array<Valintakoe>) => {
-  return valintakokeet.filter(
+const filterVisibleValintakokeet = (valintakokeet: Array<Valintakoe>) =>
+  valintakokeet.filter(
     (valintakoe) => valintakoe.aktiivinen && valintakoe.lahetetaankoKoekutsut,
   );
-};
 
-const deduceOsallistuminen = ({
-  valintakoe,
-  valintakoeTulos,
-}: {
-  valintakoe: Valintakoe;
-  valintakoeTulos: HakutoiveValintakoe;
-}) => {
-  return valintakoe.kutsutaankoKaikki
-    ? 'OSALLISTUU'
-    : valintakoeTulos.osallistuminenTulos.osallistuminen;
+const forEachValintakoekutsu = (
+  {
+    vainKutsuttavat,
+    hakukohdeOid,
+    valintakokeet,
+    hakutoiveOsallistuminen,
+  }: {
+    vainKutsuttavat: boolean;
+    hakukohdeOid: string;
+    valintakokeet: Array<Valintakoe>;
+    hakutoiveOsallistuminen: HakutoiveValintakoeOsallistumiset;
+  },
+  fn: (params: {
+    valintakoe: Valintakoe;
+    hakutoiveValintakoe: HakutoiveValintakoe;
+    valintakoeOsallistuminen: ValintakoeOsallistuminen;
+  }) => void,
+) => {
+  const valintakokeetByTunniste = indexBy(
+    valintakokeet,
+    prop('selvitettyTunniste'),
+  );
+  hakutoiveOsallistuminen.hakutoiveet.forEach((hakutoive) => {
+    if (hakutoive.hakukohdeOid === hakukohdeOid) {
+      hakutoive.valinnanVaiheet.forEach((valinnanVaihe) => {
+        valinnanVaihe.valintakokeet.forEach((hakutoiveValintakoe) => {
+          const { valintakoeTunniste } = hakutoiveValintakoe;
+          const valintakoe = valintakokeetByTunniste[valintakoeTunniste];
+
+          if (!valintakoe) {
+            return;
+          }
+          const valintakoeOsallistuminen = valintakoe.kutsutaankoKaikki
+            ? 'OSALLISTUU'
+            : hakutoiveValintakoe.osallistuminenTulos.osallistuminen;
+
+          if (
+            !vainKutsuttavat ||
+            (vainKutsuttavat && valintakoeOsallistuminen === 'OSALLISTUU')
+          ) {
+            fn({
+              valintakoe,
+              valintakoeOsallistuminen,
+              hakutoiveValintakoe,
+            });
+          }
+        });
+      });
+    }
+  });
 };
 
 export function createValintakoekutsutKokeittain(
@@ -69,68 +105,40 @@ export function createValintakoekutsutKokeittain(
     hakemuksetByOid,
   }: ValintakoekutsutData,
 ): ValintakoekutsutKokeittain {
-  const valintakokeetByTunniste = indexBy(
-    filterVisibleValintakokeet(valintakokeet),
-    prop('selvitettyTunniste'),
-  );
+  const kutsutKokeittain: ValintakoekutsutKokeittain = {};
 
-  const kutsutKokeittain = valintakoeOsallistumiset?.reduce(
-    (result, osallistumistulos) => {
-      osallistumistulos.hakutoiveet.forEach((hakutoive) => {
-        if (hakutoive.hakukohdeOid === hakukohdeOid) {
-          hakutoive.valinnanVaiheet.forEach((valinnanVaihe) => {
-            valinnanVaihe.valintakokeet.forEach((valintakoeTulos) => {
-              const { valintakoeTunniste, nimi } = valintakoeTulos;
-              const valintakoe = valintakokeetByTunniste[valintakoeTunniste];
-              if (!valintakoe) {
-                return result;
-              }
-              if (!result[valintakoeTunniste]) {
-                result[valintakoeTunniste] = {
-                  nimi,
-                  kutsut: [],
-                };
-              }
-              const hakemus = hakemuksetByOid[osallistumistulos.hakemusOid];
+  const visibleValintakokeet = filterVisibleValintakokeet(valintakokeet);
+  visibleValintakokeet.forEach((valintakoe) => {
+    kutsutKokeittain[valintakoe.selvitettyTunniste] = {
+      nimi: valintakoe.nimi,
+      kutsut: [],
+    };
+  });
 
-              const osallistuminen = deduceOsallistuminen({
-                valintakoe,
-                valintakoeTulos,
-              });
-              if (
-                (vainKutsuttavat && osallistuminen === 'OSALLISTUU') ||
-                !vainKutsuttavat
-              ) {
-                result[valintakoeTunniste].kutsut.push({
-                  hakemusOid: hakemus.hakemusOid,
-                  hakijaOid: hakemus?.hakijaOid,
-                  hakijanNimi: hakemus?.hakijanNimi,
-                  asiointiKieli: hakemus?.asiointikieliKoodi,
-                  osallistuminen: `osallistuminen.${osallistuminen}`,
-                  lisatietoja: mapKeys(
-                    valintakoeTulos?.osallistuminenTulos?.kuvaus ?? {},
-                    (k) => toLowerCase(k),
-                  ),
-                  laskettuPvm: osallistumistulos.createdAt,
-                });
-              }
-            });
-          });
-        }
-      });
-      return result;
-    },
-    {} as ValintakoekutsutKokeittain,
-  );
-
-  // Lisätään myös valintakokeet, joille ei ollut kutsuja
-  forEachObj(valintakokeetByTunniste, (valintakoe) => {
-    if (!kutsutKokeittain[valintakoe.selvitettyTunniste]) {
-      kutsutKokeittain[valintakoe.selvitettyTunniste] = {
-        nimi: valintakoe.nimi,
-        kutsut: [],
-      };
-    }
+  valintakoeOsallistumiset.forEach((hakutoiveOsallistuminen) => {
+    forEachValintakoekutsu(
+      {
+        hakutoiveOsallistuminen,
+        hakukohdeOid,
+        vainKutsuttavat,
+        valintakokeet: visibleValintakokeet,
+      },
+      ({ valintakoeOsallistuminen, valintakoe, hakutoiveValintakoe }) => {
+        const hakemus = hakemuksetByOid[hakutoiveOsallistuminen.hakemusOid];
+        kutsutKokeittain[valintakoe.selvitettyTunniste].kutsut.push({
+          hakemusOid: hakemus.hakemusOid,
+          hakijaOid: hakemus?.hakijaOid,
+          hakijanNimi: hakemus?.hakijanNimi,
+          asiointiKieli: hakemus?.asiointikieliKoodi,
+          osallistuminen: `osallistuminen.${valintakoeOsallistuminen}`,
+          lisatietoja: mapKeys(
+            hakutoiveValintakoe?.osallistuminenTulos?.kuvaus ?? {},
+            (k) => toLowerCase(k),
+          ),
+          laskettuPvm: hakutoiveOsallistuminen.createdAt,
+        });
+      },
+    );
   });
 
   return kutsutKokeittain;
@@ -148,41 +156,29 @@ export function createValintakoekutsutHakijoittain(
   }: ValintakoekutsutData,
 ): ValintakoekutsutHakijoittain {
   const kokeet = filterVisibleValintakokeet(valintakokeet);
-  const valintakokeetByTunniste = indexBy(kokeet, prop('selvitettyTunniste'));
 
   const kutsut: Array<ValintakoekutsuHakijoittain> = [];
 
-  valintakoeOsallistumiset.forEach((osallistumistulos) => {
-    const hakemus = hakemuksetByOid[osallistumistulos.hakemusOid];
+  valintakoeOsallistumiset.forEach((hakutoiveOsallistuminen) => {
+    const hakemus = hakemuksetByOid[hakutoiveOsallistuminen.hakemusOid];
     const kutsutByTunniste: Record<string, HakijanValintakoekutsu> = {};
 
-    osallistumistulos.hakutoiveet.forEach((hakutoive) => {
-      if (hakutoive.hakukohdeOid === hakukohdeOid) {
-        hakutoive.valinnanVaiheet.forEach((valinnanVaihe) => {
-          valinnanVaihe.valintakokeet.forEach((valintakoeTulos) => {
-            const { valintakoeTunniste, nimi } = valintakoeTulos;
-            const valintakoe = valintakokeetByTunniste[valintakoeTunniste];
-            if (!valintakoe) {
-              return;
-            }
-            const osallistuminen = deduceOsallistuminen({
-              valintakoe,
-              valintakoeTulos,
-            });
-            if (
-              !vainKutsuttavat ||
-              (vainKutsuttavat && osallistuminen === 'OSALLISTUU')
-            ) {
-              kutsutByTunniste[valintakoeTunniste] = {
-                nimi,
-                valintakoeTunniste,
-                osallistuminen: `osallistuminen.${osallistuminen}`,
-              };
-            }
-          });
-        });
-      }
-    });
+    forEachValintakoekutsu(
+      {
+        hakutoiveOsallistuminen,
+        hakukohdeOid,
+        vainKutsuttavat,
+        valintakokeet: kokeet,
+      },
+      ({ valintakoeOsallistuminen, valintakoe }) => {
+        kutsutByTunniste[valintakoe.selvitettyTunniste] = {
+          nimi: valintakoe.nimi,
+          valintakoeTunniste: valintakoe.selvitettyTunniste,
+          osallistuminen: `osallistuminen.${valintakoeOsallistuminen}`,
+        };
+      },
+    );
+
     if (!isEmpty(kutsutByTunniste)) {
       kutsut.push({
         hakemusOid: hakemus.hakemusOid,
