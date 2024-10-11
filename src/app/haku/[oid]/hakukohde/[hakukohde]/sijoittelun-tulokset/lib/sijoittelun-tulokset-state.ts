@@ -29,9 +29,12 @@ export type SijoittelunTuloksetChangeEvent = {
   hakemusOid: string;
   julkaistavissa?: boolean;
   ehdollisestiHyvaksyttavissa?: boolean;
+  ehdollisuudenSyy?: string;
+  ehdollisuudenSyyKieli?: { fi?: string; en?: string; sv?: string };
   vastaanottotila?: VastaanottoTila;
   ilmoittautumisTila?: IlmoittautumisTila;
   maksunTila?: MaksunTila;
+  hyvaksyttyVarasijalta?: boolean;
 };
 
 export const createSijoittelunTuloksetMachine = (
@@ -72,6 +75,21 @@ export const createSijoittelunTuloksetMachine = (
                     hakenut.ehdollisestiHyvaksyttavissa =
                       e.ehdollisestiHyvaksyttavissa;
                     //TODO muut ehto parametrit
+                  }
+                  if (e.ehdollisuudenSyy) {
+                    hakenut.ehdollisenHyvaksymisenEhtoKoodi =
+                      e.ehdollisuudenSyy;
+                  }
+                  if (e.ehdollisuudenSyyKieli) {
+                    hakenut.ehdollisenHyvaksymisenEhtoFI =
+                      e.ehdollisuudenSyyKieli.fi;
+                    hakenut.ehdollisenHyvaksymisenEhtoSV =
+                      e.ehdollisuudenSyyKieli.sv;
+                    hakenut.ehdollisenHyvaksymisenEhtoEN =
+                      e.ehdollisuudenSyyKieli.en;
+                  }
+                  if (e.hyvaksyttyVarasijalta !== undefined) {
+                    hakenut.hyvaksyttyVarasijalta = e.hyvaksyttyVarasijalta;
                   }
                   if (e.vastaanottotila) {
                     hakenut.vastaanottotila = e.vastaanottotila;
