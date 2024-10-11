@@ -6,6 +6,8 @@ import {
 } from '@/app/lib/types/sijoittelu-types';
 import { hakemukselleNaytetaanIlmoittautumisTila } from '../lib/sijoittelun-tulokset-utils';
 import { SijoittelunTuloksetChangeEvent } from '../lib/sijoittelun-tulokset-state';
+import { SelectChangeEvent } from '@mui/material';
+import { useState } from 'react';
 
 export const IlmoittautumisCell = ({
   hakemus,
@@ -17,6 +19,9 @@ export const IlmoittautumisCell = ({
   updateForm: (params: SijoittelunTuloksetChangeEvent) => void;
 }) => {
   const { t } = useTranslations();
+  const [ilmoittautumisTila, setIlmoittautumisTila] = useState(
+    hakemus.ilmoittautumisTila,
+  );
 
   const ilmoittautumistilaOptions = Object.values(IlmoittautumisTila).map(
     (tila) => {
@@ -26,17 +31,21 @@ export const IlmoittautumisCell = ({
 
   const showSelect = hakemukselleNaytetaanIlmoittautumisTila(hakemus);
 
+  const updateIlmoittautumisTila = (event: SelectChangeEvent<string>) => {
+    const tila = event.target.value as IlmoittautumisTila;
+    setIlmoittautumisTila(tila);
+    updateForm({
+      hakemusOid: hakemus.hakemusOid,
+      ilmoittautumisTila: tila,
+    });
+  };
+
   return (
     <>
       {showSelect && (
         <LocalizedSelect
-          value={hakemus.ilmoittautumisTila}
-          onChange={(event) =>
-            updateForm({
-              hakemusOid: hakemus.hakemusOid,
-              ilmoittautumisTila: event.target.value as IlmoittautumisTila,
-            })
-          }
+          value={ilmoittautumisTila}
+          onChange={updateIlmoittautumisTila}
           options={ilmoittautumistilaOptions}
           disabled={disabled}
         />
