@@ -72,9 +72,14 @@ export const useValintakoekutsutSearchParams = (valintakoeTunniste: string) => {
   };
 };
 
-export const useValintakoekutsutPaginated = (
+export const useValintakoekutsutPaginated = <
+  T extends Pick<
+    ValintakoeKutsuItem,
+    'hakemusOid' | 'hakijaOid' | 'hakijanNimi'
+  >,
+>(
   valintakoeTunniste: string,
-  valintakoeKutsut: Array<ValintakoeKutsuItem>,
+  valintakoeKutsut: Array<T>,
 ) => {
   const { translateEntity } = useTranslations();
 

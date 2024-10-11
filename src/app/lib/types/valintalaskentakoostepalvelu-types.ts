@@ -1,5 +1,22 @@
 import { ValintakoeOsallistuminen } from './valintakoekutsut-types';
 
+export type HakutoiveValintakoe = {
+  valintakoeOid: string;
+  valintakoeTunniste: string;
+  nimi: string;
+  aktiivinen: boolean;
+  lahetetaankoKoekutsut: boolean;
+  kutsutaankoKaikki: boolean | null;
+  osallistuminenTulos: {
+    osallistuminen: ValintakoeOsallistuminen;
+    kuvaus: {
+      FI?: string;
+      SV?: string;
+      EN?: string;
+    };
+  };
+};
+
 export type HakutoiveValintakoeOsallistumiset = {
   hakuOid: string;
   hakemusOid: string;
@@ -10,22 +27,7 @@ export type HakutoiveValintakoeOsallistumiset = {
     valinnanVaiheet: Array<{
       valinnanVaiheOid: string;
       valinnanVaiheJarjestysluku: number;
-      valintakokeet: Array<{
-        valintakoeOid: string;
-        valintakoeTunniste: string;
-        nimi: string;
-        aktiivinen: boolean;
-        lahetetaankoKoekutsut: boolean;
-        kutsutaankoKaikki: boolean | null;
-        osallistuminenTulos: {
-          osallistuminen: ValintakoeOsallistuminen;
-          kuvaus: {
-            FI?: string;
-            SV?: string;
-            EN?: string;
-          };
-        };
-      }>;
+      valintakokeet: Array<HakutoiveValintakoe>;
     }>;
   }>;
 };

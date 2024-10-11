@@ -14,7 +14,7 @@ import { ListTable } from '@/app/components/table/list-table';
 
 const TRANSLATIONS_PREFIX = 'valintakoekutsut.taulukko';
 
-export const ValintakoekutsutTable = ({
+export const ValintakoekutsutKokeittainTable = ({
   hakuOid,
   hakukohdeOid,
   valintakoeTunniste,

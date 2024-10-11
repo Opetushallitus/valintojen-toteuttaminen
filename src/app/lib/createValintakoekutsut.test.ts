@@ -1,5 +1,4 @@
 import { describe, expect, test } from 'vitest';
-import { indexBy, prop } from 'remeda';
 import VALINTAKOKEET from '@tests/e2e/fixtures/valintakokeet.json';
 import VALINTAKOEOSALLISTUMISET from '@tests/e2e/fixtures/valintakoeosallistumiset.json';
 import { createValintakoekutsutKokeittain } from './createValintakoekutsut';
@@ -48,10 +47,7 @@ describe('createValintakoekutsutKokeittain', () => {
         vainKutsuttavat: false,
       },
       {
-        valintakokeetByTunniste: indexBy(
-          VALINTAKOKEET,
-          prop('selvitettyTunniste'),
-        ),
+        valintakokeet: VALINTAKOKEET,
         hakemuksetByOid: HAKEMUKSET_BY_OID,
         valintakoeOsallistumiset:
           VALINTAKOEOSALLISTUMISET as Array<HakutoiveValintakoeOsallistumiset>,
@@ -109,10 +105,7 @@ describe('createValintakoekutsutKokeittain', () => {
         vainKutsuttavat: true,
       },
       {
-        valintakokeetByTunniste: indexBy(
-          VALINTAKOKEET,
-          prop('selvitettyTunniste'),
-        ),
+        valintakokeet: VALINTAKOKEET,
         hakemuksetByOid: HAKEMUKSET_BY_OID,
         valintakoeOsallistumiset:
           VALINTAKOEOSALLISTUMISET as Array<HakutoiveValintakoeOsallistumiset>,
@@ -161,10 +154,7 @@ describe('createValintakoekutsutKokeittain', () => {
         vainKutsuttavat: true,
       },
       {
-        valintakokeetByTunniste: indexBy(
-          VALINTAKOKEET,
-          prop('selvitettyTunniste'),
-        ),
+        valintakokeet: VALINTAKOKEET,
         hakemuksetByOid: {},
         valintakoeOsallistumiset: [],
       },
@@ -184,13 +174,10 @@ describe('createValintakoekutsutKokeittain', () => {
         vainKutsuttavat: true,
       },
       {
-        valintakokeetByTunniste: indexBy(
-          VALINTAKOKEET.map((v) => ({
-            ...v,
-            kutsutaankoKaikki: true,
-          })),
-          prop('selvitettyTunniste'),
-        ),
+        valintakokeet: VALINTAKOKEET.map((v) => ({
+          ...v,
+          kutsutaankoKaikki: true,
+        })),
         hakemuksetByOid: HAKEMUKSET_BY_OID,
         valintakoeOsallistumiset:
           VALINTAKOEOSALLISTUMISET as Array<HakutoiveValintakoeOsallistumiset>,

@@ -294,7 +294,7 @@ export async function getValintakoekutsutData({
 
   if (isEmpty(valintakokeet)) {
     return {
-      valintakokeetByTunniste: EMPTY_OBJECT,
+      valintakokeet: EMPTY_ARRAY,
       hakemuksetByOid: EMPTY_OBJECT,
       valintakoeOsallistumiset: EMPTY_ARRAY,
     };
@@ -325,12 +325,7 @@ export async function getValintakoekutsutData({
   const hakemuksetByOid = indexBy(allHakemukset, prop('hakemusOid'));
 
   return {
-    valintakokeetByTunniste: indexBy(
-      valintakokeet.filter(
-        (koe) => koe.aktiivinen && koe.lahetetaankoKoekutsut,
-      ),
-      prop('selvitettyTunniste'),
-    ),
+    valintakokeet,
     hakemuksetByOid,
     valintakoeOsallistumiset,
   };
