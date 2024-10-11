@@ -14,7 +14,12 @@ export default function HakuLayout({
   return (
     <PageLayout header={header}>
       <MainContainer
-        sx={{ display: 'flex', flexDirection: 'row', textAlign: 'left' }}
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          textAlign: 'left',
+          alignItems: 'flex-start',
+        }}
       >
         <HakukohdePanel hakuOid={params.oid} />
         {children}

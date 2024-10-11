@@ -28,6 +28,7 @@ describe('Laskenta states', async () => {
       jarjestyspaikkaHierarkiaNimi: { fi: 'Paikka' },
       organisaatioNimi: {},
       organisaatioOid: 'organisaatio-oid',
+      voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita: false,
     },
     sijoitellaanko: false,
     translateEntity: translateName,

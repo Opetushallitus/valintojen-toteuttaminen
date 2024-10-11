@@ -1,19 +1,22 @@
 'use client';
 import { ophColors } from '@opetushallitus/oph-design-system';
 import { styled as muiStyled, ThemeOptions } from '@mui/material/styles';
+import { shouldForwardProp } from '@mui/system/createStyled';
 
 export { ophColors } from '@opetushallitus/oph-design-system';
 
 const withTransientProps = (propName: string) =>
   // Emotion doesn't support transient props by default so add support manually
-  !propName.startsWith('$');
+  shouldForwardProp(propName) && !propName.startsWith('$');
 
 export const styled: typeof muiStyled = (
   tag: Parameters<typeof muiStyled>[0],
   options: Parameters<typeof muiStyled>[1] = {},
 ) => {
   return muiStyled(tag, {
-    shouldForwardProp: withTransientProps,
+    shouldForwardProp: (propName: string) =>
+      (!options.shouldForwardProp || options.shouldForwardProp(propName)) &&
+      withTransientProps(propName),
     ...options,
   });
 };

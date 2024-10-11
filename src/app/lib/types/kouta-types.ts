@@ -46,6 +46,7 @@ export type Hakukohde = {
   organisaatioOid: string;
   organisaatioNimi: TranslatedName;
   jarjestyspaikkaHierarkiaNimi: TranslatedName;
+  voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita: boolean;
 };
 
 export enum Tila {

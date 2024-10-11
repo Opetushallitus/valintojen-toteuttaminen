@@ -30,6 +30,7 @@ import {
 } from './valintaperusteet';
 import { ValintakoekutsutData } from './types/valintakoekutsut-types';
 import { HakutoiveValintakoeOsallistumiset } from './types/valintalaskentakoostepalvelu-types';
+import { HarkinnanvaraisuudenSyy } from './types/harkinnanvaraiset-types';
 
 const formSearchParamsForStartLaskenta = ({
   laskentaUrl,
@@ -409,12 +410,30 @@ export const getValintakoeOsoitetarrat = async ({
   urlWithQuery.searchParams.append('hakukohdeOid', hakukohdeOid);
   urlWithQuery.searchParams.append('valintakoeTunniste', valintakoeTunniste);
 
-  const createResponse = await client.post<{ id: string }>(urlWithQuery, {
+  const startProcessResponse = await client.post<{ id: string }>(urlWithQuery, {
     hakemusOids,
     tag: 'valintakoetulos',
   });
-  const tarratProcessId = createResponse?.data?.id;
-  return await downloadProcessDocument(tarratProcessId);
+  const tarratProcessId = startProcessResponse?.data?.id;
+  return downloadProcessDocument(tarratProcessId);
+};
+
+export const getOsoitetarratHakemuksille = async ({
+  tag,
+  hakemusOids,
+}: {
+  tag: string;
+  hakemusOids: Array<string>;
+}) => {
+  const startProcessResponse = await client.post<{ id: string }>(
+    configuration.startExportOsoitetarratHakemuksilleUrl,
+    {
+      hakemusOids,
+      tag,
+    },
+  );
+  const tarratProcessId = startProcessResponse?.data?.id;
+  return downloadProcessDocument(tarratProcessId);
 };
 
 export const getValintalaskennanTulosExcel = async ({
@@ -477,4 +496,24 @@ export const putPistesyottoExcel = async ({
     );
   }
   return data;
+};
+
+type HakemuksenHarkinnanvaraisuustiedot = {
+  hakemusOid: string;
+  hakutoiveet: Array<{
+    hakukohdeOid: string;
+    harkinnanvaraisuudenSyy: HarkinnanvaraisuudenSyy;
+  }>;
+};
+
+export const getHarkinnanvaraisuudetHakemuksille = async ({
+  hakemusOids,
+}: {
+  hakemusOids: Array<string>;
+}) => {
+  const res = await client.post<Array<HakemuksenHarkinnanvaraisuustiedot>>(
+    configuration.harkinnanvaraisuudetHakemuksilleUrl,
+    hakemusOids,
+  );
+  return res.data;
 };

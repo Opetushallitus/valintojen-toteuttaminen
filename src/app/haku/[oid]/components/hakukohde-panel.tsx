@@ -1,45 +1,49 @@
 'use client';
 
-import { styled, IconButton, FormLabel } from '@mui/material';
+import { Stack } from '@mui/material';
 import {
   Close as CloseIcon,
   KeyboardDoubleArrowRight as KeyboardDoubleArrowRightIcon,
 } from '@mui/icons-material';
 import HakukohdeList from './hakukohde-list';
 import { useState } from 'react';
-import { ophColors } from '@/app/lib/theme';
+import { ophColors, styled } from '@/app/lib/theme';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { ClientSpinner } from '@/app/components/client-spinner';
 import HakukohdeSearch from './hakukohde-search';
+import { OphButton } from '@opetushallitus/oph-design-system';
 
 const StyledPanel = styled('aside')({
   width: '16vw',
-  textAlign: 'left',
-  minHeight: '85vh',
-  display: 'flex',
-  flexDirection: 'column',
-  flexShrink: 0,
-  rowGap: '7px',
-  paddingRight: '5px',
-  alignItems: 'start',
-  transition: 'width 300ms ease-in-out',
-  ['label, button']: {
-    color: ophColors.blue2,
-    maxWidth: '50px',
-    alignSelf: 'end',
-    marginRight: '15px',
-    marginBottom: '5px',
-  },
+  minWidth: '300px',
+  display: 'block',
+  height: '100vh',
+  top: 0,
+  position: 'sticky',
   '&.minimized': {
-    width: '50px',
-    rowGap: '3px',
-    ['label, button']: {
-      margin: 0,
-      alignSelf: 'start',
-    },
+    minWidth: 0,
+    width: 'auto',
   },
 });
+
+const ExpandButton = styled(OphButton)(({ theme }) => ({
+  fontWeight: 'normal',
+  height: '100%',
+  color: ophColors.blue2,
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+  padding: theme.spacing(1, 0),
+  border: 0,
+  '& .MuiButton-icon': {
+    margin: 0,
+  },
+  '&:hover': {
+    backgroundColor: ophColors.lightBlue2,
+  },
+}));
 
 export const HakukohdePanel = ({ hakuOid }: { hakuOid: string }) => {
   const [minimized, setMinimized] = useState(false);
@@ -47,31 +51,35 @@ export const HakukohdePanel = ({ hakuOid }: { hakuOid: string }) => {
 
   return (
     <StyledPanel className={minimized ? 'minimized' : ''}>
-      {!minimized && (
+      {minimized ? (
+        <ExpandButton
+          onClick={() => setMinimized(false)}
+          aria-label={t('haku.suurenna')}
+          startIcon={<KeyboardDoubleArrowRightIcon />}
+        >
+          <span>{t('yleinen.haku')}</span>
+        </ExpandButton>
+      ) : (
         <QuerySuspenseBoundary suspenseFallback={<ClientSpinner />}>
-          <IconButton
-            sx={{ alignSelf: 'right', width: '1rem', height: '1rem' }}
-            onClick={() => setMinimized(true)}
-            aria-label={t('haku.pienenna')}
+          <Stack
+            sx={{
+              height: '100%',
+              flexShrink: 0,
+              gap: 1,
+              alignItems: 'flex-start',
+            }}
           >
-            <CloseIcon />
-          </IconButton>
-          <HakukohdeSearch />
-          <HakukohdeList hakuOid={hakuOid} />
+            <OphButton
+              sx={{ alignSelf: 'flex-end' }}
+              onClick={() => setMinimized(true)}
+              aria-label={t('haku.pienenna')}
+              startIcon={<CloseIcon />}
+            />
+
+            <HakukohdeSearch />
+            <HakukohdeList hakuOid={hakuOid} />
+          </Stack>
         </QuerySuspenseBoundary>
-      )}
-      {minimized && (
-        <>
-          <IconButton
-            id="expand-button"
-            name="expand-button"
-            onClick={() => setMinimized(false)}
-            aria-label={t('haku.suurenna')}
-          >
-            <KeyboardDoubleArrowRightIcon />
-          </IconButton>
-          <FormLabel htmlFor="expand-button">{t('yleinen.haku')}</FormLabel>
-        </>
       )}
     </StyledPanel>
   );

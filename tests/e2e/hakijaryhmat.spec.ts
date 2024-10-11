@@ -1,5 +1,9 @@
 import { test, expect, Page, Locator } from '@playwright/test';
-import { checkRow, expectAllSpinnersHidden } from './playwright-utils';
+import {
+  checkRow,
+  expectAllSpinnersHidden,
+  selectOption,
+} from './playwright-utils';
 
 const ROWS = {
   ruhtinas: [
@@ -225,37 +229,13 @@ test.describe('filters', () => {
 });
 
 async function selectTila(page: Page, expectedOption: string) {
-  const combobox = page.getByRole('combobox', {
-    name: 'Sijoittelun tila',
-  });
-  await combobox.click();
-  const listbox = page.getByRole('listbox', {
-    name: 'Sijoittelun tila',
-  });
-  await listbox.getByRole('option', { name: expectedOption }).click();
-  await expect(combobox).toContainText(expectedOption);
+  await selectOption(page, 'Sijoittelun tila', expectedOption);
 }
 
 async function selectKuuluuRyhmaan(page: Page, expectedOption: string) {
-  const combobox = page.getByRole('combobox', {
-    name: 'Kuuluu hakijaryhmään',
-  });
-  await combobox.click();
-  const listbox = page.getByRole('listbox', {
-    name: 'Kuuluu hakijaryhmään',
-  });
-  await listbox.getByRole('option', { name: expectedOption }).click();
-  await expect(combobox).toContainText(expectedOption);
+  await selectOption(page, 'Kuuluu hakijaryhmään', expectedOption);
 }
 
 async function selectHyvaksytty(page: Page, expectedOption: string) {
-  const combobox = page.getByRole('combobox', {
-    name: 'Hyväksytty hakijaryhmästä',
-  });
-  await combobox.click();
-  const listbox = page.getByRole('listbox', {
-    name: 'Hyväksytty hakijaryhmästä',
-  });
-  await listbox.getByRole('option', { name: expectedOption }).click();
-  await expect(combobox).toContainText(expectedOption);
+  await selectOption(page, 'Hyväksytty hakijaryhmästä', expectedOption);
 }

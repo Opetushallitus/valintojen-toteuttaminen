@@ -1,0 +1,38 @@
+[
+  {
+    "hakemusOid": "1.2.246.562.11.00000000000001796027",
+    "hakutoiveet": [
+      {
+        "hakukohdeOid": "1.2.246.562.20.00000000000000024094",
+        "harkinnanvaraisuudenSyy": "ATARU_EI_PAATTOTODISTUSTA"
+      }
+    ]
+  },
+  {
+    "hakemusOid": "1.2.246.562.11.00000000000001793706",
+    "hakutoiveet": [
+      {
+        "hakukohdeOid": "1.2.246.562.20.00000000000000024094",
+        "harkinnanvaraisuudenSyy": "ATARU_SOSIAALISET_SYYT"
+      }
+    ]
+  },
+  {
+    "hakemusOid": "1.2.246.562.11.00000000000001790371",
+    "hakutoiveet": [
+      {
+        "hakukohdeOid": "1.2.246.562.20.00000000000000024094",
+        "harkinnanvaraisuudenSyy": "ATARU_OPPIMISVAIKEUDET"
+      }
+    ]
+  },
+  {
+    "hakemusOid": "1.2.246.562.11.00000000000001543832",
+    "hakutoiveet": [
+      {
+        "hakukohdeOid": "1.2.246.562.20.00000000000000024094",
+        "harkinnanvaraisuudenSyy": "ATARU_RIITTAMATON_TUTKINTOKIELEN_TAITO"
+      }
+    ]
+  }
+]
