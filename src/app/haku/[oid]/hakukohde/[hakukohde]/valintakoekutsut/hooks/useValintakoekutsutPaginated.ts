@@ -9,6 +9,7 @@ import {
 import { byProp, getSortParts } from '@/app/components/table/table-utils';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { ValintakoeKutsuItem } from '@/app/lib/types/valintakoekutsut-types';
+import { uncapitalize } from 'remeda';
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -72,19 +73,30 @@ export const useValintakoekutsutSearchParams = (valintakoeTunniste: string) => {
   };
 };
 
+export const makePaginationId = (value: string) => {
+  return uncapitalize(
+    value
+      .replace(/[\s-]+/g, '-')
+      .replace(/[,.:]/, '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, ''),
+  );
+};
+
 export const useValintakoekutsutPaginated = <
   T extends Pick<
     ValintakoeKutsuItem,
     'hakemusOid' | 'hakijaOid' | 'hakijanNimi'
   >,
 >(
-  valintakoeTunniste: string,
+  paginationPrefix: string,
   valintakoeKutsut: Array<T>,
 ) => {
   const { translateEntity } = useTranslations();
 
-  const { page, setPage, sort, setSort } =
-    useValintakoekutsutSearchParams(valintakoeTunniste);
+  const { page, setPage, sort, setSort } = useValintakoekutsutSearchParams(
+    makePaginationId(paginationPrefix),
+  );
 
   const {
     vainKutsuttavat,

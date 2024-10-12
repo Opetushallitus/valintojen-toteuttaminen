@@ -43,15 +43,17 @@ const PaginatedValintakoekutsut = ({
   hakuOid,
   hakukohdeOid,
   valintakoeTunniste,
+  valintakoeNimi,
   valintakoeKutsut,
 }: {
   hakuOid: string;
   hakukohdeOid: string;
   valintakoeTunniste: string;
+  valintakoeNimi: string;
   valintakoeKutsut: Array<ValintakoeKutsuItem>;
 }) => {
   const { results, sort, setSort, pageSize, setPage, page } =
-    useValintakoekutsutPaginated(valintakoeTunniste, valintakoeKutsut);
+    useValintakoekutsutPaginated(valintakoeNimi, valintakoeKutsut);
 
   const { t } = useTranslations();
 
@@ -155,6 +157,7 @@ const ValintakoekutsutKokeittain = ({
                   hakuOid={hakuOid}
                   hakukohdeOid={hakukohdeOid}
                   valintakoeTunniste={valintakoeTunniste}
+                  valintakoeNimi={nimi}
                   valintakoeKutsut={kutsut}
                 />
               </AccordionBox>

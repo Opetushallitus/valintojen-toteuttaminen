@@ -127,11 +127,11 @@ type HakijaColumnType = {
   hakijaOid: string;
 };
 
-export const createHakijaColumn = (keyPrefix: string) =>
+export const createHakijaColumn = (keyPrefix?: string) =>
   makeExternalLinkColumn<HakijaColumnType>({
     linkBuilder: buildLinkToPerson,
     title: 'hakeneet.taulukko.hakija',
-    key: `${keyPrefix}'-hakijanNimi`,
+    key: keyPrefix ? `${keyPrefix}-hakijanNimi` : 'hakijanNimi',
     nameProp: 'hakijanNimi',
     linkProp: 'hakijaOid',
   });

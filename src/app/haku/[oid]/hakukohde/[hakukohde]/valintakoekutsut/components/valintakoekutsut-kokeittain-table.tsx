@@ -39,7 +39,7 @@ export const ValintakoekutsutKokeittainTable = ({
 
   const columns: Array<ListTableColumn<ValintakoeKutsuItem>> = useMemo(
     () => [
-      createHakijaColumn('koekutsut'),
+      createHakijaColumn(),
       makeColumnWithValueToTranslate({
         t,
         title: `${TRANSLATIONS_PREFIX}.osallistuminen`,

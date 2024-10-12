@@ -10,6 +10,7 @@ import {
 import { ListTable } from '@/app/components/table/list-table';
 import { ValintakoekutsuHakijoittain } from '@/app/lib/createValintakoekutsut';
 import { Valintakoe } from '@/app/lib/types/valintaperusteet-types';
+import { makePaginationId } from '../hooks/useValintakoekutsutPaginated';
 
 export const ValintakoekutsutHakijoittainTable = ({
   kokeet = [],
@@ -32,17 +33,17 @@ export const ValintakoekutsutHakijoittainTable = ({
 
   const columns: Array<ListTableColumn<ValintakoekutsuHakijoittain>> = useMemo(
     () => [
-      createHakijaColumn('koekutsut'),
+      createHakijaColumn(),
       ...kokeet.map((koe) =>
         makeColumnWithCustomRender<ValintakoekutsuHakijoittain>({
           title: koe.nimi,
-          key: koe.selvitettyTunniste,
+          key: makePaginationId(koe.nimi),
           renderFn: (props) => {
             const osallistuminen =
               props.kutsut[koe.selvitettyTunniste]?.osallistuminen;
             return <span>{osallistuminen ? t(osallistuminen) : ''}</span>;
           },
-          sortable: true,
+          sortable: false,
         }),
       ),
     ],
