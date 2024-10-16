@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 
-import { Box } from '@mui/material';
+import { Box, SelectChangeEvent } from '@mui/material';
 import { DeselectOutlined } from '@mui/icons-material';
 import { ActionBar } from '@/app/components/action-bar';
 import { LocalizedSelect } from '@/app/components/localized-select';
@@ -14,13 +14,16 @@ import {
   hakemukselleNaytetaanIlmoittautumisTila,
   hakemukselleNaytetaanVastaanottoTila,
 } from '../lib/sijoittelun-tulokset-utils';
+import { HakemuksetStateChangeEvent } from '../lib/sijoittelun-tulokset-state';
 
 const IlmoittautumisSelect = ({
   hakemukset,
   selection,
+  massStatusChangeForm,
 }: {
   hakemukset: SijoittelunHakemusValintatiedoilla[];
   selection: Set<string>;
+  massStatusChangeForm: (changeParams: HakemuksetStateChangeEvent) => void;
 }) => {
   const { t } = useTranslations();
 
@@ -29,6 +32,13 @@ const IlmoittautumisSelect = ({
       return { value: tila as string, label: t(`ilmoittautumistila.${tila}`) };
     },
   );
+
+  const massUpdateIlmoittautuminen = (event: SelectChangeEvent<string>) => {
+    massStatusChangeForm({
+      hakemusOids: selection,
+      ilmoittautumisTila: event.target.value as IlmoittautumisTila,
+    });
+  };
 
   const disabled =
     hakemukset.filter(
@@ -40,7 +50,7 @@ const IlmoittautumisSelect = ({
   return (
     <LocalizedSelect
       placeholder="Muuta ilmoittautumistieto"
-      onChange={() => ''}
+      onChange={massUpdateIlmoittautuminen}
       options={ilmoittautumistilaOptions}
       disabled={disabled}
     />
@@ -50,15 +60,24 @@ const IlmoittautumisSelect = ({
 const VastaanOttoSelect = ({
   hakemukset,
   selection,
+  massStatusChangeForm,
 }: {
   hakemukset: SijoittelunHakemusValintatiedoilla[];
   selection: Set<string>;
+  massStatusChangeForm: (changeParams: HakemuksetStateChangeEvent) => void;
 }) => {
   const { t } = useTranslations();
 
   const vastaanottotilaOptions = Object.values(VastaanottoTila).map((tila) => {
     return { value: tila as string, label: t(`vastaanottotila.${tila}`) };
   });
+
+  const massUpdateVastaanOtto = (event: SelectChangeEvent<string>) => {
+    massStatusChangeForm({
+      hakemusOids: selection,
+      vastaanottoTila: event.target.value as VastaanottoTila,
+    });
+  };
 
   const disabled =
     hakemukset.filter(
@@ -69,7 +88,7 @@ const VastaanOttoSelect = ({
   return (
     <LocalizedSelect
       placeholder="Muuta vastaanottotieto"
-      onChange={() => ''}
+      onChange={massUpdateVastaanOtto}
       options={vastaanottotilaOptions}
       disabled={disabled}
     />
@@ -80,10 +99,12 @@ export const SijoittelunTuloksetActionBar = ({
   hakemukset,
   selection,
   resetSelection,
+  massStatusChangeForm,
 }: {
   hakemukset: SijoittelunHakemusValintatiedoilla[];
   selection: Set<string>;
   resetSelection: () => void;
+  massStatusChangeForm: (changeParams: HakemuksetStateChangeEvent) => void;
 }) => {
   const { t } = useTranslation();
 
@@ -97,9 +118,17 @@ export const SijoittelunTuloksetActionBar = ({
         {t(`valintakoekutsut.valittu-maara`, { count: selection.size })}
       </Box>
       <ActionBar.Divider />
-      <VastaanOttoSelect hakemukset={hakemukset} selection={selection} />
+      <VastaanOttoSelect
+        hakemukset={hakemukset}
+        selection={selection}
+        massStatusChangeForm={massStatusChangeForm}
+      />
       <ActionBar.Divider />
-      <IlmoittautumisSelect hakemukset={hakemukset} selection={selection} />
+      <IlmoittautumisSelect
+        hakemukset={hakemukset}
+        selection={selection}
+        massStatusChangeForm={massStatusChangeForm}
+      />
       <ActionBar.Divider />
       <ActionBar.Button
         startIcon={<DeselectOutlined />}

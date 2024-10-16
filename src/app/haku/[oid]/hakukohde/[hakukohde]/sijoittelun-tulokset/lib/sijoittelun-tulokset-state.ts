@@ -11,6 +11,7 @@ export type SijoittelunTuloksetContext = {
   hakemukset: SijoittelunHakemusValintatiedoilla[];
   changedHakemukset: SijoittelunHakemusValintatiedoilla[];
   toastMessage?: string;
+  massChangeAmount?: number;
 };
 
 export enum SijoittelunTuloksetStates {
@@ -18,10 +19,12 @@ export enum SijoittelunTuloksetStates {
   UPDATING = 'UPDATING',
   UPDATE_COMPLETED = 'UPDATE_COMPLETED',
   ERROR = 'ERROR',
+  NOTIFY_MASS_STATUS_CHANGE = 'NOTIFY_MASS_STATUS_CHANGE',
 }
 
 export enum SijoittelunTuloksetEvents {
   UPDATE = 'UPDATE',
+  CHANGE_HAKEMUKSET_STATES = 'CHANGE_HAKEMUKSET_STATES',
   ADD_CHANGED_HAKEMUS = 'ADD_CHANGED_HAKEMUS',
 }
 
@@ -35,6 +38,12 @@ export type SijoittelunTuloksetChangeEvent = {
   ilmoittautumisTila?: IlmoittautumisTila;
   maksunTila?: MaksunTila;
   hyvaksyttyVarasijalta?: boolean;
+};
+
+export type HakemuksetStateChangeEvent = {
+  hakemusOids: Set<string>;
+  vastaanottoTila?: VastaanottoTila;
+  ilmoittautumisTila?: IlmoittautumisTila;
 };
 
 export const createSijoittelunTuloksetMachine = (
@@ -74,7 +83,6 @@ export const createSijoittelunTuloksetMachine = (
                   if (e.ehdollisestiHyvaksyttavissa !== undefined) {
                     hakenut.ehdollisestiHyvaksyttavissa =
                       e.ehdollisestiHyvaksyttavissa;
-                    //TODO muut ehto parametrit
                   }
                   if (e.ehdollisuudenSyy) {
                     hakenut.ehdollisenHyvaksymisenEhtoKoodi =
@@ -126,6 +134,44 @@ export const createSijoittelunTuloksetMachine = (
               },
             },
           ],
+          [SijoittelunTuloksetEvents.CHANGE_HAKEMUKSET_STATES]: {
+            actions: assign(({ context, event }) => {
+              const e = event as unknown as HakemuksetStateChangeEvent;
+              const changed: SijoittelunHakemusValintatiedoilla[] =
+                context.changedHakemukset;
+              let changedAmount = 0;
+              e.hakemusOids.forEach((hakemusOid) => {
+                let hakenut = changed.find((h) => h.hakemusOid === hakemusOid);
+                const existing: boolean = Boolean(hakenut);
+                hakenut =
+                  hakenut ||
+                  context.hakemukset.find((h) => h.hakemusOid === hakemusOid);
+                if (
+                  hakenut &&
+                  (e.ilmoittautumisTila !== hakenut.ilmoittautumisTila ||
+                    e.vastaanottoTila !== hakenut.vastaanottotila)
+                ) {
+                  hakenut.vastaanottotila =
+                    e.vastaanottoTila ?? hakenut.vastaanottotila;
+                  hakenut.ilmoittautumisTila =
+                    e.ilmoittautumisTila ?? hakenut.ilmoittautumisTila;
+                  changedAmount++;
+                  if (existing) {
+                    changed.map((h) =>
+                      h.hakemusOid === hakemusOid ? hakenut : h,
+                    );
+                  } else {
+                    changed.push(hakenut);
+                  }
+                }
+              });
+              return {
+                changedHakemukset: changed,
+                massChangeAmount: changedAmount,
+              };
+            }),
+            target: SijoittelunTuloksetStates.NOTIFY_MASS_STATUS_CHANGE,
+          },
         },
       },
       [SijoittelunTuloksetStates.UPDATING]: {
@@ -139,6 +185,14 @@ export const createSijoittelunTuloksetMachine = (
             target: SijoittelunTuloksetStates.ERROR,
           },
         },
+      },
+      [SijoittelunTuloksetStates.NOTIFY_MASS_STATUS_CHANGE]: {
+        always: [
+          {
+            target: SijoittelunTuloksetStates.IDLE,
+            actions: 'notifyMassStatusChange',
+          },
+        ],
       },
       [SijoittelunTuloksetStates.ERROR]: {
         always: [
@@ -193,6 +247,13 @@ export const createSijoittelunTuloksetMachine = (
           key: `sijoittelun-tulokset-updated-for-${hakukohdeOid}-${valintatapajonoOid}`,
           message: 'sijoittelun-tulokset.valmis',
           type: 'success',
+        }),
+      notifyMassStatusChange: ({ context }) =>
+        addToast({
+          key: `sijoittelun-tulokset-mass-status-change-for-${hakukohdeOid}-${valintatapajonoOid}`,
+          message: 'sijoittelun-tulokset.mass-status-change-done',
+          type: 'success',
+          messageParams: { amount: context.massChangeAmount ?? 0 },
         }),
     },
     actors: {
