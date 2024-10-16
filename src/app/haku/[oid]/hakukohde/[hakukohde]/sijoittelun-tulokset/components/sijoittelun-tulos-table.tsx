@@ -19,7 +19,10 @@ import { SijoittelunTilaCell } from './sijoittelun-tila-cell';
 import { Haku } from '@/app/lib/types/kouta-types';
 import { isKorkeakouluHaku } from '@/app/lib/kouta';
 import { SijoittelunTuloksetActionBar } from './sijoittelun-tulos-action-bar';
-import { SijoittelunTuloksetChangeEvent } from '../lib/sijoittelun-tulokset-state';
+import {
+  HakemuksetStateChangeEvent,
+  SijoittelunTuloksetChangeEvent,
+} from '../lib/sijoittelun-tulokset-state';
 
 export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
   title,
@@ -45,6 +48,7 @@ export const SijoittelunTulosTable = ({
   sort,
   disabled,
   updateForm,
+  massStatusChangeForm,
 }: {
   haku: Haku;
   hakemukset: SijoittelunHakemusValintatiedoilla[];
@@ -52,6 +56,7 @@ export const SijoittelunTulosTable = ({
   setSort: (sort: string) => void;
   disabled: boolean;
   updateForm: (params: SijoittelunTuloksetChangeEvent) => void;
+  massStatusChangeForm: (changeParams: HakemuksetStateChangeEvent) => void;
 }) => {
   const { t } = useTranslations();
 
@@ -138,6 +143,7 @@ export const SijoittelunTulosTable = ({
         hakemukset={hakemukset}
         selection={selection}
         resetSelection={() => setSelection(new Set())}
+        massStatusChangeForm={massStatusChangeForm}
       />
       <ListTable
         rowKeyProp="hakijaOid"
