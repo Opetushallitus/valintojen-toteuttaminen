@@ -6,6 +6,10 @@ import {
   VastaanottoTila,
 } from '@/app/lib/types/sijoittelu-types';
 import { assign, createMachine, fromPromise } from 'xstate';
+import {
+  hakemukselleNaytetaanIlmoittautumisTila,
+  hakemukselleNaytetaanVastaanottoTila,
+} from './sijoittelun-tulokset-utils';
 
 export type SijoittelunTuloksetContext = {
   hakemukset: SijoittelunHakemusValintatiedoilla[];
@@ -148,8 +152,10 @@ export const createSijoittelunTuloksetMachine = (
                   context.hakemukset.find((h) => h.hakemusOid === hakemusOid);
                 if (
                   hakenut &&
-                  (e.ilmoittautumisTila !== hakenut.ilmoittautumisTila ||
-                    e.vastaanottoTila !== hakenut.vastaanottotila)
+                  ((e.ilmoittautumisTila !== hakenut.ilmoittautumisTila &&
+                    hakemukselleNaytetaanIlmoittautumisTila(hakenut)) ||
+                    (e.vastaanottoTila !== hakenut.vastaanottotila &&
+                      hakemukselleNaytetaanVastaanottoTila(hakenut)))
                 ) {
                   hakenut.vastaanottotila =
                     e.vastaanottoTila ?? hakenut.vastaanottotila;
