@@ -7,7 +7,7 @@ import {
 import { hakemukselleNaytetaanIlmoittautumisTila } from '../lib/sijoittelun-tulokset-utils';
 import { SijoittelunTuloksetChangeEvent } from '../lib/sijoittelun-tulokset-state';
 import { SelectChangeEvent } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export const IlmoittautumisCell = ({
   hakemus,
@@ -22,6 +22,10 @@ export const IlmoittautumisCell = ({
   const [ilmoittautumisTila, setIlmoittautumisTila] = useState(
     hakemus.ilmoittautumisTila,
   );
+
+  useEffect(() => {
+    setIlmoittautumisTila(hakemus.ilmoittautumisTila);
+  }, [hakemus.ilmoittautumisTila]);
 
   const ilmoittautumistilaOptions = Object.values(IlmoittautumisTila).map(
     (tila) => {

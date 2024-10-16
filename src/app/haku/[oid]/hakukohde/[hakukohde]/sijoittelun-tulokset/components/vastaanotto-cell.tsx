@@ -7,7 +7,7 @@ import { SijoittelunTulosStyledCell } from './sijoittelun-tulos-styled-cell';
 import { SelectChangeEvent, Typography } from '@mui/material';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
 import { LocalizedSelect } from '@/app/components/localized-select';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyledOphCheckBox } from '@/app/components/form/styled-oph-checkbox';
 import { hakemukselleNaytetaanVastaanottoTila } from '../lib/sijoittelun-tulokset-utils';
 import { SijoittelunTuloksetChangeEvent } from '../lib/sijoittelun-tulokset-state';
@@ -27,6 +27,10 @@ export const VastaanOttoCell = ({
   const [vastaanottoTila, setVastaanottoTila] = useState(
     hakemus.vastaanottotila,
   );
+
+  useEffect(() => {
+    setVastaanottoTila(hakemus.vastaanottotila);
+  }, [hakemus.vastaanottotila]);
 
   const vastaanottotilaOptions = Object.values(VastaanottoTila).map((tila) => {
     return { value: tila as string, label: t(`vastaanottotila.${tila}`) };

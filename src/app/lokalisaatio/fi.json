@@ -251,6 +251,7 @@
     "muu-syy-aria-fi": "Ehdollisuuden syy suomeksi",
     "muu-syy-aria-sv": "Ehdollisuuden syy ruotsiksi",
     "muu-syy-aria-en": "Ehdollisuuden syy englanniksi",
+    "mass-status-change-done": "Muutettiin tila {{amount}} hakemukselle",
     "taulukko": {
       "alaotsikko": {
         "aloituspaikat": "Aloituspaikat",

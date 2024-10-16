@@ -10,6 +10,7 @@ import useConfirmChangesBeforeNavigation from '@/app/hooks/useConfirmChangesBefo
 import { SijoittelunTuloksetActions } from './sijoittelun-tulos-actions';
 import {
   createSijoittelunTuloksetMachine,
+  HakemuksetStateChangeEvent,
   SijoittelunTuloksetChangeEvent,
   SijoittelunTuloksetEvents,
   SijoittelunTuloksetStates,
@@ -41,9 +42,6 @@ export const SijoittelunTulosForm = ({
 
   const { addToast } = useToaster();
 
-  const { results, pageResults, sort, setSort, pageSize, setPage, page } =
-    useSijoittelunTulosSearch(valintatapajono.oid, valintatapajono.hakemukset);
-
   const syottoMachine = useMemo(() => {
     return createSijoittelunTuloksetMachine(
       haku.oid,
@@ -54,8 +52,12 @@ export const SijoittelunTulosForm = ({
     );
   }, [haku, hakukohdeOid, valintatapajono, addToast]);
 
-  const [dirty, setDirty] = useState(false);
   const [state, send] = useMachine(syottoMachine);
+
+  const { results, pageResults, sort, setSort, pageSize, setPage, page } =
+    useSijoittelunTulosSearch(valintatapajono.oid, valintatapajono.hakemukset);
+
+  const [dirty, setDirty] = useState(false);
 
   useConfirmChangesBeforeNavigation(dirty);
 
@@ -68,6 +70,14 @@ export const SijoittelunTulosForm = ({
   const updateForm = (changeParams: SijoittelunTuloksetChangeEvent) => {
     send({
       type: SijoittelunTuloksetEvents.ADD_CHANGED_HAKEMUS,
+      ...changeParams,
+    });
+    setDirty(true);
+  };
+
+  const massStatusChangeForm = (changeParams: HakemuksetStateChangeEvent) => {
+    send({
+      type: SijoittelunTuloksetEvents.CHANGE_HAKEMUKSET_STATES,
       ...changeParams,
     });
     setDirty(true);
@@ -94,6 +104,7 @@ export const SijoittelunTulosForm = ({
           sort={sort}
           setSort={setSort}
           updateForm={updateForm}
+          massStatusChangeForm={massStatusChangeForm}
           disabled={!state.matches(SijoittelunTuloksetStates.IDLE)}
         />
       </TablePaginationWrapper>
