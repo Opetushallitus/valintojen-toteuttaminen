@@ -233,7 +233,7 @@ test.describe('Excel export', () => {
 
     await expectAllSpinnersHidden(page);
     const download = await downloadPromise;
-    await expect(download.suggestedFilename()).toEqual('pistesyotto.xls');
+    expect(download.suggestedFilename()).toEqual('pistesyotto.xls');
   });
 
   test('Shows error toast when download fails', async ({ page }) => {
