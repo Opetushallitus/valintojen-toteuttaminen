@@ -4,8 +4,22 @@ import { FullSpinner } from '@/app/components/full-spinner';
 import { useAsiointiKieli } from '../hooks/useAsiointiKieli';
 import { createLocalization } from '../lib/localization/localizations';
 import { ErrorView } from './error-view';
+import { useEffect } from 'react';
 
 const localizations = createLocalization();
+
+const LocalizationContent = ({
+  lng,
+  children,
+}: {
+  lng?: string;
+  children: React.ReactNode;
+}) => {
+  useEffect(() => {
+    localizations.changeLanguage(lng ?? 'fi');
+  }, [lng]);
+  return <I18nextProvider i18n={localizations}>{children}</I18nextProvider>;
+};
 
 export default function LocalizationProvider({
   children,
@@ -20,7 +34,6 @@ export default function LocalizationProvider({
     case isError:
       return <ErrorView error={error} reset={refetch} />;
     default:
-      localizations.changeLanguage(data ?? 'fi');
-      return <I18nextProvider i18n={localizations}>{children}</I18nextProvider>;
+      return <LocalizationContent lng={data}>{children}</LocalizationContent>;
   }
 }
