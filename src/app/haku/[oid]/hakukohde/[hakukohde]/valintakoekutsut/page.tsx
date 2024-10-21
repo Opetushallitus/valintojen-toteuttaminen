@@ -92,7 +92,7 @@ const ValintakoekutsutHakijoittain = ({
   const { results, sort, setSort, pageSize, setPage, page } =
     useValintakoekutsutPaginated(
       'valintakoekutsut',
-      valintakoekutsutHakijoittain.kutsut,
+      valintakoekutsutHakijoittain.hakijat,
     );
 
   const { t } = useTranslations();

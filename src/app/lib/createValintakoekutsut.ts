@@ -34,7 +34,7 @@ export type ValintakoekutsuHakijoittain = Pick<
 
 export type ValintakoekutsutHakijoittain = {
   kokeet: Array<Valintakoe>;
-  kutsut: Array<ValintakoekutsuHakijoittain>;
+  hakijat: Array<ValintakoekutsuHakijoittain>;
 };
 
 const filterVisibleValintakokeet = (valintakokeet: Array<Valintakoe>) =>
@@ -157,7 +157,7 @@ export function createValintakoekutsutHakijoittain(
 ): ValintakoekutsutHakijoittain {
   const kokeet = filterVisibleValintakokeet(valintakokeet);
 
-  const kutsut: Array<ValintakoekutsuHakijoittain> = [];
+  const hakijat: Array<ValintakoekutsuHakijoittain> = [];
 
   valintakoeOsallistumiset.forEach((hakutoiveOsallistuminen) => {
     const hakemus = hakemuksetByOid[hakutoiveOsallistuminen.hakemusOid];
@@ -180,7 +180,7 @@ export function createValintakoekutsutHakijoittain(
     );
 
     if (!isEmpty(kutsutByTunniste)) {
-      kutsut.push({
+      hakijat.push({
         hakemusOid: hakemus.hakemusOid,
         hakijaOid: hakemus?.hakijaOid,
         hakijanNimi: hakemus?.hakijanNimi,
@@ -191,6 +191,6 @@ export function createValintakoekutsutHakijoittain(
 
   return {
     kokeet,
-    kutsut,
+    hakijat,
   };
 }
