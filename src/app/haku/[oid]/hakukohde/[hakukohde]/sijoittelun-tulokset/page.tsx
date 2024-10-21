@@ -65,6 +65,7 @@ const SijoitteluContent = ({ haku, hakukohdeOid }: SijoitteluContentParams) => {
           key={jono.oid}
           haku={haku}
           hakukohdeOid={hakukohdeOid}
+          lastModified={tulokset.lastModified}
         />
       ))}
     </Box>

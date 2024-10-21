@@ -89,6 +89,7 @@ export type SijoittelunHakemusValintatiedoilla = {
   vastaanottoDeadline?: string;
   naytetaanVastaanottoTieto: boolean;
   hyvaksyttyHarkinnanvaraisesti: boolean;
+  hyvaksyPeruuntunut: boolean;
 };
 
 export const isHyvaksyttyHarkinnanvaraisesti = (

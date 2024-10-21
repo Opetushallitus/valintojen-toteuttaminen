@@ -10,6 +10,7 @@ import {
   hakemukselleNaytetaanIlmoittautumisTila,
   hakemukselleNaytetaanVastaanottoTila,
 } from './sijoittelun-tulokset-utils';
+import { saveSijoitteluAjonTulokset } from '@/app/lib/valinta-tulos-service';
 
 export type SijoittelunTuloksetContext = {
   hakemukset: SijoittelunHakemusValintatiedoilla[];
@@ -55,6 +56,7 @@ export const createSijoittelunTuloksetMachine = (
   hakukohdeOid: string,
   valintatapajonoOid: string,
   hakemukset: SijoittelunHakemusValintatiedoilla[],
+  lastModified: string,
   addToast: (toast: Toast) => void,
 ) => {
   const tuloksetMachine = createMachine({
@@ -265,7 +267,12 @@ export const createSijoittelunTuloksetMachine = (
     actors: {
       updateHakemukset: fromPromise(
         ({ input }: { input: SijoittelunHakemusValintatiedoilla[] }) => {
-          return Promise.resolve(input); //TODO:
+          return saveSijoitteluAjonTulokset(
+            valintatapajonoOid,
+            hakukohdeOid,
+            lastModified,
+            input,
+          );
         },
       ),
     },

@@ -10,10 +10,12 @@ export const SijoittelunTulosContent = ({
   valintatapajono,
   haku,
   hakukohdeOid,
+  lastModified,
 }: {
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
   haku: Haku;
   hakukohdeOid: string;
+  lastModified: string;
 }) => {
   return (
     <Box
@@ -34,6 +36,7 @@ export const SijoittelunTulosContent = ({
           valintatapajono={valintatapajono}
           haku={haku}
           hakukohdeOid={hakukohdeOid}
+          lastModified={lastModified}
         />
       </AccordionBox>
     </Box>

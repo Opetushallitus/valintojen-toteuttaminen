@@ -142,12 +142,13 @@ export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
     data.lukuvuosimaksut,
     (m) => m.personOid,
   );
-  const valintatuloksetIndexed = indexBy(
-    data.valintatulokset,
-    (vt) => vt.hakemusOid,
-  );
+
   const sijoitteluajonTulokset: Array<SijoitteluajonValintatapajonoValintatiedoilla> =
     data.sijoittelunTulokset.valintatapajonot.map((jono) => {
+      const valintatuloksetIndexed = indexBy(
+        data.valintatulokset.filter((vt) => vt.valintatapajonoOid === jono.oid),
+        (vt) => vt.hakemusOid,
+      );
       const hakemukset: Array<SijoittelunHakemusValintatiedoilla> =
         jono.hakemukset.map((h) => {
           const hakemus = hakemuksetIndexed[h.hakemusOid];
@@ -189,6 +190,7 @@ export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
             naytetaanVastaanottoTieto: showVastaanottoTieto(h.tila),
             hyvaksyttyHarkinnanvaraisesti:
               valintatulos.hyvaksyttyHarkinnanvaraisesti,
+            hyvaksyPeruuntunut: valintatulos.hyvaksyPeruuntunut,
           };
         });
       hakemukset.sort((a, b) =>
@@ -256,4 +258,38 @@ export const getLatestSijoitteluAjonTulokset = async (
     return { oid: ryhma.oid, kiintio: ryhma.kiintio };
   });
   return { valintatapajonot: sijoitteluajonTulokset, hakijaryhmat };
+};
+
+export const saveSijoitteluAjonTulokset = async (
+  valintatapajonoOid: string,
+  hakukohdeOid: string,
+  lastModified: string,
+  hakemukset: SijoittelunHakemusValintatiedoilla[],
+) => {
+  const body = hakemukset.map((h) => {
+    return {
+      hakukohdeOid,
+      valintatapajonoOid,
+      hakemusOid: h.hakemusOid,
+      henkiloOid: h.hakijaOid,
+      vastaanottotila: h.vastaanottotila,
+      ilmoittautumistila: h.ilmoittautumisTila,
+      valinnantila: h.tila,
+      julkaistavissa: h.julkaistavissa,
+      ehdollisestiHyvaksyttavissa: h.ehdollisestiHyvaksyttavissa,
+      ehdollisenHyvaksymisenEhtoKoodi: h.ehdollisenHyvaksymisenEhtoKoodi,
+      ehdollisenHyvaksymisenEhtoFI: h.ehdollisenHyvaksymisenEhtoFI,
+      ehdollisenHyvaksymisenEhtoSV: h.ehdollisenHyvaksymisenEhtoSV,
+      ehdollisenHyvaksymisenEhtoEN: h.ehdollisenHyvaksymisenEhtoEN,
+      hyvaksyttyVarasijalta: h.hyvaksyttyVarasijalta,
+      hyvaksyPeruuntunut: h.hyvaksyPeruuntunut,
+    };
+  });
+  await client.patch<unknown>(
+    `${configuration.valintaTulosServiceUrl}valinnan-tulos/${valintatapajonoOid}`,
+    body,
+    { headers: { 'X-If-Unmodified-Since': lastModified } },
+  );
+  //todo: handle results
+  //todo: maksut omana requestinaan
 };
