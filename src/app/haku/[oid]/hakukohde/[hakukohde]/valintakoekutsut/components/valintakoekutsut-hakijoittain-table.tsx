@@ -50,8 +50,6 @@ export const ValintakoekutsutHakijoittainTable = ({
     [kokeet, t],
   );
 
-  console.log({ data, columns });
-
   return (
     <Box>
       <ListTable
