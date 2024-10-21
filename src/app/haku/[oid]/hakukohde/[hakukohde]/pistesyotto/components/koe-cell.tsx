@@ -1,8 +1,4 @@
 'use client';
-import {
-  InputValidator,
-  numberValidator,
-} from '@/app/components/form/input-validators';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import {
   HakemuksenPistetiedot,
@@ -13,17 +9,40 @@ import {
   ValintakoeAvaimet,
   ValintakoeInputTyyppi,
 } from '@/app/lib/types/valintaperusteet-types';
-import { ChangeEvent, useState } from 'react';
-import { Box, debounce, SelectChangeEvent, styled } from '@mui/material';
-import { OphFormControl } from '@/app/components/form/oph-form-control';
-import { OphInput } from '@/app/components/form/oph-input';
-import { INPUT_DEBOUNCE_DELAY } from '@/app/lib/constants';
+import { useState } from 'react';
+import { Box, SelectChangeEvent, styled } from '@mui/material';
 import { LocalizedSelect } from '@/app/components/localized-select';
 import { ChangePisteSyottoFormParams } from './pistesyotto-form';
+import { TFunction } from 'i18next';
+import { ArvoInput } from './arvo-input';
 
 const StyledSelect = styled(LocalizedSelect)({
   minWidth: '150px',
 });
+
+export type KoeCellProps = {
+  pisteTiedot: HakemuksenPistetiedot;
+  updateForm: (params: ChangePisteSyottoFormParams) => void;
+  koe: ValintakoeAvaimet;
+  disabled: boolean;
+};
+
+const getArvoOptions = (koe: ValintakoeAvaimet, t: TFunction) => {
+  switch (koe.inputTyyppi) {
+    case ValintakoeInputTyyppi.BOOLEAN:
+      return [
+        { value: 'true', label: t('yleinen.kylla') },
+        { value: 'false', label: t('yleinen.ei') },
+      ];
+    case ValintakoeInputTyyppi.BOOLEAN_ACCEPTED:
+      return [
+        { value: 'true', label: t('yleinen.hyvaksytty') },
+        { value: 'false', label: t('yleinen.hylatty') },
+      ];
+    default:
+      return koe.arvot?.map((a) => ({ value: a, label: a })) ?? [];
+  }
+};
 
 export const KoeCell = ({
   pisteTiedot,
@@ -41,13 +60,6 @@ export const KoeCell = ({
   const findMatchingKoePisteet = (): ValintakokeenPisteet | undefined =>
     pisteTiedot.valintakokeenPisteet.find((k) => k.tunniste === koe.tunniste);
 
-  const arvoValidator: InputValidator = numberValidator({
-    t,
-    min: koe.min,
-    max: koe.max,
-    nullable: true,
-  });
-
   const [arvo, setArvo] = useState<string>(
     findMatchingKoePisteet()?.arvo ?? '',
   );
@@ -57,31 +69,7 @@ export const KoeCell = ({
         ValintakoeOsallistuminenTulos.MERKITSEMATTA,
     );
 
-  const [arvoValid, setArvoValid] = useState<boolean>(true);
-  const [helperText, setHelperText] = useState<string[] | undefined>();
-
-  const changeArvo = (event: ChangeEvent<HTMLInputElement>) => {
-    setArvo(event.target.value);
-    const validationResult = arvoValidator.validate(event.target.value);
-    setArvoValid(!validationResult.error);
-    if (!validationResult.error) {
-      debounce(
-        () =>
-          updateForm({
-            value: event.target.value,
-            hakemusOid: pisteTiedot.hakemusOid,
-            koeTunniste: koe.tunniste,
-            updateArvo: true,
-          }),
-        INPUT_DEBOUNCE_DELAY,
-      )();
-      setHelperText(undefined);
-    } else {
-      setHelperText([validationResult.helperText ?? '']);
-    }
-  };
-
-  const changeSelectArvo = (event: SelectChangeEvent<string | number>) => {
+  const changeSelectArvo = (event: SelectChangeEvent<string>) => {
     setArvo(event.target.value.toString());
     updateForm({
       value: event.target.value.toString(),
@@ -91,9 +79,7 @@ export const KoeCell = ({
     });
   };
 
-  const changeOsallistumisenTila = (
-    event: SelectChangeEvent<string | number>,
-  ) => {
+  const changeOsallistumisenTila = (event: SelectChangeEvent<string>) => {
     const newOsallistuminen = event.target
       .value as ValintakoeOsallistuminenTulos;
     setOsallistuminen(newOsallistuminen);
@@ -112,28 +98,12 @@ export const KoeCell = ({
 
   const arvoId = `koe-arvo-${pisteTiedot.hakijaOid}-${koe.tunniste}`;
 
-  const getArvoOptions = () => {
-    if (koe.inputTyyppi === ValintakoeInputTyyppi.BOOLEAN) {
-      return [
-        { value: 'true', label: t('yleinen.kylla') },
-        { value: 'false', label: t('yleinen.ei') },
-      ];
-    }
-    if (koe.inputTyyppi === ValintakoeInputTyyppi.BOOLEAN_ACCEPTED) {
-      return [
-        { value: 'true', label: t('yleinen.hyvaksytty') },
-        { value: 'false', label: t('yleinen.hylatty') },
-      ];
-    }
-    return koe.arvot?.map((a) => ({ value: a, label: a })) ?? [];
-  };
-
   return (
     <Box
       sx={{
         display: 'flex',
         flexDirection: 'row',
-        columnGap: '0.6rem',
+        columnGap: 1,
         minWidth: '220px',
         alignItems: 'flex-start',
       }}
@@ -141,18 +111,22 @@ export const KoeCell = ({
       {koe.inputTyyppi === ValintakoeInputTyyppi.INPUT && (
         <Box sx={{ width: '80px' }}>
           {osallistuminen !== ValintakoeOsallistuminenTulos.EI_OSALLISTUNUT && (
-            <OphFormControl
-              error={!arvoValid}
-              errorMessages={helperText}
+            <ArvoInput
+              koe={koe}
+              pisteTiedot={pisteTiedot}
+              updateForm={updateForm}
               disabled={disabled}
-              renderInput={() => (
-                <OphInput
-                  id={arvoId}
-                  value={arvo}
-                  inputProps={{ 'aria-label': t('validaatio.numero.syota') }}
-                  onChange={changeArvo}
-                />
-              )}
+              arvo={arvo}
+              onArvoChange={(newArvo: string) => {
+                setArvo(newArvo);
+                if (
+                  newArvo &&
+                  osallistuminen === ValintakoeOsallistuminenTulos.MERKITSEMATTA
+                ) {
+                  setOsallistuminen(ValintakoeOsallistuminenTulos.OSALLISTUI);
+                }
+              }}
+              arvoId={arvoId}
             />
           )}
         </Box>
@@ -161,8 +135,7 @@ export const KoeCell = ({
         <StyledSelect
           id={arvoId}
           value={arvo}
-          options={getArvoOptions()}
-          size="small"
+          options={getArvoOptions(koe, t)}
           onChange={changeSelectArvo}
           disabled={disabled}
           clearable
