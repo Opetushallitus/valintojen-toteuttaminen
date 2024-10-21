@@ -1,11 +1,7 @@
 import { useTranslation } from 'react-i18next';
 
 import { Box } from '@mui/material';
-import {
-  DeselectOutlined,
-  InsertDriveFileOutlined,
-  NoteOutlined,
-} from '@mui/icons-material';
+import { DeselectOutlined, NoteOutlined } from '@mui/icons-material';
 import { ActionBar } from '@/app/components/action-bar';
 import {
   GetValintakoeExcelParams,
@@ -111,11 +107,6 @@ export const ValintakoekutsutActionBar = ({
         valintakoeTunniste={[valintakoeTunniste]}
         selection={selection}
       />
-      <ActionBar.Divider />
-      <ActionBar.Button startIcon={<InsertDriveFileOutlined />} disabled={true}>
-        {/* TODO: Toteutetaan koekutsujen muodostaminen eri tiketillä */}
-        {t('valintakoekutsut.muodosta-koekutsut')}
-      </ActionBar.Button>
       <ActionBar.Divider />
       <OsoitetarratDownloadButton
         hakuOid={hakuOid}
