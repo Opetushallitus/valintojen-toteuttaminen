@@ -94,12 +94,19 @@ export const KoeCell = ({
   const changeOsallistumisenTila = (
     event: SelectChangeEvent<string | number>,
   ) => {
-    setOsallistuminen(event.target.value as ValintakoeOsallistuminenTulos);
+    const newOsallistuminen = event.target
+      .value as ValintakoeOsallistuminenTulos;
+    setOsallistuminen(newOsallistuminen);
+    let updateArvo = false;
+    if (newOsallistuminen !== ValintakoeOsallistuminenTulos.OSALLISTUI) {
+      setArvo('');
+      updateArvo = true;
+    }
     updateForm({
       value: event.target.value as ValintakoeOsallistuminenTulos,
       hakemusOid: pisteTiedot.hakemusOid,
       koeTunniste: koe.tunniste,
-      updateArvo: false,
+      updateArvo,
     });
   };
 
