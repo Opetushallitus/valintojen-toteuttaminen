@@ -132,22 +132,25 @@ export const KoeCell = ({
       }}
     >
       {koe.inputTyyppi === ValintakoeInputTyyppi.INPUT && (
-        <OphFormControl
-          error={!arvoValid}
-          errorMessages={helperText}
-          disabled={disabled}
-          renderInput={() => (
-            <OphInput
-              id={arvoId}
-              value={arvo}
-              inputProps={{ 'aria-label': t('validaatio.numero.syota') }}
-              onChange={changeArvo}
-              sx={{ width: '80px' }}
+        <Box sx={{ width: '80px' }}>
+          {osallistuminen !== ValintakoeOsallistuminenTulos.EI_OSALLISTUNUT && (
+            <OphFormControl
+              error={!arvoValid}
+              errorMessages={helperText}
+              disabled={disabled}
+              renderInput={() => (
+                <OphInput
+                  id={arvoId}
+                  value={arvo}
+                  inputProps={{ 'aria-label': t('validaatio.numero.syota') }}
+                  onChange={changeArvo}
+                />
+              )}
             />
           )}
-        />
+        </Box>
       )}
-      {koe.inputTyyppi != ValintakoeInputTyyppi.INPUT && (
+      {koe.inputTyyppi !== ValintakoeInputTyyppi.INPUT && (
         <StyledSelect
           id={arvoId}
           value={arvo}
