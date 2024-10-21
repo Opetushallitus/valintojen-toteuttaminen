@@ -171,11 +171,11 @@ const modRequest = <Result = unknown>(
     new Request(url, {
       method,
       body: isJson(body) ? JSON.stringify(body) : body,
+      ...options,
       headers: {
         ...(isJson(body) ? { 'content-type': 'application/json' } : {}),
         ...(options.headers ?? {}),
       },
-      ...options,
     }),
   );
 };
@@ -193,6 +193,11 @@ export const client = {
     body: BodyType,
     options: RequestInit = {},
   ) => modRequest<Result>('PUT', url, body, options),
+  patch: <Result = unknown>(
+    url: UrlType,
+    body: BodyType,
+    options: RequestInit = {},
+  ) => modRequest<Result>('PATCH', url, body, options),
 } as const;
 
 const makeAbortable = <D>(

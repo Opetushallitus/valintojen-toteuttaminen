@@ -25,6 +25,7 @@ type SijoittelunTuloksetFormParams = {
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
   haku: Haku;
   hakukohdeOid: string;
+  lastModified: string;
 };
 
 const StyledForm = styled('form')(({ theme }) => ({
@@ -37,6 +38,7 @@ export const SijoittelunTulosForm = ({
   valintatapajono,
   hakukohdeOid,
   haku,
+  lastModified,
 }: SijoittelunTuloksetFormParams) => {
   const { t } = useTranslations();
 
@@ -48,9 +50,10 @@ export const SijoittelunTulosForm = ({
       hakukohdeOid,
       valintatapajono.oid,
       valintatapajono.hakemukset,
+      lastModified,
       addToast,
     );
-  }, [haku, hakukohdeOid, valintatapajono, addToast]);
+  }, [haku, hakukohdeOid, valintatapajono, addToast, lastModified]);
 
   const [state, send] = useMachine(syottoMachine);
 
