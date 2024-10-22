@@ -182,6 +182,7 @@
     "tuo-taulukkolaskennasta-onnistui": "Pistetietojen tuominen taulukkolaskennasta onnistui!",
     "tuodaan-pistetietoja-taulukkolaskennasta": "Tuodaan pistetietoja taulukkolaskennasta",
     "virhe-tuo-taulukkolaskennasta-epaonnistui-osittain": "Pistetietojen tuominen taulukkolaskennasta epäonnistui osittain!",
+    "osallistumisen-tila": "Osallistumisen tila",
     "tuonti-tulos-taulukko": {
       "virhe": "Virhe",
       "hakemus-oid": "Hakemuksen tekninen tunniste (OID)"

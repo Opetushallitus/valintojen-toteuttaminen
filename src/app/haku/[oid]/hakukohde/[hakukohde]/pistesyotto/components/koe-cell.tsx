@@ -162,9 +162,11 @@ export const KoeCell = ({
             label: t('valintakoe.osallistumisenTila.EI_VAADITA'),
           },
         ]}
-        size="small"
         onChange={changeOsallistumisenTila}
         disabled={disabled}
+        inputProps={{
+          'aria-label': t('pistesyotto.osallistumisen-tila'),
+        }}
       />
     </Box>
   );
