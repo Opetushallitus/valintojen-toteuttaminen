@@ -117,6 +117,12 @@ type SijoitteluajonTuloksetWithValintaEsitysResponseData = {
   }>;
   lastModified: string;
   sijoittelunTulokset: Omit<SijoitteluajonTuloksetResponseData, 'hakijaryhmat'>;
+  kirjeLahetetty: [
+    {
+      henkiloOid: string;
+      kirjeLahetetty: string;
+    },
+  ];
   lukuvuosimaksut: Array<{ personOid: string; maksuntila: MaksunTila }>;
 };
 
@@ -141,6 +147,10 @@ export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
   const lukuvuosimaksutIndexed = indexBy(
     data.lukuvuosimaksut,
     (m) => m.personOid,
+  );
+  const lahetetytKirjeetIndexed = indexBy(
+    data.kirjeLahetetty,
+    (k) => k.henkiloOid,
   );
 
   const sijoitteluajonTulokset: Array<SijoitteluajonValintatapajonoValintatiedoilla> =
@@ -191,6 +201,8 @@ export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
             hyvaksyttyHarkinnanvaraisesti:
               valintatulos.hyvaksyttyHarkinnanvaraisesti,
             hyvaksyPeruuntunut: valintatulos.hyvaksyPeruuntunut,
+            hyvaksymiskirjeLahetetty:
+              lahetetytKirjeetIndexed[h.hakijaOid]?.kirjeLahetetty,
           };
         });
       hakemukset.sort((a, b) =>
@@ -260,13 +272,20 @@ export const getLatestSijoitteluAjonTulokset = async (
   return { valintatapajonot: sijoitteluajonTulokset, hakijaryhmat };
 };
 
+type SijoitteluAjonTuloksetPatchResponse = {
+  message: string;
+  hakemusOid: string;
+  valintatapajonoOid: string;
+  status: number;
+};
+
 export const saveSijoitteluAjonTulokset = async (
   valintatapajonoOid: string,
   hakukohdeOid: string,
   lastModified: string,
   hakemukset: SijoittelunHakemusValintatiedoilla[],
 ) => {
-  const body = hakemukset.map((h) => {
+  const hakemuksetValintatiedoilla = hakemukset.map((h) => {
     return {
       hakukohdeOid,
       valintatapajonoOid,
@@ -285,11 +304,23 @@ export const saveSijoitteluAjonTulokset = async (
       hyvaksyPeruuntunut: h.hyvaksyPeruuntunut,
     };
   });
-  await client.patch<unknown>(
+  const muuttuneetKirjeet = hakemukset.map((h) => {
+    return {
+      henkiloOid: h.hakijaOid,
+      hakukohdeOid: hakukohdeOid,
+      lahetetty: h.hyvaksymiskirjeLahetetty ?? null,
+    };
+  });
+  const results = await client.patch<
+    Array<SijoitteluAjonTuloksetPatchResponse>
+  >(
     `${configuration.valintaTulosServiceUrl}valinnan-tulos/${valintatapajonoOid}`,
-    body,
+    hakemuksetValintatiedoilla,
     { headers: { 'X-If-Unmodified-Since': lastModified } },
   );
-  //todo: handle results
-  //todo: maksut omana requestinaan
+  await client.post<unknown>(
+    `${configuration.valintaTulosServiceUrl}hyvaksymiskirje`,
+    muuttuneetKirjeet,
+  );
+  return results;
 };

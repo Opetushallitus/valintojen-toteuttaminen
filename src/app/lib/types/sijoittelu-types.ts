@@ -90,6 +90,7 @@ export type SijoittelunHakemusValintatiedoilla = {
   naytetaanVastaanottoTieto: boolean;
   hyvaksyttyHarkinnanvaraisesti: boolean;
   hyvaksyPeruuntunut: boolean;
+  hyvaksymiskirjeLahetetty?: string;
 };
 
 export const isHyvaksyttyHarkinnanvaraisesti = (
