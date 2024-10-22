@@ -28,6 +28,10 @@ const isRedirected = (response: Response) => {
   return response.redirected;
 };
 
+const noContent = (response: Response) => {
+  return response.status === 204;
+};
+
 const redirectToLogin = () => {
   const loginUrl = new URL(configuration.loginUrl);
   loginUrl.searchParams.set('service', window.location.href);
@@ -72,6 +76,9 @@ const RESPONSE_BODY_PARSERS: Record<string, BodyParser<unknown>> = {
 };
 
 const responseToData = async <Result = unknown>(res: Response) => {
+  if (noContent(res)) {
+    return;
+  }
   const contentType =
     res.headers.get('content-type')?.split(';')?.[0] ?? 'text/plain';
 
