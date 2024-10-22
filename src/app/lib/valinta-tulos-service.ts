@@ -284,7 +284,24 @@ export const saveSijoitteluAjonTulokset = async (
   hakukohdeOid: string,
   lastModified: string,
   hakemukset: SijoittelunHakemusValintatiedoilla[],
+  originalHakemukset: SijoittelunHakemusValintatiedoilla[],
 ) => {
+  const hakemuksetWithChangedMaksunTila = hakemukset
+    .filter((h) => {
+      const original = originalHakemukset.find(
+        (o) => o.hakemusOid === h.hakemusOid,
+      );
+      return original?.maksuntila !== h.maksuntila;
+    })
+    .map((h) => ({ personOid: h.hakijaOid, maksuntila: h.maksuntila }));
+
+  if (hakemuksetWithChangedMaksunTila.length > 0) {
+    await client.post(
+      `${configuration.valintaTulosServiceUrl}lukuvuosimaksu/${hakukohdeOid}`,
+      hakemuksetWithChangedMaksunTila,
+    );
+  }
+
   const hakemuksetValintatiedoilla = hakemukset.map((h) => {
     return {
       hakukohdeOid,

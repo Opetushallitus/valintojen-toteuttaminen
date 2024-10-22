@@ -214,7 +214,10 @@ export const createSijoittelunTuloksetMachine = (
       [SijoittelunTuloksetStates.UPDATING]: {
         invoke: {
           src: 'updateHakemukset',
-          input: ({ context }) => context.changedHakemukset,
+          input: ({ context }) => ({
+            changed: context.changedHakemukset,
+            original: context.originalHakemukset,
+          }),
           onDone: {
             target: SijoittelunTuloksetStates.UPDATE_COMPLETED,
           },
@@ -295,12 +298,20 @@ export const createSijoittelunTuloksetMachine = (
     },
     actors: {
       updateHakemukset: fromPromise(
-        ({ input }: { input: SijoittelunHakemusValintatiedoilla[] }) => {
+        ({
+          input,
+        }: {
+          input: {
+            changed: SijoittelunHakemusValintatiedoilla[];
+            original: SijoittelunHakemusValintatiedoilla[];
+          };
+        }) => {
           return saveSijoitteluAjonTulokset(
             valintatapajonoOid,
             hakukohdeOid,
             lastModified,
-            input,
+            input.changed,
+            input.original,
           );
         },
       ),
