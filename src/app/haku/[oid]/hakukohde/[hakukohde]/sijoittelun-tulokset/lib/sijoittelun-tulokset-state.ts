@@ -11,12 +11,14 @@ import {
   hakemukselleNaytetaanVastaanottoTila,
 } from './sijoittelun-tulokset-utils';
 import { saveSijoitteluAjonTulokset } from '@/app/lib/valinta-tulos-service';
+import { clone } from 'remeda';
 
 export type SijoittelunTuloksetContext = {
   hakemukset: SijoittelunHakemusValintatiedoilla[];
   changedHakemukset: SijoittelunHakemusValintatiedoilla[];
   toastMessage?: string;
   massChangeAmount?: number;
+  originalHakemukset: SijoittelunHakemusValintatiedoilla[];
 };
 
 export enum SijoittelunTuloksetStates {
@@ -59,12 +61,14 @@ export const createSijoittelunTuloksetMachine = (
   lastModified: string,
   addToast: (toast: Toast) => void,
 ) => {
+  const original = clone(hakemukset);
   const tuloksetMachine = createMachine({
     id: `SijoittelunTuloksetMachine-${hakukohdeOid}-${valintatapajonoOid}`,
     initial: SijoittelunTuloksetStates.IDLE,
     context: {
       hakemukset,
       changedHakemukset: [],
+      originalHakemukset: original,
     } as SijoittelunTuloksetContext,
     states: {
       [SijoittelunTuloksetStates.IDLE]: {
@@ -116,6 +120,18 @@ export const createSijoittelunTuloksetMachine = (
                   }
 
                   if (existing) {
+                    if (
+                      isUnchanged(
+                        context.originalHakemukset.find(
+                          (h) => h.hakemusOid === hakenut.hakemusOid,
+                        )!,
+                        hakenut,
+                      )
+                    ) {
+                      return context.changedHakemukset.filter(
+                        (h) => h.hakemusOid !== hakenut.hakemusOid,
+                      );
+                    }
                     return context.changedHakemukset.map((h) =>
                       h.hakemusOid === e.hakemusOid ? hakenut : h,
                     );
@@ -143,7 +159,7 @@ export const createSijoittelunTuloksetMachine = (
           [SijoittelunTuloksetEvents.CHANGE_HAKEMUKSET_STATES]: {
             actions: assign(({ context, event }) => {
               const e = event as unknown as HakemuksetStateChangeEvent;
-              const changed: SijoittelunHakemusValintatiedoilla[] =
+              let changed: SijoittelunHakemusValintatiedoilla[] =
                 context.changedHakemukset;
               let changedAmount = 0;
               e.hakemusOids.forEach((hakemusOid) => {
@@ -165,9 +181,22 @@ export const createSijoittelunTuloksetMachine = (
                     e.ilmoittautumisTila ?? hakenut.ilmoittautumisTila;
                   changedAmount++;
                   if (existing) {
-                    changed.map((h) =>
-                      h.hakemusOid === hakemusOid ? hakenut : h,
-                    );
+                    if (
+                      isUnchanged(
+                        context.originalHakemukset.find(
+                          (h) => h.hakemusOid === hakenut.hakemusOid,
+                        )!,
+                        hakenut,
+                      )
+                    ) {
+                      changed = changed.filter(
+                        (h) => h.hakemusOid !== hakenut.hakemusOid,
+                      );
+                    } else {
+                      changed = changed.map((h) =>
+                        h.hakemusOid === hakemusOid ? hakenut : h,
+                      );
+                    }
                   } else {
                     changed.push(hakenut);
                   }
@@ -277,4 +306,25 @@ export const createSijoittelunTuloksetMachine = (
       ),
     },
   });
+};
+
+const isUnchanged = (
+  original: SijoittelunHakemusValintatiedoilla,
+  changed: SijoittelunHakemusValintatiedoilla,
+): boolean => {
+  return (
+    original.ehdollisenHyvaksymisenEhtoEN ===
+      changed.ehdollisenHyvaksymisenEhtoEN &&
+    original.ehdollisenHyvaksymisenEhtoFI ===
+      changed.ehdollisenHyvaksymisenEhtoFI &&
+    original.ehdollisenHyvaksymisenEhtoSV ===
+      changed.ehdollisenHyvaksymisenEhtoSV &&
+    original.ehdollisestiHyvaksyttavissa ===
+      changed.ehdollisestiHyvaksyttavissa &&
+    original.ilmoittautumisTila === changed.ilmoittautumisTila &&
+    original.vastaanottotila === changed.vastaanottotila &&
+    original.julkaistavissa === changed.julkaistavissa &&
+    original.maksuntila === changed.maksuntila &&
+    original.hyvaksyttyVarasijalta === changed.hyvaksyttyVarasijalta
+  );
 };
