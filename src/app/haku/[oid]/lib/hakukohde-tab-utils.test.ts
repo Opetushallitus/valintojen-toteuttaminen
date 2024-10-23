@@ -39,6 +39,7 @@ describe('getVisibleTabs', () => {
       },
       hakukohde: HAKUKOHDE_BASE,
       haunAsetukset: { sijoittelu: true },
+      usesValintalaskenta: true,
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -63,6 +64,7 @@ describe('getVisibleTabs', () => {
         voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita: true,
       },
       haunAsetukset: { sijoittelu: true },
+      usesValintalaskenta: true,
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -88,6 +90,7 @@ describe('getVisibleTabs', () => {
         voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita: false,
       },
       haunAsetukset: { sijoittelu: true },
+      usesValintalaskenta: true,
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -101,14 +104,14 @@ describe('getVisibleTabs', () => {
   });
 
   test.each([
-    'hakutapa_02',
-    'hakutapa_03',
-    'hakutapa_04',
-    'hakutapa_05',
-    'hakutapa_06',
+    { hakutapa: 'hakutapa_02' },
+    { hakutapa: 'hakutapa_03' },
+    { hakutapa: 'hakutapa_04' },
+    { hakutapa: 'hakutapa_05' },
+    { hakutapa: 'hakutapa_06' },
   ])(
-    'returns right tabs for korkeakoulutus with "%s" and sijoittelu not used',
-    async (hakutapa: string) => {
+    'returns right tabs for korkeakoulutus with "$hakutapa" without sijoittelu and without valintalaskenta',
+    async ({ hakutapa }: { hakutapa: string }) => {
       const tabs = getVisibleTabs({
         haku: {
           ...HAKU_BASE,
@@ -117,6 +120,7 @@ describe('getVisibleTabs', () => {
         },
         hakukohde: HAKUKOHDE_BASE,
         haunAsetukset: { sijoittelu: false },
+        usesValintalaskenta: false,
       });
       expect(tabs.map((t) => t.route)).toEqual([
         'perustiedot',
@@ -125,6 +129,38 @@ describe('getVisibleTabs', () => {
         'valintakoekutsut',
         'pistesyotto',
         'valinnan-tulokset',
+      ]);
+    },
+  );
+
+  test.each([
+    { hakutapa: 'hakutapa_02' },
+    { hakutapa: 'hakutapa_03' },
+    { hakutapa: 'hakutapa_04' },
+    { hakutapa: 'hakutapa_05' },
+    { hakutapa: 'hakutapa_06' },
+  ])(
+    'returns right tabs for korkeakoulutus with "$hakutapa" without sijoittelu and with valintalaskenta',
+    async ({ hakutapa }: { hakutapa: string }) => {
+      const tabs = getVisibleTabs({
+        haku: {
+          ...HAKU_BASE,
+          kohdejoukkoKoodiUri: 'haunkohdejoukko_12#1', // Korkeakoulutus
+          hakutapaKoodiUri: `${hakutapa}#1`,
+        },
+        hakukohde: HAKUKOHDE_BASE,
+        haunAsetukset: { sijoittelu: false },
+        usesValintalaskenta: true,
+      });
+      expect(tabs.map((t) => t.route)).toEqual([
+        'perustiedot',
+        'hakeneet',
+        'valinnan-hallinta',
+        'valintakoekutsut',
+        'pistesyotto',
+        'hakijaryhmat',
+        'valintalaskennan-tulokset',
+        'sijoittelun-tulokset',
       ]);
     },
   );

@@ -33,6 +33,8 @@ export default async function playwrightSetup() {
       response.writeHead(404);
       response.end();
       return;
+    } else if (request.url?.endsWith(`/kayttaaValintalaskentaa`)) {
+      return modifyResponse(response, { kayttaaValintalaskentaa: true });
     } else if (
       request.url?.includes(`kayttooikeus-service/henkilo/current/omattiedot`)
     ) {

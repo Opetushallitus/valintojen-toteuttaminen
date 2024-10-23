@@ -11,6 +11,7 @@ import { HakukohdeTabLink } from '@/app/haku/[oid]/components/hakukohde-tab-link
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { useSuspenseQueries } from '@tanstack/react-query';
 import { haunAsetuksetQueryOptions } from '@/app/hooks/useHaunAsetukset';
+import { getUsesValintalaskenta } from '@/app/lib/valintalaskentakoostepalvelu';
 
 const StyledContainer = styled('div')(({ theme }) => ({
   padding: theme.spacing(2, 3, 0),
@@ -56,17 +57,27 @@ const HakukohdeTabs = ({
   const activeTab = useHakukohdeTab();
   const { t, translateEntity } = useTranslations();
 
-  const [hakuQuery, hakukohdeQuery, haunAsetuksetQuery] = useSuspenseQueries({
+  const [
+    hakuQuery,
+    hakukohdeQuery,
+    haunAsetuksetQuery,
+    usesValintalaskentaQuery,
+  ] = useSuspenseQueries({
     queries: [
       hakuQueryOptions({ hakuOid }),
       hakukohdeQueryOptions({ hakukohdeOid }),
       haunAsetuksetQueryOptions({ hakuOid }),
+      {
+        queryKey: ['getUsesValintalaskenta', hakukohdeOid],
+        queryFn: () => getUsesValintalaskenta({ hakukohdeOid }),
+      },
     ],
   });
 
   const { data: haku } = hakuQuery;
   const { data: hakukohde } = hakukohdeQuery;
   const { data: haunAsetukset } = haunAsetuksetQuery;
+  const { data: usesValintalaskenta } = usesValintalaskentaQuery;
 
   return (
     <StyledContainer>
@@ -82,7 +93,12 @@ const HakukohdeTabs = ({
         </OphTypography>
       </StyledHeader>
       <StyledTabs>
-        {getVisibleTabs({ haku, hakukohde, haunAsetukset }).map((tab) => (
+        {getVisibleTabs({
+          haku,
+          hakukohde,
+          haunAsetukset,
+          usesValintalaskenta,
+        }).map((tab) => (
           <StyledTab
             key={'hakukohde-tab-' + tab.route}
             hakuOid={hakuOid}
