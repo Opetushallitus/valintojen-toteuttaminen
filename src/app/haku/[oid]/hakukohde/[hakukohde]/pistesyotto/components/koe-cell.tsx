@@ -49,12 +49,7 @@ export const KoeCell = ({
   updateForm,
   koe,
   disabled,
-}: {
-  pisteTiedot: HakemuksenPistetiedot;
-  updateForm: (params: ChangePisteSyottoFormParams) => void;
-  koe: ValintakoeAvaimet;
-  disabled: boolean;
-}) => {
+}: KoeCellProps) => {
   const { t } = useTranslations();
 
   const findMatchingKoePisteet = (): ValintakokeenPisteet | undefined =>

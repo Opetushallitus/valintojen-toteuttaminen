@@ -89,6 +89,7 @@ describe('KoeCell', () => {
       getOsallistuminenTranslation(ValintakoeOsallistuminenTulos.OSALLISTUI),
     );
   });
+
   test('Hide piste-input when osallistuminen="EI_OSALLISTUNUT"', () => {
     renderKoeCell();
 
