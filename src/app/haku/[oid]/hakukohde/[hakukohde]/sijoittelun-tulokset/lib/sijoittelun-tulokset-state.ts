@@ -10,8 +10,14 @@ import {
   hakemukselleNaytetaanIlmoittautumisTila,
   hakemukselleNaytetaanVastaanottoTila,
 } from './sijoittelun-tulokset-utils';
-import { saveSijoitteluAjonTulokset } from '@/app/lib/valinta-tulos-service';
+import {
+  saveMaksunTilanMuutokset,
+  saveSijoitteluAjonTulokset,
+} from '@/app/lib/valinta-tulos-service';
 import { clone } from 'remeda';
+import { FetchError } from '@/app/lib/common';
+import { ErrorModalDialog } from '../components/error-modal';
+import { showModal } from '@/app/components/global-modal';
 
 export type SijoittelunTuloksetContext = {
   hakemukset: SijoittelunHakemusValintatiedoilla[];
@@ -54,7 +60,6 @@ export type HakemuksetStateChangeEvent = {
 };
 
 export const createSijoittelunTuloksetMachine = (
-  hakuOid: string,
   hakukohdeOid: string,
   valintatapajonoOid: string,
   hakemukset: SijoittelunHakemusValintatiedoilla[],
@@ -223,6 +228,10 @@ export const createSijoittelunTuloksetMachine = (
           },
           onError: {
             target: SijoittelunTuloksetStates.ERROR,
+            actions: {
+              type: 'errorModal',
+              params: ({ event }) => event,
+            },
           },
         },
       },
@@ -295,6 +304,10 @@ export const createSijoittelunTuloksetMachine = (
           type: 'success',
           messageParams: { amount: context.massChangeAmount ?? 0 },
         }),
+      errorModal: (_, params) =>
+        showModal(ErrorModalDialog, {
+          error: (params as { error: Error }).error as Error,
+        }),
     },
     actors: {
       updateHakemukset: fromPromise(
@@ -306,17 +319,35 @@ export const createSijoittelunTuloksetMachine = (
             original: SijoittelunHakemusValintatiedoilla[];
           };
         }) => {
-          return saveSijoitteluAjonTulokset(
-            valintatapajonoOid,
-            hakukohdeOid,
-            lastModified,
-            input.changed,
-            input.original,
-          );
+          return tryAndParseError(async () => {
+            await saveMaksunTilanMuutokset(
+              hakukohdeOid,
+              input.changed,
+              input.original,
+            );
+            return await saveSijoitteluAjonTulokset(
+              valintatapajonoOid,
+              hakukohdeOid,
+              lastModified,
+              input.changed,
+            );
+          });
         },
       ),
     },
   });
+};
+
+const tryAndParseError = async (wrappedFn: () => Promise<void>) => {
+  try {
+    return await wrappedFn();
+  } catch (e) {
+    if (e instanceof FetchError) {
+      const message = e.message;
+      throw message;
+    }
+    throw e;
+  }
 };
 
 const isUnchanged = (

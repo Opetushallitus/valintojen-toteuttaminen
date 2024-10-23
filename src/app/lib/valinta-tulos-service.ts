@@ -16,6 +16,8 @@ import {
   VastaanottoTila,
 } from './types/sijoittelu-types';
 import { MaksunTila, Maksuvelvollisuus } from './types/ataru-types';
+import { ValintaStatusUpdateErrorResult } from './types/valinta-tulos-types';
+import { OphApiError } from './common';
 
 type SijoittelunTulosResponseData = {
   valintatapajonoNimi: string;
@@ -279,10 +281,8 @@ type SijoitteluAjonTuloksetPatchResponse = {
   status: number;
 };
 
-export const saveSijoitteluAjonTulokset = async (
-  valintatapajonoOid: string,
+export const saveMaksunTilanMuutokset = async (
   hakukohdeOid: string,
-  lastModified: string,
   hakemukset: SijoittelunHakemusValintatiedoilla[],
   originalHakemukset: SijoittelunHakemusValintatiedoilla[],
 ) => {
@@ -301,7 +301,14 @@ export const saveSijoitteluAjonTulokset = async (
       hakemuksetWithChangedMaksunTila,
     );
   }
+};
 
+export const saveSijoitteluAjonTulokset = async (
+  valintatapajonoOid: string,
+  hakukohdeOid: string,
+  lastModified: string,
+  hakemukset: SijoittelunHakemusValintatiedoilla[],
+) => {
   const hakemuksetValintatiedoilla = hakemukset.map((h) => {
     return {
       hakukohdeOid,
@@ -335,9 +342,18 @@ export const saveSijoitteluAjonTulokset = async (
     hakemuksetValintatiedoilla,
     { headers: { 'X-If-Unmodified-Since': lastModified } },
   );
+
+  const { data } = results;
+
+  if (Array.isArray(data)) {
+    throw new OphApiError<ValintaStatusUpdateErrorResult[]>(
+      results,
+      'virhe.tallennus',
+    );
+  }
+
   await client.post<unknown>(
     `${configuration.valintaTulosServiceUrl}hyvaksymiskirje`,
     muuttuneetKirjeet,
   );
-  return results;
 };

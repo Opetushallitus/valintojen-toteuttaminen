@@ -75,9 +75,11 @@ const RESPONSE_BODY_PARSERS: Record<string, BodyParser<unknown>> = {
   'text/plain': TEXT_PARSER,
 };
 
-const responseToData = async <Result = unknown>(res: Response) => {
+const responseToData = async <Result = unknown>(
+  res: Response,
+): Promise<{ headers: Headers; data: Result }> => {
   if (noContent(res)) {
-    return;
+    return { headers: res.headers, data: undefined as Result };
   }
   const contentType =
     res.headers.get('content-type')?.split(';')?.[0] ?? 'text/plain';
