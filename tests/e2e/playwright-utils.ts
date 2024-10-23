@@ -70,7 +70,7 @@ export async function selectOption(
   expectedOption: string,
 ) {
   const combobox = page.getByRole('combobox', {
-    name,
+    name: new RegExp(`^${name}`),
   });
   const contentId = await combobox.getAttribute('aria-controls');
   await combobox.click();
