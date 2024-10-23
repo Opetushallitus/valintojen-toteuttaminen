@@ -20,7 +20,7 @@ export type BasicTab = {
 
 const plainKoodiUri = (koodiUri: string) => koodiUri.split('#')[0];
 
-const ONLY_VALINNAN_TULOKSIA_HAKUTAPA_KOODI_URIS = [
+const ONLY_VALINNAN_TULOKSET_HAKUTAPA_KOODI_URIS = [
   'hakutapa_02', // Erillishaku
   'hakutapa_03', // Jatkuva haku
   'hakutapa_04', // Joustava haku
@@ -28,12 +28,12 @@ const ONLY_VALINNAN_TULOKSIA_HAKUTAPA_KOODI_URIS = [
   'hakutapa_06', // Siirtohaku
 ];
 
-const hasOnlyValinnanTuloksia = ({
+const hasOnlyValinnanTulokset = ({
   haku,
   haunAsetukset,
 }: Pick<VisibleFnProps, 'haku' | 'haunAsetukset'>) => {
   return (
-    ONLY_VALINNAN_TULOKSIA_HAKUTAPA_KOODI_URIS.includes(
+    ONLY_VALINNAN_TULOKSET_HAKUTAPA_KOODI_URIS.includes(
       plainKoodiUri(haku.hakutapaKoodiUri),
     ) && !haunAsetukset.sijoittelu
   );
@@ -56,19 +56,25 @@ export const TABS: BasicTab[] = [
     route: 'hakijaryhmat',
     visibleFn: ({ haku, haunAsetukset }) =>
       isKorkeakouluHaku(haku) &&
-      !hasOnlyValinnanTuloksia({ haku, haunAsetukset }),
+      !hasOnlyValinnanTulokset({ haku, haunAsetukset }),
   },
   {
     title: 'valintalaskennan-tulokset.otsikko',
     route: 'valintalaskennan-tulokset',
     visibleFn: ({ haku, haunAsetukset }) =>
-      !hasOnlyValinnanTuloksia({ haku, haunAsetukset }),
+      !hasOnlyValinnanTulokset({ haku, haunAsetukset }),
   },
   {
     title: 'sijoittelun-tulokset.otsikko',
     route: 'sijoittelun-tulokset',
     visibleFn: ({ haku, haunAsetukset }) =>
-      !hasOnlyValinnanTuloksia({ haku, haunAsetukset }),
+      !hasOnlyValinnanTulokset({ haku, haunAsetukset }),
+  },
+  {
+    title: 'valinnan-tulokset.otsikko',
+    route: 'valinnan-tulokset',
+    visibleFn: ({ haku, haunAsetukset }) =>
+      hasOnlyValinnanTulokset({ haku, haunAsetukset }),
   },
 ] as const;
 

@@ -124,6 +124,7 @@ describe('getVisibleTabs', () => {
         'valinnan-hallinta',
         'valintakoekutsut',
         'pistesyotto',
+        'valinnan-tulokset',
       ]);
     },
   );
