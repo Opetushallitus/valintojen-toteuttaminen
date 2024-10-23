@@ -46,14 +46,13 @@ export const SijoittelunTulosForm = ({
 
   const syottoMachine = useMemo(() => {
     return createSijoittelunTuloksetMachine(
-      haku.oid,
       hakukohdeOid,
       valintatapajono.oid,
       valintatapajono.hakemukset,
       lastModified,
       addToast,
     );
-  }, [haku, hakukohdeOid, valintatapajono, addToast, lastModified]);
+  }, [hakukohdeOid, valintatapajono, addToast, lastModified]);
 
   const [state, send] = useMachine(syottoMachine);
 
