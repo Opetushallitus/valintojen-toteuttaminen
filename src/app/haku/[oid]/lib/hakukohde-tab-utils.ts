@@ -3,14 +3,40 @@ import {
   isKorkeakouluHaku,
   isToisenAsteenYhteisHaku,
 } from '@/app/lib/kouta';
+import { HaunAsetukset } from '@/app/lib/ohjausparametrit';
 import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
 
-type VisibleFnProps = { haku: Haku; hakukohde: Hakukohde };
+type VisibleFnProps = {
+  haku: Haku;
+  hakukohde: Hakukohde;
+  haunAsetukset: HaunAsetukset;
+};
 
 export type BasicTab = {
   title: string;
   route: string;
   visibleFn?: (props: VisibleFnProps) => boolean;
+};
+
+const plainKoodiUri = (koodiUri: string) => koodiUri.split('#')[0];
+
+const ONLY_VALINNAN_TULOKSIA_HAKUTAPA_KOODI_URIS = [
+  'hakutapa_02', // Erillishaku
+  'hakutapa_03', // Jatkuva haku
+  'hakutapa_04', // Joustava haku
+  'hakutapa_05', // Lisähaku
+  'hakutapa_06', // Siirtohaku
+];
+
+const hasOnlyValinnanTuloksia = ({
+  haku,
+  haunAsetukset,
+}: Pick<VisibleFnProps, 'haku' | 'haunAsetukset'>) => {
+  return (
+    ONLY_VALINNAN_TULOKSIA_HAKUTAPA_KOODI_URIS.includes(
+      plainKoodiUri(haku.hakutapaKoodiUri),
+    ) && !haunAsetukset.sijoittelu
+  );
 };
 
 export const TABS: BasicTab[] = [
@@ -28,20 +54,33 @@ export const TABS: BasicTab[] = [
   {
     title: 'hakijaryhmat.otsikko',
     route: 'hakijaryhmat',
-    visibleFn: ({ haku }) => isKorkeakouluHaku(haku),
+    visibleFn: ({ haku, haunAsetukset }) =>
+      isKorkeakouluHaku(haku) &&
+      !hasOnlyValinnanTuloksia({ haku, haunAsetukset }),
   },
-  { title: 'valintalaskennan-tulos.otsikko', route: 'valintalaskennan-tulos' },
-  { title: 'sijoittelun-tulokset.otsikko', route: 'sijoittelun-tulokset' },
+  {
+    title: 'valintalaskennan-tulos.otsikko',
+    route: 'valintalaskennan-tulos',
+    visibleFn: ({ haku, haunAsetukset }) =>
+      !hasOnlyValinnanTuloksia({ haku, haunAsetukset }),
+  },
+  {
+    title: 'sijoittelun-tulokset.otsikko',
+    route: 'sijoittelun-tulokset',
+    visibleFn: ({ haku, haunAsetukset }) =>
+      !hasOnlyValinnanTuloksia({ haku, haunAsetukset }),
+  },
 ] as const;
 
 export const isTabVisible = ({
   tab,
   haku,
   hakukohde,
+  haunAsetukset,
 }: { tab: BasicTab } & VisibleFnProps) => {
-  return !tab.visibleFn || tab.visibleFn({ haku, hakukohde });
+  return !tab.visibleFn || tab.visibleFn({ haku, hakukohde, haunAsetukset });
 };
 
-export const getVisibleTabs = ({ haku, hakukohde }: VisibleFnProps) => {
-  return TABS.filter((tab) => isTabVisible({ tab, haku, hakukohde }));
+export const getVisibleTabs = (visibleProps: VisibleFnProps) => {
+  return TABS.filter((tab) => isTabVisible({ tab, ...visibleProps }));
 };
