@@ -59,8 +59,8 @@ export const TABS: BasicTab[] = [
       !hasOnlyValinnanTuloksia({ haku, haunAsetukset }),
   },
   {
-    title: 'valintalaskennan-tulos.otsikko',
-    route: 'valintalaskennan-tulos',
+    title: 'valintalaskennan-tulokset.otsikko',
+    route: 'valintalaskennan-tulokset',
     visibleFn: ({ haku, haunAsetukset }) =>
       !hasOnlyValinnanTuloksia({ haku, haunAsetukset }),
   },

@@ -22,18 +22,18 @@ test.beforeEach(async ({ page }) => {
   );
 });
 
-test('valintalaskennan tulos accessibility', async ({ page }) => {
+test('valintalaskennan tulokset accessibility', async ({ page }) => {
   await page.goto(
-    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/valintalaskennan-tulos',
+    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/valintalaskennan-tulokset',
   );
   await expectAllSpinnersHidden(page);
   await page.locator('tbody tr').nth(1).hover();
   await expectPageAccessibilityOk(page);
 });
 
-test('displays valintalaskennan tulos', async ({ page }) => {
+test('displays valintalaskennan tulokset', async ({ page }) => {
   await page.goto(
-    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/valintalaskennan-tulos',
+    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/valintalaskennan-tulokset',
   );
   await expectAllSpinnersHidden(page);
   await expect(
@@ -121,7 +121,7 @@ test('shows error toast when removing jono from sijoittelu fails', async ({
   page,
 }) => {
   await page.goto(
-    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/valintalaskennan-tulos',
+    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/valintalaskennan-tulokset',
   );
   await expectAllSpinnersHidden(page);
 

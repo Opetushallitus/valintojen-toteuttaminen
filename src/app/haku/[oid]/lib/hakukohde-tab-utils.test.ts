@@ -47,7 +47,7 @@ describe('getVisibleTabs', () => {
       'valintakoekutsut',
       'pistesyotto',
       'hakijaryhmat',
-      'valintalaskennan-tulos',
+      'valintalaskennan-tulokset',
       'sijoittelun-tulokset',
     ]);
   });
@@ -71,7 +71,7 @@ describe('getVisibleTabs', () => {
       'valintakoekutsut',
       'pistesyotto',
       'harkinnanvaraiset',
-      'valintalaskennan-tulos',
+      'valintalaskennan-tulokset',
       'sijoittelun-tulokset',
     ]);
   });
@@ -95,7 +95,7 @@ describe('getVisibleTabs', () => {
       'valinnan-hallinta',
       'valintakoekutsut',
       'pistesyotto',
-      'valintalaskennan-tulos',
+      'valintalaskennan-tulokset',
       'sijoittelun-tulokset',
     ]);
   });

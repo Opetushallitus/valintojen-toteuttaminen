@@ -49,7 +49,7 @@ export const SijoitteluStatusChangeButton = ({
           disabled={!hasOphUpdate && !hasOrgCrud}
           onClick={() => statusMutation.mutate({ jono, status: true })}
         >
-          {t('valintalaskennan-tulos.siirra-jono-sijoitteluun')}
+          {t('valintalaskennan-tulokset.siirra-jono-sijoitteluun')}
         </SijoitteluButton>
       );
     case jono.valmisSijoiteltavaksi && jono.siirretaanSijoitteluun:
@@ -59,7 +59,7 @@ export const SijoitteluStatusChangeButton = ({
           disabled={!hasOphUpdate}
           onClick={() => statusMutation.mutate({ jono, status: false })}
         >
-          {t('valintalaskennan-tulos.poista-jono-sijoittelusta')}
+          {t('valintalaskennan-tulokset.poista-jono-sijoittelusta')}
         </SijoitteluButton>
       );
     default:

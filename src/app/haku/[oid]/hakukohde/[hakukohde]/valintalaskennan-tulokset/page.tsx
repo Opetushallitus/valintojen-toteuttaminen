@@ -35,12 +35,13 @@ const useExcelDownloadMutation = ({
       const { fileName, blob } = await getValintalaskennanTulosExcel({
         hakukohdeOid,
       });
-      downloadBlob(fileName ?? 'valintalaskennan-tulos.xls', blob);
+      downloadBlob(fileName ?? 'valintalaskennan-tulokset.xls', blob);
     },
     onError: (e) => {
       addToast({
         key: 'get-valintakoe-excel',
-        message: 'valintalaskennan-tulos.virhe-vie-kaikki-taulukkolaskentaan',
+        message:
+          'valintalaskennan-tulokset.virhe-vie-kaikki-taulukkolaskentaan',
         type: 'error',
       });
       console.error(e);
@@ -54,7 +55,7 @@ const ExcelDownloadButton = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
 
   return (
     <DownloadButton mutation={mutation}>
-      {t('valintalaskennan-tulos.vie-kaikki-taulukkolaskentaan')}
+      {t('valintalaskennan-tulokset.vie-kaikki-taulukkolaskentaan')}
     </DownloadButton>
   );
 };
@@ -73,7 +74,7 @@ const LasketutValinnanVaiheetContent = ({
   const { t } = useTranslations();
 
   return isEmpty(valinnanVaiheet) ? (
-    <NoResults text={t('valintalaskennan-tulos.ei-tuloksia')} />
+    <NoResults text={t('valintalaskennan-tulokset.ei-tuloksia')} />
   ) : (
     <Box
       sx={{
@@ -102,7 +103,7 @@ const LasketutValinnanVaiheetContent = ({
           <SearchInput
             searchPhrase={searchPhrase}
             setSearchPhrase={setSearchPhrase}
-            name="valintalaskennan-tulos-search"
+            name="valintalaskennan-tulokset-search"
           />
           <ExcelDownloadButton hakukohdeOid={hakukohdeOid} />
         </Box>
@@ -124,7 +125,7 @@ const LasketutValinnanVaiheetContent = ({
   );
 };
 
-export default function ValintalaskennanTulosPage({
+export default function ValintalaskennanTuloksetPage({
   params,
 }: {
   params: { oid: string; hakukohde: string };
