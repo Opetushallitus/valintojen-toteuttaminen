@@ -5,7 +5,7 @@ import cssEscape from 'css.escape';
 
 export const expectPageAccessibilityOk = async (page: Page) => {
   const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
-  await expect(accessibilityScanResults.violations).toEqual([]);
+  expect(accessibilityScanResults.violations).toEqual([]);
 };
 
 export const expectAllSpinnersHidden = async (page: Page) => {
@@ -26,7 +26,7 @@ export const expectUrlParamToEqual = async (
   const pageURL = page.url();
   const urlObj = new URL(pageURL);
   const param = urlObj.searchParams.get(paramName);
-  await expect(param).toEqual(value);
+  expect(param).toEqual(value);
 };
 
 export const checkRow = async (

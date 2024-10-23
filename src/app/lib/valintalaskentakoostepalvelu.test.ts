@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, test, vi } from 'vitest';
 import { client, HttpClientResponse, JSONData } from './http-client';
 import { getValintakoekutsutData } from './valintalaskentakoostepalvelu';
-import { indexBy, prop } from 'remeda';
 import VALINTAKOKEET from '@tests/e2e/fixtures/valintakokeet.json';
 import VALINTAKOEOSALLISTUMISET from '@tests/e2e/fixtures/valintakoeosallistumiset.json';
 import HAKEMUKSET from '@tests/e2e/fixtures/hakeneet.json';
@@ -29,7 +28,7 @@ describe('getValintakoekutsutData', () => {
       hakukohdeOid: '1.2.246.562.20.00000000000000045105',
     });
     expect(result).toEqual({
-      valintakokeetByTunniste: {},
+      valintakokeet: [],
       hakemuksetByOid: {},
       valintakoeOsallistumiset: [],
     });
@@ -70,10 +69,7 @@ describe('getValintakoekutsutData', () => {
       hakukohdeOid: '1.2.246.562.20.00000000000000045105',
     });
     expect(result).toEqual({
-      valintakokeetByTunniste: indexBy(
-        VALINTAKOKEET.filter((v) => v.aktiivinen),
-        prop('selvitettyTunniste'),
-      ),
+      valintakokeet: VALINTAKOKEET,
       hakemuksetByOid: {
         '1.2.246.562.11.00000000000001796027': {
           hakemusOid: '1.2.246.562.11.00000000000001796027',
@@ -160,10 +156,7 @@ describe('getValintakoekutsutData', () => {
       hakukohdeOid: '1.2.246.562.20.00000000000000045105',
     });
     expect(result).toEqual({
-      valintakokeetByTunniste: indexBy(
-        VALINTAKOKEET.filter((v) => v.aktiivinen),
-        prop('selvitettyTunniste'),
-      ),
+      valintakokeet: VALINTAKOKEET,
       hakemuksetByOid: {
         '1.2.246.562.11.00000000000001796027': {
           hakemusOid: '1.2.246.562.11.00000000000001796027',

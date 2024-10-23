@@ -1,14 +1,9 @@
 import { useTranslation } from 'react-i18next';
 
 import { Box } from '@mui/material';
-import {
-  DeselectOutlined,
-  InsertDriveFileOutlined,
-  NoteOutlined,
-} from '@mui/icons-material';
+import { DeselectOutlined, NoteOutlined } from '@mui/icons-material';
 import { ActionBar } from '@/app/components/action-bar';
 import {
-  getValintakoeExcel,
   GetValintakoeExcelParams,
   getValintakoeOsoitetarrat,
 } from '@/app/lib/valintalaskentakoostepalvelu';
@@ -16,49 +11,17 @@ import { downloadBlob } from '@/app/lib/common';
 import { useMutation } from '@tanstack/react-query';
 import useToaster from '@/app/hooks/useToaster';
 import { DownloadButton } from '@/app/components/download-button';
-
-type ValintakoekutsutDownloadProps = {
-  hakuOid: string;
-  hakukohdeOid: string;
-  valintakoeTunniste: string;
-  selection: Set<string>;
-};
-
-const useExcelDownloadMutation = ({
-  hakuOid,
-  hakukohdeOid,
-  valintakoeTunniste,
-  selection,
-}: ValintakoekutsutDownloadProps) => {
-  const { addToast } = useToaster();
-
-  return useMutation({
-    mutationFn: async () => {
-      const { fileName, blob } = await getValintakoeExcel({
-        hakuOid,
-        hakukohdeOid,
-        valintakoeTunniste,
-        hakemusOids: Array.from(selection),
-      });
-      downloadBlob(fileName ?? 'valintakoekutsut.xls', blob);
-    },
-    onError: (e) => {
-      addToast({
-        key: 'get-valintakoe-excel',
-        message: 'valintakoekutsut.virhe-vie-taulukkolaskentaan',
-        type: 'error',
-      });
-      console.error(e);
-    },
-  });
-};
+import { ValintakoekutsutDownloadProps } from '@/app/lib/types/valintakoekutsut-types';
+import { ValintakoekutsutExcelDownloadButton } from './valintakoekutsut-excel-download-button';
 
 const useOsoitetarratMutation = ({
   hakuOid,
   hakukohdeOid,
   valintakoeTunniste,
   selection,
-}: ValintakoekutsutDownloadProps) => {
+}: Omit<ValintakoekutsutDownloadProps, 'valintakoeTunniste'> & {
+  valintakoeTunniste: string;
+}) => {
   const { addToast } = useToaster();
 
   return useMutation({
@@ -67,7 +30,7 @@ const useOsoitetarratMutation = ({
         hakuOid,
         hakukohdeOid,
         valintakoeTunniste,
-        hakemusOids: Array.from(selection),
+        hakemusOids: selection && Array.from(selection),
       });
       downloadBlob(fileName ?? 'osoitetarrat.pdf', blob);
     },
@@ -80,37 +43,6 @@ const useOsoitetarratMutation = ({
       console.error(e);
     },
   });
-};
-
-const ExcelDownloadButton = ({
-  hakuOid,
-  hakukohdeOid,
-  valintakoeTunniste,
-  selection,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
-  valintakoeTunniste: string;
-  selection: Set<string>;
-}) => {
-  const { t } = useTranslation();
-
-  const excelMutation = useExcelDownloadMutation({
-    hakuOid,
-    hakukohdeOid,
-    valintakoeTunniste,
-    selection,
-  });
-
-  return (
-    <DownloadButton
-      Component={ActionBar.Button}
-      disabled={selection.size === 0}
-      mutation={excelMutation}
-    >
-      {t('yleinen.vie-taulukkolaskentaan')}
-    </DownloadButton>
-  );
 };
 
 const OsoitetarratDownloadButton = ({
@@ -154,7 +86,8 @@ export const ValintakoekutsutActionBar = ({
 }: {
   selection: Set<string>;
   resetSelection: () => void;
-} & GetValintakoeExcelParams) => {
+  valintakoeTunniste: string;
+} & Omit<GetValintakoeExcelParams, 'valintakoeTunniste'>) => {
   const { t } = useTranslation();
 
   return (
@@ -167,17 +100,13 @@ export const ValintakoekutsutActionBar = ({
         {t(`valintakoekutsut.valittu-maara`, { count: selection.size })}
       </Box>
       <ActionBar.Divider />
-      <ExcelDownloadButton
+      <ValintakoekutsutExcelDownloadButton
+        Component={ActionBar.Button}
         hakuOid={hakuOid}
         hakukohdeOid={hakukohdeOid}
-        valintakoeTunniste={valintakoeTunniste}
+        valintakoeTunniste={[valintakoeTunniste]}
         selection={selection}
       />
-      <ActionBar.Divider />
-      <ActionBar.Button startIcon={<InsertDriveFileOutlined />} disabled={true}>
-        {/* TODO: Toteutetaan koekutsujen muodostaminen eri tiketillä */}
-        {t('valintakoekutsut.muodosta-koekutsut')}
-      </ActionBar.Button>
       <ActionBar.Divider />
       <OsoitetarratDownloadButton
         hakuOid={hakuOid}

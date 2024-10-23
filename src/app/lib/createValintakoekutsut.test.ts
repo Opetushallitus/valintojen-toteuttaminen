@@ -1,8 +1,10 @@
 import { describe, expect, test } from 'vitest';
-import { indexBy, prop } from 'remeda';
 import VALINTAKOKEET from '@tests/e2e/fixtures/valintakokeet.json';
 import VALINTAKOEOSALLISTUMISET from '@tests/e2e/fixtures/valintakoeosallistumiset.json';
-import { createValintakoekutsutKokeittain } from './createValintakoekutsut';
+import {
+  createValintakoekutsutHakijoittain,
+  createValintakoekutsutKokeittain,
+} from './createValintakoekutsut';
 import { HakutoiveValintakoeOsallistumiset } from './types/valintalaskentakoostepalvelu-types';
 
 const HAKEMUKSET_BY_OID = {
@@ -48,10 +50,7 @@ describe('createValintakoekutsutKokeittain', () => {
         vainKutsuttavat: false,
       },
       {
-        valintakokeetByTunniste: indexBy(
-          VALINTAKOKEET,
-          prop('selvitettyTunniste'),
-        ),
+        valintakokeet: VALINTAKOKEET,
         hakemuksetByOid: HAKEMUKSET_BY_OID,
         valintakoeOsallistumiset:
           VALINTAKOEOSALLISTUMISET as Array<HakutoiveValintakoeOsallistumiset>,
@@ -109,10 +108,7 @@ describe('createValintakoekutsutKokeittain', () => {
         vainKutsuttavat: true,
       },
       {
-        valintakokeetByTunniste: indexBy(
-          VALINTAKOKEET,
-          prop('selvitettyTunniste'),
-        ),
+        valintakokeet: VALINTAKOKEET,
         hakemuksetByOid: HAKEMUKSET_BY_OID,
         valintakoeOsallistumiset:
           VALINTAKOEOSALLISTUMISET as Array<HakutoiveValintakoeOsallistumiset>,
@@ -161,10 +157,7 @@ describe('createValintakoekutsutKokeittain', () => {
         vainKutsuttavat: true,
       },
       {
-        valintakokeetByTunniste: indexBy(
-          VALINTAKOKEET,
-          prop('selvitettyTunniste'),
-        ),
+        valintakokeet: VALINTAKOKEET,
         hakemuksetByOid: {},
         valintakoeOsallistumiset: [],
       },
@@ -184,13 +177,10 @@ describe('createValintakoekutsutKokeittain', () => {
         vainKutsuttavat: true,
       },
       {
-        valintakokeetByTunniste: indexBy(
-          VALINTAKOKEET.map((v) => ({
-            ...v,
-            kutsutaankoKaikki: true,
-          })),
-          prop('selvitettyTunniste'),
-        ),
+        valintakokeet: VALINTAKOKEET.map((v) => ({
+          ...v,
+          kutsutaankoKaikki: true,
+        })),
         hakemuksetByOid: HAKEMUKSET_BY_OID,
         valintakoeOsallistumiset:
           VALINTAKOEOSALLISTUMISET as Array<HakutoiveValintakoeOsallistumiset>,
@@ -238,6 +228,235 @@ describe('createValintakoekutsutKokeittain', () => {
           },
         ],
       },
+    });
+  });
+});
+
+const AKTIIVISET_VALINTAKOKEET = VALINTAKOKEET.filter((v) => v.aktiivinen);
+
+describe('createValintakoekutsutHakijoittain', () => {
+  test('Return also kutsut with other osallistuminen when vainKutsuttavat=false', async () => {
+    const result = createValintakoekutsutHakijoittain(
+      {
+        hakukohdeOid: '1.2.246.562.20.00000000000000045105',
+        vainKutsuttavat: false,
+      },
+      {
+        valintakokeet: VALINTAKOKEET,
+        hakemuksetByOid: HAKEMUKSET_BY_OID,
+        valintakoeOsallistumiset:
+          VALINTAKOEOSALLISTUMISET as Array<HakutoiveValintakoeOsallistumiset>,
+      },
+    );
+    expect(result).toEqual({
+      kokeet: AKTIIVISET_VALINTAKOKEET,
+      hakijat: [
+        {
+          hakemusOid: '1.2.246.562.11.00000000000001796027',
+          hakijaOid: '1.2.246.562.24.69259807406',
+          hakijanNimi: 'Nukettaja Ruhtinas',
+          kutsut: {
+            '1_2_246_562_20_00000000000000045105_paasykoe': {
+              nimi: 'Pääsykoe',
+              osallistuminen: 'osallistuminen.OSALLISTUU',
+              valintakoeTunniste:
+                '1_2_246_562_20_00000000000000045105_paasykoe',
+            },
+          },
+        },
+        {
+          hakemusOid: '1.2.246.562.11.00000000000001793706',
+          hakijaOid: '1.2.246.562.24.25732574711',
+          hakijanNimi: 'Dacula Kreivi',
+          kutsut: {
+            '1_2_246_562_20_00000000000000045105_paasykoe': {
+              nimi: 'Pääsykoe',
+              osallistuminen: 'osallistuminen.OSALLISTUU',
+              valintakoeTunniste:
+                '1_2_246_562_20_00000000000000045105_paasykoe',
+            },
+          },
+        },
+        {
+          hakemusOid: '1.2.246.562.11.00000000000001790371',
+          hakijaOid: '1.2.246.562.24.14598775927',
+          hakijanNimi: 'Purukumi Puru',
+          kutsut: {
+            '1_2_246_562_20_00000000000000045105_paasykoe': {
+              nimi: 'Pääsykoe',
+              osallistuminen: 'osallistuminen.OSALLISTUU',
+              valintakoeTunniste:
+                '1_2_246_562_20_00000000000000045105_paasykoe',
+            },
+          },
+        },
+        {
+          hakemusOid: '1.2.246.562.11.00000000000001543832',
+          hakijaOid: '1.2.246.562.24.30476885816',
+          hakijanNimi: 'Hui Haamu',
+          kutsut: {
+            '1_2_246_562_20_00000000000000045105_paasykoe': {
+              nimi: 'Pääsykoe',
+              osallistuminen: 'osallistuminen.EI_OSALLISTU',
+              valintakoeTunniste:
+                '1_2_246_562_20_00000000000000045105_paasykoe',
+            },
+          },
+        },
+      ],
+    });
+  });
+
+  test('Return only kutsut with osallistuminen=OSALLISTUU when vainKutsuttavat=true', async () => {
+    const result = createValintakoekutsutHakijoittain(
+      {
+        hakukohdeOid: '1.2.246.562.20.00000000000000045105',
+        vainKutsuttavat: true,
+      },
+      {
+        valintakokeet: VALINTAKOKEET,
+        hakemuksetByOid: HAKEMUKSET_BY_OID,
+        valintakoeOsallistumiset:
+          VALINTAKOEOSALLISTUMISET as Array<HakutoiveValintakoeOsallistumiset>,
+      },
+    );
+    expect(result).toEqual({
+      kokeet: AKTIIVISET_VALINTAKOKEET,
+      hakijat: [
+        {
+          hakemusOid: '1.2.246.562.11.00000000000001796027',
+          hakijaOid: '1.2.246.562.24.69259807406',
+          hakijanNimi: 'Nukettaja Ruhtinas',
+          kutsut: {
+            '1_2_246_562_20_00000000000000045105_paasykoe': {
+              nimi: 'Pääsykoe',
+              osallistuminen: 'osallistuminen.OSALLISTUU',
+              valintakoeTunniste:
+                '1_2_246_562_20_00000000000000045105_paasykoe',
+            },
+          },
+        },
+        {
+          hakemusOid: '1.2.246.562.11.00000000000001793706',
+          hakijaOid: '1.2.246.562.24.25732574711',
+          hakijanNimi: 'Dacula Kreivi',
+          kutsut: {
+            '1_2_246_562_20_00000000000000045105_paasykoe': {
+              nimi: 'Pääsykoe',
+              osallistuminen: 'osallistuminen.OSALLISTUU',
+              valintakoeTunniste:
+                '1_2_246_562_20_00000000000000045105_paasykoe',
+            },
+          },
+        },
+        {
+          hakemusOid: '1.2.246.562.11.00000000000001790371',
+          hakijaOid: '1.2.246.562.24.14598775927',
+          hakijanNimi: 'Purukumi Puru',
+          kutsut: {
+            '1_2_246_562_20_00000000000000045105_paasykoe': {
+              nimi: 'Pääsykoe',
+              osallistuminen: 'osallistuminen.OSALLISTUU',
+              valintakoeTunniste:
+                '1_2_246_562_20_00000000000000045105_paasykoe',
+            },
+          },
+        },
+      ],
+    });
+  });
+
+  test('Return valintakoe with empty kutsut, when valintakokeet data only', async () => {
+    const result = createValintakoekutsutHakijoittain(
+      {
+        hakukohdeOid: '1.2.246.562.20.00000000000000045105',
+        vainKutsuttavat: true,
+      },
+      {
+        valintakokeet: VALINTAKOKEET,
+        hakemuksetByOid: {},
+        valintakoeOsallistumiset: [],
+      },
+    );
+    expect(result).toEqual({
+      kokeet: AKTIIVISET_VALINTAKOKEET,
+      hakijat: [],
+    });
+  });
+
+  test('Return all kutsut with overwritten osallistuminen=OSALLISTUU when kutsutaankokaikki=true', async () => {
+    const kaikkiKutsutaanValintakokeet = VALINTAKOKEET.map((v) => ({
+      ...v,
+      kutsutaankoKaikki: true,
+    }));
+    const result = createValintakoekutsutHakijoittain(
+      {
+        hakukohdeOid: '1.2.246.562.20.00000000000000045105',
+        vainKutsuttavat: true,
+      },
+      {
+        valintakokeet: kaikkiKutsutaanValintakokeet,
+        hakemuksetByOid: HAKEMUKSET_BY_OID,
+        valintakoeOsallistumiset:
+          VALINTAKOEOSALLISTUMISET as Array<HakutoiveValintakoeOsallistumiset>,
+      },
+    );
+    expect(result).toEqual({
+      kokeet: kaikkiKutsutaanValintakokeet.filter((v) => v.aktiivinen),
+      hakijat: [
+        {
+          hakemusOid: '1.2.246.562.11.00000000000001796027',
+          hakijaOid: '1.2.246.562.24.69259807406',
+          hakijanNimi: 'Nukettaja Ruhtinas',
+          kutsut: {
+            '1_2_246_562_20_00000000000000045105_paasykoe': {
+              nimi: 'Pääsykoe',
+              osallistuminen: 'osallistuminen.OSALLISTUU',
+              valintakoeTunniste:
+                '1_2_246_562_20_00000000000000045105_paasykoe',
+            },
+          },
+        },
+        {
+          hakemusOid: '1.2.246.562.11.00000000000001793706',
+          hakijaOid: '1.2.246.562.24.25732574711',
+          hakijanNimi: 'Dacula Kreivi',
+          kutsut: {
+            '1_2_246_562_20_00000000000000045105_paasykoe': {
+              nimi: 'Pääsykoe',
+              osallistuminen: 'osallistuminen.OSALLISTUU',
+              valintakoeTunniste:
+                '1_2_246_562_20_00000000000000045105_paasykoe',
+            },
+          },
+        },
+        {
+          hakemusOid: '1.2.246.562.11.00000000000001790371',
+          hakijaOid: '1.2.246.562.24.14598775927',
+          hakijanNimi: 'Purukumi Puru',
+          kutsut: {
+            '1_2_246_562_20_00000000000000045105_paasykoe': {
+              nimi: 'Pääsykoe',
+              osallistuminen: 'osallistuminen.OSALLISTUU',
+              valintakoeTunniste:
+                '1_2_246_562_20_00000000000000045105_paasykoe',
+            },
+          },
+        },
+        {
+          hakemusOid: '1.2.246.562.11.00000000000001543832',
+          hakijaOid: '1.2.246.562.24.30476885816',
+          hakijanNimi: 'Hui Haamu',
+          kutsut: {
+            '1_2_246_562_20_00000000000000045105_paasykoe': {
+              nimi: 'Pääsykoe',
+              osallistuminen: 'osallistuminen.OSALLISTUU',
+              valintakoeTunniste:
+                '1_2_246_562_20_00000000000000045105_paasykoe',
+            },
+          },
+        },
+      ],
     });
   });
 });

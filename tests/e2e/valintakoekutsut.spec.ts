@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 import {
   checkRow,
   expectAllSpinnersHidden,
@@ -7,15 +7,6 @@ import {
 import VALINTAKOKEET from './fixtures/valintakokeet.json';
 import VALINTAKOEOSALLISTUMISET from './fixtures/valintakoeosallistumiset.json';
 import { difference } from 'remeda';
-
-const VALINTAKOEKUTSUT_TABLE_HEADINGS = [
-  '',
-  'Hakija',
-  'Osallistuminen',
-  'Lisätietoja',
-  'Laskettu pvm',
-  'Asiointikieli',
-];
 
 test.beforeEach(async ({ page }) => {
   await page.route(
@@ -38,139 +29,184 @@ test.beforeEach(async ({ page }) => {
     '**/valintalaskentakoostepalvelu/resources/viestintapalvelu/osoitetarrat/aktivoi?hakuOid=1.2.246.562.29.00000000000000045102&hakukohdeOid=1.2.246.562.20.00000000000000045105&valintakoeTunniste=1_2_246_562_20_00000000000000045105_paasykoe',
     async (route) => await route.abort('accessdenied'),
   );
-});
-
-test('valintakoekutsut accessibility', async ({ page }) => {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/valintakoekutsut',
   );
+});
+
+const testAccessibility = async ({ page }: { page: Page }) => {
   await expectAllSpinnersHidden(page);
   await page.locator('tbody tr').nth(1).hover();
   await expectPageAccessibilityOk(page);
-});
+};
 
-test('displays valintakoekutsut', async ({ page }) => {
-  await page.goto(
-    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/valintakoekutsut',
-  );
-  await expectAllSpinnersHidden(page);
+const VALINTAKOEKUTSUT_KOKEITTAIN_TABLE_HEADINGS = [
+  '',
+  'Hakija',
+  'Osallistuminen',
+  'Lisätietoja',
+  'Laskettu pvm',
+  'Asiointikieli',
+];
 
-  const accordionHeadingText = 'Pääsykoe';
+test.describe('valintakoekutsut kokeittain', () => {
+  test('valintakoekutsut kokeittain accessibility', testAccessibility);
 
-  const accordionContent = page.getByRole('region', {
-    name: accordionHeadingText,
+  test('displays valintakoekutsut kokeittain', async ({ page }) => {
+    const accordionHeadingText = 'Pääsykoe';
+
+    const accordionContent = page.getByRole('region', {
+      name: accordionHeadingText,
+    });
+
+    const headingRow = accordionContent.locator('thead tr');
+    const rows = accordionContent.locator('tbody tr');
+
+    await Promise.all([
+      checkRow(headingRow, VALINTAKOEKUTSUT_KOKEITTAIN_TABLE_HEADINGS, 'th'),
+      expect(rows).toHaveCount(3),
+      checkRow(rows.nth(0), [
+        '',
+        'Nukettaja Ruhtinas',
+        'Kutsutaan',
+        '',
+        '9.1.2024 09:50:59',
+        'suomi',
+      ]),
+      checkRow(rows.nth(1), [
+        '',
+        'Dacula Kreivi',
+        'Kutsutaan',
+        '',
+        '9.1.2024 09:51:00',
+        'ruotsi',
+      ]),
+
+      checkRow(rows.nth(2), [
+        '',
+        'Purukumi Puru',
+        'Kutsutaan',
+        '',
+        '9.1.2024 09:51:00',
+        'suomi',
+      ]),
+    ]);
+
+    await page.getByRole('checkbox', { name: 'Vain kutsuttavat' }).click();
+
+    await expect(rows).toHaveCount(4);
+
+    await checkRow(rows.nth(3), [
+      '',
+      'Hui Haamu',
+      'Ei kutsuta',
+      '',
+      '9.1.2024 09:51:00',
+      'englanti',
+    ]);
   });
 
-  const headingRow = accordionContent.locator('thead tr');
-  await checkRow(headingRow, VALINTAKOEKUTSUT_TABLE_HEADINGS, 'th');
+  test('Can select kutsut and start excel or osoitetarrat download for selected', async ({
+    page,
+  }) => {
+    const accordionContent = page.getByRole('region', {
+      name: 'Pääsykoe',
+    });
 
-  const rows = accordionContent.locator('tbody tr');
-  await expect(rows).toHaveCount(3);
+    const rows = accordionContent.locator('tbody tr');
 
-  await checkRow(rows.nth(0), [
-    '',
-    'Nukettaja Ruhtinas',
-    'Kutsutaan',
-    '',
-    '9.1.2024 09:50:59',
-    'suomi',
-  ]);
+    const checkedRowCheckboxes = rows.getByRole('checkbox', { checked: true });
+    await expect(checkedRowCheckboxes).toHaveCount(0);
+    await page.getByRole('checkbox', { name: 'Valitse kaikki' }).click();
+    await expect(checkedRowCheckboxes).toHaveCount(3);
 
-  await checkRow(rows.nth(1), [
-    '',
-    'Dacula Kreivi',
-    'Kutsutaan',
-    '',
-    '9.1.2024 09:51:00',
-    'ruotsi',
-  ]);
+    const selectedOids = await Promise.all(
+      (await checkedRowCheckboxes.all()).map((el) => el.getAttribute('value')),
+    );
 
-  await checkRow(rows.nth(2), [
-    '',
-    'Purukumi Puru',
-    'Kutsutaan',
-    '',
-    '9.1.2024 09:51:00',
-    'suomi',
-  ]);
+    await Promise.all([
+      page.waitForRequest((req) => {
+        const jsonData = req.postDataJSON();
+        return (
+          req
+            .url()
+            .includes(
+              '/valintalaskentakoostepalvelu/resources/valintalaskentaexcel/valintakoekutsut/aktivoi?hakuOid=1.2.246.562.29.00000000000000045102&hakukohdeOid=1.2.246.562.20.00000000000000045105',
+            ) && difference(selectedOids, jsonData.hakemusOids).length === 0
+        );
+      }),
+      accordionContent
+        .getByRole('button', { name: 'Vie taulukkolaskentaan' })
+        .click(),
+    ]);
 
-  await page.getByRole('checkbox', { name: 'Vain kutsuttavat' }).click();
+    await Promise.all([
+      page.waitForRequest((req) => {
+        const jsonData = req.postDataJSON();
+        return (
+          req
+            .url()
+            .includes(
+              '/valintalaskentakoostepalvelu/resources/viestintapalvelu/osoitetarrat/aktivoi?hakuOid=1.2.246.562.29.00000000000000045102&hakukohdeOid=1.2.246.562.20.00000000000000045105&valintakoeTunniste=1_2_246_562_20_00000000000000045105_paasykoe',
+            ) && difference(selectedOids, jsonData.hakemusOids).length === 0
+        );
+      }),
+      accordionContent
+        .getByRole('button', { name: 'Muodosta osoitetarrat' })
+        .click(),
+    ]);
 
-  await expect(rows).toHaveCount(4);
+    await accordionContent
+      .getByRole('button', { name: 'Poista valinta' })
+      .click();
 
-  await checkRow(rows.nth(3), [
-    '',
-    'Hui Haamu',
-    'Ei kutsuta',
-    '',
-    '9.1.2024 09:51:00',
-    'englanti',
-  ]);
+    await expect(checkedRowCheckboxes).toHaveCount(0);
+  });
 });
 
-test('Can select kutsut and start excel or osoitetarrat download for selected', async ({
-  page,
-}) => {
-  await page.goto(
-    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/valintakoekutsut',
-  );
-  await expectAllSpinnersHidden(page);
+const VALINTAKOEKUTSUT_HAKIJOITTAIN_TABLE_HEADINGS = ['Hakija', 'Pääsykoe'];
 
-  const accordionHeadingText = 'Pääsykoe';
+test.describe('valintakoekutsut hakijoittain', () => {
+  test('valintakoekutsut hakijoittain accessibility', testAccessibility);
 
-  const accordionContent = page.getByRole('region', {
-    name: accordionHeadingText,
-  });
-  const headingRow = accordionContent.locator('thead tr');
-  await checkRow(headingRow, VALINTAKOEKUTSUT_TABLE_HEADINGS, 'th');
+  test('displays valintakoekutsut hakijoittain', async ({ page }) => {
+    await page.getByRole('button', { name: 'Hakijoittain' }).click();
 
-  const rows = accordionContent.locator('tbody tr');
+    const headingRow = page.locator('thead tr');
+    await checkRow(
+      headingRow,
+      VALINTAKOEKUTSUT_HAKIJOITTAIN_TABLE_HEADINGS,
+      'th',
+    );
 
-  const checkedRowCheckboxes = rows.getByRole('checkbox', { checked: true });
-  await expect(checkedRowCheckboxes).toHaveCount(0);
-  await page.getByRole('checkbox', { name: 'Valitse kaikki' }).click();
-
-  await expect(checkedRowCheckboxes).toHaveCount(3);
-
-  const selectedOids = await Promise.all(
-    (await checkedRowCheckboxes.all()).map((el) => el.getAttribute('value')),
-  );
-
-  await await Promise.all([
-    page.waitForRequest((req) => {
-      const jsonData = req.postDataJSON();
-      return (
-        req
+    await Promise.all([
+      page.waitForRequest((req) => {
+        return req
           .url()
           .includes(
             '/valintalaskentakoostepalvelu/resources/valintalaskentaexcel/valintakoekutsut/aktivoi?hakuOid=1.2.246.562.29.00000000000000045102&hakukohdeOid=1.2.246.562.20.00000000000000045105',
-          ) && difference(selectedOids, jsonData.hakemusOids).length === 0
-      );
-    }),
-    accordionContent
-      .getByRole('button', { name: 'Vie taulukkolaskentaan' })
-      .click(),
-  ]);
+          );
+      }),
+      page.getByRole('button', { name: 'Vie taulukkolaskentaan' }).click(),
+    ]);
 
-  await Promise.all([
-    page.waitForRequest((req) => {
-      const jsonData = req.postDataJSON();
-      return (
-        req
-          .url()
-          .includes(
-            '/valintalaskentakoostepalvelu/resources/viestintapalvelu/osoitetarrat/aktivoi?hakuOid=1.2.246.562.29.00000000000000045102&hakukohdeOid=1.2.246.562.20.00000000000000045105&valintakoeTunniste=1_2_246_562_20_00000000000000045105_paasykoe',
-          ) && difference(selectedOids, jsonData.hakemusOids).length === 0
-      );
-    }),
-    accordionContent
-      .getByRole('button', { name: 'Muodosta osoitetarrat' })
-      .click(),
-  ]);
+    const rows = page.locator('tbody tr');
 
-  await accordionContent
-    .getByRole('button', { name: 'Poista valinta' })
-    .click();
+    const vainKutsuttavat = page.getByRole('checkbox', {
+      name: 'Vain kutsuttavat',
+    });
 
-  await expect(checkedRowCheckboxes).toHaveCount(0);
+    await expect(vainKutsuttavat).toBeChecked();
+
+    await Promise.all([
+      expect(rows).toHaveCount(3),
+      checkRow(rows.nth(0), ['Nukettaja Ruhtinas', 'Kutsutaan']),
+      checkRow(rows.nth(1), ['Dacula Kreivi', 'Kutsutaan']),
+      checkRow(rows.nth(2), ['Purukumi Puru', 'Kutsutaan']),
+    ]);
+
+    await vainKutsuttavat.click();
+    await expect(rows).toHaveCount(4);
+    await checkRow(rows.nth(3), ['Hui Haamu', 'Ei kutsuta']);
+  });
 });

@@ -1,30 +1,59 @@
 'use client';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getValintakoekutsutData } from '../lib/valintalaskentakoostepalvelu';
-import { useMemo } from 'react';
-import { createValintakoekutsutKokeittain } from '../lib/createValintakoekutsut';
-import { GetValintakoekutsutParams } from '../lib/types/valintakoekutsut-types';
+import {
+  createValintakoekutsutHakijoittain,
+  createValintakoekutsutKokeittain,
+  ValintakoekutsutHakijoittain,
+  ValintakoekutsutKokeittain,
+} from '../lib/createValintakoekutsut';
+import {
+  GetValintakoekutsutParams,
+  ValintakoekutsutData,
+} from '../lib/types/valintakoekutsut-types';
 
-export const useValintakoekutsut = ({
+const useValintakoekutsutData = <T>({
   hakuOid,
   hakukohdeOid,
-  ryhmittely,
-  vainKutsuttavat,
-}: GetValintakoekutsutParams) => {
+  select,
+}: {
+  hakuOid: string;
+  hakukohdeOid: string;
+  select: (data: ValintakoekutsutData) => T;
+}) => {
   const { data: valintakoekutsutData } = useSuspenseQuery({
     queryKey: ['getValintakoekutsutData', hakukohdeOid],
     queryFn: () => getValintakoekutsutData({ hakuOid, hakukohdeOid }),
+    select,
   });
+  return valintakoekutsutData;
+};
 
-  return useMemo(() => {
-    if (ryhmittely === 'kokeittain') {
-      return createValintakoekutsutKokeittain(
+export const useValintakoekutsutHakijoittain = ({
+  hakuOid,
+  hakukohdeOid,
+  vainKutsuttavat,
+}: Omit<GetValintakoekutsutParams, 'ryhmittely'>) => {
+  return useValintakoekutsutData<ValintakoekutsutHakijoittain>({
+    hakuOid,
+    hakukohdeOid,
+    select: (data) =>
+      createValintakoekutsutHakijoittain(
         { hakukohdeOid, vainKutsuttavat },
-        valintakoekutsutData,
-      );
-    } else {
-      // TODO: Toteuta ryhmittely hakijoittain
-      return {};
-    }
-  }, [hakukohdeOid, vainKutsuttavat, ryhmittely, valintakoekutsutData]);
+        data,
+      ),
+  });
+};
+
+export const useValintakoekutsutKokeittain = ({
+  hakuOid,
+  hakukohdeOid,
+  vainKutsuttavat,
+}: Omit<GetValintakoekutsutParams, 'ryhmittely'>) => {
+  return useValintakoekutsutData<ValintakoekutsutKokeittain>({
+    hakuOid,
+    hakukohdeOid,
+    select: (data) =>
+      createValintakoekutsutKokeittain({ hakukohdeOid, vainKutsuttavat }, data),
+  });
 };

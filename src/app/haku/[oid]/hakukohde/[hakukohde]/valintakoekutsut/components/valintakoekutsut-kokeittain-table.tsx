@@ -14,7 +14,7 @@ import { ListTable } from '@/app/components/table/list-table';
 
 const TRANSLATIONS_PREFIX = 'valintakoekutsut.taulukko';
 
-export const ValintakoekutsutTable = ({
+export const ValintakoekutsutKokeittainTable = ({
   hakuOid,
   hakukohdeOid,
   valintakoeTunniste,
@@ -39,7 +39,7 @@ export const ValintakoekutsutTable = ({
 
   const columns: Array<ListTableColumn<ValintakoeKutsuItem>> = useMemo(
     () => [
-      createHakijaColumn('koekutsut'),
+      createHakijaColumn(),
       makeColumnWithValueToTranslate({
         t,
         title: `${TRANSLATIONS_PREFIX}.osallistuminen`,

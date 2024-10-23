@@ -29,7 +29,14 @@ export type ValintakoeKutsuItem = {
 };
 
 export type ValintakoekutsutData = {
-  valintakokeetByTunniste: Record<string, Valintakoe>;
+  valintakokeet: Array<Valintakoe>;
   hakemuksetByOid: Record<string, HakijaInfo>;
   valintakoeOsallistumiset: Array<HakutoiveValintakoeOsallistumiset>;
+};
+
+export type ValintakoekutsutDownloadProps = {
+  hakuOid: string;
+  hakukohdeOid: string;
+  valintakoeTunniste: Array<string>;
+  selection?: Set<string>;
 };

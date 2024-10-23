@@ -9,12 +9,16 @@ import {
   FormControl,
   FormGroup,
   FormLabel,
+  Stack,
   ToggleButton,
   ToggleButtonGroup,
 } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { useValintakoekutsut } from '@/app/hooks/useValintakoekutsut';
-import { ValintakoekutsutTable } from './components/valintakoekutsut-table';
+import {
+  useValintakoekutsutHakijoittain,
+  useValintakoekutsutKokeittain,
+} from '@/app/hooks/useValintakoekutsut';
+import { ValintakoekutsutKokeittainTable } from './components/valintakoekutsut-kokeittain-table';
 import {
   ryhmittelyParser,
   useValintakoekutsutGlobalSearchParams,
@@ -23,12 +27,12 @@ import {
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
 import { entries, isEmpty, map, pipe } from 'remeda';
 import { AccordionBoxTitle } from '@/app/components/accordion-box-title';
-import {
-  Ryhmittely,
-  ValintakoeKutsuItem,
-} from '@/app/lib/types/valintakoekutsut-types';
+import { ValintakoeKutsuItem } from '@/app/lib/types/valintakoekutsut-types';
 import { NoResults } from '@/app/components/no-results';
 import { OphCheckbox } from '@opetushallitus/oph-design-system';
+import { ValintakoekutsutHakijoittainTable } from './components/valintakoekutsut-hakijoittain-table';
+import { FormBox } from '@/app/components/form-box';
+import { ValintakoekutsutExcelDownloadButton } from './components/valintakoekutsut-excel-download-button';
 
 type ValintakoekutsutContentProps = {
   hakuOid: string;
@@ -39,22 +43,24 @@ const PaginatedValintakoekutsut = ({
   hakuOid,
   hakukohdeOid,
   valintakoeTunniste,
+  valintakoeNimi,
   valintakoeKutsut,
 }: {
   hakuOid: string;
   hakukohdeOid: string;
   valintakoeTunniste: string;
+  valintakoeNimi: string;
   valintakoeKutsut: Array<ValintakoeKutsuItem>;
 }) => {
   const { results, sort, setSort, pageSize, setPage, page } =
-    useValintakoekutsutPaginated(valintakoeTunniste, valintakoeKutsut);
+    useValintakoekutsutPaginated(valintakoeNimi, valintakoeKutsut);
 
   const { t } = useTranslations();
 
   return isEmpty(valintakoeKutsut) ? (
     <NoResults text={t('valintakoekutsut.ei-valintakoekutsuja')} />
   ) : (
-    <ValintakoekutsutTable
+    <ValintakoekutsutKokeittainTable
       valintakoeTunniste={valintakoeTunniste}
       hakuOid={hakuOid}
       hakukohdeOid={hakukohdeOid}
@@ -68,40 +74,76 @@ const PaginatedValintakoekutsut = ({
   );
 };
 
-const ValintakoeKutsutWrapper = ({
+const ValintakoekutsutHakijoittain = ({
   hakuOid,
   hakukohdeOid,
   vainKutsuttavat,
-  ryhmittely,
 }: {
   vainKutsuttavat: boolean;
-  ryhmittely: Ryhmittely;
   hakuOid: string;
   hakukohdeOid: string;
 }) => {
-  const valintakoekutsutByTunniste = useValintakoekutsut({
+  const valintakoekutsutHakijoittain = useValintakoekutsutHakijoittain({
     hakuOid,
     hakukohdeOid,
-    ryhmittely,
+    vainKutsuttavat,
+  });
+
+  const { results, sort, setSort, pageSize, setPage, page } =
+    useValintakoekutsutPaginated(
+      'valintakoekutsut',
+      valintakoekutsutHakijoittain.hakijat,
+    );
+
+  const { t } = useTranslations();
+
+  return isEmpty(valintakoekutsutHakijoittain) ? (
+    <NoResults text={t('valintakoekutsut.ei-valintakoekutsuja')} />
+  ) : (
+    <FormBox>
+      <ValintakoekutsutExcelDownloadButton
+        hakuOid={hakuOid}
+        hakukohdeOid={hakukohdeOid}
+        valintakoeTunniste={valintakoekutsutHakijoittain.kokeet.map(
+          (k) => k.selvitettyTunniste,
+        )}
+      />
+      <ValintakoekutsutHakijoittainTable
+        data={results}
+        sort={sort}
+        kokeet={valintakoekutsutHakijoittain.kokeet}
+        setSort={setSort}
+        page={page}
+        setPage={setPage}
+        pageSize={pageSize}
+      />
+    </FormBox>
+  );
+};
+
+const ValintakoekutsutKokeittain = ({
+  hakuOid,
+  hakukohdeOid,
+  vainKutsuttavat,
+}: {
+  vainKutsuttavat: boolean;
+  hakuOid: string;
+  hakukohdeOid: string;
+}) => {
+  const valintakoekutsutKokeittain = useValintakoekutsutKokeittain({
+    hakuOid,
+    hakukohdeOid,
     vainKutsuttavat,
   });
   const { t } = useTranslations();
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        rowGap: 2,
-      }}
-    >
-      {ryhmittely === 'hakijoittain' ? (
-        'TODO: Hakijoittain ryhmittely'
-      ) : isEmpty(valintakoekutsutByTunniste) ? (
+    <Stack rowGap={2}>
+      {isEmpty(valintakoekutsutKokeittain) ? (
         <NoResults text={t('valintakoekutsut.ei-valintakokeita')} />
       ) : (
         pipe(
-          entries(valintakoekutsutByTunniste),
+          entries(valintakoekutsutKokeittain),
           map(([valintakoeTunniste, valintakoeKutsut]) => {
             const { nimi, kutsut } = valintakoeKutsut;
             return (
@@ -115,6 +157,7 @@ const ValintakoeKutsutWrapper = ({
                   hakuOid={hakuOid}
                   hakukohdeOid={hakukohdeOid}
                   valintakoeTunniste={valintakoeTunniste}
+                  valintakoeNimi={nimi}
                   valintakoeKutsut={kutsut}
                 />
               </AccordionBox>
@@ -122,7 +165,7 @@ const ValintakoeKutsutWrapper = ({
           }),
         )
       )}
-    </Box>
+    </Stack>
   );
 };
 
@@ -158,66 +201,66 @@ function ValintakoekutsutContent({
   };
 
   return (
-    <Box>
+    <Stack>
       <Box
         sx={{
           display: 'flex',
-          flexDirection: 'column',
+          justifyContent: 'space-between',
+          alignItems: 'flex-end',
+          marginBottom: 1,
         }}
       >
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'flex-end',
-            marginBottom: 1,
-          }}
-        >
-          <FormControl component="fieldset">
-            <FormLabel component="legend">
-              {t('valintakoekutsut.nayta')}
-            </FormLabel>
-            <FormGroup
-              row
-              sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                columnGap: 2,
-                width: '100%',
-              }}
+        <FormControl component="fieldset">
+          <FormLabel component="legend">
+            {t('valintakoekutsut.nayta')}
+          </FormLabel>
+          <FormGroup
+            row
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              columnGap: 2,
+              width: '100%',
+            }}
+          >
+            <ToggleButtonGroup
+              color="primary"
+              value={ryhmittely}
+              onChange={handleRyhmittelyChange}
+              exclusive
             >
-              <ToggleButtonGroup
-                color="primary"
-                value={ryhmittely}
-                onChange={handleRyhmittelyChange}
-                exclusive
-              >
-                <ToggleButton value="kokeittain">
-                  {t('valintakoekutsut.kokeittain')}
-                </ToggleButton>
-                <ToggleButton value="hakijoittain">
-                  {t('valintakoekutsut.hakijoittain')}
-                </ToggleButton>
-              </ToggleButtonGroup>
-              <OphCheckbox
-                checked={vainKutsuttavat}
-                onChange={handleVainKutsuttavatChange}
-                label={t('valintakoekutsut.vain-kutsuttavat')}
-              />
-            </FormGroup>
-          </FormControl>
-          <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
-        </Box>
-        <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
-          <ValintakoeKutsutWrapper
+              <ToggleButton value="kokeittain">
+                {t('valintakoekutsut.kokeittain')}
+              </ToggleButton>
+              <ToggleButton value="hakijoittain">
+                {t('valintakoekutsut.hakijoittain')}
+              </ToggleButton>
+            </ToggleButtonGroup>
+            <OphCheckbox
+              checked={vainKutsuttavat}
+              onChange={handleVainKutsuttavatChange}
+              label={t('valintakoekutsut.vain-kutsuttavat')}
+            />
+          </FormGroup>
+        </FormControl>
+        <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
+      </Box>
+      <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
+        {ryhmittely === 'kokeittain' ? (
+          <ValintakoekutsutKokeittain
             hakuOid={hakuOid}
             hakukohdeOid={hakukohdeOid}
             vainKutsuttavat={vainKutsuttavat}
-            ryhmittely={ryhmittely}
           />
-        </QuerySuspenseBoundary>
-      </Box>
-    </Box>
+        ) : (
+          <ValintakoekutsutHakijoittain
+            hakuOid={hakuOid}
+            hakukohdeOid={hakukohdeOid}
+            vainKutsuttavat={vainKutsuttavat}
+          />
+        )}
+      </QuerySuspenseBoundary>
+    </Stack>
   );
 }
 
