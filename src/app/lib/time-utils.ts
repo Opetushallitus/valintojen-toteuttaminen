@@ -1,5 +1,5 @@
 import { isAfter, isBefore } from 'date-fns';
-import { toZonedTime } from 'date-fns-tz';
+import { TZDate } from '@date-fns/tz';
 import { isNullish } from 'remeda';
 
 export const isInRange = (
@@ -14,4 +14,4 @@ export const isInRange = (
 };
 
 export const toFinnishDate = (date: Date) =>
-  toZonedTime(date, 'Europe/Helsinki');
+  new TZDate(date, 'Europe/Helsinki');
