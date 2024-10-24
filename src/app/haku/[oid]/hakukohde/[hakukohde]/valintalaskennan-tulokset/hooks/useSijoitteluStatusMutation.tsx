@@ -37,7 +37,7 @@ export const useSijoitteluStatusMutation = (hakukohdeOid: string) => {
     onError: (e) => {
       addToast({
         key: 'jono-sijoittelu-status-change',
-        message: 'valintalaskennan-tulos.virhe-sijoittelu-muutos',
+        message: 'valintalaskennan-tulokset.virhe-sijoittelu-muutos',
         type: 'error',
       });
       console.error(e);

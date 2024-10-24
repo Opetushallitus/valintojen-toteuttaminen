@@ -1,13 +1,14 @@
 'use client';
 
-import { getHaku, getHakukohde } from '@/app/lib/kouta';
 import HallintaTable from './components/hallinta-table';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { useSuspenseQueries } from '@tanstack/react-query';
 import { CircularProgress } from '@mui/material';
-import { getHaunAsetukset } from '@/app/lib/ohjausparametrit';
 import { TabContainer } from '../components/tab-container';
+import { hakuQueryOptions } from '@/app/hooks/useHaku';
+import { hakukohdeQueryOptions } from '@/app/hooks/useHakukohde';
+import { haunAsetuksetQueryOptions } from '@/app/hooks/useHaunAsetukset';
 
 type ValinnanHallintaContentParams = {
   hakuOid: string;
@@ -20,18 +21,9 @@ const ValinnanHallintaContent = ({
 }: ValinnanHallintaContentParams) => {
   const [hakuQuery, hakukohdeQuery, haunAsetuksetQuery] = useSuspenseQueries({
     queries: [
-      {
-        queryKey: ['getHaku', hakuOid],
-        queryFn: () => getHaku(hakuOid),
-      },
-      {
-        queryKey: ['getHakukohde', hakukohdeOid],
-        queryFn: () => getHakukohde(hakukohdeOid),
-      },
-      {
-        queryKey: ['getHaunAsetukset', hakuOid],
-        queryFn: () => getHaunAsetukset(hakuOid),
-      },
+      hakuQueryOptions({ hakuOid }),
+      hakukohdeQueryOptions({ hakukohdeOid }),
+      haunAsetuksetQueryOptions({ hakuOid }),
     ],
   });
 

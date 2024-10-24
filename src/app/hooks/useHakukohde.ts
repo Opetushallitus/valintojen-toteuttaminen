@@ -1,8 +1,15 @@
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
 import { getHakukohde } from '../lib/kouta';
 
-export const useHakukohde = ({ hakukohdeOid }: { hakukohdeOid: string }) =>
-  useSuspenseQuery({
+export const hakukohdeQueryOptions = ({
+  hakukohdeOid,
+}: {
+  hakukohdeOid: string;
+}) =>
+  queryOptions({
     queryKey: ['getHakukohde', hakukohdeOid],
     queryFn: () => getHakukohde(hakukohdeOid),
   });
+
+export const useHakukohde = ({ hakukohdeOid }: { hakukohdeOid: string }) =>
+  useSuspenseQuery(hakukohdeQueryOptions({ hakukohdeOid }));

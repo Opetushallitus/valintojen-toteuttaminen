@@ -92,4 +92,6 @@ export const configuration = {
   }) =>
     `${DOMAIN}/valintalaskenta-laskenta-service/resources/harkinnanvarainenhyvaksynta/haku/${hakuOid}/hakukohde/${hakukohdeOid}`,
   setHarkinnanvaraisetTilatUrl: `${DOMAIN}/valintalaskenta-laskenta-service/resources/harkinnanvarainenhyvaksynta`,
+  kayttaaValintalaskentaaUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
+    `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintaperusteet/hakukohde/${hakukohdeOid}/kayttaaValintalaskentaa`,
 } as const;

@@ -521,3 +521,14 @@ export const getHarkinnanvaraisuudetHakemuksille = async ({
   );
   return res.data;
 };
+
+export const getUsesValintalaskenta = async ({
+  hakukohdeOid,
+}: {
+  hakukohdeOid: string;
+}) => {
+  const res = await client.get<{ kayttaaValintalaskentaa: boolean }>(
+    configuration.kayttaaValintalaskentaaUrl({ hakukohdeOid }),
+  );
+  return res.data.kayttaaValintalaskentaa;
+};

@@ -1,6 +1,7 @@
 import { isObject } from '../common';
+import { toFinnishDate } from '../time-utils';
 import { Language, TranslatedName } from './localization-types';
-import { format, toZonedTime } from 'date-fns-tz';
+import { format } from 'date-fns';
 
 export function translateName(
   translated: TranslatedName,
@@ -31,10 +32,8 @@ export function toFormattedDateTimeString(
   value: number | Date | string,
 ): string {
   try {
-    const zonedDate = toZonedTime(new Date(value), 'Europe/Helsinki');
-    return format(zonedDate, 'd.M.yyyy HH:mm:ss', {
-      timeZone: 'Europe/Helsinki',
-    });
+    const zonedDate = toFinnishDate(new Date(value));
+    return format(zonedDate, 'd.M.yyyy HH:mm:ss');
   } catch (error) {
     console.warn(error);
     console.warn(
