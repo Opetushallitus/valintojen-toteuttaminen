@@ -4,6 +4,8 @@ import {
   isToisenAsteenYhteisHaku,
 } from '@/app/lib/kouta';
 import { HaunAsetukset } from '@/app/lib/ohjausparametrit';
+import { UserPermissions } from '@/app/lib/permissions';
+import { isInRange, toFinnishDate } from '@/app/lib/time-utils';
 import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
 
 type VisibleFnProps = {
@@ -11,6 +13,7 @@ type VisibleFnProps = {
   hakukohde: Hakukohde;
   haunAsetukset: HaunAsetukset;
   usesValintalaskenta: boolean;
+  permissions: UserPermissions;
 };
 
 export type BasicTab = {
@@ -41,43 +44,86 @@ const hasOnlyValinnanTulokset = ({
   );
 };
 
+const isAllowedToUseValinnat = (
+  haunAsetukset: HaunAsetukset,
+  permissions: UserPermissions,
+) => {
+  return (
+    permissions.admin ||
+    isInRange(
+      toFinnishDate(new Date()),
+      haunAsetukset?.PH_OLVVPKE?.dateStart,
+      haunAsetukset?.PH_OLVVPKE?.dateEnd,
+    )
+  );
+};
+
 export const TABS: BasicTab[] = [
   { title: 'perustiedot.otsikko', route: 'perustiedot' },
-  { title: 'hakeneet.otsikko', route: 'hakeneet' },
-  { title: 'valinnanhallinta.otsikko', route: 'valinnan-hallinta' },
-  { title: 'valintakoekutsut.otsikko', route: 'valintakoekutsut' },
-  { title: 'pistesyotto.otsikko', route: 'pistesyotto' },
+  {
+    title: 'hakeneet.otsikko',
+    route: 'hakeneet',
+    visibleFn: ({ haunAsetukset, permissions }) =>
+      isAllowedToUseValinnat(haunAsetukset, permissions),
+  },
+  {
+    title: 'valinnanhallinta.otsikko',
+    route: 'valinnan-hallinta',
+    visibleFn: ({ haunAsetukset, permissions }) =>
+      isAllowedToUseValinnat(haunAsetukset, permissions),
+  },
+  {
+    title: 'valintakoekutsut.otsikko',
+    route: 'valintakoekutsut',
+    visibleFn: ({ haunAsetukset, permissions }) =>
+      isAllowedToUseValinnat(haunAsetukset, permissions),
+  },
+  {
+    title: 'pistesyotto.otsikko',
+    route: 'pistesyotto',
+    visibleFn: ({ haunAsetukset, permissions }) =>
+      isAllowedToUseValinnat(haunAsetukset, permissions),
+  },
   {
     title: 'harkinnanvaraiset.otsikko',
     route: 'harkinnanvaraiset',
-    visibleFn: ({ haku, hakukohde }) =>
-      isToisenAsteenYhteisHaku(haku) && isHarkinnanvarainenHakukohde(hakukohde),
+    visibleFn: ({ haku, hakukohde, haunAsetukset, permissions }) =>
+      isToisenAsteenYhteisHaku(haku) &&
+      isHarkinnanvarainenHakukohde(hakukohde) &&
+      isAllowedToUseValinnat(haunAsetukset, permissions),
   },
   {
     title: 'hakijaryhmat.otsikko',
     route: 'hakijaryhmat',
-    visibleFn: ({ haku, haunAsetukset, usesValintalaskenta }) =>
+    visibleFn: ({ haku, haunAsetukset, usesValintalaskenta, permissions }) =>
       isKorkeakouluHaku(haku) &&
       (!hasOnlyValinnanTulokset({ haku, haunAsetukset }) ||
-        usesValintalaskenta),
+        usesValintalaskenta) &&
+      isAllowedToUseValinnat(haunAsetukset, permissions),
   },
   {
     title: 'valintalaskennan-tulokset.otsikko',
     route: 'valintalaskennan-tulokset',
-    visibleFn: ({ haku, haunAsetukset, usesValintalaskenta }) =>
-      !hasOnlyValinnanTulokset({ haku, haunAsetukset }) || usesValintalaskenta,
+    visibleFn: ({ haku, haunAsetukset, usesValintalaskenta, permissions }) =>
+      (!hasOnlyValinnanTulokset({ haku, haunAsetukset }) ||
+        usesValintalaskenta) &&
+      isAllowedToUseValinnat(haunAsetukset, permissions),
   },
   {
     title: 'sijoittelun-tulokset.otsikko',
     route: 'sijoittelun-tulokset',
-    visibleFn: ({ haku, haunAsetukset, usesValintalaskenta }) =>
-      !hasOnlyValinnanTulokset({ haku, haunAsetukset }) || usesValintalaskenta,
+    visibleFn: ({ haku, haunAsetukset, usesValintalaskenta, permissions }) =>
+      (!hasOnlyValinnanTulokset({ haku, haunAsetukset }) ||
+        usesValintalaskenta) &&
+      isAllowedToUseValinnat(haunAsetukset, permissions),
   },
   {
     title: 'valinnan-tulokset.otsikko',
     route: 'valinnan-tulokset',
-    visibleFn: ({ haku, haunAsetukset, usesValintalaskenta }) =>
-      hasOnlyValinnanTulokset({ haku, haunAsetukset }) && !usesValintalaskenta,
+    visibleFn: ({ haku, haunAsetukset, usesValintalaskenta, permissions }) =>
+      hasOnlyValinnanTulokset({ haku, haunAsetukset }) &&
+      !usesValintalaskenta &&
+      isAllowedToUseValinnat(haunAsetukset, permissions),
   },
 ] as const;
 

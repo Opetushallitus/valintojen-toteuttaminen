@@ -45,13 +45,14 @@ const getUserPermissions = async (): Promise<UserPermissions> => {
   return userPermissions;
 };
 
-const queryProps = {
+export const userPermissionsQueryOptions = {
   queryKey: ['getUserPermissions'],
   queryFn: getUserPermissions,
   staleTime: Infinity,
 };
 
 export const useQueryUserPermissions = () =>
-  useQuery({ ...queryProps, throwOnError: false });
+  useQuery({ ...userPermissionsQueryOptions, throwOnError: false });
 
-export const useUserPermissions = () => useSuspenseQuery(queryProps);
+export const useUserPermissions = () =>
+  useSuspenseQuery(userPermissionsQueryOptions);

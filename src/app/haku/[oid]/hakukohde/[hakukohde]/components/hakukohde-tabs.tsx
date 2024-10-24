@@ -12,6 +12,7 @@ import { OphTypography } from '@opetushallitus/oph-design-system';
 import { useSuspenseQueries } from '@tanstack/react-query';
 import { haunAsetuksetQueryOptions } from '@/app/hooks/useHaunAsetukset';
 import { getUsesValintalaskenta } from '@/app/lib/valintalaskentakoostepalvelu';
+import { userPermissionsQueryOptions } from '@/app/hooks/useUserPermissions';
 
 const StyledContainer = styled('div')(({ theme }) => ({
   padding: theme.spacing(2, 3, 0),
@@ -62,6 +63,7 @@ const HakukohdeTabs = ({
     hakukohdeQuery,
     haunAsetuksetQuery,
     usesValintalaskentaQuery,
+    permissionsQuery,
   ] = useSuspenseQueries({
     queries: [
       hakuQueryOptions({ hakuOid }),
@@ -71,6 +73,7 @@ const HakukohdeTabs = ({
         queryKey: ['getUsesValintalaskenta', hakukohdeOid],
         queryFn: () => getUsesValintalaskenta({ hakukohdeOid }),
       },
+      userPermissionsQueryOptions,
     ],
   });
 
@@ -78,6 +81,7 @@ const HakukohdeTabs = ({
   const { data: hakukohde } = hakukohdeQuery;
   const { data: haunAsetukset } = haunAsetuksetQuery;
   const { data: usesValintalaskenta } = usesValintalaskentaQuery;
+  const { data: permissions } = permissionsQuery;
 
   return (
     <StyledContainer>
@@ -98,6 +102,7 @@ const HakukohdeTabs = ({
           hakukohde,
           haunAsetukset,
           usesValintalaskenta,
+          permissions,
         }).map((tab) => (
           <StyledTab
             key={'hakukohde-tab-' + tab.route}
