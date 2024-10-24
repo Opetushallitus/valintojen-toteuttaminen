@@ -345,7 +345,7 @@ export const saveSijoitteluAjonTulokset = async (
 
   const { data } = results;
 
-  if (Array.isArray(data)) {
+  if (Array.isArray(data) && data.length > 0) {
     throw new OphApiError<ValintaStatusUpdateErrorResult[]>(
       results,
       'virhe.tallennus',
