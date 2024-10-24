@@ -1,7 +1,6 @@
 import {
   isHarkinnanvarainenHakukohde,
   isKorkeakouluHaku,
-  isToisenAsteenYhteisHaku,
 } from '@/app/lib/kouta';
 import { HaunAsetukset } from '@/app/lib/ohjausparametrit';
 import { UserPermissions } from '@/app/lib/permissions';
@@ -88,7 +87,7 @@ export const TABS: BasicTab[] = [
     title: 'harkinnanvaraiset.otsikko',
     route: 'harkinnanvaraiset',
     visibleFn: ({ haku, hakukohde, haunAsetukset, permissions }) =>
-      isToisenAsteenYhteisHaku(haku) &&
+      !isKorkeakouluHaku(haku) &&
       isHarkinnanvarainenHakukohde(hakukohde) &&
       isAllowedToUseValinnat(haunAsetukset, permissions),
   },
