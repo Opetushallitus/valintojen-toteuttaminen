@@ -146,7 +146,7 @@ export const SijoittelunTulosTable = ({
         massStatusChangeForm={massStatusChangeForm}
       />
       <ListTable
-        rowKeyProp="hakijaOid"
+        rowKeyProp="hakemusOid"
         columns={columns}
         rows={hakemukset}
         sort={sort}

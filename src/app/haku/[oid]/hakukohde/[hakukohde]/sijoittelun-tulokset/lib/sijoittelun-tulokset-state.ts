@@ -227,7 +227,7 @@ export const createSijoittelunTuloksetMachine = (
             target: SijoittelunTuloksetStates.UPDATE_COMPLETED,
           },
           onError: {
-            target: SijoittelunTuloksetStates.ERROR,
+            target: SijoittelunTuloksetStates.IDLE,
             actions: {
               type: 'errorModal',
               params: ({ event }) => event,
