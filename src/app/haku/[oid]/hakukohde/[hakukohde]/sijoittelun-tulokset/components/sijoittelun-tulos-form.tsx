@@ -5,7 +5,6 @@ import { FormEvent, useMemo, useState } from 'react';
 import useToaster from '@/app/hooks/useToaster';
 import { useMachine } from '@xstate/react';
 import { styled } from '@mui/material';
-import { ophColors } from '@opetushallitus/oph-design-system';
 import useConfirmChangesBeforeNavigation from '@/app/hooks/useConfirmChangesBeforeNavigation';
 import { SijoittelunTuloksetActions } from './sijoittelun-tulos-actions';
 import {
@@ -26,10 +25,10 @@ type SijoittelunTuloksetFormParams = {
   haku: Haku;
   hakukohdeOid: string;
   lastModified: string;
+  publishAllowed: boolean;
 };
 
 const StyledForm = styled('form')(({ theme }) => ({
-  border: `1px solid ${ophColors.grey100}`,
   padding: theme.spacing(2.5),
   width: '100%',
 }));
@@ -39,6 +38,7 @@ export const SijoittelunTulosForm = ({
   hakukohdeOid,
   haku,
   lastModified,
+  publishAllowed,
 }: SijoittelunTuloksetFormParams) => {
   const { t } = useTranslations();
 
@@ -64,9 +64,14 @@ export const SijoittelunTulosForm = ({
   useConfirmChangesBeforeNavigation(dirty);
 
   const submitChanges = (event: FormEvent) => {
-    setDirty(false);
     send({ type: SijoittelunTuloksetEvents.UPDATE });
     event.preventDefault();
+    setDirty(false);
+  };
+
+  const publish = () => {
+    send({ type: SijoittelunTuloksetEvents.PUBLISH });
+    setDirty(false);
   };
 
   const updateForm = (changeParams: SijoittelunTuloksetChangeEvent) => {
@@ -91,7 +96,11 @@ export const SijoittelunTulosForm = ({
       onSubmit={submitChanges}
       data-test-id={`sijoittelun-tulokset-form-${valintatapajono.oid}`}
     >
-      <SijoittelunTuloksetActions state={state} />
+      <SijoittelunTuloksetActions
+        state={state}
+        publishAllowed={publishAllowed}
+        publish={publish}
+      />
       <TablePaginationWrapper
         label={`${t('yleinen.sivutus')} ${valintatapajono.nimi}`}
         totalCount={results?.length ?? 0}

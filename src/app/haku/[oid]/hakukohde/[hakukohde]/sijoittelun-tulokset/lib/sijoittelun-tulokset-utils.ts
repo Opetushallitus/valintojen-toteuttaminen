@@ -1,3 +1,6 @@
+import { isKorkeakouluHaku } from '@/app/lib/kouta';
+import { HaunAsetukset } from '@/app/lib/types/haun-asetukset';
+import { Haku } from '@/app/lib/types/kouta-types';
 import {
   SijoittelunHakemusValintatiedoilla,
   VastaanottoTila,
@@ -18,4 +21,14 @@ export const hakemukselleNaytetaanIlmoittautumisTila = (
   h.naytetaanVastaanottoTieto &&
   VASTAANOTTOTILAT_JOILLE_NAYTETAAN_ILMOITTAUTUMISTILA.includes(
     h.vastaanottotila,
+  );
+
+export const canHakuBePublished = (
+  haku: Haku,
+  haunAsetukset: HaunAsetukset,
+): boolean =>
+  Boolean(
+    isKorkeakouluHaku(haku) ||
+      (haunAsetukset.valintaEsityksenHyvaksyminen &&
+        new Date() >= haunAsetukset.valintaEsityksenHyvaksyminen),
   );

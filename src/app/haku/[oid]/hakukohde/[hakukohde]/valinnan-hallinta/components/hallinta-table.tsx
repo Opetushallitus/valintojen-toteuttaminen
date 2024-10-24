@@ -17,7 +17,6 @@ import {
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
 import HallintaTableRow from './hallinta-table-row';
-import { HaunAsetukset } from '@/app/lib/ohjausparametrit';
 import { sijoitellaankoHaunHakukohteetLaskennanYhteydessa } from '@/app/lib/kouta';
 import Confirm from './confirm';
 import { getLasketutValinnanVaiheet } from '@/app/lib/valintalaskenta-service';
@@ -32,6 +31,7 @@ import { useMachine } from '@xstate/react';
 import { useMemo } from 'react';
 import { useToaster } from '@/app/hooks/useToaster';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
+import { HaunAsetukset } from '@/app/lib/types/haun-asetukset';
 
 type HallintaTableParams = {
   haku: Haku;

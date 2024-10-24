@@ -11,6 +11,7 @@ import {
   hakemukselleNaytetaanVastaanottoTila,
 } from './sijoittelun-tulokset-utils';
 import {
+  hyvaksyValintaEsitys,
   saveMaksunTilanMuutokset,
   saveSijoitteluAjonTulokset,
 } from '@/app/lib/valinta-tulos-service';
@@ -33,12 +34,16 @@ export enum SijoittelunTuloksetStates {
   UPDATE_COMPLETED = 'UPDATE_COMPLETED',
   ERROR = 'ERROR',
   NOTIFY_MASS_STATUS_CHANGE = 'NOTIFY_MASS_STATUS_CHANGE',
+  PUBLISHING = 'PUBLISHING',
+  UPDATING_AND_THEN_PUBLISH = 'UPDATING_AND_THEN_PUBLISH',
+  PUBLISHED = 'PUBLISHED',
 }
 
 export enum SijoittelunTuloksetEvents {
   UPDATE = 'UPDATE',
   CHANGE_HAKEMUKSET_STATES = 'CHANGE_HAKEMUKSET_STATES',
   ADD_CHANGED_HAKEMUS = 'ADD_CHANGED_HAKEMUS',
+  PUBLISH = 'PUBLISH',
 }
 
 export type SijoittelunTuloksetChangeEvent = {
@@ -161,6 +166,15 @@ export const createSijoittelunTuloksetMachine = (
               },
             },
           ],
+          [SijoittelunTuloksetEvents.PUBLISH]: [
+            {
+              guard: 'hasChangedHakemukset',
+              target: SijoittelunTuloksetStates.UPDATING_AND_THEN_PUBLISH,
+            },
+            {
+              target: SijoittelunTuloksetStates.PUBLISHING,
+            },
+          ],
           [SijoittelunTuloksetEvents.CHANGE_HAKEMUKSET_STATES]: {
             actions: assign(({ context, event }) => {
               const e = event as unknown as HakemuksetStateChangeEvent;
@@ -235,6 +249,40 @@ export const createSijoittelunTuloksetMachine = (
           },
         },
       },
+      [SijoittelunTuloksetStates.UPDATING_AND_THEN_PUBLISH]: {
+        invoke: {
+          src: 'updateHakemukset',
+          input: ({ context }) => ({
+            changed: context.changedHakemukset,
+            original: context.originalHakemukset,
+          }),
+          onDone: {
+            target: SijoittelunTuloksetStates.PUBLISHING,
+          },
+          onError: {
+            target: SijoittelunTuloksetStates.IDLE,
+            actions: {
+              type: 'errorModal',
+              params: ({ event }) => event,
+            },
+          },
+        },
+      },
+      [SijoittelunTuloksetStates.PUBLISHING]: {
+        invoke: {
+          src: 'publish',
+          onDone: {
+            target: SijoittelunTuloksetStates.PUBLISHED,
+          },
+          onError: {
+            target: SijoittelunTuloksetStates.IDLE,
+            actions: {
+              type: 'errorModal',
+              params: ({ event }) => event,
+            },
+          },
+        },
+      },
       [SijoittelunTuloksetStates.NOTIFY_MASS_STATUS_CHANGE]: {
         always: [
           {
@@ -254,11 +302,39 @@ export const createSijoittelunTuloksetMachine = (
           },
         ],
       },
+      [SijoittelunTuloksetStates.PUBLISHED]: {
+        always: [
+          {
+            target: SijoittelunTuloksetStates.IDLE,
+            actions: {
+              type: 'successNotify',
+              params: { message: 'sijoittelun-tulokset.hyvaksytty' },
+            },
+          },
+        ],
+        entry: [
+          assign({
+            hakemukset: ({ context }) =>
+              context.hakemukset.map((h) => {
+                const changed = context.changedHakemukset.find(
+                  (c) => c.hakemusOid === h.hakemusOid,
+                );
+                return changed ?? h;
+              }),
+          }),
+          assign({
+            changedHakemukset: [],
+          }),
+        ],
+      },
       [SijoittelunTuloksetStates.UPDATE_COMPLETED]: {
         always: [
           {
             target: SijoittelunTuloksetStates.IDLE,
-            actions: 'successNotify',
+            actions: {
+              type: 'successNotify',
+              params: { message: 'sijoittelun-tulokset.valmis' },
+            },
           },
         ],
         entry: [
@@ -291,10 +367,10 @@ export const createSijoittelunTuloksetMachine = (
           message: (params as { message: string }).message,
           type: 'error',
         }),
-      successNotify: () =>
+      successNotify: (_, params) =>
         addToast({
           key: `sijoittelun-tulokset-updated-for-${hakukohdeOid}-${valintatapajonoOid}`,
-          message: 'sijoittelun-tulokset.valmis',
+          message: (params as { message: string }).message,
           type: 'success',
         }),
       notifyMassStatusChange: ({ context }) =>
@@ -334,6 +410,11 @@ export const createSijoittelunTuloksetMachine = (
           });
         },
       ),
+      publish: fromPromise(() => {
+        return tryAndParseError(async () => {
+          await hyvaksyValintaEsitys(valintatapajonoOid);
+        });
+      }),
     },
   });
 };

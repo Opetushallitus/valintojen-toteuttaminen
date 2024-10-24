@@ -12,16 +12,23 @@ import { NoResults } from '@/app/components/no-results';
 import { useSijoittelunTulosSearchParams } from './hooks/useSijoittelunTuloksetSearch';
 import { SijoittelunTulosContent } from './components/sijoittelun-tulos-content';
 import { SijoittelunTulosControls } from './components/sijoittelun-tulos-controls';
-import { useHaku } from '@/app/hooks/useHaku';
+import { useHaku, useHaunAsetukset } from '@/app/hooks/useHaku';
 import { Haku } from '@/app/lib/types/kouta-types';
 import { ClientSpinner } from '@/app/components/client-spinner';
+import { HaunAsetukset } from '@/app/lib/types/haun-asetukset';
+import { canHakuBePublished } from './lib/sijoittelun-tulokset-utils';
 
 type SijoitteluContentParams = {
   haku: Haku;
   hakukohdeOid: string;
+  haunAsetukset: HaunAsetukset;
 };
 
-const SijoitteluContent = ({ haku, hakukohdeOid }: SijoitteluContentParams) => {
+const SijoitteluContent = ({
+  haku,
+  hakukohdeOid,
+  haunAsetukset,
+}: SijoitteluContentParams) => {
   const { t } = useTranslations();
 
   const { pageSize, setPageSize } = useSijoittelunTulosSearchParams();
@@ -66,6 +73,7 @@ const SijoitteluContent = ({ haku, hakukohdeOid }: SijoitteluContentParams) => {
           haku={haku}
           hakukohdeOid={hakukohdeOid}
           lastModified={tulokset.lastModified}
+          publishAllowed={canHakuBePublished(haku, haunAsetukset)}
         />
       ))}
     </Box>
@@ -78,11 +86,16 @@ export default function SijoittelunTuloksetPage({
   params: { oid: string; hakukohde: string };
 }) {
   const { data: haku } = useHaku({ hakuOid: params.oid });
+  const { data: haunAsetukset } = useHaunAsetukset({ hakuOid: params.oid });
 
   return (
     <TabContainer>
       <QuerySuspenseBoundary suspenseFallback={<ClientSpinner />}>
-        <SijoitteluContent haku={haku} hakukohdeOid={params.hakukohde} />
+        <SijoitteluContent
+          haku={haku}
+          hakukohdeOid={params.hakukohde}
+          haunAsetukset={haunAsetukset}
+        />
       </QuerySuspenseBoundary>
     </TabContainer>
   );
