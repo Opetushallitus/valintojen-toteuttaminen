@@ -252,6 +252,9 @@
     "muu-syy-aria-sv": "Ehdollisuuden syy ruotsiksi",
     "muu-syy-aria-en": "Ehdollisuuden syy englanniksi",
     "mass-status-change-done": "Muutettiin tila {{amount}} hakemukselle",
+    "hyvaksy": "Hyväksy ja tallenna valintaesitys",
+    "valmis": "Valintaesityksen muutokset tallennuttu",
+    "hyvaksytty": "Valintaesitys hyväksytty",
     "taulukko": {
       "alaotsikko": {
         "aloituspaikat": "Aloituspaikat",

@@ -357,3 +357,10 @@ export const saveSijoitteluAjonTulokset = async (
     muuttuneetKirjeet,
   );
 };
+
+export const hyvaksyValintaEsitys = async (valintatapajonoOid: string) => {
+  await client.post(
+    `${configuration.valintaTulosServiceUrl}valintaesitys/${valintatapajonoOid}/hyvaksytty`,
+    {},
+  );
+};

@@ -2,21 +2,26 @@
 
 import { configuration } from './configuration';
 import { client } from './http-client';
+import { HaunAsetukset } from './types/haun-asetukset';
 
-export type HaunAsetukset = {
+type HaunAsetuksetResponse = {
   sijoittelu: boolean;
   // PH_OLVVPKE: "Oppilaitosten virkailijoiden valintapalvelun käyttö estetty"
   PH_OLVVPKE?: {
     dateStart: number;
     dateEnd: number;
   };
+  PH_VEH?: { date?: string };
 };
 
 export const getHaunAsetukset = async (
   hakuOid: string,
 ): Promise<HaunAsetukset> => {
-  const response = await client.get<HaunAsetukset>(
+  const response = await client.get<HaunAsetuksetResponse>(
     `${configuration.ohjausparametritUrl}/${hakuOid}`,
   );
-  return response.data;
+  const valintaEsityksenHyvaksyminen = response.data.PH_VEH?.date
+    ? new Date(response.data.PH_VEH?.date)
+    : undefined;
+  return { sijoittelu: response.data.sijoittelu, PH_OLVVPKE: response.data.PH_OLVVPKE, valintaEsityksenHyvaksyminen };
 };
