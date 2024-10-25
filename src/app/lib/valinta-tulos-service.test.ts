@@ -226,6 +226,7 @@ function buildDummyValinnanTulosResponse() {
       lastModified: new Date().toISOString(),
       sijoittelunTulokset: dummySijoittelunTulokset,
       lukuvuosimaksut: [],
+      kirjeLahetetty: [],
     },
   });
 }

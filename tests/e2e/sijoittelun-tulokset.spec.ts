@@ -31,6 +31,7 @@ test('displays sijoittelun tulokset', async ({ page }) => {
   await checkRow(
     headrow,
     [
+      '',
       'Jonosija',
       'Hakija',
       'Hakutoive',
@@ -48,6 +49,7 @@ test('displays sijoittelun tulokset', async ({ page }) => {
   await checkRow(
     rows.nth(0),
     [
+      '',
       '1',
       'Nukettaja Ruhtinas',
       '0',
@@ -62,6 +64,7 @@ test('displays sijoittelun tulokset', async ({ page }) => {
   await checkRow(
     rows.nth(1),
     [
+      '',
       '2',
       'Dacula Kreivi',
       '0',
@@ -76,7 +79,7 @@ test('displays sijoittelun tulokset', async ({ page }) => {
   );
   await checkRow(
     rows.nth(2),
-    ['3', 'Purukumi Puru', '0', '49', 'VARALLA(1)', 'Julkaistavissa'],
+    ['', '3', 'Purukumi Puru', '0', '49', 'VARALLA(1)', 'Julkaistavissa'],
     'td',
     false,
   );
@@ -90,7 +93,7 @@ test('displays sijoittelun tulokset', async ({ page }) => {
   await expect(rows2nd).toHaveCount(1);
   await checkRow(
     rows2nd.nth(0),
-    ['', 'Hui Haamu', '0', '0', 'HYLÄTTY'],
+    ['', '', 'Hui Haamu', '0', '0', 'HYLÄTTY'],
     'td',
     false,
   );
@@ -122,6 +125,7 @@ test('does not show accept conditionally or payment column when toisen asteen yh
   await checkRow(
     headrow,
     [
+      '',
       'Jonosija',
       'Hakija',
       'Hakutoive',
@@ -142,8 +146,8 @@ test('shows other selection options for ehdollisuuden syy', async ({
 }) => {
   const ammSection = page.getByLabel('Todistusvalinta (AMM)(');
   await ammSection.getByLabel('Ehdollinen valinta').click();
-  await expect(ammSection.getByLabel('Valitse vaihtoehdoista')).toBeVisible();
-  await ammSection.getByLabel('Valitse vaihtoehdoista').click();
+  await expect(ammSection.getByText('Valitse...')).toBeVisible();
+  await ammSection.getByText('Valitse...').click();
   await expect(page.getByRole('option', { name: 'Muu' })).toBeVisible();
   await page.getByRole('option', { name: 'Muu' }).click();
   await expect(
@@ -165,11 +169,11 @@ test.describe('filters', () => {
     await hakuInput.fill('Ruht');
     let rows = page.locator('tbody tr');
     await expect(rows).toHaveCount(1);
-    await checkRow(rows.nth(0), ['1', 'Nukettaja Ruhtinas']);
+    await checkRow(rows.nth(0), ['', '1', 'Nukettaja Ruhtinas']);
     await hakuInput.fill('Dac');
     rows = page.locator('tbody tr');
     await expect(rows).toHaveCount(1);
-    await checkRow(rows.nth(0), ['2', 'Dacula Kreivi']);
+    await checkRow(rows.nth(0), ['', '2', 'Dacula Kreivi']);
   });
 
   test('filters by application oid', async ({ page }) => {
@@ -179,7 +183,7 @@ test.describe('filters', () => {
     await hakuInput.fill('1.2.246.562.11.00000000000001543832');
     const rows = page.locator('tbody tr');
     await expect(rows).toHaveCount(1);
-    await checkRow(rows.nth(0), ['', 'Hui Haamu']);
+    await checkRow(rows.nth(0), ['', '', 'Hui Haamu']);
   });
 
   test('filters henkiloOid', async ({ page }) => {
@@ -189,28 +193,28 @@ test.describe('filters', () => {
     await hakuInput.fill('1.2.246.562.24.14598775927');
     const rows = page.locator('tbody tr');
     await expect(rows).toHaveCount(1);
-    await checkRow(rows.nth(0), ['3', 'Purukumi Puru']);
+    await checkRow(rows.nth(0), ['', '3', 'Purukumi Puru']);
   });
 
   test('filters by julkaisutila VARALLA', async ({ page }) => {
     await selectTila(page, 'VARALLA');
     const rows = page.locator('tbody tr');
     await expect(rows).toHaveCount(1);
-    await checkRow(rows.nth(0), ['3', 'Purukumi Puru']);
+    await checkRow(rows.nth(0), ['', '3', 'Purukumi Puru']);
   });
 
   test('filters by julkaisutila HYLÄTTY', async ({ page }) => {
     await selectTila(page, 'HYLÄTTY');
     const rows = page.locator('tbody tr');
     await expect(rows).toHaveCount(1);
-    await checkRow(rows.nth(0), ['', 'Hui Haamu']);
+    await checkRow(rows.nth(0), ['', '', 'Hui Haamu']);
   });
 
   test('filters by showing only changed applications', async ({ page }) => {
     await page.getByLabel('Näytä vain edellisestä').click();
     const rows = page.locator('tbody tr');
     await expect(rows).toHaveCount(1);
-    await checkRow(rows.nth(0), ['', 'Hui Haamu']);
+    await checkRow(rows.nth(0), ['', '', 'Hui Haamu']);
   });
 
   test('filters by showing only conditionally accepted applications', async ({
@@ -219,7 +223,7 @@ test.describe('filters', () => {
     await page.getByLabel('Näytä vain ehdollisesti hyvä').click();
     const rows = page.locator('tbody tr');
     await expect(rows).toHaveCount(1);
-    await checkRow(rows.nth(0), ['3', 'Purukumi Puru']);
+    await checkRow(rows.nth(0), ['', '3', 'Purukumi Puru']);
   });
 });
 
