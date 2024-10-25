@@ -227,6 +227,101 @@ test.describe('filters', () => {
   });
 });
 
+test.describe('select', () => {
+  test('selects all applications', async ({ page }) => {
+    await expect(page.getByText('Ei hakijoita valittu')).toHaveCount(2);
+    await page
+      .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
+      .getByLabel('Valitse kaikki')
+      .click();
+    await expect(page.getByText('Ei hakijoita valittu')).toHaveCount(1);
+    await expect(page.getByText('Hakijoita valittu: 3')).toBeVisible();
+  });
+
+  test('selects applications', async ({ page }) => {
+    await page.getByLabel('Valitse hakijan Dacula Kreivi').click();
+    await expect(page.getByText('Hakijoita valittu: 1')).toBeVisible();
+    await page.getByLabel('Valitse hakijan Purukumi Puru').click();
+    await expect(page.getByText('Hakijoita valittu: 2')).toBeVisible();
+  });
+
+  test('mass changes applications vastaanottotieto', async ({ page }) => {
+    await page
+      .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
+      .getByLabel('Valitse kaikki')
+      .click();
+    await page
+      .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
+      .getByText('Muuta vastaanottotieto')
+      .click();
+    await page.getByRole('option', { name: 'Perunut' }).click();
+    await expect(
+      page.getByText('Muutettiin tila 2 hakemukselle'),
+    ).toBeVisible();
+    await expect(page.getByRole('row').getByText('Perunut')).toHaveCount(2);
+  });
+
+  test('mass changes applications ilmoittautumistieto', async ({ page }) => {
+    await page
+      .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
+      .getByLabel('Valitse kaikki')
+      .click();
+    await page
+      .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
+      .getByText('Muuta ilmoittautumistieto')
+      .click();
+    await page.getByRole('option', { name: 'Ei ilmoittautunut' }).click();
+    await expect(
+      page.getByText('Muutettiin tila 2 hakemukselle'),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('row').getByText('Ei ilmoittautunut'),
+    ).toHaveCount(2);
+  });
+});
+
+test.describe('saving changes', () => {
+  test('informs that there is nothing to save', async ({ page }) => {
+    await page
+      .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
+      .getByRole('button', { name: 'Tallenna', exact: true })
+      .click();
+    await expectAllSpinnersHidden(page);
+    await expect(page.getByText('Ei muutoksia mitä tallentaa')).toBeVisible();
+  });
+
+  test('saves changes', async ({ page }) => {
+    await page.getByText('Maksamatta').click();
+    await page.getByRole('option', { name: 'Maksettu' }).click();
+    await page
+      .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
+      .getByRole('button', { name: 'Tallenna', exact: true })
+      .click();
+    await expect(
+      page.getByText('Valintaesityksen muutokset tallennuttu'),
+    ).toBeVisible();
+  });
+
+  test('saving changes fails', async ({ page }) => {
+    await page.route(
+      '*/**/valinta-tulos-service/auth/lukuvuosimaksu/1.2.246.562.20.00000000000000045105*',
+      async (route) => {
+        await route.fulfill({ status: 500, body: 'Unknown error' });
+      },
+    );
+    await page.getByText('Maksamatta').click();
+    await page.getByRole('option', { name: 'Maksettu' }).click();
+    await page
+      .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
+      .getByRole('button', { name: 'Tallenna', exact: true })
+      .click();
+    await expect(
+      page.getByText('Tietojen tallentamisessa tapahtui virhe'),
+    ).toBeVisible();
+    await expect(page.getByText('Unknown error')).toBeVisible();
+  });
+});
+
 async function goToSijoittelunTulokset(page: Page) {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/sijoittelun-tulokset',

@@ -85,7 +85,7 @@ export const SijoittelunTulosTallennusError = ({ error }: { error: Error }) => {
   } else {
     return (
       <OphTypography>
-        <ErrorWithIcon>{error.message}</ErrorWithIcon>
+        <ErrorWithIcon>{error.message ?? error}</ErrorWithIcon>
       </OphTypography>
     );
   }

@@ -32,7 +32,6 @@ export enum SijoittelunTuloksetStates {
   IDLE = 'IDLE',
   UPDATING = 'UPDATING',
   UPDATE_COMPLETED = 'UPDATE_COMPLETED',
-  ERROR = 'ERROR',
   NOTIFY_MASS_STATUS_CHANGE = 'NOTIFY_MASS_STATUS_CHANGE',
   PUBLISHING = 'PUBLISHING',
   UPDATING_AND_THEN_PUBLISH = 'UPDATING_AND_THEN_PUBLISH',
@@ -288,17 +287,6 @@ export const createSijoittelunTuloksetMachine = (
           {
             target: SijoittelunTuloksetStates.IDLE,
             actions: 'notifyMassStatusChange',
-          },
-        ],
-      },
-      [SijoittelunTuloksetStates.ERROR]: {
-        always: [
-          {
-            target: SijoittelunTuloksetStates.IDLE,
-            actions: {
-              type: 'alert',
-              params: { message: 'virhe.tallennus' },
-            },
           },
         ],
       },
