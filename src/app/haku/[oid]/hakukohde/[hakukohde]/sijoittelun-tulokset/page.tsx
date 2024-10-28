@@ -18,6 +18,7 @@ import { Haku } from '@/app/lib/types/kouta-types';
 import { ClientSpinner } from '@/app/components/client-spinner';
 import { HaunAsetukset } from '@/app/lib/types/haun-asetukset';
 import { canHakuBePublished } from './lib/sijoittelun-tulokset-utils';
+import { useUserPermissions } from '@/app/hooks/useUserPermissions';
 
 type SijoitteluContentParams = {
   haku: Haku;
@@ -43,6 +44,8 @@ const SijoitteluContent = ({
     queryFn: () =>
       getLatestSijoitteluAjonTuloksetWithValintaEsitys(haku.oid, hakukohdeOid),
   });
+
+  const { data: permissions } = useUserPermissions();
 
   return isEmpty(tulokset) ? (
     <NoResults text={t('hakijaryhmat.ei-tuloksia')} />
@@ -74,7 +77,9 @@ const SijoitteluContent = ({
           haku={haku}
           hakukohdeOid={hakukohdeOid}
           lastModified={tulokset.lastModified}
-          publishAllowed={canHakuBePublished(haku, haunAsetukset)}
+          publishAllowed={
+            permissions.admin || canHakuBePublished(haku, haunAsetukset)
+          }
         />
       ))}
     </Box>
