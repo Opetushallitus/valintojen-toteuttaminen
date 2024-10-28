@@ -371,6 +371,7 @@ export const createSijoittelunTuloksetMachine = (
       errorModal: (_, params) =>
         showModal(ErrorModalDialog, {
           error: (params as { error: Error }).error as Error,
+          hakemukset,
         }),
     },
     actors: {

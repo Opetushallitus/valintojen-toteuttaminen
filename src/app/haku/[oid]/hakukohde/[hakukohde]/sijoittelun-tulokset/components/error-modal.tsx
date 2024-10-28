@@ -1,7 +1,11 @@
+import { ExternalLink } from '@/app/components/external-link';
 import { createModal, useOphModalProps } from '@/app/components/global-modal';
 import { OphModalDialog } from '@/app/components/oph-modal-dialog';
+import { buildLinkToPerson } from '@/app/components/table/table-columns';
 import { useTranslations } from '@/app/hooks/useTranslations';
+import { buildLinkToApplication } from '@/app/lib/ataru';
 import { OphApiError } from '@/app/lib/common';
+import { SijoittelunHakemusValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
 import { ValintaStatusUpdateErrorResult } from '@/app/lib/types/valinta-tulos-types';
 import { Error } from '@mui/icons-material';
 import {
@@ -15,28 +19,36 @@ import {
 } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 
-export const ErrorModalDialog = createModal(({ error }: { error: Error }) => {
-  const modalProps = useOphModalProps();
-  const { t, i18n } = useTranslations();
-  return (
-    <OphModalDialog
-      {...modalProps}
-      title={
-        error?.message && i18n.exists(error.message)
-          ? t(error.message)
-          : t('virhe.tallennus')
-      }
-      maxWidth="md"
-      actions={
-        <OphButton variant="outlined" onClick={modalProps.onClose}>
-          {t('yleinen.sulje')}
-        </OphButton>
-      }
-    >
-      <SijoittelunTulosTallennusError error={error} />
-    </OphModalDialog>
-  );
-});
+export const ErrorModalDialog = createModal(
+  ({
+    error,
+    hakemukset,
+  }: {
+    error: Error;
+    hakemukset: SijoittelunHakemusValintatiedoilla[];
+  }) => {
+    const modalProps = useOphModalProps();
+    const { t, i18n } = useTranslations();
+    return (
+      <OphModalDialog
+        {...modalProps}
+        title={
+          error?.message && i18n.exists(error.message)
+            ? t(error.message)
+            : t('virhe.tallennus')
+        }
+        maxWidth="md"
+        actions={
+          <OphButton variant="outlined" onClick={modalProps.onClose}>
+            {t('yleinen.sulje')}
+          </OphButton>
+        }
+      >
+        <SijoittelunTulosTallennusError error={error} hakemukset={hakemukset} />
+      </OphModalDialog>
+    );
+  },
+);
 
 const ErrorWithIcon = ({ children }: { children: string }) => {
   return (
@@ -49,8 +61,18 @@ const ErrorWithIcon = ({ children }: { children: string }) => {
   );
 };
 
-export const SijoittelunTulosTallennusError = ({ error }: { error: Error }) => {
+export const SijoittelunTulosTallennusError = ({
+  error,
+  hakemukset,
+}: {
+  error: Error;
+  hakemukset: SijoittelunHakemusValintatiedoilla[];
+}) => {
   const { t } = useTranslations();
+
+  const findMatchingHakemus = (hakemusOid: string) =>
+    hakemukset.find((h) => h.hakemusOid === hakemusOid);
+
   if (error instanceof OphApiError && Array.isArray(error.response.data)) {
     const responseData = error.response
       .data as Array<ValintaStatusUpdateErrorResult>;
@@ -59,6 +81,7 @@ export const SijoittelunTulosTallennusError = ({ error }: { error: Error }) => {
         <Table>
           <TableHead>
             <TableRow>
+              <TableCell>{t('hakeneet.taulukko.hakija')}</TableCell>
               <TableCell>
                 {t('pistesyotto.tuonti-tulos-taulukko.hakemus-oid')}
               </TableCell>
@@ -69,9 +92,25 @@ export const SijoittelunTulosTallennusError = ({ error }: { error: Error }) => {
           </TableHead>
           <TableBody>
             {responseData.map(({ hakemusOid, message }) => {
+              const hakemus = findMatchingHakemus(hakemusOid);
               return (
                 <TableRow key={hakemusOid}>
-                  <TableCell>{hakemusOid}</TableCell>
+                  <TableCell>
+                    {hakemus && (
+                      <ExternalLink
+                        noIcon={true}
+                        name={hakemus.hakijanNimi}
+                        href={buildLinkToPerson(hakemus.hakijaOid)}
+                      />
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <ExternalLink
+                      noIcon={true}
+                      name={hakemusOid}
+                      href={buildLinkToApplication(hakemusOid)}
+                    />
+                  </TableCell>
                   <TableCell>
                     <ErrorWithIcon>{message}</ErrorWithIcon>
                   </TableCell>

@@ -320,6 +320,42 @@ test.describe('saving changes', () => {
     ).toBeVisible();
     await expect(page.getByText('Unknown error')).toBeVisible();
   });
+
+  test('saving changes partially fails', async ({ page }) => {
+    await page.route(
+      '*/**/valinta-tulos-service/auth/valinnan-tulos/valintatapajono-yo',
+      async (route) => {
+        await route.fulfill({
+          status: 200,
+          json: [
+            {
+              hakemusOid: '1.2.246.562.11.00000000000001796027',
+              message: 'Vastaanottoa ei voi poistaa koska ilmoitus on tehty',
+            },
+          ],
+        });
+      },
+    );
+    await page
+      .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
+      .getByLabel('Valitse kaikki')
+      .click();
+    await page
+      .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
+      .getByText('Muuta vastaanottotieto')
+      .click();
+    await page.getByRole('option', { name: 'Perunut' }).click();
+    await page
+      .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
+      .getByRole('button', { name: 'Tallenna', exact: true })
+      .click();
+    await expect(
+      page.getByText('Tietojen tallentamisessa tapahtui virhe.'),
+    ).toBeVisible();
+    await expect(
+      page.getByText('Vastaanottoa ei voi poistaa koska ilmoitus on tehty'),
+    ).toBeVisible();
+  });
 });
 
 test.describe('accepting valintaesitys', () => {
