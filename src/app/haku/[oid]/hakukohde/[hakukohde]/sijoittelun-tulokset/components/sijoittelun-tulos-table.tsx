@@ -49,6 +49,7 @@ export const SijoittelunTulosTable = ({
   disabled,
   updateForm,
   massStatusChangeForm,
+  publishAllowed,
 }: {
   haku: Haku;
   hakemukset: SijoittelunHakemusValintatiedoilla[];
@@ -57,6 +58,7 @@ export const SijoittelunTulosTable = ({
   disabled: boolean;
   updateForm: (params: SijoittelunTuloksetChangeEvent) => void;
   massStatusChangeForm: (changeParams: HakemuksetStateChangeEvent) => void;
+  publishAllowed: boolean;
 }) => {
   const { t } = useTranslations();
 
@@ -99,6 +101,7 @@ export const SijoittelunTulosTable = ({
             hakemus={props}
             updateForm={updateForm}
             disabled={disabled}
+            publishAllowed={publishAllowed}
           />
         ),
       }),
@@ -133,7 +136,7 @@ export const SijoittelunTulosTable = ({
         sortable: false,
       }),
     ].filter((a) => a !== null);
-  }, [t, haku, updateForm, disabled]);
+  }, [t, haku, updateForm, disabled, publishAllowed]);
 
   const [selection, setSelection] = useState<Set<string>>(() => new Set());
 

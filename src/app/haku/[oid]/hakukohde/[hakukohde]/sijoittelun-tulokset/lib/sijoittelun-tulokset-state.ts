@@ -17,7 +17,7 @@ import {
 } from '@/app/lib/valinta-tulos-service';
 import { clone } from 'remeda';
 import { FetchError } from '@/app/lib/common';
-import { ErrorModalDialog } from '../components/error-modal';
+import { SijoittelunTulosErrorModalDialog } from '../components/sijoittelun-tulos-error-modal';
 import { showModal } from '@/app/components/global-modal';
 
 export type SijoittelunTuloksetContext = {
@@ -369,7 +369,7 @@ export const createSijoittelunTuloksetMachine = (
           messageParams: { amount: context.massChangeAmount ?? 0 },
         }),
       errorModal: (_, params) =>
-        showModal(ErrorModalDialog, {
+        showModal(SijoittelunTulosErrorModalDialog, {
           error: (params as { error: Error }).error as Error,
           hakemukset,
         }),

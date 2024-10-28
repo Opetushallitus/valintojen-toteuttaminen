@@ -117,6 +117,7 @@ export const SijoittelunTulosForm = ({
           updateForm={updateForm}
           massStatusChangeForm={massStatusChangeForm}
           disabled={!state.matches(SijoittelunTuloksetStates.IDLE)}
+          publishAllowed={publishAllowed}
         />
       </TablePaginationWrapper>
     </StyledForm>

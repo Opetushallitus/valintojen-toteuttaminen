@@ -19,7 +19,7 @@ import {
 } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 
-export const ErrorModalDialog = createModal(
+export const SijoittelunTulosErrorModalDialog = createModal(
   ({
     error,
     hakemukset,
@@ -61,7 +61,7 @@ const ErrorWithIcon = ({ children }: { children: string }) => {
   );
 };
 
-export const SijoittelunTulosTallennusError = ({
+const SijoittelunTulosTallennusError = ({
   error,
   hakemukset,
 }: {

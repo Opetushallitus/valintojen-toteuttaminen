@@ -32,3 +32,9 @@ export const canHakuBePublished = (
       (haunAsetukset.valintaEsityksenHyvaksyminen &&
         new Date() >= haunAsetukset.valintaEsityksenHyvaksyminen),
   );
+
+export const hakemusVastaanottotilaJulkaistavissa = (
+  h: SijoittelunHakemusValintatiedoilla,
+): boolean =>
+  h.vastaanottotila === VastaanottoTila.KESKEN ||
+  h.vastaanottotila === VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA;

@@ -9,17 +9,22 @@ import { toFormattedDateTimeString } from '@/app/lib/localization/translation-ut
 import { LocalizedSelect } from '@/app/components/localized-select';
 import { useEffect, useState } from 'react';
 import { StyledOphCheckBox } from '@/app/components/form/styled-oph-checkbox';
-import { hakemukselleNaytetaanVastaanottoTila } from '../lib/sijoittelun-tulokset-utils';
+import {
+  hakemukselleNaytetaanVastaanottoTila,
+  hakemusVastaanottotilaJulkaistavissa,
+} from '../lib/sijoittelun-tulokset-utils';
 import { SijoittelunTuloksetChangeEvent } from '../lib/sijoittelun-tulokset-state';
 
 export const VastaanOttoCell = ({
   hakemus,
   disabled,
   updateForm,
+  publishAllowed,
 }: {
   hakemus: SijoittelunHakemusValintatiedoilla;
   disabled: boolean;
   updateForm: (params: SijoittelunTuloksetChangeEvent) => void;
+  publishAllowed: boolean;
 }) => {
   const { t } = useTranslations();
 
@@ -56,7 +61,10 @@ export const VastaanOttoCell = ({
         checked={julkaistavissa}
         onChange={updateJulkaistu}
         label={t('sijoittelun-tulokset.julkaistavissa')}
-        disabled={disabled}
+        disabled={
+          disabled ||
+          !(hakemusVastaanottotilaJulkaistavissa(hakemus) || !publishAllowed)
+        }
       />
       {hakemus.vastaanottoDeadline && (
         <Typography>
