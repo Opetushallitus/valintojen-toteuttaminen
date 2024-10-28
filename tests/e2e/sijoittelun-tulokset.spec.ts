@@ -322,6 +322,67 @@ test.describe('saving changes', () => {
   });
 });
 
+test.describe('accepting valintaesitys', () => {
+  test('accept', async ({ page }) => {
+    await page
+      .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
+      .getByRole('button', { name: 'Hyväksy ja tallenna' })
+      .click();
+    await expect(page.getByText('Valintaesitys hyväksytty')).toBeVisible();
+  });
+
+  test('save changes and accept', async ({ page }) => {
+    await page.getByText('Läsnä (koko lukuvuosi)').click();
+    await page.getByRole('option', { name: 'Ei ilmoittautunut' }).click();
+    await page
+      .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
+      .getByRole('button', { name: 'Hyväksy ja tallenna' })
+      .click();
+    await expect(page.getByText('Valintaesitys hyväksytty')).toBeVisible();
+  });
+
+  test('operation fails during saving changes', async ({ page }) => {
+    await page.route(
+      '*/**/valinta-tulos-service/auth/lukuvuosimaksu/1.2.246.562.20.00000000000000045105*',
+      async (route) => {
+        await route.fulfill({
+          status: 400,
+          body: 'Kumma syy taustajärjestelmästä',
+        });
+      },
+    );
+    await page.getByText('Maksamatta').click();
+    await page.getByRole('option', { name: 'Maksettu' }).click();
+    await page
+      .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
+      .getByRole('button', { name: 'Hyväksy ja tallenna' })
+      .click();
+    await expect(
+      page.getByText('Tietojen tallentamisessa tapahtui virhe'),
+    ).toBeVisible();
+    await expect(
+      page.getByText('Kumma syy taustajärjestelmästä'),
+    ).toBeVisible();
+  });
+
+  test('accept operation fail', async ({ page }) => {
+    await page.route(
+      '*/**/valinta-tulos-service/auth/valintaesitys/valintatapajono-yo/hyvaksytty*',
+      async (route) => {
+        await route.fulfill({ status: 500, body: 'Räjähti' });
+      },
+    );
+    await page
+      .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
+      .getByRole('button', { name: 'Hyväksy ja tallenna' })
+      .click();
+    await expect(
+      page.getByText('Tietojen tallentamisessa tapahtui virhe'),
+    ).toBeVisible();
+    await expect(page.getByText('Räjähti')).toBeVisible();
+  });
+});
+
 async function goToSijoittelunTulokset(page: Page) {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/sijoittelun-tulokset',

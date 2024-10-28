@@ -159,6 +159,13 @@ export default async function playwrightSetup() {
     ) {
       return modifyResponse(response, []);
     } else if (
+      request.method === 'POST' &&
+      request.url?.endsWith(
+        'valinta-tulos-service/auth/valintaesitys/valintatapajono-yo/hyvaksytty',
+      )
+    ) {
+      return modifyResponse(response, {});
+    } else if (
       request.method === 'PATCH' &&
       request.url?.endsWith(
         'valinta-tulos-service/auth/valinnan-tulos/valintatapajono-yo',
