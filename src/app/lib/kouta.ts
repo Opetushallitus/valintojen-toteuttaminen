@@ -5,8 +5,8 @@ import { Haku, Hakukohde, Tila } from './types/kouta-types';
 import { client } from './http-client';
 import { TranslatedName } from './localization/localization-types';
 import { UserPermissions } from './permissions';
-import { HaunAsetukset } from './ohjausparametrit';
 import { pick } from 'remeda';
+import { HaunAsetukset } from './types/haun-asetukset';
 
 type HakuResponseData = {
   oid: string;
