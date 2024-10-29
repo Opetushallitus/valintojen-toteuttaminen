@@ -17,7 +17,7 @@ import {
 } from './types/sijoittelu-types';
 import { MaksunTila, Maksuvelvollisuus } from './types/ataru-types';
 import { ValintaStatusUpdateErrorResult } from './types/valinta-tulos-types';
-import { OphApiError } from './common';
+import { FetchError, OphApiError } from './common';
 
 type SijoittelunTulosResponseData = {
   valintatapajonoNimi: string;
@@ -136,7 +136,7 @@ const showVastaanottoTieto = (hakemuksenTila: SijoittelunTila) =>
     SijoittelunTila.PERUUTETTU,
   ].includes(hakemuksenTila);
 
-export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
+const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
   hakuOid: string,
   hakukohdeOid: string,
 ): Promise<SijoitteluajonTuloksetValintatiedoilla> => {
@@ -239,6 +239,24 @@ export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
     valintatapajonot: sijoitteluajonTulokset,
     lastModified: data.lastModified,
   };
+};
+
+export const tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys = async (
+  hakuOid: string,
+  hakukohdeOid: string,
+): Promise<SijoitteluajonTuloksetValintatiedoilla | null> => {
+  try {
+    return await getLatestSijoitteluAjonTuloksetWithValintaEsitys(
+      hakuOid,
+      hakukohdeOid,
+    );
+  } catch (e) {
+    if (e instanceof FetchError && e?.response?.status === 404) {
+      console.error('FetchError with 404', e);
+      return null;
+    }
+    throw e;
+  }
 };
 
 export const getLatestSijoitteluAjonTulokset = async (

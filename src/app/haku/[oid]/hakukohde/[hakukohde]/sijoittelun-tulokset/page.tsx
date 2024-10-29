@@ -5,7 +5,7 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { Box } from '@mui/material';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { getLatestSijoitteluAjonTuloksetWithValintaEsitys } from '@/app/lib/valinta-tulos-service';
+import { tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys } from '@/app/lib/valinta-tulos-service';
 import { isEmpty } from '@/app/lib/common';
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
 import { NoResults } from '@/app/components/no-results';
@@ -37,18 +37,21 @@ const SijoitteluContent = ({
 
   const { data: tulokset } = useSuspenseQuery({
     queryKey: [
-      'getLatestSijoitteluAjonTuloksetWithValintaEsitys',
+      'tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys',
       haku.oid,
       hakukohdeOid,
     ],
     queryFn: () =>
-      getLatestSijoitteluAjonTuloksetWithValintaEsitys(haku.oid, hakukohdeOid),
+      tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys(
+        haku.oid,
+        hakukohdeOid,
+      ),
   });
 
   const { data: permissions } = useUserPermissions();
 
   return isEmpty(tulokset) ? (
-    <NoResults text={t('hakijaryhmat.ei-tuloksia')} />
+    <NoResults text={t('sijoittelun-tulokset.ei-tuloksia')} />
   ) : (
     <Box
       sx={{
@@ -70,18 +73,19 @@ const SijoitteluContent = ({
         <SijoittelunTulosControls haku={haku} />
         <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
       </Box>
-      {tulokset.valintatapajonot.map((jono) => (
-        <SijoittelunTulosContent
-          valintatapajono={jono}
-          key={jono.oid}
-          haku={haku}
-          hakukohdeOid={hakukohdeOid}
-          lastModified={tulokset.lastModified}
-          publishAllowed={
-            permissions.admin || canHakuBePublished(haku, haunAsetukset)
-          }
-        />
-      ))}
+      {tulokset &&
+        tulokset.valintatapajonot.map((jono) => (
+          <SijoittelunTulosContent
+            valintatapajono={jono}
+            key={jono.oid}
+            haku={haku}
+            hakukohdeOid={hakukohdeOid}
+            lastModified={tulokset.lastModified}
+            publishAllowed={
+              permissions.admin || canHakuBePublished(haku, haunAsetukset)
+            }
+          />
+        ))}
     </Box>
   );
 };
