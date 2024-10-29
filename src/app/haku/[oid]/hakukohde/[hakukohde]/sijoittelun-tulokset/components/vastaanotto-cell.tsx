@@ -63,7 +63,8 @@ export const VastaanOttoCell = ({
         label={t('sijoittelun-tulokset.julkaistavissa')}
         disabled={
           disabled ||
-          !(hakemusVastaanottotilaJulkaistavissa(hakemus) || !publishAllowed)
+          !hakemusVastaanottotilaJulkaistavissa(hakemus) ||
+          !publishAllowed
         }
       />
       {hakemus.vastaanottoDeadline && (
