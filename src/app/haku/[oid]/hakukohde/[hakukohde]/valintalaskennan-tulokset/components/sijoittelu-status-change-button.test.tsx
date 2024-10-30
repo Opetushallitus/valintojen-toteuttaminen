@@ -70,7 +70,7 @@ describe('SijoitteluStatusChangeButton', () => {
     renderSijoitteluButton({ jono, statusMutation: { mutate: mutateFn } });
 
     const btn = screen.getByRole('button', {
-      name: 'valintalaskennan-tulos.poista-jono-sijoittelusta',
+      name: 'valintalaskennan-tulokset.poista-jono-sijoittelusta',
     });
     expect(btn).toBeEnabled();
     fireEvent.click(btn);
@@ -85,7 +85,7 @@ describe('SijoitteluStatusChangeButton', () => {
     renderSijoitteluButton({ jono, statusMutation: { mutate: mutateFn } });
 
     const btn = screen.getByRole('button', {
-      name: 'valintalaskennan-tulos.siirra-jono-sijoitteluun',
+      name: 'valintalaskennan-tulokset.siirra-jono-sijoitteluun',
     });
     expect(btn).toBeEnabled();
     fireEvent.click(btn);
@@ -102,7 +102,7 @@ describe('SijoitteluStatusChangeButton', () => {
     });
 
     const btn = screen.getByRole('button', {
-      name: 'valintalaskennan-tulos.poista-jono-sijoittelusta',
+      name: 'valintalaskennan-tulokset.poista-jono-sijoittelusta',
     });
     expect(btn).toBeDisabled();
   });
@@ -117,7 +117,7 @@ describe('SijoitteluStatusChangeButton', () => {
     });
 
     const btn = screen.getByRole('button', {
-      name: 'valintalaskennan-tulos.poista-jono-sijoittelusta',
+      name: 'valintalaskennan-tulokset.poista-jono-sijoittelusta',
     });
     expect(btn).toBeDisabled();
   });
@@ -135,7 +135,7 @@ describe('SijoitteluStatusChangeButton', () => {
     });
 
     const btn = screen.getByRole('button', {
-      name: 'valintalaskennan-tulos.siirra-jono-sijoitteluun',
+      name: 'valintalaskennan-tulokset.siirra-jono-sijoitteluun',
     });
     expect(btn).toBeEnabled();
   });
@@ -157,7 +157,7 @@ describe('SijoitteluStatusChangeButton', () => {
       },
     });
     const btn = screen.getByRole('button', {
-      name: 'valintalaskennan-tulos.poista-jono-sijoittelusta',
+      name: 'valintalaskennan-tulokset.poista-jono-sijoittelusta',
     });
     expect(btn).toBeDisabled();
   });

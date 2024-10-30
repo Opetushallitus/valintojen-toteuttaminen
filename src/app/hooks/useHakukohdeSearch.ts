@@ -32,7 +32,7 @@ export const useHakukohdeSearchResults = (hakuOid: string) => {
   const { data: userPermissions } = useUserPermissions();
 
   const { data: hakukohteet } = useSuspenseQuery({
-    queryKey: ['getHakukohteet' + hakuOid],
+    queryKey: ['getHakukohteet', hakuOid, userPermissions],
     queryFn: () => getHakukohteet(hakuOid, userPermissions),
   });
 

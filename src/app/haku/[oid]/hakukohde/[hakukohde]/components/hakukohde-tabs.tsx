@@ -3,12 +3,20 @@
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { ophColors, styled } from '@/app/lib/theme';
 import { DEFAULT_BOX_BORDER } from '@/app/lib/constants';
-import { useHakukohde } from '@/app/hooks/useHakukohde';
-import { useHaku } from '@/app/hooks/useHaku';
-import { getVisibleTabs } from '@/app/haku/[oid]/lib/hakukohde-tab-utils';
+import { hakukohdeQueryOptions } from '@/app/hooks/useHakukohde';
+import { hakuQueryOptions } from '@/app/hooks/useHaku';
+import {
+  getVisibleTabs,
+  isTabVisible,
+} from '@/app/haku/[oid]/lib/hakukohde-tab-utils';
 import { useHakukohdeTab } from '@/app/haku/[oid]/hooks/useHakukohdeTab';
 import { HakukohdeTabLink } from '@/app/haku/[oid]/components/hakukohde-tab-link';
 import { OphTypography } from '@opetushallitus/oph-design-system';
+import { useSuspenseQueries } from '@tanstack/react-query';
+import { haunAsetuksetQueryOptions } from '@/app/hooks/useHaunAsetukset';
+import { getUsesValintalaskenta } from '@/app/lib/valintalaskentakoostepalvelu';
+import { userPermissionsQueryOptions } from '@/app/hooks/useUserPermissions';
+import { notFound } from 'next/navigation';
 
 const StyledContainer = styled('div')(({ theme }) => ({
   padding: theme.spacing(2, 3, 0),
@@ -54,8 +62,43 @@ const HakukohdeTabs = ({
   const activeTab = useHakukohdeTab();
   const { t, translateEntity } = useTranslations();
 
-  const { data: hakukohde } = useHakukohde({ hakukohdeOid });
-  const { data: haku } = useHaku({ hakuOid });
+  const [
+    hakuQuery,
+    hakukohdeQuery,
+    haunAsetuksetQuery,
+    usesValintalaskentaQuery,
+    permissionsQuery,
+  ] = useSuspenseQueries({
+    queries: [
+      hakuQueryOptions({ hakuOid }),
+      hakukohdeQueryOptions({ hakukohdeOid }),
+      haunAsetuksetQueryOptions({ hakuOid }),
+      {
+        queryKey: ['getUsesValintalaskenta', hakukohdeOid],
+        queryFn: () => getUsesValintalaskenta({ hakukohdeOid }),
+      },
+      userPermissionsQueryOptions,
+    ],
+  });
+
+  const { data: haku } = hakuQuery;
+  const { data: hakukohde } = hakukohdeQuery;
+  const { data: haunAsetukset } = haunAsetuksetQuery;
+  const { data: usesValintalaskenta } = usesValintalaskentaQuery;
+  const { data: permissions } = permissionsQuery;
+
+  if (
+    !isTabVisible({
+      tab: activeTab,
+      haku,
+      hakukohde,
+      haunAsetukset,
+      permissions,
+      usesValintalaskenta,
+    })
+  ) {
+    return notFound();
+  }
 
   return (
     <StyledContainer>
@@ -71,7 +114,13 @@ const HakukohdeTabs = ({
         </OphTypography>
       </StyledHeader>
       <StyledTabs>
-        {getVisibleTabs({ haku, hakukohde }).map((tab) => (
+        {getVisibleTabs({
+          haku,
+          hakukohde,
+          haunAsetukset,
+          usesValintalaskenta,
+          permissions,
+        }).map((tab) => (
           <StyledTab
             key={'hakukohde-tab-' + tab.route}
             hakuOid={hakuOid}

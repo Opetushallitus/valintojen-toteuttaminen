@@ -12,7 +12,7 @@ import { configuration } from '@/app/lib/configuration';
 import { Link } from '@mui/material';
 import { useMemo } from 'react';
 
-const TRANSLATIONS_PREFIX = 'valintalaskennan-tulos.taulukko';
+const TRANSLATIONS_PREFIX = 'valintalaskennan-tulokset.taulukko';
 
 const jonosijaColumn = makeCountColumn<JonoSijaWithHakijaInfo>({
   title: `${TRANSLATIONS_PREFIX}.jonosija`,
@@ -42,7 +42,7 @@ export const LaskettuValintatapajonoTable = ({
   const columns: Array<ListTableColumn<JonoSijaWithHakijaInfo>> = useMemo(
     () => [
       jonosijaColumn,
-      createHakijaColumn('valintalaskennan-tulos'),
+      createHakijaColumn('valintalaskennan-tulokset'),
       {
         title: `${TRANSLATIONS_PREFIX}.pisteet`,
         key: 'pisteet',
