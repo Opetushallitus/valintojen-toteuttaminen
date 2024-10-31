@@ -91,7 +91,7 @@ describe('Sijoittelun tulokset states', async () => {
 
   test('saving without changes creates error toast', async () => {
     expect(toastFn).not.toHaveBeenCalledOnce();
-    await actor.send({ type: SijoittelunTuloksetEvents.UPDATE });
+    actor.send({ type: SijoittelunTuloksetEvents.UPDATE });
     expect(toastFn).toHaveBeenCalledWith({
       key: `sijoittelun-tulokset-update-failed-for-hakukohde-oid-jono-oid`,
       message: 'virhe.eimuutoksia',
@@ -106,7 +106,7 @@ describe('Sijoittelun tulokset states', async () => {
     vi.spyOn(client, 'patch').mockImplementationOnce(() =>
       Promise.resolve({ headers: new Headers(), data: [] }),
     );
-    await actor.send({
+    actor.send({
       type: SijoittelunTuloksetEvents.ADD_CHANGED_HAKEMUS,
       hakemusOid: 'hakemus-2',
       vastaanottoTila: VastaanottoTila.EHDOLLISESTI_VASTAANOTTANUT,
@@ -115,7 +115,7 @@ describe('Sijoittelun tulokset states', async () => {
       state.matches(SijoittelunTuloksetStates.IDLE),
     );
     expect(state.context.changedHakemukset.length).toEqual(1);
-    await actor.send({ type: SijoittelunTuloksetEvents.UPDATE });
+    actor.send({ type: SijoittelunTuloksetEvents.UPDATE });
     state = await waitFor(actor, (state) =>
       state.matches(SijoittelunTuloksetStates.IDLE),
     );

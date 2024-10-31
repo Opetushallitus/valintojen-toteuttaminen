@@ -86,69 +86,7 @@ export const createSijoittelunTuloksetMachine = (
             actions: assign({
               changedHakemukset: ({ context, event }) => {
                 const e = event as unknown as SijoittelunTuloksetChangeEvent;
-                let hakenut = context.changedHakemukset.find(
-                  (h) => h.hakemusOid === e.hakemusOid,
-                );
-                const existing: boolean = Boolean(hakenut);
-                hakenut =
-                  hakenut ||
-                  context.hakemukset.find(
-                    (h) => h.hakemusOid === event.hakemusOid,
-                  );
-                if (hakenut) {
-                  if (e.julkaistavissa !== undefined) {
-                    hakenut.julkaistavissa = e.julkaistavissa;
-                  }
-                  if (e.ehdollisestiHyvaksyttavissa !== undefined) {
-                    hakenut.ehdollisestiHyvaksyttavissa =
-                      e.ehdollisestiHyvaksyttavissa;
-                  }
-                  if (e.ehdollisuudenSyy) {
-                    hakenut.ehdollisenHyvaksymisenEhtoKoodi =
-                      e.ehdollisuudenSyy;
-                  }
-                  if (e.ehdollisuudenSyyKieli) {
-                    hakenut.ehdollisenHyvaksymisenEhtoFI =
-                      e.ehdollisuudenSyyKieli.fi;
-                    hakenut.ehdollisenHyvaksymisenEhtoSV =
-                      e.ehdollisuudenSyyKieli.sv;
-                    hakenut.ehdollisenHyvaksymisenEhtoEN =
-                      e.ehdollisuudenSyyKieli.en;
-                  }
-                  if (e.hyvaksyttyVarasijalta !== undefined) {
-                    hakenut.hyvaksyttyVarasijalta = e.hyvaksyttyVarasijalta;
-                  }
-                  if (e.vastaanottotila) {
-                    hakenut.vastaanottotila = e.vastaanottotila;
-                  }
-                  if (e.ilmoittautumisTila) {
-                    hakenut.ilmoittautumisTila = e.ilmoittautumisTila;
-                  }
-                  if (e.maksunTila) {
-                    hakenut.maksuntila = e.maksunTila;
-                  }
-
-                  if (existing) {
-                    if (
-                      isUnchanged(
-                        context.originalHakemukset.find(
-                          (h) => h.hakemusOid === hakenut.hakemusOid,
-                        )!,
-                        hakenut,
-                      )
-                    ) {
-                      return context.changedHakemukset.filter(
-                        (h) => h.hakemusOid !== hakenut.hakemusOid,
-                      );
-                    }
-                    return context.changedHakemukset.map((h) =>
-                      h.hakemusOid === e.hakemusOid ? hakenut : h,
-                    );
-                  } else {
-                    return [...context.changedHakemukset, ...[hakenut]];
-                  }
-                }
-                return context.changedHakemukset;
+                return updateChangedHakemus(context, e);
               },
             }),
           },
@@ -177,53 +115,7 @@ export const createSijoittelunTuloksetMachine = (
           [SijoittelunTuloksetEvents.CHANGE_HAKEMUKSET_STATES]: {
             actions: assign(({ context, event }) => {
               const e = event as unknown as HakemuksetStateChangeEvent;
-              let changed: SijoittelunHakemusValintatiedoilla[] =
-                context.changedHakemukset;
-              let changedAmount = 0;
-              e.hakemusOids.forEach((hakemusOid) => {
-                let hakenut = changed.find((h) => h.hakemusOid === hakemusOid);
-                const existing: boolean = Boolean(hakenut);
-                hakenut =
-                  hakenut ||
-                  context.hakemukset.find((h) => h.hakemusOid === hakemusOid);
-                if (
-                  hakenut &&
-                  ((e.ilmoittautumisTila !== hakenut.ilmoittautumisTila &&
-                    hakemukselleNaytetaanIlmoittautumisTila(hakenut)) ||
-                    (e.vastaanottoTila !== hakenut.vastaanottotila &&
-                      hakemukselleNaytetaanVastaanottoTila(hakenut)))
-                ) {
-                  hakenut.vastaanottotila =
-                    e.vastaanottoTila ?? hakenut.vastaanottotila;
-                  hakenut.ilmoittautumisTila =
-                    e.ilmoittautumisTila ?? hakenut.ilmoittautumisTila;
-                  changedAmount++;
-                  if (existing) {
-                    if (
-                      isUnchanged(
-                        context.originalHakemukset.find(
-                          (h) => h.hakemusOid === hakenut.hakemusOid,
-                        )!,
-                        hakenut,
-                      )
-                    ) {
-                      changed = changed.filter(
-                        (h) => h.hakemusOid !== hakenut.hakemusOid,
-                      );
-                    } else {
-                      changed = changed.map((h) =>
-                        h.hakemusOid === hakemusOid ? hakenut : h,
-                      );
-                    }
-                  } else {
-                    changed.push(hakenut);
-                  }
-                }
-              });
-              return {
-                changedHakemukset: changed,
-                massChangeAmount: changedAmount,
-              };
+              return massUpdateChangedHakemukset(context, e);
             }),
             target: SijoittelunTuloksetStates.NOTIFY_MASS_STATUS_CHANGE,
           },
@@ -418,6 +310,115 @@ const tryAndParseError = async (wrappedFn: () => Promise<void>) => {
     }
     throw e;
   }
+};
+
+const updateChangedHakemus = (
+  context: SijoittelunTuloksetContext,
+  e: SijoittelunTuloksetChangeEvent,
+): SijoittelunHakemusValintatiedoilla[] => {
+  let hakenut = context.changedHakemukset.find(
+    (h) => h.hakemusOid === e.hakemusOid,
+  );
+  const existing: boolean = Boolean(hakenut);
+  hakenut =
+    hakenut || context.hakemukset.find((h) => h.hakemusOid === e.hakemusOid);
+  if (hakenut) {
+    if (e.julkaistavissa !== undefined) {
+      hakenut.julkaistavissa = e.julkaistavissa;
+    }
+    if (e.ehdollisestiHyvaksyttavissa !== undefined) {
+      hakenut.ehdollisestiHyvaksyttavissa = e.ehdollisestiHyvaksyttavissa;
+    }
+    if (e.ehdollisuudenSyy) {
+      hakenut.ehdollisenHyvaksymisenEhtoKoodi = e.ehdollisuudenSyy;
+    }
+    if (e.ehdollisuudenSyyKieli) {
+      hakenut.ehdollisenHyvaksymisenEhtoFI = e.ehdollisuudenSyyKieli.fi;
+      hakenut.ehdollisenHyvaksymisenEhtoSV = e.ehdollisuudenSyyKieli.sv;
+      hakenut.ehdollisenHyvaksymisenEhtoEN = e.ehdollisuudenSyyKieli.en;
+    }
+    if (e.hyvaksyttyVarasijalta !== undefined) {
+      hakenut.hyvaksyttyVarasijalta = e.hyvaksyttyVarasijalta;
+    }
+    if (e.vastaanottotila) {
+      hakenut.vastaanottotila = e.vastaanottotila;
+    }
+    if (e.ilmoittautumisTila) {
+      hakenut.ilmoittautumisTila = e.ilmoittautumisTila;
+    }
+    if (e.maksunTila) {
+      hakenut.maksuntila = e.maksunTila;
+    }
+
+    if (existing) {
+      if (
+        isUnchanged(
+          context.originalHakemukset.find(
+            (h) => h.hakemusOid === hakenut.hakemusOid,
+          )!,
+          hakenut,
+        )
+      ) {
+        return context.changedHakemukset.filter(
+          (h) => h.hakemusOid !== hakenut.hakemusOid,
+        );
+      }
+      return context.changedHakemukset.map((h) =>
+        h.hakemusOid === e.hakemusOid ? hakenut : h,
+      );
+    } else {
+      return [...context.changedHakemukset, ...[hakenut]];
+    }
+  }
+  return context.changedHakemukset;
+};
+
+const massUpdateChangedHakemukset = (
+  context: SijoittelunTuloksetContext,
+  e: HakemuksetStateChangeEvent,
+) => {
+  let changed: SijoittelunHakemusValintatiedoilla[] = context.changedHakemukset;
+  let changedAmount = 0;
+  e.hakemusOids.forEach((hakemusOid) => {
+    let hakenut = changed.find((h) => h.hakemusOid === hakemusOid);
+    const existing: boolean = Boolean(hakenut);
+    hakenut =
+      hakenut || context.hakemukset.find((h) => h.hakemusOid === hakemusOid);
+    if (
+      hakenut &&
+      ((e.ilmoittautumisTila !== hakenut.ilmoittautumisTila &&
+        hakemukselleNaytetaanIlmoittautumisTila(hakenut)) ||
+        (e.vastaanottoTila !== hakenut.vastaanottotila &&
+          hakemukselleNaytetaanVastaanottoTila(hakenut)))
+    ) {
+      hakenut.vastaanottotila = e.vastaanottoTila ?? hakenut.vastaanottotila;
+      hakenut.ilmoittautumisTila =
+        e.ilmoittautumisTila ?? hakenut.ilmoittautumisTila;
+      changedAmount++;
+      if (existing) {
+        if (
+          isUnchanged(
+            context.originalHakemukset.find(
+              (h) => h.hakemusOid === hakenut.hakemusOid,
+            )!,
+            hakenut,
+          )
+        ) {
+          changed = changed.filter((h) => h.hakemusOid !== hakenut.hakemusOid);
+        } else {
+          changed = changed.map((h) =>
+            h.hakemusOid === hakemusOid ? hakenut : h,
+          );
+        }
+      } else {
+        changed.push(hakenut);
+      }
+    }
+  });
+  return {
+    changedHakemukset: changed,
+    massChangeAmount: changedAmount,
+  };
 };
 
 const isUnchanged = (
