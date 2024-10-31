@@ -142,3 +142,8 @@ export async function getHakemukset({
     };
   });
 }
+
+const LINK_TO_APPLICATION = 'lomake-editori/applications/search?term=';
+
+export const buildLinkToApplication = (hakemusOid: string) =>
+  LINK_TO_APPLICATION + hakemusOid;

@@ -7,19 +7,20 @@ import {
   SijoittelunTila,
   VastaanottoTila,
 } from './types/sijoittelu-types';
-import { getLatestSijoitteluAjonTuloksetWithValintaEsitys } from './valinta-tulos-service';
+import { tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys } from './valinta-tulos-service';
 import { buildDummyHakemukset } from './ataru.test';
 
-describe('Valinta-tulos-service: getLatestSijoitteluAjonTuloksetWithValintaEsitys', () => {
+describe('Valinta-tulos-service: tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys', () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
   test('returns tulokset', async () => {
-    const tulokset: SijoitteluajonTuloksetValintatiedoilla =
+    const tulokset: SijoitteluajonTuloksetValintatiedoilla | null =
       await getTulokset();
-    expect(tulokset.valintatapajonot.length).toEqual(1);
-    const jono = tulokset.valintatapajonot[0];
+    expect(tulokset).not.toBeNull();
+    expect(tulokset!.valintatapajonot.length).toEqual(1);
+    const jono = tulokset!.valintatapajonot[0];
     expect(jono.nimi).toEqual('Todistusvalinta (YO)');
     expect(jono.aloituspaikat).toEqual(2);
     expect(jono.alkuperaisetAloituspaikat).toEqual(1);
@@ -57,9 +58,10 @@ describe('Valinta-tulos-service: getLatestSijoitteluAjonTuloksetWithValintaEsity
   });
 
   test('tulokset are sorted by sija', async () => {
-    const tulokset: SijoitteluajonTuloksetValintatiedoilla =
+    const tulokset: SijoitteluajonTuloksetValintatiedoilla | null =
       await getTulokset();
-    const hakemukset = tulokset.valintatapajonot[0].hakemukset;
+    expect(tulokset).not.toBeNull();
+    const hakemukset = tulokset!.valintatapajonot[0].hakemukset;
     expect(hakemukset[0].hakemusOid).toEqual('hakemus2');
     expect(hakemukset[0].sija).toEqual(1);
     expect(hakemukset[1].hakemusOid).toEqual('hakemus1');
@@ -94,7 +96,7 @@ async function getTulokset() {
   clientSpy
     .mockImplementationOnce(() => buildDummyValinnanTulosResponse())
     .mockImplementationOnce(() => buildDummyHakemukset());
-  return await getLatestSijoitteluAjonTuloksetWithValintaEsitys(
+  return await tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys(
     'haku1',
     'hakukohde1',
   );
@@ -226,6 +228,7 @@ function buildDummyValinnanTulosResponse() {
       lastModified: new Date().toISOString(),
       sijoittelunTulokset: dummySijoittelunTulokset,
       lukuvuosimaksut: [],
+      kirjeLahetetty: [],
     },
   });
 }

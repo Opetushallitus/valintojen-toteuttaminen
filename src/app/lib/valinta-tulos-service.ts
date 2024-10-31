@@ -16,6 +16,8 @@ import {
   VastaanottoTila,
 } from './types/sijoittelu-types';
 import { MaksunTila, Maksuvelvollisuus } from './types/ataru-types';
+import { ValintaStatusUpdateErrorResult } from './types/valinta-tulos-types';
+import { FetchError, OphApiError } from './common';
 
 type SijoittelunTulosResponseData = {
   valintatapajonoNimi: string;
@@ -117,6 +119,12 @@ type SijoitteluajonTuloksetWithValintaEsitysResponseData = {
   }>;
   lastModified: string;
   sijoittelunTulokset: Omit<SijoitteluajonTuloksetResponseData, 'hakijaryhmat'>;
+  kirjeLahetetty: [
+    {
+      henkiloOid: string;
+      kirjeLahetetty: string;
+    },
+  ];
   lukuvuosimaksut: Array<{ personOid: string; maksuntila: MaksunTila }>;
 };
 
@@ -128,7 +136,7 @@ const showVastaanottoTieto = (hakemuksenTila: SijoittelunTila) =>
     SijoittelunTila.PERUUTETTU,
   ].includes(hakemuksenTila);
 
-export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
+const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
   hakuOid: string,
   hakukohdeOid: string,
 ): Promise<SijoitteluajonTuloksetValintatiedoilla> => {
@@ -142,12 +150,17 @@ export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
     data.lukuvuosimaksut,
     (m) => m.personOid,
   );
-  const valintatuloksetIndexed = indexBy(
-    data.valintatulokset,
-    (vt) => vt.hakemusOid,
+  const lahetetytKirjeetIndexed = indexBy(
+    data.kirjeLahetetty,
+    (k) => k.henkiloOid,
   );
+
   const sijoitteluajonTulokset: Array<SijoitteluajonValintatapajonoValintatiedoilla> =
     data.sijoittelunTulokset.valintatapajonot.map((jono) => {
+      const valintatuloksetIndexed = indexBy(
+        data.valintatulokset.filter((vt) => vt.valintatapajonoOid === jono.oid),
+        (vt) => vt.hakemusOid,
+      );
       const hakemukset: Array<SijoittelunHakemusValintatiedoilla> =
         jono.hakemukset.map((h) => {
           const hakemus = hakemuksetIndexed[h.hakemusOid];
@@ -189,6 +202,9 @@ export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
             naytetaanVastaanottoTieto: showVastaanottoTieto(h.tila),
             hyvaksyttyHarkinnanvaraisesti:
               valintatulos.hyvaksyttyHarkinnanvaraisesti,
+            hyvaksyPeruuntunut: valintatulos.hyvaksyPeruuntunut,
+            hyvaksymiskirjeLahetetty:
+              lahetetytKirjeetIndexed[h.hakijaOid]?.kirjeLahetetty,
           };
         });
       hakemukset.sort((a, b) =>
@@ -225,6 +241,24 @@ export const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
   };
 };
 
+export const tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys = async (
+  hakuOid: string,
+  hakukohdeOid: string,
+): Promise<SijoitteluajonTuloksetValintatiedoilla | null> => {
+  try {
+    return await getLatestSijoitteluAjonTuloksetWithValintaEsitys(
+      hakuOid,
+      hakukohdeOid,
+    );
+  } catch (e) {
+    if (e instanceof FetchError && e?.response?.status === 404) {
+      console.error('FetchError with 404', e);
+      return null;
+    }
+    throw e;
+  }
+};
+
 export const getLatestSijoitteluAjonTulokset = async (
   hakuOid: string,
   hakukohdeOid: string,
@@ -256,4 +290,95 @@ export const getLatestSijoitteluAjonTulokset = async (
     return { oid: ryhma.oid, kiintio: ryhma.kiintio };
   });
   return { valintatapajonot: sijoitteluajonTulokset, hakijaryhmat };
+};
+
+type SijoitteluAjonTuloksetPatchResponse = {
+  message: string;
+  hakemusOid: string;
+  valintatapajonoOid: string;
+  status: number;
+};
+
+export const saveMaksunTilanMuutokset = async (
+  hakukohdeOid: string,
+  hakemukset: SijoittelunHakemusValintatiedoilla[],
+  originalHakemukset: SijoittelunHakemusValintatiedoilla[],
+) => {
+  const hakemuksetWithChangedMaksunTila = hakemukset
+    .filter((h) => {
+      const original = originalHakemukset.find(
+        (o) => o.hakemusOid === h.hakemusOid,
+      );
+      return original?.maksuntila !== h.maksuntila;
+    })
+    .map((h) => ({ personOid: h.hakijaOid, maksuntila: h.maksuntila }));
+
+  if (hakemuksetWithChangedMaksunTila.length > 0) {
+    await client.post(
+      `${configuration.valintaTulosServiceUrl}lukuvuosimaksu/${hakukohdeOid}`,
+      hakemuksetWithChangedMaksunTila,
+    );
+  }
+};
+
+export const saveSijoitteluAjonTulokset = async (
+  valintatapajonoOid: string,
+  hakukohdeOid: string,
+  lastModified: string,
+  hakemukset: SijoittelunHakemusValintatiedoilla[],
+) => {
+  const hakemuksetValintatiedoilla = hakemukset.map((h) => {
+    return {
+      hakukohdeOid,
+      valintatapajonoOid,
+      hakemusOid: h.hakemusOid,
+      henkiloOid: h.hakijaOid,
+      vastaanottotila: h.vastaanottotila,
+      ilmoittautumistila: h.ilmoittautumisTila,
+      valinnantila: h.tila,
+      julkaistavissa: h.julkaistavissa,
+      ehdollisestiHyvaksyttavissa: h.ehdollisestiHyvaksyttavissa,
+      ehdollisenHyvaksymisenEhtoKoodi: h.ehdollisenHyvaksymisenEhtoKoodi,
+      ehdollisenHyvaksymisenEhtoFI: h.ehdollisenHyvaksymisenEhtoFI,
+      ehdollisenHyvaksymisenEhtoSV: h.ehdollisenHyvaksymisenEhtoSV,
+      ehdollisenHyvaksymisenEhtoEN: h.ehdollisenHyvaksymisenEhtoEN,
+      hyvaksyttyVarasijalta: h.hyvaksyttyVarasijalta,
+      hyvaksyPeruuntunut: h.hyvaksyPeruuntunut,
+    };
+  });
+  const muuttuneetKirjeet = hakemukset.map((h) => {
+    return {
+      henkiloOid: h.hakijaOid,
+      hakukohdeOid: hakukohdeOid,
+      lahetetty: h.hyvaksymiskirjeLahetetty ?? null,
+    };
+  });
+  const results = await client.patch<
+    Array<SijoitteluAjonTuloksetPatchResponse>
+  >(
+    `${configuration.valintaTulosServiceUrl}valinnan-tulos/${valintatapajonoOid}`,
+    hakemuksetValintatiedoilla,
+    { headers: { 'X-If-Unmodified-Since': lastModified } },
+  );
+
+  const { data } = results;
+
+  if (Array.isArray(data) && data.length > 0) {
+    throw new OphApiError<ValintaStatusUpdateErrorResult[]>(
+      results,
+      'virhe.tallennus',
+    );
+  }
+
+  await client.post<unknown>(
+    `${configuration.valintaTulosServiceUrl}hyvaksymiskirje`,
+    muuttuneetKirjeet,
+  );
+};
+
+export const hyvaksyValintaEsitys = async (valintatapajonoOid: string) => {
+  await client.post(
+    `${configuration.valintaTulosServiceUrl}valintaesitys/${valintatapajonoOid}/hyvaksytty`,
+    {},
+  );
 };

@@ -9,12 +9,8 @@ import {
   makeGenericColumn,
 } from '@/app/components/table/table-columns';
 import { useTranslations } from '@/app/hooks/useTranslations';
+import { buildLinkToApplication } from '@/app/lib/ataru';
 import { Hakemus } from '@/app/lib/types/ataru-types';
-
-const LINK_TO_APPLICATION = 'lomake-editori/applications/search?term=';
-
-const buildLinkToApplication = (hakemusOid: string) =>
-  LINK_TO_APPLICATION + hakemusOid;
 
 export const HakeneetTable = ({
   hakeneet,

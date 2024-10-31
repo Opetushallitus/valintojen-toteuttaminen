@@ -251,6 +251,11 @@
     "muu-syy-aria-fi": "Ehdollisuuden syy suomeksi",
     "muu-syy-aria-sv": "Ehdollisuuden syy ruotsiksi",
     "muu-syy-aria-en": "Ehdollisuuden syy englanniksi",
+    "mass-status-change-done": "Muutettiin tila {{amount}} hakemukselle",
+    "hyvaksy": "Hyväksy ja tallenna valintaesitys",
+    "valmis": "Valintaesityksen muutokset tallennuttu",
+    "hyvaksytty": "Valintaesitys hyväksytty",
+    "ei-tuloksia": "Ei sijoittelun tuloksia hakukohteelle",
     "taulukko": {
       "alaotsikko": {
         "aloituspaikat": "Aloituspaikat",
@@ -265,7 +270,8 @@
       "vastaanottotieto": "Vastaanottotieto",
       "ilmoittautumistieto": "Ilmoittautumistieto",
       "maksuntila": "Maksun tila",
-      "toiminnot": "Toiminnot"
+      "toiminnot": "Toiminnot",
+      "valitse-hakemus": "Valitse hakijan {{hakijanNimi}} hakemus"
     }
   },
   "valinnan-tulokset": {

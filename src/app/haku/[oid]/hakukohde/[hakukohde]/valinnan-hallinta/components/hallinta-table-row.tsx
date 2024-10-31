@@ -16,9 +16,9 @@ import {
 import { useMemo } from 'react';
 import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
 import { sijoitellaankoHaunHakukohteetLaskennanYhteydessa } from '@/app/lib/kouta';
-import { HaunAsetukset } from '@/app/lib/ohjausparametrit';
 import { useToaster } from '@/app/hooks/useToaster';
 import { Valinnanvaihe } from '@/app/lib/types/valintaperusteet-types';
+import { HaunAsetukset } from '@/app/lib/types/haun-asetukset';
 
 type HallintaTableRowParams = {
   haku: Haku;

@@ -146,7 +146,7 @@ const stickyColumnStyle: React.CSSProperties = {
 };
 
 export const createStickyHakijaColumn = (keyPrefix: string, t: TFunction) =>
-  Object.assign(createHakijaColumn('pistesyotto'), {
+  Object.assign(createHakijaColumn(keyPrefix), {
     style: stickyColumnStyle,
     title: t('hakeneet.taulukko.hakija'),
   });

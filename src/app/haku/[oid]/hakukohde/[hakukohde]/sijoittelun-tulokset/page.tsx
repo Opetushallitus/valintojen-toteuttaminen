@@ -5,7 +5,7 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { Box } from '@mui/material';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { getLatestSijoitteluAjonTuloksetWithValintaEsitys } from '@/app/lib/valinta-tulos-service';
+import { tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys } from '@/app/lib/valinta-tulos-service';
 import { isEmpty } from '@/app/lib/common';
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
 import { NoResults } from '@/app/components/no-results';
@@ -13,31 +13,45 @@ import { useSijoittelunTulosSearchParams } from './hooks/useSijoittelunTuloksetS
 import { SijoittelunTulosContent } from './components/sijoittelun-tulos-content';
 import { SijoittelunTulosControls } from './components/sijoittelun-tulos-controls';
 import { useHaku } from '@/app/hooks/useHaku';
+import { useHaunAsetukset } from '@/app/hooks/useHaunAsetukset';
 import { Haku } from '@/app/lib/types/kouta-types';
 import { ClientSpinner } from '@/app/components/client-spinner';
+import { HaunAsetukset } from '@/app/lib/types/haun-asetukset';
+import { canHakuBePublished } from './lib/sijoittelun-tulokset-utils';
+import { useUserPermissions } from '@/app/hooks/useUserPermissions';
 
 type SijoitteluContentParams = {
   haku: Haku;
   hakukohdeOid: string;
+  haunAsetukset: HaunAsetukset;
 };
 
-const SijoitteluContent = ({ haku, hakukohdeOid }: SijoitteluContentParams) => {
+const SijoitteluContent = ({
+  haku,
+  hakukohdeOid,
+  haunAsetukset,
+}: SijoitteluContentParams) => {
   const { t } = useTranslations();
 
   const { pageSize, setPageSize } = useSijoittelunTulosSearchParams();
 
   const { data: tulokset } = useSuspenseQuery({
     queryKey: [
-      'getLatestSijoitteluAjonTuloksetWithValintaEsitys',
+      'tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys',
       haku.oid,
       hakukohdeOid,
     ],
     queryFn: () =>
-      getLatestSijoitteluAjonTuloksetWithValintaEsitys(haku.oid, hakukohdeOid),
+      tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys(
+        haku.oid,
+        hakukohdeOid,
+      ),
   });
 
+  const { data: permissions } = useUserPermissions();
+
   return isEmpty(tulokset) ? (
-    <NoResults text={t('hakijaryhmat.ei-tuloksia')} />
+    <NoResults text={t('sijoittelun-tulokset.ei-tuloksia')} />
   ) : (
     <Box
       sx={{
@@ -59,13 +73,19 @@ const SijoitteluContent = ({ haku, hakukohdeOid }: SijoitteluContentParams) => {
         <SijoittelunTulosControls haku={haku} />
         <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
       </Box>
-      {tulokset.valintatapajonot.map((jono) => (
-        <SijoittelunTulosContent
-          valintatapajono={jono}
-          key={jono.oid}
-          haku={haku}
-        />
-      ))}
+      {tulokset &&
+        tulokset.valintatapajonot.map((jono) => (
+          <SijoittelunTulosContent
+            valintatapajono={jono}
+            key={jono.oid}
+            haku={haku}
+            hakukohdeOid={hakukohdeOid}
+            lastModified={tulokset.lastModified}
+            publishAllowed={
+              permissions.admin || canHakuBePublished(haku, haunAsetukset)
+            }
+          />
+        ))}
     </Box>
   );
 };
@@ -76,11 +96,16 @@ export default function SijoittelunTuloksetPage({
   params: { oid: string; hakukohde: string };
 }) {
   const { data: haku } = useHaku({ hakuOid: params.oid });
+  const { data: haunAsetukset } = useHaunAsetukset({ hakuOid: params.oid });
 
   return (
     <TabContainer>
       <QuerySuspenseBoundary suspenseFallback={<ClientSpinner />}>
-        <SijoitteluContent haku={haku} hakukohdeOid={params.hakukohde} />
+        <SijoitteluContent
+          haku={haku}
+          hakukohdeOid={params.hakukohde}
+          haunAsetukset={haunAsetukset}
+        />
       </QuerySuspenseBoundary>
     </TabContainer>
   );

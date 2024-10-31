@@ -7,7 +7,7 @@ import {
 } from '@/app/components/table/table-columns';
 import { ListTable } from '@/app/components/table/list-table';
 import { SijoittelunHakemusValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   KeysMatching,
   ListTableColumn,
@@ -18,6 +18,11 @@ import { VastaanOttoCell } from './vastaanotto-cell';
 import { SijoittelunTilaCell } from './sijoittelun-tila-cell';
 import { Haku } from '@/app/lib/types/kouta-types';
 import { isKorkeakouluHaku } from '@/app/lib/kouta';
+import { SijoittelunTuloksetActionBar } from './sijoittelun-tulos-action-bar';
+import {
+  HakemuksetStateChangeEvent,
+  SijoittelunTuloksetChangeEvent,
+} from '../lib/sijoittelun-tulokset-state';
 
 export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
   title,
@@ -41,11 +46,19 @@ export const SijoittelunTulosTable = ({
   hakemukset,
   setSort,
   sort,
+  disabled,
+  updateForm,
+  massStatusChangeForm,
+  publishAllowed,
 }: {
   haku: Haku;
   hakemukset: SijoittelunHakemusValintatiedoilla[];
   sort: string;
   setSort: (sort: string) => void;
+  disabled: boolean;
+  updateForm: (params: SijoittelunTuloksetChangeEvent) => void;
+  massStatusChangeForm: (changeParams: HakemuksetStateChangeEvent) => void;
+  publishAllowed: boolean;
 }) => {
   const { t } = useTranslations();
 
@@ -72,24 +85,48 @@ export const SijoittelunTulosTable = ({
         title: t(`${TRANSLATIONS_PREFIX}.tila`),
         key: 'sijoittelunTila',
         renderFn: (props) => (
-          <SijoittelunTilaCell hakemus={props} haku={haku} />
+          <SijoittelunTilaCell
+            hakemus={props}
+            haku={haku}
+            updateForm={updateForm}
+            disabled={disabled}
+          />
         ),
       }),
       makeColumnWithCustomRender<SijoittelunHakemusValintatiedoilla>({
         title: t(`${TRANSLATIONS_PREFIX}.vastaanottotieto`),
         key: 'vastaanottotila',
-        renderFn: (props) => <VastaanOttoCell hakemus={props} />,
+        renderFn: (props) => (
+          <VastaanOttoCell
+            hakemus={props}
+            updateForm={updateForm}
+            disabled={disabled}
+            publishAllowed={publishAllowed}
+          />
+        ),
       }),
       makeColumnWithCustomRender<SijoittelunHakemusValintatiedoilla>({
         title: t(`${TRANSLATIONS_PREFIX}.ilmoittautumistieto`),
         key: 'ilmoittautumisTila',
-        renderFn: (props) => <IlmoittautumisCell hakemus={props} />,
+        renderFn: (props) => (
+          <IlmoittautumisCell
+            hakemus={props}
+            updateForm={updateForm}
+            disabled={disabled}
+          />
+        ),
       }),
       isKorkeakouluHaku(haku)
         ? makeColumnWithCustomRender<SijoittelunHakemusValintatiedoilla>({
             title: t(`${TRANSLATIONS_PREFIX}.maksuntila`),
             key: 'maksuntila',
-            renderFn: (props) => <MaksuCell hakemus={props} />,
+            renderFn: (props) => (
+              <MaksuCell
+                hakemus={props}
+                updateForm={updateForm}
+                disabled={disabled}
+              />
+            ),
           })
         : null,
       makeColumnWithCustomRender<SijoittelunHakemusValintatiedoilla>({
@@ -99,16 +136,35 @@ export const SijoittelunTulosTable = ({
         sortable: false,
       }),
     ].filter((a) => a !== null);
-  }, [t, haku]);
+  }, [t, haku, updateForm, disabled, publishAllowed]);
+
+  const [selection, setSelection] = useState<Set<string>>(() => new Set());
 
   return (
-    <ListTable
-      rowKeyProp="hakijaOid"
-      columns={columns}
-      rows={hakemukset}
-      sort={sort}
-      setSort={setSort}
-      translateHeader={false}
-    />
+    <>
+      <SijoittelunTuloksetActionBar
+        hakemukset={hakemukset}
+        selection={selection}
+        resetSelection={() => setSelection(new Set())}
+        massStatusChangeForm={massStatusChangeForm}
+      />
+      <ListTable
+        rowKeyProp="hakemusOid"
+        columns={columns}
+        rows={hakemukset}
+        sort={sort}
+        setSort={setSort}
+        checkboxSelection={true}
+        selection={selection}
+        onSelectionChange={setSelection}
+        translateHeader={false}
+        sx={{ overflowX: 'auto', width: 'unset' }}
+        getRowCheckboxLabel={({ hakijanNimi }) =>
+          t(`${TRANSLATIONS_PREFIX}.valitse-hakemus`, {
+            hakijanNimi,
+          })
+        }
+      />
+    </>
   );
 };

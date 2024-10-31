@@ -28,6 +28,10 @@ const isRedirected = (response: Response) => {
   return response.redirected;
 };
 
+const noContent = (response: Response) => {
+  return response.status === 204;
+};
+
 const redirectToLogin = () => {
   const loginUrl = new URL(configuration.loginUrl);
   loginUrl.searchParams.set('service', window.location.href);
@@ -71,7 +75,12 @@ const RESPONSE_BODY_PARSERS: Record<string, BodyParser<unknown>> = {
   'text/plain': TEXT_PARSER,
 };
 
-const responseToData = async <Result = unknown>(res: Response) => {
+const responseToData = async <Result = unknown>(
+  res: Response,
+): Promise<{ headers: Headers; data: Result }> => {
+  if (noContent(res)) {
+    return { headers: res.headers, data: undefined as Result };
+  }
   const contentType =
     res.headers.get('content-type')?.split(';')?.[0] ?? 'text/plain';
 
@@ -171,11 +180,11 @@ const modRequest = <Result = unknown>(
     new Request(url, {
       method,
       body: isJson(body) ? JSON.stringify(body) : body,
+      ...options,
       headers: {
         ...(isJson(body) ? { 'content-type': 'application/json' } : {}),
         ...(options.headers ?? {}),
       },
-      ...options,
     }),
   );
 };
@@ -193,6 +202,11 @@ export const client = {
     body: BodyType,
     options: RequestInit = {},
   ) => modRequest<Result>('PUT', url, body, options),
+  patch: <Result = unknown>(
+    url: UrlType,
+    body: BodyType,
+    options: RequestInit = {},
+  ) => modRequest<Result>('PATCH', url, body, options),
 } as const;
 
 const makeAbortable = <D>(
