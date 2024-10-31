@@ -13,12 +13,14 @@ import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary'
 import { ClientSpinner } from '@/app/components/client-spinner';
 import HakukohdeSearch from './hakukohde-search';
 import { OphButton } from '@opetushallitus/oph-design-system';
+import { DEFAULT_BOX_BORDER } from '@/app/lib/constants';
 
 const StyledPanel = styled('aside')({
   width: '16vw',
   minWidth: '300px',
   display: 'block',
   height: '100vh',
+  borderRight: DEFAULT_BOX_BORDER,
   top: 0,
   position: 'sticky',
   '&.minimized': {
@@ -67,6 +69,7 @@ export const HakukohdePanel = ({ hakuOid }: { hakuOid: string }) => {
               flexShrink: 0,
               gap: 1,
               alignItems: 'flex-start',
+              paddingLeft: 2,
             }}
           >
             <OphButton
