@@ -11,6 +11,7 @@ import { OphNextJsThemeProvider } from '@opetushallitus/oph-design-system/next/t
 import PermissionProvider from './components/permission-provider';
 import { THEME_OVERRIDES } from './lib/theme';
 import { GlobalModalProvider } from './components/global-modal';
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
 
 export const metadata: Metadata = {
   title: 'Valintojen Toteuttaminen',
@@ -33,8 +34,10 @@ export default async function RootLayout({
               <PermissionProvider>
                 <LocalizationProvider>
                   <LocalizedThemeProvider>
-                    <Toaster />
-                    <GlobalModalProvider>{children}</GlobalModalProvider>
+                    <NuqsAdapter>
+                      <Toaster />
+                      <GlobalModalProvider>{children}</GlobalModalProvider>
+                    </NuqsAdapter>
                   </LocalizedThemeProvider>
                 </LocalizationProvider>
               </PermissionProvider>

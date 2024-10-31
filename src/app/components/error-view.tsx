@@ -21,7 +21,7 @@ const ErrorComponent = ({
       {title && (
         <OphTypography variant="h1">{t('virhe.palvelin')}</OphTypography>
       )}
-      {message && <OphTypography>{message}</OphTypography>}
+      {message && <OphTypography component="div">{message}</OphTypography>}
       {retry && (
         <OphButton variant="contained" onClick={retry}>
           {t('virhe.uudelleenyritys')}
