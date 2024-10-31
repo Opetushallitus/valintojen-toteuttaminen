@@ -40,6 +40,7 @@ const TabButton = ({
 };
 
 export const HakuTabs = ({ hakuOid }: { hakuOid: string }) => {
+  const { t } = useTranslations();
   return (
     <Stack
       component="nav"
@@ -49,6 +50,7 @@ export const HakuTabs = ({ hakuOid }: { hakuOid: string }) => {
         width: '100%',
         borderBottom: DEFAULT_BOX_BORDER,
       }}
+      aria-label={t('haku-tabs.navigaatio')}
     >
       <TabButton tabName="hakukohde" hakuOid={hakuOid} />
       <TabButton tabName="henkilo" hakuOid={hakuOid} />
