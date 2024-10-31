@@ -49,7 +49,5 @@ test('shows unauthorized message if user has no proper access rights', async ({
   );
   await page.goto('/');
   await expect(page).toHaveTitle(/Valintojen Toteuttaminen/);
-  await expect(page.locator('p')).toContainText(
-    'Ei riittäviä käyttöoikeuksia.',
-  );
+  await expect(page.getByText('Ei riittäviä käyttöoikeuksia.')).toBeVisible();
 });

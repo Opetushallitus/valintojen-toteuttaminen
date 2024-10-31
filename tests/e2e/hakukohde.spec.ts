@@ -69,7 +69,7 @@ const checkTabContent = async (page: Page, tab: Tab) => {
     await expect(page.locator('main').getByText(tab.textLocator)).toBeVisible();
   } else {
     await expect(
-      page.getByRole('heading', { level: 3, name: tab.title }),
+      page.getByRole('heading', { level: 3, name: tab.title, exact: true }),
     ).toBeVisible();
   }
 };
@@ -82,7 +82,7 @@ test.describe('Hakukohde tabs', () => {
       );
 
       await getHakukohdeNaviLinks(page).first().click();
-      await page.getByRole('link', { name: tab.title }).click();
+      await page.getByRole('link', { name: tab.title, exact: true }).click();
       await checkTabContent(page, tab);
     });
 

@@ -113,7 +113,7 @@ test('sorts list by nimi when header clicked', async ({ page }) => {
 test('navigates to haku page', async ({ page }) => {
   await page.locator('tbody tr:last-child td:first-child a').click();
   await expect(page).toHaveURL(
-    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102',
+    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde',
   );
   await expect(page.locator('h1')).toHaveText(
     '> Tampere University Separate Admission/ Finnish MAOL Competition Route 2024',
@@ -124,7 +124,7 @@ test('navigates to haku page', async ({ page }) => {
 test('navigates to haku page with no hakukohde', async ({ page }) => {
   await page.locator('tbody tr:first-child td:first-child a').click();
   await expect(page).toHaveURL(
-    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000046872',
+    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000046872/hakukohde',
   );
   await expect(page.locator('h1')).toHaveText(
     '> Hausjärven lukio jatkuva haku',
