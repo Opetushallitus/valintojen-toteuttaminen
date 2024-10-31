@@ -56,7 +56,8 @@ export const TableHeaderCell = ({
           sx={{
             color: ophColors.black,
             border: 0,
-            padding: (theme) => theme.spacing(1, 0),
+            padding: 0,
+            margin: (theme) => theme.spacing(1, 0),
           }}
           onClick={() => {
             let newSortValue = '';

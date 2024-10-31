@@ -11,7 +11,7 @@ import { haunAsetuksetQueryOptions } from '@/app/hooks/useHaunAsetukset';
 import { getUsesValintalaskenta } from '@/app/lib/valintalaskentakoostepalvelu';
 import { userPermissionsQueryOptions } from '@/app/hooks/useUserPermissions';
 import { notFound } from 'next/navigation';
-import { HakukohdeTabLink } from '../../components/hakukohde-tab-link';
+import { HakukohdeTabLink } from './hakukohde-tab-link';
 import { useHakukohdeTab } from '@/app/hooks/useHakukohdeTab';
 import { getVisibleTabs, isTabVisible } from '@/app/lib/hakukohde-tab-utils';
 
@@ -43,8 +43,11 @@ const StyledTab = styled(HakukohdeTabLink)<{ $active: boolean }>(
     borderBottom: '3px solid',
     borderColor: $active ? ophColors.blue2 : 'transparent',
     textDecoration: 'none',
-    '&:hover,&:focus': {
+    '&:hover': {
       borderColor: ophColors.blue2,
+    },
+    '&:focus-visible': {
+      outlineOffset: '3px',
     },
   }),
 );

@@ -38,9 +38,9 @@
     "sulje": "Sulje"
   },
   "haku-tabs": {
-    "hakukohteittain": "Hakukohteittain",
-    "henkiloittain": "Henkilöittäin",
-    "valintaryhmittain": "Valintaryhmittäin",
+    "hakukohde": "Hakukohteittain",
+    "henkilo": "Henkilöittäin",
+    "valintaryhma": "Valintaryhmittäin",
     "yhteisvalinnan-hallinta": "Yhteisvalinnan hallinta"
   },
   "lomake": {

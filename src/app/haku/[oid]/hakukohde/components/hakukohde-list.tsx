@@ -29,11 +29,15 @@ const StyledLinkItem = styled(HakukohdeTabLink)(({ theme }) => ({
   cursor: 'pointer',
   color: ophColors.blue2,
   textDecoration: 'none',
+  borderRadius: '0',
   '&:nth-of-type(even)': {
     backgroundColor: ophColors.grey50,
   },
-  [`&:hover, &:focus, &.${SELECTED_CLASS}`]: {
+  [`&:hover, &.${SELECTED_CLASS}`]: {
     backgroundColor: ophColors.lightBlue2,
+  },
+  '&:focus-visible': {
+    outlineOffset: '-2px',
   },
 }));
 

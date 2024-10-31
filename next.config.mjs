@@ -49,8 +49,13 @@ const nextConfig = {
     // Uudelleenohjaus oletuksena "hakukohteittain"-välilehdelle
     return [
       {
-        source: '/haku/:oid',
-        destination: '/haku/:oid/hakukohde',
+        source: '/haku/:hakuoid',
+        destination: '/haku/:hakuoid/hakukohde',
+        permanent: true,
+      },
+      {
+        source: '/haku/:hakuoid/hakukohde/:hakukohdeoid',
+        destination: '/haku/:hakuoid/hakukohde/:hakukohdeoid/perustiedot',
         permanent: true,
       },
     ];
