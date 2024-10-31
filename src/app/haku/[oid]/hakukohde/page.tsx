@@ -11,7 +11,7 @@ const Container = styled('div')(({ theme }) => ({
   width: '70%',
 }));
 
-export default function HakuPage() {
+export default function HakukohdePage() {
   const { t } = useTranslations();
   return (
     <Container>

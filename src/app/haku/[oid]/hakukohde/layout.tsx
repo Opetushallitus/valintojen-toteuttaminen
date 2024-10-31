@@ -18,7 +18,7 @@ export default function HakuLayout({
       <MainContainer
         sx={{ flexDirection: 'column', padding: 0, alignItems: 'stretch' }}
       >
-        <HakuTabs />
+        <HakuTabs hakuOid={params.oid} />
         <Stack
           direction="row"
           sx={{

@@ -5,9 +5,9 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { Hakukohde } from '@/app/lib/types/kouta-types';
 import { ophColors, OphTypography } from '@opetushallitus/oph-design-system';
 import { useParams } from 'next/navigation';
-import { useHakukohdeTab } from '../hooks/useHakukohdeTab';
 import { styled } from '@/app/lib/theme';
 import { HakukohdeTabLink } from './hakukohde-tab-link';
+import { useHakukohdeTab } from '@/app/hooks/useHakukohdeTab';
 
 const StyledList = styled('nav')(({ theme }) => ({
   display: 'flex',

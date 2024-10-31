@@ -8,7 +8,7 @@ const TabLink = styled(Link)(({ theme }) => ({
   padding: theme.spacing(0),
 }));
 
-export const HakuTabs = () => {
+export const HakuTabs = ({ hakuOid }: { hakuOid: string }) => {
   const { t } = useTranslations();
 
   return (
@@ -23,7 +23,9 @@ export const HakuTabs = () => {
         borderBottom: DEFAULT_BOX_BORDER,
       }}
     >
-      <TabLink href="#">{t('haku-tabs.hakukohteittain')}</TabLink>
+      <TabLink href={`/haku/${hakuOid}/hakukohde`}>
+        {t('haku-tabs.hakukohteittain')}
+      </TabLink>
       <TabLink href="#">{t('haku-tabs.henkiloittain')}</TabLink>
       <TabLink href="#">{t('haku-tabs.valintaryhmittain')}</TabLink>
       <Box sx={{ flexGrow: 2 }}></Box>

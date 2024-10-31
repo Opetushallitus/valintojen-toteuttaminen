@@ -10,7 +10,7 @@ import { useState } from 'react';
 import { ophColors, styled } from '@/app/lib/theme';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
-import { ClientSpinner } from '@/app/components/client-spinner';
+import { FullClientSpinner } from '@/app/components/client-spinner';
 import HakukohdeSearch from './hakukohde-search';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { DEFAULT_BOX_BORDER } from '@/app/lib/constants';
@@ -62,7 +62,7 @@ export const HakukohdePanel = ({ hakuOid }: { hakuOid: string }) => {
           <span>{t('yleinen.haku')}</span>
         </ExpandButton>
       ) : (
-        <QuerySuspenseBoundary suspenseFallback={<ClientSpinner />}>
+        <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
           <Stack
             sx={{
               height: '100%',
