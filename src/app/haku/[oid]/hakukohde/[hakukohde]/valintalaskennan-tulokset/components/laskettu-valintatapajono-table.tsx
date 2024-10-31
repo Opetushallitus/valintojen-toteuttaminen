@@ -9,7 +9,7 @@ import { ListTableColumn } from '@/app/components/table/table-types';
 import { JonoSijaWithHakijaInfo } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { configuration } from '@/app/lib/configuration';
-import { Link } from '@mui/material';
+import { OphLink } from '@opetushallitus/oph-design-system';
 import { useMemo } from 'react';
 
 const TRANSLATIONS_PREFIX = 'valintalaskennan-tulokset.taulukko';
@@ -49,14 +49,15 @@ export const LaskettuValintatapajonoTable = ({
         render: ({ pisteet, hakemusOid }) => (
           <span>
             {pisteet}{' '}
-            <Link
+            <OphLink
+              iconVisible={false}
               href={configuration.valintalaskentahistoriaUrl({
                 hakemusOid,
                 valintatapajonoOid: jonoId,
               })}
             >
               {t('yleinen.lisatietoja')}
-            </Link>
+            </OphLink>
           </span>
         ),
       },

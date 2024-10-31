@@ -21,14 +21,6 @@ export const styled: typeof muiStyled = (
   });
 };
 
-export const focusOutlineStyle = (offset: string = '1px') => ({
-  '&:focus-visible': {
-    outline: `2px solid ${ophColors.black}`,
-    outlineOffset: offset,
-    zIndex: 9999,
-  },
-});
-
 export const THEME_OVERRIDES: ThemeOptions = {
   components: {
     MuiInputBase: {
@@ -37,25 +29,6 @@ export const THEME_OVERRIDES: ThemeOptions = {
           borderColor: ophColors.grey800,
           borderRadius: '2px',
           height: '48px',
-          ...focusOutlineStyle(),
-        },
-      },
-    },
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          ...focusOutlineStyle(),
-        },
-      },
-    },
-    MuiLink: {
-      styleOverrides: {
-        root: {
-          textDecoration: 'none',
-          '&:hover, &:focus': {
-            textDecoration: 'underline',
-          },
-          ...focusOutlineStyle('3px'),
         },
       },
     },

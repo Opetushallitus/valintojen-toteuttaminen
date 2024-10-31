@@ -1,7 +1,5 @@
 import { DOMAIN } from '@/app/lib/configuration';
-import { OpenInNew } from '@mui/icons-material';
-import { Link } from '@mui/material';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { OphLink } from '@opetushallitus/oph-design-system';
 
 export type ExternalLinkProps = {
   name: string;
@@ -10,21 +8,12 @@ export type ExternalLinkProps = {
 };
 
 export const ExternalLink = ({ name, href, noIcon }: ExternalLinkProps) => {
-  const { t } = useTranslations();
   return (
-    <Link target="_blank" href={`${DOMAIN}/${href}`}>
+    <OphLink
+      iconVisible={noIcon == null ? true : !noIcon}
+      href={`${DOMAIN}/${href}`}
+    >
       {name}
-      {!noIcon && (
-        <OpenInNew
-          sx={{
-            verticalAlign: 'middle',
-            width: '20px',
-            height: '20px',
-            marginLeft: 0.5,
-          }}
-          aria-label={t('yleinen.ulkoinenlinkki')}
-        />
-      )}
-    </Link>
+    </OphLink>
   );
 };
