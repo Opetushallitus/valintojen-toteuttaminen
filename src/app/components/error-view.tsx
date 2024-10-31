@@ -4,6 +4,7 @@ import { FetchError, PermissionError } from '../lib/common';
 import { useTranslations } from '../hooks/useTranslations';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { Stack } from '@mui/material';
+import { notFound } from 'next/navigation';
 
 const ErrorComponent = ({
   title,
@@ -44,14 +45,21 @@ export function ErrorView({
   const { t } = useTranslations();
 
   if (error instanceof FetchError) {
+    const { response } = error;
+    if (
+      response.status === 404 &&
+      response.url.includes('/kouta-internal/haku/')
+    ) {
+      notFound();
+    }
     return (
       <ErrorComponent
         title={t('virhe.palvelin')}
         message={
           <Stack gap={1}>
-            <OphTypography>URL: {error.response.url}</OphTypography>
+            <OphTypography>URL: {response.url}</OphTypography>
             <OphTypography>
-              {t('virhe.virhekoodi')} {error.response.status}
+              {t('virhe.virhekoodi')} {response.status}
             </OphTypography>
           </Stack>
         }
