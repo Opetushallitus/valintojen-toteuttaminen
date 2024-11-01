@@ -78,5 +78,10 @@ export const THEME_OVERRIDES: ThemeOptions = {
         thickness: 4.5,
       },
     },
+    MuiStack: {
+      defaultProps: {
+        useFlexGap: true,
+      },
+    },
   },
 };

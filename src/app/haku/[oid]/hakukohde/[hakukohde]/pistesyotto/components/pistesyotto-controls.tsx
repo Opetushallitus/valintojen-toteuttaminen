@@ -1,6 +1,6 @@
 import { usePisteSyottoSearchParams } from '../hooks/usePisteSyottoSearch';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { Box, SelectChangeEvent } from '@mui/material';
+import { Box, SelectChangeEvent, Stack } from '@mui/material';
 import { ValintakoeAvaimet } from '@/app/lib/types/valintaperusteet-types';
 import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { LocalizedSelect } from '@/app/components/localized-select';
@@ -37,20 +37,8 @@ export const PisteSyottoControls = ({
   };
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        columnGap: 2,
-      }}
-    >
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          columnGap: 2,
-        }}
-      >
+    <Stack spacing={2}>
+      <Stack direction="row" spacing={2} sx={{ alignItems: 'flex-end' }}>
         <SearchInput
           searchPhrase={searchPhrase}
           setSearchPhrase={setSearchPhrase}
@@ -113,7 +101,7 @@ export const PisteSyottoControls = ({
             />
           )}
         />
-      </Box>
+      </Stack>
       <Box sx={{ marginY: 1 }}>
         <OphCheckbox
           checked={naytaVainLaskentaanVaikuttavat}
@@ -121,6 +109,6 @@ export const PisteSyottoControls = ({
           label={t('pistesyotto.laskentaanVaikuttavat')}
         />
       </Box>
-    </Box>
+    </Stack>
   );
 };
