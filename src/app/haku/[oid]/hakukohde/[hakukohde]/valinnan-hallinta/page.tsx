@@ -2,13 +2,12 @@
 
 import HallintaTable from './components/hallinta-table';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
-import { useTranslations } from '@/app/hooks/useTranslations';
 import { useSuspenseQueries } from '@tanstack/react-query';
-import { CircularProgress } from '@mui/material';
 import { TabContainer } from '../components/tab-container';
 import { hakuQueryOptions } from '@/app/hooks/useHaku';
 import { hakukohdeQueryOptions } from '@/app/hooks/useHakukohde';
 import { haunAsetuksetQueryOptions } from '@/app/hooks/useHaunAsetukset';
+import { FullClientSpinner } from '@/app/components/client-spinner';
 
 type ValinnanHallintaContentParams = {
   hakuOid: string;
@@ -52,15 +51,9 @@ export default function ValinnanHallintaPage({
 }: {
   params: { oid: string; hakukohde: string };
 }) {
-  const { t } = useTranslations();
-
   return (
     <TabContainer>
-      <QuerySuspenseBoundary
-        suspenseFallback={
-          <CircularProgress aria-label={t('yleinen.ladataan')} />
-        }
-      >
+      <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
         <ValinnanHallintaContent
           hakukohdeOid={params.hakukohde}
           hakuOid={params.oid}
