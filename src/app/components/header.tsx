@@ -1,35 +1,39 @@
 'use client';
 import { HomeOutlined as HomeOutlinedIcon } from '@mui/icons-material';
-import { Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { PageContent } from './page-content';
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
 import { useTranslations } from '../hooks/useTranslations';
 import { DEFAULT_BOX_BORDER } from '../lib/constants';
+import { styled } from '@/app/lib/theme';
+import { responsivePadding } from '../lib/responsive-padding';
 
 export type HeaderProps = {
   title?: React.ReactNode;
   isHome?: boolean;
 };
 
-export default function Header({ title, isHome = false }: HeaderProps) {
+const HeaderContent = styled(PageContent)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  columnGap: theme.spacing(2),
+  ...responsivePadding(theme),
+}));
+
+export function Header({ title, isHome = false }: HeaderProps) {
   const { t } = useTranslations();
+
   return (
-    <header
-      style={{
+    <Box
+      component="header"
+      sx={{
         position: 'relative',
         backgroundColor: ophColors.white,
         width: '100%',
-        border: DEFAULT_BOX_BORDER,
+        borderBottom: DEFAULT_BOX_BORDER,
       }}
     >
-      <PageContent
-        sx={{
-          paddingY: 2,
-          display: 'flex',
-          alignItems: 'center',
-          columnGap: 2,
-        }}
-      >
+      <HeaderContent>
         {!isHome && (
           <OphButton
             href="/"
@@ -38,11 +42,11 @@ export default function Header({ title, isHome = false }: HeaderProps) {
             aria-label={t('yleinen.palaa-etusivulle')}
           />
         )}
-        <Typography variant="h1">
+        <Typography variant="h2" component="h1">
           {isHome ? '' : '> '}
           {title ?? t('otsikko')}
         </Typography>
-      </PageContent>
-    </header>
+      </HeaderContent>
+    </Box>
   );
 }

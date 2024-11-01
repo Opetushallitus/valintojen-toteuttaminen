@@ -1,5 +1,5 @@
 'use client';
-import Header from '@/app/components/header';
+import { Header } from '@/app/components/header';
 import { useHaku } from '@/app/hooks/useHaku';
 import { useTranslations } from '@/app/hooks/useTranslations';
 

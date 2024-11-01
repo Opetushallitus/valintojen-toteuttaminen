@@ -1,12 +1,12 @@
 'use client';
 
-import Header from '../components/header';
 import { AccessTime as AccessTimeIcon } from '@mui/icons-material';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Box, Typography } from '@mui/material';
-import { PageLayout } from '../components/page-layout';
-import { ophColors } from '@opetushallitus/oph-design-system';
-import { DEFAULT_BOX_BORDER } from '../lib/constants';
+import { PageLayout } from '@/app/components/page-layout';
+import { DEFAULT_BOX_BORDER } from '@/app/lib/constants';
+import { Header } from '@/app/components/header';
+import { responsivePadding } from '../lib/responsive-padding';
 
 const IconHeaderBlock = ({
   title,
@@ -17,37 +17,20 @@ const IconHeaderBlock = ({
   children: React.ReactNode;
 }) => {
   return (
-    <Box
-      component="main"
-      sx={{
-        backgroundColor: ophColors.white,
-      }}
-    >
-      <Typography
-        component="div"
-        variant="h2"
-        sx={{
-          border: DEFAULT_BOX_BORDER,
-          borderBottom: 'none',
-          paddingX: 4,
-          paddingY: 2,
-          width: '100%',
+    <Box component="main">
+      <Box
+        sx={(theme) => ({
+          borderBottom: DEFAULT_BOX_BORDER,
           display: 'flex',
           alignItems: 'center',
-          gap: 1,
-        }}
+          columnGap: 1,
+          ...responsivePadding(theme),
+        })}
       >
-        <AccessTimeIcon /> {title}
-      </Typography>
-      <Box
-        sx={{
-          border: DEFAULT_BOX_BORDER,
-          paddingX: 4,
-          paddingY: 2,
-        }}
-      >
-        {children}
+        <AccessTimeIcon />
+        <Typography variant="h2">{title}</Typography>
       </Box>
+      <Box sx={(theme) => responsivePadding(theme)}>{children}</Box>
     </Box>
   );
 };
