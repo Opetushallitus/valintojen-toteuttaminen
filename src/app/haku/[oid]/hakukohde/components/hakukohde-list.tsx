@@ -43,7 +43,13 @@ const StyledLinkItem = styled(HakukohdeTabLink)(({ theme }) => ({
 
 const useSelectedHakukohdeOid = () => useParams().hakukohde;
 
-export const HakukohdeList = ({ hakuOid }: { hakuOid: string }) => {
+export const HakukohdeList = ({
+  hakuOid,
+  onItemClick,
+}: {
+  hakuOid: string;
+  onItemClick: () => void;
+}) => {
   const { t, translateEntity } = useTranslations();
   const { results } = useHakukohdeSearchResults(hakuOid);
 
@@ -62,6 +68,7 @@ export const HakukohdeList = ({ hakuOid }: { hakuOid: string }) => {
             hakukohdeOid={hk.oid}
             tabRoute={activeHakukohdeTab.route}
             className={selectedHakukohdeOid === hk.oid ? SELECTED_CLASS : ''}
+            onClick={onItemClick}
             tabIndex={0}
           >
             <OphTypography
