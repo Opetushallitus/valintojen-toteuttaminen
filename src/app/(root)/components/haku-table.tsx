@@ -1,11 +1,11 @@
 'use client';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { HakuListItem } from '@/app/hooks/useHakuSearch';
-import { Link } from '@mui/material';
 import { useMemo } from 'react';
 import { ListTableColumn } from '@/app/components/table/table-types';
 import { makeCountColumn } from '@/app/components/table/table-columns';
 import { ListTable } from '@/app/components/table/list-table';
+import { OphLink } from '@opetushallitus/oph-design-system';
 
 export const HakuTable = ({
   haut,
@@ -24,11 +24,11 @@ export const HakuTable = ({
         title: 'yleinen.nimi',
         key: 'nimi',
         render: (haku) => (
-          <Link href={`/haku/${haku.oid}`} sx={{ textDecoration: 'none' }}>
+          <OphLink href={`/haku/${haku.oid}`} sx={{ textDecoration: 'none' }}>
             {typeof haku.nimi == 'object'
               ? translateEntity(haku.nimi)
               : haku.nimi}
-          </Link>
+          </OphLink>
         ),
         style: {
           width: 'auto',

@@ -1,4 +1,4 @@
-import HakukohdeTabs from './components/hakukohde-tabs';
+import HakukohdeTabs from '../components/hakukohde-tabs';
 import { MainContainer } from '@/app/components/main-container';
 
 export default function HakuLayout({
@@ -17,6 +17,7 @@ export default function HakuLayout({
         padding: 0,
         width: '100%',
         overflow: 'hidden',
+        border: 'none',
       }}
     >
       <HakukohdeTabs hakuOid={params.oid} hakukohdeOid={params.hakukohde} />

@@ -32,16 +32,6 @@ export const THEME_OVERRIDES: ThemeOptions = {
         },
       },
     },
-    MuiLink: {
-      styleOverrides: {
-        root: {
-          textDecoration: 'none',
-          '&:hover, &:focus': {
-            textDecoration: 'underline',
-          },
-        },
-      },
-    },
     MuiDialog: {
       defaultProps: {
         fullWidth: true,

@@ -45,6 +45,21 @@ const nextConfig = {
     APP_URL: process.env.APP_URL,
   },
   output: isStandalone ? 'standalone' : undefined,
+  async redirects() {
+    // Uudelleenohjaus oletuksena "hakukohteittain"-välilehdelle
+    return [
+      {
+        source: '/haku/:hakuoid',
+        destination: '/haku/:hakuoid/hakukohde',
+        permanent: true,
+      },
+      {
+        source: '/haku/:hakuoid/hakukohde/:hakukohdeoid',
+        destination: '/haku/:hakuoid/hakukohde/:hakukohdeoid/perustiedot',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

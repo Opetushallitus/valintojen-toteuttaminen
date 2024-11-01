@@ -50,6 +50,11 @@ export const getHakukohdeNaviLinks = (page: Page) => {
   return nav.getByRole('link');
 };
 
+export const getHakuNaviLinks = (page: Page) => {
+  const nav = page.getByRole('navigation', { name: 'Haun näkymävalitsin' });
+  return nav.getByRole('link');
+};
+
 export const getMuiCloseButton = (page: Page) =>
   page.getByRole('button', { name: 'Sulje' });
 

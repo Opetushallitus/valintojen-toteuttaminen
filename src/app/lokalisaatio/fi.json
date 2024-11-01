@@ -37,6 +37,13 @@
     "tuo-taulukkolaskennasta": "Tuo taulukkolaskennasta",
     "sulje": "Sulje"
   },
+  "haku-tabs": {
+    "navigaatio": "Haun näkymävalitsin",
+    "hakukohde": "Hakukohteittain",
+    "henkilo": "Henkilöittäin",
+    "valintaryhma": "Valintaryhmittäin",
+    "yhteisvalinnan-hallinta": "Yhteisvalinnan hallinta"
+  },
   "lomake": {
     "jatka": "Jatka",
     "tallentamaton": "Olet poistumassa lomakkeelta jolla on tallentamattomia muutoksia. Jatketaanko silti?"

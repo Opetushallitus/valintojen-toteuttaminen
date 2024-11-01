@@ -1,6 +1,6 @@
-import HakukohdePanel from './components/hakukohde-panel';
 import { MainContainer } from '@/app/components/main-container';
 import { PageLayout } from '@/app/components/page-layout';
+import { HakuTabs } from './components/haku-tabs';
 
 export default function HakuLayout({
   children,
@@ -14,14 +14,9 @@ export default function HakuLayout({
   return (
     <PageLayout header={header}>
       <MainContainer
-        sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          textAlign: 'left',
-          alignItems: 'flex-start',
-        }}
+        sx={{ flexDirection: 'column', padding: 0, alignItems: 'stretch' }}
       >
-        <HakukohdePanel hakuOid={params.oid} />
+        <HakuTabs hakuOid={params.oid} />
         {children}
       </MainContainer>
     </PageLayout>

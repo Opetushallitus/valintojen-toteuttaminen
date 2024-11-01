@@ -23,5 +23,9 @@ export const getHaunAsetukset = async (
   const valintaEsityksenHyvaksyminen = response.data.PH_VEH?.date
     ? new Date(response.data.PH_VEH?.date)
     : undefined;
-  return { sijoittelu: response.data.sijoittelu, PH_OLVVPKE: response.data.PH_OLVVPKE, valintaEsityksenHyvaksyminen };
+  return {
+    sijoittelu: response.data.sijoittelu,
+    PH_OLVVPKE: response.data.PH_OLVVPKE,
+    valintaEsityksenHyvaksyminen,
+  };
 };

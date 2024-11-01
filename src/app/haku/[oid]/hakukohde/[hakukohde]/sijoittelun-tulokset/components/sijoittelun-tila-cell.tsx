@@ -12,9 +12,8 @@ import { LocalizedSelect } from '@/app/components/localized-select';
 import { OphInput } from '@/app/components/form/oph-input';
 import { isKorkeakouluHaku } from '@/app/lib/kouta';
 import { Haku } from '@/app/lib/types/kouta-types';
-import { ophColors } from '@opetushallitus/oph-design-system';
-import { StyledOphCheckBox } from '@/app/components/form/styled-oph-checkbox';
 import { SijoittelunTuloksetChangeEvent } from '../lib/sijoittelun-tulokset-state';
+import { ophColors, OphCheckbox } from '@opetushallitus/oph-design-system';
 
 const LanguageAdornment = styled(InputAdornment)(() => ({
   backgroundColor: ophColors.grey200,
@@ -128,7 +127,7 @@ export const SijoittelunTilaCell = ({
           : ''}
       </span>
       {showHyvaksyVarasijalta(hakemus) && (
-        <StyledOphCheckBox
+        <OphCheckbox
           checked={hyvaksyttyVarasijalta}
           onChange={updateHyvaksyttyVarasijalta}
           label={t('sijoittelun-tulokset.varasijalta')}
@@ -136,7 +135,7 @@ export const SijoittelunTilaCell = ({
         />
       )}
       {isKorkeakouluHaku(haku) && (
-        <StyledOphCheckBox
+        <OphCheckbox
           checked={ehdollinen}
           onChange={updateEhdollinen}
           label={t('sijoittelun-tulokset.ehdollinen')}

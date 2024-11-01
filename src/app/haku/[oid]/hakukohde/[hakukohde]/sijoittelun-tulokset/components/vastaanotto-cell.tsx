@@ -1,19 +1,19 @@
+import { LocalizedSelect } from '@/app/components/localized-select';
 import { useTranslations } from '@/app/hooks/useTranslations';
+import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
 import {
   SijoittelunHakemusValintatiedoilla,
   VastaanottoTila,
 } from '@/app/lib/types/sijoittelu-types';
-import { SijoittelunTulosStyledCell } from './sijoittelun-tulos-styled-cell';
 import { SelectChangeEvent, Typography } from '@mui/material';
-import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
-import { LocalizedSelect } from '@/app/components/localized-select';
+import { OphCheckbox } from '@opetushallitus/oph-design-system';
 import { useEffect, useState } from 'react';
-import { StyledOphCheckBox } from '@/app/components/form/styled-oph-checkbox';
+import { SijoittelunTuloksetChangeEvent } from '../lib/sijoittelun-tulokset-state';
 import {
   hakemukselleNaytetaanVastaanottoTila,
   hakemusVastaanottotilaJulkaistavissa,
 } from '../lib/sijoittelun-tulokset-utils';
-import { SijoittelunTuloksetChangeEvent } from '../lib/sijoittelun-tulokset-state';
+import { SijoittelunTulosStyledCell } from './sijoittelun-tulos-styled-cell';
 
 export const VastaanOttoCell = ({
   hakemus,
@@ -57,7 +57,7 @@ export const VastaanOttoCell = ({
 
   return (
     <SijoittelunTulosStyledCell>
-      <StyledOphCheckBox
+      <OphCheckbox
         checked={julkaistavissa}
         onChange={updateJulkaistu}
         label={t('sijoittelun-tulokset.julkaistavissa')}

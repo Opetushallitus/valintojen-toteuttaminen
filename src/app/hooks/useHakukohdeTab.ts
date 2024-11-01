@@ -1,5 +1,5 @@
 import { usePathname } from 'next/navigation';
-import { TABS } from '../lib/hakukohde-tab-utils';
+import { TABS } from '@/app/lib/hakukohde-tab-utils';
 
 function getPathMatchingTab(pathName: string) {
   const lastPath = pathName.split('/').reverse()[0];
