@@ -10,7 +10,7 @@ import { HakeneetTable } from './components/hakeneet-table';
 import { isKorkeakouluHaku } from '@/app/lib/kouta';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { Haku } from '@/app/lib/types/kouta-types';
-import { ClientSpinner } from '@/app/components/client-spinner';
+import { FullClientSpinner } from '@/app/components/client-spinner';
 import { useHaku } from '@/app/hooks/useHaku';
 import { SearchInput } from '@/app/components/search-input';
 
@@ -69,7 +69,7 @@ export default function HakeneetPage({
 
   return (
     <TabContainer>
-      <QuerySuspenseBoundary suspenseFallback={<ClientSpinner />}>
+      <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
         <HakeneetContent haku={haku} hakukohdeOid={params.hakukohde} />
       </QuerySuspenseBoundary>
     </TabContainer>

@@ -38,6 +38,7 @@ export const HakeneetTable = ({
     title: 'hakeneet.taulukko.hakutoiveennro',
     key: 'hakutoiveNumero',
     valueProp: 'hakutoiveNumero',
+    style: { textAlign: 'center' },
   });
 
   const maksuvelvollisuusColumn = makeColumnWithValueToTranslate<Hakemus>({

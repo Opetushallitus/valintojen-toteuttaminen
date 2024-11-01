@@ -7,15 +7,17 @@ export const makeGenericColumn = <T extends Record<string, unknown>>({
   title,
   key,
   valueProp,
+  style = {},
 }: {
   title: string;
   key: string;
   valueProp: KeysMatching<T, string | number | undefined>;
+  style?: React.CSSProperties;
 }): ListTableColumn<T> => ({
   title,
   key,
   render: (props) => <span>{props[valueProp] as string}</span>,
-  style: { width: 'auto' },
+  style: { width: 'auto', ...style },
 });
 
 export const makeColumnWithCustomRender = <T extends Record<string, unknown>>({
@@ -98,12 +100,14 @@ export const makeExternalLinkColumn = <T extends Record<string, unknown>>({
   key,
   nameProp,
   linkProp,
+  style = {},
 }: {
   linkBuilder: (s: string) => string;
   title: string;
   key: string;
   nameProp?: KeysMatching<T, string>;
   linkProp: KeysMatching<T, string>;
+  style?: React.CSSProperties;
 }): ListTableColumn<T> => ({
   title,
   key,
@@ -114,7 +118,7 @@ export const makeExternalLinkColumn = <T extends Record<string, unknown>>({
       href={linkBuilder(props[linkProp] as string)}
     />
   ),
-  style: { width: 'auto' },
+  style: { width: 'auto', ...style },
 });
 
 const LINK_TO_PERSON = 'henkilo-ui/oppija/';
