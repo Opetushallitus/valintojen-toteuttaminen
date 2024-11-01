@@ -7,7 +7,7 @@ import { useSuspenseQueries } from '@tanstack/react-query';
 import { ValintatapajonotTable } from './components/valintatapajonot-table';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
-import { ClientSpinner } from '@/app/components/client-spinner';
+import { FullClientSpinner } from '@/app/components/client-spinner';
 import { hakuQueryOptions } from '@/app/hooks/useHaku';
 
 type PerustiedotParams = {
@@ -57,7 +57,7 @@ export default function PerustiedotTab({
     <TabContainer>
       <BasicInfo hakukohdeOid={params.hakukohde} />
       <h3>{t('perustiedot.taulukko.otsikko')}</h3>
-      <QuerySuspenseBoundary suspenseFallback={<ClientSpinner />}>
+      <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
         <PerustiedotContent oid={params.oid} hakukohde={params.hakukohde} />
       </QuerySuspenseBoundary>
     </TabContainer>
