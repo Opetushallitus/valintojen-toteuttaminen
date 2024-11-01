@@ -11,6 +11,11 @@ export const Button = withDefaultProps(
       color: ophColors.white,
       backgroundColor: theme.palette.primary.light,
     },
+    [theme.breakpoints.down('md')]: {
+      '.MuiButton-icon': {
+        display: 'none',
+      },
+    },
   })),
   { variant: 'text' },
 );

@@ -217,10 +217,8 @@ function ValintakoekutsutContent({
           <FormGroup
             row
             sx={{
-              display: 'flex',
-              flexDirection: 'row',
-              columnGap: 2,
-              width: '100%',
+              gap: 2,
+              flexWrap: 'nowrap',
             }}
           >
             <ToggleButtonGroup

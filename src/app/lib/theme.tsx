@@ -83,5 +83,12 @@ export const THEME_OVERRIDES: ThemeOptions = {
         useFlexGap: true,
       },
     },
+    MuiAccordionDetails: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          padding: theme.spacing(2),
+        }),
+      },
+    },
   },
 };
