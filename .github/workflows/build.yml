@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   lint:
-    timeout-minutes: 10
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,7 +31,7 @@ jobs:
       - name: Run unit tests
         run: npm test
   e2e:
-    timeout-minutes: 60
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -39,16 +39,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-next-env
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps ${{ matrix.browser }}
       - name: Create self-signed dev certificates
         run: npm run create-self-signed-dev-certs
       - name: Build app
         run: npm run build-test
-      - name: Start the app
-        run: npm run start-test &
       - name: Run Playwright tests
-        run: npx playwright test --project=${{ matrix.browser }}
+        env:
+          PLAYWRIGHT_ARGS: --project=${{ matrix.browser }}
+        run: npm run start-and-test-playwright-docker
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -58,7 +56,7 @@ jobs:
           if-no-files-found: ignore
   deploy-zip:
     needs: [lint, test, e2e]
-    timeout-minutes: 30
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     permissions:
       id-token: write
