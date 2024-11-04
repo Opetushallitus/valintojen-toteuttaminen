@@ -7,7 +7,7 @@ import { useHenkiloSearchResults } from '../hooks/useHenkiloSearchResults';
 import { FullClientSpinner } from '@/app/components/client-spinner';
 import { ErrorView } from '@/app/components/error-view';
 import Link, { LinkProps } from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { getHenkiloTitle } from '../lib/henkilo-utils';
 
 const StyledList = styled('nav')(({ theme }) => ({
@@ -70,8 +70,7 @@ const StyledLinkItem = styled(HenkiloLink)(({ theme }) => ({
   },
 }));
 
-// TODO
-const useSelectedHenkiloOid = () => '';
+const useSelectedHakemusOid = () => useParams().hakemusOid;
 
 export const HenkiloList = ({
   hakuOid,
@@ -89,7 +88,7 @@ export const HenkiloList = ({
     error,
   } = useHenkiloSearchResults({ hakuOid });
 
-  const selectedHenkiloOid = useSelectedHenkiloOid();
+  const selectedHakemusOid = useSelectedHakemusOid();
   switch (true) {
     case isLoading:
       return <FullClientSpinner />;
@@ -109,7 +108,7 @@ export const HenkiloList = ({
                     <StyledLinkItem
                       key={henkilo.hakijaOid}
                       className={
-                        selectedHenkiloOid === henkilo.hakijaOid
+                        selectedHakemusOid === henkilo.hakemusOid
                           ? SELECTED_CLASS
                           : ''
                       }
