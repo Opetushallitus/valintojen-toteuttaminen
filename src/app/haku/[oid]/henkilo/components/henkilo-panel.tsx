@@ -17,8 +17,8 @@ import { useParams } from 'next/navigation';
 import HenkiloList from './henkilo-list';
 
 const StyledPanel = styled('aside')({
-  width: '16vw',
-  minWidth: '300px',
+  width: '17vw',
+  minWidth: '400px',
   display: 'block',
   height: '100vh',
   borderRight: DEFAULT_BOX_BORDER,
@@ -70,11 +70,11 @@ export const HenkiloPanel = ({ hakuOid }: { hakuOid: string }) => {
       ) : (
         <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
           <Stack
+            spacing={1}
             sx={{
               height: '100%',
               flexShrink: 0,
-              gap: 1,
-              alignItems: 'flex-start',
+              alignItems: 'stretch',
               paddingLeft: 2,
             }}
           >

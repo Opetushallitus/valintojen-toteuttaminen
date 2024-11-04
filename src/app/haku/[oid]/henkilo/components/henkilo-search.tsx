@@ -14,8 +14,8 @@ export const HenkiloSearch = () => {
   return (
     <FormControl
       sx={{
-        minWidth: '180px',
         textAlign: 'left',
+        paddingRight: 2,
       }}
     >
       <OutlinedInput
