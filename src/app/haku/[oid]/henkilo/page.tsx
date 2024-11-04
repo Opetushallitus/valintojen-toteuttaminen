@@ -1,8 +1,10 @@
 'use client';
-import { useTranslations } from '@/app/hooks/useTranslations';
-import { Box } from '@mui/material';
 
-export default function HenkiloPage() {
+import { useTranslations } from '@/app/hooks/useTranslations';
+import { ListAlt } from '@mui/icons-material';
+import { NoResults } from '@/app/components/no-results';
+
+export default function ValitseHenkiloPage() {
   const { t } = useTranslations();
-  return <Box sx={{ padding: 4 }}>TODO: {t('haku-tabs.henkilo')}</Box>;
+  return <NoResults text={t('henkilo.valitse')} icon={<ListAlt />} />;
 }

@@ -34,7 +34,7 @@ export const useHarkinnanvaraisetHakemukset = ({
   hakukohdeOid: string;
 }): Array<HakemuksenHarkinnanvaraisuus> => {
   const { data: hakemukset } = useSuspenseQuery({
-    queryKey: ['getHakemukset', hakukohdeOid],
+    queryKey: ['getHakemukset', hakuOid, hakukohdeOid],
     queryFn: () => getHakemukset({ hakuOid, hakukohdeOid }),
   });
 
