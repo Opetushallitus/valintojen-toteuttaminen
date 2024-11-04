@@ -136,7 +136,7 @@ export const ListTable = <T extends Row>({
   }, [rows, pagination]);
 
   return (
-    <Stack gap={1} sx={{ alignItems: 'center', width: '100%' }}>
+    <Stack spacing={1} sx={{ alignItems: 'center', width: '100%' }}>
       <TableWrapper tabIndex={0}>
         <StyledTable {...props}>
           <TableHead>

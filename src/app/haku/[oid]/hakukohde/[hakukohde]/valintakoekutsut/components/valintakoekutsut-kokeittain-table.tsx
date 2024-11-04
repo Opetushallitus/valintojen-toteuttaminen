@@ -1,7 +1,7 @@
 'use client';
 import { ValintakoekutsutActionBar } from './valintakoekutsut-action-bar';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { Box } from '@mui/material';
+import { Stack } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
 import { ValintakoeKutsuItem } from '@/app/lib/types/valintakoekutsut-types';
@@ -69,7 +69,7 @@ export const ValintakoekutsutKokeittainTable = ({
   const [selection, setSelection] = useState<Set<string>>(() => new Set());
 
   return (
-    <Box>
+    <Stack spacing={1}>
       <ValintakoekutsutActionBar
         hakuOid={hakuOid}
         hakukohdeOid={hakukohdeOid}
@@ -97,6 +97,6 @@ export const ValintakoekutsutKokeittainTable = ({
           pageSize,
         }}
       />
-    </Box>
+    </Stack>
   );
 };

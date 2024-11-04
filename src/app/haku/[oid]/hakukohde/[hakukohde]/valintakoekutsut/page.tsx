@@ -138,7 +138,7 @@ const ValintakoekutsutKokeittain = ({
   const { t } = useTranslations();
 
   return (
-    <Stack rowGap={2}>
+    <Stack spacing={2}>
       {isEmpty(valintakoekutsutKokeittain) ? (
         <NoResults text={t('valintakoekutsut.ei-valintakokeita')} />
       ) : (
