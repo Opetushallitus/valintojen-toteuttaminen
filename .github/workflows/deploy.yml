@@ -22,14 +22,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-      - name: Install NPM dependencies
+      - uses: ./.github/actions/setup-next-env
+      - name: Install CDK dependencies
         run: |
-          npm ci
           cd cdk
-          npm ci
+          npm ci --prefer-offline
           npm install -g aws-cdk
       - name: Configure AWS credentials
         if: ${{ inputs.environment == 'hahtuva' || inputs.environment == 'untuva' || inputs.environment == 'pallero' }}

@@ -1,5 +1,26 @@
-import { Box } from '@mui/material';
+'use client';
+import { Box, Stack, styled } from '@mui/material';
+import { DEFAULT_BOX_BORDER } from '../lib/constants';
+import { ophColors } from '@opetushallitus/oph-design-system';
 import { PageContent } from './page-content';
+import { notLarge } from '../lib/theme';
+
+const ContentWrapper = styled(PageContent)(({ theme }) => ({
+  padding: theme.spacing(4),
+  [notLarge(theme)]: {
+    padding: theme.spacing(1, 0, 0, 0),
+  },
+}));
+
+const BoxWrapper = styled(Box)(({ theme }) => ({
+  backgroundColor: ophColors.white,
+  width: '100%',
+  border: DEFAULT_BOX_BORDER,
+  [notLarge(theme)]: {
+    borderLeft: 'none',
+    borderRight: 'none',
+  },
+}));
 
 export const PageLayout = ({
   header,
@@ -9,17 +30,16 @@ export const PageLayout = ({
   children: React.ReactNode;
 }) => {
   return (
-    <Box
+    <Stack
       sx={{
         width: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        rowGap: 4,
         alignItems: 'stretch',
       }}
     >
       {header}
-      <PageContent>{children}</PageContent>
-    </Box>
+      <ContentWrapper>
+        <BoxWrapper>{children}</BoxWrapper>
+      </ContentWrapper>
+    </Stack>
   );
 };

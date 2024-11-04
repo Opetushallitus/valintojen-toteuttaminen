@@ -6,19 +6,20 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 import { styled } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
 
-const BasicContainer = styled('div')({
+const BasicContainer = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'row',
-  columnGap: '1.5rem',
+  columnGap: theme.spacing(3),
+  flexWrap: 'wrap',
   p: {
     marginTop: '0',
   },
-});
+}));
 
-const InfoHeader = styled('p')({
-  fontWeight: 500,
-  marginBottom: '0.3rem',
-});
+const InfoHeader = styled('p')(({ theme }) => ({
+  fontWeight: 600,
+  marginBottom: theme.spacing(0.5),
+}));
 
 const BasicInfo = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
   const { data: valintaryhma } = useSuspenseQuery({
@@ -31,7 +32,7 @@ const BasicInfo = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
   return (
     <BasicContainer>
       <div>
-        <InfoHeader>HakukohdeOid</InfoHeader>
+        <InfoHeader>{t('perustiedot.hakukohde-oid')}</InfoHeader>
         <p>{hakukohdeOid}</p>
       </div>
       <div>

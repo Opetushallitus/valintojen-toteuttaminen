@@ -1,6 +1,6 @@
 'use client';
 import { ophColors } from '@opetushallitus/oph-design-system';
-import { styled as muiStyled, ThemeOptions } from '@mui/material/styles';
+import { styled as muiStyled, Theme, ThemeOptions } from '@mui/material/styles';
 import { shouldForwardProp } from '@mui/system/createStyled';
 
 export { ophColors } from '@opetushallitus/oph-design-system';
@@ -20,6 +20,8 @@ export const styled: typeof muiStyled = (
     ...options,
   });
 };
+
+export const notLarge = (theme: Theme) => theme.breakpoints.down('lg');
 
 export const THEME_OVERRIDES: ThemeOptions = {
   components: {
@@ -74,6 +76,18 @@ export const THEME_OVERRIDES: ThemeOptions = {
       defaultProps: {
         size: 50,
         thickness: 4.5,
+      },
+    },
+    MuiStack: {
+      defaultProps: {
+        useFlexGap: true,
+      },
+    },
+    MuiAccordionDetails: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          padding: theme.spacing(2),
+        }),
       },
     },
   },

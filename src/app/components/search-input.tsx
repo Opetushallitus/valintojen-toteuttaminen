@@ -1,14 +1,16 @@
 import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Search } from '@mui/icons-material';
-import { InputAdornment, OutlinedInput, styled } from '@mui/material';
+import { InputAdornment, OutlinedInput } from '@mui/material';
 import { ChangeEvent } from 'react';
+import { styled } from '@/app/lib/theme';
 
-const StyledContol = styled(OphFormControl)(() => ({
+const StyledContol = styled(OphFormControl)({
   flexGrow: 0,
-  minWidth: '380px',
+  flexBasis: '380px',
+  minWidth: '200px',
   textAlign: 'left',
-}));
+});
 
 export type SearchInputProps = {
   name: string;
@@ -43,7 +45,6 @@ export const SearchInput = ({
           inputProps={{ 'aria-labelledby': labelId }}
           defaultValue={searchPhrase}
           onChange={handleSearchChange}
-          autoFocus={true}
           type="text"
           endAdornment={
             <InputAdornment position="end">

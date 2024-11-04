@@ -138,7 +138,7 @@ const ValintakoekutsutKokeittain = ({
   const { t } = useTranslations();
 
   return (
-    <Stack rowGap={2}>
+    <Stack spacing={2}>
       {isEmpty(valintakoekutsutKokeittain) ? (
         <NoResults text={t('valintakoekutsut.ei-valintakokeita')} />
       ) : (
@@ -217,10 +217,8 @@ function ValintakoekutsutContent({
           <FormGroup
             row
             sx={{
-              display: 'flex',
-              flexDirection: 'row',
-              columnGap: 2,
-              width: '100%',
+              gap: 2,
+              flexWrap: 'nowrap',
             }}
           >
             <ToggleButtonGroup

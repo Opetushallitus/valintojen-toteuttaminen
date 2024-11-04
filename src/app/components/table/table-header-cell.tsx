@@ -58,6 +58,7 @@ export const TableHeaderCell = ({
             border: 0,
             padding: 0,
             margin: (theme) => theme.spacing(1, 0),
+            lineHeight: 1.3,
           }}
           onClick={() => {
             let newSortValue = '';

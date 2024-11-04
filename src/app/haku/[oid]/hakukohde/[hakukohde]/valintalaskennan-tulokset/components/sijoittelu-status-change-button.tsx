@@ -18,6 +18,7 @@ export const SijoitteluButton = ({
       {...props}
       disabled={isLoading || disabled}
       variant="outlined"
+      sx={{ marginBottom: 1 }}
       startIcon={isLoading ? <SpinnerIcon /> : startIcon}
     />
   );

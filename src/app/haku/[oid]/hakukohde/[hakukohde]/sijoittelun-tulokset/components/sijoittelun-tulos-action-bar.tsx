@@ -109,7 +109,7 @@ export const SijoittelunTuloksetActionBar = ({
   const { t } = useTranslation();
 
   return (
-    <ActionBar.Container sx={{ width: '100%' }}>
+    <ActionBar.Container sx={{ width: '100%', justifyContent: 'stretch' }}>
       <Box
         sx={{
           padding: 1,
@@ -118,17 +118,25 @@ export const SijoittelunTuloksetActionBar = ({
         {t(`valintakoekutsut.valittu-maara`, { count: selection.size })}
       </Box>
       <ActionBar.Divider />
-      <VastaanOttoSelect
-        hakemukset={hakemukset}
-        selection={selection}
-        massStatusChangeForm={massStatusChangeForm}
-      />
-      <ActionBar.Divider />
-      <IlmoittautumisSelect
-        hakemukset={hakemukset}
-        selection={selection}
-        massStatusChangeForm={massStatusChangeForm}
-      />
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          gap: 1,
+        }}
+      >
+        <VastaanOttoSelect
+          hakemukset={hakemukset}
+          selection={selection}
+          massStatusChangeForm={massStatusChangeForm}
+        />
+        <IlmoittautumisSelect
+          hakemukset={hakemukset}
+          selection={selection}
+          massStatusChangeForm={massStatusChangeForm}
+        />
+      </Box>
       <ActionBar.Divider />
       <ActionBar.Button
         startIcon={<DeselectOutlined />}

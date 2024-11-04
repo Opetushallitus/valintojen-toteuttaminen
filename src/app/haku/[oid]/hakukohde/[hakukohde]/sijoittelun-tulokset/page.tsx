@@ -15,7 +15,7 @@ import { SijoittelunTulosControls } from './components/sijoittelun-tulos-control
 import { useHaku } from '@/app/hooks/useHaku';
 import { useHaunAsetukset } from '@/app/hooks/useHaunAsetukset';
 import { Haku } from '@/app/lib/types/kouta-types';
-import { ClientSpinner } from '@/app/components/client-spinner';
+import { FullClientSpinner } from '@/app/components/client-spinner';
 import { HaunAsetukset } from '@/app/lib/types/haun-asetukset';
 import { canHakuBePublished } from './lib/sijoittelun-tulokset-utils';
 import { useUserPermissions } from '@/app/hooks/useUserPermissions';
@@ -100,7 +100,7 @@ export default function SijoittelunTuloksetPage({
 
   return (
     <TabContainer>
-      <QuerySuspenseBoundary suspenseFallback={<ClientSpinner />}>
+      <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
         <SijoitteluContent
           haku={haku}
           hakukohdeOid={params.hakukohde}

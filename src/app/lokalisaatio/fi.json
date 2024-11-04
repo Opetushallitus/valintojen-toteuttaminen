@@ -100,6 +100,7 @@
   },
   "perustiedot": {
     "otsikko": "Perustiedot",
+    "hakukohde-oid": "Hakukohteen OID",
     "valintaryhma": "Valintaryhmä",
     "valintaperusteet": "Valintaperusteet",
     "tarjonta": "Tarjonta",

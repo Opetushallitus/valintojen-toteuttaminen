@@ -1,11 +1,11 @@
 'use client';
-import { styled } from '@mui/material/styles';
 import { Box } from '@mui/material';
+import { styled } from '@/app/lib/theme';
 
-export const PageContent = styled(Box)(({ theme }) => ({
-  paddingLeft: theme.spacing(4),
-  paddingRight: theme.spacing(4),
-  maxWidth: '1920px',
+const MAX_WIDTH = '1920px';
+
+export const PageContent = styled(Box)({
+  maxWidth: MAX_WIDTH,
   margin: 'auto',
   width: '100%',
-}));
+});

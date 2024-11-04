@@ -1,6 +1,6 @@
-import { MainContainer } from '@/app/components/main-container';
 import { PageLayout } from '@/app/components/page-layout';
 import { HakuTabs } from './components/haku-tabs';
+import { Stack } from '@mui/material';
 
 export default function HakuLayout({
   children,
@@ -13,12 +13,15 @@ export default function HakuLayout({
 }) {
   return (
     <PageLayout header={header}>
-      <MainContainer
-        sx={{ flexDirection: 'column', padding: 0, alignItems: 'stretch' }}
+      <Stack
+        component="main"
+        sx={{
+          alignItems: 'stretch',
+        }}
       >
         <HakuTabs hakuOid={params.oid} />
         {children}
-      </MainContainer>
+      </Stack>
     </PageLayout>
   );
 }

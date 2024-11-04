@@ -102,14 +102,7 @@ export const ValintatapajonoContent = ({
           />
         }
       >
-        <Box
-          sx={{
-            paddingTop: 2,
-            paddingBottom: 1,
-          }}
-        >
-          <JonoActions hakukohdeOid={hakukohdeOid} jono={jono} />
-        </Box>
+        <JonoActions hakukohdeOid={hakukohdeOid} jono={jono} />
         <PaginatedValintatapajonoTable
           label={label}
           jonoId={jono.valintatapajonooid}

@@ -9,7 +9,7 @@ import { PageSizeSelector } from '@/app/components/table/page-size-selector';
 import React from 'react';
 import { ValintatapajonoContent } from './components/valintatapajono-content';
 import { useJonosijatSearchParams } from '@/app/hooks/useJonosijatSearch';
-import { ClientSpinner } from '@/app/components/client-spinner';
+import { FullClientSpinner } from '@/app/components/client-spinner';
 import { downloadBlob, isEmpty } from '@/app/lib/common';
 import { DownloadButton } from '@/app/components/download-button';
 import useToaster from '@/app/hooks/useToaster';
@@ -132,7 +132,7 @@ export default function ValintalaskennanTuloksetPage({
 }) {
   return (
     <TabContainer>
-      <QuerySuspenseBoundary suspenseFallback={<ClientSpinner />}>
+      <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
         <LasketutValinnanVaiheetContent
           hakuOid={params.oid}
           hakukohdeOid={params.hakukohde}

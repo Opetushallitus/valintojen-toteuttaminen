@@ -28,10 +28,9 @@ type SijoittelunTuloksetFormParams = {
   publishAllowed: boolean;
 };
 
-const StyledForm = styled('form')(({ theme }) => ({
-  padding: theme.spacing(2.5),
+const StyledForm = styled('form')({
   width: '100%',
-}));
+});
 
 export const SijoittelunTulosForm = ({
   valintatapajono,

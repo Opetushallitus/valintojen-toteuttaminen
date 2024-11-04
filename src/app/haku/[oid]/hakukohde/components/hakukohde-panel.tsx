@@ -1,19 +1,20 @@
 'use client';
 
-import { Stack } from '@mui/material';
+import { Stack, useMediaQuery, useTheme } from '@mui/material';
 import {
   Close as CloseIcon,
   KeyboardDoubleArrowRight as KeyboardDoubleArrowRightIcon,
 } from '@mui/icons-material';
 import HakukohdeList from './hakukohde-list';
 import { useState } from 'react';
-import { ophColors, styled } from '@/app/lib/theme';
+import { notLarge, ophColors, styled } from '@/app/lib/theme';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { FullClientSpinner } from '@/app/components/client-spinner';
 import HakukohdeSearch from './hakukohde-search';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { DEFAULT_BOX_BORDER } from '@/app/lib/constants';
+import { useParams } from 'next/navigation';
 
 const StyledPanel = styled('aside')({
   width: '16vw',
@@ -48,7 +49,12 @@ const ExpandButton = styled(OphButton)(({ theme }) => ({
 }));
 
 export const HakukohdePanel = ({ hakuOid }: { hakuOid: string }) => {
-  const [minimized, setMinimized] = useState(false);
+  const theme = useTheme();
+  const isNotLarge = useMediaQuery(notLarge(theme));
+  const hakukohdeOid = useParams().hakukohde;
+  const [minimized, setMinimized] = useState(
+    () => Boolean(hakukohdeOid) && isNotLarge,
+  );
   const { t } = useTranslations();
 
   return (
@@ -80,7 +86,14 @@ export const HakukohdePanel = ({ hakuOid }: { hakuOid: string }) => {
             />
 
             <HakukohdeSearch />
-            <HakukohdeList hakuOid={hakuOid} />
+            <HakukohdeList
+              hakuOid={hakuOid}
+              onItemClick={() => {
+                if (isNotLarge) {
+                  setMinimized(true);
+                }
+              }}
+            />
           </Stack>
         </QuerySuspenseBoundary>
       )}

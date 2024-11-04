@@ -17,7 +17,7 @@ const ErrorComponent = ({
 }) => {
   const { t } = useTranslations();
   return (
-    <Stack gap={1} sx={{ margin: 1 }} alignItems="flex-start">
+    <Stack spacing={1} sx={{ margin: 1 }} alignItems="flex-start">
       {title && (
         <OphTypography variant="h1">{t('virhe.palvelin')}</OphTypography>
       )}
@@ -56,7 +56,7 @@ export function ErrorView({
       <ErrorComponent
         title={t('virhe.palvelin')}
         message={
-          <Stack gap={1}>
+          <Stack spacing={1}>
             <OphTypography>URL: {response.url}</OphTypography>
             <OphTypography>
               {t('virhe.virhekoodi')} {response.status}

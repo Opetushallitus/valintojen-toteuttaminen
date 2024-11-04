@@ -1,5 +1,5 @@
+import { Stack } from '@mui/material';
 import HakukohdeTabs from '../components/hakukohde-tabs';
-import { MainContainer } from '@/app/components/main-container';
 
 export default function HakuLayout({
   children,
@@ -9,19 +9,14 @@ export default function HakuLayout({
   params: { oid: string; hakukohde: string };
 }) {
   return (
-    <MainContainer
-      component="div"
+    <Stack
       sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        padding: 0,
         width: '100%',
         overflow: 'hidden',
-        border: 'none',
       }}
     >
       <HakukohdeTabs hakuOid={params.oid} hakukohdeOid={params.hakukohde} />
       {children}
-    </MainContainer>
+    </Stack>
   );
 }
