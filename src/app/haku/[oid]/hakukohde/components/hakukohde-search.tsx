@@ -19,6 +19,7 @@ export const HakukohdeSearch = () => {
       }}
     >
       <OutlinedInput
+        key={searchPhrase}
         id="hakukohde-search"
         name="hakukohde-search"
         defaultValue={searchPhrase}

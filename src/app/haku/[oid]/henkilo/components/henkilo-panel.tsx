@@ -68,27 +68,27 @@ export const HenkiloPanel = ({ hakuOid }: { hakuOid: string }) => {
           <span>{t('yleinen.haku')}</span>
         </ExpandButton>
       ) : (
-        <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
-          <Stack
-            spacing={1}
-            sx={{
-              height: '100%',
-              flexShrink: 0,
-              alignItems: 'stretch',
-              paddingLeft: 2,
-            }}
-          >
-            <OphButton
-              sx={{ alignSelf: 'flex-end' }}
-              onClick={() => setMinimized(true)}
-              aria-label={t('haku.pienenna')}
-              startIcon={<CloseIcon />}
-            />
+        <Stack
+          spacing={1}
+          sx={{
+            height: '100%',
+            flexShrink: 0,
+            alignItems: 'stretch',
+            paddingLeft: 2,
+          }}
+        >
+          <OphButton
+            sx={{ alignSelf: 'flex-end' }}
+            onClick={() => setMinimized(true)}
+            aria-label={t('haku.pienenna')}
+            startIcon={<CloseIcon />}
+          />
 
-            <HenkiloSearch />
+          <HenkiloSearch />
+          <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
             <HenkiloList hakuOid={hakuOid} />
-          </Stack>
-        </QuerySuspenseBoundary>
+          </QuerySuspenseBoundary>
+        </Stack>
       )}
     </StyledPanel>
   );

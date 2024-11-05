@@ -1,8 +1,10 @@
+'use client';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Search } from '@mui/icons-material';
-import { FormControl, InputAdornment, OutlinedInput } from '@mui/material';
+import { InputAdornment, OutlinedInput } from '@mui/material';
 import { ChangeEvent } from 'react';
 import { useHenkiloSearchParams } from '../hooks/useHenkiloSearchResults';
+import { OphFormControl } from '@/app/components/form/oph-form-control';
 
 export const HenkiloSearch = () => {
   const { searchPhrase, setSearchPhrase } = useHenkiloSearchParams();
@@ -12,27 +14,32 @@ export const HenkiloSearch = () => {
   };
 
   return (
-    <FormControl
+    <OphFormControl
       sx={{
         textAlign: 'left',
         paddingRight: 2,
       }}
-    >
-      <OutlinedInput
-        id="henkilo-search"
-        name="henkilo-search"
-        defaultValue={searchPhrase}
-        onChange={handleSearchChange}
-        autoFocus={true}
-        type="text"
-        placeholder={t('henkilo.haehenkilo')}
-        endAdornment={
-          <InputAdornment position="end">
-            <Search />
-          </InputAdornment>
-        }
-      />
-    </FormControl>
+      helperText={t('henkilo.hae-helpertext')}
+      renderInput={() => {
+        return (
+          <OutlinedInput
+            key={searchPhrase}
+            id="henkilo-search"
+            name="henkilo-search"
+            defaultValue={searchPhrase}
+            onChange={handleSearchChange}
+            autoFocus={true}
+            type="text"
+            placeholder={t('henkilo.hae-henkilo')}
+            endAdornment={
+              <InputAdornment position="end">
+                <Search />
+              </InputAdornment>
+            }
+          />
+        );
+      }}
+    ></OphFormControl>
   );
 };
 

@@ -370,8 +370,9 @@
     "henkilo-maara_zero": "Henkilöitä ei löytynyt",
     "henkilo-maara_other": "{{count}} henkilöä",
     "valitse": "Valitse tai hae henkilö",
-    "haehenkilo": "Hae henkilöitä",
     "hakemus-oid": "Hakemuksen tekninen tunniste (OID)",
-    "lahiosoite": "Lähiosoite"
+    "lahiosoite": "Lähiosoite",
+    "hae-henkilo": "Hae henkilöitä",
+    "hae-helpertext": "Hae: Etunimi, sukunimi, hakemus-oid tai henkilö-oid"
   }
 }
