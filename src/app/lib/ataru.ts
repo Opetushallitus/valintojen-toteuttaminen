@@ -80,6 +80,8 @@ type GetHakemuksetParams = {
   hakukohdeOid?: string;
   hakemusOids?: Array<string>;
   name?: string;
+  henkiloOid?: string;
+  henkilotunnus?: string;
 };
 
 async function getAtaruHakemukset({
@@ -87,6 +89,8 @@ async function getAtaruHakemukset({
   hakukohdeOid,
   hakemusOids,
   name,
+  henkiloOid,
+  henkilotunnus,
 }: GetHakemuksetParams) {
   const url = new URL(configuration.hakemuksetUrl);
   if (hakuOid) {
@@ -100,9 +104,14 @@ async function getAtaruHakemukset({
       url.searchParams.append('hakemusOids', hakemusOid);
     }
   }
-  console.log({ name });
+  if (henkiloOid) {
+    url.searchParams.append('henkiloOid', henkiloOid);
+  }
   if (name) {
     url.searchParams.append('name', name);
+  }
+  if (henkilotunnus) {
+    url.searchParams.append('henkilotunnus', henkilotunnus);
   }
 
   const response = await client.get<Array<AtaruHakemus>>(url);
@@ -133,13 +142,17 @@ export async function getHakemukset({
   hakuOid,
   hakukohdeOid,
   hakemusOids,
+  henkiloOid,
   name,
+  henkilotunnus,
 }: GetHakemuksetParams): Promise<Hakemus[]> {
   const data = await getAtaruHakemukset({
     hakuOid,
     hakukohdeOid,
     hakemusOids,
+    henkiloOid,
     name,
+    henkilotunnus,
   });
 
   return data.map((h) => {
