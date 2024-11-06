@@ -30,7 +30,13 @@ export type ValintakoeKutsuItem = {
 
 export type ValintakoekutsutData = {
   valintakokeet: Array<Valintakoe>;
-  hakemuksetByOid: Record<string, HakijaInfo>;
+  hakemuksetByOid: Record<
+    string,
+    Pick<
+      HakijaInfo,
+      'hakijanNimi' | 'hakemusOid' | 'hakijaOid' | 'asiointikieliKoodi'
+    >
+  >;
   valintakoeOsallistumiset: Array<HakutoiveValintakoeOsallistumiset>;
 };
 
