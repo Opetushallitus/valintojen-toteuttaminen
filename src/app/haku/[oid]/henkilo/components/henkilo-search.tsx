@@ -42,5 +42,3 @@ export const HenkiloSearch = () => {
     ></OphFormControl>
   );
 };
-
-export default HenkiloSearch;

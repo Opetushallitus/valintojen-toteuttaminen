@@ -36,5 +36,3 @@ export const HakukohdeSearch = () => {
     </FormControl>
   );
 };
-
-export default HakukohdeSearch;

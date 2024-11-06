@@ -130,5 +130,3 @@ export const HenkiloList = ({
       }
   }
 };
-
-export default HenkiloList;

@@ -1,5 +1,5 @@
 import { Stack } from '@mui/material';
-import HenkiloPanel from './components/henkilo-panel';
+import { HenkiloPanel } from './components/henkilo-panel';
 
 export default function HenkiloLayout({
   children,

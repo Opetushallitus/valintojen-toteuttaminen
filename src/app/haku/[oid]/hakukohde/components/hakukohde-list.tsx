@@ -89,5 +89,3 @@ export const HakukohdeList = ({
     </>
   );
 };
-
-export default HakukohdeList;

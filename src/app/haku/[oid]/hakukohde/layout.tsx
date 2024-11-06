@@ -1,5 +1,5 @@
 import { Stack } from '@mui/material';
-import HakukohdePanel from './components/hakukohde-panel';
+import { HakukohdePanel } from './components/hakukohde-panel';
 
 export default function HakuLayout({
   children,
