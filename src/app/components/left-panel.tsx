@@ -11,21 +11,26 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { DEFAULT_BOX_BORDER } from '@/app/lib/constants';
 
+const MINIMIZED_PANEL_WIDTH = '60px';
+
 const StyledPanel = styled('aside')({
-  width: '17vw',
-  minWidth: '400px',
+  width: '30vw',
+  minWidth: '350px',
   display: 'block',
   height: '100vh',
   borderRight: DEFAULT_BOX_BORDER,
   top: 0,
   position: 'sticky',
   '&.minimized': {
-    minWidth: 0,
+    minWidth: MINIMIZED_PANEL_WIDTH,
     width: 'auto',
   },
 });
 
 const ExpandButton = styled(OphButton)(({ theme }) => ({
+  minWidth: '100%',
+  width: '100%',
+  position: 'relative',
   fontWeight: 'normal',
   height: '100%',
   color: ophColors.blue2,
@@ -35,6 +40,7 @@ const ExpandButton = styled(OphButton)(({ theme }) => ({
   alignItems: 'center',
   padding: theme.spacing(1, 0),
   border: 0,
+  borderRadius: 0,
   '& .MuiButton-icon': {
     margin: 0,
   },
