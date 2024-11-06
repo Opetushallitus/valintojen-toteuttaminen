@@ -1,11 +1,22 @@
 'use client';
 
+import { useTranslations } from '@/app/hooks/useTranslations';
 import { getHakemukset } from '@/app/lib/ataru';
 import { Box, Typography } from '@mui/material';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { notFound } from 'next/navigation';
+import { useId } from 'react';
 import { getHenkiloTitle } from '../lib/henkilo-utils';
-import { useTranslations } from '@/app/hooks/useTranslations';
+
+const InfoItem = ({ label, value }: { label: string; value: string }) => {
+  const labelId = useId();
+  return (
+    <p>
+      <label id={labelId}>{label}</label>:{' '}
+      <span aria-labelledby={labelId}>{value}</span>
+    </p>
+  );
+};
 
 export default function ValitseHenkiloPage({
   params,
@@ -30,13 +41,12 @@ export default function ValitseHenkiloPage({
 
   return (
     <Box sx={{ m: 4 }}>
-      <Typography variant="h3">{getHenkiloTitle(hakemus)}</Typography>
-      <p>
-        {t('henkilo.hakemus-oid')}: {hakemus.hakemusOid}
-      </p>
-      <p>
-        {t('henkilo.lahiosoite')}: {hakemus.lahiosoite}, {hakemus.postinumero}
-      </p>
+      <Typography variant="h2">{getHenkiloTitle(hakemus)}</Typography>
+      <InfoItem label={t('henkilo.hakemus-oid')} value={hakemus.hakemusOid} />
+      <InfoItem
+        label={t('henkilo.lahiosoite')}
+        value={`${hakemus.lahiosoite}, ${hakemus.postinumero}`}
+      />
     </Box>
   );
 }

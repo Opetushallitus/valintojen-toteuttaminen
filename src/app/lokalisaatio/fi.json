@@ -373,6 +373,7 @@
     "hakemus-oid": "Hakemuksen tekninen tunniste (OID)",
     "lahiosoite": "Lähiosoite",
     "hae-henkilo": "Hae henkilöitä",
-    "hae-helpertext": "Hae: Etunimi, sukunimi, hakemus-oid tai henkilö-oid"
+    "hae-helpertext": "Hae: Etunimi, sukunimi, hakemus-oid tai henkilö-oid",
+    "navigaatio": "Henkilövalitsin"
   }
 }
