@@ -40,10 +40,6 @@ const nextConfig = {
       },
     ];
   },
-  env: {
-    VIRKAILIJA_URL: process.env.VIRKAILIJA_URL,
-    APP_URL: process.env.APP_URL,
-  },
   output: isStandalone ? 'standalone' : undefined,
   async redirects() {
     // Uudelleenohjaus oletuksena "hakukohteittain"-välilehdelle

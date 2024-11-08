@@ -7,6 +7,7 @@ import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
 import { usePathname } from 'next/navigation';
 
 const StyledButton = styled(OphButton)({
+  borderRadius: 0,
   fontWeight: 'normal',
   height: '48px',
   '&:hover': {

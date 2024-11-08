@@ -3,43 +3,14 @@
 import { useHakukohdeSearchResults } from '@/app/hooks/useHakukohdeSearch';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Hakukohde } from '@/app/lib/types/kouta-types';
-import { ophColors, OphTypography } from '@opetushallitus/oph-design-system';
+import { OphTypography } from '@opetushallitus/oph-design-system';
 import { useParams } from 'next/navigation';
-import { styled } from '@/app/lib/theme';
 import { HakukohdeTabLink } from './hakukohde-tab-link';
 import { useHakukohdeTab } from '@/app/hooks/useHakukohdeTab';
-
-const StyledList = styled('nav')(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'stretch',
-  width: '100%',
-  textAlign: 'left',
-  overflowY: 'auto',
-  height: 'auto',
-  paddingRight: theme.spacing(0.5),
-  gap: theme.spacing(0.5),
-}));
-
-const SELECTED_CLASS = 'hakukohde-list--item-selected';
-
-const StyledLinkItem = styled(HakukohdeTabLink)(({ theme }) => ({
-  display: 'block',
-  padding: theme.spacing(1),
-  cursor: 'pointer',
-  color: ophColors.blue2,
-  textDecoration: 'none',
-  borderRadius: '0',
-  '&:nth-of-type(even)': {
-    backgroundColor: ophColors.grey50,
-  },
-  [`&:hover, &.${SELECTED_CLASS}`]: {
-    backgroundColor: ophColors.lightBlue2,
-  },
-  '&:focus-visible': {
-    outlineOffset: '-2px',
-  },
-}));
+import {
+  NavigationList,
+  NAV_LIST_SELECTED_ITEM_CLASS,
+} from '@/app/components/navigation-list';
 
 const useSelectedHakukohdeOid = () => useParams().hakukohde;
 
@@ -60,14 +31,18 @@ export const HakukohdeList = ({
       <OphTypography>
         {results.length} {t('haku.hakukohdetta')}
       </OphTypography>
-      <StyledList tabIndex={0} aria-label={t('hakukohde.navigaatio')}>
+      <NavigationList tabIndex={0} aria-label={t('hakukohde.navigaatio')}>
         {results?.map((hk: Hakukohde) => (
-          <StyledLinkItem
+          <HakukohdeTabLink
             key={hk.oid}
             hakuOid={hakuOid}
             hakukohdeOid={hk.oid}
             tabRoute={activeHakukohdeTab.route}
-            className={selectedHakukohdeOid === hk.oid ? SELECTED_CLASS : ''}
+            className={
+              selectedHakukohdeOid === hk.oid
+                ? NAV_LIST_SELECTED_ITEM_CLASS
+                : ''
+            }
             onClick={onItemClick}
             tabIndex={0}
           >
@@ -83,11 +58,9 @@ export const HakukohdeList = ({
             <OphTypography title={hk.oid} color="inherit">
               {translateEntity(hk.nimi)}
             </OphTypography>
-          </StyledLinkItem>
+          </HakukohdeTabLink>
         ))}
-      </StyledList>
+      </NavigationList>
     </>
   );
 };
-
-export default HakukohdeList;

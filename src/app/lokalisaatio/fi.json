@@ -364,5 +364,16 @@
     "ATARU_OPPIMISVAIKEUDET": "Oppimisvaikeudet",
     "ATARU_KOULUTODISTUSTEN_VERTAILUVAIKEUDET": "Koulututodistusten vertailuvaikeudet",
     "ATARU_RIITTAMATON_TUTKINTOKIELEN_TAITO": "Riittämätön tutkintokielen taito"
+  },
+  "henkilo": {
+    "henkilo-maara_one": "{{count}} henkilö",
+    "henkilo-maara_zero": "Henkilöitä ei löytynyt",
+    "henkilo-maara_other": "{{count}} henkilöä",
+    "valitse": "Valitse tai hae henkilö",
+    "hakemus-oid": "Hakemuksen tekninen tunniste (OID)",
+    "lahiosoite": "Lähiosoite",
+    "hae-henkilo": "Hae henkilöitä",
+    "hae-helpertext": "Hae: Etunimi, sukunimi, hakemus-oid tai henkilö-oid",
+    "navigaatio": "Henkilövalitsin"
   }
 }

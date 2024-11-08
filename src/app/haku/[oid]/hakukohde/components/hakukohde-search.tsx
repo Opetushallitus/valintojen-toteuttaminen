@@ -14,11 +14,12 @@ export const HakukohdeSearch = () => {
   return (
     <FormControl
       sx={{
-        minWidth: '180px',
         textAlign: 'left',
+        paddingRight: 2,
       }}
     >
       <OutlinedInput
+        key={searchPhrase}
         id="hakukohde-search"
         name="hakukohde-search"
         defaultValue={searchPhrase}
@@ -35,5 +36,3 @@ export const HakukohdeSearch = () => {
     </FormControl>
   );
 };
-
-export default HakukohdeSearch;

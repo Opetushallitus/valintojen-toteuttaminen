@@ -7,24 +7,24 @@ import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary'
 import { FullClientSpinner } from '@/app/components/client-spinner';
 import { useParams } from 'next/navigation';
 import { LeftPanel } from '@/app/components/left-panel';
-import { HakukohdeSearch } from './hakukohde-search';
-import { HakukohdeList } from './hakukohde-list';
+import { HenkiloList } from './henkilo-list';
+import { HenkiloSearch } from './henkilo-search';
 
-export const HakukohdePanel = ({ hakuOid }: { hakuOid: string }) => {
+export const HenkiloPanel = ({ hakuOid }: { hakuOid: string }) => {
   const theme = useTheme();
   const isLarge = !useMediaQuery(notLarge(theme));
-  const hakukohdeOid = useParams().hakukohde;
-  const [isOpen, setIsOpen] = useState(() => isLarge || !hakukohdeOid);
+  const hakemusOid = useParams().hakemusOid;
 
+  const [isOpen, setIsOpen] = useState(() => isLarge || !hakemusOid);
   return (
     <LeftPanel isOpen={isOpen} setIsOpen={setIsOpen}>
-      <HakukohdeSearch />
+      <HenkiloSearch />
       <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
-        <HakukohdeList
+        <HenkiloList
           hakuOid={hakuOid}
           onItemClick={() => {
             if (!isLarge) {
-              setIsOpen(true);
+              setIsOpen(false);
             }
           }}
         />

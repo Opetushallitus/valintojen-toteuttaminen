@@ -32,6 +32,9 @@ export type HakijaInfo = {
   sukunimi: string;
   hakijanNimi: string;
   asiointikieliKoodi: Language;
+  henkilotunnus: string;
+  lahiosoite: string;
+  postinumero: string;
 };
 
 export enum MaksunTila {
