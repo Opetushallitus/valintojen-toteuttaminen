@@ -84,7 +84,7 @@ type GetHakemuksetParams = {
   henkilotunnus?: string;
 };
 
-async function getAtaruHakemukset({
+export async function getAtaruHakemukset({
   hakuOid,
   hakukohdeOid,
   hakemusOids,
@@ -119,7 +119,7 @@ async function getAtaruHakemukset({
   return response.data;
 }
 
-const parseHakijaTiedot = (hakemus: AtaruHakemus) => {
+export const parseHakijaTiedot = (hakemus: AtaruHakemus) => {
   return {
     hakemusOid: hakemus.oid,
     hakijaOid: hakemus.personOid,

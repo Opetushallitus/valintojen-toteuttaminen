@@ -60,6 +60,7 @@ export const HenkiloList = ({
   } = useHenkiloSearchResults({ hakuOid });
 
   const selectedHakemusOid = useSelectedHakemusOid();
+
   switch (true) {
     case isLoading:
       return <FullClientSpinner />;
