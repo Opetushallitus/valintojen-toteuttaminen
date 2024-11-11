@@ -118,6 +118,9 @@ const HakutoiveRows = ({
   const { valinnanvaiheet, sijoittelunTulokset } = hakukohde;
   const { t } = useTranslations();
 
+  const headerId = `hakutoive-header-${hakutoiveNumero}`;
+  const contentId = `hakutoive-content-${hakutoiveNumero}`;
+
   return (
     <>
       <TableBody>
@@ -129,7 +132,7 @@ const HakutoiveRows = ({
         >
           <TC colSpan={6}>
             <AccordionHeader>
-              <Box>
+              <Box id={headerId}>
                 {hakutoiveNumero}
                 {'. '}
                 {translateEntity(hakukohde.nimi)}
@@ -148,13 +151,15 @@ const HakutoiveRows = ({
                 sx={{ color: ophColors.black }}
                 startIcon={isOpen ? <ExpandLess /> : <ExpandMore />}
                 onClick={() => setIsOpen((open) => !open)}
+                aria-controls={contentId}
+                aria-expanded={isOpen ? 'true' : 'false'}
               />
             </AccordionHeader>
           </TC>
         </TableRow>
       </TableBody>
       {isOpen && (
-        <TableBody>
+        <TableBody role="region" id={contentId} aria-labelledby={headerId}>
           {isEmpty(valinnanvaiheet ?? []) ? (
             <HakutoiveInfoRow>
               <TC></TC>
