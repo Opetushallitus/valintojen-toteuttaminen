@@ -3,7 +3,7 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { Search } from '@mui/icons-material';
 import { InputAdornment, OutlinedInput } from '@mui/material';
 import { ChangeEvent } from 'react';
-import { useHenkiloSearchParams } from '../hooks/useHenkiloSearchResults';
+import { useHenkiloSearchParams } from '../hooks/useHenkiloSearch';
 import { OphFormControl } from '@/app/components/form/oph-form-control';
 
 export const HenkiloSearch = () => {

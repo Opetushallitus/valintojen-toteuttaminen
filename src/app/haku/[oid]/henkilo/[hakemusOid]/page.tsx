@@ -18,7 +18,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useSuspenseQueries } from '@tanstack/react-query';
 import { notFound } from 'next/navigation';
 import { getHenkiloTitle } from '../lib/henkilo-utils';
 import { LabeledInfoItem } from '@/app/components/labeled-info-item';
@@ -29,12 +29,24 @@ import { getHakukohteet } from '@/app/lib/kouta';
 import { Hakukohde } from '@/app/lib/types/kouta-types';
 import { useUserPermissions } from '@/app/hooks/useUserPermissions';
 import { HakukohdeTabLink } from '@/app/haku/[oid]/hakukohde/components/hakukohde-tab-link';
-import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
-import { sortBy } from 'remeda';
+import {
+  OphButton,
+  ophColors,
+  OphTypography,
+} from '@opetushallitus/oph-design-system';
+import { filter, indexBy, isEmpty, map, pipe, prop, sortBy } from 'remeda';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { FullClientSpinner } from '@/app/components/client-spinner';
 import { useState } from 'react';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
+import { getHakemuksenLasketutValinnanvaiheet } from '@/app/lib/valintalaskenta-service';
+import {
+  LaskettuJonoWithHakijaInfo,
+  selectValinnanvaiheet,
+} from '@/app/hooks/useLasketutValinnanVaiheet';
+import { LaskettuValinnanVaihe } from '@/app/lib/types/laskenta-types';
+import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
+import { getValintatapaJonoNimi } from '@/app/lib/get-valintatapa-jono-nimi';
 
 const TC = styled(TableCell)(({ theme }) => ({
   borderBottom: 0,
@@ -49,10 +61,25 @@ const AccordionHeader = styled(Box)(({ theme }) => ({
 }));
 
 const HakutoiveInfoRow = styled(TableRow)({
+  '&:nth-of-type(even)': {
+    backgroundColor: ophColors.grey50,
+  },
   '&:hover': {
     backgroundColor: ophColors.lightBlue2,
   },
 });
+
+type HakukohdeValinnanvaiheilla = Hakukohde & {
+  valinnanvaiheet?: Array<
+    Omit<LaskettuValinnanVaihe, 'valintatapajonot'> & {
+      valintatapajonot?: Array<LaskettuJonoWithHakijaInfo>;
+    }
+  >;
+};
+
+const CellContentRows = styled(Stack)(({ theme }) => ({
+  gap: theme.spacing(1),
+}));
 
 const HakutoiveRows = ({
   hakuOid,
@@ -60,12 +87,15 @@ const HakutoiveRows = ({
   hakutoiveNumero,
 }: {
   hakuOid: string;
-  hakukohde: Hakukohde;
+  hakukohde: HakukohdeValinnanvaiheilla;
   hakutoiveNumero: number;
 }) => {
   const { translateEntity } = useTranslations();
 
   const [isOpen, setIsOpen] = useState(true);
+
+  const { valinnanvaiheet } = hakukohde;
+  const { t } = useTranslations();
 
   return (
     <>
@@ -104,22 +134,42 @@ const HakutoiveRows = ({
       </TableBody>
       {isOpen && (
         <TableBody>
-          <HakutoiveInfoRow>
-            <TC></TC>
-            <TC>1</TC>
-            <TC>2</TC>
-            <TC>3</TC>
-            <TC>4</TC>
-            <TC>5</TC>
-          </HakutoiveInfoRow>
-          <HakutoiveInfoRow sx={{ backgroundColor: ophColors.grey50 }}>
-            <TC></TC>
-            <TC>1</TC>
-            <TC>2</TC>
-            <TC>3</TC>
-            <TC>4</TC>
-            <TC>5</TC>
-          </HakutoiveInfoRow>
+          {isEmpty(valinnanvaiheet ?? []) ? (
+            <HakutoiveInfoRow>
+              <TC></TC>
+              <TC colSpan={5}>{t('valintalaskennan-tulokset.ei-tuloksia')}</TC>
+            </HakutoiveInfoRow>
+          ) : (
+            valinnanvaiheet?.map((vv) => {
+              return vv.valintatapajonot?.map((jono) => {
+                const jonosija = jono.jonosijat[0];
+                return (
+                  <HakutoiveInfoRow key={vv.valinnanvaiheoid}>
+                    <TC></TC>
+                    <TC>
+                      <CellContentRows>
+                        <OphTypography variant="label">
+                          {getValintatapaJonoNimi({
+                            valinnanVaiheNimi: vv.nimi,
+                            jonoNimi: jono.nimi,
+                          })}
+                        </OphTypography>
+                        <div>
+                          {t('henkilo.valintalaskenta-tehty')}
+                          {': '}
+                          {toFormattedDateTimeString(vv.createdAt)}
+                        </div>
+                      </CellContentRows>
+                    </TC>
+                    <TC>{jonosija.pisteet}</TC>
+                    <TC>{t(`tuloksenTila.${jonosija.tuloksenTila}`)}</TC>
+                    <TC>4</TC>
+                    <TC>5</TC>
+                  </HakutoiveInfoRow>
+                );
+              });
+            })
+          )}
         </TableBody>
       )}
     </>
@@ -131,7 +181,7 @@ const HakutoiveetTable = ({
   hakukohteet,
 }: {
   hakuOid: string;
-  hakukohteet: Array<Hakukohde>;
+  hakukohteet: Array<HakukohdeValinnanvaiheilla>;
 }) => {
   return (
     <Table sx={{ width: '100%' }}>
@@ -171,10 +221,21 @@ const HenkiloContent = ({
 }) => {
   const { t, translateEntity } = useTranslations();
 
-  const { data: hakemukset } = useSuspenseQuery({
-    queryKey: ['getHakemukset', hakuOid, hakemusOid],
-    queryFn: () => getAtaruHakemukset({ hakuOid, hakemusOids: [hakemusOid] }),
-  });
+  const [{ data: hakemukset }, { data: hakemuksenValintalaskenta }] =
+    useSuspenseQueries({
+      queries: [
+        {
+          queryKey: ['getHakemukset', hakuOid, hakemusOid],
+          queryFn: () =>
+            getAtaruHakemukset({ hakuOid, hakemusOids: [hakemusOid] }),
+        },
+        {
+          queryKey: ['getHakemuksenValintalaskenta', hakuOid, hakemusOid],
+          queryFn: () =>
+            getHakemuksenLasketutValinnanvaiheet({ hakuOid, hakemusOid }),
+        },
+      ],
+    });
 
   const hakemus = hakemukset[0];
 
@@ -184,23 +245,47 @@ const HenkiloContent = ({
   const hakija = parseHakijaTiedot(hakemus);
 
   const hakukohdeOids = hakemus.hakutoiveet.map((h) => h.hakukohdeOid);
-
-  const { data: postitoimipaikka } = useSuspenseQuery({
-    queryKey: ['getPostitoimipaikka', hakemus.postinumero],
-    queryFn: () => getPostitoimipaikka(hakemus.postinumero),
-  });
+  const hakemuksetByOid = indexBy(hakemukset, prop('oid'));
+  const lasketutValinnanVaiheet = hakemuksenValintalaskenta.hakukohteet.map(
+    (hakukohde) => {
+      return {
+        ...hakukohde,
+        valinnanvaiheet: selectValinnanvaiheet({
+          hakemuksetByOid,
+          lasketutValinnanVaiheet: hakukohde.valinnanvaihe,
+          selectHakemusFields(hakemus) {
+            return parseHakijaTiedot(hakemus);
+          },
+        }),
+      };
+    },
+  );
 
   const { data: userPermissions } = useUserPermissions();
 
-  const { data: hakukohteet } = useSuspenseQuery({
-    queryKey: ['getHakukohteet', hakuOid, userPermissions],
-    queryFn: () => getHakukohteet(hakuOid, userPermissions),
-    select: (hakukohteet) =>
-      sortBy(
-        hakukohteet.filter((h) => hakukohdeOids.includes(h.oid)),
-        (item) => hakukohdeOids.indexOf(item.oid),
-      ),
-  });
+  const [{ data: hakukohteet }, { data: postitoimipaikka }] =
+    useSuspenseQueries({
+      queries: [
+        {
+          queryKey: ['getHakukohteet', hakuOid, userPermissions],
+          queryFn: () => getHakukohteet(hakuOid, userPermissions),
+          select: (hakukohteet: Array<Hakukohde>) =>
+            pipe(
+              hakukohteet,
+              filter((h) => hakukohdeOids.includes(h.oid)),
+              sortBy((h) => hakukohdeOids.indexOf(h.oid)),
+              map((hakukohde) => ({
+                ...hakukohde,
+                ...lasketutValinnanVaiheet.find((v) => v.oid === hakukohde.oid),
+              })),
+            ),
+        },
+        {
+          queryKey: ['getPostitoimipaikka', hakemus.postinumero],
+          queryFn: () => getPostitoimipaikka(hakemus.postinumero),
+        },
+      ],
+    });
 
   return (
     <>

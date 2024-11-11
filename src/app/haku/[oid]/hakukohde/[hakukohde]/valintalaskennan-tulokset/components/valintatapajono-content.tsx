@@ -15,7 +15,7 @@ import {
   LaskettuJonoWithHakijaInfo,
 } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { getJonoNimi } from '../lib/get-jono-nimi';
+import { getValintatapaJonoNimi } from '@/app/lib/get-valintatapa-jono-nimi';
 
 const PaginatedValintatapajonoTable = ({
   label,
@@ -82,7 +82,7 @@ export const ValintatapajonoContent = ({
   const label =
     t('yleinen.sivutus') +
     ': ' +
-    getJonoNimi({
+    getValintatapaJonoNimi({
       valinnanVaiheNimi: valinnanVaihe.nimi,
       jonoNimi: jono.nimi,
     });

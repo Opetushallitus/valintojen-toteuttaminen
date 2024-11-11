@@ -1,11 +1,14 @@
 'use client';
 import { useSuspenseQueries } from '@tanstack/react-query';
-import { getLasketutValinnanVaiheet } from '../lib/valintalaskenta-service';
+import { getHakukohteenLasketutValinnanvaiheet } from '../lib/valintalaskenta-service';
 import { getHakemukset } from '../lib/ataru';
 import { TranslatedName } from '../lib/localization/localization-types';
-import { JonoSija, LaskettuValintatapajono } from '../lib/types/laskenta-types';
-import { Hakemus } from '../lib/types/ataru-types';
-import { mapKeys } from 'remeda';
+import {
+  JonoSija,
+  LaskettuValinnanVaihe,
+  LaskettuValintatapajono,
+} from '../lib/types/laskenta-types';
+import { indexBy, map, mapKeys, pipe, prop } from 'remeda';
 
 export type JonoSijaWithHakijaInfo = Omit<
   JonoSija,
@@ -24,6 +27,48 @@ export type LaskettuJonoWithHakijaInfo = LaskettuValintatapajono & {
   jonosijat: Array<JonoSijaWithHakijaInfo>;
 };
 
+export const selectValinnanvaiheet = <H1, H2>({
+  lasketutValinnanVaiheet,
+  hakemuksetByOid,
+  selectHakemusFields,
+}: {
+  lasketutValinnanVaiheet: Array<LaskettuValinnanVaihe>;
+  hakemuksetByOid: Record<string, H1>;
+  selectHakemusFields: (hakemus: H1) => H2;
+}) => {
+  return lasketutValinnanVaiheet?.map((valinnanVaihe) => {
+    return {
+      ...valinnanVaihe,
+      valintatapajonot: valinnanVaihe?.valintatapajonot?.map(
+        (valintatapajono) => {
+          return {
+            ...valintatapajono,
+            jonosijat: pipe(
+              valintatapajono?.jonosijat,
+              map((jonosija) => {
+                const hakemus = hakemuksetByOid[jonosija.hakemusOid];
+                const jarjestyskriteeri = jonosija.jarjestyskriteerit?.[0];
+
+                return {
+                  ...jonosija,
+                  ...selectHakemusFields(hakemus),
+                  hakutoiveNumero: jonosija.prioriteetti,
+                  pisteet: jarjestyskriteeri?.arvo,
+                  tuloksenTila: jonosija.tuloksenTila,
+                  muutoksenSyy: mapKeys(
+                    jarjestyskriteeri?.kuvaus ?? {},
+                    (key) => key.toLowerCase(),
+                  ),
+                };
+              }),
+            ),
+          };
+        },
+      ),
+    };
+  });
+};
+
 export const useLasketutValinnanVaiheet = ({
   hakuOid,
   hakukohdeOid,
@@ -31,55 +76,32 @@ export const useLasketutValinnanVaiheet = ({
   hakuOid: string;
   hakukohdeOid: string;
 }) => {
-  const [hakemukset, lasketutValinnanVaiheet] = useSuspenseQueries({
-    queries: [
-      {
-        queryKey: ['getHakemukset', hakuOid, hakukohdeOid],
-        queryFn: () => getHakemukset({ hakuOid, hakukohdeOid }),
-      },
-      {
-        queryKey: ['getLasketutValinnanVaiheet', hakukohdeOid],
-        queryFn: () => getLasketutValinnanVaiheet(hakukohdeOid),
-      },
-    ],
-  });
-
-  const hakemuksetByOid = hakemukset?.data?.reduce(
-    (result, hakemus) => {
-      result[hakemus.hakemusOid] = hakemus;
-      return result;
-    },
-    {} as Record<string, Hakemus>,
-  );
-
-  return lasketutValinnanVaiheet.data?.map((valinnanVaihe) => {
-    return {
-      ...valinnanVaihe,
-      valintatapajonot: valinnanVaihe?.valintatapajonot?.map(
-        (valintatapajono) => {
-          return {
-            ...valintatapajono,
-            jonosijat: valintatapajono?.jonosijat?.map((jonosija) => {
-              const hakemus = hakemuksetByOid[jonosija.hakemusOid];
-              const jarjestyskriteeri = jonosija.jarjestyskriteerit?.[0];
-
-              return {
-                ...jonosija,
-                hakijanNimi: hakemus.hakijanNimi,
-                hakutoiveNumero: jonosija.prioriteetti,
-                hakemusOid: hakemus.hakemusOid,
-                hakijaOid: hakemus.hakijaOid,
-                hakemuksenTila: hakemus.tila,
-                pisteet: jarjestyskriteeri?.arvo,
-                tuloksenTila: jonosija.tuloksenTila,
-                muutoksenSyy: mapKeys(jarjestyskriteeri?.kuvaus ?? {}, (key) =>
-                  key.toLowerCase(),
-                ),
-              };
-            }),
-          };
+  const [{ data: hakemukset }, { data: lasketutValinnanVaiheet }] =
+    useSuspenseQueries({
+      queries: [
+        {
+          queryKey: ['getHakemukset', hakuOid, hakukohdeOid],
+          queryFn: () => getHakemukset({ hakuOid, hakukohdeOid }),
         },
-      ),
-    };
+        {
+          queryKey: ['getLasketutValinnanVaiheet', hakukohdeOid],
+          queryFn: () => getHakukohteenLasketutValinnanvaiheet(hakukohdeOid),
+        },
+      ],
+    });
+
+  const hakemuksetByOid = indexBy(hakemukset ?? [], prop('hakemusOid'));
+
+  return selectValinnanvaiheet({
+    hakemuksetByOid,
+    lasketutValinnanVaiheet,
+    selectHakemusFields(hakemus) {
+      return {
+        hakijanNimi: hakemus.hakijanNimi,
+        hakemusOid: hakemus.hakemusOid,
+        hakijaOid: hakemus.hakijaOid,
+        hakemuksenTila: hakemus.tila,
+      };
+    },
   });
 };

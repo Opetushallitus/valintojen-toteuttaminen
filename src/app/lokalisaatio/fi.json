@@ -374,6 +374,7 @@
     "lahiosoite": "Lähiosoite",
     "hae-henkilo": "Hae henkilöitä",
     "hae-helpertext": "Hae: Etunimi, sukunimi, hakemus-oid tai henkilö-oid",
-    "navigaatio": "Henkilövalitsin"
+    "navigaatio": "Henkilövalitsin",
+    "valintalaskenta-tehty": "Valintalaskenta tehty"
   }
 }

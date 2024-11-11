@@ -27,9 +27,43 @@ import {
   HarkinnanvaraisestiHyvaksytty,
 } from './types/harkinnanvaraiset-types';
 
-export const getLasketutValinnanVaiheet = async (hakukohdeOid: string) => {
+export const getHakukohteenLasketutValinnanvaiheet = async (
+  hakukohdeOid: string,
+) => {
   const response = await client.get<Array<LaskettuValinnanVaihe>>(
-    configuration.lasketutValinnanVaiheetUrl({ hakukohdeOid }),
+    configuration.hakukohteenLasketutValinnanVaiheetUrl({ hakukohdeOid }),
+  );
+  return response.data;
+};
+
+export type HakemuksenValintalaskentaData = {
+  hakuoid: string;
+  hakemusoid: string;
+  hakijaOid: string;
+  hakukohteet: Array<{
+    tarjoajaoid: string;
+    oid: string;
+    prioriteetti: number;
+    hakukohdeRyhmaOids: Array<string>;
+    valinnanvaihe: Array<LaskettuValinnanVaihe>;
+    kaikkiJonotSijoiteltu: boolean;
+    harkinnanvaraisuus: boolean;
+    hakijaryhma: Array<unknown>;
+  }>;
+};
+
+export const getHakemuksenLasketutValinnanvaiheet = async ({
+  hakuOid,
+  hakemusOid,
+}: {
+  hakuOid: string;
+  hakemusOid: string;
+}) => {
+  const response = await client.get<HakemuksenValintalaskentaData>(
+    configuration.hakemuksenLasketutValinnanvaiheetUrl({
+      hakuOid,
+      hakemusOid,
+    }),
   );
   return response.data;
 };

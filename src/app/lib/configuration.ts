@@ -45,8 +45,20 @@ export const configuration = {
   }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/haku/${hakuOid}/hakukohde/${hakukohdeOid}`,
   valintalaskentaKoostePalveluLogin: `${DOMAIN}/valintalaskentakoostepalvelu/cas/login`,
-  lasketutValinnanVaiheetUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
+  hakukohteenLasketutValinnanVaiheetUrl: ({
+    hakukohdeOid,
+  }: {
+    hakukohdeOid: string;
+  }) =>
     `${DOMAIN}/valintalaskenta-laskenta-service/resources/hakukohde/${hakukohdeOid}/valinnanvaihe`,
+  hakemuksenLasketutValinnanvaiheetUrl: ({
+    hakuOid,
+    hakemusOid,
+  }: {
+    hakuOid: string;
+    hakemusOid: string;
+  }) =>
+    `${DOMAIN}/valintalaskenta-laskenta-service/resources/hakemus/${hakuOid}/${hakemusOid}`,
   seurantaUrl: `${DOMAIN}/valintalaskenta-laskenta-service/resources/seuranta/yhteenveto/`,
   ohjausparametritUrl: `${DOMAIN}/ohjausparametrit-service/api/v1/rest/parametri`,
   hakukohdeHakijaryhmatUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>

@@ -19,7 +19,7 @@ import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
 import HallintaTableRow from './hallinta-table-row';
 import { sijoitellaankoHaunHakukohteetLaskennanYhteydessa } from '@/app/lib/kouta';
 import Confirm from './confirm';
-import { getLasketutValinnanVaiheet } from '@/app/lib/valintalaskenta-service';
+import { getHakukohteenLasketutValinnanvaiheet } from '@/app/lib/valintalaskenta-service';
 import ErrorRow from './error-row';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
 import {
@@ -73,7 +73,7 @@ const HallintaTable = ({
         },
         {
           queryKey: ['getLasketutValinnanvaiheet', hakukohde.oid],
-          queryFn: () => getLasketutValinnanVaiheet(hakukohde.oid),
+          queryFn: () => getHakukohteenLasketutValinnanvaiheet(hakukohde.oid),
         },
       ],
     });
