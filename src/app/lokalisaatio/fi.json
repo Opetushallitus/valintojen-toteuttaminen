@@ -376,6 +376,16 @@
     "hae-henkilo": "Hae henkilöitä",
     "hae-helpertext": "Hae: Etunimi, sukunimi, hakemus-oid tai henkilö-oid",
     "navigaatio": "Henkilövalitsin",
-    "valintalaskenta-tehty": "Valintalaskenta tehty"
+    "valintalaskenta-tehty": "Valintalaskenta tehty",
+    "taulukko": {
+      "valintalaskenta": "Valintalaskenta",
+      "sijoittelu": "Sijoittelu",
+      "hakutoive": "Hakutoive",
+      "valintatapajono": "Valintatapajono",
+      "pisteet": "Pisteet",
+      "valintatieto": "Vastaanottotieto",
+      "tila": "Tila",
+      "vastaanottotieto": "Vastaanottotieto"
+    }
   }
 }

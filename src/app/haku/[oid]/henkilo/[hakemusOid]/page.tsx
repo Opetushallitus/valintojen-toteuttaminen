@@ -99,7 +99,7 @@ const getHakemuksenTila = (
   t: TFunction,
 ) =>
   isHyvaksyttyHarkinnanvaraisesti(hakemus)
-    ? `${t('sijoitteluntila.HARKINNANVARAISESTI_HYVAKSYTTY')}`
+    ? t('sijoitteluntila.HARKINNANVARAISESTI_HYVAKSYTTY')
     : t(`sijoitteluntila.${hakemus.tila}`);
 
 const HakutoiveRows = ({
@@ -171,8 +171,6 @@ const HakutoiveRows = ({
                       jono.valintatapajonooid,
                   );
 
-                console.log({ jonosija });
-
                 return (
                   <HakutoiveInfoRow key={vv.valinnanvaiheoid}>
                     <TC></TC>
@@ -224,21 +222,22 @@ const HakutoiveetTable = ({
   hakuOid: string;
   hakukohteet: Array<HakukohdeValinnanvaiheilla>;
 }) => {
+  const { t } = useTranslations();
   return (
     <Table sx={{ width: '100%' }}>
       <TableHead sx={{ borderBottom: DEFAULT_BOX_BORDER }}>
         <TableRow>
           <TC colSpan={2}></TC>
-          <TC colSpan={2}>Valintalaskenta</TC>
-          <TC colSpan={2}>Sijoittelu</TC>
+          <TC colSpan={2}>{t('henkilo.taulukko.valintalaskenta')}</TC>
+          <TC colSpan={2}>{t('henkilo.taulukko.sijoittelu')}</TC>
         </TableRow>
         <TableRow>
-          <TC>Hakutoive</TC>
-          <TC>Valintatapajono</TC>
-          <TC>Pisteet</TC>
-          <TC>Valintatieto</TC>
-          <TC>Tila</TC>
-          <TC>Vastaanottotieto</TC>
+          <TC>{t('henkilo.taulukko.hakutoive')}</TC>
+          <TC>{t('henkilo.taulukko.valintatapajono')}</TC>
+          <TC>{t('henkilo.taulukko.pisteet')}</TC>
+          <TC>{t('henkilo.taulukko.valintatieto')}</TC>
+          <TC>{t('henkilo.taulukko.tila')}</TC>
+          <TC>{t('henkilo.taulukko.vastaanottotieto')}</TC>
         </TableRow>
       </TableHead>
       {hakukohteet.map((hakukohde, index) => (
@@ -295,6 +294,7 @@ const HenkiloContent = ({
   if (!hakemus) {
     notFound();
   }
+
   const hakija = parseHakijaTiedot(hakemus);
 
   const hakukohdeOids = hakemus.hakutoiveet.map((h) => h.hakukohdeOid);
