@@ -1,22 +1,14 @@
 'use client';
 
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { getHakemukset } from '@/app/lib/ataru';
-import { Box, Typography } from '@mui/material';
+import { buildLinkToApplication, getHakemukset } from '@/app/lib/ataru';
+import { Box, Stack, Typography } from '@mui/material';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { notFound } from 'next/navigation';
-import { useId } from 'react';
 import { getHenkiloTitle } from '../lib/henkilo-utils';
-
-const InfoItem = ({ label, value }: { label: string; value: string }) => {
-  const labelId = useId();
-  return (
-    <p>
-      <label id={labelId}>{label}</label>:{' '}
-      <span aria-labelledby={labelId}>{value}</span>
-    </p>
-  );
-};
+import { LabeledInfoItem } from '@/app/components/labeled-info-item';
+import { ExternalLink } from '@/app/components/external-link';
+import { getPostitoimipaikka } from '@/app/lib/koodisto';
 
 export default function ValitseHenkiloPage({
   params,
@@ -26,7 +18,7 @@ export default function ValitseHenkiloPage({
   const hakuOid = params.oid;
   const hakemusOid = params.hakemusOid;
 
-  const { t } = useTranslations();
+  const { t, translateEntity } = useTranslations();
 
   const { data: hakemukset } = useSuspenseQuery({
     queryKey: ['getHakemukset', hakuOid, hakemusOid],
@@ -39,14 +31,32 @@ export default function ValitseHenkiloPage({
     notFound();
   }
 
+  const { data: postitoimipaikka } = useSuspenseQuery({
+    queryKey: ['getPostitoimipaikka', hakemus.postinumero],
+    queryFn: () => getPostitoimipaikka(hakemus.postinumero),
+  });
+
   return (
     <Box sx={{ m: 4 }}>
-      <Typography variant="h2">{getHenkiloTitle(hakemus)}</Typography>
-      <InfoItem label={t('henkilo.hakemus-oid')} value={hakemus.hakemusOid} />
-      <InfoItem
-        label={t('henkilo.lahiosoite')}
-        value={`${hakemus.lahiosoite}, ${hakemus.postinumero}`}
-      />
+      <Typography variant="h2" sx={{ mb: 3 }}>
+        {getHenkiloTitle(hakemus)}
+      </Typography>
+      <Stack direction="row" spacing="4vw">
+        <LabeledInfoItem
+          label={t('henkilo.hakemus-oid')}
+          value={
+            <ExternalLink
+              name={hakemus.hakemusOid}
+              href={buildLinkToApplication(hakemus.hakemusOid)}
+              noIcon={true}
+            />
+          }
+        />
+        <LabeledInfoItem
+          label={t('henkilo.lahiosoite')}
+          value={`${hakemus.lahiosoite}, ${hakemus.postinumero} ${translateEntity(postitoimipaikka)}`}
+        />
+      </Stack>
     </Box>
   );
 }

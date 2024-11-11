@@ -24,6 +24,8 @@ export const configuration = {
   hakukohteetUrl: `${DOMAIN}/kouta-internal/hakukohde/search?all=false`,
   hakukohdeUrl: `${DOMAIN}/kouta-internal/hakukohde`,
   kooditUrl: `${DOMAIN}/koodisto-service/rest/codeelement/codes/`,
+  koodiUrl: (codeElementUri: string) =>
+    `${DOMAIN}/koodisto-service/rest/codeelement/latest/${codeElementUri}`,
   koutaInternalLogin: `${DOMAIN}/kouta-internal/auth/login`,
   asiointiKieliUrl: `${DOMAIN}/oppijanumerorekisteri-service/henkilo/current/asiointiKieli`,
   lokalisaatioUrl: `${DOMAIN}/lokalisointi/cxf/rest/v1/localisation?category=valintojen-toteuttaminen&locale=`,
