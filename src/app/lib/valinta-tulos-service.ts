@@ -241,15 +241,9 @@ const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
   };
 };
 
-export const tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys = async (
-  hakuOid: string,
-  hakukohdeOid: string,
-): Promise<SijoitteluajonTuloksetValintatiedoilla | null> => {
+const nullWhen404 = async <T>(promise: Promise<T>): Promise<T | null> => {
   try {
-    return await getLatestSijoitteluAjonTuloksetWithValintaEsitys(
-      hakuOid,
-      hakukohdeOid,
-    );
+    return await promise;
   } catch (e) {
     if (e instanceof FetchError && e?.response?.status === 404) {
       console.error('FetchError with 404', e);
@@ -257,6 +251,15 @@ export const tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys = async (
     }
     throw e;
   }
+};
+
+export const tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys = async (
+  hakuOid: string,
+  hakukohdeOid: string,
+): Promise<SijoitteluajonTuloksetValintatiedoilla | null> => {
+  return nullWhen404(
+    getLatestSijoitteluAjonTuloksetWithValintaEsitys(hakuOid, hakukohdeOid),
+  );
 };
 
 export const getLatestSijoitteluAjonTulokset = async (
@@ -320,15 +323,16 @@ export const getLatestSijoitteluajonTuloksetForHakemus = async ({
   hakuOid: string;
   hakemusOid: string;
 }) => {
-  const { data } =
-    await client.get<SijoitteluajonTuloksetForHakemusResponseData>(
+  const res = await nullWhen404(
+    client.get<SijoitteluajonTuloksetForHakemusResponseData>(
       configuration.hakemuksenSijoitteluajonTuloksetUrl({
         hakuOid,
         hakemusOid,
       }),
-    );
+    ),
+  );
 
-  return indexBy(data.hakutoiveet, prop('hakukohdeOid'));
+  return res ? indexBy(res.data.hakutoiveet, prop('hakukohdeOid')) : {};
 };
 
 type SijoitteluAjonTuloksetPatchResponse = {
