@@ -1,6 +1,6 @@
 'use client';
 
-import { indexBy } from 'remeda';
+import { indexBy, prop } from 'remeda';
 import { getHakemukset } from './ataru';
 import { configuration } from './configuration';
 import { client } from './http-client';
@@ -290,6 +290,45 @@ export const getLatestSijoitteluAjonTulokset = async (
     return { oid: ryhma.oid, kiintio: ryhma.kiintio };
   });
   return { valintatapajonot: sijoitteluajonTulokset, hakijaryhmat };
+};
+
+export type SijoitteluajonTulosHakutoive = {
+  hakutoive: number;
+  hakukohdeOid: string;
+  vastaanottotieto: VastaanottoTila;
+  hakijaryhmat: Array<{ oid: string; kiintio: number }>;
+  hakutoiveenValintatapajonot: Array<{
+    tila: SijoittelunTila;
+    pisteet: number;
+    valintatapajonoOid: string;
+    varasijanNumero: number;
+    jonosija: number;
+    tasasijaJonosija: number;
+    valintatapajonoPrioriteetti: number;
+    hyvaksyttyHarkinnanvaraisesti: boolean;
+  }>;
+};
+
+type SijoitteluajonTuloksetForHakemusResponseData = {
+  hakutoiveet: Array<SijoitteluajonTulosHakutoive>;
+};
+
+export const getLatestSijoitteluajonTuloksetForHakemus = async ({
+  hakuOid,
+  hakemusOid,
+}: {
+  hakuOid: string;
+  hakemusOid: string;
+}) => {
+  const { data } =
+    await client.get<SijoitteluajonTuloksetForHakemusResponseData>(
+      configuration.hakemuksenSijoitteluajonTuloksetUrl({
+        hakuOid,
+        hakemusOid,
+      }),
+    );
+
+  return indexBy(data.hakutoiveet, prop('hakukohdeOid'));
 };
 
 type SijoitteluAjonTuloksetPatchResponse = {

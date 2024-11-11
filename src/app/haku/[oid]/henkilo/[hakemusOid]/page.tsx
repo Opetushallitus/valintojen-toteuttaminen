@@ -47,6 +47,15 @@ import {
 import { LaskettuValinnanVaihe } from '@/app/lib/types/laskenta-types';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
 import { getValintatapaJonoNimi } from '@/app/lib/get-valintatapa-jono-nimi';
+import {
+  getLatestSijoitteluajonTuloksetForHakemus,
+  SijoitteluajonTulosHakutoive,
+} from '@/app/lib/valinta-tulos-service';
+import {
+  isHyvaksyttyHarkinnanvaraisesti,
+  SijoittelunTila,
+} from '@/app/lib/types/sijoittelu-types';
+import { TFunction } from 'i18next';
 
 const TC = styled(TableCell)(({ theme }) => ({
   borderBottom: 0,
@@ -70,6 +79,7 @@ const HakutoiveInfoRow = styled(TableRow)({
 });
 
 type HakukohdeValinnanvaiheilla = Hakukohde & {
+  sijoittelunTulokset: SijoitteluajonTulosHakutoive;
   valinnanvaiheet?: Array<
     Omit<LaskettuValinnanVaihe, 'valintatapajonot'> & {
       valintatapajonot?: Array<LaskettuJonoWithHakijaInfo>;
@@ -80,6 +90,17 @@ type HakukohdeValinnanvaiheilla = Hakukohde & {
 const CellContentRows = styled(Stack)(({ theme }) => ({
   gap: theme.spacing(1),
 }));
+
+const getHakemuksenTila = (
+  hakemus: {
+    tila: SijoittelunTila;
+    hyvaksyttyHarkinnanvaraisesti: boolean;
+  },
+  t: TFunction,
+) =>
+  isHyvaksyttyHarkinnanvaraisesti(hakemus)
+    ? `${t('sijoitteluntila.HARKINNANVARAISESTI_HYVAKSYTTY')}`
+    : t(`sijoitteluntila.${hakemus.tila}`);
 
 const HakutoiveRows = ({
   hakuOid,
@@ -94,7 +115,7 @@ const HakutoiveRows = ({
 
   const [isOpen, setIsOpen] = useState(true);
 
-  const { valinnanvaiheet } = hakukohde;
+  const { valinnanvaiheet, sijoittelunTulokset } = hakukohde;
   const { t } = useTranslations();
 
   return (
@@ -143,6 +164,15 @@ const HakutoiveRows = ({
             valinnanvaiheet?.map((vv) => {
               return vv.valintatapajonot?.map((jono) => {
                 const jonosija = jono.jonosijat[0];
+                const sijoittelunJono =
+                  sijoittelunTulokset.hakutoiveenValintatapajonot.find(
+                    (sijoitteluJono) =>
+                      sijoitteluJono.valintatapajonoOid ===
+                      jono.valintatapajonooid,
+                  );
+
+                console.log({ jonosija });
+
                 return (
                   <HakutoiveInfoRow key={vv.valinnanvaiheoid}>
                     <TC></TC>
@@ -163,8 +193,19 @@ const HakutoiveRows = ({
                     </TC>
                     <TC>{jonosija.pisteet}</TC>
                     <TC>{t(`tuloksenTila.${jonosija.tuloksenTila}`)}</TC>
-                    <TC>4</TC>
-                    <TC>5</TC>
+                    <TC>
+                      {sijoittelunJono &&
+                        getHakemuksenTila(sijoittelunJono, t) +
+                          ' ' +
+                          (sijoittelunJono.varasijanNumero
+                            ? `(${sijoittelunJono.varasijanNumero})`
+                            : '')}
+                    </TC>
+                    <TC>
+                      {t(
+                        `vastaanottotila.${sijoittelunTulokset.vastaanottotieto}`,
+                      )}
+                    </TC>
                   </HakutoiveInfoRow>
                 );
               });
@@ -221,21 +262,33 @@ const HenkiloContent = ({
 }) => {
   const { t, translateEntity } = useTranslations();
 
-  const [{ data: hakemukset }, { data: hakemuksenValintalaskenta }] =
-    useSuspenseQueries({
-      queries: [
-        {
-          queryKey: ['getHakemukset', hakuOid, hakemusOid],
-          queryFn: () =>
-            getAtaruHakemukset({ hakuOid, hakemusOids: [hakemusOid] }),
-        },
-        {
-          queryKey: ['getHakemuksenValintalaskenta', hakuOid, hakemusOid],
-          queryFn: () =>
-            getHakemuksenLasketutValinnanvaiheet({ hakuOid, hakemusOid }),
-        },
-      ],
-    });
+  const [
+    { data: hakemukset },
+    { data: hakemuksenValintalaskenta },
+    { data: sijoittelunTuloksetByHakemus },
+  ] = useSuspenseQueries({
+    queries: [
+      {
+        queryKey: ['getHakemukset', hakuOid, hakemusOid],
+        queryFn: () =>
+          getAtaruHakemukset({ hakuOid, hakemusOids: [hakemusOid] }),
+      },
+      {
+        queryKey: ['getHakemuksenValintalaskenta', hakuOid, hakemusOid],
+        queryFn: () =>
+          getHakemuksenLasketutValinnanvaiheet({ hakuOid, hakemusOid }),
+      },
+      {
+        queryKey: [
+          'getLatestSijoitteluajonTuloksetForHakemus',
+          hakuOid,
+          hakemusOid,
+        ],
+        queryFn: () =>
+          getLatestSijoitteluajonTuloksetForHakemus({ hakuOid, hakemusOid }),
+      },
+    ],
+  });
 
   const hakemus = hakemukset[0];
 
@@ -277,6 +330,8 @@ const HenkiloContent = ({
               map((hakukohde) => ({
                 ...hakukohde,
                 ...lasketutValinnanVaiheet.find((v) => v.oid === hakukohde.oid),
+                sijoittelunTulokset:
+                  sijoittelunTuloksetByHakemus[hakukohde.oid],
               })),
             ),
         },

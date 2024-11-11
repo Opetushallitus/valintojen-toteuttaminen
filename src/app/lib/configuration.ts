@@ -108,4 +108,12 @@ export const configuration = {
   setHarkinnanvaraisetTilatUrl: `${DOMAIN}/valintalaskenta-laskenta-service/resources/harkinnanvarainenhyvaksynta`,
   kayttaaValintalaskentaaUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintaperusteet/hakukohde/${hakukohdeOid}/kayttaaValintalaskentaa`,
+  hakemuksenSijoitteluajonTuloksetUrl: ({
+    hakuOid,
+    hakemusOid,
+  }: {
+    hakuOid: string;
+    hakemusOid: string;
+  }) =>
+    `${DOMAIN}/valinta-tulos-service/auth/sijoittelu/${hakuOid}/sijoitteluajo/latest/hakemus/${hakemusOid}`,
 } as const;

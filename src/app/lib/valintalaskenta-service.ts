@@ -21,7 +21,15 @@ import {
   SijoittelunHakemus,
   SijoittelunTila,
 } from './types/sijoittelu-types';
-import { filter, flatMap, groupBy, indexBy, isDefined, pipe } from 'remeda';
+import {
+  filter,
+  flatMap,
+  groupBy,
+  indexBy,
+  isDefined,
+  pipe,
+  prop,
+} from 'remeda';
 import {
   HarkinnanvarainenTila,
   HarkinnanvaraisestiHyvaksytty,
@@ -136,12 +144,12 @@ export const getHakijaryhmat = async (
     tulokset?.valintatapajonot,
     filter(isDefined),
     flatMap((jono) => jono.hakemukset),
-    groupBy((a) => a.hakemusOid),
+    groupBy(prop('hakemusOid')),
   );
   const valintatapajonotSijoittelusta = pipe(
     tulokset?.valintatapajonot,
     filter(isDefined),
-    indexBy((j) => j.oid),
+    indexBy(prop('oid')),
   );
   const { data } = await client.get<
     Array<{

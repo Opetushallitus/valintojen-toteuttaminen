@@ -51,7 +51,8 @@
   "tuloksenTila": {
     "HYVAKSYTTAVISSA": "Hyväksyttävissä",
     "HYLATTY": "Hylätty",
-    "MAARITTELEMATON": "Määrittelemätön"
+    "MAARITTELEMATON": "Määrittelemätön",
+    "HYVAKSYTTY_HARKINNANVARAISESTI": "Hyväksytty harkinnanvaraisesti"
   },
   "valintakoe": {
     "osallistumisenTila": {
