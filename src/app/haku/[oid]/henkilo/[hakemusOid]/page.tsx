@@ -25,7 +25,7 @@ import { LabeledInfoItem } from '@/app/components/labeled-info-item';
 import { ExternalLink } from '@/app/components/external-link';
 import { getPostitoimipaikka } from '@/app/lib/koodisto';
 import { DEFAULT_BOX_BORDER } from '@/app/lib/constants';
-import { getHakukohteet } from '@/app/lib/kouta';
+import { getHakukohteetQueryOptions } from '@/app/lib/kouta';
 import { Hakukohde } from '@/app/lib/types/kouta-types';
 import { useUserPermissions } from '@/app/hooks/useUserPermissions';
 import { HakukohdeTabLink } from '@/app/haku/[oid]/hakukohde/components/hakukohde-tab-link';
@@ -320,8 +320,7 @@ const HenkiloContent = ({
     useSuspenseQueries({
       queries: [
         {
-          queryKey: ['getHakukohteet', hakuOid, userPermissions],
-          queryFn: () => getHakukohteet(hakuOid, userPermissions),
+          ...getHakukohteetQueryOptions(hakuOid, userPermissions),
           select: (hakukohteet: Array<Hakukohde>) =>
             pipe(
               hakukohteet,
