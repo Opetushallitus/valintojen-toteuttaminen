@@ -220,6 +220,13 @@ const HakutoiveRows = ({
   );
 };
 
+const StyledTableHead = styled(TableHead)(({ theme }) => ({
+  borderBottom: DEFAULT_BOX_BORDER,
+  '& .MuiTableCell-root': {
+    padding: theme.spacing(0, 2, 1, 2),
+  },
+}));
+
 const HakutoiveetTable = ({
   hakuOid,
   hakukohteet,
@@ -230,7 +237,7 @@ const HakutoiveetTable = ({
   const { t } = useTranslations();
   return (
     <Table sx={{ width: '100%' }}>
-      <TableHead sx={{ borderBottom: DEFAULT_BOX_BORDER }}>
+      <StyledTableHead>
         <TableRow>
           <TC colSpan={2}></TC>
           <TC colSpan={2}>{t('henkilo.taulukko.valintalaskenta')}</TC>
@@ -244,7 +251,7 @@ const HakutoiveetTable = ({
           <TC>{t('henkilo.taulukko.tila')}</TC>
           <TC>{t('henkilo.taulukko.vastaanottotieto')}</TC>
         </TableRow>
-      </TableHead>
+      </StyledTableHead>
       {hakukohteet.map((hakukohde, index) => (
         <HakutoiveRows
           key={hakukohde.oid}
