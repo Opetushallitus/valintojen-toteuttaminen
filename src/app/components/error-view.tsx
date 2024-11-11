@@ -55,7 +55,9 @@ export function ErrorView({
         title={t('virhe.palvelin')}
         message={
           <Stack spacing={1}>
-            <OphTypography>URL: {response.url}</OphTypography>
+            <OphTypography sx={{ overflowWrap: 'anywhere' }}>
+              URL: {response.url}
+            </OphTypography>
             <OphTypography>
               {t('virhe.virhekoodi')} {response.status}
             </OphTypography>
