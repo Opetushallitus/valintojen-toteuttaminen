@@ -1,12 +1,9 @@
 'use client';
 
-'use client';
-
 import { useTranslations } from '@/app/hooks/useTranslations';
 import {
   Box,
   Link,
-  Stack,
   styled,
   Table,
   TableBody,
@@ -22,9 +19,9 @@ import {
   ophColors,
   OphTypography,
 } from '@opetushallitus/oph-design-system';
-import { isEmpty } from 'remeda';
+import { isEmpty, isNonNullish } from 'remeda';
 import { useState } from 'react';
-import { ExpandLess, ExpandMore } from '@mui/icons-material';
+import { ChevronRight } from '@mui/icons-material';
 import { LaskettuJonoWithHakijaInfo } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { LaskettuValinnanVaihe } from '@/app/lib/types/laskenta-types';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
@@ -55,7 +52,8 @@ const TC = styled(TableCell)(({ theme }) => ({
 const AccordionHeader = styled(Box)(({ theme }) => ({
   ...theme.typography.h5,
   display: 'flex',
-  justifyContent: 'space-between',
+  justifyContent: 'flex-start',
+  gap: theme.spacing(1),
   alignItems: 'center',
 }));
 
@@ -67,10 +65,6 @@ const HakutoiveInfoRow = styled(TableRow)({
     backgroundColor: ophColors.lightBlue2,
   },
 });
-
-const CellContentRows = styled(Stack)(({ theme }) => ({
-  gap: theme.spacing(1),
-}));
 
 const getHakemuksenTila = (
   hakemus: {
@@ -105,21 +99,19 @@ const HakutoiveContent = ({
 
         return (
           <HakutoiveInfoRow key={vv.valinnanvaiheoid}>
-            <TC></TC>
+            <TC />
             <TC>
-              <CellContentRows>
-                <OphTypography variant="label">
-                  {getValintatapaJonoNimi({
-                    valinnanVaiheNimi: vv.nimi,
-                    jonoNimi: jono.nimi,
-                  })}
-                </OphTypography>
-                <div>
-                  {t('henkilo.valintalaskenta-tehty')}
-                  {': '}
-                  {toFormattedDateTimeString(vv.createdAt)}
-                </div>
-              </CellContentRows>
+              <OphTypography variant="label">
+                {getValintatapaJonoNimi({
+                  valinnanVaiheNimi: vv.nimi,
+                  jonoNimi: jono.nimi,
+                })}
+              </OphTypography>
+              <div>
+                {t('henkilo.valintalaskenta-tehty')}
+                {': '}
+                {toFormattedDateTimeString(vv.createdAt)}
+              </div>
             </TC>
             <TC>{jonosija.pisteet}</TC>
             <TC>{t(`tuloksenTila.${jonosija.tuloksenTila}`)}</TC>
@@ -127,7 +119,7 @@ const HakutoiveContent = ({
               {sijoittelunJono &&
                 getHakemuksenTila(sijoittelunJono, t) +
                   ' ' +
-                  (sijoittelunJono.varasijanNumero
+                  (isNonNullish(sijoittelunJono.varasijanNumero)
                     ? `(${sijoittelunJono.varasijanNumero})`
                     : '')}
             </TC>
@@ -150,7 +142,7 @@ const HakutoiveTableAccordion = ({
   hakukohde: HakukohdeTuloksilla;
   hakutoiveNumero: number;
 }) => {
-  const { translateEntity } = useTranslations();
+  const { t, translateEntity } = useTranslations();
 
   const [isOpen, setIsOpen] = useState(true);
 
@@ -168,8 +160,28 @@ const HakutoiveTableAccordion = ({
             borderBottom: isOpen ? 'none' : DEFAULT_BOX_BORDER,
           }}
         >
-          <TC colSpan={6}>
+          <TC colSpan={6} component="th">
             <AccordionHeader>
+              <OphButton
+                variant="text"
+                aria-label={
+                  isOpen
+                    ? t('henkilo.taulukko.piilota-hakutoiveen-tiedot')
+                    : t('henkilo.taulukko.nayta-hakutoiveen-tiedot')
+                }
+                sx={{ color: ophColors.black }}
+                startIcon={
+                  <ChevronRight
+                    sx={{
+                      transform: isOpen ? 'rotate(90deg)' : 'none',
+                      transition: 'transform 0.15s ease-in-out',
+                    }}
+                  />
+                }
+                onClick={() => setIsOpen((open) => !open)}
+                aria-controls={contentId}
+                aria-expanded={isOpen ? 'true' : 'false'}
+              />
               <Box id={headerId}>
                 {hakutoiveNumero}
                 {'. '}
@@ -184,26 +196,23 @@ const HakutoiveTableAccordion = ({
                   {translateEntity(hakukohde.jarjestyspaikkaHierarkiaNimi)}
                 </Link>
               </Box>
-              <OphButton
-                variant="text"
-                sx={{ color: ophColors.black }}
-                startIcon={isOpen ? <ExpandLess /> : <ExpandMore />}
-                onClick={() => setIsOpen((open) => !open)}
-                aria-controls={contentId}
-                aria-expanded={isOpen ? 'true' : 'false'}
-              />
             </AccordionHeader>
           </TC>
         </TableRow>
       </TableBody>
-      {isOpen && (
-        <TableBody role="region" id={contentId} aria-labelledby={headerId}>
-          <HakutoiveContent
-            valinnanvaiheet={valinnanvaiheet}
-            sijoittelunTulokset={sijoittelunTulokset}
-          />
-        </TableBody>
-      )}
+      <TableBody
+        role="region"
+        id={contentId}
+        aria-labelledby={headerId}
+        sx={{
+          visibility: isOpen ? 'visible' : 'collapse',
+        }}
+      >
+        <HakutoiveContent
+          valinnanvaiheet={valinnanvaiheet}
+          sijoittelunTulokset={sijoittelunTulokset}
+        />
+      </TableBody>
     </>
   );
 };
