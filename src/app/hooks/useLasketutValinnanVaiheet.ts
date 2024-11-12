@@ -8,7 +8,7 @@ import {
   LaskettuValinnanVaihe,
   LaskettuValintatapajono,
 } from '../lib/types/laskenta-types';
-import { indexBy, map, mapKeys, pipe, prop } from 'remeda';
+import { indexBy, map, mapKeys, pipe, prop, sortBy } from 'remeda';
 
 export type JonoSijaWithHakijaInfo = Omit<
   JonoSija,
@@ -36,37 +36,41 @@ export const selectValinnanvaiheet = <H1, H2>({
   hakemuksetByOid: Record<string, H1>;
   selectHakemusFields: (hakemus: H1) => H2;
 }) => {
-  return lasketutValinnanVaiheet?.map((valinnanVaihe) => {
-    return {
-      ...valinnanVaihe,
-      valintatapajonot: valinnanVaihe?.valintatapajonot?.map(
-        (valintatapajono) => {
-          return {
-            ...valintatapajono,
-            jonosijat: pipe(
-              valintatapajono?.jonosijat,
-              map((jonosija) => {
-                const hakemus = hakemuksetByOid[jonosija.hakemusOid];
-                const jarjestyskriteeri = jonosija.jarjestyskriteerit?.[0];
+  return pipe(
+    lasketutValinnanVaiheet,
+    map((valinnanVaihe) => {
+      return {
+        ...valinnanVaihe,
+        valintatapajonot: valinnanVaihe?.valintatapajonot?.map(
+          (valintatapajono) => {
+            return {
+              ...valintatapajono,
+              jonosijat: pipe(
+                valintatapajono?.jonosijat,
+                map((jonosija) => {
+                  const hakemus = hakemuksetByOid[jonosija.hakemusOid];
+                  const jarjestyskriteeri = jonosija.jarjestyskriteerit?.[0];
 
-                return {
-                  ...jonosija,
-                  ...selectHakemusFields(hakemus),
-                  hakutoiveNumero: jonosija.prioriteetti,
-                  pisteet: jarjestyskriteeri?.arvo,
-                  tuloksenTila: jonosija.tuloksenTila,
-                  muutoksenSyy: mapKeys(
-                    jarjestyskriteeri?.kuvaus ?? {},
-                    (key) => key.toLowerCase(),
-                  ),
-                };
-              }),
-            ),
-          };
-        },
-      ),
-    };
-  });
+                  return {
+                    ...jonosija,
+                    ...selectHakemusFields(hakemus),
+                    hakutoiveNumero: jonosija.prioriteetti,
+                    pisteet: jarjestyskriteeri?.arvo,
+                    tuloksenTila: jonosija.tuloksenTila,
+                    muutoksenSyy: mapKeys(
+                      jarjestyskriteeri?.kuvaus ?? {},
+                      (key) => key.toLowerCase(),
+                    ),
+                  };
+                }),
+              ),
+            };
+          },
+        ),
+      };
+    }),
+    sortBy(prop('jarjestysnumero')),
+  );
 };
 
 export const useLasketutValinnanVaiheet = ({
