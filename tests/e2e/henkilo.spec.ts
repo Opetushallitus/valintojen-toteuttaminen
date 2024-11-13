@@ -4,6 +4,32 @@ import {
   expectPageAccessibilityOk,
 } from './playwright-utils';
 import HAKENEET from './fixtures/hakeneet.json';
+import POSTI_00100 from './fixtures/posti_00100.json';
+
+test.beforeEach(async ({ page }) => {
+  await page.route('**/codeelement/latest/posti_00100', (route) => {
+    return route.fulfill({
+      json: POSTI_00100,
+    });
+  });
+  await page.route(
+    '**/resources/hakemus/1.2.246.562.29.00000000000000045102/1.2.246.562.11.00000000000001796027',
+    (route) =>
+      route.fulfill({
+        json: {
+          hakukohteet: [],
+        },
+      }),
+  );
+  await page.route(
+    '**/sijoittelu/1.2.246.562.29.00000000000000045102/sijoitteluajo/latest/hakemus/1.2.246.562.11.00000000000001796027',
+    (route) => {
+      return route.fulfill({
+        status: 404,
+      });
+    },
+  );
+});
 
 test('Henkiloittain page accessibility', async ({ page }) => {
   await page.goto(
@@ -102,7 +128,9 @@ test('Henkilö-search and navigation works', async ({ page }) => {
   ).toBeVisible();
 });
 
-test('Displays selected henkilö info', async ({ page }) => {
+test('Displays selected henkilö info with hakutoive without valintalaskenta or sijoittelu results', async ({
+  page,
+}) => {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo/1.2.246.562.11.00000000000001796027',
   );
@@ -116,6 +144,21 @@ test('Displays selected henkilö info', async ({ page }) => {
     page.getByLabel('Hakemuksen tekninen tunniste (OID)'),
   ).toHaveText('1.2.246.562.11.00000000000001796027');
   await expect(page.getByLabel('Lähiosoite')).toHaveText(
-    'Kuoppamäki 905, 00100',
+    'Kuoppamäki 905, 00100 HELSINKI',
   );
+
+  await expect(
+    page.getByText(
+      'Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs)',
+    ),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('link', {
+      name: 'Tampereen yliopisto, Rakennetun ympäristön tiedekunta',
+    }),
+  ).toBeVisible();
+
+  await expect(page.getByText('Ei valintalaskennan tuloksia')).toBeHidden();
+  await page.getByRole('button', { name: 'Näytä hakutoiveen tiedot' }).click();
+  await expect(page.getByText('Ei valintalaskennan tuloksia')).toBeVisible();
 });

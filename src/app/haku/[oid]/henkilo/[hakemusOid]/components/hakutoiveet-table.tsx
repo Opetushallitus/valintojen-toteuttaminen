@@ -168,6 +168,11 @@ const HakutoiveTableAccordion = ({
             <AccordionHeader>
               <OphButton
                 variant="text"
+                title={
+                  isOpen
+                    ? t('henkilo.taulukko.piilota-hakutoiveen-tiedot')
+                    : t('henkilo.taulukko.nayta-hakutoiveen-tiedot')
+                }
                 aria-label={
                   isOpen
                     ? t('henkilo.taulukko.piilota-hakutoiveen-tiedot')
@@ -186,11 +191,13 @@ const HakutoiveTableAccordion = ({
                 aria-controls={contentId}
                 aria-expanded={isOpen ? 'true' : 'false'}
               />
-              <Box id={headerId}>
-                {hakutoiveNumero}
-                {'. '}
-                {translateEntity(hakukohde.nimi)}
-                {' \u2013 '}
+              <Box id={headerId} sx={{ color: 'black' }}>
+                <span>
+                  {hakutoiveNumero}
+                  {'. '}
+                  {translateEntity(hakukohde.nimi)}
+                  {' \u2013 '}
+                </span>
                 <Link
                   component={HakukohdeTabLink}
                   hakuOid={hakuOid}
@@ -239,13 +246,16 @@ export const HakutoiveetTable = ({
     <Table sx={{ width: '100%' }}>
       <StyledTableHead>
         <TableRow>
-          <TC colSpan={2}></TC>
+          <TC rowSpan={2} sx={{ verticalAlign: 'bottom' }}>
+            {t('henkilo.taulukko.hakutoive')}
+          </TC>
+          <TC rowSpan={2} sx={{ verticalAlign: 'bottom' }}>
+            {t('henkilo.taulukko.valintatapajono')}
+          </TC>
           <TC colSpan={2}>{t('henkilo.taulukko.valintalaskenta')}</TC>
           <TC colSpan={2}>{t('henkilo.taulukko.sijoittelu')}</TC>
         </TableRow>
         <TableRow>
-          <TC>{t('henkilo.taulukko.hakutoive')}</TC>
-          <TC>{t('henkilo.taulukko.valintatapajono')}</TC>
           <TC>{t('henkilo.taulukko.pisteet')}</TC>
           <TC>{t('henkilo.taulukko.valintatieto')}</TC>
           <TC>{t('henkilo.taulukko.tila')}</TC>
