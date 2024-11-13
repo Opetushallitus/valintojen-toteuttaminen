@@ -66,6 +66,8 @@ export function ErrorView({
         retry={reset}
       />
     );
+  } else if (error?.digest === 'NEXT_NOT_FOUND') {
+    notFound();
   } else if (error instanceof PermissionError) {
     return <ErrorComponent message={error.message} />;
   } else {
