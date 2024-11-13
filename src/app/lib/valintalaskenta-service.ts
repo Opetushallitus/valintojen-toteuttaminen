@@ -99,6 +99,11 @@ type MuutaSijoitteluaResponse = {
   [x: string]: string | number | boolean | null;
 };
 
+export type MuutaSijoittelunStatusProps = {
+  jono: Pick<LaskettuJonoWithHakijaInfo, 'oid' | 'prioriteetti'>;
+  status: boolean;
+};
+
 export const muutaSijoittelunStatus = async ({
   jono,
   status,

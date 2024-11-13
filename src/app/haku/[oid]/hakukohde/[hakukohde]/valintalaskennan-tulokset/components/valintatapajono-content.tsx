@@ -75,7 +75,7 @@ export const ValintatapajonoContent = ({
   jono,
 }: {
   hakukohdeOid: string;
-  valinnanVaihe: LaskettuValinnanVaihe;
+  valinnanVaihe: Omit<LaskettuValinnanVaihe, 'valintatapajonot'>;
   jono: LaskettuJonoWithHakijaInfo;
 }) => {
   const { t } = useTranslations();
