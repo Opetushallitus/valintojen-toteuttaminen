@@ -385,7 +385,9 @@
       "pisteet": "Pisteet",
       "valintatieto": "Vastaanottotieto",
       "tila": "Tila",
-      "vastaanottotieto": "Vastaanottotieto"
+      "vastaanottotieto": "Vastaanottotieto",
+      "nayta-hakutoiveen-tiedot": "Naytä hakutoiveen tiedot",
+      "piilota-hakutoiveen-tiedot": "Piilota hakutoiveen tiedot"
     }
   }
 }

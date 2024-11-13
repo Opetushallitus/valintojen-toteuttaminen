@@ -8,36 +8,53 @@ import {
   LaskettuValinnanVaihe,
   LaskettuValintatapajono,
 } from '../lib/types/laskenta-types';
-import { indexBy, map, mapKeys, pipe, prop, sortBy } from 'remeda';
+import { indexBy, map, mapKeys, omit, pipe, prop, sortBy } from 'remeda';
 
-export type JonoSijaWithHakijaInfo = Omit<
+export type JonoSijaInternal = Omit<
   JonoSija,
-  'jarjestyskriteerit' | 'harkinnanvarainen'
+  'jarjestyskriteerit' | 'harkinnanvarainen' | 'prioriteetti'
 > & {
-  hakijanNimi: string;
-  hakemusOid: string;
-  hakijaOid: string;
   pisteet?: number;
   hakutoiveNumero?: number;
   tuloksenTila?: string;
   muutoksenSyy?: TranslatedName;
 };
 
-export type LaskettuJonoWithHakijaInfo = LaskettuValintatapajono & {
+export type JonoSijaWithHakijaInfo = JonoSijaInternal & {
+  hakijanNimi: string;
+  hakemusOid: string;
+  hakijaOid: string;
+};
+
+export type LaskettuJonoInternal = Omit<
+  LaskettuValintatapajono,
+  'jonosijat'
+> & {
+  jonosijat: Array<JonoSijaInternal>;
+};
+
+export type LaskettuJonoWithHakijaInfo = Omit<
+  LaskettuValintatapajono,
+  'jonosijat'
+> & {
   jonosijat: Array<JonoSijaWithHakijaInfo>;
 };
 
-export const selectValinnanvaiheet = <H1, H2>({
-  lasketutValinnanVaiheet,
-  hakemuksetByOid,
+export type LasketutValinnanvaiheetInternal = Array<
+  Omit<LaskettuValinnanVaihe, 'valintatapajonot'> & {
+    valintatapajonot?: Array<LaskettuJonoInternal>;
+  }
+>;
+
+export const selectValinnanvaiheet = <H>({
+  lasketutValinnanvaiheet,
   selectHakemusFields,
 }: {
-  lasketutValinnanVaiheet: Array<LaskettuValinnanVaihe>;
-  hakemuksetByOid: Record<string, H1>;
-  selectHakemusFields: (hakemus: H1) => H2;
+  lasketutValinnanvaiheet?: Array<LaskettuValinnanVaihe>;
+  selectHakemusFields?: (hakemusOid: string) => H;
 }) => {
   return pipe(
-    lasketutValinnanVaiheet,
+    lasketutValinnanvaiheet ?? [],
     map((valinnanVaihe) => {
       return {
         ...valinnanVaihe,
@@ -48,12 +65,15 @@ export const selectValinnanvaiheet = <H1, H2>({
               jonosijat: pipe(
                 valintatapajono?.jonosijat,
                 map((jonosija) => {
-                  const hakemus = hakemuksetByOid[jonosija.hakemusOid];
                   const jarjestyskriteeri = jonosija.jarjestyskriteerit?.[0];
 
                   return {
-                    ...jonosija,
-                    ...selectHakemusFields(hakemus),
+                    ...omit(jonosija, [
+                      'jarjestyskriteerit',
+                      'harkinnanvarainen',
+                      'prioriteetti',
+                    ]),
+                    ...(selectHakemusFields?.(jonosija.hakemusOid) ?? {}),
                     hakutoiveNumero: jonosija.prioriteetti,
                     pisteet: jarjestyskriteeri?.arvo,
                     tuloksenTila: jonosija.tuloksenTila,
@@ -69,7 +89,7 @@ export const selectValinnanvaiheet = <H1, H2>({
         ),
       };
     }),
-    sortBy(prop('jarjestysnumero')),
+    sortBy([prop('jarjestysnumero'), 'desc']),
   );
 };
 
@@ -80,7 +100,7 @@ export const useLasketutValinnanVaiheet = ({
   hakuOid: string;
   hakukohdeOid: string;
 }) => {
-  const [{ data: hakemukset }, { data: lasketutValinnanVaiheet }] =
+  const [{ data: hakemukset }, { data: lasketutValinnanvaiheet }] =
     useSuspenseQueries({
       queries: [
         {
@@ -97,15 +117,17 @@ export const useLasketutValinnanVaiheet = ({
   const hakemuksetByOid = indexBy(hakemukset ?? [], prop('hakemusOid'));
 
   return selectValinnanvaiheet({
-    hakemuksetByOid,
-    lasketutValinnanVaiheet,
-    selectHakemusFields(hakemus) {
-      return {
-        hakijanNimi: hakemus.hakijanNimi,
-        hakemusOid: hakemus.hakemusOid,
-        hakijaOid: hakemus.hakijaOid,
-        hakemuksenTila: hakemus.tila,
-      };
+    lasketutValinnanvaiheet,
+    selectHakemusFields(hakemusOid) {
+      const hakemus = hakemuksetByOid[hakemusOid];
+      return hakemus
+        ? {
+            hakijanNimi: hakemus.hakijanNimi,
+            hakemusOid: hakemus.hakemusOid,
+            hakijaOid: hakemus.hakijaOid,
+            hakemuksenTila: hakemus.tila,
+          }
+        : {};
     },
   });
 };

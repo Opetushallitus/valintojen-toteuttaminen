@@ -22,8 +22,7 @@ import {
 import { isEmpty, isNonNullish } from 'remeda';
 import { useState } from 'react';
 import { ChevronRight } from '@mui/icons-material';
-import { LaskettuJonoWithHakijaInfo } from '@/app/hooks/useLasketutValinnanVaiheet';
-import { LaskettuValinnanVaihe } from '@/app/lib/types/laskenta-types';
+import { LasketutValinnanvaiheetInternal } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
 import { getValintatapaJonoNimi } from '@/app/lib/get-valintatapa-jono-nimi';
 import { SijoitteluajonTulosHakutoive } from '@/app/lib/valinta-tulos-service';
@@ -35,11 +34,7 @@ import { TFunction } from 'i18next';
 
 type Tulokset = {
   sijoittelunTulokset: SijoitteluajonTulosHakutoive;
-  valinnanvaiheet?: Array<
-    Omit<LaskettuValinnanVaihe, 'valintatapajonot'> & {
-      valintatapajonot?: Array<LaskettuJonoWithHakijaInfo>;
-    }
-  >;
+  valinnanvaiheet?: LasketutValinnanvaiheetInternal;
 };
 
 type HakukohdeTuloksilla = Hakukohde & Tulokset;
@@ -84,48 +79,54 @@ const HakutoiveContent = ({
   const { t } = useTranslations();
   return isEmpty(valinnanvaiheet ?? []) ? (
     <HakutoiveInfoRow>
-      <TC></TC>
+      <TC />
       <TC colSpan={5}>{t('valintalaskennan-tulokset.ei-tuloksia')}</TC>
     </HakutoiveInfoRow>
   ) : (
-    valinnanvaiheet?.map((vv) => {
-      return vv.valintatapajonot?.map((jono) => {
+    valinnanvaiheet?.map((valinnanvaihe) => {
+      return valinnanvaihe.valintatapajonot?.map((jono) => {
         const jonosija = jono.jonosijat[0];
         const sijoittelunJono =
-          sijoittelunTulokset.hakutoiveenValintatapajonot.find(
+          sijoittelunTulokset?.hakutoiveenValintatapajonot?.find(
             (sijoitteluJono) =>
               sijoitteluJono.valintatapajonoOid === jono.valintatapajonooid,
           );
 
         return (
-          <HakutoiveInfoRow key={vv.valinnanvaiheoid}>
+          <HakutoiveInfoRow key={valinnanvaihe.valinnanvaiheoid}>
             <TC />
             <TC>
               <OphTypography variant="label">
                 {getValintatapaJonoNimi({
-                  valinnanVaiheNimi: vv.nimi,
+                  valinnanVaiheNimi: valinnanvaihe.nimi,
                   jonoNimi: jono.nimi,
                 })}
               </OphTypography>
               <div>
                 {t('henkilo.valintalaskenta-tehty')}
                 {': '}
-                {toFormattedDateTimeString(vv.createdAt)}
+                {toFormattedDateTimeString(valinnanvaihe.createdAt)}
               </div>
             </TC>
             <TC>{jonosija.pisteet}</TC>
             <TC>{t(`tuloksenTila.${jonosija.tuloksenTila}`)}</TC>
-            <TC>
-              {sijoittelunJono &&
-                getHakemuksenTila(sijoittelunJono, t) +
-                  ' ' +
-                  (isNonNullish(sijoittelunJono.varasijanNumero)
-                    ? `(${sijoittelunJono.varasijanNumero})`
-                    : '')}
-            </TC>
-            <TC>
-              {t(`vastaanottotila.${sijoittelunTulokset.vastaanottotieto}`)}
-            </TC>
+            {sijoittelunTulokset ? (
+              <>
+                <TC>
+                  {sijoittelunJono &&
+                    getHakemuksenTila(sijoittelunJono, t) +
+                      ' ' +
+                      (isNonNullish(sijoittelunJono.varasijanNumero)
+                        ? `(${sijoittelunJono.varasijanNumero})`
+                        : '')}
+                </TC>
+                <TC>
+                  {t(`vastaanottotila.${sijoittelunTulokset.vastaanottotieto}`)}
+                </TC>
+              </>
+            ) : (
+              <TC colSpan={2}>Ei sijoittelun tuloksia</TC>
+            )}
           </HakutoiveInfoRow>
         );
       });
@@ -144,9 +145,11 @@ const HakutoiveTableAccordion = ({
 }) => {
   const { t, translateEntity } = useTranslations();
 
-  const [isOpen, setIsOpen] = useState(true);
-
   const { valinnanvaiheet, sijoittelunTulokset } = hakukohde;
+
+  const noContent = isEmpty(valinnanvaiheet ?? []);
+
+  const [isOpen, setIsOpen] = useState(() => !noContent);
 
   const headerId = `hakutoive-header-${hakutoiveNumero}`;
   const contentId = `hakutoive-content-${hakutoiveNumero}`;
@@ -157,7 +160,8 @@ const HakutoiveTableAccordion = ({
         <TableRow
           sx={{
             width: '100%',
-            borderBottom: isOpen ? 'none' : DEFAULT_BOX_BORDER,
+            borderTop: DEFAULT_BOX_BORDER,
+            backgroundColor: noContent ? ophColors.grey50 : ophColors.white,
           }}
         >
           <TC colSpan={6} component="th">
@@ -218,7 +222,6 @@ const HakutoiveTableAccordion = ({
 };
 
 const StyledTableHead = styled(TableHead)(({ theme }) => ({
-  borderBottom: DEFAULT_BOX_BORDER,
   '& .MuiTableCell-root': {
     padding: theme.spacing(0, 2, 1, 2),
   },

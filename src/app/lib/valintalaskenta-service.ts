@@ -27,6 +27,7 @@ import {
   groupBy,
   indexBy,
   isDefined,
+  mapValues,
   pipe,
   prop,
 } from 'remeda';
@@ -73,7 +74,11 @@ export const getHakemuksenLasketutValinnanvaiheet = async ({
       hakemusOid,
     }),
   );
-  return response.data;
+  return pipe(
+    response.data.hakukohteet,
+    indexBy(prop('oid')),
+    mapValues(prop('valinnanvaihe')),
+  );
 };
 
 export const getLaskennanSeurantaTiedot = async (loadingUrl: string) => {
