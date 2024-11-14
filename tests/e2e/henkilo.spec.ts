@@ -5,6 +5,8 @@ import {
 } from './playwright-utils';
 import HAKENEET from './fixtures/hakeneet.json';
 import POSTI_00100 from './fixtures/posti_00100.json';
+import HAKEMUKSEN_VALINTALASKENTA_TULOKSET from './fixtures/hakemuksen-valintalaskenta-tulokset.json';
+import HAKEMUKSEN_SIJOITTELU_TULOKSET from './fixtures/hakemuksen-sijoittelu-tulokset.json';
 
 test.beforeEach(async ({ page }) => {
   await page.route('**/codeelement/latest/posti_00100', (route) => {
@@ -161,4 +163,110 @@ test('Displays selected henkilö info with hakutoive without valintalaskenta or 
   await expect(page.getByText('Ei valintalaskennan tuloksia')).toBeHidden();
   await page.getByRole('button', { name: 'Näytä hakutoiveen tiedot' }).click();
   await expect(page.getByText('Ei valintalaskennan tuloksia')).toBeVisible();
+});
+
+test('Displays selected henkilö hakutoiveet with laskenta and sijoittelu results', async ({
+  page,
+}) => {
+  await page.route(
+    '**/resources/hakemus/1.2.246.562.29.00000000000000045102/1.2.246.562.11.00000000000001796027',
+    (route) =>
+      route.fulfill({
+        json: HAKEMUKSEN_VALINTALASKENTA_TULOKSET,
+      }),
+  );
+
+  await page.route(
+    '**/sijoittelu/1.2.246.562.29.00000000000000045102/sijoitteluajo/latest/hakemus/1.2.246.562.11.00000000000001796027',
+    (route) => {
+      return route.fulfill({
+        json: HAKEMUKSEN_SIJOITTELU_TULOKSET,
+      });
+    },
+  );
+
+  await page.goto(
+    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo/1.2.246.562.11.00000000000001796027',
+  );
+
+  const accordionContent = page.getByLabel(
+    'Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs)',
+  );
+
+  await expect(accordionContent).toBeVisible();
+
+  const jonoRows = accordionContent.getByRole('row');
+
+  await expect(jonoRows).toHaveCount(2);
+
+  const firstRowTextContents = await jonoRows
+    .nth(0)
+    .getByRole('cell')
+    .allTextContents();
+  expect(firstRowTextContents).toEqual([
+    '',
+    'Jono 2Valintalaskenta tehty: 12.11.2024 17:54:55',
+    '13',
+    'Hyväksyttävissä',
+    'PERUUNTUNUT',
+    'Kesken',
+  ]);
+  const secondRowTextContents = await jonoRows
+    .nth(1)
+    .getByRole('cell')
+    .allTextContents();
+  expect(secondRowTextContents).toEqual([
+    '',
+    'Jono 1Valintalaskenta tehty: 12.11.2024 17:54:48',
+    '',
+    'Hyväksyttävissä',
+    '',
+    'Kesken',
+  ]);
+});
+
+test('Displays selected henkilö hakutoiveet with laskenta results only', async ({
+  page,
+}) => {
+  await page.route(
+    '**/resources/hakemus/1.2.246.562.29.00000000000000045102/1.2.246.562.11.00000000000001796027',
+    (route) =>
+      route.fulfill({
+        json: HAKEMUKSEN_VALINTALASKENTA_TULOKSET,
+      }),
+  );
+
+  await page.goto(
+    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo/1.2.246.562.11.00000000000001796027',
+  );
+
+  const accordionContent = page.getByLabel(
+    'Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs)',
+  );
+
+  const jonoRows = accordionContent.getByRole('row');
+  await expect(jonoRows).toHaveCount(2);
+
+  const firstRowTextContents = await jonoRows
+    .nth(0)
+    .getByRole('cell')
+    .allTextContents();
+  expect(firstRowTextContents).toEqual([
+    '',
+    'Jono 2Valintalaskenta tehty: 12.11.2024 17:54:55',
+    '13',
+    'Hyväksyttävissä',
+    'Ei sijoittelun tuloksia',
+  ]);
+  const secondRowTextContents = await jonoRows
+    .nth(1)
+    .getByRole('cell')
+    .allTextContents();
+  expect(secondRowTextContents).toEqual([
+    '',
+    'Jono 1Valintalaskenta tehty: 12.11.2024 17:54:48',
+    '',
+    'Hyväksyttävissä',
+    'Ei sijoittelun tuloksia',
+  ]);
 });

@@ -1,0 +1,56 @@
+{
+    "hakijaOid": "1.2.246.562.24.69259807406",
+    "hakemusOid": "1.2.246.562.11.00000000000001796027",
+    "etunimi": null,
+    "sukunimi": null,
+    "hakutoiveet": [
+        {
+            "hakutoive": 1,
+            "hakukohdeOid": "1.2.246.562.20.00000000000000045105",
+            "tarjoajaOid": null,
+            "vastaanottotieto": "KESKEN",
+            "hakutoiveenValintatapajonot": [
+                {
+                    "valintatapajonoPrioriteetti": 0,
+                    "valintatapajonoOid": "17093042998533736417074016063604",
+                    "valintatapajonoNimi": "Jono 2",
+                    "eiVarasijatayttoa": false,
+                    "jonosija": 1,
+                    "paasyJaSoveltuvuusKokeenTulos": null,
+                    "varasijanNumero": null,
+                    "tila": "PERUUNTUNUT",
+                    "tilanKuvaukset": {
+                        "FI": "Peruuntunut, varasijatäyttö päättynyt",
+                        "SV": "Annullerad, besättning av reservplatser har upphört",
+                        "EN": "Cancelled, waiting list selection has ended"
+                    },
+                    "ilmoittautumisTila": "EI_TEHTY",
+                    "hyvaksyttyHarkinnanvaraisesti": false,
+                    "tasasijaJonosija": 1,
+                    "pisteet": 13.0,
+                    "alinHyvaksyttyPistemaara": null,
+                    "hakeneet": 15,
+                    "hyvaksytty": 0,
+                    "varalla": null,
+                    "varasijat": 0,
+                    "varasijaTayttoPaivat": 0,
+                    "varasijojaKaytetaanAlkaen": null,
+                    "varasijojaTaytetaanAsti": null,
+                    "tayttojono": null,
+                    "julkaistavissa": false,
+                    "ehdollisestiHyvaksyttavissa": false,
+                    "ehdollisenHyvaksymisenEhtoKoodi": null,
+                    "ehdollisenHyvaksymisenEhtoFI": null,
+                    "ehdollisenHyvaksymisenEhtoSV": null,
+                    "ehdollisenHyvaksymisenEhtoEN": null,
+                    "hyvaksyttyVarasijalta": false,
+                    "valintatuloksenViimeisinMuutos": null,
+                    "hakemuksenTilanViimeisinMuutos": 1727869090586
+                }
+            ],
+            "hakijaryhmat": [],
+            "kaikkiJonotSijoiteltu": true,
+            "ensikertalaisuusHakijaryhmanAlimmatHyvaksytytPisteet": null
+        }
+    ]
+}

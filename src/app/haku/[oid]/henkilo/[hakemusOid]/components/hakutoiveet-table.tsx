@@ -115,9 +115,8 @@ const HakutoiveContent = ({
                 <TC>
                   {sijoittelunJono &&
                     getHakemuksenTila(sijoittelunJono, t) +
-                      ' ' +
                       (isNonNullish(sijoittelunJono.varasijanNumero)
-                        ? `(${sijoittelunJono.varasijanNumero})`
+                        ? ` (${sijoittelunJono.varasijanNumero})`
                         : '')}
                 </TC>
                 <TC>
