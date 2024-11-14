@@ -80,7 +80,7 @@ const HakutoiveContent = ({
   return isEmpty(valinnanvaiheet ?? []) ? (
     <HakutoiveInfoRow>
       <TC />
-      <TC colSpan={5}>{t('valintalaskennan-tulokset.ei-tuloksia')}</TC>
+      <TC colSpan={5}>{t('henkilo.taulukko.ei-valintalaskennan-tuloksia')}</TC>
     </HakutoiveInfoRow>
   ) : (
     valinnanvaiheet?.map((valinnanvaihe) => {
@@ -124,7 +124,9 @@ const HakutoiveContent = ({
                 </TC>
               </>
             ) : (
-              <TC colSpan={2}>Ei sijoittelun tuloksia</TC>
+              <TC colSpan={2}>
+                {t('henkilo.taulukko.ei-sijoittelun-tuloksia')}
+              </TC>
             )}
           </HakutoiveInfoRow>
         );
