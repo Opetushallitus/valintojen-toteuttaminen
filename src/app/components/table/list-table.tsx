@@ -22,11 +22,9 @@ import { DEFAULT_BOX_BORDER } from '@/app/lib/constants';
 
 const StyledTable = styled(Table)({
   width: '100%',
-  borderSpacing: '0px',
 });
 
 const StyledCell = styled(TableCell)(({ theme }) => ({
-  borderSpacing: 0,
   padding: theme.spacing(1, 0, 1, 2),
   textAlign: 'left',
   whiteSpace: 'pre-wrap',
