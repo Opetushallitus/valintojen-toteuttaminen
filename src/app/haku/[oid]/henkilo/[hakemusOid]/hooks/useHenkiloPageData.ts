@@ -26,7 +26,7 @@ const useAtaruHakemus = ({
   return hakemukset;
 };
 
-export const useHakutoiveTiedot = ({
+export const useHenkiloPageData = ({
   hakuOid,
   hakemusOid,
 }: {

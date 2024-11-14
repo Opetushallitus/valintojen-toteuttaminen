@@ -9,7 +9,7 @@ import { ExternalLink } from '@/app/components/external-link';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { FullClientSpinner } from '@/app/components/client-spinner';
 import { HakutoiveetTable } from './components/hakutoiveet-table';
-import { useHakutoiveTiedot } from './hooks/useHakutoiveTiedot';
+import { useHenkiloPageData } from './hooks/useHenkiloPageData';
 
 const HenkiloContent = ({
   hakuOid,
@@ -20,7 +20,7 @@ const HenkiloContent = ({
 }) => {
   const { t, translateEntity } = useTranslations();
 
-  const { hakukohteet, hakija, postitoimipaikka } = useHakutoiveTiedot({
+  const { hakukohteet, hakija, postitoimipaikka } = useHenkiloPageData({
     hakuOid,
     hakemusOid,
   });
