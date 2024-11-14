@@ -244,33 +244,35 @@ export const HakutoiveetTable = ({
 }) => {
   const { t } = useTranslations();
   return (
-    <Table sx={{ width: '100%' }}>
-      <StyledTableHead>
-        <TableRow>
-          <TC rowSpan={2} sx={{ verticalAlign: 'bottom' }}>
-            {t('henkilo.taulukko.hakutoive')}
-          </TC>
-          <TC rowSpan={2} sx={{ verticalAlign: 'bottom' }}>
-            {t('henkilo.taulukko.valintatapajono')}
-          </TC>
-          <TC colSpan={2}>{t('henkilo.taulukko.valintalaskenta')}</TC>
-          <TC colSpan={2}>{t('henkilo.taulukko.sijoittelu')}</TC>
-        </TableRow>
-        <TableRow>
-          <TC>{t('henkilo.taulukko.pisteet')}</TC>
-          <TC>{t('henkilo.taulukko.valintatieto')}</TC>
-          <TC>{t('henkilo.taulukko.tila')}</TC>
-          <TC>{t('henkilo.taulukko.vastaanottotieto')}</TC>
-        </TableRow>
-      </StyledTableHead>
-      {hakukohteet.map((hakukohde, index) => (
-        <HakutoiveTableAccordion
-          key={hakukohde.oid}
-          hakuOid={hakuOid}
-          hakukohde={hakukohde}
-          hakutoiveNumero={index + 1}
-        />
-      ))}
-    </Table>
+    <Box sx={{ overflowX: 'auto' }}>
+      <Table sx={{ width: '100%' }}>
+        <StyledTableHead>
+          <TableRow>
+            <TC rowSpan={2} sx={{ verticalAlign: 'bottom' }}>
+              {t('henkilo.taulukko.hakutoive')}
+            </TC>
+            <TC rowSpan={2} sx={{ verticalAlign: 'bottom' }}>
+              {t('henkilo.taulukko.valintatapajono')}
+            </TC>
+            <TC colSpan={2}>{t('henkilo.taulukko.valintalaskenta')}</TC>
+            <TC colSpan={2}>{t('henkilo.taulukko.sijoittelu')}</TC>
+          </TableRow>
+          <TableRow>
+            <TC>{t('henkilo.taulukko.pisteet')}</TC>
+            <TC>{t('henkilo.taulukko.valintatieto')}</TC>
+            <TC>{t('henkilo.taulukko.tila')}</TC>
+            <TC>{t('henkilo.taulukko.vastaanottotieto')}</TC>
+          </TableRow>
+        </StyledTableHead>
+        {hakukohteet.map((hakukohde, index) => (
+          <HakutoiveTableAccordion
+            key={hakukohde.oid}
+            hakuOid={hakuOid}
+            hakukohde={hakukohde}
+            hakutoiveNumero={index + 1}
+          />
+        ))}
+      </Table>
+    </Box>
   );
 };

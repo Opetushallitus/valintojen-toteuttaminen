@@ -58,7 +58,7 @@ export default function HenkiloPage({
   const hakemusOid = params.hakemusOid;
 
   return (
-    <Stack spacing={2} sx={{ m: 4, width: '100%' }}>
+    <Stack spacing={2} sx={{ m: 4, width: '100%', overflowX: 'hidden' }}>
       <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
         <HenkiloContent hakuOid={hakuOid} hakemusOid={hakemusOid} />
       </QuerySuspenseBoundary>
