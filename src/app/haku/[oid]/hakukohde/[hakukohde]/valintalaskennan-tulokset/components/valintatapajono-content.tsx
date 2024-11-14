@@ -1,6 +1,6 @@
 'use client';
 import { Box } from '@mui/material';
-import { LaskettuValinnanVaihe } from '@/app/lib/types/laskenta-types';
+import { LaskettuValinnanVaiheModel } from '@/app/lib/types/laskenta-types';
 import { AccordionBox } from '@/app/components/accordion-box';
 import { useJonosijatSearch } from '@/app/hooks/useJonosijatSearch';
 import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
@@ -75,7 +75,7 @@ export const ValintatapajonoContent = ({
   jono,
 }: {
   hakukohdeOid: string;
-  valinnanVaihe: Omit<LaskettuValinnanVaihe, 'valintatapajonot'>;
+  valinnanVaihe: Omit<LaskettuValinnanVaiheModel, 'valintatapajonot'>;
   jono: LaskettuJonoWithHakijaInfo;
 }) => {
   const { t } = useTranslations();

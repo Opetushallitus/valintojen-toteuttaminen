@@ -11,7 +11,7 @@ import {
   HakijaryhmanHakija,
   HakukohteenHakijaryhma,
   JarjestyskriteeriTila,
-  LaskettuValinnanVaihe,
+  LaskettuValinnanVaiheModel,
   SeurantaTiedot,
 } from './types/laskenta-types';
 import {
@@ -39,7 +39,7 @@ import {
 export const getHakukohteenLasketutValinnanvaiheet = async (
   hakukohdeOid: string,
 ) => {
-  const response = await client.get<Array<LaskettuValinnanVaihe>>(
+  const response = await client.get<Array<LaskettuValinnanVaiheModel>>(
     configuration.hakukohteenLasketutValinnanVaiheetUrl({ hakukohdeOid }),
   );
   return response.data;
@@ -54,7 +54,7 @@ export type HakemuksenValintalaskentaData = {
     oid: string;
     prioriteetti: number;
     hakukohdeRyhmaOids: Array<string>;
-    valinnanvaihe: Array<LaskettuValinnanVaihe>;
+    valinnanvaihe: Array<LaskettuValinnanVaiheModel>;
     kaikkiJonotSijoiteltu: boolean;
     harkinnanvaraisuus: boolean;
     hakijaryhma: Array<unknown>;

@@ -1,5 +1,5 @@
 import useToaster from '@/app/hooks/useToaster';
-import { LaskettuValinnanVaihe } from '@/app/lib/types/laskenta-types';
+import { LaskettuValinnanVaiheModel } from '@/app/lib/types/laskenta-types';
 import {
   muutaSijoittelunStatus,
   MuutaSijoittelunStatusProps,
@@ -15,7 +15,7 @@ export const useSijoitteluStatusMutation = (hakukohdeOid: string) => {
       await muutaSijoittelunStatus({ jono, status });
       queryClient.setQueryData(
         ['getLasketutValinnanVaiheet', hakukohdeOid],
-        (vaiheet: Array<LaskettuValinnanVaihe>) =>
+        (vaiheet: Array<LaskettuValinnanVaiheModel>) =>
           vaiheet.map((vaihe) => ({
             ...vaihe,
             valintatapajonot: vaihe.valintatapajonot?.map((oldJono) => ({

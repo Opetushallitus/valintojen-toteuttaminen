@@ -22,7 +22,7 @@ import {
 import { isEmpty, isNonNullish } from 'remeda';
 import { useState } from 'react';
 import { ChevronRight } from '@mui/icons-material';
-import { LasketutValinnanvaiheetInternal } from '@/app/hooks/useLasketutValinnanVaiheet';
+import { LasketutValinnanvaiheet } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
 import { getValintatapaJonoNimi } from '@/app/lib/get-valintatapa-jono-nimi';
 import { SijoitteluajonTulosHakutoive } from '@/app/lib/valinta-tulos-service';
@@ -34,7 +34,7 @@ import { TFunction } from 'i18next';
 
 type Tulokset = {
   sijoittelunTulokset: SijoitteluajonTulosHakutoive;
-  valinnanvaiheet?: LasketutValinnanvaiheetInternal;
+  valinnanvaiheet?: LasketutValinnanvaiheet;
 };
 
 type HakukohdeTuloksilla = Hakukohde & Tulokset;

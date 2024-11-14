@@ -4,15 +4,15 @@ import { getHakukohteenLasketutValinnanvaiheet } from '../lib/valintalaskenta-se
 import { getHakemukset } from '../lib/ataru';
 import { TranslatedName } from '../lib/localization/localization-types';
 import {
-  JonoSija,
-  LaskettuValinnanVaihe,
-  LaskettuValintatapajono,
+  JonoSijaModel,
+  LaskettuValinnanVaiheModel,
+  LaskettuValintatapajonoModel,
 } from '../lib/types/laskenta-types';
 import { indexBy, map, mapKeys, omit, pipe, prop, sortBy } from 'remeda';
 import { HakemuksenTila } from '@/app/lib/types/ataru-types';
 
-export type JonoSijaInternal = Omit<
-  JonoSija,
+export type JonoSija = Omit<
+  JonoSijaModel,
   'jarjestyskriteerit' | 'harkinnanvarainen' | 'prioriteetti'
 > & {
   pisteet?: number;
@@ -26,25 +26,22 @@ type AdditionalHakemusFields = {
   hakemuksenTila: HakemuksenTila;
 };
 
-export type JonoSijaWithHakijaInfo = JonoSijaInternal & AdditionalHakemusFields;
+export type JonoSijaWithHakijaInfo = JonoSija & AdditionalHakemusFields;
 
-export type LaskettuJonoInternal = Omit<
-  LaskettuValintatapajono,
-  'jonosijat'
-> & {
-  jonosijat: Array<JonoSijaInternal>;
+export type LaskettuJono = Omit<LaskettuValintatapajonoModel, 'jonosijat'> & {
+  jonosijat: Array<JonoSija>;
 };
 
 export type LaskettuJonoWithHakijaInfo = Omit<
-  LaskettuValintatapajono,
+  LaskettuValintatapajonoModel,
   'jonosijat'
 > & {
   jonosijat: Array<JonoSijaWithHakijaInfo>;
 };
 
-export type LasketutValinnanvaiheetInternal = Array<
-  Omit<LaskettuValinnanVaihe, 'valintatapajonot'> & {
-    valintatapajonot?: Array<LaskettuJonoInternal>;
+export type LasketutValinnanvaiheet = Array<
+  Omit<LaskettuValinnanVaiheModel, 'valintatapajonot'> & {
+    valintatapajonot?: Array<LaskettuJono>;
   }
 >;
 
@@ -54,7 +51,7 @@ export const selectValinnanvaiheet = <
   lasketutValinnanvaiheet,
   selectHakemusFields,
 }: {
-  lasketutValinnanvaiheet?: Array<LaskettuValinnanVaihe>;
+  lasketutValinnanvaiheet?: Array<LaskettuValinnanVaiheModel>;
   selectHakemusFields?: (hakemusOid: string) => H;
 }) => {
   return pipe(

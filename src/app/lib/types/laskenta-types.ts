@@ -36,7 +36,7 @@ export type Jarjestyskriteeri = {
   };
 };
 
-export type JonoSija = {
+export type JonoSijaModel = {
   jonosija: number;
   hakemusOid: string;
   hakijaOid: string;
@@ -46,23 +46,23 @@ export type JonoSija = {
   jarjestyskriteerit: Array<Jarjestyskriteeri>;
 };
 
-export type LaskettuValintatapajono = {
+export type LaskettuValintatapajonoModel = {
   oid: string;
   nimi: string;
   valintatapajonooid: string;
   prioriteetti: number;
-  jonosijat: Array<JonoSija>;
+  jonosijat: Array<JonoSijaModel>;
   valmisSijoiteltavaksi: boolean;
   siirretaanSijoitteluun: boolean;
 };
 
-export type LaskettuValinnanVaihe = {
+export type LaskettuValinnanVaiheModel = {
   jarjestysnumero: number;
   valinnanvaiheoid: string;
   hakuOid: string;
   nimi: string;
   createdAt: number;
-  valintatapajonot?: Array<LaskettuValintatapajono>;
+  valintatapajonot?: Array<LaskettuValintatapajonoModel>;
 };
 
 export type SeurantaTiedot = {
