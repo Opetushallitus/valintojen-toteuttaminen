@@ -117,4 +117,14 @@ export const configuration = {
     hakemusOid: string;
   }) =>
     `${DOMAIN}/valinta-tulos-service/auth/sijoittelu/${hakuOid}/sijoitteluajo/latest/hakemus/${hakemusOid}`,
+  jonosijanJarjestyskriteeriMuokkausUrl: ({
+    valintatapajonoOid,
+    hakemusOid,
+    jarjestyskriteeriPrioriteetti,
+  }: {
+    valintatapajonoOid: string;
+    hakemusOid: string;
+    jarjestyskriteeriPrioriteetti: number;
+  }) =>
+    `${DOMAIN}/valintalaskenta-laskenta-service/resources/valintatapajono/${valintatapajonoOid}/${hakemusOid}/${jarjestyskriteeriPrioriteetti}/jonosija`,
 } as const;

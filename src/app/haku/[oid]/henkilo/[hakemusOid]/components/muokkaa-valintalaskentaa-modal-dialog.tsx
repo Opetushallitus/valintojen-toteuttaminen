@@ -1,17 +1,38 @@
-import { createModal, useOphModalProps } from '@/app/components/global-modal';
+import {
+  createModal,
+  hideModal,
+  useOphModalProps,
+} from '@/app/components/global-modal';
 import { OphModalDialog } from '@/app/components/oph-modal-dialog';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { OphButton, OphSelect } from '@opetushallitus/oph-design-system';
 import { FormLabel, Grid2, Stack } from '@mui/material';
 import { OphInput } from '@/app/components/form/oph-input';
-import { useId, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { LaskettuJono } from '@/app/hooks/useLasketutValinnanVaiheet';
-import { mapKeys } from 'remeda';
 import { Jarjestyskriteeri } from '@/app/lib/types/laskenta-types';
 import { Hakukohde } from '@/app/lib/types/kouta-types';
 import { HakutoiveTitle } from './hakutoive-title';
+import { useHasChanged } from '@/app/hooks/useHasChanged';
+import {
+  QueryClient,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
+import useToaster from '@/app/hooks/useToaster';
+import {
+  hakemuksenLasketutValinnanvaiheetQueryOptions,
+  saveJonosijanJarjestyskriteeri,
+} from '@/app/lib/valintalaskenta-service';
+import { FullClientSpinner } from '@/app/components/client-spinner';
 
-const ModalActions = ({ onClose }: { onClose: () => void }) => {
+const ModalActions = ({
+  onClose,
+  onSave,
+}: {
+  onClose: () => void;
+  onSave: () => void;
+}) => {
   const { t } = useTranslations();
 
   return (
@@ -22,7 +43,9 @@ const ModalActions = ({ onClose }: { onClose: () => void }) => {
       <OphButton variant="contained" disabled={true}>
         {t('henkilo.poista-muokkaus')}
       </OphButton>
-      <OphButton variant="contained">{t('yleinen.tallenna')}</OphButton>
+      <OphButton variant="contained" onClick={onSave}>
+        {t('yleinen.tallenna')}
+      </OphButton>
     </Stack>
   );
 };
@@ -64,30 +87,18 @@ enum TuloksenTila {
 }
 
 const JarjestyskriteeriFields = ({
-  jarjestyskriteeri,
+  value,
+  onChange,
 }: {
-  jarjestyskriteeri: Jarjestyskriteeri;
+  value: MuokkausParams;
+  onChange: (e: Partial<MuokkausParams>) => void;
 }) => {
-  const { t, translateEntity } = useTranslations();
+  const { t } = useTranslations();
 
-  const [pisteet, setPisteet] = useState(
-    () => jarjestyskriteeri?.arvo?.toString() ?? '',
-  );
-
-  const [valintatieto, setValintatieto] = useState(
-    () => jarjestyskriteeri.tila,
-  );
-
-  const tuloksenTilaOptions = Object.values(TuloksenTila).map((value) => ({
-    value: value,
-    label: t('tuloksenTila.' + value),
+  const tuloksenTilaOptions = Object.values(TuloksenTila).map((v) => ({
+    value: v,
+    label: t('tuloksenTila.' + v),
   }));
-
-  const [muokkauksenSyy, setMuokkauksenSyy] = useState<string>(() =>
-    translateEntity(
-      mapKeys(jarjestyskriteeri.kuvaus ?? {}, (k) => k.toLowerCase()),
-    ),
-  );
 
   return (
     <>
@@ -95,8 +106,8 @@ const JarjestyskriteeriFields = ({
         label={t('henkilo.taulukko.pisteet')}
         renderInput={() => (
           <OphInput
-            value={pisteet}
-            onChange={(e) => setPisteet(e.target.value)}
+            value={value.arvo}
+            onChange={(e) => onChange({ arvo: e.target.value })}
           />
         )}
       />
@@ -106,9 +117,9 @@ const JarjestyskriteeriFields = ({
           <OphSelect
             sx={{ width: '100%' }}
             labelId={labelId}
-            value={valintatieto}
+            value={value.tila}
             options={tuloksenTilaOptions}
-            onChange={(e) => setValintatieto(e.target.value)}
+            onChange={(e) => onChange({ tila: e.target.value })}
           />
         )}
       />
@@ -120,14 +131,107 @@ const JarjestyskriteeriFields = ({
             maxRows={10}
             sx={{ width: '100%', height: 'auto', minHeight: '48px' }}
             inputProps={{ 'aria-labelledby': labelId }}
-            value={muokkauksenSyy}
-            onChange={(e) => setMuokkauksenSyy(e.target.value)}
+            value={value.selite}
+            onChange={(e) => onChange({ selite: e.target.value })}
             notched={false}
           />
         )}
       />
     </>
   );
+};
+
+type MuokkausParams = {
+  tila: string;
+  arvo: string;
+  selite: string;
+};
+
+const useMuokkausParams = (jarjestyskriteeri: Jarjestyskriteeri) => {
+  const [muokkausParams, setMuokkausParams] = useState<MuokkausParams>(() => ({
+    tila: jarjestyskriteeri.tila,
+    arvo: jarjestyskriteeri.arvo?.toString() ?? '',
+    selite: jarjestyskriteeri.kuvaus?.FI ?? '',
+  }));
+
+  const jarjestyskriteeriChanged = useHasChanged(
+    jarjestyskriteeri.prioriteetti,
+  );
+
+  useEffect(() => {
+    if (jarjestyskriteeriChanged) {
+      setMuokkausParams({
+        tila: jarjestyskriteeri.tila,
+        arvo: jarjestyskriteeri.arvo?.toString() ?? '',
+        selite: jarjestyskriteeri.kuvaus?.FI ?? '',
+      });
+    }
+  }, [jarjestyskriteeri, jarjestyskriteeriChanged]);
+
+  return [muokkausParams, setMuokkausParams] as const;
+};
+
+const refetchValinnanvaiheet = ({
+  queryClient,
+  hakuOid,
+  hakemusOid,
+}: {
+  queryClient: QueryClient;
+  hakuOid: string;
+  hakemusOid: string;
+}) => {
+  const options = hakemuksenLasketutValinnanvaiheetQueryOptions({
+    hakuOid,
+    hakemusOid,
+  });
+  queryClient.resetQueries(options);
+  queryClient.invalidateQueries(options);
+};
+
+const useJarjestyskriteeriMutation = ({
+  hakuOid,
+  hakemusOid,
+  valintatapajonoOid,
+  jarjestyskriteeriPrioriteetti,
+}: {
+  hakuOid: string;
+  hakemusOid: string;
+  valintatapajonoOid: string;
+  jarjestyskriteeriPrioriteetti: number;
+}) => {
+  const { addToast } = useToaster();
+
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ tila, arvo, selite }: MuokkausParams) => {
+      await saveJonosijanJarjestyskriteeri({
+        valintatapajonoOid,
+        hakemusOid,
+        jarjestyskriteeriPrioriteetti,
+        tila,
+        arvo,
+        selite,
+      });
+    },
+    onError: (e) => {
+      addToast({
+        key: 'set-harkinnanvaraiset-tilat-error',
+        message: 'harkinnanvaraiset.virhe-tallenna',
+        type: 'error',
+      });
+      console.error(e);
+    },
+    onSuccess: () => {
+      addToast({
+        key: 'set-harkinnanvaraiset-tilat-success',
+        message: 'harkinnanvaraiset.tallennettu',
+        type: 'success',
+      });
+      refetchValinnanvaiheet({ hakuOid, hakemusOid, queryClient });
+      hideModal(MuokkaaValintalaskentaaModalDialog);
+    },
+  });
 };
 
 export const MuokkaaValintalaskentaaModalDialog = createModal<{
@@ -142,7 +246,13 @@ export const MuokkaaValintalaskentaaModalDialog = createModal<{
   const jonosija = valintatapajono.jonosijat?.[0];
 
   const [jarjestyskriteeriPrioriteetti, setJarjestyskriteeriPrioriteetti] =
-    useState(() => '0');
+    useState<number>(0);
+
+  const jarjestyskriteeri =
+    jonosija.jarjestyskriteerit[jarjestyskriteeriPrioriteetti];
+
+  const [muokkausParams, setMuokkausParams] =
+    useMuokkausParams(jarjestyskriteeri);
 
   const jarjestyskriteeriOptions = jonosija.jarjestyskriteerit.map(
     ({ nimi, prioriteetti }) => ({
@@ -151,8 +261,12 @@ export const MuokkaaValintalaskentaaModalDialog = createModal<{
     }),
   );
 
-  const jarjestyskriteeri =
-    jonosija.jarjestyskriteerit[Number(jarjestyskriteeriPrioriteetti)];
+  const { mutate, isPending } = useJarjestyskriteeriMutation({
+    hakemusOid: jonosija.hakemusOid,
+    valintatapajonoOid: valintatapajono.oid,
+    jarjestyskriteeriPrioriteetti,
+    hakuOid,
+  });
 
   return (
     <OphModalDialog
@@ -162,50 +276,58 @@ export const MuokkaaValintalaskentaaModalDialog = createModal<{
       maxWidth="lg"
       titleAlign="left"
       onClose={onClose}
-      actions={<ModalActions onClose={onClose} />}
+      actions={
+        <ModalActions onClose={onClose} onSave={() => mutate(muokkausParams)} />
+      }
     >
-      <Grid2 container rowSpacing={2} sx={{ paddingY: 4 }}>
-        <InlineFormControl
-          label={t('henkilo.taulukko.hakija')}
-          renderInput={({ labelId }) => (
-            <span aria-labelledby={labelId}>{hakijanNimi}</span>
-          )}
-        />
-        <InlineFormControl
-          label={t('henkilo.taulukko.hakutoive')}
-          renderInput={({ labelId }) => (
-            <span aria-labelledby={labelId}>
-              <HakutoiveTitle
-                hakutoiveNumero={1}
-                hakuOid={hakuOid}
-                hakukohde={hakukohde}
+      {isPending ? (
+        <FullClientSpinner />
+      ) : (
+        <Grid2 container rowSpacing={2} sx={{ paddingY: 4 }}>
+          <InlineFormControl
+            label={t('henkilo.taulukko.hakija')}
+            renderInput={({ labelId }) => (
+              <span aria-labelledby={labelId}>{hakijanNimi}</span>
+            )}
+          />
+          <InlineFormControl
+            label={t('henkilo.taulukko.hakutoive')}
+            renderInput={({ labelId }) => (
+              <span aria-labelledby={labelId}>
+                <HakutoiveTitle
+                  hakutoiveNumero={1}
+                  hakuOid={hakuOid}
+                  hakukohde={hakukohde}
+                />
+              </span>
+            )}
+          />
+          <InlineFormControl
+            label={t('henkilo.taulukko.valintatapajono')}
+            renderInput={({ labelId }) => (
+              <span aria-labelledby={labelId}>{valintatapajono.nimi}</span>
+            )}
+          />
+          <InlineFormControl
+            label={t('henkilo.taulukko.jarjestyskriteeri')}
+            renderInput={({ labelId }) => (
+              <OphSelect
+                sx={{ width: '100%' }}
+                labelId={labelId}
+                value={jarjestyskriteeriPrioriteetti.toString()}
+                options={jarjestyskriteeriOptions}
+                onChange={(e) =>
+                  setJarjestyskriteeriPrioriteetti(Number(e.target.value))
+                }
               />
-            </span>
-          )}
-        />
-        <InlineFormControl
-          label={t('henkilo.taulukko.valintatapajono')}
-          renderInput={({ labelId }) => (
-            <span aria-labelledby={labelId}>{valintatapajono.nimi}</span>
-          )}
-        />
-        <InlineFormControl
-          label={t('henkilo.taulukko.jarjestyskriteeri')}
-          renderInput={({ labelId }) => (
-            <OphSelect
-              sx={{ width: '100%' }}
-              labelId={labelId}
-              value={jarjestyskriteeriPrioriteetti}
-              options={jarjestyskriteeriOptions}
-              onChange={(e) => setJarjestyskriteeriPrioriteetti(e.target.value)}
-            />
-          )}
-        />
-        <JarjestyskriteeriFields
-          key={jarjestyskriteeriPrioriteetti}
-          jarjestyskriteeri={jarjestyskriteeri}
-        />
-      </Grid2>
+            )}
+          />
+          <JarjestyskriteeriFields
+            value={muokkausParams}
+            onChange={(p) => setMuokkausParams((s) => ({ ...s, ...p }))}
+          />
+        </Grid2>
+      )}
     </OphModalDialog>
   );
 });

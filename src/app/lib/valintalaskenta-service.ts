@@ -35,6 +35,7 @@ import {
   HarkinnanvarainenTila,
   HarkinnanvaraisestiHyvaksytty,
 } from './types/harkinnanvaraiset-types';
+import { queryOptions } from '@tanstack/react-query';
 
 export const getHakukohteenLasketutValinnanvaiheet = async (
   hakukohdeOid: string,
@@ -59,6 +60,20 @@ export type HakemuksenValintalaskentaData = {
     harkinnanvaraisuus: boolean;
     hakijaryhma: Array<unknown>;
   }>;
+};
+
+export const hakemuksenLasketutValinnanvaiheetQueryOptions = ({
+  hakuOid,
+  hakemusOid,
+}: {
+  hakuOid: string;
+  hakemusOid: string;
+}) => {
+  return queryOptions({
+    queryKey: ['getHakemuksenLasketutValinnanvaiheet', hakuOid, hakemusOid],
+    queryFn: () =>
+      getHakemuksenLasketutValinnanvaiheet({ hakuOid, hakemusOid }),
+  });
 };
 
 export const getHakemuksenLasketutValinnanvaiheet = async ({
@@ -312,5 +327,54 @@ export const setHarkinnanvaraisetTilat = async (
   return client.post<unknown>(
     configuration.setHarkinnanvaraisetTilatUrl,
     harkinnanvaraisetTilat,
+  );
+};
+
+export type JarjestyskriteeriMutationParams = {
+  valintatapajonoOid: string;
+  hakemusOid: string;
+  jarjestyskriteeriPrioriteetti: number;
+  tila: string;
+  arvo: string;
+  selite: string;
+};
+
+export const saveJonosijanJarjestyskriteeri = ({
+  valintatapajonoOid,
+  hakemusOid,
+  jarjestyskriteeriPrioriteetti,
+  tila,
+  arvo,
+  selite,
+}: JarjestyskriteeriMutationParams) => {
+  return client.post<null>(
+    configuration.jonosijanJarjestyskriteeriMuokkausUrl({
+      valintatapajonoOid,
+      hakemusOid,
+      jarjestyskriteeriPrioriteetti,
+    }),
+    {
+      tila,
+      arvo,
+      selite,
+    },
+  );
+};
+
+export const deleteJonosijanJarjestyskriteeri = ({
+  valintatapajonoOid,
+  hakemusOid,
+  jarjestyskriteeriPrioriteetti,
+}: {
+  valintatapajonoOid: string;
+  hakemusOid: string;
+  jarjestyskriteeriPrioriteetti: number;
+}) => {
+  return client.delete<null>(
+    configuration.jonosijanJarjestyskriteeriMuokkausUrl({
+      valintatapajonoOid,
+      hakemusOid,
+      jarjestyskriteeriPrioriteetti,
+    }),
   );
 };

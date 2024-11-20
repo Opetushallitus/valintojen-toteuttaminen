@@ -4,13 +4,13 @@ import { getAtaruHakemukset, parseHakijaTiedot } from '@/app/lib/ataru';
 import { useSuspenseQueries, useSuspenseQuery } from '@tanstack/react-query';
 import { getPostitoimipaikka } from '@/app/lib/koodisto';
 import { getHakukohteetQueryOptions } from '@/app/lib/kouta';
-import { Hakukohde } from '@/app/lib/types/kouta-types';
 import { useUserPermissions } from '@/app/hooks/useUserPermissions';
 import { filter, map, pipe, prop, sortBy } from 'remeda';
-import { getHakemuksenLasketutValinnanvaiheet } from '@/app/lib/valintalaskenta-service';
+import { hakemuksenLasketutValinnanvaiheetQueryOptions } from '@/app/lib/valintalaskenta-service';
 import { selectValinnanvaiheet } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { getLatestSijoitteluajonTuloksetForHakemus } from '@/app/lib/valinta-tulos-service';
 import { notFound } from 'next/navigation';
+import { useMemo } from 'react';
 
 const useAtaruHakemus = ({
   hakuOid,
@@ -46,11 +46,7 @@ export const useHenkiloPageData = ({
     { data: sijoittelunTuloksetByHakukohde },
   ] = useSuspenseQueries({
     queries: [
-      {
-        queryKey: ['getHakemuksenLasketutValinnanvaiheet', hakuOid, hakemusOid],
-        queryFn: () =>
-          getHakemuksenLasketutValinnanvaiheet({ hakuOid, hakemusOid }),
-      },
+      hakemuksenLasketutValinnanvaiheetQueryOptions({ hakuOid, hakemusOid }),
       {
         queryKey: [
           'getLatestSijoitteluajonTuloksetForHakemus',
@@ -65,40 +61,46 @@ export const useHenkiloPageData = ({
 
   const hakija = parseHakijaTiedot(hakemus);
 
-  const hakukohdeOids = hakemus.hakutoiveet.map(prop('hakukohdeOid'));
+  const hakukohdeOids = useMemo(
+    () => hakemus.hakutoiveet.map(prop('hakukohdeOid')),
+    [hakemus.hakutoiveet],
+  );
 
   const { data: userPermissions } = useUserPermissions();
 
-  const [{ data: hakukohteet }, { data: postitoimipaikka }] =
+  const [{ data: hakukohteetPlain }, { data: postitoimipaikka }] =
     useSuspenseQueries({
       queries: [
-        {
-          ...getHakukohteetQueryOptions(hakuOid, userPermissions),
-          select: (hakukohteet: Array<Hakukohde>) => {
-            return pipe(
-              hakukohteet,
-              filter((h) => hakukohdeOids.includes(h.oid)),
-              sortBy((h) => hakukohdeOids.indexOf(h.oid)),
-              map((hakukohde) => {
-                return {
-                  ...hakukohde,
-                  valinnanvaiheet: selectValinnanvaiheet({
-                    lasketutValinnanvaiheet:
-                      valinnanvaiheetByHakukohde?.[hakukohde.oid],
-                  }),
-                  sijoittelunTulokset:
-                    sijoittelunTuloksetByHakukohde?.[hakukohde.oid],
-                };
-              }),
-            );
-          },
-        },
+        getHakukohteetQueryOptions(hakuOid, userPermissions),
         {
           queryKey: ['getPostitoimipaikka', hakemus.postinumero],
           queryFn: () => getPostitoimipaikka(hakemus.postinumero),
         },
       ],
     });
+
+  const hakukohteet = useMemo(() => {
+    return pipe(
+      hakukohteetPlain,
+      filter((h) => hakukohdeOids.includes(h.oid)),
+      sortBy((h) => hakukohdeOids.indexOf(h.oid)),
+      map((hakukohde) => {
+        return {
+          ...hakukohde,
+          valinnanvaiheet: selectValinnanvaiheet({
+            lasketutValinnanvaiheet:
+              valinnanvaiheetByHakukohde?.[hakukohde.oid],
+          }),
+          sijoittelunTulokset: sijoittelunTuloksetByHakukohde?.[hakukohde.oid],
+        };
+      }),
+    );
+  }, [
+    hakukohdeOids,
+    hakukohteetPlain,
+    valinnanvaiheetByHakukohde,
+    sijoittelunTuloksetByHakukohde,
+  ]);
 
   return { hakukohteet, hakija, postitoimipaikka };
 };
