@@ -111,6 +111,14 @@ export async function getHakukohteet(
   return response.data.map(mapToHakukohde);
 }
 
+export const getHakukohteetQueryOptions = (
+  hakuOid: string,
+  userPermissions: UserPermissions,
+) => ({
+  queryKey: ['getHakukohteet', hakuOid, userPermissions],
+  queryFn: () => getHakukohteet(hakuOid, userPermissions),
+});
+
 export async function getHakukohde(hakukohdeOid: string): Promise<Hakukohde> {
   const response = await client.get<HakukohdeResponseData>(
     `${configuration.hakukohdeUrl}/${hakukohdeOid}`,

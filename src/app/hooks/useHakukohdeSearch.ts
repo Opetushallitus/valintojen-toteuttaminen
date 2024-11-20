@@ -6,7 +6,7 @@ import { useQueryState } from 'nuqs';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY } from '@/app/lib/constants';
 import { useTranslations } from './useTranslations';
-import { getHakukohteet } from '../lib/kouta';
+import { getHakukohteetQueryOptions } from '../lib/kouta';
 import { useUserPermissions } from './useUserPermissions';
 import { DEFAULT_NUQS_OPTIONS } from './common';
 
@@ -31,10 +31,9 @@ export const useHakukohdeSearchResults = (hakuOid: string) => {
   const { translateEntity } = useTranslations();
   const { data: userPermissions } = useUserPermissions();
 
-  const { data: hakukohteet } = useSuspenseQuery({
-    queryKey: ['getHakukohteet', hakuOid, userPermissions],
-    queryFn: () => getHakukohteet(hakuOid, userPermissions),
-  });
+  const { data: hakukohteet } = useSuspenseQuery(
+    getHakukohteetQueryOptions(hakuOid, userPermissions),
+  );
 
   const { searchPhrase } = useHakukohdeSearchParams();
 

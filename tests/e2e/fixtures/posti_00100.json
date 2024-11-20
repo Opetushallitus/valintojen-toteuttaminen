@@ -1,0 +1,45 @@
+{
+    "koodiUri": "posti_00100",
+    "resourceUri": "https://virkailija.untuvaopintopolku.fi/koodisto-service/rest/codeelement/posti_00100",
+    "version": 0,
+    "versio": 2,
+    "koodisto": {
+        "koodistoUri": "posti",
+        "organisaatioOid": "1.2.246.562.10.00000000001",
+        "koodistoVersios": [
+            2
+        ]
+    },
+    "koodiArvo": "00100",
+    "paivitysPvm": "2018-11-19",
+    "paivittajaOid": null,
+    "voimassaAlkuPvm": "1990-01-01",
+    "voimassaLoppuPvm": null,
+    "tila": "LUONNOS",
+    "metadata": [
+        {
+            "nimi": "HELSINGFORS",
+            "kuvaus": "HELSINGFORS",
+            "lyhytNimi": "HELSINGFORS",
+            "kayttoohje": null,
+            "kasite": null,
+            "sisaltaaMerkityksen": null,
+            "eiSisallaMerkitysta": null,
+            "huomioitavaKoodi": null,
+            "sisaltaaKoodiston": null,
+            "kieli": "SV"
+        },
+        {
+            "nimi": "HELSINKI",
+            "kuvaus": "HELSINKI",
+            "lyhytNimi": "HELSINKI",
+            "kayttoohje": null,
+            "kasite": null,
+            "sisaltaaMerkityksen": null,
+            "eiSisallaMerkitysta": null,
+            "huomioitavaKoodi": null,
+            "sisaltaaKoodiston": null,
+            "kieli": "FI"
+        }
+    ]
+}

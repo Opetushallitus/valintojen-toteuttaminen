@@ -1,0 +1,428 @@
+{
+  "hakuoid": "1.2.246.562.29.00000000000000045102",
+  "hakemusoid": "1.2.246.562.11.00000000000001796027",
+  "hakukohteet": [
+    {
+      "hakuoid": "1.2.246.562.29.00000000000000045102",
+      "tarjoajaoid": "1.2.246.562.10.40842862605",
+      "oid": "1.2.246.562.20.00000000000000029096",
+      "valinnanvaihe": [
+        {
+          "jarjestysnumero": 0,
+          "valinnanvaiheoid": "1712237014366-8384505732518907254",
+          "hakuOid": "1.2.246.562.29.00000000000000045102",
+          "nimi": null,
+          "createdAt": 1731426819607,
+          "valintatapajonot": [
+            {
+              "valintatapajonooid": "17122370143975180146190386712096",
+              "nimi": "Harkinnanvaraisten käsittelyvaiheen valintatapajono",
+              "prioriteetti": 0,
+              "aloituspaikat": 0,
+              "siirretaanSijoitteluun": false,
+              "tasasijasaanto": "ARVONTA",
+              "eiVarasijatayttoa": false,
+              "kaikkiEhdonTayttavatHyvaksytaan": false,
+              "poissaOlevaTaytto": null,
+              "kaytetaanValintalaskentaa": true,
+              "valmisSijoiteltavaksi": false,
+              "jonosijat": [
+                {
+                  "jonosija": 1,
+                  "hakemusOid": "1.2.246.562.11.00000000000001796027",
+                  "hakijaOid": "1.2.246.562.24.54857401125",
+                  "jarjestyskriteerit": [
+                    {
+                      "arvo": null,
+                      "tila": "HYVAKSYTTAVISSA",
+                      "kuvaus": {},
+                      "prioriteetti": 0,
+                      "nimi": "Harkinnanvaraisten käsittelyvaihe 2022"
+                    }
+                  ],
+                  "prioriteetti": 1,
+                  "sukunimi": null,
+                  "etunimi": null,
+                  "harkinnanvarainen": false,
+                  "tuloksenTila": "HYVAKSYTTAVISSA",
+                  "historiat": null,
+                  "syotetytArvot": [],
+                  "funktioTulokset": [],
+                  "muokattu": false,
+                  "lastModified": null,
+                  "hylattyValisijoittelussa": false
+                }
+              ],
+              "aktiivinen": true,
+              "kaytetaanKokonaispisteita": null,
+              "hakija": [],
+              "varasijat": 0,
+              "varasijaTayttoPaivat": 0,
+              "varasijojaKaytetaanAlkaen": null,
+              "varasijojaTaytetaanAsti": null,
+              "tayttojono": null,
+              "sijoitteluajoId": null,
+              "lastModified": null,
+              "oid": "17122370143975180146190386712096"
+            }
+          ],
+          "valintakokeet": [],
+          "valinnanvaihe": 0,
+          "lastModified": null
+        },
+        {
+          "jarjestysnumero": 1,
+          "valinnanvaiheoid": "1712237014165-1267618629904892860",
+          "hakuOid": "1.2.246.562.29.00000000000000045102",
+          "nimi": null,
+          "createdAt": 1731426829768,
+          "valintatapajonot": [
+            {
+              "valintatapajonooid": "1712237014194-1820034543007743958",
+              "nimi": "Jono 2",
+              "prioriteetti": 0,
+              "aloituspaikat": 20,
+              "siirretaanSijoitteluun": true,
+              "tasasijasaanto": "ARVONTA",
+              "eiVarasijatayttoa": false,
+              "kaikkiEhdonTayttavatHyvaksytaan": false,
+              "poissaOlevaTaytto": null,
+              "kaytetaanValintalaskentaa": true,
+              "valmisSijoiteltavaksi": true,
+              "jonosijat": [
+                {
+                  "jonosija": 1,
+                  "hakemusOid": "1.2.246.562.11.00000000000001796027",
+                  "hakijaOid": "1.2.246.562.11.00000000000001796027",
+                  "jarjestyskriteerit": [
+                    {
+                      "arvo": 15,
+                      "tila": "HYVAKSYTTAVISSA",
+                      "kuvaus": {},
+                      "prioriteetti": 0,
+                      "nimi": "2. asteen peruskoulupohjainen peruskaava + Kielitaidon riittävyys - 2 aste, pk ja yo 2021"
+                    },
+                    {
+                      "arvo": 7,
+                      "tila": "HYVAKSYTTAVISSA",
+                      "kuvaus": {},
+                      "prioriteetti": 1,
+                      "nimi": "Hakutoivejärjestystasapistetilanne, 2 aste, pk ja yo 2016"
+                    },
+                    {
+                      "arvo": 6.2647,
+                      "tila": "HYVAKSYTTAVISSA",
+                      "kuvaus": {},
+                      "prioriteetti": 2,
+                      "nimi": "Kaikkien aineiden keskiarvo, PK 2019"
+                    },
+                    {
+                      "arvo": 7,
+                      "tila": "HYVAKSYTTAVISSA",
+                      "kuvaus": {},
+                      "prioriteetti": 3,
+                      "nimi": "Painotettavien arvosanojen keskiarvo 2016"
+                    }
+                  ],
+                  "prioriteetti": 1,
+                  "sukunimi": null,
+                  "etunimi": null,
+                  "harkinnanvarainen": false,
+                  "tuloksenTila": "HYVAKSYTTAVISSA",
+                  "historiat": null,
+                  "syotetytArvot": [],
+                  "funktioTulokset": [
+                    {
+                      "tunniste": "painotettavat_ka",
+                      "arvo": "7.0000",
+                      "nimiFi": "Painotettavien arvosanojen keskiarvo",
+                      "nimiSv": "Medeltalet av betonade vitsord",
+                      "nimiEn": "",
+                      "omaopintopolku": false
+                    },
+                    {
+                      "tunniste": "pohjakoulutus",
+                      "arvo": "6.0",
+                      "nimiFi": "Perusopetuksen tai lisäkoulutuksen suorittaminen",
+                      "nimiSv": "Genomfört grundläggande utbildning eller tilläggsutbildning",
+                      "nimiEn": "Perusopetuksen tai lisäkoulutuksen suorittaminen",
+                      "omaopintopolku": false
+                    },
+                    {
+                      "tunniste": "hakutoivejarjestys",
+                      "arvo": "2.0",
+                      "nimiFi": "Hakutoivejärjestys",
+                      "nimiSv": "Ansökningsmålsordning",
+                      "nimiEn": "",
+                      "omaopintopolku": false
+                    },
+                    {
+                      "tunniste": "koulumenestys_pk",
+                      "arvo": "4.0",
+                      "nimiFi": "Yleinen koulumenestys",
+                      "nimiSv": "Allmän skolframgång",
+                      "nimiEn": "Yleinen koulumenestys",
+                      "omaopintopolku": false
+                    },
+                    {
+                      "tunniste": "keskiarvo_pk",
+                      "arvo": "6.2647",
+                      "nimiFi": "Kaikkien aineiden keskiarvo",
+                      "nimiSv": "Medeltalet av alla ämnen",
+                      "nimiEn": "Kaikkien aineiden keskiarvo",
+                      "omaopintopolku": false
+                    },
+                    {
+                      "tunniste": "painotettavat_arvosanat",
+                      "arvo": "3.0",
+                      "nimiFi": "Painotettavat arvosanat",
+                      "nimiSv": "Betonade vitsord",
+                      "nimiEn": "",
+                      "omaopintopolku": false
+                    }
+                  ],
+                  "muokattu": false,
+                  "lastModified": null,
+                  "hylattyValisijoittelussa": false
+                }
+              ],
+              "aktiivinen": true,
+              "kaytetaanKokonaispisteita": null,
+              "hakija": [],
+              "varasijat": 0,
+              "varasijaTayttoPaivat": 0,
+              "varasijojaKaytetaanAlkaen": null,
+              "varasijojaTaytetaanAsti": null,
+              "tayttojono": null,
+              "sijoitteluajoId": null,
+              "lastModified": null,
+              "oid": "1712237014194-1820034543007743958"
+            }
+          ],
+          "valintakokeet": [],
+          "valinnanvaihe": 0,
+          "lastModified": null
+        }
+      ],
+      "hakukohdeRyhmatOids": [],
+      "prioriteetti": 0,
+      "kaikkiJonotSijoiteltu": true,
+      "harkinnanvaraisuus": false,
+      "hakijaryhma": []
+    },
+    {
+      "hakuoid": "1.2.246.562.29.00000000000000045102",
+      "tarjoajaoid": "1.2.246.562.10.40842862605",
+      "oid": "1.2.246.562.20.00000000000000045105",
+      "valinnanvaihe": [
+        {
+          "jarjestysnumero": 1,
+          "valinnanvaiheoid": "1709304299841-1495392252776170181",
+          "hakuOid": "1.2.246.562.29.00000000000000045102",
+          "nimi": null,
+          "createdAt": 1731426895783,
+          "valintatapajonot": [
+            {
+              "valintatapajonooid": "17093042998533736417074016063604",
+              "nimi": "Jono 2",
+              "prioriteetti": 0,
+              "aloituspaikat": 20,
+              "siirretaanSijoitteluun": true,
+              "tasasijasaanto": "ARVONTA",
+              "eiVarasijatayttoa": false,
+              "kaikkiEhdonTayttavatHyvaksytaan": false,
+              "poissaOlevaTaytto": null,
+              "kaytetaanValintalaskentaa": true,
+              "valmisSijoiteltavaksi": true,
+              "jonosijat": [
+                {
+                  "jonosija": 1,
+                  "hakemusOid": "1.2.246.562.11.00000000000002190092",
+                  "hakijaOid": "1.2.246.562.24.54857401125",
+                  "jarjestyskriteerit": [
+                    {
+                      "arvo": 13,
+                      "tila": "HYVAKSYTTAVISSA",
+                      "kuvaus": {},
+                      "prioriteetti": 0,
+                      "nimi": "2. asteen peruskoulupohjainen peruskaava + Kielitaidon riittävyys - 2 aste, pk ja yo 2021"
+                    },
+                    {
+                      "arvo": 6,
+                      "tila": "HYVAKSYTTAVISSA",
+                      "kuvaus": {},
+                      "prioriteetti": 1,
+                      "nimi": "Hakutoivejärjestystasapistetilanne, 2 aste, pk ja yo 2016"
+                    },
+                    {
+                      "arvo": 6.2647,
+                      "tila": "HYVAKSYTTAVISSA",
+                      "kuvaus": {},
+                      "prioriteetti": 2,
+                      "nimi": "Kaikkien aineiden keskiarvo, PK 2019"
+                    },
+                    {
+                      "arvo": 7,
+                      "tila": "HYVAKSYTTAVISSA",
+                      "kuvaus": {},
+                      "prioriteetti": 3,
+                      "nimi": "Painotettavien arvosanojen keskiarvo 2016"
+                    }
+                  ],
+                  "prioriteetti": 2,
+                  "sukunimi": null,
+                  "etunimi": null,
+                  "harkinnanvarainen": false,
+                  "tuloksenTila": "HYVAKSYTTAVISSA",
+                  "historiat": null,
+                  "syotetytArvot": [],
+                  "funktioTulokset": [
+                    {
+                      "tunniste": "painotettavat_ka",
+                      "arvo": "7.0000",
+                      "nimiFi": "Painotettavien arvosanojen keskiarvo",
+                      "nimiSv": "Medeltalet av betonade vitsord",
+                      "nimiEn": "",
+                      "omaopintopolku": false
+                    },
+                    {
+                      "tunniste": "pohjakoulutus",
+                      "arvo": "6.0",
+                      "nimiFi": "Perusopetuksen tai lisäkoulutuksen suorittaminen",
+                      "nimiSv": "Genomfört grundläggande utbildning eller tilläggsutbildning",
+                      "nimiEn": "Perusopetuksen tai lisäkoulutuksen suorittaminen",
+                      "omaopintopolku": false
+                    },
+                    {
+                      "tunniste": "hakutoivejarjestys",
+                      "arvo": "0.0",
+                      "nimiFi": "Hakutoivejärjestys",
+                      "nimiSv": "Ansökningsmålsordning",
+                      "nimiEn": "",
+                      "omaopintopolku": false
+                    },
+                    {
+                      "tunniste": "koulumenestys_pk",
+                      "arvo": "4.0",
+                      "nimiFi": "Yleinen koulumenestys",
+                      "nimiSv": "Allmän skolframgång",
+                      "nimiEn": "Yleinen koulumenestys",
+                      "omaopintopolku": false
+                    },
+                    {
+                      "tunniste": "keskiarvo_pk",
+                      "arvo": "6.2647",
+                      "nimiFi": "Kaikkien aineiden keskiarvo",
+                      "nimiSv": "Medeltalet av alla ämnen",
+                      "nimiEn": "Kaikkien aineiden keskiarvo",
+                      "omaopintopolku": false
+                    },
+                    {
+                      "tunniste": "painotettavat_arvosanat",
+                      "arvo": "3.0",
+                      "nimiFi": "Painotettavat arvosanat",
+                      "nimiSv": "Betonade vitsord",
+                      "nimiEn": "",
+                      "omaopintopolku": false
+                    }
+                  ],
+                  "muokattu": false,
+                  "lastModified": null,
+                  "hylattyValisijoittelussa": false
+                }
+              ],
+              "aktiivinen": true,
+              "kaytetaanKokonaispisteita": null,
+              "hakija": [],
+              "varasijat": 0,
+              "varasijaTayttoPaivat": 0,
+              "varasijojaKaytetaanAlkaen": null,
+              "varasijojaTaytetaanAsti": null,
+              "tayttojono": null,
+              "sijoitteluajoId": null,
+              "lastModified": null,
+              "oid": "17093042998533736417074016063604"
+            }
+          ],
+          "valintakokeet": [],
+          "valinnanvaihe": 0,
+          "lastModified": null
+        },
+        {
+          "jarjestysnumero": 0,
+          "valinnanvaiheoid": "17093043001992069035634704883086",
+          "hakuOid": "1.2.246.562.29.00000000000000045102",
+          "nimi": null,
+          "createdAt": 1731426888388,
+          "valintatapajonot": [
+            {
+              "valintatapajonooid": "1709304300265-3508347773035455417",
+              "nimi": "Jono 1",
+              "prioriteetti": 0,
+              "aloituspaikat": 0,
+              "siirretaanSijoitteluun": false,
+              "tasasijasaanto": "ARVONTA",
+              "eiVarasijatayttoa": false,
+              "kaikkiEhdonTayttavatHyvaksytaan": false,
+              "poissaOlevaTaytto": null,
+              "kaytetaanValintalaskentaa": true,
+              "valmisSijoiteltavaksi": false,
+              "jonosijat": [
+                {
+                  "jonosija": 1,
+                  "hakemusOid": "1.2.246.562.11.00000000000002190092",
+                  "hakijaOid": "1.2.246.562.24.54857401125",
+                  "jarjestyskriteerit": [
+                    {
+                      "arvo": null,
+                      "tila": "HYVAKSYTTAVISSA",
+                      "kuvaus": {},
+                      "prioriteetti": 0,
+                      "nimi": "Harkinnanvaraisten käsittelyvaihe 2022"
+                    }
+                  ],
+                  "prioriteetti": 2,
+                  "sukunimi": null,
+                  "etunimi": null,
+                  "harkinnanvarainen": false,
+                  "tuloksenTila": "HYVAKSYTTAVISSA",
+                  "historiat": null,
+                  "syotetytArvot": [],
+                  "funktioTulokset": [],
+                  "muokattu": false,
+                  "lastModified": null,
+                  "hylattyValisijoittelussa": false
+                }
+              ],
+              "aktiivinen": true,
+              "kaytetaanKokonaispisteita": null,
+              "hakija": [],
+              "varasijat": 0,
+              "varasijaTayttoPaivat": 0,
+              "varasijojaKaytetaanAlkaen": null,
+              "varasijojaTaytetaanAsti": null,
+              "tayttojono": null,
+              "sijoitteluajoId": null,
+              "lastModified": null,
+              "oid": "1709304300265-3508347773035455417"
+            }
+          ],
+          "valintakokeet": [],
+          "valinnanvaihe": 0,
+          "lastModified": null
+        }
+      ],
+      "hakukohdeRyhmatOids": [],
+      "prioriteetti": 0,
+      "kaikkiJonotSijoiteltu": true,
+      "harkinnanvaraisuus": false,
+      "hakijaryhma": []
+    }
+  ],
+  "hakijaOid": null,
+  "etunimi": null,
+  "sukunimi": null,
+  "koskiOpiskeluoikeudetJson": null,
+  "avaimet": [],
+  "avainMetatiedotDTO": []
+}

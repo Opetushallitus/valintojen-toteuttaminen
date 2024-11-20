@@ -24,6 +24,8 @@ export const configuration = {
   hakukohteetUrl: `${DOMAIN}/kouta-internal/hakukohde/search?all=false`,
   hakukohdeUrl: `${DOMAIN}/kouta-internal/hakukohde`,
   kooditUrl: `${DOMAIN}/koodisto-service/rest/codeelement/codes/`,
+  koodiUrl: (codeElementUri: string) =>
+    `${DOMAIN}/koodisto-service/rest/codeelement/latest/${codeElementUri}`,
   koutaInternalLogin: `${DOMAIN}/kouta-internal/auth/login`,
   asiointiKieliUrl: `${DOMAIN}/oppijanumerorekisteri-service/henkilo/current/asiointiKieli`,
   lokalisaatioUrl: `${DOMAIN}/lokalisointi/cxf/rest/v1/localisation?category=valintojen-toteuttaminen&locale=`,
@@ -44,8 +46,20 @@ export const configuration = {
   }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/haku/${hakuOid}/hakukohde/${hakukohdeOid}`,
   valintalaskentaKoostePalveluLogin: `${DOMAIN}/valintalaskentakoostepalvelu/cas/login`,
-  lasketutValinnanVaiheetUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
+  hakukohteenLasketutValinnanVaiheetUrl: ({
+    hakukohdeOid,
+  }: {
+    hakukohdeOid: string;
+  }) =>
     `${DOMAIN}/valintalaskenta-laskenta-service/resources/hakukohde/${hakukohdeOid}/valinnanvaihe`,
+  hakemuksenLasketutValinnanvaiheetUrl: ({
+    hakuOid,
+    hakemusOid,
+  }: {
+    hakuOid: string;
+    hakemusOid: string;
+  }) =>
+    `${DOMAIN}/valintalaskenta-laskenta-service/resources/hakemus/${hakuOid}/${hakemusOid}`,
   seurantaUrl: `${DOMAIN}/valintalaskenta-laskenta-service/resources/seuranta/yhteenveto/`,
   ohjausparametritUrl: `${DOMAIN}/ohjausparametrit-service/api/v1/rest/parametri`,
   hakukohdeHakijaryhmatUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
@@ -95,4 +109,12 @@ export const configuration = {
   setHarkinnanvaraisetTilatUrl: `${DOMAIN}/valintalaskenta-laskenta-service/resources/harkinnanvarainenhyvaksynta`,
   kayttaaValintalaskentaaUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintaperusteet/hakukohde/${hakukohdeOid}/kayttaaValintalaskentaa`,
+  hakemuksenSijoitteluajonTuloksetUrl: ({
+    hakuOid,
+    hakemusOid,
+  }: {
+    hakuOid: string;
+    hakemusOid: string;
+  }) =>
+    `${DOMAIN}/valinta-tulos-service/auth/sijoittelu/${hakuOid}/sijoitteluajo/latest/hakemus/${hakemusOid}`,
 } as const;

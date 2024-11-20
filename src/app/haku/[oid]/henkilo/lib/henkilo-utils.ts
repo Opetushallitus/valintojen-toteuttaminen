@@ -1,4 +1,5 @@
-import { Hakemus } from '@/app/lib/types/ataru-types';
-
-export const getHenkiloTitle = (henkilo: Hakemus) =>
+export const getHenkiloTitle = (henkilo: {
+  henkilotunnus: string;
+  hakijanNimi: string;
+}) =>
   `${henkilo.hakijanNimi} ${henkilo.henkilotunnus ? `(${henkilo.henkilotunnus})` : ''}`;

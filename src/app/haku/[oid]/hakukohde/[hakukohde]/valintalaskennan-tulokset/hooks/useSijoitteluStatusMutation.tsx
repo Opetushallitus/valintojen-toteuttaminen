@@ -1,9 +1,9 @@
 import useToaster from '@/app/hooks/useToaster';
+import { LaskettuValinnanVaiheModel } from '@/app/lib/types/laskenta-types';
 import {
-  LaskettuValinnanVaihe,
-  LaskettuValintatapajono,
-} from '@/app/lib/types/laskenta-types';
-import { muutaSijoittelunStatus } from '@/app/lib/valintalaskenta-service';
+  muutaSijoittelunStatus,
+  MuutaSijoittelunStatusProps,
+} from '@/app/lib/valintalaskenta-service';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export const useSijoitteluStatusMutation = (hakukohdeOid: string) => {
@@ -11,17 +11,11 @@ export const useSijoitteluStatusMutation = (hakukohdeOid: string) => {
   const { addToast } = useToaster();
 
   return useMutation({
-    mutationFn: async ({
-      jono,
-      status,
-    }: {
-      jono: LaskettuValintatapajono;
-      status: boolean;
-    }) => {
+    mutationFn: async ({ jono, status }: MuutaSijoittelunStatusProps) => {
       await muutaSijoittelunStatus({ jono, status });
       queryClient.setQueryData(
         ['getLasketutValinnanVaiheet', hakukohdeOid],
-        (vaiheet: Array<LaskettuValinnanVaihe>) =>
+        (vaiheet: Array<LaskettuValinnanVaiheModel>) =>
           vaiheet.map((vaihe) => ({
             ...vaihe,
             valintatapajonot: vaihe.valintatapajonot?.map((oldJono) => ({

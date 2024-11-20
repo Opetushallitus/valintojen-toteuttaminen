@@ -11,7 +11,7 @@ import {
   HakijaryhmanHakija,
   HakukohteenHakijaryhma,
   JarjestyskriteeriTila,
-  LaskettuValinnanVaihe,
+  LaskettuValinnanVaiheModel,
   SeurantaTiedot,
 } from './types/laskenta-types';
 import {
@@ -21,17 +21,64 @@ import {
   SijoittelunHakemus,
   SijoittelunTila,
 } from './types/sijoittelu-types';
-import { filter, flatMap, groupBy, indexBy, isDefined, pipe } from 'remeda';
+import {
+  filter,
+  flatMap,
+  groupBy,
+  indexBy,
+  isDefined,
+  mapValues,
+  pipe,
+  prop,
+} from 'remeda';
 import {
   HarkinnanvarainenTila,
   HarkinnanvaraisestiHyvaksytty,
 } from './types/harkinnanvaraiset-types';
 
-export const getLasketutValinnanVaiheet = async (hakukohdeOid: string) => {
-  const response = await client.get<Array<LaskettuValinnanVaihe>>(
-    configuration.lasketutValinnanVaiheetUrl({ hakukohdeOid }),
+export const getHakukohteenLasketutValinnanvaiheet = async (
+  hakukohdeOid: string,
+) => {
+  const response = await client.get<Array<LaskettuValinnanVaiheModel>>(
+    configuration.hakukohteenLasketutValinnanVaiheetUrl({ hakukohdeOid }),
   );
   return response.data;
+};
+
+export type HakemuksenValintalaskentaData = {
+  hakuoid: string;
+  hakemusoid: string;
+  hakijaOid: string;
+  hakukohteet: Array<{
+    tarjoajaoid: string;
+    oid: string;
+    prioriteetti: number;
+    hakukohdeRyhmaOids: Array<string>;
+    valinnanvaihe: Array<LaskettuValinnanVaiheModel>;
+    kaikkiJonotSijoiteltu: boolean;
+    harkinnanvaraisuus: boolean;
+    hakijaryhma: Array<unknown>;
+  }>;
+};
+
+export const getHakemuksenLasketutValinnanvaiheet = async ({
+  hakuOid,
+  hakemusOid,
+}: {
+  hakuOid: string;
+  hakemusOid: string;
+}) => {
+  const response = await client.get<HakemuksenValintalaskentaData>(
+    configuration.hakemuksenLasketutValinnanvaiheetUrl({
+      hakuOid,
+      hakemusOid,
+    }),
+  );
+  return pipe(
+    response.data.hakukohteet,
+    indexBy(prop('oid')),
+    mapValues(prop('valinnanvaihe')),
+  );
 };
 
 export const getLaskennanSeurantaTiedot = async (loadingUrl: string) => {
@@ -50,6 +97,11 @@ export const getLaskennanSeurantaTiedot = async (loadingUrl: string) => {
 type MuutaSijoitteluaResponse = {
   prioriteetti: number;
   [x: string]: string | number | boolean | null;
+};
+
+export type MuutaSijoittelunStatusProps = {
+  jono: Pick<LaskettuJonoWithHakijaInfo, 'oid' | 'prioriteetti'>;
+  status: boolean;
 };
 
 export const muutaSijoittelunStatus = async ({
@@ -102,12 +154,12 @@ export const getHakijaryhmat = async (
     tulokset?.valintatapajonot,
     filter(isDefined),
     flatMap((jono) => jono.hakemukset),
-    groupBy((a) => a.hakemusOid),
+    groupBy(prop('hakemusOid')),
   );
   const valintatapajonotSijoittelusta = pipe(
     tulokset?.valintatapajonot,
     filter(isDefined),
-    indexBy((j) => j.oid),
+    indexBy(prop('oid')),
   );
   const { data } = await client.get<
     Array<{

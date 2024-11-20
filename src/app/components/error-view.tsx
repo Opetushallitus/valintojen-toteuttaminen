@@ -18,9 +18,7 @@ const ErrorComponent = ({
   const { t } = useTranslations();
   return (
     <Stack spacing={1} sx={{ margin: 1 }} alignItems="flex-start">
-      {title && (
-        <OphTypography variant="h1">{t('virhe.palvelin')}</OphTypography>
-      )}
+      {title && <OphTypography variant="h1">{title}</OphTypography>}
       {message && <OphTypography component="div">{message}</OphTypography>}
       {retry && (
         <OphButton variant="contained" onClick={retry}>
@@ -57,7 +55,9 @@ export function ErrorView({
         title={t('virhe.palvelin')}
         message={
           <Stack spacing={1}>
-            <OphTypography>URL: {response.url}</OphTypography>
+            <OphTypography sx={{ overflowWrap: 'anywhere' }}>
+              URL: {response.url}
+            </OphTypography>
             <OphTypography>
               {t('virhe.virhekoodi')} {response.status}
             </OphTypography>
@@ -66,6 +66,8 @@ export function ErrorView({
         retry={reset}
       />
     );
+  } else if (error?.digest === 'NEXT_NOT_FOUND') {
+    notFound();
   } else if (error instanceof PermissionError) {
     return <ErrorComponent message={error.message} />;
   } else {

@@ -94,7 +94,10 @@ export type SijoittelunHakemusValintatiedoilla = {
 };
 
 export const isHyvaksyttyHarkinnanvaraisesti = (
-  hakemus: SijoittelunHakemusValintatiedoilla,
+  hakemus: Pick<
+    SijoittelunHakemusValintatiedoilla,
+    'tila' | 'hyvaksyttyHarkinnanvaraisesti'
+  >,
 ): boolean =>
   hakemus.hyvaksyttyHarkinnanvaraisesti &&
   [SijoittelunTila.HYVAKSYTTY, SijoittelunTila.VARASIJALTA_HYVAKSYTTY].includes(

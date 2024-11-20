@@ -18,7 +18,9 @@ export enum Hakukelpoisuus {
   TARKASTAMATTA = 'hakemus.tarkastamatta',
 }
 
-export type Hakemus = HakijaInfo & {
+export type Hakemus = HakijaInfo & HakutoiveInfo;
+
+export type HakutoiveInfo = {
   hakutoiveNumero: number;
   hakukelpoisuus: Hakukelpoisuus;
   maksuvelvollisuus: Maksuvelvollisuus;

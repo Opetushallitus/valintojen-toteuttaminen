@@ -3,7 +3,7 @@
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { TabContainer } from '../components/tab-container';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
-import { Box, CircularProgress } from '@mui/material';
+import { Box } from '@mui/material';
 import { useSuspenseQueries } from '@tanstack/react-query';
 import { getHakijaryhmat } from '@/app/lib/valintalaskenta-service';
 import { isEmpty } from '@/app/lib/common';
@@ -12,6 +12,7 @@ import { PageSizeSelector } from '@/app/components/table/page-size-selector';
 import { useHakijaryhmatSearchParams } from './hooks/useHakijaryhmatSearch';
 import { HakijaryhmatControls } from './components/hakijaryhmat-controls';
 import { NoResults } from '@/app/components/no-results';
+import { FullClientSpinner } from '@/app/components/client-spinner';
 
 type HakijaryhmatContentParams = {
   hakuOid: string;
@@ -82,15 +83,9 @@ export default function HakijaryhmatPage({
 }: {
   params: { oid: string; hakukohde: string };
 }) {
-  const { t } = useTranslations();
-
   return (
     <TabContainer>
-      <QuerySuspenseBoundary
-        suspenseFallback={
-          <CircularProgress aria-label={t('yleinen.ladataan')} />
-        }
-      >
+      <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
         <HakijaryhmatContent
           hakuOid={params.oid}
           hakukohdeOid={params.hakukohde}

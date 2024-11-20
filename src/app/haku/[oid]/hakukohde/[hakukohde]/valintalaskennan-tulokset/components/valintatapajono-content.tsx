@@ -1,6 +1,6 @@
 'use client';
 import { Box } from '@mui/material';
-import { LaskettuValinnanVaihe } from '@/app/lib/types/laskenta-types';
+import { LaskettuValinnanVaiheModel } from '@/app/lib/types/laskenta-types';
 import { AccordionBox } from '@/app/components/accordion-box';
 import { useJonosijatSearch } from '@/app/hooks/useJonosijatSearch';
 import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
@@ -15,7 +15,7 @@ import {
   LaskettuJonoWithHakijaInfo,
 } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { getJonoNimi } from '../lib/get-jono-nimi';
+import { getValintatapaJonoNimi } from '@/app/lib/get-valintatapa-jono-nimi';
 
 const PaginatedValintatapajonoTable = ({
   label,
@@ -75,14 +75,14 @@ export const ValintatapajonoContent = ({
   jono,
 }: {
   hakukohdeOid: string;
-  valinnanVaihe: LaskettuValinnanVaihe;
+  valinnanVaihe: Omit<LaskettuValinnanVaiheModel, 'valintatapajonot'>;
   jono: LaskettuJonoWithHakijaInfo;
 }) => {
   const { t } = useTranslations();
   const label =
     t('yleinen.sivutus') +
     ': ' +
-    getJonoNimi({
+    getValintatapaJonoNimi({
       valinnanVaiheNimi: valinnanVaihe.nimi,
       jonoNimi: jono.nimi,
     });

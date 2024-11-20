@@ -3,7 +3,7 @@ import { useDebounce } from '@/app/hooks/useDebounce';
 import { useQueryState } from 'nuqs';
 import { useQuery } from '@tanstack/react-query';
 import { HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY } from '@/app/lib/constants';
-import { getHakemukset } from '@/app/lib/ataru';
+import { getHakijat } from '@/app/lib/ataru';
 import { DEFAULT_NUQS_OPTIONS } from '@/app/hooks/common';
 import { EMPTY_ARRAY } from '@/app/lib/common';
 
@@ -64,7 +64,7 @@ export const useHenkiloSearchResults = ({ hakuOid }: { hakuOid: string }) => {
       henkilotunnus,
     ],
     queryFn: () =>
-      getHakemukset({ hakuOid, name, hakemusOids, henkiloOid, henkilotunnus }),
+      getHakijat({ hakuOid, name, hakemusOids, henkiloOid, henkilotunnus }),
     enabled: searchPhrase?.length >= 3,
   });
 };

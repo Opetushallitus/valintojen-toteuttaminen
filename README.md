@@ -6,6 +6,14 @@ Valintojen toteuttamisen käyttöliittymä
 
 ## Lokaaliajo
 
+Voit käyttää lokaaliajossa [mkcert](https://github.com/FiloSottile/mkcert)-työkalulla luotuja sertifikaatteja. Luo sertifikaatit ajamalla komento:
+
+`npm run create-dev-certs`
+
+ja ota sertifikaatit käyttöön node.js:ssä
+
+`npm run node-extra-ca-certs`
+
 Asenna riippuvuudet komennolla:
 
 `npm ci`

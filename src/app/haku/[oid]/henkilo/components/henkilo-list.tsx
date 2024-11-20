@@ -2,7 +2,7 @@
 
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { OphTypography } from '@opetushallitus/oph-design-system';
-import { useHenkiloSearchResults } from '../hooks/useHenkiloSearchResults';
+import { useHenkiloSearchResults } from '../hooks/useHenkiloSearch';
 import { FullClientSpinner } from '@/app/components/client-spinner';
 import { ErrorView } from '@/app/components/error-view';
 import Link, { LinkProps } from 'next/link';
@@ -60,6 +60,7 @@ export const HenkiloList = ({
   } = useHenkiloSearchResults({ hakuOid });
 
   const selectedHakemusOid = useSelectedHakemusOid();
+
   switch (true) {
     case isLoading:
       return <FullClientSpinner />;

@@ -2,7 +2,7 @@
 
 import { TabContainer } from '../components/tab-container';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
-import { ClientSpinner } from '@/app/components/client-spinner';
+import { FullClientSpinner } from '@/app/components/client-spinner';
 import { PisteSyottoControls } from './components/pistesyotto-controls';
 import { Box } from '@mui/material';
 import { PisteSyottoForm } from './components/pistesyotto-form';
@@ -56,7 +56,7 @@ export default function PisteSyottoPage({
   );
   return (
     <TabContainer>
-      <QuerySuspenseBoundary suspenseFallback={<ClientSpinner />}>
+      <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
         <PisteSyottoContent
           hakuOid={params.oid}
           hakukohdeOid={params.hakukohde}

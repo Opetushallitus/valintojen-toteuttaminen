@@ -51,7 +51,8 @@
   "tuloksenTila": {
     "HYVAKSYTTAVISSA": "Hyväksyttävissä",
     "HYLATTY": "Hylätty",
-    "MAARITTELEMATON": "Määrittelemätön"
+    "MAARITTELEMATON": "Määrittelemätön",
+    "HYVAKSYTTY_HARKINNANVARAISESTI": "Hyväksytty harkinnanvaraisesti"
   },
   "valintakoe": {
     "osallistumisenTila": {
@@ -374,6 +375,21 @@
     "lahiosoite": "Lähiosoite",
     "hae-henkilo": "Hae henkilöitä",
     "hae-helpertext": "Hae: Etunimi, sukunimi, hakemus-oid tai henkilö-oid",
-    "navigaatio": "Henkilövalitsin"
+    "navigaatio": "Henkilövalitsin",
+    "valintalaskenta-tehty": "Valintalaskenta tehty",
+    "taulukko": {
+      "valintalaskenta": "Valintalaskenta",
+      "sijoittelu": "Sijoittelu",
+      "hakutoive": "Hakutoive",
+      "valintatapajono": "Valintatapajono",
+      "pisteet": "Pisteet",
+      "valintatieto": "Vastaanottotieto",
+      "tila": "Tila",
+      "vastaanottotieto": "Vastaanottotieto",
+      "nayta-hakutoiveen-tiedot": "Näytä hakutoiveen tiedot",
+      "piilota-hakutoiveen-tiedot": "Piilota hakutoiveen tiedot",
+      "ei-valintalaskennan-tuloksia": "Ei valintalaskennan tuloksia",
+      "ei-sijoittelun-tuloksia": "Ei sijoittelun tuloksia"
+    }
   }
 }
