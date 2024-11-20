@@ -3,7 +3,6 @@
 import { useTranslations } from '@/app/hooks/useTranslations';
 import {
   Box,
-  Link,
   styled,
   Table,
   TableBody,
@@ -13,7 +12,6 @@ import {
 } from '@mui/material';
 import { DEFAULT_BOX_BORDER } from '@/app/lib/constants';
 import { Hakukohde } from '@/app/lib/types/kouta-types';
-import { HakukohdeTabLink } from '@/app/haku/[oid]/hakukohde/components/hakukohde-tab-link';
 import {
   OphButton,
   ophColors,
@@ -21,7 +19,7 @@ import {
 } from '@opetushallitus/oph-design-system';
 import { isEmpty, isNonNullish } from 'remeda';
 import { useState } from 'react';
-import { ChevronRight } from '@mui/icons-material';
+import { ChevronRight, Edit } from '@mui/icons-material';
 import { LasketutValinnanvaiheet } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
 import { getValintatapaJonoNimi } from '@/app/lib/get-valintatapa-jono-nimi';
@@ -31,6 +29,11 @@ import {
   SijoittelunTila,
 } from '@/app/lib/types/sijoittelu-types';
 import { TFunction } from 'i18next';
+import { showModal } from '@/app/components/global-modal';
+import { MuokkaaValintalaskentaaModalDialog } from './muokkaa-valintalaskentaa-modal-dialog';
+import { HakijaInfo } from '@/app/lib/types/ataru-types';
+import { getHenkiloTitle } from '@/app/lib/henkilo-utils';
+import { HakutoiveTitle } from './hakutoive-title';
 
 type Tulokset = {
   sijoittelunTulokset: SijoitteluajonTulosHakutoive;
@@ -61,6 +64,20 @@ const HakutoiveInfoRow = styled(TableRow)({
   },
 });
 
+const MuokkaaButton = ({ onClick }: { onClick: () => void }) => {
+  const { t } = useTranslations();
+  return (
+    <OphButton
+      sx={{ paddingX: 0 }}
+      variant="text"
+      startIcon={<Edit />}
+      onClick={onClick}
+    >
+      {t('yleinen.muokkaa')}
+    </OphButton>
+  );
+};
+
 const getHakemuksenTila = (
   hakemus: {
     tila: SijoittelunTila;
@@ -75,7 +92,14 @@ const getHakemuksenTila = (
 const HakutoiveContent = ({
   valinnanvaiheet,
   sijoittelunTulokset,
-}: Tulokset) => {
+  hakija,
+  hakukohde,
+  hakuOid,
+}: Tulokset & {
+  hakija: HakijaInfo;
+  hakukohde: Hakukohde;
+  hakuOid: string;
+}) => {
   const { t } = useTranslations();
   return isEmpty(valinnanvaiheet ?? []) ? (
     <HakutoiveInfoRow>
@@ -109,7 +133,19 @@ const HakutoiveContent = ({
               </div>
             </TC>
             <TC>{jonosija.pisteet}</TC>
-            <TC>{t(`tuloksenTila.${jonosija.tuloksenTila}`)}</TC>
+            <TC>
+              <div>{t(`tuloksenTila.${jonosija.tuloksenTila}`)}</div>{' '}
+              <MuokkaaButton
+                onClick={() =>
+                  showModal(MuokkaaValintalaskentaaModalDialog, {
+                    hakijanNimi: getHenkiloTitle(hakija),
+                    valintatapajono: jono,
+                    hakukohde,
+                    hakuOid,
+                  })
+                }
+              />
+            </TC>
             {sijoittelunTulokset ? (
               <>
                 <TC>
@@ -120,7 +156,12 @@ const HakutoiveContent = ({
                         : '')}
                 </TC>
                 <TC>
-                  {t(`vastaanottotila.${sijoittelunTulokset.vastaanottotieto}`)}
+                  <div>
+                    {t(
+                      `vastaanottotila.${sijoittelunTulokset.vastaanottotieto}`,
+                    )}
+                  </div>
+                  <MuokkaaButton onClick={() => {}} />
                 </TC>
               </>
             ) : (
@@ -139,12 +180,14 @@ const HakutoiveTableAccordion = ({
   hakuOid,
   hakukohde,
   hakutoiveNumero,
+  hakija,
 }: {
   hakuOid: string;
   hakukohde: HakukohdeTuloksilla;
   hakutoiveNumero: number;
+  hakija: HakijaInfo;
 }) => {
-  const { t, translateEntity } = useTranslations();
+  const { t } = useTranslations();
 
   const { valinnanvaiheet, sijoittelunTulokset } = hakukohde;
 
@@ -193,20 +236,11 @@ const HakutoiveTableAccordion = ({
                 aria-expanded={isOpen ? 'true' : 'false'}
               />
               <Box id={headerId} sx={{ color: 'black' }}>
-                <span>
-                  {hakutoiveNumero}
-                  {'. '}
-                  {translateEntity(hakukohde.nimi)}
-                  {' \u2013 '}
-                </span>
-                <Link
-                  component={HakukohdeTabLink}
+                <HakutoiveTitle
+                  hakutoiveNumero={hakutoiveNumero}
                   hakuOid={hakuOid}
-                  hakukohdeOid={hakukohde.oid}
-                  tabRoute="perustiedot"
-                >
-                  {translateEntity(hakukohde.jarjestyspaikkaHierarkiaNimi)}
-                </Link>
+                  hakukohde={hakukohde}
+                />
               </Box>
             </AccordionHeader>
           </TC>
@@ -223,6 +257,9 @@ const HakutoiveTableAccordion = ({
         <HakutoiveContent
           valinnanvaiheet={valinnanvaiheet}
           sijoittelunTulokset={sijoittelunTulokset}
+          hakija={hakija}
+          hakukohde={hakukohde}
+          hakuOid={hakuOid}
         />
       </TableBody>
     </>
@@ -238,9 +275,11 @@ const StyledTableHead = styled(TableHead)(({ theme }) => ({
 export const HakutoiveetTable = ({
   hakuOid,
   hakukohteet,
+  hakija,
 }: {
   hakuOid: string;
   hakukohteet: Array<HakukohdeTuloksilla>;
+  hakija: HakijaInfo;
 }) => {
   const { t } = useTranslations();
   return (
@@ -270,6 +309,7 @@ export const HakutoiveetTable = ({
             hakuOid={hakuOid}
             hakukohde={hakukohde}
             hakutoiveNumero={index + 1}
+            hakija={hakija}
           />
         ))}
       </Table>

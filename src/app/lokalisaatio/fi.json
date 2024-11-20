@@ -35,7 +35,8 @@
     "poista-valinta": "Poista valinta",
     "valitse-kaikki": "Valitse kaikki",
     "tuo-taulukkolaskennasta": "Tuo taulukkolaskennasta",
-    "sulje": "Sulje"
+    "sulje": "Sulje",
+    "muokkaa": "Muokkaa"
   },
   "haku-tabs": {
     "navigaatio": "Haun näkymävalitsin",
@@ -383,13 +384,19 @@
       "hakutoive": "Hakutoive",
       "valintatapajono": "Valintatapajono",
       "pisteet": "Pisteet",
-      "valintatieto": "Vastaanottotieto",
+      "valintatieto": "Valintatieto",
       "tila": "Tila",
       "vastaanottotieto": "Vastaanottotieto",
       "nayta-hakutoiveen-tiedot": "Näytä hakutoiveen tiedot",
       "piilota-hakutoiveen-tiedot": "Piilota hakutoiveen tiedot",
       "ei-valintalaskennan-tuloksia": "Ei valintalaskennan tuloksia",
-      "ei-sijoittelun-tuloksia": "Ei sijoittelun tuloksia"
-    }
+      "ei-sijoittelun-tuloksia": "Ei sijoittelun tuloksia",
+      "hakija": "Hakija",
+      "jarjestyskriteeri": "Järjestyskriteeri",
+      "muokkauksen-syy": "Muokkauksen syy (näkyy hakijalle)"
+    },
+    "muokkaa-valintalaskentaa": "Muokkaa valintalaskentaa",
+    "muokkaa-vastaanottotietoa": "Muokkaa vastaanottotietoa",
+    "poista-muokkaus": "Poista muokkaus"
   }
 }
