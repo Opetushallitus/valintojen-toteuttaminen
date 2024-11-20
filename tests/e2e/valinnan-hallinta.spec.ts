@@ -33,7 +33,7 @@ test('displays valinnanvaiheet', async ({ page }) => {
 
 test('starts laskenta', async ({ page }) => {
   await page.route(
-    '*/**/valintalaskentakoostepalvelu/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000045102/tyyppi/HAKUKOHDE/whitelist/true**',
+    '*/**/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000045102/tyyppi/HAKUKOHDE/whitelist/true**',
     async (route) => {
       const started = {
         lisatiedot: {
@@ -70,7 +70,7 @@ test('starts laskenta', async ({ page }) => {
 
 test('shows success toast when laskenta completes', async ({ page }) => {
   await page.route(
-    '*/**/valintalaskentakoostepalvelu/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000045102/tyyppi/HAKUKOHDE/whitelist/true**',
+    '*/**/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000045102/tyyppi/HAKUKOHDE/whitelist/true**',
     async (route) => {
       const started = {
         lisatiedot: {
@@ -98,7 +98,7 @@ test('shows success toast when laskenta completes', async ({ page }) => {
     },
   );
   await page.route(
-    '*/**/valintalaskentakoostepalvelu/resources/valintalaskentakerralla/status/12345abs/yhteenveto',
+    '*/**/resources/valintalaskentakerralla/status/12345abs/yhteenveto',
     async (route) => {
       await route.fulfill({
         json: {
@@ -124,7 +124,7 @@ test('shows success toast when laskenta completes', async ({ page }) => {
 
 test('starting laskenta causes error', async ({ page }) => {
   await page.route(
-    '*/**/valintalaskentakoostepalvelu/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000045102/tyyppi/HAKUKOHDE/whitelist/true**',
+    '*/**/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000045102/tyyppi/HAKUKOHDE/whitelist/true**',
     async (route) => {
       await route.fulfill({ status: 500, body: 'Unknown error' });
     },

@@ -87,7 +87,7 @@ export const kaynnistaLaskenta = async (
 ): Promise<LaskentaStart> => {
   const laskentaUrl = formSearchParamsForStartLaskenta({
     laskentaUrl: new URL(
-      `${configuration.valintalaskentaKoostePalveluUrl}valintalaskentakerralla/haku/${haku.oid}/tyyppi/HAKUKOHDE/whitelist/true?`,
+      `${configuration.valintalaskentaServiceUrl}valintalaskentakerralla/haku/${haku.oid}/tyyppi/HAKUKOHDE/whitelist/true?`,
     ),
     haku,
     hakukohde,
@@ -114,7 +114,7 @@ export const kaynnistaLaskentaHakukohteenValinnanvaiheille = async (
 ): Promise<LaskentaStart> => {
   const laskentaUrl = formSearchParamsForStartLaskenta({
     laskentaUrl: new URL(
-      `${configuration.valintalaskentaKoostePalveluUrl}valintalaskentakerralla/haku/${haku.oid}/tyyppi/HAKUKOHDE/whitelist/true?`,
+      `${configuration.valintalaskentaServiceUrl}valintalaskentakerralla/haku/${haku.oid}/tyyppi/HAKUKOHDE/whitelist/true?`,
     ),
     haku,
     hakukohde,
@@ -140,7 +140,7 @@ export const getLaskennanTilaHakukohteelle = async (
       ilmoitukset: [{ otsikko: string; tyyppi: string }] | null;
     }>;
   }>(
-    `${configuration.valintalaskentaKoostePalveluUrl}valintalaskentakerralla/status/${loadingUrl}/yhteenveto`,
+    `${configuration.valintalaskentaServiceUrl}valintalaskentakerralla/status/${loadingUrl}/yhteenveto`,
   );
   return response.data?.hakukohteet
     ?.filter((hk) => hk.ilmoitukset?.some((i) => i.tyyppi === 'VIRHE'))
