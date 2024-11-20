@@ -14,7 +14,7 @@ import useToaster from '@/app/hooks/useToaster';
 import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 import {
-  muokkaaVastaanottotietoa,
+  saveValinnanTulokset,
   SijoitteluajonTulosHakutoive,
 } from '@/app/lib/valinta-tulos-service';
 import { LaskettuJono } from '@/app/hooks/useLasketutValinnanVaiheet';
@@ -66,14 +66,20 @@ const useVastaanottotietoMutation = ({
 
   return useMutation({
     mutationFn: async (params: MuokkausParams) => {
-      await muokkaaVastaanottotietoa(new Date().toUTCString(), {
-        hakemusOid,
-        hakukohdeOid,
+      await saveValinnanTulokset({
         valintatapajonoOid,
-        henkiloOid,
-        vastaanottotila: params.vastaanottotieto,
-        valinnantila: params.valinnantila,
-        ilmoittautumistila: params.ilmoittautumistila,
+        lastModified: new Date().toUTCString(),
+        tulokset: [
+          {
+            hakukohdeOid,
+            valintatapajonoOid,
+            henkiloOid,
+            hakemusOid,
+            valinnantila: params.valinnantila,
+            vastaanottotila: params.vastaanottotieto,
+            ilmoittautumistila: params.ilmoittautumistila,
+          },
+        ],
       });
     },
     onError: (e) => {

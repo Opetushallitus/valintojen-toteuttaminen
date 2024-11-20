@@ -365,13 +365,60 @@ export const saveMaksunTilanMuutokset = async (
   }
 };
 
+type ValinnanTulos = {
+  hakukohdeOid: string;
+  valintatapajonoOid: string;
+  hakemusOid: string;
+  henkiloOid: string;
+  vastaanottotila: VastaanottoTila;
+  valinnantila: string;
+  ilmoittautumistila: IlmoittautumisTila;
+  julkaistavissa?: boolean;
+  ehdollisestiHyvaksyttavissa?: boolean;
+  ehdollisenHyvaksymisenEhtoKoodi?: string | null;
+  ehdollisenHyvaksymisenEhtoFI?: string | null;
+  ehdollisenHyvaksymisenEhtoSV?: string | null;
+  ehdollisenHyvaksymisenEhtoEN?: string | null;
+  hyvaksyttyVarasijalta?: boolean;
+  hyvaksyPeruuntunut?: boolean;
+};
+
+export const saveValinnanTulokset = async ({
+  valintatapajonoOid,
+  lastModified,
+  tulokset,
+}: {
+  valintatapajonoOid: string;
+  lastModified: string;
+  tulokset: Array<ValinnanTulos>;
+}) => {
+  const results = await client.patch<
+    Array<SijoitteluAjonTuloksetPatchResponse>
+  >(
+    `${configuration.valintaTulosServiceUrl}valinnan-tulos/${valintatapajonoOid}`,
+    tulokset,
+    { headers: { 'X-If-Unmodified-Since': lastModified } },
+  );
+
+  const { data } = results;
+
+  if (Array.isArray(data) && data.length > 0) {
+    throw new OphApiError<ValintaStatusUpdateErrorResult[]>(
+      results,
+      'virhe.tallennus',
+    );
+  }
+
+  return data;
+};
+
 export const saveSijoitteluAjonTulokset = async (
   valintatapajonoOid: string,
   hakukohdeOid: string,
   lastModified: string,
   hakemukset: SijoittelunHakemusValintatiedoilla[],
 ) => {
-  const hakemuksetValintatiedoilla = hakemukset.map((h) => {
+  const valintaTulokset = hakemukset.map((h) => {
     return {
       hakukohdeOid,
       valintatapajonoOid,
@@ -390,6 +437,13 @@ export const saveSijoitteluAjonTulokset = async (
       hyvaksyPeruuntunut: h.hyvaksyPeruuntunut,
     };
   });
+
+  await saveValinnanTulokset({
+    valintatapajonoOid,
+    lastModified,
+    tulokset: valintaTulokset,
+  });
+
   const muuttuneetKirjeet = hakemukset.map((h) => {
     return {
       henkiloOid: h.hakijaOid,
@@ -397,23 +451,6 @@ export const saveSijoitteluAjonTulokset = async (
       lahetetty: h.hyvaksymiskirjeLahetetty ?? null,
     };
   });
-  const results = await client.patch<
-    Array<SijoitteluAjonTuloksetPatchResponse>
-  >(
-    `${configuration.valintaTulosServiceUrl}valinnan-tulos/${valintatapajonoOid}`,
-    hakemuksetValintatiedoilla,
-    { headers: { 'X-If-Unmodified-Since': lastModified } },
-  );
-
-  const { data } = results;
-
-  if (Array.isArray(data) && data.length > 0) {
-    throw new OphApiError<ValintaStatusUpdateErrorResult[]>(
-      results,
-      'virhe.tallennus',
-    );
-  }
-
   await client.post<unknown>(
     `${configuration.valintaTulosServiceUrl}hyvaksymiskirje`,
     muuttuneetKirjeet,
@@ -426,37 +463,14 @@ export const hyvaksyValintaEsitys = async (valintatapajonoOid: string) => {
     {},
   );
 };
-type ValintatapajonoTiedot = {
-  hakukohdeOid: string;
-  valintatapajonoOid: string;
-  hakemusOid: string;
-  henkiloOid: string;
-  vastaanottotila: VastaanottoTila;
-  valinnantila: string;
-  julkaistavissa?: boolean;
-  ilmoittautumistila: IlmoittautumisTila;
-  ehdollisestiHyvaksyttavissa?: boolean;
-  ehdollisenHyvaksymisenEhtoKoodi?: string | null;
-  ehdollisenHyvaksymisenEhtoFI?: string | null;
-  ehdollisenHyvaksymisenEhtoSV?: string | null;
-  ehdollisenHyvaksymisenEhtoEN?: string | null;
-  hyvaksyttyVarasijalta?: boolean;
-};
-export const muokkaaVastaanottotietoa = async (
-  lastModified: string,
-  jonoTiedot: ValintatapajonoTiedot,
-) => {
-  const { data } = await client.patch<null>(
-    configuration.vastaanottotietoMuokkausUrl({
-      valintatapajonoOid: jonoTiedot.valintatapajonoOid,
-    }),
-    [jonoTiedot],
-    {
-      headers: {
-        'X-If-Unmodified-Since': lastModified,
-      },
-    },
-  );
 
-  return data;
+export const getValinnanTulokset = async ({
+  hakemusOid,
+}: {
+  hakemusOid: string;
+}) => {
+  const { data } = await client.get<Array<{ valinnantulos: ValinnanTulos }>>(
+    configuration.hakemuksenValinnanTuloksetUrl({ hakemusOid }),
+  );
+  return data.map(prop('valinnantulos'));
 };
