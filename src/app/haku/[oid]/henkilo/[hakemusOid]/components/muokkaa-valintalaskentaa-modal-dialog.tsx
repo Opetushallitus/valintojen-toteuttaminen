@@ -6,9 +6,9 @@ import {
 import { OphModalDialog } from '@/app/components/oph-modal-dialog';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { OphButton, OphSelect } from '@opetushallitus/oph-design-system';
-import { FormLabel, Grid2, Stack } from '@mui/material';
+import { Box, FormLabel, Stack } from '@mui/material';
 import { OphInput } from '@/app/components/form/oph-input';
-import { useEffect, useId, useState } from 'react';
+import React, { useEffect, useId, useState } from 'react';
 import { LaskettuJono } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { Jarjestyskriteeri } from '@/app/lib/types/laskenta-types';
 import { Hakukohde } from '@/app/lib/types/kouta-types';
@@ -27,6 +27,7 @@ import {
 } from '@/app/lib/valintalaskenta-service';
 import { FullClientSpinner } from '@/app/components/client-spinner';
 import { isEmpty } from 'remeda';
+import { styled } from '@/app/lib/theme';
 
 const ModalActions = ({
   onClose,
@@ -64,28 +65,24 @@ export const InlineFormControl = ({
   label,
   renderInput,
 }: {
-  label: string;
+  label: React.ReactNode;
   renderInput: (props: { labelId: string }) => React.ReactNode;
 }) => {
   const id = useId();
   const labelId = `InlineFormControl-${id}-label`;
   return (
     <>
-      <Grid2 size={2} sx={{ marginTop: '12px' }}>
-        <FormLabel id={labelId}>{label}</FormLabel>
-      </Grid2>
-      <Grid2
-        size={10}
+      <FormLabel id={labelId}>{label}</FormLabel>
+      <Box
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          minHeight: '48px',
           justifyContent: 'center',
           alignItems: 'flex-start',
         }}
       >
         {renderInput({ labelId })}
-      </Grid2>
+      </Box>
     </>
   );
 };
@@ -95,6 +92,10 @@ enum TuloksenTila {
   HYLATTY = 'HYLATTY',
   MAARITTELEMATON = 'MAARITTELEMATON',
 }
+
+const PaddedLabel = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(1.5, 0),
+}));
 
 const JarjestyskriteeriFields = ({
   value,
@@ -113,7 +114,7 @@ const JarjestyskriteeriFields = ({
   return (
     <>
       <InlineFormControl
-        label={t('henkilo.taulukko.pisteet')}
+        label={<PaddedLabel>{t('henkilo.taulukko.pisteet')}</PaddedLabel>}
         renderInput={() => (
           <OphInput
             value={value.arvo}
@@ -122,7 +123,7 @@ const JarjestyskriteeriFields = ({
         )}
       />
       <InlineFormControl
-        label={t('henkilo.taulukko.valintatieto')}
+        label={<PaddedLabel>{t('henkilo.taulukko.valintatieto')}</PaddedLabel>}
         renderInput={({ labelId }) => (
           <OphSelect
             sx={{ width: '100%' }}
@@ -134,7 +135,9 @@ const JarjestyskriteeriFields = ({
         )}
       />
       <InlineFormControl
-        label={t('henkilo.taulukko.muokkauksen-syy')}
+        label={
+          <PaddedLabel>{t('henkilo.taulukko.muokkauksen-syy')}</PaddedLabel>
+        }
         renderInput={({ labelId }) => (
           <OphInput
             multiline={true}
@@ -316,7 +319,15 @@ export const MuokkaaValintalaskentaaModalDialog = createModal<{
       {isUpdatePending || isDeletePending ? (
         <FullClientSpinner />
       ) : (
-        <Grid2 container rowSpacing={2} sx={{ paddingY: 4 }}>
+        <Box
+          sx={{
+            display: 'grid',
+            paddingY: 2,
+            gridGap: (theme) => theme.spacing(2),
+            gridTemplateColumns: '170px 1fr',
+            placeItems: 'start stretch',
+          }}
+        >
           <InlineFormControl
             label={t('henkilo.taulukko.hakija')}
             renderInput={({ labelId }) => (
@@ -342,7 +353,11 @@ export const MuokkaaValintalaskentaaModalDialog = createModal<{
             )}
           />
           <InlineFormControl
-            label={t('henkilo.taulukko.jarjestyskriteeri')}
+            label={
+              <PaddedLabel>
+                {t('henkilo.taulukko.jarjestyskriteeri')}
+              </PaddedLabel>
+            }
             renderInput={({ labelId }) => (
               <OphSelect
                 sx={{ width: '100%' }}
@@ -359,7 +374,7 @@ export const MuokkaaValintalaskentaaModalDialog = createModal<{
             value={muokkausParams}
             onChange={(p) => setMuokkausParams((s) => ({ ...s, ...p }))}
           />
-        </Grid2>
+        </Box>
       )}
     </OphModalDialog>
   );
