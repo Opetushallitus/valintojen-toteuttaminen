@@ -34,6 +34,7 @@ import { MuokkaaValintalaskentaaModalDialog } from './muokkaa-valintalaskentaa-m
 import { HakijaInfo } from '@/app/lib/types/ataru-types';
 import { getHenkiloTitle } from '@/app/lib/henkilo-utils';
 import { HakutoiveTitle } from './hakutoive-title';
+import { MuokkaaVastaanottotietoaModalDialog } from './muokkaa-vastaanottotietoa-modal-dialog';
 
 type Tulokset = {
   sijoittelunTulokset: SijoitteluajonTulosHakutoive;
@@ -139,9 +140,9 @@ const HakutoiveContent = ({
                 onClick={() =>
                   showModal(MuokkaaValintalaskentaaModalDialog, {
                     hakijanNimi: getHenkiloTitle(hakija),
-                    valintatapajono: jono,
-                    hakukohde,
                     hakuOid,
+                    hakukohde,
+                    valintatapajono: jono,
                   })
                 }
               />
@@ -161,7 +162,19 @@ const HakutoiveContent = ({
                       `vastaanottotila.${sijoittelunTulokset.vastaanottotieto}`,
                     )}
                   </div>
-                  <MuokkaaButton onClick={() => {}} />
+                  <MuokkaaButton
+                    onClick={() =>
+                      showModal(MuokkaaVastaanottotietoaModalDialog, {
+                        hakijanNimi: getHenkiloTitle(hakija),
+                        henkiloOid: hakija.hakijaOid,
+                        hakemusOid: hakija.hakemusOid,
+                        hakuOid,
+                        hakukohde,
+                        valintatapajono: jono,
+                        sijoittelunTulokset,
+                      })
+                    }
+                  />
                 </TC>
               </>
             ) : (
@@ -251,7 +264,7 @@ const HakutoiveTableAccordion = ({
         id={contentId}
         aria-labelledby={headerId}
         sx={{
-          visibility: isOpen ? 'visible' : 'collapse',
+          display: isOpen ? 'table-row-group' : 'none',
         }}
       >
         <HakutoiveContent

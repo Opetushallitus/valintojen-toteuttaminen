@@ -127,4 +127,12 @@ export const configuration = {
     jarjestyskriteeriPrioriteetti: number;
   }) =>
     `${DOMAIN}/valintalaskenta-laskenta-service/resources/valintatapajono/${valintatapajonoOid}/${hakemusOid}/${jarjestyskriteeriPrioriteetti}/jonosija`,
+  vastaanottotietoMuokkausUrl: ({
+    valintatapajonoOid,
+  }: {
+    valintatapajonoOid: string;
+  }) =>
+    `${DOMAIN}/valinta-tulos-service/auth/valinnan-tulos/${valintatapajonoOid}`,
+  hakemuksenValinnanTuloksetUrl: ({ hakemusOid }: { hakemusOid: string }) =>
+    `${DOMAIN}/valinta-tulos-service/auth/valinnan-tulos/hakemus/?hakemusOid=${hakemusOid}`,
 } as const;

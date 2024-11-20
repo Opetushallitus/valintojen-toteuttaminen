@@ -6,9 +6,9 @@ import {
 import { OphModalDialog } from '@/app/components/oph-modal-dialog';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { OphButton, OphSelect } from '@opetushallitus/oph-design-system';
-import { Box, FormLabel, Stack } from '@mui/material';
+import { Box, Stack } from '@mui/material';
 import { OphInput } from '@/app/components/form/oph-input';
-import React, { useEffect, useId, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { LaskettuJono } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { Jarjestyskriteeri } from '@/app/lib/types/laskenta-types';
 import { Hakukohde } from '@/app/lib/types/kouta-types';
@@ -27,7 +27,7 @@ import {
 } from '@/app/lib/valintalaskenta-service';
 import { FullClientSpinner } from '@/app/components/client-spinner';
 import { isEmpty } from 'remeda';
-import { styled } from '@/app/lib/theme';
+import { InlineFormControl, PaddedLabel } from './inline-form-control';
 
 const ModalActions = ({
   onClose,
@@ -61,41 +61,11 @@ const ModalActions = ({
   );
 };
 
-export const InlineFormControl = ({
-  label,
-  renderInput,
-}: {
-  label: React.ReactNode;
-  renderInput: (props: { labelId: string }) => React.ReactNode;
-}) => {
-  const id = useId();
-  const labelId = `InlineFormControl-${id}-label`;
-  return (
-    <>
-      <FormLabel id={labelId}>{label}</FormLabel>
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'flex-start',
-        }}
-      >
-        {renderInput({ labelId })}
-      </Box>
-    </>
-  );
-};
-
 enum TuloksenTila {
   HYVAKSYTTAVISSA = 'HYVAKSYTTAVISSA',
   HYLATTY = 'HYLATTY',
   MAARITTELEMATON = 'MAARITTELEMATON',
 }
-
-const PaddedLabel = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(1.5, 0),
-}));
 
 const JarjestyskriteeriFields = ({
   value,

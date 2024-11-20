@@ -309,6 +309,7 @@ export type SijoitteluajonTulosHakutoive = {
     tasasijaJonosija: number;
     valintatapajonoPrioriteetti: number;
     hyvaksyttyHarkinnanvaraisesti: boolean;
+    ilmoittautumisTila: string;
   }>;
 };
 
@@ -424,4 +425,38 @@ export const hyvaksyValintaEsitys = async (valintatapajonoOid: string) => {
     `${configuration.valintaTulosServiceUrl}valintaesitys/${valintatapajonoOid}/hyvaksytty`,
     {},
   );
+};
+type ValintatapajonoTiedot = {
+  hakukohdeOid: string;
+  valintatapajonoOid: string;
+  hakemusOid: string;
+  henkiloOid: string;
+  vastaanottotila: VastaanottoTila;
+  valinnantila: string;
+  julkaistavissa?: boolean;
+  ilmoittautumistila: IlmoittautumisTila;
+  ehdollisestiHyvaksyttavissa?: boolean;
+  ehdollisenHyvaksymisenEhtoKoodi?: string | null;
+  ehdollisenHyvaksymisenEhtoFI?: string | null;
+  ehdollisenHyvaksymisenEhtoSV?: string | null;
+  ehdollisenHyvaksymisenEhtoEN?: string | null;
+  hyvaksyttyVarasijalta?: boolean;
+};
+export const muokkaaVastaanottotietoa = async (
+  lastModified: string,
+  jonoTiedot: ValintatapajonoTiedot,
+) => {
+  const { data } = await client.patch<null>(
+    configuration.vastaanottotietoMuokkausUrl({
+      valintatapajonoOid: jonoTiedot.valintatapajonoOid,
+    }),
+    [jonoTiedot],
+    {
+      headers: {
+        'X-If-Unmodified-Since': lastModified,
+      },
+    },
+  );
+
+  return data;
 };
