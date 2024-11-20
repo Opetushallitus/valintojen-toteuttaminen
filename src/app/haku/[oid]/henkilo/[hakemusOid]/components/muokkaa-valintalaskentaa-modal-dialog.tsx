@@ -21,17 +21,23 @@ import {
 } from '@tanstack/react-query';
 import useToaster from '@/app/hooks/useToaster';
 import {
+  deleteJonosijanJarjestyskriteeri,
   hakemuksenLasketutValinnanvaiheetQueryOptions,
   saveJonosijanJarjestyskriteeri,
 } from '@/app/lib/valintalaskenta-service';
 import { FullClientSpinner } from '@/app/components/client-spinner';
+import { isEmpty } from 'remeda';
 
 const ModalActions = ({
   onClose,
   onSave,
+  onDelete,
+  deleteDisabled,
 }: {
   onClose: () => void;
   onSave: () => void;
+  onDelete: () => void;
+  deleteDisabled?: boolean;
 }) => {
   const { t } = useTranslations();
 
@@ -40,7 +46,11 @@ const ModalActions = ({
       <OphButton variant="outlined" onClick={onClose}>
         {t('yleinen.peruuta')}
       </OphButton>
-      <OphButton variant="contained" disabled={true}>
+      <OphButton
+        variant="contained"
+        onClick={onDelete}
+        disabled={deleteDisabled}
+      >
         {t('henkilo.poista-muokkaus')}
       </OphButton>
       <OphButton variant="contained" onClick={onSave}>
@@ -193,39 +203,46 @@ const useJarjestyskriteeriMutation = ({
   hakemusOid,
   valintatapajonoOid,
   jarjestyskriteeriPrioriteetti,
+  mode,
 }: {
   hakuOid: string;
   hakemusOid: string;
   valintatapajonoOid: string;
   jarjestyskriteeriPrioriteetti: number;
+  mode: 'update' | 'delete';
 }) => {
   const { addToast } = useToaster();
-
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ tila, arvo, selite }: MuokkausParams) => {
-      await saveJonosijanJarjestyskriteeri({
-        valintatapajonoOid,
-        hakemusOid,
-        jarjestyskriteeriPrioriteetti,
-        tila,
-        arvo,
-        selite,
-      });
+    mutationFn: async (params: MuokkausParams) => {
+      if (mode === 'delete') {
+        await deleteJonosijanJarjestyskriteeri({
+          valintatapajonoOid,
+          hakemusOid,
+          jarjestyskriteeriPrioriteetti,
+        });
+      } else {
+        await saveJonosijanJarjestyskriteeri({
+          valintatapajonoOid,
+          hakemusOid,
+          jarjestyskriteeriPrioriteetti,
+          ...params,
+        });
+      }
     },
     onError: (e) => {
       addToast({
-        key: 'set-harkinnanvaraiset-tilat-error',
-        message: 'harkinnanvaraiset.virhe-tallenna',
+        key: `${mode}-jarjestyskriteeri-error`,
+        message: `henkilo.jarjestyskriteeri.${mode}-error`,
         type: 'error',
       });
       console.error(e);
     },
     onSuccess: () => {
       addToast({
-        key: 'set-harkinnanvaraiset-tilat-success',
-        message: 'harkinnanvaraiset.tallennettu',
+        key: `${mode}-jarjestyskriteeri-success`,
+        message: `henkilo.jarjestyskriteeri.${mode}-success`,
         type: 'success',
       });
       refetchValinnanvaiheet({ hakuOid, hakemusOid, queryClient });
@@ -261,12 +278,23 @@ export const MuokkaaValintalaskentaaModalDialog = createModal<{
     }),
   );
 
-  const { mutate, isPending } = useJarjestyskriteeriMutation({
-    hakemusOid: jonosija.hakemusOid,
-    valintatapajonoOid: valintatapajono.oid,
-    jarjestyskriteeriPrioriteetti,
-    hakuOid,
-  });
+  const { mutate: updateJarjestyskriteeri, isPending: isUpdatePending } =
+    useJarjestyskriteeriMutation({
+      hakemusOid: jonosija.hakemusOid,
+      valintatapajonoOid: valintatapajono.oid,
+      jarjestyskriteeriPrioriteetti,
+      hakuOid,
+      mode: 'update',
+    });
+
+  const { mutate: deleteJarjestyskriteeri, isPending: isDeletePending } =
+    useJarjestyskriteeriMutation({
+      hakemusOid: jonosija.hakemusOid,
+      valintatapajonoOid: valintatapajono.oid,
+      jarjestyskriteeriPrioriteetti,
+      hakuOid,
+      mode: 'delete',
+    });
 
   return (
     <OphModalDialog
@@ -277,10 +305,15 @@ export const MuokkaaValintalaskentaaModalDialog = createModal<{
       titleAlign="left"
       onClose={onClose}
       actions={
-        <ModalActions onClose={onClose} onSave={() => mutate(muokkausParams)} />
+        <ModalActions
+          onClose={onClose}
+          onSave={() => updateJarjestyskriteeri(muokkausParams)}
+          onDelete={() => deleteJarjestyskriteeri(muokkausParams)}
+          deleteDisabled={isEmpty(jarjestyskriteeri?.kuvaus ?? {})}
+        />
       }
     >
-      {isPending ? (
+      {isUpdatePending || isDeletePending ? (
         <FullClientSpinner />
       ) : (
         <Grid2 container rowSpacing={2} sx={{ paddingY: 4 }}>
