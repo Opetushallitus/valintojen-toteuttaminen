@@ -34,6 +34,7 @@ export const configuration = {
   ataruEditoriLogin: `${DOMAIN}/lomake-editori/auth/cas`,
   valintalaskentaServiceLogin: `${DOMAIN}/valintalaskenta-laskenta-service/auth/login`,
   valintalaskentaKoostePalveluUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/`,
+  valintalaskentaServiceUrl: `${DOMAIN}/valintalaskenta-laskenta-service/resources/`,
   koostetutPistetiedot: ({
     hakuOid,
     hakukohdeOid,
