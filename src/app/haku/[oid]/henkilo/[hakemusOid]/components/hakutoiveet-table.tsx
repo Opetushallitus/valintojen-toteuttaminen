@@ -44,9 +44,10 @@ import {
 } from '@/app/lib/sijoittelun-tulokset-utils';
 
 type Tulokset = {
-  sijoittelunTulokset: SijoitteluajonTulosHakutoive;
+  sijoittelunTulokset?: SijoitteluajonTulosHakutoive;
   valinnanvaiheet?: LasketutValinnanvaiheet;
   valinnanTulos?: ValinnanTulos;
+  valinnanTulosDateHeader: string | null;
 };
 
 type HakukohdeTuloksilla = Hakukohde & Tulokset;
@@ -122,7 +123,12 @@ const HakutoiveContent = ({
   hakuOid: string;
 }) => {
   const { t } = useTranslations();
-  const { valinnanvaiheet, sijoittelunTulokset, valinnanTulos } = hakukohde;
+  const {
+    valinnanvaiheet,
+    sijoittelunTulokset,
+    valinnanTulos,
+    valinnanTulosDateHeader,
+  } = hakukohde;
 
   return isEmpty(valinnanvaiheet ?? []) ? (
     <HakutoiveInfoRow>
@@ -149,6 +155,7 @@ const HakutoiveContent = ({
             hakukohde,
             valinnanTulos,
             valintatapajono: jono,
+            dateHeader: valinnanTulosDateHeader,
           });
 
         return (

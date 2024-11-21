@@ -378,11 +378,11 @@ export type ValinnanTulos = {
 
 export const saveValinnanTulokset = async ({
   valintatapajonoOid,
-  lastModified,
+  ifUnmodifiedSince,
   tulokset,
 }: {
   valintatapajonoOid: string;
-  lastModified: string;
+  ifUnmodifiedSince: string;
   tulokset: Array<ValinnanTulos>;
 }) => {
   const results = await client.patch<
@@ -390,7 +390,7 @@ export const saveValinnanTulokset = async ({
   >(
     `${configuration.valintaTulosServiceUrl}valinnan-tulos/${valintatapajonoOid}`,
     tulokset,
-    { headers: { 'X-If-Unmodified-Since': lastModified } },
+    { headers: { 'X-If-Unmodified-Since': ifUnmodifiedSince } },
   );
 
   const { data } = results;
@@ -433,7 +433,7 @@ export const saveSijoitteluAjonTulokset = async (
 
   await saveValinnanTulokset({
     valintatapajonoOid,
-    lastModified,
+    ifUnmodifiedSince: lastModified,
     tulokset: valintaTulokset,
   });
 
@@ -462,8 +462,13 @@ export const getValinnanTulokset = async ({
 }: {
   hakemusOid: string;
 }) => {
-  const { data } = await client.get<Array<{ valinnantulos: ValinnanTulos }>>(
-    configuration.hakemuksenValinnanTuloksetUrl({ hakemusOid }),
-  );
-  return indexBy(data.map(prop('valinnantulos')), prop('hakukohdeOid'));
+  const { data, headers } = await client.get<
+    Array<{ valinnantulos: ValinnanTulos }>
+  >(configuration.hakemuksenValinnanTuloksetUrl({ hakemusOid }));
+  const dateHeader = headers.get('Date');
+  console.log({ dateHeader });
+  return {
+    dateHeader,
+    data: indexBy(data.map(prop('valinnantulos')), prop('hakukohdeOid')),
+  };
 };

@@ -78,7 +78,7 @@ export const useHenkiloPageData = ({
   const [
     { data: valinnanvaiheetByHakukohde },
     { data: sijoittelunTuloksetByHakukohde },
-    { data: valinnanTuloksetByHakukohde },
+    { data: valinnanTuloksetResponse },
   ] = useSuspenseQueries({
     queries: [
       hakemuksenLasketutValinnanvaiheetQueryOptions({ hakuOid, hakemusOid }),
@@ -89,6 +89,8 @@ export const useHenkiloPageData = ({
       valinnanTuloksetQueryOptions({ hakemusOid }),
     ],
   });
+
+  const valinnanTuloksetByHakukohde = valinnanTuloksetResponse.data;
 
   const hakija = parseHakijaTiedot(hakemus);
 
@@ -124,6 +126,7 @@ export const useHenkiloPageData = ({
           }),
           sijoittelunTulokset: sijoittelunTuloksetByHakukohde?.[hakukohde.oid],
           valinnanTulos: valinnanTuloksetByHakukohde?.[hakukohde.oid],
+          valinnanTulosDateHeader: valinnanTuloksetResponse.dateHeader,
         };
       }),
     );
@@ -133,6 +136,7 @@ export const useHenkiloPageData = ({
     valinnanvaiheetByHakukohde,
     sijoittelunTuloksetByHakukohde,
     valinnanTuloksetByHakukohde,
+    valinnanTuloksetResponse.dateHeader,
   ]);
 
   return { hakukohteet, hakija, postitoimipaikka };

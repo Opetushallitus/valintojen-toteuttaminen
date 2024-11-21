@@ -81,11 +81,13 @@ const useValinnanTilatMutation = ({
   hakemusOid,
   henkiloOid,
   valintatapajonoOid,
+  dateHeader,
 }: {
   hakukohdeOid: string;
   hakemusOid: string;
   henkiloOid: string;
   valintatapajonoOid: string;
+  dateHeader: string | null;
 }) => {
   const { addToast } = useToaster();
   const queryClient = useQueryClient();
@@ -94,7 +96,10 @@ const useValinnanTilatMutation = ({
     mutationFn: async (params: MuokkausParams) => {
       await saveValinnanTulokset({
         valintatapajonoOid,
-        lastModified: new Date().toUTCString(),
+        ifUnmodifiedSince: (dateHeader
+          ? new Date(dateHeader)
+          : new Date()
+        ).toUTCString(),
         tulokset: [
           {
             hakukohdeOid,
@@ -138,6 +143,7 @@ export const ValinnanTilatEditModal = createModal<{
   hakemusOid: string;
   henkiloOid: string;
   valintatapajono: LaskettuJono;
+  dateHeader: string | null;
 }>(
   ({
     hakijanNimi,
@@ -147,6 +153,7 @@ export const ValinnanTilatEditModal = createModal<{
     hakuOid,
     henkiloOid,
     valintatapajono,
+    dateHeader,
   }) => {
     const { open, TransitionProps, onClose } = useOphModalProps();
     const { t } = useTranslations();
@@ -178,6 +185,7 @@ export const ValinnanTilatEditModal = createModal<{
       hakemusOid,
       valintatapajonoOid: valintatapajono.oid,
       henkiloOid,
+      dateHeader,
     });
 
     return (
