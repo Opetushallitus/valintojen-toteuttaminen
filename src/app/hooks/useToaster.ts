@@ -96,8 +96,8 @@ const toasterMachine = setup({
           target: 'empty',
         },
         [ToastEvents.REMOVE]: {
-          target: 'showing',
           actions: 'removeToast',
+          reenter: true,
         },
         [ToastEvents.ENTER]: {
           actions: sendTo(({ event }) => event.key, {
