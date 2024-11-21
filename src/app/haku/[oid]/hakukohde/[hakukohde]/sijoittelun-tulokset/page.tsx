@@ -17,8 +17,8 @@ import { useHaunAsetukset } from '@/app/hooks/useHaunAsetukset';
 import { Haku } from '@/app/lib/types/kouta-types';
 import { FullClientSpinner } from '@/app/components/client-spinner';
 import { HaunAsetukset } from '@/app/lib/types/haun-asetukset';
-import { canHakuBePublished } from './lib/sijoittelun-tulokset-utils';
 import { useUserPermissions } from '@/app/hooks/useUserPermissions';
+import { canHakuBePublished } from '@/app/lib/sijoittelun-tulokset-utils';
 
 type SijoitteluContentParams = {
   haku: Haku;

@@ -7,10 +7,6 @@ import {
 } from '@/app/lib/types/sijoittelu-types';
 import { assign, createMachine, fromPromise } from 'xstate';
 import {
-  hakemukselleNaytetaanIlmoittautumisTila,
-  hakemukselleNaytetaanVastaanottoTila,
-} from './sijoittelun-tulokset-utils';
-import {
   hyvaksyValintaEsitys,
   saveMaksunTilanMuutokset,
   saveSijoitteluAjonTulokset,
@@ -19,6 +15,10 @@ import { clone } from 'remeda';
 import { FetchError } from '@/app/lib/common';
 import { SijoittelunTulosErrorModalDialog } from '../components/sijoittelun-tulos-error-modal';
 import { showModal } from '@/app/components/global-modal';
+import {
+  isIlmoittautumistilaEditable,
+  isVastaanottotilaEditable,
+} from '@/app/lib/sijoittelun-tulokset-utils';
 
 export type SijoittelunTuloksetContext = {
   hakemukset: SijoittelunHakemusValintatiedoilla[];
@@ -387,9 +387,9 @@ const massUpdateChangedHakemukset = (
     if (
       hakenut &&
       ((e.ilmoittautumisTila !== hakenut.ilmoittautumisTila &&
-        hakemukselleNaytetaanIlmoittautumisTila(hakenut)) ||
+        isIlmoittautumistilaEditable(hakenut)) ||
         (e.vastaanottoTila !== hakenut.vastaanottotila &&
-          hakemukselleNaytetaanVastaanottoTila(hakenut)))
+          isVastaanottotilaEditable(hakenut)))
     ) {
       hakenut.vastaanottotila = e.vastaanottoTila ?? hakenut.vastaanottotila;
       hakenut.ilmoittautumisTila =

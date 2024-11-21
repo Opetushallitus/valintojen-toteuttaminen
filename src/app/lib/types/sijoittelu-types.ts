@@ -88,8 +88,7 @@ export type SijoittelunHakemusValintatiedoilla = {
   ehdollisenHyvaksymisenEhtoEN?: string;
   vastaanottoDeadlineMennyt?: boolean;
   vastaanottoDeadline?: string;
-  naytetaanVastaanottoTieto: boolean;
-  hyvaksyttyHarkinnanvaraisesti: boolean;
+  hyvaksyttyHarkinnanvaraisesti?: boolean;
   hyvaksyPeruuntunut: boolean;
   hyvaksymiskirjeLahetetty?: string;
 };
@@ -100,7 +99,7 @@ export const isHyvaksyttyHarkinnanvaraisesti = (
     'tila' | 'hyvaksyttyHarkinnanvaraisesti'
   >,
 ): boolean =>
-  hakemus.hyvaksyttyHarkinnanvaraisesti &&
+  Boolean(hakemus?.hyvaksyttyHarkinnanvaraisesti) &&
   [SijoittelunTila.HYVAKSYTTY, SijoittelunTila.VARASIJALTA_HYVAKSYTTY].includes(
     hakemus.tila,
   );

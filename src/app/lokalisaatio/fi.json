@@ -380,23 +380,28 @@
     "valintalaskenta-tehty": "Valintalaskenta tehty",
     "taulukko": {
       "valintalaskenta": "Valintalaskenta",
-      "sijoittelu": "Sijoittelu",
+      "sijoittelu": "Valinta/Sijoittelu",
       "hakutoive": "Hakutoive",
       "valintatapajono": "Valintatapajono",
       "pisteet": "Pisteet",
       "valintatieto": "Valintatieto",
-      "tila": "Tila",
+      "laskennan-tuloksen-tila": "Tila",
       "vastaanottotieto": "Vastaanottotieto",
       "nayta-hakutoiveen-tiedot": "Näytä hakutoiveen tiedot",
       "piilota-hakutoiveen-tiedot": "Piilota hakutoiveen tiedot",
       "ei-valintalaskennan-tuloksia": "Ei valintalaskennan tuloksia",
-      "ei-sijoittelun-tuloksia": "Ei sijoittelun tuloksia",
+      "ei-valinnan-tuloksia": "Ei valinnan tuloksia",
       "hakija": "Hakija",
       "jarjestyskriteeri": "Järjestyskriteeri",
-      "muokkauksen-syy": "Muokkauksen syy (näkyy hakijalle)"
+      "muokkauksen-syy": "Muokkauksen syy (näkyy hakijalle)",
+      "valinnan-tila": "Valinnan tila",
+      "vastaanotto": "Vastaanotto",
+      "ilmoittautuminen": "Ilmoittautuminen",
+      "vastaanottotila": "Vastaanottotila",
+      "ilmoittautumistila": "Ilmoittautumistila"
     },
     "muokkaa-valintalaskentaa": "Muokkaa valintalaskentaa",
-    "muokkaa-vastaanottotietoa": "Muokkaa vastaanottotietoa",
+    "muokkaa-valintaa": "Muokkaa valintaa",
     "poista-muokkaus": "Poista muokkaus"
   }
 }

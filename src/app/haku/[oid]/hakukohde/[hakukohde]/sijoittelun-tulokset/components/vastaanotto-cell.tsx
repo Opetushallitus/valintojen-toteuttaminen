@@ -9,11 +9,11 @@ import { SelectChangeEvent, Typography } from '@mui/material';
 import { OphCheckbox } from '@opetushallitus/oph-design-system';
 import { useEffect, useState } from 'react';
 import { SijoittelunTuloksetChangeEvent } from '../lib/sijoittelun-tulokset-state';
-import {
-  hakemukselleNaytetaanVastaanottoTila,
-  hakemusVastaanottotilaJulkaistavissa,
-} from '../lib/sijoittelun-tulokset-utils';
 import { SijoittelunTulosStyledCell } from './sijoittelun-tulos-styled-cell';
+import {
+  hakemusVastaanottotilaJulkaistavissa,
+  isVastaanottotilaEditable,
+} from '@/app/lib/sijoittelun-tulokset-utils';
 
 export const VastaanOttoCell = ({
   hakemus,
@@ -73,7 +73,7 @@ export const VastaanOttoCell = ({
           {toFormattedDateTimeString(hakemus.vastaanottoDeadline)}
         </Typography>
       )}
-      {hakemukselleNaytetaanVastaanottoTila(hakemus) && (
+      {isVastaanottotilaEditable(hakemus) && (
         <LocalizedSelect
           value={vastaanottoTila}
           onChange={updateVastaanottoTila}

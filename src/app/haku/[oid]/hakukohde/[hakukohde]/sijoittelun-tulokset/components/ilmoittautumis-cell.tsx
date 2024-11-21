@@ -4,10 +4,10 @@ import {
   IlmoittautumisTila,
   SijoittelunHakemusValintatiedoilla,
 } from '@/app/lib/types/sijoittelu-types';
-import { hakemukselleNaytetaanIlmoittautumisTila } from '../lib/sijoittelun-tulokset-utils';
 import { SijoittelunTuloksetChangeEvent } from '../lib/sijoittelun-tulokset-state';
 import { SelectChangeEvent } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { isIlmoittautumistilaEditable } from '@/app/lib/sijoittelun-tulokset-utils';
 
 export const IlmoittautumisCell = ({
   hakemus,
@@ -33,7 +33,7 @@ export const IlmoittautumisCell = ({
     },
   );
 
-  const showSelect = hakemukselleNaytetaanIlmoittautumisTila(hakemus);
+  const showSelect = isIlmoittautumistilaEditable(hakemus);
 
   const updateIlmoittautumisTila = (event: SelectChangeEvent<string>) => {
     const tila = event.target.value as IlmoittautumisTila;

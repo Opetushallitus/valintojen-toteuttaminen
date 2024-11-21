@@ -128,14 +128,6 @@ type SijoitteluajonTuloksetWithValintaEsitysResponseData = {
   lukuvuosimaksut: Array<{ personOid: string; maksuntila: MaksunTila }>;
 };
 
-const showVastaanottoTieto = (hakemuksenTila: SijoittelunTila) =>
-  [
-    SijoittelunTila.HYVAKSYTTY,
-    SijoittelunTila.VARASIJALTA_HYVAKSYTTY,
-    SijoittelunTila.PERUNUT,
-    SijoittelunTila.PERUUTETTU,
-  ].includes(hakemuksenTila);
-
 const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
   hakuOid: string,
   hakukohdeOid: string,
@@ -199,7 +191,6 @@ const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
               valintatulos.ehdollisenHyvaksymisenEhtoEN,
             vastaanottoDeadlineMennyt: valintatulos.vastaanottoDeadlineMennyt,
             vastaanottoDeadline: valintatulos.vastaanottoDeadline,
-            naytetaanVastaanottoTieto: showVastaanottoTieto(h.tila),
             hyvaksyttyHarkinnanvaraisesti:
               valintatulos.hyvaksyttyHarkinnanvaraisesti,
             hyvaksyPeruuntunut: valintatulos.hyvaksyPeruuntunut,
@@ -295,22 +286,24 @@ export const getLatestSijoitteluAjonTulokset = async (
   return { valintatapajonot: sijoitteluajonTulokset, hakijaryhmat };
 };
 
+export type SijoittelunHakutoiveenValintatapajono = {
+  tila: SijoittelunTila;
+  pisteet: number;
+  valintatapajonoOid: string;
+  varasijanNumero: number;
+  jonosija: number;
+  tasasijaJonosija: number;
+  valintatapajonoPrioriteetti: number;
+  hyvaksyttyHarkinnanvaraisesti: boolean;
+  ilmoittautumisTila: string;
+};
+
 export type SijoitteluajonTulosHakutoive = {
   hakutoive: number;
   hakukohdeOid: string;
   vastaanottotieto: VastaanottoTila;
   hakijaryhmat: Array<{ oid: string; kiintio: number }>;
-  hakutoiveenValintatapajonot: Array<{
-    tila: SijoittelunTila;
-    pisteet: number;
-    valintatapajonoOid: string;
-    varasijanNumero: number;
-    jonosija: number;
-    tasasijaJonosija: number;
-    valintatapajonoPrioriteetti: number;
-    hyvaksyttyHarkinnanvaraisesti: boolean;
-    ilmoittautumisTila: string;
-  }>;
+  hakutoiveenValintatapajonot: Array<SijoittelunHakutoiveenValintatapajono>;
 };
 
 type SijoitteluajonTuloksetForHakemusResponseData = {
@@ -365,13 +358,13 @@ export const saveMaksunTilanMuutokset = async (
   }
 };
 
-type ValinnanTulos = {
+export type ValinnanTulos = {
   hakukohdeOid: string;
   valintatapajonoOid: string;
   hakemusOid: string;
   henkiloOid: string;
   vastaanottotila: VastaanottoTila;
-  valinnantila: string;
+  valinnantila: SijoittelunTila;
   ilmoittautumistila: IlmoittautumisTila;
   julkaistavissa?: boolean;
   ehdollisestiHyvaksyttavissa?: boolean;
@@ -472,5 +465,5 @@ export const getValinnanTulokset = async ({
   const { data } = await client.get<Array<{ valinnantulos: ValinnanTulos }>>(
     configuration.hakemuksenValinnanTuloksetUrl({ hakemusOid }),
   );
-  return data.map(prop('valinnantulos'));
+  return indexBy(data.map(prop('valinnantulos')), prop('hakukohdeOid'));
 };

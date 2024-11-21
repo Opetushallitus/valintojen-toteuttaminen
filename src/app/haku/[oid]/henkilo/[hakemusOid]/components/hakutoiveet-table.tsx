@@ -23,7 +23,10 @@ import { ChevronRight, Edit } from '@mui/icons-material';
 import { LasketutValinnanvaiheet } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
 import { getValintatapaJonoNimi } from '@/app/lib/get-valintatapa-jono-nimi';
-import { SijoitteluajonTulosHakutoive } from '@/app/lib/valinta-tulos-service';
+import {
+  SijoitteluajonTulosHakutoive,
+  ValinnanTulos,
+} from '@/app/lib/valinta-tulos-service';
 import {
   isHyvaksyttyHarkinnanvaraisesti,
   SijoittelunTila,
@@ -34,11 +37,16 @@ import { MuokkaaValintalaskentaaModalDialog } from './muokkaa-valintalaskentaa-m
 import { HakijaInfo } from '@/app/lib/types/ataru-types';
 import { getHenkiloTitle } from '@/app/lib/henkilo-utils';
 import { HakutoiveTitle } from './hakutoive-title';
-import { MuokkaaVastaanottotietoaModalDialog } from './muokkaa-vastaanottotietoa-modal-dialog';
+import { ValinnanTilatEditModal } from './valinnan-tilat-edit-modal';
+import {
+  isIlmoittautumistilaEditable,
+  isVastaanottotilaEditable,
+} from '@/app/lib/sijoittelun-tulokset-utils';
 
 type Tulokset = {
   sijoittelunTulokset: SijoitteluajonTulosHakutoive;
   valinnanvaiheet?: LasketutValinnanvaiheet;
+  valinnanTulos?: ValinnanTulos;
 };
 
 type HakukohdeTuloksilla = Hakukohde & Tulokset;
@@ -65,7 +73,13 @@ const HakutoiveInfoRow = styled(TableRow)({
   },
 });
 
-const MuokkaaButton = ({ onClick }: { onClick: () => void }) => {
+const MuokkaaButton = ({
+  onClick,
+  label,
+}: {
+  label?: string;
+  onClick: () => void;
+}) => {
   const { t } = useTranslations();
   return (
     <OphButton
@@ -74,7 +88,7 @@ const MuokkaaButton = ({ onClick }: { onClick: () => void }) => {
       startIcon={<Edit />}
       onClick={onClick}
     >
-      {t('yleinen.muokkaa')}
+      {label ?? t('yleinen.muokkaa')}
     </OphButton>
   );
 };
@@ -82,34 +96,43 @@ const MuokkaaButton = ({ onClick }: { onClick: () => void }) => {
 const getHakemuksenTila = (
   hakemus: {
     tila: SijoittelunTila;
-    hyvaksyttyHarkinnanvaraisesti: boolean;
+    hyvaksyttyHarkinnanvaraisesti?: boolean;
+    varasijanNumero?: number | null;
   },
   t: TFunction,
-) =>
-  isHyvaksyttyHarkinnanvaraisesti(hakemus)
-    ? t('sijoitteluntila.HARKINNANVARAISESTI_HYVAKSYTTY')
-    : t(`sijoitteluntila.${hakemus.tila}`);
+) => {
+  switch (true) {
+    case isHyvaksyttyHarkinnanvaraisesti(hakemus):
+      return t('sijoitteluntila.HARKINNANVARAISESTI_HYVAKSYTTY');
+    case hakemus.tila === SijoittelunTila.VARALLA &&
+      isNonNullish(hakemus.varasijanNumero):
+      return `${t(`sijoitteluntila.${hakemus.tila}`)} (${hakemus.varasijanNumero})`;
+    default:
+      return t(`sijoitteluntila.${hakemus.tila}`);
+  }
+};
 
 const HakutoiveContent = ({
-  valinnanvaiheet,
-  sijoittelunTulokset,
   hakija,
   hakukohde,
   hakuOid,
-}: Tulokset & {
+}: {
   hakija: HakijaInfo;
-  hakukohde: Hakukohde;
+  hakukohde: HakukohdeTuloksilla;
   hakuOid: string;
 }) => {
   const { t } = useTranslations();
+  const { valinnanvaiheet, sijoittelunTulokset, valinnanTulos } = hakukohde;
+
   return isEmpty(valinnanvaiheet ?? []) ? (
     <HakutoiveInfoRow>
       <TC />
       <TC colSpan={5}>{t('henkilo.taulukko.ei-valintalaskennan-tuloksia')}</TC>
     </HakutoiveInfoRow>
   ) : (
-    valinnanvaiheet?.map((valinnanvaihe) => {
-      return valinnanvaihe.valintatapajonot?.map((jono) => {
+    valinnanvaiheet?.map((valinnanvaihe, valinnanvaiheIndex) => {
+      return valinnanvaihe.valintatapajonot?.map((jono, jonoIndex) => {
+        const isFirstJono = valinnanvaiheIndex === 0 && jonoIndex === 0;
         const jonosija = jono.jonosijat[0];
         const sijoittelunJono =
           sijoittelunTulokset?.hakutoiveenValintatapajonot?.find(
@@ -117,8 +140,19 @@ const HakutoiveContent = ({
               sijoitteluJono.valintatapajonoOid === jono.valintatapajonooid,
           );
 
+        const openValinnanTilatEditModal = () =>
+          showModal(ValinnanTilatEditModal, {
+            hakijanNimi: getHenkiloTitle(hakija),
+            henkiloOid: hakija.hakijaOid,
+            hakemusOid: hakija.hakemusOid,
+            hakuOid,
+            hakukohde,
+            valinnanTulos,
+            valintatapajono: jono,
+          });
+
         return (
-          <HakutoiveInfoRow key={valinnanvaihe.valinnanvaiheoid}>
+          <HakutoiveInfoRow key={jono.oid}>
             <TC />
             <TC>
               <OphTypography variant="label">
@@ -135,7 +169,7 @@ const HakutoiveContent = ({
             </TC>
             <TC>{jonosija.pisteet}</TC>
             <TC>
-              <div>{t(`tuloksenTila.${jonosija.tuloksenTila}`)}</div>{' '}
+              <div>{t(`tuloksenTila.${jonosija.tuloksenTila}`)}</div>
               <MuokkaaButton
                 onClick={() =>
                   showModal(MuokkaaValintalaskentaaModalDialog, {
@@ -147,40 +181,58 @@ const HakutoiveContent = ({
                 }
               />
             </TC>
-            {sijoittelunTulokset ? (
-              <>
-                <TC>
-                  {sijoittelunJono &&
-                    getHakemuksenTila(sijoittelunJono, t) +
-                      (isNonNullish(sijoittelunJono.varasijanNumero)
-                        ? ` (${sijoittelunJono.varasijanNumero})`
-                        : '')}
-                </TC>
-                <TC>
-                  <div>
-                    {t(
-                      `vastaanottotila.${sijoittelunTulokset.vastaanottotieto}`,
+            {valinnanTulos ? (
+              isFirstJono ? (
+                <>
+                  <TC>
+                    {getHakemuksenTila(
+                      {
+                        tila: valinnanTulos.valinnantila,
+                        hyvaksyttyHarkinnanvaraisesti:
+                          sijoittelunJono?.hyvaksyttyHarkinnanvaraisesti,
+                        varasijanNumero: sijoittelunJono?.varasijanNumero,
+                      },
+                      t,
                     )}
-                  </div>
-                  <MuokkaaButton
-                    onClick={() =>
-                      showModal(MuokkaaVastaanottotietoaModalDialog, {
-                        hakijanNimi: getHenkiloTitle(hakija),
-                        henkiloOid: hakija.hakijaOid,
-                        hakemusOid: hakija.hakemusOid,
-                        hakuOid,
-                        hakukohde,
-                        valintatapajono: jono,
-                        sijoittelunTulokset,
-                      })
-                    }
-                  />
-                </TC>
-              </>
+                  </TC>
+                  <TC>
+                    {isVastaanottotilaEditable({
+                      tila: valinnanTulos.valinnantila,
+                      vastaanottotila: valinnanTulos.vastaanottotila,
+                      julkaistavissa: Boolean(valinnanTulos.julkaistavissa),
+                    }) && (
+                      <>
+                        <div>
+                          {t(
+                            `vastaanottotila.${valinnanTulos?.vastaanottotila}`,
+                          )}
+                        </div>
+                        <MuokkaaButton onClick={openValinnanTilatEditModal} />
+                      </>
+                    )}
+                  </TC>
+                  <TC>
+                    {isIlmoittautumistilaEditable({
+                      tila: valinnanTulos.valinnantila,
+                      vastaanottotila: valinnanTulos.vastaanottotila,
+                      julkaistavissa: Boolean(valinnanTulos.julkaistavissa),
+                    }) && (
+                      <>
+                        <div>
+                          {t(
+                            `ilmoittautumistila.${valinnanTulos?.ilmoittautumistila}`,
+                          )}
+                        </div>
+                        <MuokkaaButton onClick={openValinnanTilatEditModal} />
+                      </>
+                    )}
+                  </TC>
+                </>
+              ) : (
+                <TC colSpan={3} />
+              )
             ) : (
-              <TC colSpan={2}>
-                {t('henkilo.taulukko.ei-sijoittelun-tuloksia')}
-              </TC>
+              <TC colSpan={2}>{t('henkilo.taulukko.ei-valinnan-tulosta')}</TC>
             )}
           </HakutoiveInfoRow>
         );
@@ -202,7 +254,7 @@ const HakutoiveTableAccordion = ({
 }) => {
   const { t } = useTranslations();
 
-  const { valinnanvaiheet, sijoittelunTulokset } = hakukohde;
+  const { valinnanvaiheet } = hakukohde;
 
   const noContent = isEmpty(valinnanvaiheet ?? []);
 
@@ -221,7 +273,7 @@ const HakutoiveTableAccordion = ({
             backgroundColor: noContent ? ophColors.grey50 : ophColors.white,
           }}
         >
-          <TC colSpan={6} component="th">
+          <TC colSpan={7} component="th">
             <AccordionHeader>
               <OphButton
                 variant="text"
@@ -268,11 +320,9 @@ const HakutoiveTableAccordion = ({
         }}
       >
         <HakutoiveContent
-          valinnanvaiheet={valinnanvaiheet}
-          sijoittelunTulokset={sijoittelunTulokset}
           hakija={hakija}
-          hakukohde={hakukohde}
           hakuOid={hakuOid}
+          hakukohde={hakukohde}
         />
       </TableBody>
     </>
@@ -299,7 +349,13 @@ export const HakutoiveetTable = ({
     <Box sx={{ overflowX: 'auto' }}>
       <Table sx={{ width: '100%' }}>
         <StyledTableHead>
-          <TableRow>
+          <TableRow
+            sx={{
+              '& > th': {
+                position: 'sticky',
+              },
+            }}
+          >
             <TC rowSpan={2} sx={{ verticalAlign: 'bottom' }}>
               {t('henkilo.taulukko.hakutoive')}
             </TC>
@@ -308,12 +364,14 @@ export const HakutoiveetTable = ({
             </TC>
             <TC colSpan={2}>{t('henkilo.taulukko.valintalaskenta')}</TC>
             <TC colSpan={2}>{t('henkilo.taulukko.sijoittelu')}</TC>
+            <TC />
           </TableRow>
           <TableRow>
             <TC>{t('henkilo.taulukko.pisteet')}</TC>
-            <TC>{t('henkilo.taulukko.valintatieto')}</TC>
-            <TC>{t('henkilo.taulukko.tila')}</TC>
-            <TC>{t('henkilo.taulukko.vastaanottotieto')}</TC>
+            <TC>{t('henkilo.taulukko.laskennan-tuloksen-tila')}</TC>
+            <TC>{t('henkilo.taulukko.valinnan-tila')}</TC>
+            <TC>{t('henkilo.taulukko.vastaanotto')}</TC>
+            <TC>{t('henkilo.taulukko.ilmoittautuminen')}</TC>
           </TableRow>
         </StyledTableHead>
         {hakukohteet.map((hakukohde, index) => (

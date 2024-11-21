@@ -1,14 +1,21 @@
 'use client';
 
 import { getAtaruHakemukset, parseHakijaTiedot } from '@/app/lib/ataru';
-import { useSuspenseQueries, useSuspenseQuery } from '@tanstack/react-query';
+import {
+  queryOptions,
+  useSuspenseQueries,
+  useSuspenseQuery,
+} from '@tanstack/react-query';
 import { getPostitoimipaikka } from '@/app/lib/koodisto';
 import { getHakukohteetQueryOptions } from '@/app/lib/kouta';
 import { useUserPermissions } from '@/app/hooks/useUserPermissions';
 import { filter, map, pipe, prop, sortBy } from 'remeda';
 import { hakemuksenLasketutValinnanvaiheetQueryOptions } from '@/app/lib/valintalaskenta-service';
 import { selectValinnanvaiheet } from '@/app/hooks/useLasketutValinnanVaiheet';
-import { getLatestSijoitteluajonTuloksetForHakemus } from '@/app/lib/valinta-tulos-service';
+import {
+  getLatestSijoitteluajonTuloksetForHakemus,
+  getValinnanTulokset,
+} from '@/app/lib/valinta-tulos-service';
 import { notFound } from 'next/navigation';
 import { useMemo } from 'react';
 
@@ -25,6 +32,33 @@ const useAtaruHakemus = ({
   });
   return hakemukset;
 };
+
+export const latestSijoitteluajonTuloksetForHakemusQueryOptions = ({
+  hakuOid,
+  hakemusOid,
+}: {
+  hakuOid: string;
+  hakemusOid: string;
+}) =>
+  queryOptions({
+    queryKey: [
+      'getLatestSijoitteluajonTuloksetForHakemus',
+      hakuOid,
+      hakemusOid,
+    ],
+    queryFn: () =>
+      getLatestSijoitteluajonTuloksetForHakemus({ hakuOid, hakemusOid }),
+  });
+
+export const valinnanTuloksetQueryOptions = ({
+  hakemusOid,
+}: {
+  hakemusOid: string;
+}) =>
+  queryOptions({
+    queryKey: ['getValinnanTulokset', hakemusOid],
+    queryFn: () => getValinnanTulokset({ hakemusOid }),
+  });
 
 export const useHenkiloPageData = ({
   hakuOid,
@@ -44,18 +78,15 @@ export const useHenkiloPageData = ({
   const [
     { data: valinnanvaiheetByHakukohde },
     { data: sijoittelunTuloksetByHakukohde },
+    { data: valinnanTuloksetByHakukohde },
   ] = useSuspenseQueries({
     queries: [
       hakemuksenLasketutValinnanvaiheetQueryOptions({ hakuOid, hakemusOid }),
-      {
-        queryKey: [
-          'getLatestSijoitteluajonTuloksetForHakemus',
-          hakuOid,
-          hakemusOid,
-        ],
-        queryFn: () =>
-          getLatestSijoitteluajonTuloksetForHakemus({ hakuOid, hakemusOid }),
-      },
+      latestSijoitteluajonTuloksetForHakemusQueryOptions({
+        hakuOid,
+        hakemusOid,
+      }),
+      valinnanTuloksetQueryOptions({ hakemusOid }),
     ],
   });
 
@@ -92,6 +123,7 @@ export const useHenkiloPageData = ({
               valinnanvaiheetByHakukohde?.[hakukohde.oid],
           }),
           sijoittelunTulokset: sijoittelunTuloksetByHakukohde?.[hakukohde.oid],
+          valinnanTulos: valinnanTuloksetByHakukohde?.[hakukohde.oid],
         };
       }),
     );
@@ -100,6 +132,7 @@ export const useHenkiloPageData = ({
     hakukohteetPlain,
     valinnanvaiheetByHakukohde,
     sijoittelunTuloksetByHakukohde,
+    valinnanTuloksetByHakukohde,
   ]);
 
   return { hakukohteet, hakija, postitoimipaikka };
