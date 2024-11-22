@@ -5,11 +5,9 @@ import { Link } from '@mui/material';
 
 export const HakutoiveTitle = ({
   hakutoiveNumero,
-  hakuOid,
   hakukohde,
 }: {
   hakutoiveNumero: number;
-  hakuOid: string;
   hakukohde: Hakukohde;
 }) => {
   const { translateEntity } = useTranslations();
@@ -23,7 +21,7 @@ export const HakutoiveTitle = ({
       </span>
       <Link
         component={HakukohdeTabLink}
-        hakuOid={hakuOid}
+        hakuOid={hakukohde.hakuOid}
         hakukohdeOid={hakukohde.oid}
         tabRoute="perustiedot"
         prefetch={false}

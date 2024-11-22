@@ -21,7 +21,6 @@ import {
   saveValinnanTulokset,
   ValinnanTulos,
 } from '@/app/lib/valinta-tulos-service';
-import { LaskettuJono } from '@/app/hooks/useLasketutValinnanVaiheet';
 import {
   IlmoittautumisTila,
   SijoittelunTila,
@@ -136,23 +135,19 @@ const useValinnanTilatMutation = ({
 };
 
 export const ValinnanTilatEditModal = createModal<{
+  hakutoiveNumero: number;
   hakijanNimi: string;
   hakukohde: Hakukohde;
   valinnanTulos: ValinnanTulos;
-  hakuOid: string;
-  hakemusOid: string;
   henkiloOid: string;
-  valintatapajono: LaskettuJono;
   dateHeader: string | null;
 }>(
   ({
+    hakutoiveNumero,
     hakijanNimi,
     hakukohde,
     valinnanTulos,
-    hakemusOid,
-    hakuOid,
     henkiloOid,
-    valintatapajono,
     dateHeader,
   }) => {
     const { open, TransitionProps, onClose } = useOphModalProps();
@@ -182,8 +177,8 @@ export const ValinnanTilatEditModal = createModal<{
 
     const mutation = useValinnanTilatMutation({
       hakukohdeOid: hakukohde.oid,
-      hakemusOid,
-      valintatapajonoOid: valintatapajono.oid,
+      hakemusOid: valinnanTulos.hakemusOid,
+      valintatapajonoOid: valinnanTulos.valintatapajonoOid,
       henkiloOid,
       dateHeader,
     });
@@ -233,8 +228,7 @@ export const ValinnanTilatEditModal = createModal<{
               renderInput={({ labelId }) => (
                 <span aria-labelledby={labelId}>
                   <HakutoiveTitle
-                    hakutoiveNumero={1}
-                    hakuOid={hakuOid}
+                    hakutoiveNumero={hakutoiveNumero}
                     hakukohde={hakukohde}
                   />
                 </span>

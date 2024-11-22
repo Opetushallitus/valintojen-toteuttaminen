@@ -42,6 +42,7 @@ export type Haku = {
 
 export type Hakukohde = {
   oid: string;
+  hakuOid: string;
   nimi: TranslatedName;
   organisaatioOid: string;
   organisaatioNimi: TranslatedName;

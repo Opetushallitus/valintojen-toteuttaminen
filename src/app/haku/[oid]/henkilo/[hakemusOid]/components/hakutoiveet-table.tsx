@@ -33,7 +33,7 @@ import {
 } from '@/app/lib/types/sijoittelu-types';
 import { TFunction } from 'i18next';
 import { showModal } from '@/app/components/global-modal';
-import { MuokkaaValintalaskentaaModalDialog } from './muokkaa-valintalaskentaa-modal-dialog';
+import { ValintalaskentaEditModal } from './valintalaskenta-edit-modal';
 import { HakijaInfo } from '@/app/lib/types/ataru-types';
 import { getHenkiloTitle } from '@/app/lib/henkilo-utils';
 import { HakutoiveTitle } from './hakutoive-title';
@@ -116,11 +116,11 @@ const getHakemuksenTila = (
 const HakutoiveContent = ({
   hakija,
   hakukohde,
-  hakuOid,
+  hakutoiveNumero,
 }: {
   hakija: HakijaInfo;
   hakukohde: HakukohdeTuloksilla;
-  hakuOid: string;
+  hakutoiveNumero: number;
 }) => {
   const { t } = useTranslations();
   const {
@@ -148,13 +148,11 @@ const HakutoiveContent = ({
 
         const openValinnanTilatEditModal = () =>
           showModal(ValinnanTilatEditModal, {
+            hakutoiveNumero,
             hakijanNimi: getHenkiloTitle(hakija),
             henkiloOid: hakija.hakijaOid,
-            hakemusOid: hakija.hakemusOid,
-            hakuOid,
             hakukohde,
             valinnanTulos,
-            valintatapajono: jono,
             dateHeader: valinnanTulosDateHeader,
           });
 
@@ -179,9 +177,9 @@ const HakutoiveContent = ({
               <div>{t(`tuloksenTila.${jonosija.tuloksenTila}`)}</div>
               <MuokkaaButton
                 onClick={() =>
-                  showModal(MuokkaaValintalaskentaaModalDialog, {
+                  showModal(ValintalaskentaEditModal, {
+                    hakutoiveNumero,
                     hakijanNimi: getHenkiloTitle(hakija),
-                    hakuOid,
                     hakukohde,
                     valintatapajono: jono,
                   })
@@ -310,7 +308,6 @@ const HakutoiveTableAccordion = ({
               <Box id={headerId} sx={{ color: 'black' }}>
                 <HakutoiveTitle
                   hakutoiveNumero={hakutoiveNumero}
-                  hakuOid={hakuOid}
                   hakukohde={hakukohde}
                 />
               </Box>
@@ -330,6 +327,7 @@ const HakutoiveTableAccordion = ({
           hakija={hakija}
           hakuOid={hakuOid}
           hakukohde={hakukohde}
+          hakutoiveNumero={hakutoiveNumero}
         />
       </TableBody>
     </>

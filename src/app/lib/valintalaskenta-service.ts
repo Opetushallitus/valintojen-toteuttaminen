@@ -330,10 +330,13 @@ export const setHarkinnanvaraisetTilat = async (
   );
 };
 
-export type JarjestyskriteeriMutationParams = {
+type JarjestyskriteeriKeyParams = {
   valintatapajonoOid: string;
   hakemusOid: string;
   jarjestyskriteeriPrioriteetti: number;
+};
+
+export type SaveJarjestyskriteeriParams = JarjestyskriteeriKeyParams & {
   tila: string;
   arvo: string;
   selite: string;
@@ -346,7 +349,7 @@ export const saveJonosijanJarjestyskriteeri = ({
   tila,
   arvo,
   selite,
-}: JarjestyskriteeriMutationParams) => {
+}: SaveJarjestyskriteeriParams) => {
   return client.post<null>(
     configuration.jonosijanJarjestyskriteeriMuokkausUrl({
       valintatapajonoOid,
@@ -365,11 +368,7 @@ export const deleteJonosijanJarjestyskriteeri = ({
   valintatapajonoOid,
   hakemusOid,
   jarjestyskriteeriPrioriteetti,
-}: {
-  valintatapajonoOid: string;
-  hakemusOid: string;
-  jarjestyskriteeriPrioriteetti: number;
-}) => {
+}: JarjestyskriteeriKeyParams) => {
   return client.delete<null>(
     configuration.jonosijanJarjestyskriteeriMuokkausUrl({
       valintatapajonoOid,

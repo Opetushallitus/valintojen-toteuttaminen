@@ -71,8 +71,8 @@ const JarjestyskriteeriFields = ({
   value,
   onChange,
 }: {
-  value: MuokkausParams;
-  onChange: (e: Partial<MuokkausParams>) => void;
+  value: JarjestyskriteeriParams;
+  onChange: (e: Partial<JarjestyskriteeriParams>) => void;
 }) => {
   const { t } = useTranslations();
 
@@ -124,18 +124,20 @@ const JarjestyskriteeriFields = ({
   );
 };
 
-type MuokkausParams = {
+type JarjestyskriteeriParams = {
   tila: string;
   arvo: string;
   selite: string;
 };
 
 const useMuokkausParams = (jarjestyskriteeri: Jarjestyskriteeri) => {
-  const [muokkausParams, setMuokkausParams] = useState<MuokkausParams>(() => ({
-    tila: jarjestyskriteeri.tila,
-    arvo: jarjestyskriteeri.arvo?.toString() ?? '',
-    selite: jarjestyskriteeri.kuvaus?.FI ?? '',
-  }));
+  const [muokkausParams, setMuokkausParams] = useState<JarjestyskriteeriParams>(
+    () => ({
+      tila: jarjestyskriteeri.tila,
+      arvo: jarjestyskriteeri.arvo?.toString() ?? '',
+      selite: jarjestyskriteeri.kuvaus?.FI ?? '',
+    }),
+  );
 
   const jarjestyskriteeriChanged = useHasChanged(
     jarjestyskriteeri.prioriteetti,
@@ -176,19 +178,20 @@ const useJarjestyskriteeriMutation = ({
   hakemusOid,
   valintatapajonoOid,
   jarjestyskriteeriPrioriteetti,
-  mode,
 }: {
   hakuOid: string;
   hakemusOid: string;
   valintatapajonoOid: string;
   jarjestyskriteeriPrioriteetti: number;
-  mode: 'update' | 'delete';
 }) => {
   const { addToast } = useToaster();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (params: MuokkausParams) => {
+    mutationFn: async ({
+      mode,
+      ...params
+    }: JarjestyskriteeriParams & { mode: 'save' | 'delete' }) => {
       if (mode === 'delete') {
         await deleteJonosijanJarjestyskriteeri({
           valintatapajonoOid,
@@ -204,7 +207,7 @@ const useJarjestyskriteeriMutation = ({
         });
       }
     },
-    onError: (e) => {
+    onError: (e, { mode }) => {
       addToast({
         key: `${mode}-jarjestyskriteeri-error`,
         message: `henkilo.jarjestyskriteeri.${mode}-error`,
@@ -212,24 +215,24 @@ const useJarjestyskriteeriMutation = ({
       });
       console.error(e);
     },
-    onSuccess: () => {
+    onSuccess: (_, { mode }) => {
       addToast({
         key: `${mode}-jarjestyskriteeri-success`,
         message: `henkilo.jarjestyskriteeri.${mode}-success`,
         type: 'success',
       });
       refetchValinnanvaiheet({ hakuOid, hakemusOid, queryClient });
-      hideModal(MuokkaaValintalaskentaaModalDialog);
+      hideModal(ValintalaskentaEditModal);
     },
   });
 };
 
-export const MuokkaaValintalaskentaaModalDialog = createModal<{
+export const ValintalaskentaEditModal = createModal<{
   hakijanNimi: string;
   hakukohde: Hakukohde;
   valintatapajono: LaskettuJono;
-  hakuOid: string;
-}>(({ hakijanNimi, hakukohde, valintatapajono, hakuOid }) => {
+  hakutoiveNumero: number;
+}>(({ hakutoiveNumero, hakijanNimi, hakukohde, valintatapajono }) => {
   const { open, TransitionProps, onClose } = useOphModalProps();
   const { t } = useTranslations();
 
@@ -251,22 +254,12 @@ export const MuokkaaValintalaskentaaModalDialog = createModal<{
     }),
   );
 
-  const { mutate: updateJarjestyskriteeri, isPending: isUpdatePending } =
+  const { mutate: mutateJarjestyskriteeri, isPending: isPending } =
     useJarjestyskriteeriMutation({
       hakemusOid: jonosija.hakemusOid,
       valintatapajonoOid: valintatapajono.oid,
       jarjestyskriteeriPrioriteetti,
-      hakuOid,
-      mode: 'update',
-    });
-
-  const { mutate: deleteJarjestyskriteeri, isPending: isDeletePending } =
-    useJarjestyskriteeriMutation({
-      hakemusOid: jonosija.hakemusOid,
-      valintatapajonoOid: valintatapajono.oid,
-      jarjestyskriteeriPrioriteetti,
-      hakuOid,
-      mode: 'delete',
+      hakuOid: hakukohde.hakuOid,
     });
 
   return (
@@ -280,13 +273,17 @@ export const MuokkaaValintalaskentaaModalDialog = createModal<{
       actions={
         <ModalActions
           onClose={onClose}
-          onSave={() => updateJarjestyskriteeri(muokkausParams)}
-          onDelete={() => deleteJarjestyskriteeri(muokkausParams)}
+          onSave={() =>
+            mutateJarjestyskriteeri({ ...muokkausParams, mode: 'save' })
+          }
+          onDelete={() =>
+            mutateJarjestyskriteeri({ ...muokkausParams, mode: 'delete' })
+          }
           deleteDisabled={isEmpty(jarjestyskriteeri?.kuvaus ?? {})}
         />
       }
     >
-      {isUpdatePending || isDeletePending ? (
+      {isPending ? (
         <FullClientSpinner />
       ) : (
         <Box
@@ -309,8 +306,7 @@ export const MuokkaaValintalaskentaaModalDialog = createModal<{
             renderInput={({ labelId }) => (
               <span aria-labelledby={labelId}>
                 <HakutoiveTitle
-                  hakutoiveNumero={1}
-                  hakuOid={hakuOid}
+                  hakutoiveNumero={hakutoiveNumero}
                   hakukohde={hakukohde}
                 />
               </span>
@@ -342,7 +338,12 @@ export const MuokkaaValintalaskentaaModalDialog = createModal<{
           />
           <JarjestyskriteeriFields
             value={muokkausParams}
-            onChange={(p) => setMuokkausParams((s) => ({ ...s, ...p }))}
+            onChange={(changedParams) =>
+              setMuokkausParams((oldParams) => ({
+                ...oldParams,
+                ...changedParams,
+              }))
+            }
           />
         </Box>
       )}

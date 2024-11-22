@@ -24,6 +24,7 @@ describe('Laskenta states', async () => {
     },
     hakukohde: {
       oid: 'hakukohde-oid',
+      hakuOid: 'haku-oid',
       nimi: { fi: 'hakukohde' },
       jarjestyspaikkaHierarkiaNimi: { fi: 'Paikka' },
       organisaatioNimi: {},
