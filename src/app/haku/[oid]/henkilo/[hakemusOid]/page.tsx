@@ -44,11 +44,7 @@ const HenkiloContent = ({
           value={`${hakija.lahiosoite}, ${hakija.postinumero} ${translateEntity(postitoimipaikka)}`}
         />
       </Stack>
-      <HakutoiveetTable
-        hakukohteet={hakukohteet}
-        hakuOid={hakuOid}
-        hakija={hakija}
-      />
+      <HakutoiveetTable hakukohteet={hakukohteet} hakija={hakija} />
     </>
   );
 };

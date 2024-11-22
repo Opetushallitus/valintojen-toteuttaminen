@@ -247,12 +247,10 @@ const HakutoiveContent = ({
 };
 
 const HakutoiveTableAccordion = ({
-  hakuOid,
   hakukohde,
   hakutoiveNumero,
   hakija,
 }: {
-  hakuOid: string;
   hakukohde: HakukohdeTuloksilla;
   hakutoiveNumero: number;
   hakija: HakijaInfo;
@@ -325,7 +323,6 @@ const HakutoiveTableAccordion = ({
       >
         <HakutoiveContent
           hakija={hakija}
-          hakuOid={hakuOid}
           hakukohde={hakukohde}
           hakutoiveNumero={hakutoiveNumero}
         />
@@ -341,11 +338,9 @@ const StyledTableHead = styled(TableHead)(({ theme }) => ({
 }));
 
 export const HakutoiveetTable = ({
-  hakuOid,
   hakukohteet,
   hakija,
 }: {
-  hakuOid: string;
   hakukohteet: Array<HakukohdeTuloksilla>;
   hakija: HakijaInfo;
 }) => {
@@ -382,7 +377,6 @@ export const HakutoiveetTable = ({
         {hakukohteet.map((hakukohde, index) => (
           <HakutoiveTableAccordion
             key={hakukohde.oid}
-            hakuOid={hakuOid}
             hakukohde={hakukohde}
             hakutoiveNumero={index + 1}
             hakija={hakija}

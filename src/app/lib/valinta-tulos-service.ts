@@ -366,7 +366,7 @@ export type ValinnanTulos = {
   vastaanottotila: VastaanottoTila;
   valinnantila: SijoittelunTila;
   ilmoittautumistila: IlmoittautumisTila;
-  julkaistavissa?: boolean;
+  julkaistavissa: boolean;
   ehdollisestiHyvaksyttavissa?: boolean;
   ehdollisenHyvaksymisenEhtoKoodi?: string | null;
   ehdollisenHyvaksymisenEhtoFI?: string | null;
