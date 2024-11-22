@@ -1,14 +1,9 @@
-import { Haku, Hakukohde, getFullnameOfHakukohde } from './types/kouta-types';
 import { configuration } from './configuration';
-import { ValinnanvaiheTyyppi } from './types/valintaperusteet-types';
 import { abortableClient, client, HttpClientResponse } from './http-client';
-import { TranslatedName } from './localization/localization-types';
 import { HenkilonValintaTulos } from './types/sijoittelu-types';
 import {
   HakemuksenPistetiedot,
   HakukohteenPistetiedot,
-  LaskentaErrorSummary,
-  LaskentaStart,
   ValintakoeOsallistuminenTulos,
   ValintakokeenPisteet,
 } from './types/laskenta-types';
@@ -31,131 +26,6 @@ import {
 import { ValintakoekutsutData } from './types/valintakoekutsut-types';
 import { HakutoiveValintakoeOsallistumiset } from './types/valintalaskentakoostepalvelu-types';
 import { HarkinnanvaraisuudenSyy } from './types/harkinnanvaraiset-types';
-
-const formSearchParamsForStartLaskenta = ({
-  laskentaUrl,
-  haku,
-  hakukohde,
-  valinnanvaiheTyyppi,
-  sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
-  valinnanvaihe,
-  translateEntity,
-}: {
-  laskentaUrl: URL;
-  haku: Haku;
-  hakukohde: Hakukohde;
-  valinnanvaiheTyyppi?: ValinnanvaiheTyyppi;
-  sijoitellaankoHaunHakukohteetLaskennanYhteydessa: boolean;
-  valinnanvaihe?: number;
-  translateEntity: (translateable: TranslatedName) => string;
-}): URL => {
-  laskentaUrl.searchParams.append(
-    'erillishaku',
-    '' + sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
-  );
-  laskentaUrl.searchParams.append('haunnimi', translateEntity(haku.nimi));
-  laskentaUrl.searchParams.append(
-    'nimi',
-    getFullnameOfHakukohde(hakukohde, translateEntity),
-  );
-  if (valinnanvaihe && valinnanvaiheTyyppi !== ValinnanvaiheTyyppi.VALINTAKOE) {
-    laskentaUrl.searchParams.append('valinnanvaihe', '' + valinnanvaihe);
-  }
-  if (valinnanvaiheTyyppi) {
-    laskentaUrl.searchParams.append(
-      'valintakoelaskenta',
-      `${valinnanvaiheTyyppi === ValinnanvaiheTyyppi.VALINTAKOE}`,
-    );
-  }
-  return laskentaUrl;
-};
-
-type LaskentaStatusResponseData = {
-  lisatiedot: {
-    luotiinkoUusiLaskenta: boolean;
-  };
-  latausUrl: string;
-};
-
-export const kaynnistaLaskenta = async (
-  haku: Haku,
-  hakukohde: Hakukohde,
-  valinnanvaiheTyyppi: ValinnanvaiheTyyppi,
-  sijoitellaankoHaunHakukohteetLaskennanYhteydessa: boolean,
-  valinnanvaihe: number,
-  translateEntity: (translateable: TranslatedName) => string,
-): Promise<LaskentaStart> => {
-  const laskentaUrl = formSearchParamsForStartLaskenta({
-    laskentaUrl: new URL(
-      `${configuration.valintalaskentaServiceUrl}valintalaskentakerralla/haku/${haku.oid}/tyyppi/HAKUKOHDE/whitelist/true?`,
-    ),
-    haku,
-    hakukohde,
-    valinnanvaiheTyyppi: valinnanvaiheTyyppi,
-    sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
-    valinnanvaihe,
-    translateEntity,
-  });
-  const response = await client.post<LaskentaStatusResponseData>(
-    laskentaUrl.toString(),
-    [hakukohde.oid],
-  );
-  return {
-    startedNewLaskenta: response.data?.lisatiedot?.luotiinkoUusiLaskenta,
-    loadingUrl: response.data?.latausUrl,
-  };
-};
-
-export const kaynnistaLaskentaHakukohteenValinnanvaiheille = async (
-  haku: Haku,
-  hakukohde: Hakukohde,
-  sijoitellaankoHaunHakukohteetLaskennanYhteydessa: boolean,
-  translateEntity: (translateable: TranslatedName) => string,
-): Promise<LaskentaStart> => {
-  const laskentaUrl = formSearchParamsForStartLaskenta({
-    laskentaUrl: new URL(
-      `${configuration.valintalaskentaServiceUrl}valintalaskentakerralla/haku/${haku.oid}/tyyppi/HAKUKOHDE/whitelist/true?`,
-    ),
-    haku,
-    hakukohde,
-    sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
-    translateEntity,
-  });
-  const response = await client.post<LaskentaStatusResponseData>(
-    laskentaUrl.toString(),
-    [hakukohde.oid],
-  );
-  return {
-    startedNewLaskenta: response.data?.lisatiedot?.luotiinkoUusiLaskenta,
-    loadingUrl: response.data?.latausUrl,
-  };
-};
-
-export const getLaskennanTilaHakukohteelle = async (
-  loadingUrl: string,
-): Promise<LaskentaErrorSummary> => {
-  const response = await client.get<{
-    hakukohteet: Array<{
-      hakukohdeOid: string;
-      ilmoitukset: [{ otsikko: string; tyyppi: string }] | null;
-    }>;
-  }>(
-    `${configuration.valintalaskentaServiceUrl}valintalaskentakerralla/status/${loadingUrl}/yhteenveto`,
-  );
-  return response.data?.hakukohteet
-    ?.filter((hk) => hk.ilmoitukset?.some((i) => i.tyyppi === 'VIRHE'))
-    .map(
-      (hakukohde: {
-        hakukohdeOid: string;
-        ilmoitukset: [{ otsikko: string }] | null;
-      }) => {
-        return {
-          hakukohdeOid: hakukohde.hakukohdeOid,
-          notifications: hakukohde.ilmoitukset?.map((i) => i.otsikko),
-        };
-      },
-    )[0];
-};
 
 export const getHakukohteenValintatuloksetIlmanHakijanTilaa = async (
   hakuOid: string,
