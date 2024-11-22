@@ -294,7 +294,7 @@ export const MuokkaaValintalaskentaaModalDialog = createModal<{
             display: 'grid',
             paddingY: 2,
             gridGap: (theme) => theme.spacing(2),
-            gridTemplateColumns: '170px 1fr',
+            gridTemplateColumns: 'fit-content(170px) minmax(0, 1fr)',
             placeItems: 'start stretch',
           }}
         >
