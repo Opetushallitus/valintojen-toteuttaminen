@@ -14,13 +14,13 @@ import { getHaut } from '../lib/kouta';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { useHakutavat } from './useHakutavat';
 import {
+  DEFAULT_NUQS_OPTIONS,
   DEFAULT_PAGE_SIZE,
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
 } from '@/app/lib/constants';
 import { useTranslations } from './useTranslations';
 import { useUserPermissions } from './useUserPermissions';
 import { TranslatedName } from '../lib/localization/localization-types';
-import { DEFAULT_NUQS_OPTIONS } from './common';
 
 const alkamisKausiMatchesSelected = (
   haku: Haku,

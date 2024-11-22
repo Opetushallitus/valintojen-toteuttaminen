@@ -8,7 +8,10 @@ import {
   getSortParts,
   SortDirection,
 } from '@/app/components/table/table-utils';
-import { HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY } from '@/app/lib/constants';
+import {
+  DEFAULT_NUQS_OPTIONS,
+  HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
+} from '@/app/lib/constants';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import {
   isHyvaksyttyHarkinnanvaraisesti,
@@ -16,10 +19,7 @@ import {
   SijoittelunTila,
 } from '@/app/lib/types/sijoittelu-types';
 import { hakemusFilter } from '@/app/hooks/filters';
-import {
-  DEFAULT_NUQS_OPTIONS,
-  sortBySijoittelunTila,
-} from '@/app/hooks/common';
+import { sortBySijoittelunTila } from '@/app/hooks/common';
 
 const DEFAULT_PAGE_SIZE = 10;
 

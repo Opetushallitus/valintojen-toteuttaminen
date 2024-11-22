@@ -1,4 +1,4 @@
-import { DEFAULT_NUQS_OPTIONS } from '@/app/hooks/common';
+import { DEFAULT_NUQS_OPTIONS } from '@/app/lib/constants';
 import { useQueryState } from 'nuqs';
 import { useEffect } from 'react';
 import { useHarkinnanvaraisetPaginationQueryParams } from './useHarkinnanvaraisetPaginated';

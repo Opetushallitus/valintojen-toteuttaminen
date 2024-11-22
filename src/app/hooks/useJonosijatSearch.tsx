@@ -4,11 +4,13 @@ import { useDebounce } from '@/app/hooks/useDebounce';
 import { parseAsInteger, useQueryState } from 'nuqs';
 import { useHasChanged } from '@/app/hooks/useHasChanged';
 import { byProp, getSortParts } from '../components/table/table-utils';
-import { HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY } from '@/app/lib/constants';
+import {
+  DEFAULT_NUQS_OPTIONS,
+  HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
+} from '@/app/lib/constants';
 import { useTranslations } from './useTranslations';
 import { JonoSijaWithHakijaInfo } from './useLasketutValinnanVaiheet';
 import { hakemusFilter } from './filters';
-import { DEFAULT_NUQS_OPTIONS } from './common';
 
 const DEFAULT_PAGE_SIZE = 10;
 
