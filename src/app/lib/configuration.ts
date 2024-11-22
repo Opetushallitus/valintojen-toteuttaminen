@@ -15,43 +15,50 @@ type ValintatapajonoStatusParams = {
 };
 
 export const configuration = {
+  // yleiset
   raamitUrl: `${DOMAIN}/virkailija-raamit/apply-raamit.js`,
   loginUrl: process.env.LOGIN_URL || `${DOMAIN}/cas/login`,
   sessionCookie: process.env.SESSION_COOKIE || 'JSESSIONID',
   kayttoikeusUrl: `${DOMAIN}/kayttooikeus-service/henkilo/current/omattiedot`,
-  hautUrl: `${DOMAIN}/kouta-internal/haku/search?includeHakukohdeOids=false`,
-  hakuUrl: `${DOMAIN}/kouta-internal/haku`,
-  hakukohteetUrl: `${DOMAIN}/kouta-internal/hakukohde/search?all=false`,
-  hakukohdeUrl: `${DOMAIN}/kouta-internal/hakukohde`,
+  asiointiKieliUrl: `${DOMAIN}/oppijanumerorekisteri-service/henkilo/current/asiointiKieli`,
+  lokalisaatioUrl: `${DOMAIN}/lokalisointi/cxf/rest/v1/localisation?category=valintojen-toteuttaminen&locale=`,
+  ohjausparametritUrl: `${DOMAIN}/ohjausparametrit-service/api/v1/rest/parametri`,
+
+  // -------------------------------------------------------------------------------------------------
+  // koodisto
   kooditUrl: `${DOMAIN}/koodisto-service/rest/codeelement/codes/`,
   koodiUrl: (codeElementUri: string) =>
     `${DOMAIN}/koodisto-service/rest/codeelement/latest/${codeElementUri}`,
+
+  // -------------------------------------------------------------------------------------------------
+  // kouta-internal
   koutaInternalLogin: `${DOMAIN}/kouta-internal/auth/login`,
-  asiointiKieliUrl: `${DOMAIN}/oppijanumerorekisteri-service/henkilo/current/asiointiKieli`,
-  lokalisaatioUrl: `${DOMAIN}/lokalisointi/cxf/rest/v1/localisation?category=valintojen-toteuttaminen&locale=`,
+  hakuUrl: `${DOMAIN}/kouta-internal/haku`,
+  hautUrl: `${DOMAIN}/kouta-internal/haku/search?includeHakukohdeOids=false`,
+  hakukohteetUrl: `${DOMAIN}/kouta-internal/hakukohde/search?all=false`,
+  hakukohdeUrl: `${DOMAIN}/kouta-internal/hakukohde`,
+
+  // -------------------------------------------------------------------------------------------------
+  // valintaperusteet-service
   valintaperusteetUrl: `${DOMAIN}/valintaperusteet-service/resources/`,
-  valintaTulosServiceUrl: `${DOMAIN}/valinta-tulos-service/auth/`,
-  valintaTulosServiceLogin: `${DOMAIN}/valinta-tulos-service/auth/login`,
-  hakemuksetUrl: `${DOMAIN}/lomake-editori/api/external/valinta-ui`,
+
+  automaattinenSiirtoUrl: ({
+    valintatapajonoOid,
+    status,
+  }: ValintatapajonoStatusParams) =>
+    `${DOMAIN}/valintaperusteet-service/resources/V2valintaperusteet/${valintatapajonoOid}/automaattinenSiirto?status=${status}`,
+  hakukohdeValintakokeetUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
+    `${DOMAIN}/valintaperusteet-service/resources/hakukohde/${hakukohdeOid}/valintakoe`,
+
+  // -------------------------------------------------------------------------------------------------
+  // ataru
   ataruEditoriLogin: `${DOMAIN}/lomake-editori/auth/cas`,
+  hakemuksetUrl: `${DOMAIN}/lomake-editori/api/external/valinta-ui`,
+
+  // -------------------------------------------------------------------------------------------------
+  // valintalaskenta-laskenta-service
   valintalaskentaServiceLogin: `${DOMAIN}/valintalaskenta-laskenta-service/auth/login`,
-  valintalaskentaKoostePalveluUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/`,
   valintalaskentaServiceUrl: `${DOMAIN}/valintalaskenta-laskenta-service/resources/`,
-  koostetutPistetiedot: ({
-    hakuOid,
-    hakukohdeOid,
-  }: {
-    hakuOid: string;
-    hakukohdeOid: string;
-  }) =>
-    `${DOMAIN}/valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/haku/${hakuOid}/hakukohde/${hakukohdeOid}`,
-  valintalaskentaKoostePalveluLogin: `${DOMAIN}/valintalaskentakoostepalvelu/cas/login`,
-  hakukohteenLasketutValinnanVaiheetUrl: ({
-    hakukohdeOid,
-  }: {
-    hakukohdeOid: string;
-  }) =>
-    `${DOMAIN}/valintalaskenta-laskenta-service/resources/hakukohde/${hakukohdeOid}/valinnanvaihe`,
   hakemuksenLasketutValinnanvaiheetUrl: ({
     hakuOid,
     hakemusOid,
@@ -60,32 +67,57 @@ export const configuration = {
     hakemusOid: string;
   }) =>
     `${DOMAIN}/valintalaskenta-laskenta-service/resources/hakemus/${hakuOid}/${hakemusOid}`,
-  seurantaUrl: `${DOMAIN}/valintalaskenta-laskenta-service/resources/seuranta/yhteenveto/`,
-  ohjausparametritUrl: `${DOMAIN}/ohjausparametrit-service/api/v1/rest/parametri`,
+  hakukohteenLasketutValinnanVaiheetUrl: ({
+    hakukohdeOid,
+  }: {
+    hakukohdeOid: string;
+  }) =>
+    `${DOMAIN}/valintalaskenta-laskenta-service/resources/hakukohde/${hakukohdeOid}/valinnanvaihe`,
   hakukohdeHakijaryhmatUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
     `${DOMAIN}/valintalaskenta-laskenta-service/resources/hakukohde/${hakukohdeOid}/hakijaryhma`,
-  valintalaskentahistoriaUrl: ({
-    valintatapajonoOid,
-    hakemusOid,
-  }: {
-    valintatapajonoOid: string;
-    hakemusOid: string;
-  }) =>
-    `${DOMAIN}/valintalaskenta-ui/app/index.html#/valintatapajono/${valintatapajonoOid}/hakemus/${hakemusOid}/valintalaskentahistoria`,
-  valintalaskennanTulosExcelUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
-    `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintalaskentaexcel/valintalaskennantulos/aktivoi?hakukohdeOid=${hakukohdeOid}`,
+  seurantaUrl: `${DOMAIN}/valintalaskenta-laskenta-service/resources/seuranta/yhteenveto/`,
   valmisSijoiteltavaksiUrl: ({
     valintatapajonoOid,
     status,
   }: ValintatapajonoStatusParams) =>
     `${DOMAIN}/valintalaskenta-laskenta-service/resources/valintatapajono/${valintatapajonoOid}/valmissijoiteltavaksi?status=${status}`,
-  automaattinenSiirtoUrl: ({
+  getHarkinnanvaraisetTilatUrl: ({
+    hakuOid,
+    hakukohdeOid,
+  }: {
+    hakuOid: string;
+    hakukohdeOid: string;
+  }) =>
+    `${DOMAIN}/valintalaskenta-laskenta-service/resources/harkinnanvarainenhyvaksynta/haku/${hakuOid}/hakukohde/${hakukohdeOid}`,
+  setHarkinnanvaraisetTilatUrl: `${DOMAIN}/valintalaskenta-laskenta-service/resources/harkinnanvarainenhyvaksynta`,
+  jarjestyskriteeriMuokkausUrl: ({
     valintatapajonoOid,
-    status,
-  }: ValintatapajonoStatusParams) =>
-    `${DOMAIN}/valintaperusteet-service/resources/V2valintaperusteet/${valintatapajonoOid}/automaattinenSiirto?status=${status}`,
-  hakukohdeValintakokeetUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
-    `${DOMAIN}/valintaperusteet-service/resources/hakukohde/${hakukohdeOid}/valintakoe`,
+    hakemusOid,
+    jarjestyskriteeriPrioriteetti,
+  }: {
+    valintatapajonoOid: string;
+    hakemusOid: string;
+    jarjestyskriteeriPrioriteetti: number;
+  }) =>
+    `${DOMAIN}/valintalaskenta-laskenta-service/resources/valintatapajono/${valintatapajonoOid}/${hakemusOid}/${jarjestyskriteeriPrioriteetti}/jonosija`,
+
+  // -------------------------------------------------------------------------------------------------
+  // valintalaskentakoostepalvelu
+  valintalaskentaKoostePalveluLogin: `${DOMAIN}/valintalaskentakoostepalvelu/cas/login`,
+  valintalaskentaKoostePalveluUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/`,
+  kayttaaValintalaskentaaUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
+    `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintaperusteet/hakukohde/${hakukohdeOid}/kayttaaValintalaskentaa`,
+  koostetutPistetiedot: ({
+    hakuOid,
+    hakukohdeOid,
+  }: {
+    hakuOid: string;
+    hakukohdeOid: string;
+  }) =>
+    `${DOMAIN}/valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/haku/${hakuOid}/hakukohde/${hakukohdeOid}`,
+  valintalaskennanTulosExcelUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
+    `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintalaskentaexcel/valintalaskennantulos/aktivoi?hakukohdeOid=${hakukohdeOid}`,
+
   valintakoeOsallistumisetUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintakoe/hakutoive/${hakukohdeOid}`,
   startExportValintakoeExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintalaskentaexcel/valintakoekutsut/aktivoi`,
@@ -98,17 +130,11 @@ export const configuration = {
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/dokumentit/lataa/${dokumenttiId}`,
   startImportPistesyottoUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/pistesyotto/tuonti`,
   harkinnanvaraisuudetHakemuksilleUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/harkinnanvaraisuus/hakemuksille`,
-  getHarkinnanvaraisetTilatUrl: ({
-    hakuOid,
-    hakukohdeOid,
-  }: {
-    hakuOid: string;
-    hakukohdeOid: string;
-  }) =>
-    `${DOMAIN}/valintalaskenta-laskenta-service/resources/harkinnanvarainenhyvaksynta/haku/${hakuOid}/hakukohde/${hakukohdeOid}`,
-  setHarkinnanvaraisetTilatUrl: `${DOMAIN}/valintalaskenta-laskenta-service/resources/harkinnanvarainenhyvaksynta`,
-  kayttaaValintalaskentaaUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
-    `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintaperusteet/hakukohde/${hakukohdeOid}/kayttaaValintalaskentaa`,
+
+  // -------------------------------------------------------------------------------------------------
+  // valinta-tulos-service
+  valintaTulosServiceLogin: `${DOMAIN}/valinta-tulos-service/auth/login`,
+  valintaTulosServiceUrl: `${DOMAIN}/valinta-tulos-service/auth/`,
   hakemuksenSijoitteluajonTuloksetUrl: ({
     hakuOid,
     hakemusOid,
@@ -117,22 +143,24 @@ export const configuration = {
     hakemusOid: string;
   }) =>
     `${DOMAIN}/valinta-tulos-service/auth/sijoittelu/${hakuOid}/sijoitteluajo/latest/hakemus/${hakemusOid}`,
-  jonosijanJarjestyskriteeriMuokkausUrl: ({
-    valintatapajonoOid,
-    hakemusOid,
-    jarjestyskriteeriPrioriteetti,
-  }: {
-    valintatapajonoOid: string;
-    hakemusOid: string;
-    jarjestyskriteeriPrioriteetti: number;
-  }) =>
-    `${DOMAIN}/valintalaskenta-laskenta-service/resources/valintatapajono/${valintatapajonoOid}/${hakemusOid}/${jarjestyskriteeriPrioriteetti}/jonosija`,
-  vastaanottotietoMuokkausUrl: ({
+  valinnanTulosMuokkausUrl: ({
     valintatapajonoOid,
   }: {
     valintatapajonoOid: string;
   }) =>
     `${DOMAIN}/valinta-tulos-service/auth/valinnan-tulos/${valintatapajonoOid}`,
-  hakemuksenValinnanTuloksetUrl: ({ hakemusOid }: { hakemusOid: string }) =>
+  hakemuksenValinnanTulosUrl: ({ hakemusOid }: { hakemusOid: string }) =>
     `${DOMAIN}/valinta-tulos-service/auth/valinnan-tulos/hakemus/?hakemusOid=${hakemusOid}`,
+
+  // -------------------------------------------------------------------------------------------------
+  // valintalaskenta-ui (vanha käyttöliittymä)
+  // TODO: Poista kun korvattu uudella käyttöliittymällä
+  valintalaskentahistoriaUrl: ({
+    valintatapajonoOid,
+    hakemusOid,
+  }: {
+    valintatapajonoOid: string;
+    hakemusOid: string;
+  }) =>
+    `${DOMAIN}/valintalaskenta-ui/app/index.html#/valintatapajono/${valintatapajonoOid}/hakemus/${hakemusOid}/valintalaskentahistoria`,
 } as const;

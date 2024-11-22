@@ -351,7 +351,7 @@ export const saveJonosijanJarjestyskriteeri = ({
   selite,
 }: SaveJarjestyskriteeriParams) => {
   return client.post<null>(
-    configuration.jonosijanJarjestyskriteeriMuokkausUrl({
+    configuration.jarjestyskriteeriMuokkausUrl({
       valintatapajonoOid,
       hakemusOid,
       jarjestyskriteeriPrioriteetti,
@@ -370,7 +370,7 @@ export const deleteJonosijanJarjestyskriteeri = ({
   jarjestyskriteeriPrioriteetti,
 }: JarjestyskriteeriKeyParams) => {
   return client.delete<null>(
-    configuration.jonosijanJarjestyskriteeriMuokkausUrl({
+    configuration.jarjestyskriteeriMuokkausUrl({
       valintatapajonoOid,
       hakemusOid,
       jarjestyskriteeriPrioriteetti,

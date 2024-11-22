@@ -387,11 +387,9 @@ export const saveValinnanTulokset = async ({
 }) => {
   const results = await client.patch<
     Array<SijoitteluAjonTuloksetPatchResponse>
-  >(
-    `${configuration.valintaTulosServiceUrl}valinnan-tulos/${valintatapajonoOid}`,
-    tulokset,
-    { headers: { 'X-If-Unmodified-Since': ifUnmodifiedSince } },
-  );
+  >(configuration.valinnanTulosMuokkausUrl({ valintatapajonoOid }), tulokset, {
+    headers: { 'X-If-Unmodified-Since': ifUnmodifiedSince },
+  });
 
   const { data } = results;
 
@@ -464,7 +462,7 @@ export const getValinnanTulokset = async ({
 }) => {
   const { data, headers } = await client.get<
     Array<{ valinnantulos: ValinnanTulos }>
-  >(configuration.hakemuksenValinnanTuloksetUrl({ hakemusOid }));
+  >(configuration.hakemuksenValinnanTulosUrl({ hakemusOid }));
   const dateHeader = headers.get('Date');
   console.log({ dateHeader });
   return {
