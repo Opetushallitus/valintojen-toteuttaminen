@@ -11,7 +11,6 @@ import {
   TableRow,
 } from '@mui/material';
 import { DEFAULT_BOX_BORDER } from '@/app/lib/constants';
-import { Hakukohde } from '@/app/lib/types/kouta-types';
 import {
   OphButton,
   ophColors,
@@ -20,13 +19,8 @@ import {
 import { isEmpty, isNonNullish } from 'remeda';
 import { useState } from 'react';
 import { ChevronRight, Edit } from '@mui/icons-material';
-import { LasketutValinnanvaiheet } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
 import { getValintatapaJonoNimi } from '@/app/lib/get-valintatapa-jono-nimi';
-import {
-  SijoitteluajonTulosHakutoive,
-  ValinnanTulos,
-} from '@/app/lib/valinta-tulos-service';
 import {
   isHyvaksyttyHarkinnanvaraisesti,
   SijoittelunTila,
@@ -42,15 +36,7 @@ import {
   isImoittautuminenPossible,
   isVastaanottoPossible,
 } from '@/app/lib/sijoittelun-tulokset-utils';
-
-type Tulokset = {
-  sijoittelunTulokset?: SijoitteluajonTulosHakutoive;
-  valinnanvaiheet?: LasketutValinnanvaiheet;
-  valinnanTulos?: ValinnanTulos;
-  valinnanTulosDateHeader: string | null;
-};
-
-type HakukohdeTuloksilla = Hakukohde & Tulokset;
+import { HakukohdeTuloksilla } from '../hooks/useHenkiloPageData';
 
 const TC = styled(TableCell)(({ theme }) => ({
   borderBottom: 0,
@@ -123,12 +109,7 @@ const HakutoiveContent = ({
   hakutoiveNumero: number;
 }) => {
   const { t } = useTranslations();
-  const {
-    valinnanvaiheet,
-    sijoittelunTulokset,
-    valinnanTulos,
-    valinnanTulosDateHeader,
-  } = hakukohde;
+  const { valinnanvaiheet, valinnanTulos } = hakukohde;
 
   return isEmpty(valinnanvaiheet ?? []) ? (
     <HakutoiveInfoRow>
@@ -139,12 +120,9 @@ const HakutoiveContent = ({
     valinnanvaiheet?.map((valinnanvaihe, valinnanvaiheIndex) => {
       return valinnanvaihe.valintatapajonot?.map((jono, jonoIndex) => {
         const isFirstJono = valinnanvaiheIndex === 0 && jonoIndex === 0;
+
+        // Jonosijoja pitäisi aina olla vain yksi
         const jonosija = jono.jonosijat[0];
-        const sijoittelunJono =
-          sijoittelunTulokset?.hakutoiveenValintatapajonot?.find(
-            (sijoitteluJono) =>
-              sijoitteluJono.valintatapajonoOid === jono.valintatapajonooid,
-          );
 
         const openValinnanTilatEditModal = () =>
           showModal(ValinnanTilatEditModal, {
@@ -153,7 +131,7 @@ const HakutoiveContent = ({
             henkiloOid: hakija.hakijaOid,
             hakukohde,
             valinnanTulos,
-            dateHeader: valinnanTulosDateHeader,
+            lastModified: valinnanTulos?.lastModified,
           });
 
         return (
@@ -194,8 +172,8 @@ const HakutoiveContent = ({
                       {
                         tila: valinnanTulos.valinnantila,
                         hyvaksyttyHarkinnanvaraisesti:
-                          sijoittelunJono?.hyvaksyttyHarkinnanvaraisesti,
-                        varasijanNumero: sijoittelunJono?.varasijanNumero,
+                          valinnanTulos?.hyvaksyttyHarkinnanvaraisesti,
+                        varasijanNumero: valinnanTulos?.varasijanNumero,
                       },
                       t,
                     )}

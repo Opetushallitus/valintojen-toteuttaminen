@@ -16,7 +16,6 @@ import {
   VastaanottoTila,
 } from './types/sijoittelu-types';
 import { MaksunTila, Maksuvelvollisuus } from './types/ataru-types';
-import { ValintaStatusUpdateErrorResult } from './types/valinta-tulos-types';
 import { FetchError, OphApiError } from './common';
 
 type SijoittelunTulosResponseData = {
@@ -253,7 +252,7 @@ export const tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys = async (
   );
 };
 
-export const getLatestSijoitteluAjonTulokset = async (
+export const getLatestSijoitteluAjonTuloksetForHakukohde = async (
   hakuOid: string,
   hakukohdeOid: string,
 ): Promise<SijoitteluajonTulokset> => {
@@ -286,7 +285,7 @@ export const getLatestSijoitteluAjonTulokset = async (
   return { valintatapajonot: sijoitteluajonTulokset, hakijaryhmat };
 };
 
-export type SijoittelunHakutoiveenValintatapajono = {
+type SijoittelunHakutoiveenValintatapajonoModel = {
   tila: SijoittelunTila;
   pisteet: number;
   valintatapajonoOid: string;
@@ -298,16 +297,16 @@ export type SijoittelunHakutoiveenValintatapajono = {
   ilmoittautumisTila: string;
 };
 
-export type SijoitteluajonTulosHakutoive = {
+export type SijoitteluajonTulosHakutoiveModel = {
   hakutoive: number;
   hakukohdeOid: string;
   vastaanottotieto: VastaanottoTila;
   hakijaryhmat: Array<{ oid: string; kiintio: number }>;
-  hakutoiveenValintatapajonot: Array<SijoittelunHakutoiveenValintatapajono>;
+  hakutoiveenValintatapajonot: Array<SijoittelunHakutoiveenValintatapajonoModel>;
 };
 
 type SijoitteluajonTuloksetForHakemusResponseData = {
-  hakutoiveet: Array<SijoitteluajonTulosHakutoive>;
+  hakutoiveet: Array<SijoitteluajonTulosHakutoiveModel>;
 };
 
 export const getLatestSijoitteluajonTuloksetForHakemus = async ({
@@ -358,7 +357,7 @@ export const saveMaksunTilanMuutokset = async (
   }
 };
 
-export type ValinnanTulos = {
+export type ValinnanTulosModel = {
   hakukohdeOid: string;
   valintatapajonoOid: string;
   hakemusOid: string;
@@ -367,24 +366,28 @@ export type ValinnanTulos = {
   valinnantila: SijoittelunTila;
   ilmoittautumistila: IlmoittautumisTila;
   julkaistavissa: boolean;
-  ehdollisestiHyvaksyttavissa?: boolean;
+  ehdollisestiHyvaksyttavissa: boolean;
   ehdollisenHyvaksymisenEhtoKoodi?: string | null;
   ehdollisenHyvaksymisenEhtoFI?: string | null;
   ehdollisenHyvaksymisenEhtoSV?: string | null;
   ehdollisenHyvaksymisenEhtoEN?: string | null;
-  hyvaksyttyVarasijalta?: boolean;
-  hyvaksyPeruuntunut?: boolean;
+  hyvaksyttyVarasijalta: boolean;
+  hyvaksyPeruuntunut: boolean;
 };
 
 export const saveValinnanTulokset = async ({
   valintatapajonoOid,
-  ifUnmodifiedSince,
+  lastModified,
   tulokset,
 }: {
   valintatapajonoOid: string;
-  ifUnmodifiedSince: string;
-  tulokset: Array<ValinnanTulos>;
+  lastModified: Date | string | null;
+  tulokset: Array<ValinnanTulosModel>;
 }) => {
+  const ifUnmodifiedSince = (
+    lastModified ? new Date(lastModified) : new Date()
+  ).toUTCString();
+
   const results = await client.patch<
     Array<SijoitteluAjonTuloksetPatchResponse>
   >(configuration.valinnanTulosMuokkausUrl({ valintatapajonoOid }), tulokset, {
@@ -394,7 +397,7 @@ export const saveValinnanTulokset = async ({
   const { data } = results;
 
   if (Array.isArray(data) && data.length > 0) {
-    throw new OphApiError<ValintaStatusUpdateErrorResult[]>(
+    throw new OphApiError<Array<SijoitteluAjonTuloksetPatchResponse>>(
       results,
       'virhe.tallennus',
     );
@@ -431,7 +434,7 @@ export const saveSijoitteluAjonTulokset = async (
 
   await saveValinnanTulokset({
     valintatapajonoOid,
-    ifUnmodifiedSince: lastModified,
+    lastModified: lastModified,
     tulokset: valintaTulokset,
   });
 
@@ -461,12 +464,10 @@ export const getValinnanTulokset = async ({
   hakemusOid: string;
 }) => {
   const { data, headers } = await client.get<
-    Array<{ valinnantulos: ValinnanTulos }>
+    Array<{ valinnantulos: ValinnanTulosModel }>
   >(configuration.hakemuksenValinnanTulosUrl({ hakemusOid }));
-  const dateHeader = headers.get('Date');
-  console.log({ dateHeader });
   return {
-    dateHeader,
+    lastModified: headers.get('X-Last-Modified'),
     data: indexBy(data.map(prop('valinnantulos')), prop('hakukohdeOid')),
   };
 };

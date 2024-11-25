@@ -19,14 +19,17 @@ import {
 import { useEffect, useState } from 'react';
 import {
   saveValinnanTulokset,
-  ValinnanTulos,
+  ValinnanTulosModel,
 } from '@/app/lib/valinta-tulos-service';
 import {
   IlmoittautumisTila,
   VastaanottoTila,
 } from '@/app/lib/types/sijoittelu-types';
 import { FullClientSpinner } from '@/app/components/client-spinner';
-import { valinnanTuloksetQueryOptions } from '../hooks/useHenkiloPageData';
+import {
+  valinnanTuloksetQueryOptions,
+  ValinnanTulosLisatiedoilla,
+} from '../hooks/useHenkiloPageData';
 import {
   isImoittautuminenPossible,
   isVastaanottoPossible,
@@ -71,22 +74,19 @@ const refetchValinnanTulokset = ({
 };
 
 const useValinnanTilatMutation = ({
-  dateHeader,
+  lastModified,
 }: {
-  dateHeader: string | null;
+  lastModified: Date | null;
 }) => {
   const { addToast } = useToaster();
   const queryClient = useQueryClient();
   const { t } = useTranslations();
 
   return useMutation({
-    mutationFn: async (valinnanTulos: ValinnanTulos) => {
+    mutationFn: async (valinnanTulos: ValinnanTulosModel) => {
       await saveValinnanTulokset({
+        lastModified,
         valintatapajonoOid: valinnanTulos.valintatapajonoOid,
-        ifUnmodifiedSince: (dateHeader
-          ? new Date(dateHeader)
-          : new Date()
-        ).toUTCString(),
         tulokset: [valinnanTulos],
       });
     },
@@ -129,10 +129,9 @@ export const ValinnanTilatEditModal = createModal<{
   hakutoiveNumero: number;
   hakijanNimi: string;
   hakukohde: Hakukohde;
-  valinnanTulos: ValinnanTulos;
+  valinnanTulos: ValinnanTulosLisatiedoilla;
   henkiloOid: string;
-  dateHeader: string | null;
-}>(({ hakutoiveNumero, hakijanNimi, hakukohde, valinnanTulos, dateHeader }) => {
+}>(({ hakutoiveNumero, hakijanNimi, hakukohde, valinnanTulos }) => {
   const { open, TransitionProps, onClose } = useOphModalProps();
   const { t } = useTranslations();
 
@@ -169,7 +168,7 @@ export const ValinnanTilatEditModal = createModal<{
   }, [ilmoittautuminenPossible]);
 
   const mutation = useValinnanTilatMutation({
-    dateHeader,
+    lastModified: valinnanTulos.lastModified,
   });
 
   return (

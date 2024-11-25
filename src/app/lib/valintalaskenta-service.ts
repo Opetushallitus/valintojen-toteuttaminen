@@ -5,7 +5,7 @@ import { booleanToString } from './common';
 import { configuration } from './configuration';
 import { client } from './http-client';
 import { getHakemukset } from './ataru';
-import { getLatestSijoitteluAjonTulokset } from './valinta-tulos-service';
+import { getLatestSijoitteluAjonTuloksetForHakukohde } from './valinta-tulos-service';
 import { getHakukohteenValintatuloksetIlmanHakijanTilaa } from './valintalaskentakoostepalvelu';
 import {
   HakijaryhmanHakija,
@@ -292,7 +292,7 @@ export const getHakijaryhmat = async (
 ): Promise<HakukohteenHakijaryhma[]> => {
   const [hakemukset, tulokset, valintaTulokset] = await Promise.all([
     getHakemukset({ hakuOid, hakukohdeOid }),
-    getLatestSijoitteluAjonTulokset(hakuOid, hakukohdeOid),
+    getLatestSijoitteluAjonTuloksetForHakukohde(hakuOid, hakukohdeOid),
     getHakukohteenValintatuloksetIlmanHakijanTilaa(hakuOid, hakukohdeOid),
   ]);
   const sijoittelunHakemukset = pipe(
