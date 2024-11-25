@@ -84,7 +84,7 @@ const VastaanOttoSelect = ({
 
   return (
     <LocalizedSelect
-      placeholder="Muuta vastaanottotieto"
+      placeholder={t('sijoittelun-tulokset.muuta-vastaanottotieto')}
       onChange={massUpdateVastaanOtto}
       options={vastaanottotilaOptions}
       disabled={disabled}
