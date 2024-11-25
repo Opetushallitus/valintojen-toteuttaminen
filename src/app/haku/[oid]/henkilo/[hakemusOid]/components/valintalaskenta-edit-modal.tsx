@@ -3,10 +3,9 @@ import {
   hideModal,
   useOphModalProps,
 } from '@/app/components/global-modal';
-import { OphModalDialog } from '@/app/components/oph-modal-dialog';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { OphButton, OphSelect } from '@opetushallitus/oph-design-system';
-import { Box, Stack } from '@mui/material';
+import { Stack } from '@mui/material';
 import { OphInput } from '@/app/components/form/oph-input';
 import { useEffect, useState } from 'react';
 import { LaskettuJono } from '@/app/hooks/useLasketutValinnanVaiheet';
@@ -25,9 +24,9 @@ import {
   hakemuksenLasketutValinnanvaiheetQueryOptions,
   saveJonosijanJarjestyskriteeri,
 } from '@/app/lib/valintalaskenta-service';
-import { FullClientSpinner } from '@/app/components/client-spinner';
 import { isEmpty } from 'remeda';
 import { InlineFormControl, PaddedLabel } from './inline-form-control';
+import { EditModalDialog } from './edit-modal-dialog';
 
 const ModalActions = ({
   onClose,
@@ -263,12 +262,12 @@ export const ValintalaskentaEditModal = createModal<{
     });
 
   return (
-    <OphModalDialog
+    <EditModalDialog
       open={open}
       TransitionProps={TransitionProps}
       title={t('henkilo.muokkaa-valintalaskentaa')}
-      maxWidth="lg"
-      titleAlign="left"
+      pendingTitle="Tallennetaan järjestyskriteerin tietoja..."
+      isPending={isPending}
       onClose={onClose}
       actions={
         <ModalActions
@@ -283,70 +282,54 @@ export const ValintalaskentaEditModal = createModal<{
         />
       }
     >
-      {isPending ? (
-        <FullClientSpinner />
-      ) : (
-        <Box
-          sx={{
-            display: 'grid',
-            paddingY: 2,
-            gridGap: (theme) => theme.spacing(2),
-            gridTemplateColumns: 'fit-content(170px) minmax(0, 1fr)',
-            placeItems: 'start stretch',
-          }}
-        >
-          <InlineFormControl
-            label={t('henkilo.taulukko.hakija')}
-            renderInput={({ labelId }) => (
-              <span aria-labelledby={labelId}>{hakijanNimi}</span>
-            )}
-          />
-          <InlineFormControl
-            label={t('henkilo.taulukko.hakutoive')}
-            renderInput={({ labelId }) => (
-              <span aria-labelledby={labelId}>
-                <HakutoiveTitle
-                  hakutoiveNumero={hakutoiveNumero}
-                  hakukohde={hakukohde}
-                />
-              </span>
-            )}
-          />
-          <InlineFormControl
-            label={t('henkilo.taulukko.valintatapajono')}
-            renderInput={({ labelId }) => (
-              <span aria-labelledby={labelId}>{valintatapajono.nimi}</span>
-            )}
-          />
-          <InlineFormControl
-            label={
-              <PaddedLabel>
-                {t('henkilo.taulukko.jarjestyskriteeri')}
-              </PaddedLabel>
-            }
-            renderInput={({ labelId }) => (
-              <OphSelect
-                sx={{ width: '100%' }}
-                labelId={labelId}
-                value={jarjestyskriteeriPrioriteetti.toString()}
-                options={jarjestyskriteeriOptions}
-                onChange={(e) =>
-                  setJarjestyskriteeriPrioriteetti(Number(e.target.value))
-                }
-              />
-            )}
-          />
-          <JarjestyskriteeriFields
-            value={muokkausParams}
-            onChange={(changedParams) =>
-              setMuokkausParams((oldParams) => ({
-                ...oldParams,
-                ...changedParams,
-              }))
+      <InlineFormControl
+        label={t('henkilo.taulukko.hakija')}
+        renderInput={({ labelId }) => (
+          <span aria-labelledby={labelId}>{hakijanNimi}</span>
+        )}
+      />
+      <InlineFormControl
+        label={t('henkilo.taulukko.hakutoive')}
+        renderInput={({ labelId }) => (
+          <span aria-labelledby={labelId}>
+            <HakutoiveTitle
+              hakutoiveNumero={hakutoiveNumero}
+              hakukohde={hakukohde}
+            />
+          </span>
+        )}
+      />
+      <InlineFormControl
+        label={t('henkilo.taulukko.valintatapajono')}
+        renderInput={({ labelId }) => (
+          <span aria-labelledby={labelId}>{valintatapajono.nimi}</span>
+        )}
+      />
+      <InlineFormControl
+        label={
+          <PaddedLabel>{t('henkilo.taulukko.jarjestyskriteeri')}</PaddedLabel>
+        }
+        renderInput={({ labelId }) => (
+          <OphSelect
+            sx={{ width: '100%' }}
+            labelId={labelId}
+            value={jarjestyskriteeriPrioriteetti.toString()}
+            options={jarjestyskriteeriOptions}
+            onChange={(e) =>
+              setJarjestyskriteeriPrioriteetti(Number(e.target.value))
             }
           />
-        </Box>
-      )}
-    </OphModalDialog>
+        )}
+      />
+      <JarjestyskriteeriFields
+        value={muokkausParams}
+        onChange={(changedParams) =>
+          setMuokkausParams((oldParams) => ({
+            ...oldParams,
+            ...changedParams,
+          }))
+        }
+      />
+    </EditModalDialog>
   );
 });

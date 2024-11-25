@@ -3,10 +3,9 @@ import {
   hideModal,
   useOphModalProps,
 } from '@/app/components/global-modal';
-import { OphModalDialog } from '@/app/components/oph-modal-dialog';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Hakukohde } from '@/app/lib/types/kouta-types';
-import { Box, Stack } from '@mui/material';
+import { Stack } from '@mui/material';
 import { OphButton, OphSelect } from '@opetushallitus/oph-design-system';
 import { InlineFormControl, PaddedLabel } from './inline-form-control';
 import { HakutoiveTitle } from './hakutoive-title';
@@ -25,7 +24,6 @@ import {
   IlmoittautumisTila,
   VastaanottoTila,
 } from '@/app/lib/types/sijoittelu-types';
-import { FullClientSpinner } from '@/app/components/client-spinner';
 import {
   valinnanTuloksetQueryOptions,
   ValinnanTulosLisatiedoilla,
@@ -37,6 +35,7 @@ import {
 import { OphApiError } from '@/app/lib/common';
 import { ValintaStatusUpdateErrorResult } from '@/app/lib/types/valinta-tulos-types';
 import { HttpClientResponse } from '@/app/lib/http-client';
+import { EditModalDialog } from './edit-modal-dialog';
 
 const ModalActions = ({
   onClose,
@@ -167,23 +166,23 @@ export const ValinnanTilatEditModal = createModal<{
     }
   }, [ilmoittautuminenPossible]);
 
-  const mutation = useValinnanTilatMutation({
+  const { mutate: saveValinnanTilat, isPending } = useValinnanTilatMutation({
     lastModified: valinnanTulos.lastModified,
   });
 
   return (
-    <OphModalDialog
+    <EditModalDialog
       open={open}
       TransitionProps={TransitionProps}
       title={t('henkilo.muokkaa-valintaa')}
-      maxWidth="lg"
-      titleAlign="left"
+      isPending={isPending}
+      pendingTitle="Tallennetaan valinnan tietoja..."
       onClose={onClose}
       actions={
         <ModalActions
           onClose={onClose}
           onSave={() =>
-            mutation.mutate({
+            saveValinnanTilat({
               ...valinnanTulos,
               vastaanottotila: vastaanottoTila as VastaanottoTila,
               ilmoittautumistila: ilmoittautumisTila as IlmoittautumisTila,
@@ -192,77 +191,61 @@ export const ValinnanTilatEditModal = createModal<{
         />
       }
     >
-      {mutation.isPending ? (
-        <FullClientSpinner />
-      ) : (
-        <Box
-          sx={{
-            display: 'grid',
-            paddingY: 2,
-            gridGap: (theme) => theme.spacing(2),
-            gridTemplateColumns: '170px 1fr',
-            placeItems: 'start stretch',
-          }}
-        >
-          <InlineFormControl
-            label={t('henkilo.taulukko.hakija')}
-            renderInput={({ labelId }) => (
-              <span aria-labelledby={labelId}>{hakijanNimi}</span>
-            )}
-          />
-          <InlineFormControl
-            label={t('henkilo.taulukko.hakutoive')}
-            renderInput={({ labelId }) => (
-              <span aria-labelledby={labelId}>
-                <HakutoiveTitle
-                  hakutoiveNumero={hakutoiveNumero}
-                  hakukohde={hakukohde}
-                />
-              </span>
-            )}
-          />
-          {isVastaanottoPossible({
-            tila: valinnanTulos.valinnantila,
-            vastaanottotila: valinnanTulos.vastaanottotila,
-            julkaistavissa: valinnanTulos.julkaistavissa,
-          }) && (
-            <InlineFormControl
-              label={
-                <PaddedLabel>
-                  {t('henkilo.taulukko.vastaanottotila')}
-                </PaddedLabel>
-              }
-              renderInput={({ labelId }) => (
-                <OphSelect
-                  sx={{ width: '100%' }}
-                  labelId={labelId}
-                  value={vastaanottoTila}
-                  options={vastaanottoTilaOptions}
-                  onChange={(e) => setVastaanottoTila(e.target.value)}
-                />
-              )}
+      <InlineFormControl
+        label={t('henkilo.taulukko.hakija')}
+        renderInput={({ labelId }) => (
+          <span aria-labelledby={labelId}>{hakijanNimi}</span>
+        )}
+      />
+      <InlineFormControl
+        label={t('henkilo.taulukko.hakutoive')}
+        renderInput={({ labelId }) => (
+          <span aria-labelledby={labelId}>
+            <HakutoiveTitle
+              hakutoiveNumero={hakutoiveNumero}
+              hakukohde={hakukohde}
+            />
+          </span>
+        )}
+      />
+      {isVastaanottoPossible({
+        tila: valinnanTulos.valinnantila,
+        vastaanottotila: valinnanTulos.vastaanottotila,
+        julkaistavissa: valinnanTulos.julkaistavissa,
+      }) && (
+        <InlineFormControl
+          label={
+            <PaddedLabel>{t('henkilo.taulukko.vastaanottotila')}</PaddedLabel>
+          }
+          renderInput={({ labelId }) => (
+            <OphSelect
+              sx={{ width: '100%' }}
+              labelId={labelId}
+              value={vastaanottoTila}
+              options={vastaanottoTilaOptions}
+              onChange={(e) => setVastaanottoTila(e.target.value)}
             />
           )}
-          {ilmoittautuminenPossible && (
-            <InlineFormControl
-              label={
-                <PaddedLabel>
-                  {t('henkilo.taulukko.ilmoittautumistila')}
-                </PaddedLabel>
-              }
-              renderInput={({ labelId }) => (
-                <OphSelect
-                  sx={{ width: '100%' }}
-                  labelId={labelId}
-                  value={ilmoittautumisTila}
-                  options={ilmoittautumisTilaOptions}
-                  onChange={(e) => setIlmoittautumisTila(e.target.value)}
-                />
-              )}
-            />
-          )}
-        </Box>
+        />
       )}
-    </OphModalDialog>
+      {ilmoittautuminenPossible && (
+        <InlineFormControl
+          label={
+            <PaddedLabel>
+              {t('henkilo.taulukko.ilmoittautumistila')}
+            </PaddedLabel>
+          }
+          renderInput={({ labelId }) => (
+            <OphSelect
+              sx={{ width: '100%' }}
+              labelId={labelId}
+              value={ilmoittautumisTila}
+              options={ilmoittautumisTilaOptions}
+              onChange={(e) => setIlmoittautumisTila(e.target.value)}
+            />
+          )}
+        />
+      )}
+    </EditModalDialog>
   );
 });
