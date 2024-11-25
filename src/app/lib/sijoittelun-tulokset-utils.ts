@@ -17,7 +17,7 @@ type SijoittelunTilaKentat = Pick<
   'julkaistavissa' | 'tila' | 'vastaanottotila'
 >;
 
-const isVastaanotettavissa = (hakemuksenTila: SijoittelunTila) =>
+const isSijoittelunTilaVastaanotettavissa = (hakemuksenTila: SijoittelunTila) =>
   [
     SijoittelunTila.HYVAKSYTTY,
     SijoittelunTila.VARASIJALTA_HYVAKSYTTY,
@@ -25,13 +25,11 @@ const isVastaanotettavissa = (hakemuksenTila: SijoittelunTila) =>
     SijoittelunTila.PERUUTETTU,
   ].includes(hakemuksenTila);
 
-export const isVastaanottotilaEditable = (h: SijoittelunTilaKentat): boolean =>
-  isVastaanotettavissa(h.tila) && h.julkaistavissa;
+export const isVastaanottoPossible = (h: SijoittelunTilaKentat): boolean =>
+  isSijoittelunTilaVastaanotettavissa(h.tila) && h.julkaistavissa;
 
-export const isIlmoittautumistilaEditable = (
-  h: SijoittelunTilaKentat,
-): boolean =>
-  isVastaanotettavissa(h.tila) &&
+export const isImoittautuminenPossible = (h: SijoittelunTilaKentat): boolean =>
+  isSijoittelunTilaVastaanotettavissa(h.tila) &&
   VASTAANOTTOTILAT_JOILLE_NAYTETAAN_ILMOITTAUTUMISTILA.includes(
     h.vastaanottotila,
   );
@@ -46,7 +44,7 @@ export const canHakuBePublished = (
         new Date() >= haunAsetukset.valintaEsityksenHyvaksyminen),
   );
 
-export const hakemusVastaanottotilaJulkaistavissa = (
+export const isVastaanottotilaJulkaistavissa = (
   h: SijoittelunTilaKentat,
 ): boolean =>
   h.vastaanottotila === VastaanottoTila.KESKEN ||

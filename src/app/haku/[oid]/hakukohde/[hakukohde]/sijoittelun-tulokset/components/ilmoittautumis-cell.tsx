@@ -7,7 +7,7 @@ import {
 import { SijoittelunTuloksetChangeEvent } from '../lib/sijoittelun-tulokset-state';
 import { SelectChangeEvent } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { isIlmoittautumistilaEditable } from '@/app/lib/sijoittelun-tulokset-utils';
+import { isImoittautuminenPossible } from '@/app/lib/sijoittelun-tulokset-utils';
 
 export const IlmoittautumisCell = ({
   hakemus,
@@ -33,7 +33,7 @@ export const IlmoittautumisCell = ({
     },
   );
 
-  const showSelect = isIlmoittautumistilaEditable(hakemus);
+  const showSelect = isImoittautuminenPossible(hakemus);
 
   const updateIlmoittautumisTila = (event: SelectChangeEvent<string>) => {
     const tila = event.target.value as IlmoittautumisTila;

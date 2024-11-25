@@ -16,8 +16,8 @@ import { FetchError } from '@/app/lib/common';
 import { SijoittelunTulosErrorModalDialog } from '../components/sijoittelun-tulos-error-modal';
 import { showModal } from '@/app/components/global-modal';
 import {
-  isIlmoittautumistilaEditable,
-  isVastaanottotilaEditable,
+  isImoittautuminenPossible,
+  isVastaanottoPossible,
 } from '@/app/lib/sijoittelun-tulokset-utils';
 
 export type SijoittelunTuloksetContext = {
@@ -387,9 +387,9 @@ const massUpdateChangedHakemukset = (
     if (
       hakenut &&
       ((e.ilmoittautumisTila !== hakenut.ilmoittautumisTila &&
-        isIlmoittautumistilaEditable(hakenut)) ||
+        isImoittautuminenPossible(hakenut)) ||
         (e.vastaanottoTila !== hakenut.vastaanottotila &&
-          isVastaanottotilaEditable(hakenut)))
+          isVastaanottoPossible(hakenut)))
     ) {
       hakenut.vastaanottotila = e.vastaanottoTila ?? hakenut.vastaanottotila;
       hakenut.ilmoittautumisTila =

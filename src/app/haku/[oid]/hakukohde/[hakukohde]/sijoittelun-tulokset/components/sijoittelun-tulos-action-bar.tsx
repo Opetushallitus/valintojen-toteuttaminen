@@ -12,8 +12,8 @@ import {
 } from '@/app/lib/types/sijoittelu-types';
 import { HakemuksetStateChangeEvent } from '../lib/sijoittelun-tulokset-state';
 import {
-  isIlmoittautumistilaEditable,
-  isVastaanottotilaEditable,
+  isImoittautuminenPossible,
+  isVastaanottoPossible,
 } from '@/app/lib/sijoittelun-tulokset-utils';
 
 const IlmoittautumisSelect = ({
@@ -42,7 +42,7 @@ const IlmoittautumisSelect = ({
 
   const disabled =
     hakemukset.filter(
-      (h) => selection.has(h.hakemusOid) && isIlmoittautumistilaEditable(h),
+      (h) => selection.has(h.hakemusOid) && isImoittautuminenPossible(h),
     ).length < 1;
 
   return (
@@ -79,7 +79,7 @@ const VastaanOttoSelect = ({
 
   const disabled =
     hakemukset.filter(
-      (h) => selection.has(h.hakemusOid) && isVastaanottotilaEditable(h),
+      (h) => selection.has(h.hakemusOid) && isVastaanottoPossible(h),
     ).length < 1;
 
   return (

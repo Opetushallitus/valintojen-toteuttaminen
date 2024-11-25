@@ -39,8 +39,8 @@ import { getHenkiloTitle } from '@/app/lib/henkilo-utils';
 import { HakutoiveTitle } from './hakutoive-title';
 import { ValinnanTilatEditModal } from './valinnan-tilat-edit-modal';
 import {
-  isIlmoittautumistilaEditable,
-  isVastaanottotilaEditable,
+  isImoittautuminenPossible,
+  isVastaanottoPossible,
 } from '@/app/lib/sijoittelun-tulokset-utils';
 
 type Tulokset = {
@@ -201,7 +201,7 @@ const HakutoiveContent = ({
                     )}
                   </TC>
                   <TC>
-                    {isVastaanottotilaEditable({
+                    {isVastaanottoPossible({
                       tila: valinnanTulos.valinnantila,
                       vastaanottotila: valinnanTulos.vastaanottotila,
                       julkaistavissa: Boolean(valinnanTulos.julkaistavissa),
@@ -217,7 +217,7 @@ const HakutoiveContent = ({
                     )}
                   </TC>
                   <TC>
-                    {isIlmoittautumistilaEditable({
+                    {isImoittautuminenPossible({
                       tila: valinnanTulos.valinnantila,
                       vastaanottotila: valinnanTulos.vastaanottotila,
                       julkaistavissa: Boolean(valinnanTulos.julkaistavissa),

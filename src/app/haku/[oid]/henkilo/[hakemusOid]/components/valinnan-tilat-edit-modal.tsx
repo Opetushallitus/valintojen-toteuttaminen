@@ -16,7 +16,7 @@ import {
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   saveValinnanTulokset,
   ValinnanTulos,
@@ -28,8 +28,8 @@ import {
 import { FullClientSpinner } from '@/app/components/client-spinner';
 import { valinnanTuloksetQueryOptions } from '../hooks/useHenkiloPageData';
 import {
-  isIlmoittautumistilaEditable,
-  isVastaanottotilaEditable,
+  isImoittautuminenPossible,
+  isVastaanottoPossible,
 } from '@/app/lib/sijoittelun-tulokset-utils';
 import { OphApiError } from '@/app/lib/common';
 import { ValintaStatusUpdateErrorResult } from '@/app/lib/types/valinta-tulos-types';
@@ -156,6 +156,18 @@ export const ValinnanTilatEditModal = createModal<{
     }),
   );
 
+  const ilmoittautuminenPossible = isImoittautuminenPossible({
+    tila: valinnanTulos.valinnantila,
+    vastaanottotila: vastaanottoTila as VastaanottoTila,
+    julkaistavissa: valinnanTulos.julkaistavissa,
+  });
+
+  useEffect(() => {
+    if (!ilmoittautuminenPossible) {
+      setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY);
+    }
+  }, [ilmoittautuminenPossible]);
+
   const mutation = useValinnanTilatMutation({
     dateHeader,
   });
@@ -210,7 +222,7 @@ export const ValinnanTilatEditModal = createModal<{
               </span>
             )}
           />
-          {isVastaanottotilaEditable({
+          {isVastaanottoPossible({
             tila: valinnanTulos.valinnantila,
             vastaanottotila: valinnanTulos.vastaanottotila,
             julkaistavissa: valinnanTulos.julkaistavissa,
@@ -232,11 +244,7 @@ export const ValinnanTilatEditModal = createModal<{
               )}
             />
           )}
-          {isIlmoittautumistilaEditable({
-            tila: valinnanTulos.valinnantila,
-            vastaanottotila: valinnanTulos.vastaanottotila,
-            julkaistavissa: valinnanTulos.julkaistavissa,
-          }) && (
+          {ilmoittautuminenPossible && (
             <InlineFormControl
               label={
                 <PaddedLabel>

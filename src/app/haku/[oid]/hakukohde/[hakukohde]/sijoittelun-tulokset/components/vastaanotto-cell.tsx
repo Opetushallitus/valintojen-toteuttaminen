@@ -11,8 +11,8 @@ import { useEffect, useState } from 'react';
 import { SijoittelunTuloksetChangeEvent } from '../lib/sijoittelun-tulokset-state';
 import { SijoittelunTulosStyledCell } from './sijoittelun-tulos-styled-cell';
 import {
-  hakemusVastaanottotilaJulkaistavissa,
-  isVastaanottotilaEditable,
+  isVastaanottotilaJulkaistavissa,
+  isVastaanottoPossible,
 } from '@/app/lib/sijoittelun-tulokset-utils';
 
 export const VastaanOttoCell = ({
@@ -63,7 +63,7 @@ export const VastaanOttoCell = ({
         label={t('sijoittelun-tulokset.julkaistavissa')}
         disabled={
           disabled ||
-          !hakemusVastaanottotilaJulkaistavissa(hakemus) ||
+          !isVastaanottotilaJulkaistavissa(hakemus) ||
           !publishAllowed
         }
       />
@@ -73,7 +73,7 @@ export const VastaanOttoCell = ({
           {toFormattedDateTimeString(hakemus.vastaanottoDeadline)}
         </Typography>
       )}
-      {isVastaanottotilaEditable(hakemus) && (
+      {isVastaanottoPossible(hakemus) && (
         <LocalizedSelect
           value={vastaanottoTila}
           onChange={updateVastaanottoTila}
