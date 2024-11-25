@@ -403,7 +403,11 @@
     "muokkaa-valintalaskentaa": "Muokkaa valintalaskentaa",
     "muokkaa-valintaa": "Muokkaa valintaa",
     "poista-muokkaus": "Poista muokkaus",
-    "valinta-edit-error": "Valinnan tietojen muokkaus epäonnistui",
-    "valinta-edit-success": "Valinnan tietojen tallentaminen onnistui"
+    "valinta-save-error": "Valinnan tietojen tallentaminen epäonnistui",
+    "valinta-save-success": "Valinnan tietojen tallentaminen onnistui",
+    "valintalaskenta-save-error": "Valintalaskennan tietojen tallentaminen epäonnistui",
+    "valintalaskenta-save-success": "Valintalaskennan tietojen tallentaminen onnistui",
+    "valintalaskenta-delete-error": "Valintalaskennan muokkauksen poistaminen epäonnistui",
+    "valintalaskenta-delete-success": "Valintalaskennan muokkauksen poistaminen onnistui"
   }
 }

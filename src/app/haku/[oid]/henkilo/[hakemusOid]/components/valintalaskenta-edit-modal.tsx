@@ -209,16 +209,16 @@ const useJarjestyskriteeriMutation = ({
     },
     onError: (e, { mode }) => {
       addToast({
-        key: `${mode}-jarjestyskriteeri-error`,
-        message: `henkilo.jarjestyskriteeri.${mode}-error`,
+        key: `valintalaskenta-${mode}-error`,
+        message: `henkilo.valintalaskenta-${mode}-error`,
         type: 'error',
       });
       console.error(e);
     },
     onSuccess: (_, { mode }) => {
       addToast({
-        key: `${mode}-jarjestyskriteeri-success`,
-        message: `henkilo.jarjestyskriteeri.${mode}-success`,
+        key: `valintalaskenta-${mode}-success`,
+        message: `henkilo.valintalaskenta-${mode}-success`,
         type: 'success',
       });
       refetchValinnanvaiheet({ hakuOid, hakemusOid, queryClient });

@@ -91,7 +91,7 @@ const useValinnanTilatMutation = ({
       });
     },
     onError: (error) => {
-      let message = t('henkilo.valinta-edit-error');
+      let message = t('henkilo.valinta-save-error');
       if (error instanceof OphApiError) {
         const response = error.response as HttpClientResponse<
           Array<ValintaStatusUpdateErrorResult>
@@ -102,7 +102,7 @@ const useValinnanTilatMutation = ({
       }
 
       addToast({
-        key: `valinta-edit-error`,
+        key: `valinta-save-error`,
         message: message,
         type: 'error',
       });
@@ -111,8 +111,8 @@ const useValinnanTilatMutation = ({
     },
     onSuccess: (_, valinnanTulos) => {
       addToast({
-        key: `valinta-edit-success`,
-        message: `henkilo.valinta-edit-success`,
+        key: `valinta-save-success`,
+        message: `henkilo.valinta-save-success`,
         type: 'success',
       });
 
