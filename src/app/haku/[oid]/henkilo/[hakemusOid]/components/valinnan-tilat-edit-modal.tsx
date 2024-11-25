@@ -31,6 +31,9 @@ import {
   isIlmoittautumistilaEditable,
   isVastaanottotilaEditable,
 } from '@/app/lib/sijoittelun-tulokset-utils';
+import { OphApiError } from '@/app/lib/common';
+import { ValintaStatusUpdateErrorResult } from '@/app/lib/types/valinta-tulos-types';
+import { HttpClientResponse } from '@/app/lib/http-client';
 
 const ModalActions = ({
   onClose,
@@ -74,6 +77,7 @@ const useValinnanTilatMutation = ({
 }) => {
   const { addToast } = useToaster();
   const queryClient = useQueryClient();
+  const { t } = useTranslations();
 
   return useMutation({
     mutationFn: async (valinnanTulos: ValinnanTulos) => {
@@ -86,18 +90,29 @@ const useValinnanTilatMutation = ({
         tulokset: [valinnanTulos],
       });
     },
-    onError: (e) => {
+    onError: (error) => {
+      let message = t('henkilo.valinta-edit-error');
+      if (error instanceof OphApiError) {
+        const response = error.response as HttpClientResponse<
+          Array<ValintaStatusUpdateErrorResult>
+        >;
+
+        const errors = response.data?.map((res) => res.message);
+        message += '\n' + errors.join('\n');
+      }
+
       addToast({
-        key: `vastaanottotieto-edit-error`,
-        message: `henkilo.vastaanottieto-edit-error`,
+        key: `valinta-edit-error`,
+        message: message,
         type: 'error',
       });
-      console.error(e);
+
+      console.error(error);
     },
     onSuccess: (_, valinnanTulos) => {
       addToast({
-        key: `vastaanottotieto-edit-success`,
-        message: `henkilo.vastaanottotieto-edit-success`,
+        key: `valinta-edit-success`,
+        message: `henkilo.valinta-edit-success`,
         type: 'success',
       });
 

@@ -402,6 +402,8 @@
     },
     "muokkaa-valintalaskentaa": "Muokkaa valintalaskentaa",
     "muokkaa-valintaa": "Muokkaa valintaa",
-    "poista-muokkaus": "Poista muokkaus"
+    "poista-muokkaus": "Poista muokkaus",
+    "valinta-edit-error": "Valinnan tietojen muokkaus epäonnistui",
+    "valinta-edit-success": "Valinnan tietojen tallentaminen onnistui"
   }
 }
