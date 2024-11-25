@@ -6,7 +6,6 @@ import {
 } from '@tanstack/react-query';
 import { forwardRef, useImperativeHandle, useRef } from 'react';
 import { pisteTuloksetOptions } from '../hooks/usePisteTulokset';
-import { FullClientSpinner } from '@/app/components/client-spinner';
 import { PistesyottoTuontiError } from './pistesyotto-excel-upload-error';
 import { FileUploadOutlined } from '@mui/icons-material';
 import useToaster from '@/app/hooks/useToaster';
@@ -20,6 +19,7 @@ import {
   showModal,
   useOphModalProps,
 } from '@/app/components/global-modal';
+import { SpinnerModal } from '@/app/components/spinner-modal';
 
 const refetchPisteTulokset = ({
   queryClient,
@@ -34,22 +34,6 @@ const refetchPisteTulokset = ({
   queryClient.resetQueries(options);
   queryClient.invalidateQueries(options);
 };
-
-const SpinnerModalDialog = createModal(() => {
-  const { open, TransitionProps } = useOphModalProps();
-  const { t } = useTranslations();
-  return (
-    <OphModalDialog
-      open={open}
-      TransitionProps={TransitionProps}
-      title={t('pistesyotto.tuodaan-pistetietoja-taulukkolaskennasta')}
-      maxWidth="md"
-      titleAlign="center"
-    >
-      <FullClientSpinner />
-    </OphModalDialog>
-  );
-});
 
 const ErrorModalDialog = createModal(({ error }: { error: Error }) => {
   const modalProps = useOphModalProps();
@@ -82,12 +66,15 @@ const useExcelUploadMutation = ({
   hakukohdeOid: string;
 }) => {
   const { addToast } = useToaster();
+  const { t } = useTranslations();
 
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({ file }: { file: File }) => {
-      showModal(SpinnerModalDialog);
+      showModal(SpinnerModal, {
+        title: t('pistesyotto.tuodaan-pistetietoja-taulukkolaskennasta'),
+      });
       return await putPistesyottoExcel({
         hakuOid,
         hakukohdeOid,
@@ -95,7 +82,7 @@ const useExcelUploadMutation = ({
       });
     },
     onError: (error) => {
-      hideModal(SpinnerModalDialog);
+      hideModal(SpinnerModal);
       // Tuonti onnistui osittain -> ladataan muuttuneet pistetulokset
       if (error instanceof OphApiError) {
         refetchPisteTulokset({ queryClient, hakuOid, hakukohdeOid });
@@ -105,7 +92,7 @@ const useExcelUploadMutation = ({
     onSuccess: () => {
       // Ladataan muuttuneet pistetulokset
       refetchPisteTulokset({ queryClient, hakuOid, hakukohdeOid });
-      hideModal(SpinnerModalDialog);
+      hideModal(SpinnerModal);
       addToast({
         key: 'put-pistesyotto-excel-success',
         message: 'pistesyotto.tuo-valintalaskennasta-onnistui',
