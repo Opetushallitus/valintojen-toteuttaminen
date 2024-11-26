@@ -48,10 +48,9 @@ export const HakutoiveetTable = ({
             <TableCell colSpan={2}>
               {t('henkilo.taulukko.valintalaskenta')}
             </TableCell>
-            <TableCell colSpan={2}>
+            <TableCell colSpan={3}>
               {t('henkilo.taulukko.sijoittelu')}
             </TableCell>
-            <TableCell />
           </TableRow>
           <TableRow>
             <TableCell>{t('henkilo.taulukko.pisteet')}</TableCell>
