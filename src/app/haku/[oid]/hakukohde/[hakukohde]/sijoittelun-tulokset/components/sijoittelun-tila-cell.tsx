@@ -1,6 +1,5 @@
 import { useTranslations } from '@/app/hooks/useTranslations';
 import {
-  isHyvaksyttyHarkinnanvaraisesti,
   SijoittelunHakemusValintatiedoilla,
   SijoittelunTila,
 } from '@/app/lib/types/sijoittelu-types';
@@ -14,6 +13,7 @@ import { isKorkeakouluHaku } from '@/app/lib/kouta';
 import { Haku } from '@/app/lib/types/kouta-types';
 import { SijoittelunTuloksetChangeEvent } from '../lib/sijoittelun-tulokset-state';
 import { ophColors, OphCheckbox } from '@opetushallitus/oph-design-system';
+import { getHakemuksenTilaTitle } from '@/app/lib/sijoittelun-tulokset-utils';
 
 const LanguageAdornment = styled(InputAdornment)(() => ({
   backgroundColor: ophColors.grey200,
@@ -76,9 +76,7 @@ export const SijoittelunTilaCell = ({
     en: hakemus.ehdollisenHyvaksymisenEhtoEN,
   });
 
-  const hakemuksenTila = isHyvaksyttyHarkinnanvaraisesti(hakemus)
-    ? t('sijoitteluntila.HARKINNANVARAISESTI_HYVAKSYTTY')
-    : t(`sijoitteluntila.${hakemus.tila}`);
+  const hakemuksenTilaTitle = getHakemuksenTilaTitle(hakemus, t);
 
   const updateEhdollinen = () => {
     setEhdollinen(!ehdollinen);
@@ -120,12 +118,7 @@ export const SijoittelunTilaCell = ({
 
   return (
     <SijoittelunTulosStyledCell>
-      <span>
-        {hakemuksenTila}
-        {hakemuksenTila === SijoittelunTila.VARALLA
-          ? `(${hakemus.varasijanNumero})`
-          : ''}
-      </span>
+      <span>{hakemuksenTilaTitle}</span>
       {showHyvaksyVarasijalta(hakemus) && (
         <OphCheckbox
           checked={hyvaksyttyVarasijalta}

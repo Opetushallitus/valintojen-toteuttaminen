@@ -4,11 +4,9 @@ import {
   useOphModalProps,
 } from '@/app/components/global-modal';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { Hakukohde } from '@/app/lib/types/kouta-types';
 import { Stack } from '@mui/material';
 import { OphButton, OphSelect } from '@opetushallitus/oph-design-system';
 import { InlineFormControl, PaddedLabel } from './inline-form-control';
-import { HakutoiveTitle } from './hakutoive-title';
 import useToaster from '@/app/hooks/useToaster';
 import {
   QueryClient,
@@ -125,12 +123,10 @@ const useValinnanTilatMutation = ({
 };
 
 export const ValinnanTilatEditModal = createModal<{
-  hakutoiveNumero: number;
   hakijanNimi: string;
-  hakukohde: Hakukohde;
   valinnanTulos: ValinnanTulosLisatiedoilla;
-  henkiloOid: string;
-}>(({ hakutoiveNumero, hakijanNimi, hakukohde, valinnanTulos }) => {
+  hakutoiveTitle: React.ReactNode;
+}>(({ hakijanNimi, hakutoiveTitle, valinnanTulos }) => {
   const { open, TransitionProps, onClose } = useOphModalProps();
   const { t } = useTranslations();
 
@@ -200,12 +196,7 @@ export const ValinnanTilatEditModal = createModal<{
       <InlineFormControl
         label={t('henkilo.taulukko.hakutoive')}
         renderInput={({ labelId }) => (
-          <span aria-labelledby={labelId}>
-            <HakutoiveTitle
-              hakutoiveNumero={hakutoiveNumero}
-              hakukohde={hakukohde}
-            />
-          </span>
+          <span aria-labelledby={labelId}>{hakutoiveTitle}</span>
         )}
       />
       {isVastaanottoPossible({

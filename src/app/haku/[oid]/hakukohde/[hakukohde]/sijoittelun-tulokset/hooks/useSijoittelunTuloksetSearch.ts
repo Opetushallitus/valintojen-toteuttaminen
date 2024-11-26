@@ -14,12 +14,12 @@ import {
 } from '@/app/lib/constants';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import {
-  isHyvaksyttyHarkinnanvaraisesti,
   SijoittelunHakemusValintatiedoilla,
   SijoittelunTila,
 } from '@/app/lib/types/sijoittelu-types';
 import { hakemusFilter } from '@/app/hooks/filters';
 import { sortBySijoittelunTila } from '@/app/hooks/common';
+import { isHyvaksyttyHarkinnanvaraisesti } from '@/app/lib/sijoittelun-tulokset-utils';
 
 const DEFAULT_PAGE_SIZE = 10;
 

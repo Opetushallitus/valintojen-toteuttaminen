@@ -6,6 +6,8 @@ import {
   SijoittelunTila,
   VastaanottoTila,
 } from '@/app/lib/types/sijoittelu-types';
+import { TFunction } from 'i18next';
+import { isNonNullish } from 'remeda';
 
 const VASTAANOTTOTILAT_JOILLE_NAYTETAAN_ILMOITTAUTUMISTILA = [
   VastaanottoTila.VASTAANOTTANUT_SITOVASTI,
@@ -49,3 +51,33 @@ export const isVastaanottotilaJulkaistavissa = (
 ): boolean =>
   h.vastaanottotila === VastaanottoTila.KESKEN ||
   h.vastaanottotila === VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA;
+
+export const isHyvaksyttyHarkinnanvaraisesti = (
+  hakemus: Pick<
+    SijoittelunHakemusValintatiedoilla,
+    'tila' | 'hyvaksyttyHarkinnanvaraisesti'
+  >,
+): boolean =>
+  Boolean(hakemus?.hyvaksyttyHarkinnanvaraisesti) &&
+  [SijoittelunTila.HYVAKSYTTY, SijoittelunTila.VARASIJALTA_HYVAKSYTTY].includes(
+    hakemus.tila,
+  );
+
+export const getHakemuksenTilaTitle = (
+  hakemus: {
+    tila: SijoittelunTila;
+    hyvaksyttyHarkinnanvaraisesti?: boolean;
+    varasijanNumero?: number | null;
+  },
+  t: TFunction,
+) => {
+  switch (true) {
+    case isHyvaksyttyHarkinnanvaraisesti(hakemus):
+      return t('sijoitteluntila.HARKINNANVARAISESTI_HYVAKSYTTY');
+    case hakemus.tila === SijoittelunTila.VARALLA &&
+      isNonNullish(hakemus.varasijanNumero):
+      return `${t(`sijoitteluntila.${hakemus.tila}`)} (${hakemus.varasijanNumero})`;
+    default:
+      return t(`sijoitteluntila.${hakemus.tila}`);
+  }
+};
