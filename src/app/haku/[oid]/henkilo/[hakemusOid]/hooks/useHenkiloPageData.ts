@@ -25,7 +25,7 @@ import { useMemo } from 'react';
 import { Hakukohde } from '@/app/lib/types/kouta-types';
 
 export type ValinnanTulosLisatiedoilla = ValinnanTulosModel & {
-  lastModified: Date | null;
+  lastModified: string | null;
   varasijanNumero?: number;
   hyvaksyttyHarkinnanvaraisesti: boolean;
 };

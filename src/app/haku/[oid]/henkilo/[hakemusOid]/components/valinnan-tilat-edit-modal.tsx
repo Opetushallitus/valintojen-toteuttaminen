@@ -75,7 +75,7 @@ const refetchValinnanTulokset = ({
 const useValinnanTilatMutation = ({
   lastModified,
 }: {
-  lastModified: Date | null;
+  lastModified: string | null;
 }) => {
   const { addToast } = useToaster();
   const queryClient = useQueryClient();
