@@ -391,7 +391,6 @@
       "nayta-hakutoiveen-tiedot": "Näytä hakutoiveen tiedot",
       "piilota-hakutoiveen-tiedot": "Piilota hakutoiveen tiedot",
       "ei-valintalaskennan-tuloksia": "Ei valintalaskennan tuloksia",
-      "ei-valinnan-tuloksia": "Ei valinnan tuloksia",
       "hakija": "Hakija",
       "jarjestyskriteeri": "Järjestyskriteeri",
       "muokkauksen-syy": "Muokkauksen syy (näkyy hakijalle)",
@@ -399,7 +398,8 @@
       "vastaanotto": "Vastaanotto",
       "ilmoittautuminen": "Ilmoittautuminen",
       "vastaanottotila": "Vastaanottotila",
-      "ilmoittautumistila": "Ilmoittautumistila"
+      "ilmoittautumistila": "Ilmoittautumistila",
+      "ei-valinnan-tulosta": "Ei valinnan tulosta"
     },
     "muokkaa-valintalaskentaa": "Muokkaa valintalaskentaa",
     "muokkaa-valintaa": "Muokkaa valintaa",
