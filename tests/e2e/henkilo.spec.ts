@@ -7,6 +7,13 @@ import HAKENEET from './fixtures/hakeneet.json';
 import POSTI_00100 from './fixtures/posti_00100.json';
 import HAKEMUKSEN_VALINTALASKENTA_TULOKSET from './fixtures/hakemuksen-valintalaskenta-tulokset.json';
 import HAKEMUKSEN_SIJOITTELU_TULOKSET from './fixtures/hakemuksen-sijoittelu-tulokset.json';
+import { configuration } from '@/app/lib/configuration';
+import { hakemusValinnanTulosFixture } from './fixtures/hakemus-valinnan-tulos';
+import {
+  IlmoittautumisTila,
+  SijoittelunTila,
+  VastaanottoTila,
+} from '@/app/lib/types/sijoittelu-types';
 
 test.beforeEach(async ({ page }) => {
   await page.route('**/codeelement/latest/posti_00100', (route) => {
@@ -14,20 +21,55 @@ test.beforeEach(async ({ page }) => {
       json: POSTI_00100,
     });
   });
+
+  await page.route(configuration.hakemuksetUrl, (route) => {
+    return route.fulfill({
+      json: HAKENEET.filter(
+        ({ oid }) => oid === '1.2.246.562.11.00000000000001793706',
+      ),
+    });
+  });
   await page.route(
-    '**/resources/hakemus/1.2.246.562.29.00000000000000045102/1.2.246.562.11.00000000000001796027',
+    configuration.hakemuksenLasketutValinnanvaiheetUrl({
+      hakuOid: '1.2.246.562.29.00000000000000045102',
+      hakemusOid: '1.2.246.562.11.00000000000001796027',
+    }),
     (route) =>
       route.fulfill({
-        json: {
-          hakukohteet: [],
-        },
+        json: HAKEMUKSEN_VALINTALASKENTA_TULOKSET,
       }),
   );
   await page.route(
-    '**/sijoittelu/1.2.246.562.29.00000000000000045102/sijoitteluajo/latest/hakemus/1.2.246.562.11.00000000000001796027',
+    configuration.hakemuksenSijoitteluajonTuloksetUrl({
+      hakuOid: '1.2.246.562.29.00000000000000045102',
+      hakemusOid: '1.2.246.562.11.00000000000001796027',
+    }),
     (route) => {
       return route.fulfill({
-        status: 404,
+        json: HAKEMUKSEN_SIJOITTELU_TULOKSET,
+      });
+    },
+  );
+
+  await page.route(
+    configuration.hakemuksenValinnanTulosUrl({
+      hakemusOid: '1.2.246.562.11.00000000000001796027',
+    }),
+    (route) => {
+      return route.fulfill({
+        json: hakemusValinnanTulosFixture({
+          hakukohdeOid: '1.2.246.562.20.00000000000000045105',
+          hakemusOid: '1.2.246.562.11.00000000000001796027',
+          valintatapajonoOid: '1709304299853373641707401606360',
+          henkiloOid: '1.2.246.562.24.69259807406',
+          valinnantila: SijoittelunTila.HYVAKSYTTY,
+          vastaanottotila: VastaanottoTila.VASTAANOTTANUT_SITOVASTI,
+          ilmoittautumistila: IlmoittautumisTila.EI_ILMOITTAUTUNUT,
+          julkaistavissa: true,
+          ehdollisestiHyvaksyttavissa: false,
+          hyvaksyttyVarasijalta: false,
+          hyvaksyPeruuntunut: false,
+        }),
       });
     },
   );
@@ -130,9 +172,44 @@ test('Henkilö-search and navigation works', async ({ page }) => {
   ).toBeVisible();
 });
 
-test('Displays selected henkilö info with hakutoive without valintalaskenta or sijoittelu results', async ({
+test('Displays selected henkilö info with hakutoive but without valintalaskenta or sijoittelu results', async ({
   page,
 }) => {
+  await page.route(
+    configuration.hakemuksenLasketutValinnanvaiheetUrl({
+      hakuOid: '1.2.246.562.29.00000000000000045102',
+      hakemusOid: '1.2.246.562.11.00000000000001796027',
+    }),
+    (route) =>
+      route.fulfill({
+        json: {
+          hakukohteet: [],
+        },
+      }),
+  );
+
+  await page.route(
+    configuration.hakemuksenSijoitteluajonTuloksetUrl({
+      hakuOid: '1.2.246.562.29.00000000000000045102',
+      hakemusOid: '1.2.246.562.11.00000000000001796027',
+    }),
+    (route) => {
+      return route.fulfill({
+        status: 404,
+      });
+    },
+  );
+
+  await page.route(
+    configuration.hakemuksenValinnanTulosUrl({
+      hakemusOid: '1.2.246.562.11.00000000000001796027',
+    }),
+    (route) => {
+      return route.fulfill({
+        json: [],
+      });
+    },
+  );
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo/1.2.246.562.11.00000000000001796027',
   );
@@ -165,26 +242,9 @@ test('Displays selected henkilö info with hakutoive without valintalaskenta or 
   await expect(page.getByText('Ei valintalaskennan tuloksia')).toBeVisible();
 });
 
-test('Displays selected henkilö hakutoiveet with laskenta and sijoittelu results', async ({
+test('Displays selected henkilö hakutoiveet with laskenta and valinta results', async ({
   page,
 }) => {
-  await page.route(
-    '**/resources/hakemus/1.2.246.562.29.00000000000000045102/1.2.246.562.11.00000000000001796027',
-    (route) =>
-      route.fulfill({
-        json: HAKEMUKSEN_VALINTALASKENTA_TULOKSET,
-      }),
-  );
-
-  await page.route(
-    '**/sijoittelu/1.2.246.562.29.00000000000000045102/sijoitteluajo/latest/hakemus/1.2.246.562.11.00000000000001796027',
-    (route) => {
-      return route.fulfill({
-        json: HAKEMUKSEN_SIJOITTELU_TULOKSET,
-      });
-    },
-  );
-
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo/1.2.246.562.11.00000000000001796027',
   );
@@ -207,9 +267,10 @@ test('Displays selected henkilö hakutoiveet with laskenta and sijoittelu result
     '',
     'Jono 2Valintalaskenta tehty: 12.11.2024 17:54:55',
     '13',
-    'Hyväksyttävissä',
-    'PERUUNTUNUT',
-    'Kesken',
+    'HyväksyttävissäMuokkaa',
+    'HYVÄKSYTTY',
+    'Vastaanottanut sitovastiMuokkaa',
+    'Ei ilmoittautunutMuokkaa',
   ]);
   const secondRowTextContents = await jonoRows
     .nth(1)
@@ -219,9 +280,8 @@ test('Displays selected henkilö hakutoiveet with laskenta and sijoittelu result
     '',
     'Jono 1Valintalaskenta tehty: 12.11.2024 17:54:48',
     '',
-    'Hyväksyttävissä',
+    'HyväksyttävissäMuokkaa',
     '',
-    'Kesken',
   ]);
 });
 
@@ -229,11 +289,26 @@ test('Displays selected henkilö hakutoiveet with laskenta results only', async 
   page,
 }) => {
   await page.route(
-    '**/resources/hakemus/1.2.246.562.29.00000000000000045102/1.2.246.562.11.00000000000001796027',
-    (route) =>
-      route.fulfill({
-        json: HAKEMUKSEN_VALINTALASKENTA_TULOKSET,
-      }),
+    configuration.hakemuksenSijoitteluajonTuloksetUrl({
+      hakuOid: '1.2.246.562.29.00000000000000045102',
+      hakemusOid: '1.2.246.562.11.00000000000001796027',
+    }),
+    (route) => {
+      return route.fulfill({
+        status: 404,
+      });
+    },
+  );
+
+  await page.route(
+    configuration.hakemuksenValinnanTulosUrl({
+      hakemusOid: '1.2.246.562.11.00000000000001796027',
+    }),
+    (route) => {
+      return route.fulfill({
+        json: [],
+      });
+    },
   );
 
   await page.goto(
@@ -255,8 +330,8 @@ test('Displays selected henkilö hakutoiveet with laskenta results only', async 
     '',
     'Jono 2Valintalaskenta tehty: 12.11.2024 17:54:55',
     '13',
-    'Hyväksyttävissä',
-    'Ei sijoittelun tuloksia',
+    'HyväksyttävissäMuokkaa',
+    'Ei valinnan tulosta',
   ]);
   const secondRowTextContents = await jonoRows
     .nth(1)
@@ -266,7 +341,7 @@ test('Displays selected henkilö hakutoiveet with laskenta results only', async 
     '',
     'Jono 1Valintalaskenta tehty: 12.11.2024 17:54:48',
     '',
-    'Hyväksyttävissä',
-    'Ei sijoittelun tuloksia',
+    'HyväksyttävissäMuokkaa',
+    '',
   ]);
 });
