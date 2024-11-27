@@ -84,9 +84,10 @@ const JarjestyskriteeriFields = ({
     <>
       <InlineFormControl
         label={<PaddedLabel>{t('henkilo.taulukko.pisteet')}</PaddedLabel>}
-        renderInput={() => (
+        renderInput={({ labelId }) => (
           <OphInput
             value={value.arvo}
+            inputProps={{ 'aria-labelledby': labelId }}
             onChange={(e) => onChange({ arvo: e.target.value })}
           />
         )}
