@@ -60,7 +60,7 @@ test.beforeEach(async ({ page }) => {
         json: hakemusValinnanTulosFixture({
           hakukohdeOid: '1.2.246.562.20.00000000000000045105',
           hakemusOid: '1.2.246.562.11.00000000000001796027',
-          valintatapajonoOid: '1709304299853373641707401606360',
+          valintatapajonoOid: '17093042998533736417074016063604',
           henkiloOid: '1.2.246.562.24.69259807406',
           valinnantila: SijoittelunTila.HYVAKSYTTY,
           vastaanottotila: VastaanottoTila.VASTAANOTTANUT_SITOVASTI,
@@ -346,7 +346,20 @@ test('Displays selected henkilö hakutoiveet with laskenta results only', async 
   ]);
 });
 
-test('Shows valintalaskenta edit modal', async ({ page }) => {
+test('Shows valintalaskenta edit modal and saves data', async ({ page }) => {
+  await page.route(
+    configuration.jarjestyskriteeriMuokkausUrl({
+      hakemusOid: '1.2.246.562.11.00000000000001796027',
+      valintatapajonoOid: '17093042998533736417074016063604',
+      jarjestyskriteeriPrioriteetti: 0,
+    }),
+    (route) => {
+      return route.fulfill({
+        json: [],
+      });
+    },
+  );
+
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo/1.2.246.562.11.00000000000001796027',
   );
@@ -395,9 +408,30 @@ test('Shows valintalaskenta edit modal', async ({ page }) => {
   await expect(
     valintalaskentaMuokkausModal.getByLabel('Muokkauksen syy'),
   ).toHaveValue('');
+
+  const tallennaButton = valintalaskentaMuokkausModal.getByRole('button', {
+    name: 'Tallenna',
+  });
+
+  await tallennaButton.click();
+
+  await expect(
+    page.getByText('Valintalaskennan tietojen tallentaminen onnistui'),
+  ).toBeVisible();
 });
 
-test('Shows valinta edit modal', async ({ page }) => {
+test('Shows valinta edit modal and saves data', async ({ page }) => {
+  await page.route(
+    configuration.valinnanTulosMuokkausUrl({
+      valintatapajonoOid: '17093042998533736417074016063604',
+    }),
+    (route) => {
+      return route.fulfill({
+        json: [],
+      });
+    },
+  );
+
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo/1.2.246.562.11.00000000000001796027',
   );
@@ -436,4 +470,16 @@ test('Shows valinta edit modal', async ({ page }) => {
   await expect(
     valintaMuokkausModal.getByLabel('Ilmoittautumisen tila'),
   ).toContainText('Ei ilmoittautunut');
+
+  const tallennaButton = valintaMuokkausModal.getByRole('button', {
+    name: 'Tallenna',
+  });
+
+  await tallennaButton.click();
+
+  await expect(valintaMuokkausModal).toBeHidden();
+
+  await expect(
+    page.getByText('Valinnan tietojen tallentaminen onnistui'),
+  ).toBeVisible();
 });
