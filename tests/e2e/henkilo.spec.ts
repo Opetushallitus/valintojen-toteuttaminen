@@ -345,3 +345,95 @@ test('Displays selected henkilö hakutoiveet with laskenta results only', async 
     '',
   ]);
 });
+
+test('Shows valintalaskenta edit modal', async ({ page }) => {
+  await page.goto(
+    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo/1.2.246.562.11.00000000000001796027',
+  );
+
+  const accordionContent = page.getByLabel(
+    'Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs)',
+  );
+
+  await expect(accordionContent).toBeVisible();
+
+  const jonoRows = accordionContent.getByRole('row');
+
+  const valintalaskentaTilaCell = jonoRows.first().getByRole('cell').nth(3);
+
+  const muokkaaButton = valintalaskentaTilaCell.getByRole('button', {
+    name: 'Muokkaa',
+  });
+
+  await muokkaaButton.click();
+
+  const valintalaskentaMuokkausModal = page.getByRole('dialog', {
+    name: 'Muokkaa valintalaskentaa',
+  });
+
+  await expect(valintalaskentaMuokkausModal).toBeVisible();
+  await expect(
+    valintalaskentaMuokkausModal.getByLabel('Hakija', { exact: true }),
+  ).toHaveText('Nukettaja Ruhtinas');
+  await expect(valintalaskentaMuokkausModal.getByLabel('Hakutoive')).toHaveText(
+    '1. Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs) \u2013 Tampereen yliopisto, Rakennetun ympäristön tiedekunta',
+  );
+  await expect(
+    valintalaskentaMuokkausModal.getByLabel('Valintatapajono'),
+  ).toHaveText('Jono 2');
+  await expect(
+    valintalaskentaMuokkausModal.getByLabel('Järjestyskriteeri'),
+  ).toContainText(
+    '2. asteen peruskoulupohjainen peruskaava + Kielitaidon riittävyys - 2 aste, pk ja yo 2021',
+  );
+  await expect(valintalaskentaMuokkausModal.getByLabel('Pisteet')).toHaveValue(
+    '13',
+  );
+  await expect(
+    valintalaskentaMuokkausModal.getByLabel('Valintatieto'),
+  ).toContainText('Hyväksyttävissä');
+  await expect(
+    valintalaskentaMuokkausModal.getByLabel('Muokkauksen syy'),
+  ).toHaveValue('');
+});
+
+test('Shows valinta edit modal', async ({ page }) => {
+  await page.goto(
+    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo/1.2.246.562.11.00000000000001796027',
+  );
+
+  const accordionContent = page.getByLabel(
+    'Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs)',
+  );
+
+  await expect(accordionContent).toBeVisible();
+
+  const jonoRows = accordionContent.getByRole('row');
+
+  const vastaanottoTilaCell = jonoRows.first().getByRole('cell').nth(5);
+
+  const muokkaaButton = vastaanottoTilaCell.getByRole('button', {
+    name: 'Muokkaa',
+  });
+
+  await muokkaaButton.click();
+
+  const valintaMuokkausModal = page.getByRole('dialog', {
+    name: 'Muokkaa valintaa',
+  });
+
+  await expect(valintaMuokkausModal).toBeVisible();
+  await expect(
+    valintaMuokkausModal.getByLabel('Hakija', { exact: true }),
+  ).toHaveText('Nukettaja Ruhtinas');
+  await expect(valintaMuokkausModal.getByLabel('Hakutoive')).toHaveText(
+    '1. Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs) \u2013 Tampereen yliopisto, Rakennetun ympäristön tiedekunta',
+  );
+
+  await expect(
+    valintaMuokkausModal.getByLabel('Vastaanottotila'),
+  ).toContainText('Vastaanottanut sitovasti');
+  await expect(
+    valintaMuokkausModal.getByLabel('Ilmoittautumistila'),
+  ).toContainText('Ei ilmoittautunut');
+});

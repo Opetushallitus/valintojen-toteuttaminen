@@ -79,7 +79,7 @@ test('displays sijoittelun tulokset', async ({ page }) => {
   );
   await checkRow(
     rows.nth(2),
-    ['', '3', 'Purukumi Puru', '0', '49', 'VARALLA(1)', 'Julkaistavissa'],
+    ['', '3', 'Purukumi Puru', '0', '49', 'VARALLA (1)', 'Julkaistavissa'],
     'td',
     false,
   );
