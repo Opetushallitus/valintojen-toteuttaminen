@@ -172,7 +172,7 @@ export const ValinnanTilatEditModal = createModal<{
       TransitionProps={TransitionProps}
       title={t('henkilo.muokkaa-valintaa')}
       isPending={isPending}
-      pendingTitle="Tallennetaan valinnan tietoja..."
+      pendingTitle={t('henkilo.tallennetaan-valintaa')}
       onClose={onClose}
       actions={
         <ModalActions
@@ -206,7 +206,7 @@ export const ValinnanTilatEditModal = createModal<{
       }) && (
         <InlineFormControl
           label={
-            <PaddedLabel>{t('henkilo.taulukko.vastaanottotila')}</PaddedLabel>
+            <PaddedLabel>{t('henkilo.taulukko.vastaanoton-tila')}</PaddedLabel>
           }
           renderInput={({ labelId }) => (
             <OphSelect
@@ -223,7 +223,7 @@ export const ValinnanTilatEditModal = createModal<{
         <InlineFormControl
           label={
             <PaddedLabel>
-              {t('henkilo.taulukko.ilmoittautumistila')}
+              {t('henkilo.taulukko.ilmoittautumisen-tila')}
             </PaddedLabel>
           }
           renderInput={({ labelId }) => (

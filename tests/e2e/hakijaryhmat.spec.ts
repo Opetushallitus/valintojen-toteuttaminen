@@ -17,7 +17,7 @@ const ROWS = {
   kreiviTable1: [
     'Dacula Kreivi',
     'Kyllä',
-    'Valintatapajono: Todistusvalinta (YO)VARALLA(1)',
+    'Valintatapajono: Todistusvalinta (YO)VARALLA (1)',
     'Kyllä',
     '78',
     'KESKEN',
@@ -25,7 +25,7 @@ const ROWS = {
   kreiviTable2: [
     'Dacula Kreivi',
     'Ei',
-    'Valintatapajono: Todistusvalinta (YO)VARALLA(1)',
+    'Valintatapajono: Todistusvalinta (YO)VARALLA (1)',
     'Ei',
     '78',
     'KESKEN',
@@ -33,7 +33,7 @@ const ROWS = {
   purukumiTable1: [
     'Purukumi Puru',
     'Kyllä',
-    'Valintatapajono: Todistusvalinta (YO)VARALLA(2)',
+    'Valintatapajono: Todistusvalinta (YO)VARALLA (2)',
     'Kyllä',
     '49',
     'KESKEN',
@@ -41,7 +41,7 @@ const ROWS = {
   purukumiTable2: [
     'Purukumi Puru',
     'Ei',
-    'Valintatapajono: Todistusvalinta (YO)VARALLA(2)',
+    'Valintatapajono: Todistusvalinta (YO)VARALLA (2)',
     'Ei',
     '49',
     'KESKEN',

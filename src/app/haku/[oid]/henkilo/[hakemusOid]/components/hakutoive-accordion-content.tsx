@@ -62,7 +62,7 @@ export const HakutoiveAccordionContent = ({
                 })}
               </OphTypography>
               <div>
-                {t('henkilo.valintalaskenta-tehty')}
+                {t('henkilo.taulukko.valintalaskenta-tehty')}
                 {': '}
                 {toFormattedDateTimeString(valinnanvaihe.createdAt)}
               </div>

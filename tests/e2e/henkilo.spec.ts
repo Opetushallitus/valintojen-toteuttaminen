@@ -390,7 +390,7 @@ test('Shows valintalaskenta edit modal', async ({ page }) => {
     '13',
   );
   await expect(
-    valintalaskentaMuokkausModal.getByLabel('Valintatieto'),
+    valintalaskentaMuokkausModal.getByLabel('Tila', { exact: true }),
   ).toContainText('Hyväksyttävissä');
   await expect(
     valintalaskentaMuokkausModal.getByLabel('Muokkauksen syy'),
@@ -431,9 +431,9 @@ test('Shows valinta edit modal', async ({ page }) => {
   );
 
   await expect(
-    valintaMuokkausModal.getByLabel('Vastaanottotila'),
+    valintaMuokkausModal.getByLabel('Vastaanoton tila'),
   ).toContainText('Vastaanottanut sitovasti');
   await expect(
-    valintaMuokkausModal.getByLabel('Ilmoittautumistila'),
+    valintaMuokkausModal.getByLabel('Ilmoittautumisen tila'),
   ).toContainText('Ei ilmoittautunut');
 });

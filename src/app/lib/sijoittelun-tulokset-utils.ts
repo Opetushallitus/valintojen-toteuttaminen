@@ -63,7 +63,7 @@ export const isHyvaksyttyHarkinnanvaraisesti = (
     hakemus.tila,
   );
 
-export const getHakemuksenTilaTitle = (
+export const getReadableHakemuksenTila = (
   hakemus: {
     tila: SijoittelunTila;
     hyvaksyttyHarkinnanvaraisesti?: boolean;

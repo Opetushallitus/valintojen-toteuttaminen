@@ -93,7 +93,11 @@ const JarjestyskriteeriFields = ({
         )}
       />
       <InlineFormControl
-        label={<PaddedLabel>{t('henkilo.taulukko.valintatieto')}</PaddedLabel>}
+        label={
+          <PaddedLabel>
+            {t('henkilo.taulukko.laskennan-tuloksen-tila')}
+          </PaddedLabel>
+        }
         renderInput={({ labelId }) => (
           <OphSelect
             sx={{ width: '100%' }}
@@ -267,7 +271,7 @@ export const ValintalaskentaEditModal = createModal<{
       open={open}
       TransitionProps={TransitionProps}
       title={t('henkilo.muokkaa-valintalaskentaa')}
-      pendingTitle="Tallennetaan järjestyskriteerin tietoja..."
+      pendingTitle={t('henkilo.tallennetaan-valintalaskentaa')}
       isPending={isPending}
       onClose={onClose}
       actions={

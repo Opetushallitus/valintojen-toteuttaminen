@@ -2,7 +2,7 @@
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { getHenkiloTitle } from '@/app/lib/henkilo-utils';
 import {
-  getHakemuksenTilaTitle,
+  getReadableHakemuksenTila,
   isVastaanottoPossible,
   isImoittautuminenPossible,
 } from '@/app/lib/sijoittelun-tulokset-utils';
@@ -41,7 +41,7 @@ export const ValinnanTulosCells = ({
   return valinnanTulos ? (
     <>
       <TableCell>
-        {getHakemuksenTilaTitle(
+        {getReadableHakemuksenTila(
           {
             tila: valinnanTulos.valinnantila,
             hyvaksyttyHarkinnanvaraisesti:

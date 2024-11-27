@@ -58,8 +58,8 @@ export const HakutoiveetTable = ({
               {t('henkilo.taulukko.laskennan-tuloksen-tila')}
             </TableCell>
             <TableCell>{t('henkilo.taulukko.valinnan-tila')}</TableCell>
-            <TableCell>{t('henkilo.taulukko.vastaanotto')}</TableCell>
-            <TableCell>{t('henkilo.taulukko.ilmoittautuminen')}</TableCell>
+            <TableCell>{t('henkilo.taulukko.vastaanoton-tila')}</TableCell>
+            <TableCell>{t('henkilo.taulukko.ilmoittautumisen-tila')}</TableCell>
           </TableRow>
         </StyledTableHead>
         {hakukohteet.map((hakukohde, index) => (
