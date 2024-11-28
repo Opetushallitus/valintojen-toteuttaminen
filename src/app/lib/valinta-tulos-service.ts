@@ -17,6 +17,7 @@ import {
 } from './types/sijoittelu-types';
 import { MaksunTila, Maksuvelvollisuus } from './types/ataru-types';
 import { FetchError, OphApiError } from './common';
+import { ValinnanTulosUpdateErrorResult } from './types/valinta-tulos-types';
 
 type SijoittelunTulosResponseData = {
   valintatapajonoNimi: string;
@@ -328,13 +329,6 @@ export const getLatestSijoitteluajonTuloksetForHakemus = async ({
   return res ? indexBy(res.data.hakutoiveet, prop('hakukohdeOid')) : {};
 };
 
-type SijoitteluAjonTuloksetPatchResponse = {
-  message: string;
-  hakemusOid: string;
-  valintatapajonoOid: string;
-  status: number;
-};
-
 export const saveMaksunTilanMuutokset = async (
   hakukohdeOid: string,
   hakemukset: SijoittelunHakemusValintatiedoilla[],
@@ -388,16 +382,18 @@ export const saveValinnanTulokset = async ({
     lastModified ? new Date(lastModified) : new Date()
   ).toUTCString();
 
-  const results = await client.patch<
-    Array<SijoitteluAjonTuloksetPatchResponse>
-  >(configuration.valinnanTulosMuokkausUrl({ valintatapajonoOid }), tulokset, {
-    headers: { 'X-If-Unmodified-Since': ifUnmodifiedSince },
-  });
+  const results = await client.patch<Array<ValinnanTulosUpdateErrorResult>>(
+    configuration.valinnanTulosMuokkausUrl({ valintatapajonoOid }),
+    tulokset,
+    {
+      headers: { 'X-If-Unmodified-Since': ifUnmodifiedSince },
+    },
+  );
 
   const { data } = results;
 
   if (Array.isArray(data) && data.length > 0) {
-    throw new OphApiError<Array<SijoitteluAjonTuloksetPatchResponse>>(
+    throw new OphApiError<Array<ValinnanTulosUpdateErrorResult>>(
       results,
       'virhe.tallennus',
     );

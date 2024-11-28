@@ -472,6 +472,22 @@ export type SaveJarjestyskriteeriParams = JarjestyskriteeriKeyParams & {
   selite: string;
 };
 
+type JarjestyskriteeriChangeResult = {
+  hakukohdeOid: string;
+  hakuOid: string;
+  valintatapajonoOid: string;
+  hakemusOid: string;
+  harkinnanvarainen: boolean | null;
+  jarjestyskriteerit: Array<{
+    arvo: number;
+    tila: SijoittelunTila;
+    kuvaus: {
+      FI?: string;
+    };
+    prioriteetti: number;
+  }>;
+};
+
 export const saveJonosijanJarjestyskriteeri = ({
   valintatapajonoOid,
   hakemusOid,
@@ -480,7 +496,7 @@ export const saveJonosijanJarjestyskriteeri = ({
   arvo,
   selite,
 }: SaveJarjestyskriteeriParams) => {
-  return client.post<null>(
+  return client.post<JarjestyskriteeriChangeResult>(
     configuration.jarjestyskriteeriMuokkausUrl({
       valintatapajonoOid,
       hakemusOid,
@@ -499,7 +515,7 @@ export const deleteJonosijanJarjestyskriteeri = ({
   hakemusOid,
   jarjestyskriteeriPrioriteetti,
 }: JarjestyskriteeriKeyParams) => {
-  return client.delete<null>(
+  return client.delete<JarjestyskriteeriChangeResult>(
     configuration.jarjestyskriteeriMuokkausUrl({
       valintatapajonoOid,
       hakemusOid,

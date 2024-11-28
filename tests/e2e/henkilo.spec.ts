@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 import {
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
@@ -346,20 +346,10 @@ test('Displays selected henkilö hakutoiveet with laskenta results only', async 
   ]);
 });
 
-test('Shows valintalaskenta edit modal and saves data', async ({ page }) => {
-  await page.route(
-    configuration.jarjestyskriteeriMuokkausUrl({
-      hakemusOid: '1.2.246.562.11.00000000000001796027',
-      valintatapajonoOid: '17093042998533736417074016063604',
-      jarjestyskriteeriPrioriteetti: 0,
-    }),
-    (route) => {
-      return route.fulfill({
-        json: [],
-      });
-    },
-  );
-
+const initSaveModal = async (
+  page: Page,
+  mode: 'valintalaskenta' | 'valinta',
+) => {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo/1.2.246.562.11.00000000000001796027',
   );
@@ -372,13 +362,20 @@ test('Shows valintalaskenta edit modal and saves data', async ({ page }) => {
 
   const jonoRows = accordionContent.getByRole('row');
 
-  const valintalaskentaTilaCell = jonoRows.first().getByRole('cell').nth(3);
+  const tilaCell = jonoRows
+    .first()
+    .getByRole('cell')
+    .nth(mode === 'valintalaskenta' ? 3 : 5);
 
-  const muokkaaButton = valintalaskentaTilaCell.getByRole('button', {
+  const muokkaaButton = tilaCell.getByRole('button', {
     name: 'Muokkaa',
   });
 
   await muokkaaButton.click();
+};
+
+test('Shows valintalaskenta edit modal with info', async ({ page }) => {
+  await initSaveModal(page, 'valintalaskenta');
 
   const valintalaskentaMuokkausModal = page.getByRole('dialog', {
     name: 'Muokkaa valintalaskentaa',
@@ -408,58 +405,77 @@ test('Shows valintalaskenta edit modal and saves data', async ({ page }) => {
   await expect(
     valintalaskentaMuokkausModal.getByLabel('Muokkauksen syy'),
   ).toHaveValue('');
+});
 
-  const tallennaButton = valintalaskentaMuokkausModal.getByRole('button', {
+test('Show notification on valintalaskenta save success', async ({ page }) => {
+  await page.route(
+    configuration.jarjestyskriteeriMuokkausUrl({
+      hakemusOid: '1.2.246.562.11.00000000000001796027',
+      valintatapajonoOid: '17093042998533736417074016063604',
+      jarjestyskriteeriPrioriteetti: 0,
+    }),
+    (route) => {
+      return route.fulfill({
+        status: 200,
+      });
+    },
+  );
+  await initSaveModal(page, 'valintalaskenta');
+  const valintaMuokkausModal = page.getByRole('dialog', {
+    name: 'Muokkaa valintalaskentaa',
+  });
+
+  const saveButton = valintaMuokkausModal.getByRole('button', {
     name: 'Tallenna',
   });
 
-  await tallennaButton.click();
-
+  await saveButton.click();
   await expect(
     page.getByText('Valintalaskennan tietojen tallentaminen onnistui'),
   ).toBeVisible();
 });
 
-test('Shows valinta edit modal and saves data', async ({ page }) => {
+test('Show notification on valintalaskenta save error', async ({ page }) => {
   await page.route(
-    configuration.valinnanTulosMuokkausUrl({
+    configuration.jarjestyskriteeriMuokkausUrl({
+      hakemusOid: '1.2.246.562.11.00000000000001796027',
       valintatapajonoOid: '17093042998533736417074016063604',
+      jarjestyskriteeriPrioriteetti: 0,
     }),
     (route) => {
       return route.fulfill({
-        json: [],
+        status: 400,
       });
     },
   );
-
-  await page.goto(
-    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo/1.2.246.562.11.00000000000001796027',
-  );
-
-  const accordionContent = page.getByLabel(
-    'Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs)',
-  );
-
-  await expect(accordionContent).toBeVisible();
-
-  const jonoRows = accordionContent.getByRole('row');
-
-  const vastaanottoTilaCell = jonoRows.first().getByRole('cell').nth(5);
-
-  const muokkaaButton = vastaanottoTilaCell.getByRole('button', {
-    name: 'Muokkaa',
+  await initSaveModal(page, 'valintalaskenta');
+  const valintaMuokkausModal = page.getByRole('dialog', {
+    name: 'Muokkaa valintalaskentaa',
   });
 
-  await muokkaaButton.click();
+  const tallennaButton = valintaMuokkausModal.getByRole('button', {
+    name: 'Tallenna',
+  });
+
+  await tallennaButton.click();
+  await expect(
+    page.getByText('Valintalaskennan tietojen tallentaminen epäonnistui'),
+  ).toBeVisible();
+});
+
+test('Shows valinta edit modal with info', async ({ page }) => {
+  await initSaveModal(page, 'valinta');
 
   const valintaMuokkausModal = page.getByRole('dialog', {
     name: 'Muokkaa valintaa',
   });
 
   await expect(valintaMuokkausModal).toBeVisible();
+
   await expect(
     valintaMuokkausModal.getByLabel('Hakija', { exact: true }),
   ).toHaveText('Nukettaja Ruhtinas');
+
   await expect(valintaMuokkausModal.getByLabel('Hakutoive')).toHaveText(
     '1. Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs) \u2013 Tampereen yliopisto, Rakennetun ympäristön tiedekunta',
   );
@@ -470,16 +486,63 @@ test('Shows valinta edit modal and saves data', async ({ page }) => {
   await expect(
     valintaMuokkausModal.getByLabel('Ilmoittautumisen tila'),
   ).toContainText('Ei ilmoittautunut');
+});
+
+test('Show notification on valinta save success', async ({ page }) => {
+  await page.route(
+    configuration.valinnanTulosMuokkausUrl({
+      valintatapajonoOid: '17093042998533736417074016063604',
+    }),
+    (route) => {
+      return route.fulfill({
+        json: [],
+      });
+    },
+  );
+  await initSaveModal(page, 'valinta');
+  const valintaMuokkausModal = page.getByRole('dialog', {
+    name: 'Muokkaa valintaa',
+  });
+
+  const saveButton = valintaMuokkausModal.getByRole('button', {
+    name: 'Tallenna',
+  });
+
+  await saveButton.click();
+  await expect(
+    page.getByText('Valinnan tietojen tallentaminen onnistui'),
+  ).toBeVisible();
+});
+
+test('Show notification on valinta save error', async ({ page }) => {
+  await page.route(
+    configuration.valinnanTulosMuokkausUrl({
+      valintatapajonoOid: '17093042998533736417074016063604',
+    }),
+    (route) => {
+      return route.fulfill({
+        json: [
+          {
+            status: 400,
+            message: 'Virhe backendista',
+          },
+        ],
+      });
+    },
+  );
+  await initSaveModal(page, 'valinta');
+  const valintaMuokkausModal = page.getByRole('dialog', {
+    name: 'Muokkaa valintaa',
+  });
 
   const tallennaButton = valintaMuokkausModal.getByRole('button', {
     name: 'Tallenna',
   });
 
   await tallennaButton.click();
-
-  await expect(valintaMuokkausModal).toBeHidden();
-
   await expect(
-    page.getByText('Valinnan tietojen tallentaminen onnistui'),
+    page.getByText(
+      'Valinnan tietojen tallentaminen epäonnistui\nVirhe backendista',
+    ),
   ).toBeVisible();
 });

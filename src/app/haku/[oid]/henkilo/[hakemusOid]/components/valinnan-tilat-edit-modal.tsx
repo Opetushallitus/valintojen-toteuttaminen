@@ -31,7 +31,7 @@ import {
   isVastaanottoPossible,
 } from '@/app/lib/sijoittelun-tulokset-utils';
 import { OphApiError } from '@/app/lib/common';
-import { ValintaStatusUpdateErrorResult } from '@/app/lib/types/valinta-tulos-types';
+import { ValinnanTulosUpdateErrorResult } from '@/app/lib/types/valinta-tulos-types';
 import { HttpClientResponse } from '@/app/lib/http-client';
 import { EditModalDialog } from './edit-modal-dialog';
 
@@ -91,7 +91,7 @@ const useValinnanTilatMutation = ({
       let message = t('henkilo.valinta-save-error');
       if (error instanceof OphApiError) {
         const response = error.response as HttpClientResponse<
-          Array<ValintaStatusUpdateErrorResult>
+          Array<ValinnanTulosUpdateErrorResult>
         >;
 
         const errors = response.data?.map((res) => res.message);
