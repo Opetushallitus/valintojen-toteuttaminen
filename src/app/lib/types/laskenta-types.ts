@@ -113,3 +113,9 @@ export type HakukohteenPistetiedot = {
   hakemukset: HakemuksenPistetiedot[];
   lastModified?: Date;
 };
+
+export enum TuloksenTila {
+  HYVAKSYTTAVISSA = 'HYVAKSYTTAVISSA',
+  HYLATTY = 'HYLATTY',
+  MAARITTELEMATON = 'MAARITTELEMATON',
+}

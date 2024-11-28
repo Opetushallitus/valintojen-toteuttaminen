@@ -14,10 +14,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import {
-  saveValinnanTulokset,
-  ValinnanTulosModel,
-} from '@/app/lib/valinta-tulos-service';
+import { saveValinnanTulokset } from '@/app/lib/valinta-tulos-service';
 import {
   IlmoittautumisTila,
   VastaanottoTila,
@@ -80,7 +77,7 @@ const useValinnanTilatMutation = ({
   const { t } = useTranslations();
 
   return useMutation({
-    mutationFn: async (valinnanTulos: ValinnanTulosModel) => {
+    mutationFn: async (valinnanTulos: ValinnanTulosLisatiedoilla) => {
       await saveValinnanTulokset({
         lastModified,
         valintatapajonoOid: valinnanTulos.valintatapajonoOid,

@@ -2,6 +2,7 @@ import { test, expect, Page } from '@playwright/test';
 import {
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
+  selectOption,
 } from './playwright-utils';
 import HAKENEET from './fixtures/hakeneet.json';
 import POSTI_00100 from './fixtures/posti_00100.json';
@@ -14,6 +15,24 @@ import {
   SijoittelunTila,
   VastaanottoTila,
 } from '@/app/lib/types/sijoittelu-types';
+import { TuloksenTila } from '@/app/lib/types/laskenta-types';
+import { forEachObj, isShallowEqual } from 'remeda';
+
+const VALINNAN_TULOS_RESULT = hakemusValinnanTulosFixture({
+  hakukohdeOid: '1.2.246.562.20.00000000000000045105',
+  hakemusOid: '1.2.246.562.11.00000000000001796027',
+  valintatapajonoOid: '17093042998533736417074016063604',
+  henkiloOid: '1.2.246.562.24.69259807406',
+  valinnantila: SijoittelunTila.HYVAKSYTTY,
+  vastaanottotila: VastaanottoTila.VASTAANOTTANUT_SITOVASTI,
+  ilmoittautumistila: IlmoittautumisTila.EI_ILMOITTAUTUNUT,
+  julkaistavissa: true,
+  ehdollisestiHyvaksyttavissa: false,
+  hyvaksyttyVarasijalta: false,
+  hyvaksyPeruuntunut: false,
+});
+
+const VALINNAN_TULOS_BASE = VALINNAN_TULOS_RESULT[0].valinnantulos;
 
 test.beforeEach(async ({ page }) => {
   await page.route('**/codeelement/latest/posti_00100', (route) => {
@@ -57,19 +76,7 @@ test.beforeEach(async ({ page }) => {
     }),
     (route) => {
       return route.fulfill({
-        json: hakemusValinnanTulosFixture({
-          hakukohdeOid: '1.2.246.562.20.00000000000000045105',
-          hakemusOid: '1.2.246.562.11.00000000000001796027',
-          valintatapajonoOid: '17093042998533736417074016063604',
-          henkiloOid: '1.2.246.562.24.69259807406',
-          valinnantila: SijoittelunTila.HYVAKSYTTY,
-          vastaanottotila: VastaanottoTila.VASTAANOTTANUT_SITOVASTI,
-          ilmoittautumistila: IlmoittautumisTila.EI_ILMOITTAUTUNUT,
-          julkaistavissa: true,
-          ehdollisestiHyvaksyttavissa: false,
-          hyvaksyttyVarasijalta: false,
-          hyvaksyPeruuntunut: false,
-        }),
+        json: VALINNAN_TULOS_RESULT,
       });
     },
   );
@@ -405,31 +412,59 @@ test('Shows valintalaskenta edit modal with info', async ({ page }) => {
   await expect(
     valintalaskentaMuokkausModal.getByLabel('Muokkauksen syy'),
   ).toHaveValue('');
+
+  await expect(
+    valintalaskentaMuokkausModal.getByRole('button', {
+      name: 'Poista muokkaus',
+    }),
+  ).toBeDisabled();
 });
 
-test('Show notification on valintalaskenta save success', async ({ page }) => {
-  await page.route(
-    configuration.jarjestyskriteeriMuokkausUrl({
-      hakemusOid: '1.2.246.562.11.00000000000001796027',
-      valintatapajonoOid: '17093042998533736417074016063604',
-      jarjestyskriteeriPrioriteetti: 0,
-    }),
-    (route) => {
-      return route.fulfill({
-        status: 200,
-      });
-    },
-  );
+test('Sends valintalaskenta save request with right values and shows success notification', async ({
+  page,
+}) => {
+  const muokkausUrl = configuration.jarjestyskriteeriMuokkausUrl({
+    hakemusOid: '1.2.246.562.11.00000000000001796027',
+    valintatapajonoOid: '17093042998533736417074016063604',
+    jarjestyskriteeriPrioriteetti: 0,
+  });
+  await page.route(muokkausUrl, (route) => {
+    return route.fulfill({
+      status: 200,
+    });
+  });
+
   await initSaveModal(page, 'valintalaskenta');
-  const valintaMuokkausModal = page.getByRole('dialog', {
+  const valintalaskentaMuokkausModal = page.getByRole('dialog', {
     name: 'Muokkaa valintalaskentaa',
   });
 
-  const saveButton = valintaMuokkausModal.getByRole('button', {
+  await valintalaskentaMuokkausModal.getByLabel('Pisteet').fill('12');
+
+  await selectOption(page, 'Tila', 'Hylätty');
+
+  await valintalaskentaMuokkausModal
+    .getByLabel('Muokkauksen syy')
+    .fill('Syy muokkaukselle');
+
+  const saveButton = valintalaskentaMuokkausModal.getByRole('button', {
     name: 'Tallenna',
   });
 
-  await saveButton.click();
+  await Promise.all([
+    saveButton.click(),
+    page.waitForRequest((request) => {
+      return (
+        request.url() === muokkausUrl &&
+        isShallowEqual(request.postDataJSON(), {
+          arvo: '12',
+          tila: TuloksenTila.HYLATTY,
+          selite: 'Syy muokkaukselle',
+        })
+      );
+    }),
+  ]);
+
   await expect(
     page.getByText('Valintalaskennan tietojen tallentaminen onnistui'),
   ).toBeVisible();
@@ -488,27 +523,54 @@ test('Shows valinta edit modal with info', async ({ page }) => {
   ).toContainText('Ei ilmoittautunut');
 });
 
-test('Show notification on valinta save success', async ({ page }) => {
-  await page.route(
-    configuration.valinnanTulosMuokkausUrl({
-      valintatapajonoOid: '17093042998533736417074016063604',
-    }),
-    (route) => {
-      return route.fulfill({
-        json: [],
-      });
-    },
-  );
+test('Sends valinta save request with right info and shows success notification', async ({
+  page,
+}) => {
+  const muokkausUrl = configuration.valinnanTulosMuokkausUrl({
+    valintatapajonoOid: '17093042998533736417074016063604',
+  });
+  await page.route(muokkausUrl, (route) => {
+    return route.fulfill({
+      json: [],
+    });
+  });
   await initSaveModal(page, 'valinta');
   const valintaMuokkausModal = page.getByRole('dialog', {
     name: 'Muokkaa valintaa',
   });
 
+  await selectOption(page, 'Vastaanoton tila', 'Ehdollisesti vastaanottanut');
+  await selectOption(page, 'Ilmoittautumisen tila', 'Läsnä (koko lukuvuosi)');
+
   const saveButton = valintaMuokkausModal.getByRole('button', {
     name: 'Tallenna',
   });
 
-  await saveButton.click();
+  await Promise.all([
+    saveButton.click(),
+    page.waitForRequest((request) => {
+      if (request.url() === muokkausUrl) {
+        const postData = request.postDataJSON();
+        const newValinnanTulos = postData[0];
+        let result = true;
+        forEachObj(
+          {
+            ...VALINNAN_TULOS_BASE,
+            vastaanottotila: VastaanottoTila.EHDOLLISESTI_VASTAANOTTANUT,
+            ilmoittautumistila: IlmoittautumisTila.LASNA_KOKO_LUKUVUOSI,
+          },
+          (value, key) => {
+            if (value !== newValinnanTulos[key]) {
+              result = false;
+            }
+          },
+        );
+        return result;
+      }
+      return false;
+    }),
+  ]);
+
   await expect(
     page.getByText('Valinnan tietojen tallentaminen onnistui'),
   ).toBeVisible();

@@ -9,7 +9,10 @@ import { Stack } from '@mui/material';
 import { OphInput } from '@/app/components/form/oph-input';
 import { useEffect, useState } from 'react';
 import { LaskettuJono } from '@/app/hooks/useLasketutValinnanVaiheet';
-import { Jarjestyskriteeri } from '@/app/lib/types/laskenta-types';
+import {
+  Jarjestyskriteeri,
+  TuloksenTila,
+} from '@/app/lib/types/laskenta-types';
 import { Hakukohde } from '@/app/lib/types/kouta-types';
 import { HakutoiveTitle } from './hakutoive-title';
 import { useHasChanged } from '@/app/hooks/useHasChanged';
@@ -59,12 +62,6 @@ const ModalActions = ({
     </Stack>
   );
 };
-
-enum TuloksenTila {
-  HYVAKSYTTAVISSA = 'HYVAKSYTTAVISSA',
-  HYLATTY = 'HYLATTY',
-  MAARITTELEMATON = 'MAARITTELEMATON',
-}
 
 const JarjestyskriteeriFields = ({
   value,

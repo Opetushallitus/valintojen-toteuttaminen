@@ -1,6 +1,6 @@
 'use client';
 
-import { indexBy, prop } from 'remeda';
+import { indexBy, pick, prop } from 'remeda';
 import { getHakemukset } from './ataru';
 import { configuration } from './configuration';
 import { client } from './http-client';
@@ -369,6 +369,25 @@ export type ValinnanTulosModel = {
   hyvaksyPeruuntunut: boolean;
 };
 
+const pickValinnanTulosProps = (value: ValinnanTulosModel) =>
+  pick(value, [
+    'hakukohdeOid',
+    'valintatapajonoOid',
+    'hakemusOid',
+    'henkiloOid',
+    'vastaanottotila',
+    'valinnantila',
+    'ilmoittautumistila',
+    'julkaistavissa',
+    'ehdollisestiHyvaksyttavissa',
+    'ehdollisenHyvaksymisenEhtoKoodi',
+    'ehdollisenHyvaksymisenEhtoFI',
+    'ehdollisenHyvaksymisenEhtoSV',
+    'ehdollisenHyvaksymisenEhtoEN',
+    'hyvaksyttyVarasijalta',
+    'hyvaksyPeruuntunut',
+  ]);
+
 export const saveValinnanTulokset = async ({
   valintatapajonoOid,
   lastModified,
@@ -384,7 +403,7 @@ export const saveValinnanTulokset = async ({
 
   const results = await client.patch<Array<ValinnanTulosUpdateErrorResult>>(
     configuration.valinnanTulosMuokkausUrl({ valintatapajonoOid }),
-    tulokset,
+    tulokset.map(pickValinnanTulosProps),
     {
       headers: { 'X-If-Unmodified-Since': ifUnmodifiedSince },
     },
