@@ -79,7 +79,7 @@ export const SijoittelunTilaCell = ({
     en: hakemus.ehdollisenHyvaksymisenEhtoEN,
   });
 
-  const hakemuksenTilaTitle = getReadableHakemuksenTila(hakemus, t);
+  const hakemuksenTila = getReadableHakemuksenTila(hakemus, t);
 
   const updateEhdollinen = () => {
     setEhdollinen(!ehdollinen);
@@ -121,7 +121,7 @@ export const SijoittelunTilaCell = ({
 
   return (
     <SijoittelunTulosStyledCell>
-      <span>{hakemuksenTilaTitle}</span>
+      <span>{hakemuksenTila}</span>
       {isHyvaksyttyVarasijaltaVisible(hakemus) && (
         <OphCheckbox
           checked={hyvaksyttyVarasijalta}

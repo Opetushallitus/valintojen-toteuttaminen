@@ -120,7 +120,7 @@ export const useHenkiloPageData = ({
 
   const { data: userPermissions } = useUserPermissions();
 
-  const [{ data: hakukohteetPlain }, { data: postitoimipaikka }] =
+  const [{ data: koutaHakukohteet }, { data: postitoimipaikka }] =
     useSuspenseQueries({
       queries: [
         getHakukohteetQueryOptions(hakuOid, userPermissions),
@@ -133,7 +133,7 @@ export const useHenkiloPageData = ({
 
   const hakukohteet: Array<HakukohdeTuloksilla> = useMemo(() => {
     return pipe(
-      hakukohteetPlain,
+      koutaHakukohteet,
       filter((h) => hakukohdeOids.includes(h.oid)),
       sortBy((h) => hakukohdeOids.indexOf(h.oid)),
       map((hakukohde) => {
@@ -171,7 +171,7 @@ export const useHenkiloPageData = ({
     );
   }, [
     hakukohdeOids,
-    hakukohteetPlain,
+    koutaHakukohteet,
     valinnanvaiheetByHakukohde,
     sijoittelunTuloksetByHakukohde,
     valinnanTuloksetByHakukohde,
