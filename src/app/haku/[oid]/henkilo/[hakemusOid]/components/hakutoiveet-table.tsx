@@ -10,8 +10,8 @@ import {
   TableRow,
 } from '@mui/material';
 import { HakijaInfo } from '@/app/lib/types/ataru-types';
-import { HakukohdeTuloksilla } from '../hooks/useHenkiloPageData';
 import { HakutoiveAccordion } from './hakutoive-accordion';
+import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
 
 const StyledTable = styled(Table)(({ theme }) => ({
   '& .MuiTableCell-root': {
@@ -30,7 +30,7 @@ export const HakutoiveetTable = ({
   hakukohteet,
   hakija,
 }: {
-  hakukohteet: Array<HakukohdeTuloksilla>;
+  hakukohteet: Array<HenkilonHakukohdeTuloksilla>;
   hakija: HakijaInfo;
 }) => {
   const { t } = useTranslations();

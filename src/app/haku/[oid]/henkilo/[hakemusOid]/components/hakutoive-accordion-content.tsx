@@ -10,10 +10,10 @@ import { showModal } from '@/app/components/global-modal';
 import { ValintalaskentaEditModal } from './valintalaskenta-edit-modal';
 import { HakijaInfo } from '@/app/lib/types/ataru-types';
 import { getHenkiloTitle } from '@/app/lib/henkilo-utils';
-import { HakukohdeTuloksilla } from '../hooks/useHenkiloPageData';
 import { ValinnanTulosCells } from './valinnan-tulos-cells';
 import { styled } from '@/app/lib/theme';
 import { EditButton } from '@/app/components/edit-button';
+import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
 
 const HakutoiveInfoRow = styled(TableRow)({
   '&:nth-of-type(even)': {
@@ -30,7 +30,7 @@ export const HakutoiveAccordionContent = ({
   hakutoiveNumero,
 }: {
   hakija: HakijaInfo;
-  hakukohde: HakukohdeTuloksilla;
+  hakukohde: HenkilonHakukohdeTuloksilla;
   hakutoiveNumero: number;
 }) => {
   const { t } = useTranslations();

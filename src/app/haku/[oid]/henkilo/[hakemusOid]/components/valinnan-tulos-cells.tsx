@@ -7,19 +7,19 @@ import {
   isImoittautuminenPossible,
 } from '@/app/lib/sijoittelun-tulokset-utils';
 import { HakijaInfo } from '@/app/lib/types/ataru-types';
-import { HakukohdeTuloksilla } from '../hooks/useHenkiloPageData';
 import { HakutoiveTitle } from './hakutoive-title';
 import { ValinnanTilatEditModal } from './valinnan-tilat-edit-modal';
 import { showModal } from '@/app/components/global-modal';
 import { TableCell } from '@mui/material';
 import { EditButton } from '@/app/components/edit-button';
+import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
 
 export const ValinnanTulosCells = ({
   hakukohde,
   hakija,
   hakutoiveNumero,
 }: {
-  hakukohde: HakukohdeTuloksilla;
+  hakukohde: HenkilonHakukohdeTuloksilla;
   hakija: HakijaInfo;
   hakutoiveNumero: number;
 }) => {

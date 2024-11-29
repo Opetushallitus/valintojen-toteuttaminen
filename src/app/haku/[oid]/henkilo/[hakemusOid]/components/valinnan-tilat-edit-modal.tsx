@@ -19,10 +19,7 @@ import {
   IlmoittautumisTila,
   VastaanottoTila,
 } from '@/app/lib/types/sijoittelu-types';
-import {
-  valinnanTuloksetQueryOptions,
-  ValinnanTulosLisatiedoilla,
-} from '../hooks/useHenkiloPageData';
+import { valinnanTuloksetQueryOptions } from '../hooks/useHenkiloPageData';
 import {
   isImoittautuminenPossible,
   isVastaanottoPossible,
@@ -31,6 +28,7 @@ import { OphApiError } from '@/app/lib/common';
 import { ValinnanTulosUpdateErrorResult } from '@/app/lib/types/valinta-tulos-types';
 import { HttpClientResponse } from '@/app/lib/http-client';
 import { EditModalDialog } from './edit-modal-dialog';
+import { ValinnanTulosLisatiedoilla } from '../lib/henkilo-page-types';
 
 const ModalActions = ({
   onClose,

@@ -11,31 +11,14 @@ import { getHakukohteetQueryOptions } from '@/app/lib/kouta';
 import { useUserPermissions } from '@/app/hooks/useUserPermissions';
 import { filter, map, pipe, prop, sortBy } from 'remeda';
 import { hakemuksenLasketutValinnanvaiheetQueryOptions } from '@/app/lib/valintalaskenta-service';
-import {
-  LasketutValinnanvaiheet,
-  selectValinnanvaiheet,
-} from '@/app/hooks/useLasketutValinnanVaiheet';
+import { selectValinnanvaiheet } from '@/app/hooks/useLasketutValinnanVaiheet';
 import {
   getLatestSijoitteluajonTuloksetForHakemus,
   getValinnanTulokset,
-  ValinnanTulosModel,
 } from '@/app/lib/valinta-tulos-service';
 import { notFound } from 'next/navigation';
 import { useMemo } from 'react';
-import { Hakukohde } from '@/app/lib/types/kouta-types';
-
-export type ValinnanTulosLisatiedoilla = ValinnanTulosModel & {
-  lastModified: string | null;
-  varasijanNumero?: number;
-  hyvaksyttyHarkinnanvaraisesti: boolean;
-};
-
-type Tulokset = {
-  valinnanvaiheet?: LasketutValinnanvaiheet;
-  valinnanTulos?: ValinnanTulosLisatiedoilla;
-};
-
-export type HakukohdeTuloksilla = Hakukohde & Tulokset;
+import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
 
 const useAtaruHakemus = ({
   hakuOid,
@@ -131,7 +114,7 @@ export const useHenkiloPageData = ({
       ],
     });
 
-  const hakukohteet: Array<HakukohdeTuloksilla> = useMemo(() => {
+  const hakukohteet: Array<HenkilonHakukohdeTuloksilla> = useMemo(() => {
     return pipe(
       koutaHakukohteet,
       filter((h) => hakukohdeOids.includes(h.oid)),

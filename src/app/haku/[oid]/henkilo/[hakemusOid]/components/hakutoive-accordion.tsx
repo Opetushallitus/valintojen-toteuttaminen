@@ -1,5 +1,4 @@
 import { HakijaInfo } from '@/app/lib/types/ataru-types';
-import { HakukohdeTuloksilla } from '../hooks/useHenkiloPageData';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { isEmpty } from 'remeda';
 import { useState } from 'react';
@@ -10,6 +9,7 @@ import { styled } from '@/app/lib/theme';
 import { ChevronRight } from '@mui/icons-material';
 import { HakutoiveTitle } from './hakutoive-title';
 import { HakutoiveAccordionContent } from './hakutoive-accordion-content';
+import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
 
 const AccordionHeader = styled(Box)(({ theme }) => ({
   ...theme.typography.h5,
@@ -24,7 +24,7 @@ export const HakutoiveAccordion = ({
   hakutoiveNumero,
   hakija,
 }: {
-  hakukohde: HakukohdeTuloksilla;
+  hakukohde: HenkilonHakukohdeTuloksilla;
   hakutoiveNumero: number;
   hakija: HakijaInfo;
 }) => {

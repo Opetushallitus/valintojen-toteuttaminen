@@ -17,7 +17,10 @@ import {
 } from './types/sijoittelu-types';
 import { MaksunTila, Maksuvelvollisuus } from './types/ataru-types';
 import { FetchError, OphApiError } from './common';
-import { ValinnanTulosUpdateErrorResult } from './types/valinta-tulos-types';
+import {
+  ValinnanTulosModel,
+  ValinnanTulosUpdateErrorResult,
+} from './types/valinta-tulos-types';
 
 type SijoittelunTulosResponseData = {
   valintatapajonoNimi: string;
@@ -298,7 +301,7 @@ type SijoittelunHakutoiveenValintatapajonoModel = {
   ilmoittautumisTila: string;
 };
 
-export type SijoitteluajonTulosHakutoiveModel = {
+type SijoitteluajonTulosHakutoiveModel = {
   hakutoive: number;
   hakukohdeOid: string;
   vastaanottotieto: VastaanottoTila;
@@ -349,24 +352,6 @@ export const saveMaksunTilanMuutokset = async (
       hakemuksetWithChangedMaksunTila,
     );
   }
-};
-
-export type ValinnanTulosModel = {
-  hakukohdeOid: string;
-  valintatapajonoOid: string;
-  hakemusOid: string;
-  henkiloOid: string;
-  vastaanottotila: VastaanottoTila;
-  valinnantila: SijoittelunTila;
-  ilmoittautumistila: IlmoittautumisTila;
-  julkaistavissa: boolean;
-  ehdollisestiHyvaksyttavissa: boolean;
-  ehdollisenHyvaksymisenEhtoKoodi?: string | null;
-  ehdollisenHyvaksymisenEhtoFI?: string | null;
-  ehdollisenHyvaksymisenEhtoSV?: string | null;
-  ehdollisenHyvaksymisenEhtoEN?: string | null;
-  hyvaksyttyVarasijalta: boolean;
-  hyvaksyPeruuntunut: boolean;
 };
 
 const pickValinnanTulosProps = (value: ValinnanTulosModel) =>
