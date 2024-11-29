@@ -12,7 +12,7 @@ import PermissionProvider from './components/permission-provider';
 import { THEME_OVERRIDES } from './lib/theme';
 import { GlobalModalProvider } from './components/global-modal';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
-
+import NextTopLoader from 'nextjs-toploader';
 export const metadata: Metadata = {
   title: 'Valintojen Toteuttaminen',
   description: 'Valintojen toteuttamisen käyttöliittymä',
@@ -27,6 +27,7 @@ export default async function RootLayout({
     <html lang="fi">
       <Script src={configuration.raamitUrl} />
       <body>
+        <NextTopLoader />
         <AppRouterCacheProvider>
           {/* Initialisoidaan ensin lokalisoimaton teema, jotta ensimmäisten spinnereiden tyylit tulee oikein. */}
           <OphNextJsThemeProvider variant="oph" overrides={THEME_OVERRIDES}>
