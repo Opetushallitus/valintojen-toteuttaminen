@@ -11,7 +11,7 @@ import {
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { HakukohteenPistetiedot } from '@/app/lib/types/laskenta-types';
 import { hakemusFilter } from '@/app/hooks/filters';
-import { DEFAULT_NUQS_OPTIONS } from '@/app/hooks/common';
+import { DEFAULT_NUQS_OPTIONS } from '@/app/lib/constants';
 
 export const usePisteSyottoSearchParams = () => {
   const [searchPhrase, setSearchPhrase] = useQueryState(

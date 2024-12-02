@@ -4,11 +4,13 @@ import { Hakukohde } from '../lib/types/kouta-types';
 import { useDebounce } from '@/app/hooks/useDebounce';
 import { useQueryState } from 'nuqs';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY } from '@/app/lib/constants';
+import {
+  DEFAULT_NUQS_OPTIONS,
+  HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
+} from '@/app/lib/constants';
 import { useTranslations } from './useTranslations';
 import { getHakukohteetQueryOptions } from '../lib/kouta';
 import { useUserPermissions } from './useUserPermissions';
-import { DEFAULT_NUQS_OPTIONS } from './common';
 
 export const useHakukohdeSearchParams = () => {
   const [searchPhrase, setSearchPhrase] = useQueryState(

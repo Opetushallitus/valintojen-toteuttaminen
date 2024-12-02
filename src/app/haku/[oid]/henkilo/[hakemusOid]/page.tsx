@@ -3,7 +3,7 @@
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { buildLinkToApplication } from '@/app/lib/ataru';
 import { Stack, Typography } from '@mui/material';
-import { getHenkiloTitle } from '../lib/henkilo-utils';
+import { getHenkiloTitle } from '@/app/lib/henkilo-utils';
 import { LabeledInfoItem } from '@/app/components/labeled-info-item';
 import { ExternalLink } from '@/app/components/external-link';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
@@ -44,7 +44,7 @@ const HenkiloContent = ({
           value={`${hakija.lahiosoite}, ${hakija.postinumero} ${translateEntity(postitoimipaikka)}`}
         />
       </Stack>
-      <HakutoiveetTable hakukohteet={hakukohteet} hakuOid={hakuOid} />
+      <HakutoiveetTable hakukohteet={hakukohteet} hakija={hakija} />
     </>
   );
 };

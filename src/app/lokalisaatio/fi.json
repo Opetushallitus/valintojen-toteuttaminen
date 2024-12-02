@@ -35,7 +35,8 @@
     "poista-valinta": "Poista valinta",
     "valitse-kaikki": "Valitse kaikki",
     "tuo-taulukkolaskennasta": "Tuo taulukkolaskennasta",
-    "sulje": "Sulje"
+    "sulje": "Sulje",
+    "muokkaa": "Muokkaa"
   },
   "haku-tabs": {
     "navigaatio": "Haun näkymävalitsin",
@@ -265,6 +266,7 @@
     "valmis": "Valintaesityksen muutokset tallennuttu",
     "hyvaksytty": "Valintaesitys hyväksytty",
     "ei-tuloksia": "Ei sijoittelun tuloksia hakukohteelle",
+    "muuta-vastaanottotieto": "Muuta vastaanottotieto",
     "taulukko": {
       "alaotsikko": {
         "aloituspaikat": "Aloituspaikat",
@@ -376,20 +378,35 @@
     "hae-henkilo": "Hae henkilöitä",
     "hae-helpertext": "Hae: Etunimi, sukunimi, hakemus-oid tai henkilö-oid",
     "navigaatio": "Henkilövalitsin",
-    "valintalaskenta-tehty": "Valintalaskenta tehty",
     "taulukko": {
+      "valintalaskenta-tehty": "Valintalaskenta tehty",
       "valintalaskenta": "Valintalaskenta",
-      "sijoittelu": "Sijoittelu",
+      "sijoittelu": "Valinta/Sijoittelu",
       "hakutoive": "Hakutoive",
       "valintatapajono": "Valintatapajono",
       "pisteet": "Pisteet",
-      "valintatieto": "Vastaanottotieto",
-      "tila": "Tila",
-      "vastaanottotieto": "Vastaanottotieto",
+      "laskennan-tuloksen-tila": "Tila",
       "nayta-hakutoiveen-tiedot": "Näytä hakutoiveen tiedot",
       "piilota-hakutoiveen-tiedot": "Piilota hakutoiveen tiedot",
       "ei-valintalaskennan-tuloksia": "Ei valintalaskennan tuloksia",
-      "ei-sijoittelun-tuloksia": "Ei sijoittelun tuloksia"
-    }
+      "hakija": "Hakija",
+      "jarjestyskriteeri": "Järjestyskriteeri",
+      "muokkauksen-syy": "Muokkauksen syy (näkyy hakijalle)",
+      "valinnan-tila": "Valinnan tila",
+      "vastaanoton-tila": "Vastaanoton tila",
+      "ilmoittautumisen-tila": "Ilmoittautumisen tila",
+      "ei-valinnan-tulosta": "Ei valinnan tulosta"
+    },
+    "tallennetaan-valintalaskentaa": "Tallennetaan valintalaskennan tietoja...",
+    "tallennetaan-valintaa": "Tallennetaan valinnan tietoja...",
+    "muokkaa-valintalaskentaa": "Muokkaa valintalaskentaa",
+    "muokkaa-valintaa": "Muokkaa valintaa",
+    "poista-muokkaus": "Poista muokkaus",
+    "valinta-save-error": "Valinnan tietojen tallentaminen epäonnistui",
+    "valinta-save-success": "Valinnan tietojen tallentaminen onnistui",
+    "valintalaskenta-save-error": "Valintalaskennan tietojen tallentaminen epäonnistui",
+    "valintalaskenta-save-success": "Valintalaskennan tietojen tallentaminen onnistui",
+    "valintalaskenta-delete-error": "Valintalaskennan muokkauksen poistaminen epäonnistui",
+    "valintalaskenta-delete-success": "Valintalaskennan muokkauksen poistaminen onnistui"
   }
 }

@@ -83,6 +83,7 @@ export async function getHaku(oid: string): Promise<Haku> {
 
 type HakukohdeResponseData = {
   oid: string;
+  hakuOid: string;
   nimi: TranslatedName;
   organisaatioOid: string;
   organisaatioNimi: TranslatedName;
@@ -93,6 +94,7 @@ type HakukohdeResponseData = {
 const mapToHakukohde = (hakukohdeData: HakukohdeResponseData) =>
   pick(hakukohdeData, [
     'oid',
+    'hakuOid',
     'nimi',
     'organisaatioOid',
     'organisaatioNimi',

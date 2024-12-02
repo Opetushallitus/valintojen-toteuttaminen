@@ -4,7 +4,7 @@ import { useQueryState } from 'nuqs';
 import { useQuery } from '@tanstack/react-query';
 import { HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY } from '@/app/lib/constants';
 import { getHakijat } from '@/app/lib/ataru';
-import { DEFAULT_NUQS_OPTIONS } from '@/app/hooks/common';
+import { DEFAULT_NUQS_OPTIONS } from '@/app/lib/constants';
 import { EMPTY_ARRAY } from '@/app/lib/common';
 
 export const useHenkiloSearchParams = () => {

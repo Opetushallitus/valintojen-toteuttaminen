@@ -8,6 +8,7 @@ import {
 } from '@/app/components/table/table-columns';
 import { ListTableColumn } from '@/app/components/table/table-types';
 import { useTranslations } from '@/app/hooks/useTranslations';
+import { getReadableHakemuksenTila } from '@/app/lib/sijoittelun-tulokset-utils';
 import { HakijaryhmanHakija } from '@/app/lib/types/laskenta-types';
 import { Box } from '@mui/material';
 import { TFunction } from 'i18next';
@@ -34,10 +35,16 @@ const makeSijoittelunTilaColumn = (
         </span>
       )}
       <span>
-        {props.sijoittelunTila && (
-          <>{t(`sijoitteluntila.${props.sijoittelunTila}`)}</>
-        )}
-        {props.varasijanNumero && <>({props.varasijanNumero})</>}
+        {props.sijoittelunTila
+          ? getReadableHakemuksenTila(
+              {
+                tila: props.sijoittelunTila,
+                varasijanNumero: props.varasijanNumero,
+                hyvaksyttyHarkinnanvaraisesti: false,
+              },
+              t,
+            )
+          : null}
       </span>
     </Box>
   ),

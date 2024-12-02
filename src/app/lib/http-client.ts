@@ -207,6 +207,8 @@ export const client = {
     body: BodyType,
     options: RequestInit = {},
   ) => modRequest<Result>('PATCH', url, body, options),
+  delete: <Result = unknown>(url: UrlType, options: RequestInit = {}) =>
+    makeRequest<Result>(new Request(url, { method: 'DELETE', ...options })),
 } as const;
 
 const makeAbortable = <D>(

@@ -6,7 +6,7 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { buildLinkToApplication } from '@/app/lib/ataru';
 import { OphApiError } from '@/app/lib/common';
 import { SijoittelunHakemusValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
-import { ValintaStatusUpdateErrorResult } from '@/app/lib/types/valinta-tulos-types';
+import { ValinnanTulosUpdateErrorResult } from '@/app/lib/types/valinta-tulos-types';
 import { Error } from '@mui/icons-material';
 import {
   Box,
@@ -75,7 +75,7 @@ const SijoittelunTulosTallennusError = ({
 
   if (error instanceof OphApiError && Array.isArray(error.response.data)) {
     const responseData = error.response
-      .data as Array<ValintaStatusUpdateErrorResult>;
+      .data as Array<ValinnanTulosUpdateErrorResult>;
     return (
       <TableContainer>
         <Table>

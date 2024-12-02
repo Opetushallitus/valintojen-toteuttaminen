@@ -3,12 +3,6 @@ import {
   SijoittelunTilaOrdinals,
 } from '../lib/types/sijoittelu-types';
 
-export const DEFAULT_NUQS_OPTIONS = {
-  history: 'push',
-  clearOnDefault: true,
-  defaultValue: '',
-} as const;
-
 type SijoittelunTilaSortable = {
   sijoittelunTila?: SijoittelunTila;
   tila?: SijoittelunTila;

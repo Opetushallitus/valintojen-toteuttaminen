@@ -37,6 +37,7 @@ export enum VastaanottoTila {
   EI_VASTAANOTETTU_MAARA_AIKANA = 'EI_VASTAANOTETTU_MAARA_AIKANA',
   PERUNUT = 'PERUNUT',
   PERUUTETTU = 'PERUUTETTU',
+  OTTANUT_VASTAAN_TOISEN_PAIKAN = 'OTTANUT_VASTAAN_TOISEN_PAIKAN',
 }
 
 export enum IlmoittautumisTila {
@@ -87,8 +88,7 @@ export type SijoittelunHakemusValintatiedoilla = {
   ehdollisenHyvaksymisenEhtoEN?: string;
   vastaanottoDeadlineMennyt?: boolean;
   vastaanottoDeadline?: string;
-  naytetaanVastaanottoTieto: boolean;
-  hyvaksyttyHarkinnanvaraisesti: boolean;
+  hyvaksyttyHarkinnanvaraisesti?: boolean;
   hyvaksyPeruuntunut: boolean;
   hyvaksymiskirjeLahetetty?: string;
 };
@@ -99,7 +99,7 @@ export const isHyvaksyttyHarkinnanvaraisesti = (
     'tila' | 'hyvaksyttyHarkinnanvaraisesti'
   >,
 ): boolean =>
-  hakemus.hyvaksyttyHarkinnanvaraisesti &&
+  Boolean(hakemus?.hyvaksyttyHarkinnanvaraisesti) &&
   [SijoittelunTila.HYVAKSYTTY, SijoittelunTila.VARASIJALTA_HYVAKSYTTY].includes(
     hakemus.tila,
   );

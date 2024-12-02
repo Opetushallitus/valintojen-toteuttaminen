@@ -15,7 +15,7 @@ import {
   LaskettuJonoWithHakijaInfo,
 } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { getValintatapaJonoNimi } from '@/app/lib/get-valintatapa-jono-nimi';
+import { getValintatapaJonoNimi } from '@/app/lib/valintalaskenta-utils';
 
 const PaginatedValintatapajonoTable = ({
   label,

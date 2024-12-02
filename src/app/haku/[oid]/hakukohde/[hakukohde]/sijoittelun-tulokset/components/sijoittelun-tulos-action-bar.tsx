@@ -10,11 +10,11 @@ import {
   SijoittelunHakemusValintatiedoilla,
   VastaanottoTila,
 } from '@/app/lib/types/sijoittelu-types';
-import {
-  hakemukselleNaytetaanIlmoittautumisTila,
-  hakemukselleNaytetaanVastaanottoTila,
-} from '../lib/sijoittelun-tulokset-utils';
 import { HakemuksetStateChangeEvent } from '../lib/sijoittelun-tulokset-state';
+import {
+  isImoittautuminenPossible,
+  isVastaanottoPossible,
+} from '@/app/lib/sijoittelun-tulokset-utils';
 
 const IlmoittautumisSelect = ({
   hakemukset,
@@ -42,9 +42,7 @@ const IlmoittautumisSelect = ({
 
   const disabled =
     hakemukset.filter(
-      (h) =>
-        selection.has(h.hakemusOid) &&
-        hakemukselleNaytetaanIlmoittautumisTila(h),
+      (h) => selection.has(h.hakemusOid) && isImoittautuminenPossible(h),
     ).length < 1;
 
   return (
@@ -81,13 +79,12 @@ const VastaanOttoSelect = ({
 
   const disabled =
     hakemukset.filter(
-      (h) =>
-        selection.has(h.hakemusOid) && hakemukselleNaytetaanVastaanottoTila(h),
+      (h) => selection.has(h.hakemusOid) && isVastaanottoPossible(h),
     ).length < 1;
 
   return (
     <LocalizedSelect
-      placeholder="Muuta vastaanottotieto"
+      placeholder={t('sijoittelun-tulokset.muuta-vastaanottotieto')}
       onChange={massUpdateVastaanOtto}
       options={vastaanottotilaOptions}
       disabled={disabled}

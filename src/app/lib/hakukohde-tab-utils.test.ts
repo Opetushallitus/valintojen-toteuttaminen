@@ -5,7 +5,7 @@ import { toFinnishDate } from '@/app/lib/time-utils';
 import { UserPermissions } from '@/app/lib/permissions';
 
 const HAKU_BASE: Haku = {
-  oid: '1.2.3.4.5',
+  oid: '5.4.3.2.1',
   nimi: {
     fi: 'testihaku',
   },
@@ -19,6 +19,7 @@ const HAKU_BASE: Haku = {
 
 const HAKUKOHDE_BASE: Hakukohde = {
   oid: '1.2.3.4.5',
+  hakuOid: '5.4.3.2.1',
   nimi: {
     fi: 'testihaku',
   },

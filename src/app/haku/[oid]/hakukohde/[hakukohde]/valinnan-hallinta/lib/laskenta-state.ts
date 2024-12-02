@@ -4,13 +4,13 @@ import { assign, fromPromise, setup } from 'xstate';
 import { Laskenta, laskentaReducer } from './valinnan-hallinta-types';
 import { ValinnanvaiheTyyppi } from '@/app/lib/types/valintaperusteet-types';
 import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
+import { TranslatedName } from '@/app/lib/localization/localization-types';
 import {
+  getLaskennanSeurantaTiedot,
   getLaskennanTilaHakukohteelle,
   kaynnistaLaskenta,
   kaynnistaLaskentaHakukohteenValinnanvaiheille,
-} from '@/app/lib/valintalaskentakoostepalvelu';
-import { TranslatedName } from '@/app/lib/localization/localization-types';
-import { getLaskennanSeurantaTiedot } from '@/app/lib/valintalaskenta-service';
+} from '@/app/lib/valintalaskenta-service';
 import { FetchError } from '@/app/lib/common';
 import { Toast } from '@/app/hooks/useToaster';
 import {

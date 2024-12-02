@@ -1,6 +1,5 @@
 import { useTranslations } from '@/app/hooks/useTranslations';
 import {
-  isHyvaksyttyHarkinnanvaraisesti,
   SijoittelunHakemusValintatiedoilla,
   SijoittelunTila,
 } from '@/app/lib/types/sijoittelu-types';
@@ -14,6 +13,8 @@ import { isKorkeakouluHaku } from '@/app/lib/kouta';
 import { Haku } from '@/app/lib/types/kouta-types';
 import { SijoittelunTuloksetChangeEvent } from '../lib/sijoittelun-tulokset-state';
 import { ophColors, OphCheckbox } from '@opetushallitus/oph-design-system';
+import { Language } from '@/app/lib/localization/localization-types';
+import { getReadableHakemuksenTila } from '@/app/lib/sijoittelun-tulokset-utils';
 
 const LanguageAdornment = styled(InputAdornment)(() => ({
   backgroundColor: ophColors.grey200,
@@ -30,7 +31,9 @@ const StyledInput = styled(OphInput)(() => ({
   paddingLeft: 0,
 }));
 
-const showHyvaksyVarasijalta = (hakemus: SijoittelunHakemusValintatiedoilla) =>
+const isHyvaksyttyVarasijaltaVisible = (
+  hakemus: SijoittelunHakemusValintatiedoilla,
+) =>
   hakemus.tila === SijoittelunTila.VARALLA ||
   (hakemus.hyvaksyttyVarasijalta &&
     [
@@ -76,9 +79,7 @@ export const SijoittelunTilaCell = ({
     en: hakemus.ehdollisenHyvaksymisenEhtoEN,
   });
 
-  const hakemuksenTila = isHyvaksyttyHarkinnanvaraisesti(hakemus)
-    ? t('sijoitteluntila.HARKINNANVARAISESTI_HYVAKSYTTY')
-    : t(`sijoitteluntila.${hakemus.tila}`);
+  const hakemuksenTila = getReadableHakemuksenTila(hakemus, t);
 
   const updateEhdollinen = () => {
     setEhdollinen(!ehdollinen);
@@ -106,7 +107,7 @@ export const SijoittelunTilaCell = ({
 
   const updateEhdollisuudenMuuSyy = (
     event: ChangeEvent<HTMLInputElement>,
-    kieli: 'fi' | 'en' | 'sv',
+    kieli: Language,
   ) => {
     const syy = Object.assign(ehdollisuudenMuuSyyt, {
       [kieli]: event.target.value,
@@ -120,13 +121,8 @@ export const SijoittelunTilaCell = ({
 
   return (
     <SijoittelunTulosStyledCell>
-      <span>
-        {hakemuksenTila}
-        {hakemuksenTila === SijoittelunTila.VARALLA
-          ? `(${hakemus.varasijanNumero})`
-          : ''}
-      </span>
-      {showHyvaksyVarasijalta(hakemus) && (
+      <span>{hakemuksenTila}</span>
+      {isHyvaksyttyVarasijaltaVisible(hakemus) && (
         <OphCheckbox
           checked={hyvaksyttyVarasijalta}
           onChange={updateHyvaksyttyVarasijalta}

@@ -1,6 +1,6 @@
 'use client';
 
-import { indexBy, prop } from 'remeda';
+import { indexBy, pick, prop } from 'remeda';
 import { getHakemukset } from './ataru';
 import { configuration } from './configuration';
 import { client } from './http-client';
@@ -16,8 +16,11 @@ import {
   VastaanottoTila,
 } from './types/sijoittelu-types';
 import { MaksunTila, Maksuvelvollisuus } from './types/ataru-types';
-import { ValintaStatusUpdateErrorResult } from './types/valinta-tulos-types';
 import { FetchError, OphApiError } from './common';
+import {
+  ValinnanTulosModel,
+  ValinnanTulosUpdateErrorResult,
+} from './types/valinta-tulos-types';
 
 type SijoittelunTulosResponseData = {
   valintatapajonoNimi: string;
@@ -128,14 +131,6 @@ type SijoitteluajonTuloksetWithValintaEsitysResponseData = {
   lukuvuosimaksut: Array<{ personOid: string; maksuntila: MaksunTila }>;
 };
 
-const showVastaanottoTieto = (hakemuksenTila: SijoittelunTila) =>
-  [
-    SijoittelunTila.HYVAKSYTTY,
-    SijoittelunTila.VARASIJALTA_HYVAKSYTTY,
-    SijoittelunTila.PERUNUT,
-    SijoittelunTila.PERUUTETTU,
-  ].includes(hakemuksenTila);
-
 const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
   hakuOid: string,
   hakukohdeOid: string,
@@ -199,7 +194,6 @@ const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
               valintatulos.ehdollisenHyvaksymisenEhtoEN,
             vastaanottoDeadlineMennyt: valintatulos.vastaanottoDeadlineMennyt,
             vastaanottoDeadline: valintatulos.vastaanottoDeadline,
-            naytetaanVastaanottoTieto: showVastaanottoTieto(h.tila),
             hyvaksyttyHarkinnanvaraisesti:
               valintatulos.hyvaksyttyHarkinnanvaraisesti,
             hyvaksyPeruuntunut: valintatulos.hyvaksyPeruuntunut,
@@ -262,7 +256,7 @@ export const tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys = async (
   );
 };
 
-export const getLatestSijoitteluAjonTulokset = async (
+export const getLatestSijoitteluAjonTuloksetForHakukohde = async (
   hakuOid: string,
   hakukohdeOid: string,
 ): Promise<SijoitteluajonTulokset> => {
@@ -295,25 +289,28 @@ export const getLatestSijoitteluAjonTulokset = async (
   return { valintatapajonot: sijoitteluajonTulokset, hakijaryhmat };
 };
 
-export type SijoitteluajonTulosHakutoive = {
+type SijoittelunHakutoiveenValintatapajonoModel = {
+  tila: SijoittelunTila;
+  pisteet: number;
+  valintatapajonoOid: string;
+  varasijanNumero: number;
+  jonosija: number;
+  tasasijaJonosija: number;
+  valintatapajonoPrioriteetti: number;
+  hyvaksyttyHarkinnanvaraisesti: boolean;
+  ilmoittautumisTila: string;
+};
+
+type SijoitteluajonTulosHakutoiveModel = {
   hakutoive: number;
   hakukohdeOid: string;
   vastaanottotieto: VastaanottoTila;
   hakijaryhmat: Array<{ oid: string; kiintio: number }>;
-  hakutoiveenValintatapajonot: Array<{
-    tila: SijoittelunTila;
-    pisteet: number;
-    valintatapajonoOid: string;
-    varasijanNumero: number;
-    jonosija: number;
-    tasasijaJonosija: number;
-    valintatapajonoPrioriteetti: number;
-    hyvaksyttyHarkinnanvaraisesti: boolean;
-  }>;
+  hakutoiveenValintatapajonot: Array<SijoittelunHakutoiveenValintatapajonoModel>;
 };
 
 type SijoitteluajonTuloksetForHakemusResponseData = {
-  hakutoiveet: Array<SijoitteluajonTulosHakutoive>;
+  hakutoiveet: Array<SijoitteluajonTulosHakutoiveModel>;
 };
 
 export const getLatestSijoitteluajonTuloksetForHakemus = async ({
@@ -333,13 +330,6 @@ export const getLatestSijoitteluajonTuloksetForHakemus = async ({
   );
 
   return res ? indexBy(res.data.hakutoiveet, prop('hakukohdeOid')) : {};
-};
-
-type SijoitteluAjonTuloksetPatchResponse = {
-  message: string;
-  hakemusOid: string;
-  valintatapajonoOid: string;
-  status: number;
 };
 
 export const saveMaksunTilanMuutokset = async (
@@ -364,13 +354,65 @@ export const saveMaksunTilanMuutokset = async (
   }
 };
 
+const pickValinnanTulosProps = (value: ValinnanTulosModel) =>
+  pick(value, [
+    'hakukohdeOid',
+    'valintatapajonoOid',
+    'hakemusOid',
+    'henkiloOid',
+    'vastaanottotila',
+    'valinnantila',
+    'ilmoittautumistila',
+    'julkaistavissa',
+    'ehdollisestiHyvaksyttavissa',
+    'ehdollisenHyvaksymisenEhtoKoodi',
+    'ehdollisenHyvaksymisenEhtoFI',
+    'ehdollisenHyvaksymisenEhtoSV',
+    'ehdollisenHyvaksymisenEhtoEN',
+    'hyvaksyttyVarasijalta',
+    'hyvaksyPeruuntunut',
+  ]);
+
+export const saveValinnanTulokset = async ({
+  valintatapajonoOid,
+  lastModified,
+  tulokset,
+}: {
+  valintatapajonoOid: string;
+  lastModified: Date | string | null;
+  tulokset: Array<ValinnanTulosModel>;
+}) => {
+  const ifUnmodifiedSince = (
+    lastModified ? new Date(lastModified) : new Date()
+  ).toUTCString();
+
+  const results = await client.patch<Array<ValinnanTulosUpdateErrorResult>>(
+    configuration.valinnanTulosMuokkausUrl({ valintatapajonoOid }),
+    tulokset.map(pickValinnanTulosProps),
+    {
+      headers: { 'X-If-Unmodified-Since': ifUnmodifiedSince },
+    },
+  );
+
+  const { data } = results;
+
+  if (Array.isArray(data) && data.length > 0) {
+    throw new OphApiError<Array<ValinnanTulosUpdateErrorResult>>(
+      results,
+      'virhe.tallennus',
+    );
+  }
+
+  return data;
+};
+
 export const saveSijoitteluAjonTulokset = async (
   valintatapajonoOid: string,
   hakukohdeOid: string,
   lastModified: string,
   hakemukset: SijoittelunHakemusValintatiedoilla[],
 ) => {
-  const hakemuksetValintatiedoilla = hakemukset.map((h) => {
+  const valintaTulokset = hakemukset.map((h) => {
     return {
       hakukohdeOid,
       valintatapajonoOid,
@@ -389,6 +431,13 @@ export const saveSijoitteluAjonTulokset = async (
       hyvaksyPeruuntunut: h.hyvaksyPeruuntunut,
     };
   });
+
+  await saveValinnanTulokset({
+    valintatapajonoOid,
+    lastModified: lastModified,
+    tulokset: valintaTulokset,
+  });
+
   const muuttuneetKirjeet = hakemukset.map((h) => {
     return {
       henkiloOid: h.hakijaOid,
@@ -396,23 +445,6 @@ export const saveSijoitteluAjonTulokset = async (
       lahetetty: h.hyvaksymiskirjeLahetetty ?? null,
     };
   });
-  const results = await client.patch<
-    Array<SijoitteluAjonTuloksetPatchResponse>
-  >(
-    `${configuration.valintaTulosServiceUrl}valinnan-tulos/${valintatapajonoOid}`,
-    hakemuksetValintatiedoilla,
-    { headers: { 'X-If-Unmodified-Since': lastModified } },
-  );
-
-  const { data } = results;
-
-  if (Array.isArray(data) && data.length > 0) {
-    throw new OphApiError<ValintaStatusUpdateErrorResult[]>(
-      results,
-      'virhe.tallennus',
-    );
-  }
-
   await client.post<unknown>(
     `${configuration.valintaTulosServiceUrl}hyvaksymiskirje`,
     muuttuneetKirjeet,
@@ -424,4 +456,18 @@ export const hyvaksyValintaEsitys = async (valintatapajonoOid: string) => {
     `${configuration.valintaTulosServiceUrl}valintaesitys/${valintatapajonoOid}/hyvaksytty`,
     {},
   );
+};
+
+export const getValinnanTulokset = async ({
+  hakemusOid,
+}: {
+  hakemusOid: string;
+}) => {
+  const { data, headers } = await client.get<
+    Array<{ valinnantulos: ValinnanTulosModel }>
+  >(configuration.hakemuksenValinnanTulosUrl({ hakemusOid }));
+  return {
+    lastModified: headers.get('X-Last-Modified'),
+    data: indexBy(data.map(prop('valinnantulos')), prop('hakukohdeOid')),
+  };
 };

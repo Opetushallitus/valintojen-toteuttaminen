@@ -13,7 +13,7 @@ import { HakemuksenTila } from '@/app/lib/types/ataru-types';
 
 export type JonoSija = Omit<
   JonoSijaModel,
-  'jarjestyskriteerit' | 'harkinnanvarainen' | 'prioriteetti'
+  'harkinnanvarainen' | 'prioriteetti'
 > & {
   pisteet?: number;
   hakutoiveNumero?: number;
@@ -69,11 +69,7 @@ export const selectValinnanvaiheet = <
                   const jarjestyskriteeri = jonosija.jarjestyskriteerit?.[0];
 
                   return {
-                    ...omit(jonosija, [
-                      'jarjestyskriteerit',
-                      'harkinnanvarainen',
-                      'prioriteetti',
-                    ]),
+                    ...omit(jonosija, ['harkinnanvarainen', 'prioriteetti']),
                     ...((selectHakemusFields?.(jonosija.hakemusOid) ??
                       {}) as H),
                     hakutoiveNumero: jonosija.prioriteetti,

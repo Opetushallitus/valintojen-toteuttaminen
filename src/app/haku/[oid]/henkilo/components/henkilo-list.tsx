@@ -7,7 +7,7 @@ import { FullClientSpinner } from '@/app/components/client-spinner';
 import { ErrorView } from '@/app/components/error-view';
 import Link, { LinkProps } from 'next/link';
 import { useParams, useSearchParams } from 'next/navigation';
-import { getHenkiloTitle } from '../lib/henkilo-utils';
+import { getHenkiloTitle } from '@/app/lib/henkilo-utils';
 import {
   NAV_LIST_SELECTED_ITEM_CLASS,
   NavigationList,

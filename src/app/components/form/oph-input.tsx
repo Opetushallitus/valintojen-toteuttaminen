@@ -1,12 +1,12 @@
 'use client';
 import React from 'react';
-import { OutlinedInput, InputProps } from '@mui/material';
+import { OutlinedInput, OutlinedInputProps } from '@mui/material';
 
 export const OphInput = ({
   value,
   onChange,
   ...props
-}: InputProps & {
+}: OutlinedInputProps & {
   value: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   helperText?: string[];
