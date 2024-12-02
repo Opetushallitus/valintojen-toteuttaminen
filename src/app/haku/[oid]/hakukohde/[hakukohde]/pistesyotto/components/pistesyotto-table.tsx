@@ -37,19 +37,22 @@ export const PisteSyottoTable = ({
       return makeColumnWithCustomRender<HakemuksenPistetiedot>({
         title: koe.kuvaus,
         key: koe.tunniste,
-        renderFn: (props) =>
-          isNotPartOfThisHakukohde(
-            props.valintakokeenPisteet.find((p) => p.tunniste === koe.tunniste),
-          ) ? (
-            <ReadOnlyKoeCell pisteTiedot={props} koe={koe} />
+        renderFn: (props) => {
+          const matchingKoePisteet = props.valintakokeenPisteet.find(
+            (p) => p.tunniste === koe.tunniste,
+          );
+          return isNotPartOfThisHakukohde(matchingKoePisteet) ? (
+            <ReadOnlyKoeCell koePisteet={matchingKoePisteet} />
           ) : (
             <KoeCell
-              pisteTiedot={props}
+              hakemusOid={props.hakemusOid}
+              koePisteet={matchingKoePisteet}
               koe={koe}
               updateForm={updateForm}
               disabled={disabled}
             />
-          ),
+          );
+        },
         sortable: false,
       });
     });

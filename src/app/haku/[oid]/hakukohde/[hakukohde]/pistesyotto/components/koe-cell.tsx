@@ -1,7 +1,6 @@
 'use client';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import {
-  HakemuksenPistetiedot,
   ValintakoeOsallistuminenTulos,
   ValintakokeenPisteet,
 } from '@/app/lib/types/laskenta-types';
@@ -21,7 +20,8 @@ const StyledSelect = styled(LocalizedSelect)({
 });
 
 export type KoeCellProps = {
-  pisteTiedot: HakemuksenPistetiedot;
+  hakemusOid: string;
+  koePisteet?: ValintakokeenPisteet;
   updateForm: (params: ChangePisteSyottoFormParams) => void;
   koe: ValintakoeAvaimet;
   disabled: boolean;
@@ -45,30 +45,25 @@ const getArvoOptions = (koe: ValintakoeAvaimet, t: TFunction) => {
 };
 
 export const KoeCell = ({
-  pisteTiedot,
+  hakemusOid,
+  koePisteet,
   updateForm,
   koe,
   disabled,
 }: KoeCellProps) => {
   const { t } = useTranslations();
 
-  const findMatchingKoePisteet = (): ValintakokeenPisteet | undefined =>
-    pisteTiedot.valintakokeenPisteet.find((k) => k.tunniste === koe.tunniste);
-
-  const [arvo, setArvo] = useState<string>(
-    findMatchingKoePisteet()?.arvo ?? '',
-  );
+  const [arvo, setArvo] = useState<string>(koePisteet?.arvo ?? '');
   const [osallistuminen, setOsallistuminen] =
     useState<ValintakoeOsallistuminenTulos>(
-      findMatchingKoePisteet()?.osallistuminen ??
-        ValintakoeOsallistuminenTulos.MERKITSEMATTA,
+      koePisteet?.osallistuminen ?? ValintakoeOsallistuminenTulos.MERKITSEMATTA,
     );
 
   const changeSelectArvo = (event: SelectChangeEvent<string>) => {
     setArvo(event.target.value.toString());
     updateForm({
       value: event.target.value.toString(),
-      hakemusOid: pisteTiedot.hakemusOid,
+      hakemusOid,
       koeTunniste: koe.tunniste,
       updateArvo: true,
     });
@@ -85,13 +80,13 @@ export const KoeCell = ({
     }
     updateForm({
       value: event.target.value as ValintakoeOsallistuminenTulos,
-      hakemusOid: pisteTiedot.hakemusOid,
+      hakemusOid,
       koeTunniste: koe.tunniste,
       updateArvo,
     });
   };
 
-  const arvoId = `koe-arvo-${pisteTiedot.hakijaOid}-${koe.tunniste}`;
+  const arvoId = `koe-arvo-${hakemusOid}-${koe.tunniste}`;
 
   return (
     <Box
@@ -103,12 +98,12 @@ export const KoeCell = ({
         alignItems: 'flex-start',
       }}
     >
-      {koe.inputTyyppi === ValintakoeInputTyyppi.INPUT && (
+      {koe.inputTyyppi === ValintakoeInputTyyppi.INPUT ? (
         <Box sx={{ width: '80px' }}>
           {osallistuminen !== ValintakoeOsallistuminenTulos.EI_OSALLISTUNUT && (
             <ArvoInput
               koe={koe}
-              pisteTiedot={pisteTiedot}
+              hakemusOid={hakemusOid}
               updateForm={updateForm}
               disabled={disabled}
               arvo={arvo}
@@ -125,8 +120,7 @@ export const KoeCell = ({
             />
           )}
         </Box>
-      )}
-      {koe.inputTyyppi !== ValintakoeInputTyyppi.INPUT && (
+      ) : (
         <StyledSelect
           id={arvoId}
           value={arvo}
@@ -137,7 +131,7 @@ export const KoeCell = ({
         />
       )}
       <StyledSelect
-        id={`koe-osallistuminen-${pisteTiedot.hakijaOid}-${koe.tunniste}`}
+        id={`koe-osallistuminen-${hakemusOid}-${koe.tunniste}`}
         value={osallistuminen}
         options={[
           {

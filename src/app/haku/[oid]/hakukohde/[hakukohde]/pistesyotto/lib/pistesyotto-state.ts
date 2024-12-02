@@ -34,7 +34,7 @@ export const createPisteSyottoMachine = (
     id: `PistesyottoMachine-${hakukohdeOid}`,
     initial: PisteSyottoStates.IDLE,
     context: {
-      pistetiedot: pistetiedot,
+      pistetiedot,
       changedPistetiedot: [],
     } as PisteSyottoContext,
     states: {
@@ -46,7 +46,7 @@ export const createPisteSyottoMachine = (
                 let hakenut = context.changedPistetiedot.find(
                   (h) => h.hakemusOid === event.hakemusOid,
                 );
-                const existing: boolean = Boolean(hakenut);
+                const changedPisteetExists: boolean = Boolean(hakenut);
                 hakenut =
                   hakenut ||
                   context.pistetiedot.find(
@@ -62,12 +62,12 @@ export const createPisteSyottoMachine = (
                     koe.osallistuminen =
                       event.value as ValintakoeOsallistuminenTulos;
                   }
-                  if (existing) {
+                  if (changedPisteetExists) {
                     return context.changedPistetiedot.map((h) =>
                       h.hakemusOid === event.hakemusOid ? hakenut : h,
                     );
                   } else {
-                    return [...context.changedPistetiedot, ...[hakenut]];
+                    return [...context.changedPistetiedot, hakenut];
                   }
                 }
                 return context.changedPistetiedot;

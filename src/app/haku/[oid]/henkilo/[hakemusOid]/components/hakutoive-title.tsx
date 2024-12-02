@@ -2,6 +2,7 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { Hakukohde } from '@/app/lib/types/kouta-types';
 import { HakukohdeTabLink } from '@/app/haku/[oid]/hakukohde/components/hakukohde-tab-link';
 import { Link } from '@mui/material';
+import { NDASH } from '@/app/lib/constants';
 
 export const HakutoiveTitle = ({
   hakutoiveNumero,
@@ -17,7 +18,7 @@ export const HakutoiveTitle = ({
         {hakutoiveNumero}
         {'. '}
         {translateEntity(hakukohde.nimi)}
-        {' \u2013 '}
+        {` ${NDASH} `}
       </span>
       <Link
         component={HakukohdeTabLink}

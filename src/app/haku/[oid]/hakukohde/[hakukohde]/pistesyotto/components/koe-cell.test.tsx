@@ -8,7 +8,10 @@ import {
 } from '@testing-library/react';
 import { KoeCell } from './koe-cell';
 import { ValintakoeInputTyyppi } from '@/app/lib/types/valintaperusteet-types';
-import { ValintakoeOsallistuminenTulos } from '@/app/lib/types/laskenta-types';
+import {
+  ValintakoeOsallistuminenTulos,
+  ValintakokeenPisteet,
+} from '@/app/lib/types/laskenta-types';
 import userEvent from '@testing-library/user-event';
 
 vi.mock('@/app/hooks/useTranslations', () => ({
@@ -17,20 +20,13 @@ vi.mock('@/app/hooks/useTranslations', () => ({
   },
 }));
 
-const PISTETIEDOT = {
-  hakemusOid: '1',
-  hakijanNimi: 'Nukettaja Ruhtinas',
-  etunimet: 'Nukettaja',
-  sukunimi: 'Ruhtinas',
-  hakijaOid: '2',
-  valintakokeenPisteet: [
-    {
-      tunniste: 'tunniste',
-      arvo: '10',
-      osallistuminen: ValintakoeOsallistuminenTulos.EI_OSALLISTUNUT,
-      osallistuminenTunniste: 'tunniste-osallistuminen',
-    },
-  ],
+const HAKEMUS_OID = '1';
+
+const KOE_PISTEET: ValintakokeenPisteet = {
+  tunniste: 'tunniste',
+  arvo: '10',
+  osallistuminen: ValintakoeOsallistuminenTulos.EI_OSALLISTUNUT,
+  osallistuminenTunniste: 'tunniste-osallistuminen',
 };
 
 const KOE = {
@@ -54,16 +50,12 @@ const renderKoeCell = ({
   const updateFormFn = vi.fn();
   return render(
     <KoeCell
-      pisteTiedot={Object.assign({}, PISTETIEDOT, {
-        valintakokeenPisteet: PISTETIEDOT.valintakokeenPisteet.map(
-          (pisteet) => ({
-            ...pisteet,
-            arvo,
-            osallistuminen:
-              osallistuminen ?? ValintakoeOsallistuminenTulos.EI_OSALLISTUNUT,
-          }),
-        ),
-      })}
+      hakemusOid={HAKEMUS_OID}
+      koePisteet={{
+        ...KOE_PISTEET,
+        arvo: arvo ?? KOE_PISTEET.arvo,
+        osallistuminen: osallistuminen ?? KOE_PISTEET.osallistuminen,
+      }}
       koe={KOE}
       updateForm={updateFormFn}
       disabled={false}

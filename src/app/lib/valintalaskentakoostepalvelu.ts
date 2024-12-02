@@ -22,10 +22,12 @@ import { getHakemukset, getHakijat } from './ataru';
 import {
   getValintakokeet,
   getValintakoeAvaimetHakukohteelle,
+  getValintakoeAvaimetHakukohteille,
 } from './valintaperusteet';
 import { ValintakoekutsutData } from './types/valintakoekutsut-types';
 import { HakutoiveValintakoeOsallistumiset } from './types/valintalaskentakoostepalvelu-types';
 import { HarkinnanvaraisuudenSyy } from './types/harkinnanvaraiset-types';
+import { ValintakoeAvaimet } from './types/valintaperusteet-types';
 
 export const getHakukohteenValintatuloksetIlmanHakijanTilaa = async (
   hakuOid: string,
@@ -39,6 +41,68 @@ export const getHakukohteenValintatuloksetIlmanHakijanTilaa = async (
   });
 };
 
+export type ValintakokeidenOsallistumistiedot = Record<
+  string,
+  {
+    osallistumistieto: ValintakoeOsallistuminenTulos;
+  }
+>;
+
+type PistetietoItem = {
+  applicationAdditionalDataDTO: {
+    oid: string;
+    additionalData: Record<string, string>;
+  };
+};
+
+export type PisteetForHakemus = {
+  lastmodified: string;
+  hakukohteittain: Record<string, PistetietoItem>;
+};
+
+const getPisteetForHakemus = async ({ hakemusOid }: { hakemusOid: string }) => {
+  const res = await client.get<PisteetForHakemus>(
+    configuration.koostetutPistetiedotHakemukselleUrl({ hakemusOid }),
+  );
+
+  return res.data;
+};
+
+const selectKokeenPisteet = (
+  pistetieto: PistetietoItem,
+  kokeet: Array<ValintakoeAvaimet>,
+): Array<ValintakokeenPisteet> => {
+  return kokeet.map((k) => {
+    const arvo =
+      pistetieto.applicationAdditionalDataDTO.additionalData[k.tunniste];
+    const osallistuminen = pistetieto.applicationAdditionalDataDTO
+      .additionalData[
+      k.osallistuminenTunniste
+    ] as ValintakoeOsallistuminenTulos;
+    return {
+      tunniste: k.tunniste,
+      arvo,
+      osallistuminen,
+      osallistuminenTunniste: k.osallistuminenTunniste,
+    };
+  });
+};
+
+export const getKoePisteetForHakemus = async ({
+  hakemusOid,
+  hakukohdeOids,
+}: {
+  hakemusOid: string;
+  hakukohdeOids: Array<string>;
+}): Promise<Record<string, Array<ValintakokeenPisteet>>> => {
+  const kokeet = await getValintakoeAvaimetHakukohteille({ hakukohdeOids });
+  const pistetiedot = await getPisteetForHakemus({ hakemusOid });
+
+  return mapValues(pistetiedot.hakukohteittain, (p, hakukohdeOid) => {
+    return selectKokeenPisteet(p, kokeet[hakukohdeOid]);
+  });
+};
+
 export const getPisteetForHakukohde = async (
   hakuOid: string,
   hakukohdeOid: string,
@@ -47,14 +111,13 @@ export const getPisteetForHakukohde = async (
   const hakemuksetPromise = getHakemukset({ hakuOid, hakukohdeOid });
   const pisteTiedotFetch = abortableClient.get<{
     lastmodified?: string;
-    valintapisteet: Array<{
-      applicationAdditionalDataDTO: {
-        oid: string;
-        personOid: string;
-        additionalData: Record<string, string>;
-      };
-    }>;
-  }>(configuration.koostetutPistetiedot({ hakuOid, hakukohdeOid }));
+    valintapisteet: Array<PistetietoItem>;
+  }>(
+    configuration.koostetutPistetiedotHakukohteelleUrl({
+      hakuOid,
+      hakukohdeOid,
+    }),
+  );
 
   const kokeet = await kokeetPromise;
 
@@ -67,41 +130,24 @@ export const getPisteetForHakukohde = async (
     hakemuksetPromise,
     pisteTiedotFetch.promise,
   ]);
-  const hakemuksetIndexed = indexBy(hakemukset, (h) => h.hakemusOid);
+  const hakemuksetIndexed = indexBy(hakemukset, prop('hakemusOid'));
 
   const hakemuksetKokeilla: HakemuksenPistetiedot[] =
-    pistetiedot.valintapisteet.map(
-      (p: {
-        applicationAdditionalDataDTO: {
-          oid: string;
-          personOid: string;
-          additionalData: Record<string, string>;
-        };
-      }) => {
-        const hakemus = hakemuksetIndexed[p.applicationAdditionalDataDTO.oid];
-        const kokeenPisteet: ValintakokeenPisteet[] = kokeet.map((k) => {
-          const arvo =
-            p.applicationAdditionalDataDTO.additionalData[k.tunniste];
-          const osallistuminen = p.applicationAdditionalDataDTO.additionalData[
-            k.osallistuminenTunniste
-          ] as ValintakoeOsallistuminenTulos;
-          return {
-            tunniste: k.tunniste,
-            arvo,
-            osallistuminen,
-            osallistuminenTunniste: k.osallistuminenTunniste,
-          };
-        });
-        return {
-          hakemusOid: hakemus.hakemusOid,
-          hakijaOid: hakemus.hakijaOid,
-          hakijanNimi: hakemus.hakijanNimi,
-          etunimet: hakemus.etunimet,
-          sukunimi: hakemus.sukunimi,
-          valintakokeenPisteet: kokeenPisteet,
-        };
-      },
-    );
+    pistetiedot.valintapisteet.map((p: PistetietoItem) => {
+      const hakemus = hakemuksetIndexed[p.applicationAdditionalDataDTO.oid];
+      const kokeenPisteet: Array<ValintakokeenPisteet> = selectKokeenPisteet(
+        p,
+        kokeet,
+      );
+      return {
+        hakemusOid: hakemus.hakemusOid,
+        hakijaOid: hakemus.hakijaOid,
+        hakijanNimi: hakemus.hakijanNimi,
+        etunimet: hakemus.etunimet,
+        sukunimi: hakemus.sukunimi,
+        valintakokeenPisteet: kokeenPisteet,
+      };
+    });
 
   const lastModified = isNonNullish(pistetiedot.lastmodified)
     ? new Date(pistetiedot.lastmodified)
@@ -137,7 +183,10 @@ export const updatePisteetForHakukohde = async (
     };
   });
   await client.put(
-    configuration.koostetutPistetiedot({ hakuOid, hakukohdeOid }),
+    configuration.koostetutPistetiedotHakukohteelleUrl({
+      hakuOid,
+      hakukohdeOid,
+    }),
     mappedPistetiedot,
   );
 };
