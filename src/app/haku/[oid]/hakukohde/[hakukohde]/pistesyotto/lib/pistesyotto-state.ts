@@ -4,8 +4,9 @@ import {
   ValintakoeOsallistuminenTulos,
 } from '@/app/lib/types/laskenta-types';
 import { updatePisteetForHakukohde } from '@/app/lib/valintalaskentakoostepalvelu';
+import { useSelector } from '@xstate/react';
 import { useMemo } from 'react';
-import { assign, createMachine, fromPromise } from 'xstate';
+import { AnyActorRef, assign, createMachine, fromPromise } from 'xstate';
 
 export type PisteSyottoContext = {
   pistetiedot: HakemuksenPistetiedot[];
@@ -25,6 +26,10 @@ export enum PisteSyottoEvent {
   ADD_CHANGED_PISTETIETO = 'ADD_CHANGED_PISTETIETO',
 }
 
+type PistesyottoAnyEvent =
+  | PistesyottoSaveEvent
+  | PistesyottoChangedPistetietoEvent;
+
 export type PistesyottoSaveEvent = {
   type: PisteSyottoEvent.SAVE;
 };
@@ -33,26 +38,27 @@ export type PistesyottoChangedPistetietoEvent = {
   type: PisteSyottoEvent.ADD_CHANGED_PISTETIETO;
   hakemusOid: string;
   koeTunniste: string;
-  value: string;
-  updateArvo: boolean;
+  arvo?: string;
+  osallistuminen?: ValintakoeOsallistuminenTulos;
 };
 
-export const createPisteSyottoMachine = (
-  hakuOid: string,
+export const createPisteMachine = (
   hakukohdeOid: string,
-  pistetiedot: HakemuksenPistetiedot[],
-  addToast: (toast: Toast) => void,
+  pistetiedot: Array<HakemuksenPistetiedot>,
 ) => {
-  const pisteMachine = createMachine({
+  return createMachine({
     id: `PistesyottoMachine-${hakukohdeOid}`,
     initial: PisteSyottoStates.IDLE,
-    types: {} as {
-      context: PisteSyottoContext;
-      events: PistesyottoSaveEvent | PistesyottoChangedPistetietoEvent;
-    },
     context: {
       pistetiedot,
       changedPistetiedot: [],
+    },
+    types: {} as {
+      context: PisteSyottoContext;
+      events: PistesyottoAnyEvent;
+      actions:
+        | { type: 'alert'; params: { message: string } }
+        | { type: 'successNotify' };
     },
     states: {
       [PisteSyottoStates.IDLE]: {
@@ -73,12 +79,9 @@ export const createPisteSyottoMachine = (
                   (k) => k.tunniste === event.koeTunniste,
                 );
                 if (hakenut && koe) {
-                  if (event.updateArvo) {
-                    koe.arvo = event.value;
-                  } else {
-                    koe.osallistuminen =
-                      event.value as ValintakoeOsallistuminenTulos;
-                  }
+                  koe.arvo = event.arvo ?? koe.arvo;
+                  koe.osallistuminen =
+                    event.osallistuminen ?? koe.osallistuminen;
                   if (changedPisteetExists) {
                     return context.changedPistetiedot.map((h) =>
                       h.hakemusOid === event.hakemusOid ? hakenut : h,
@@ -153,7 +156,15 @@ export const createPisteSyottoMachine = (
       },
     },
   });
+};
 
+export const createPisteSyottoMachine = (
+  hakuOid: string,
+  hakukohdeOid: string,
+  pistetiedot: Array<HakemuksenPistetiedot>,
+  addToast: (toast: Toast) => void,
+) => {
+  const pisteMachine = createPisteMachine(hakukohdeOid, pistetiedot);
   return pisteMachine.provide({
     guards: {
       hasChangedPistetiedot: ({ context }) =>
@@ -204,4 +215,26 @@ export const usePistesyottoMachine = ({
       addToast,
     );
   }, [hakuOid, hakukohdeOid, pistetiedot, addToast]);
+};
+
+export const useOsallistumistieto = (
+  pistesyottoActor: AnyActorRef,
+  { hakemusOid, koeTunniste }: { hakemusOid: string; koeTunniste: string },
+) => {
+  return useSelector(pistesyottoActor, (s) => {
+    const pistetieto =
+      s.context.changedPistetiedot.find(
+        (p: { hakemusOid: string }) => p.hakemusOid === hakemusOid,
+      ) ??
+      s.context.pistetiedot.find(
+        (p: { hakemusOid: string }) => p.hakemusOid === hakemusOid,
+      );
+    const machineKoe = pistetieto?.valintakokeenPisteet.find(
+      (p: { tunniste: string }) => p.tunniste === koeTunniste,
+    );
+    return {
+      arvo: machineKoe.arvo,
+      osallistuminen: machineKoe.osallistuminen,
+    };
+  });
 };

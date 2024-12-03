@@ -19,18 +19,16 @@ import { ValintakoeAvaimet } from '@/app/lib/types/valintaperusteet-types';
 import { NDASH } from '@/app/lib/constants';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import {
-  PistesyottoChangedPistetietoEvent,
   PisteSyottoEvent,
-  PistesyottoSaveEvent,
   PisteSyottoStates,
   usePistesyottoMachine,
 } from '@/app/haku/[oid]/hakukohde/[hakukohde]/pistesyotto/lib/pistesyotto-state';
 import { HakijaInfo } from '@/app/lib/types/ataru-types';
-import { useMachine } from '@xstate/react';
+import { useActorRef, useSelector } from '@xstate/react';
 import useToaster from '@/app/hooks/useToaster';
-import { ChangePisteSyottoFormParams } from '@/app/haku/[oid]/hakukohde/[hakukohde]/pistesyotto/components/pistesyotto-form';
 import { useMemo } from 'react';
 import { SpinnerIcon } from '@/app/components/spinner-icon';
+import { AnyActorRef } from 'xstate';
 
 const Range = ({
   min,
@@ -68,7 +66,7 @@ const HakukohdeFields = ({
     addToast,
   });
 
-  const [state, send] = useMachine(pistesyottoMachine);
+  const pistesyottoActorRef = useActorRef(pistesyottoMachine);
 
   return (
     <>
@@ -92,8 +90,7 @@ const HakukohdeFields = ({
               koe={koe}
               hakija={hakija}
               pisteet={matchingKoePisteet}
-              send={send}
-              isPending={state.matches(PisteSyottoStates.UPDATING)}
+              pistesyottoActor={pistesyottoActorRef}
             />
           </Box>
         );
@@ -105,24 +102,18 @@ const HakukohdeFields = ({
 const KoeFields = ({
   hakija,
   koe,
-  pisteet,
-  send,
-  isPending,
+  pistesyottoActor,
 }: {
   hakija: HakijaInfo;
   koe: ValintakoeAvaimet;
   pisteet?: ValintakokeenPisteet;
-  send: (e: PistesyottoSaveEvent | PistesyottoChangedPistetietoEvent) => void;
-  isPending: boolean;
+  pistesyottoActor: AnyActorRef;
 }) => {
   const { t } = useTranslations();
 
-  const updateForm = (changeParams: ChangePisteSyottoFormParams) => {
-    send({
-      type: PisteSyottoEvent.ADD_CHANGED_PISTETIETO,
-      ...changeParams,
-    });
-  };
+  const state = useSelector(pistesyottoActor, (s) => s);
+
+  const isPending = state.matches(PisteSyottoStates.UPDATING);
 
   return (
     <>
@@ -132,20 +123,27 @@ const KoeFields = ({
         </Typography>
       </Box>
       <Divider orientation="horizontal" />
-      <Box sx={{ display: 'flex', gap: 2, paddingLeft: 1, marginTop: 1.5 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          gap: 2,
+          paddingLeft: 1,
+          marginTop: 1.5,
+          alignItems: 'flex-start',
+        }}
+      >
         <KoeCell
           hakemusOid={hakija.hakemusOid}
           koe={koe}
-          koePisteet={pisteet}
-          updateForm={updateForm}
-          disabled={false}
+          pistesyottoActorRef={pistesyottoActor}
         />
         <OphButton
           variant="contained"
+          sx={{ minHeight: '48px' }}
           startIcon={isPending && <SpinnerIcon />}
           disabled={isPending}
           onClick={() => {
-            send({
+            pistesyottoActor.send({
               type: PisteSyottoEvent.SAVE,
             });
           }}

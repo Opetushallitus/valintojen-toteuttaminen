@@ -6,7 +6,7 @@ import {
   waitFor,
   within,
 } from '@testing-library/react';
-import { KoeCell } from './koe-cell';
+import { KoeCellUncontrolled } from './koe-cell';
 import { ValintakoeInputTyyppi } from '@/app/lib/types/valintaperusteet-types';
 import {
   ValintakoeOsallistuminenTulos,
@@ -47,17 +47,13 @@ const renderKoeCell = ({
   osallistuminen?: ValintakoeOsallistuminenTulos;
   arvo?: string;
 } = {}) => {
-  const updateFormFn = vi.fn();
   return render(
-    <KoeCell
+    <KoeCellUncontrolled
       hakemusOid={HAKEMUS_OID}
-      koePisteet={{
-        ...KOE_PISTEET,
-        arvo: arvo ?? KOE_PISTEET.arvo,
-        osallistuminen: osallistuminen ?? KOE_PISTEET.osallistuminen,
-      }}
+      arvo={arvo ?? KOE_PISTEET.arvo}
+      osallistuminen={osallistuminen ?? KOE_PISTEET.osallistuminen}
       koe={KOE}
-      updateForm={updateFormFn}
+      onChange={() => {}}
       disabled={false}
     />,
   );
