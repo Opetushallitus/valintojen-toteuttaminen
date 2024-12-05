@@ -3,8 +3,12 @@ import { Construct } from 'constructs';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as logs from 'aws-cdk-lib/aws-logs';
-import { Nextjs, NextjsOverrides } from 'cdk-nextjs-standalone';
-import { PriceClass } from 'aws-cdk-lib/aws-cloudfront';
+import {
+  Nextjs,
+  NextjsOverrides,
+  OptionalFunctionProps,
+} from 'cdk-nextjs-standalone';
+import { CachePolicy, PriceClass } from 'aws-cdk-lib/aws-cloudfront';
 
 type EnvironmentName = 'untuva' | 'hahtuva' | 'pallero';
 
@@ -25,79 +29,37 @@ interface ValintojenToteuttaminenStackProps extends cdk.StackProps {
   skipBuild: boolean;
 }
 
-const nextJsLogGroupOverrides = (
+const nameFunctionProps = (
+  scope: Construct,
+  environmentName: EnvironmentName,
+  appName: string,
+  lambdaName: string,
+  logGroupOptions?: logs.LogGroupProps,
+): OptionalFunctionProps => {
+  const id = `${environmentName}-${appName}-${lambdaName}`;
+  return {
+    functionName: id,
+    logGroup: new logs.LogGroup(scope, id, {
+      logGroupName: `/aws/lambda/${id}`,
+      retention: logs.RetentionDays.INFINITE,
+      ...logGroupOptions,
+    }),
+  };
+};
+
+const nameOverrides = (
   scope: Construct,
   environmentName: EnvironmentName,
   appName: string,
 ): NextjsOverrides => {
   return {
     nextjsServer: {
-      functionProps: {
-        logGroup: new logs.LogGroup(
-          scope,
-          'Valintojen Toteuttaminen NextJs Server lambda',
-          {
-            logGroupName: `/aws/lambda/${environmentName}-${appName}-nextjs-server`,
-          },
-        ),
-      },
-    },
-    nextjsStaticAssets: {
-      nextjsBucketDeploymentProps: {
-        overrides: {
-          functionProps: {
-            logGroup: new logs.LogGroup(
-              scope,
-              'Valintojen Toteuttaminen NextJs Static Assets Bucket Deployment lambda',
-              {
-                logGroupName: `/aws/lambda/${environmentName}-${appName}-nextjs-static-assets-bucket-deployment`,
-              },
-            ),
-          },
-        },
-      },
-    },
-    nextjsBucketDeployment: {
-      functionProps: {
-        logGroup: new logs.LogGroup(
-          scope,
-          'Valintojen Toteuttaminen NextJs Bucket Deployment lambda',
-          {
-            logGroupName: `/aws/lambda/${environmentName}-${appName}-nextjs-bucket-deployment`,
-          },
-        ),
-      },
-    },
-    nextjsImage: {
-      functionProps: {
-        logGroup: new logs.LogGroup(
-          scope,
-          'Valintojen Toteuttaminen NextJs Image lambda',
-          {
-            logGroupName: `/aws/lambda/${environmentName}-${appName}-nextjs-image`,
-          },
-        ),
-      },
-    },
-    nextjsRevalidation: {
-      insertFunctionProps: {
-        logGroup: new logs.LogGroup(
-          scope,
-          'Valintojen Toteuttaminen NextJs Revalidation Insert lambda',
-          {
-            logGroupName: `/aws/lambda/${environmentName}-${appName}-nextjs-revalidation-insert`,
-          },
-        ),
-      },
-      queueFunctionProps: {
-        logGroup: new logs.LogGroup(
-          scope,
-          'Valintojen Toteuttaminen NextJs Revalidation Queue lambda',
-          {
-            logGroupName: `/aws/lambda/${environmentName}-${appName}-nextjs-revalidation-queue`,
-          },
-        ),
-      },
+      functionProps: nameFunctionProps(
+        scope,
+        environmentName,
+        appName,
+        'nextjs-server',
+      ),
     },
   };
 };
@@ -130,7 +92,6 @@ export class SovellusStack extends cdk.Stack {
         region: 'us-east-1', // Cloudfront only checks this region for certificates.
       },
     );
-
     const nextjs = new Nextjs(this, 'Nextjs', {
       nextjsPath: '..', // relative path from your project root to NextJS
       ...(props.skipBuild
@@ -151,11 +112,16 @@ export class SovellusStack extends cdk.Stack {
       },
       overrides: {
         nextjsDistribution: {
+          imageBehaviorOptions: {
+            // We don't need image optimization, so doesn't matter what cache policy we use
+            // Using a managed policy so we don't add useless cache policies.
+            cachePolicy: CachePolicy.CACHING_DISABLED,
+          },
           distributionProps: {
             priceClass: PriceClass.PRICE_CLASS_100,
           },
         },
-        ...nextJsLogGroupOverrides(
+        ...nameOverrides(
           this,
           props.environmentName,
           'valintojen-toteuttaminen',
