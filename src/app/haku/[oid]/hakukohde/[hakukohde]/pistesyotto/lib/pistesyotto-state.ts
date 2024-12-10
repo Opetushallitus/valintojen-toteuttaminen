@@ -6,7 +6,7 @@ import {
 import { updatePisteetForHakukohde } from '@/app/lib/valintalaskentakoostepalvelu';
 import { useActorRef, useSelector } from '@xstate/react';
 import { useMemo } from 'react';
-import { isDeepEqual, isEmpty } from 'remeda';
+import { clone, isEmpty } from 'remeda';
 import { AnyActorRef, assign, createMachine, fromPromise } from 'xstate';
 
 export type PisteSyottoContext = {
@@ -43,6 +43,22 @@ export type PistesyottoChangedPistetietoEvent = {
   osallistuminen?: ValintakoeOsallistuminenTulos;
 };
 
+const isKoeValuesEqual = (
+  oldKoe:
+    | { arvo?: string; osallistuminen: ValintakoeOsallistuminenTulos }
+    | undefined,
+  newKoe:
+    | { arvo?: string; osallistuminen: ValintakoeOsallistuminenTulos }
+    | undefined,
+) => {
+  const oldArvo = oldKoe?.arvo ?? '';
+
+  return (
+    oldKoe?.osallistuminen === newKoe?.osallistuminen &&
+    oldArvo === newKoe?.arvo
+  );
+};
+
 export const createPisteMachine = (
   hakukohdeOid: string,
   pistetiedot: Array<HakemuksenPistetiedot>,
@@ -74,18 +90,17 @@ export const createPisteMachine = (
                   (h) => h.hakemusOid === event.hakemusOid,
                 );
 
-                const changedKoe =
-                  changedPistetieto?.valintakokeenPisteet?.find(
-                    (k) => k.tunniste === event.koeTunniste,
-                  );
-
                 const existingKoe =
                   existingPistetieto?.valintakokeenPisteet?.find(
                     (k) => k.tunniste === event.koeTunniste,
                   );
 
-                const pistetieto = changedPistetieto || existingPistetieto;
-                const koe = changedKoe || existingKoe;
+                const pistetieto = clone(
+                  changedPistetieto || existingPistetieto,
+                );
+                const koe = pistetieto?.valintakokeenPisteet.find(
+                  (k) => k.tunniste === event.koeTunniste,
+                );
 
                 if (pistetieto && koe) {
                   const newArvo = event.arvo;
@@ -113,10 +128,10 @@ export const createPisteMachine = (
                   }
 
                   if (changedPistetieto) {
-                    let newPisteet = changedPistetieto?.valintakokeenPisteet;
+                    let newPisteet = changedPistetieto.valintakokeenPisteet;
 
-                    // kokeen pistetieto sama kuin alkuperäinen
-                    if (isDeepEqual(changedKoe, existingKoe)) {
+                    // muuttunut kokeen pistetieto sama kuin alkuperäinen
+                    if (isKoeValuesEqual(existingKoe, koe)) {
                       newPisteet = newPisteet?.filter(
                         (p) => p.tunniste !== event.koeTunniste,
                       );
@@ -129,7 +144,6 @@ export const createPisteMachine = (
                       );
                     }
 
-                    // Jos arvo muuttuu
                     // pistetiedolla edelleen muokattuja kokeen pisteitä. Vaihdetaan muokattuun pistetietoon.
                     pistetieto.valintakokeenPisteet = newPisteet;
 
@@ -285,7 +299,7 @@ export const useOsallistumistieto = (
       (p: { tunniste: string }) => p.tunniste === koeTunniste,
     );
     return {
-      arvo: machineKoe.arvo,
+      arvo: machineKoe.arvo ?? '',
       osallistuminen: machineKoe.osallistuminen,
     };
   });
