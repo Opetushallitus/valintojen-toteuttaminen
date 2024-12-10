@@ -1,19 +1,22 @@
 'use client';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import {
-  ValintakoeOsallistuminenTulos,
-  ValintakokeenPisteet,
-} from '@/app/lib/types/laskenta-types';
+import { ValintakoeOsallistuminenTulos } from '@/app/lib/types/laskenta-types';
 import {
   ValintakoeAvaimet,
   ValintakoeInputTyyppi,
 } from '@/app/lib/types/valintaperusteet-types';
-import { useState } from 'react';
 import { Box, SelectChangeEvent, styled } from '@mui/material';
 import { LocalizedSelect } from '@/app/components/localized-select';
 import { ChangePisteSyottoFormParams } from './pistesyotto-form';
 import { TFunction } from 'i18next';
 import { ArvoInput } from './arvo-input';
+import {
+  PisteSyottoEvent,
+  PisteSyottoStates,
+  useOsallistumistieto,
+} from '../lib/pistesyotto-state';
+import { AnyActorRef } from 'xstate';
+import { useSelector } from '@xstate/react';
 
 const StyledSelect = styled(LocalizedSelect)({
   minWidth: '150px',
@@ -21,10 +24,8 @@ const StyledSelect = styled(LocalizedSelect)({
 
 export type KoeCellProps = {
   hakemusOid: string;
-  koePisteet?: ValintakokeenPisteet;
-  updateForm: (params: ChangePisteSyottoFormParams) => void;
   koe: ValintakoeAvaimet;
-  disabled: boolean;
+  pistesyottoActorRef: AnyActorRef;
 };
 
 const getArvoOptions = (koe: ValintakoeAvaimet, t: TFunction) => {
@@ -44,49 +45,37 @@ const getArvoOptions = (koe: ValintakoeAvaimet, t: TFunction) => {
   }
 };
 
-export const KoeCell = ({
+export const KoeCellUncontrolled = ({
   hakemusOid,
-  koePisteet,
-  updateForm,
   koe,
   disabled,
-}: KoeCellProps) => {
+  arvo,
+  osallistuminen,
+  onChange,
+}: Omit<KoeCellProps, 'pistesyottoActorRef'> & {
+  arvo: string;
+  osallistuminen: ValintakoeOsallistuminenTulos;
+  disabled: boolean;
+  onChange: (event: ChangePisteSyottoFormParams) => void;
+}) => {
   const { t } = useTranslations();
 
-  const [arvo, setArvo] = useState<string>(koePisteet?.arvo ?? '');
-  const [osallistuminen, setOsallistuminen] =
-    useState<ValintakoeOsallistuminenTulos>(
-      koePisteet?.osallistuminen ?? ValintakoeOsallistuminenTulos.MERKITSEMATTA,
-    );
-
-  const changeSelectArvo = (event: SelectChangeEvent<string>) => {
-    setArvo(event.target.value.toString());
-    updateForm({
-      value: event.target.value.toString(),
-      hakemusOid,
-      koeTunniste: koe.tunniste,
-      updateArvo: true,
-    });
-  };
+  const arvoId = `koe-arvo-${hakemusOid}-${koe.tunniste}`;
 
   const changeOsallistumisenTila = (event: SelectChangeEvent<string>) => {
     const newOsallistuminen = event.target
       .value as ValintakoeOsallistuminenTulos;
-    setOsallistuminen(newOsallistuminen);
-    let updateArvo = false;
+    let newArvo = arvo;
     if (newOsallistuminen !== ValintakoeOsallistuminenTulos.OSALLISTUI) {
-      setArvo('');
-      updateArvo = true;
+      newArvo = '';
     }
-    updateForm({
-      value: event.target.value as ValintakoeOsallistuminenTulos,
+    onChange({
+      osallistuminen: event.target.value as ValintakoeOsallistuminenTulos,
       hakemusOid,
       koeTunniste: koe.tunniste,
-      updateArvo,
+      arvo: newArvo,
     });
   };
-
-  const arvoId = `koe-arvo-${hakemusOid}-${koe.tunniste}`;
 
   return (
     <Box
@@ -103,18 +92,22 @@ export const KoeCell = ({
           {osallistuminen !== ValintakoeOsallistuminenTulos.EI_OSALLISTUNUT && (
             <ArvoInput
               koe={koe}
-              hakemusOid={hakemusOid}
-              updateForm={updateForm}
               disabled={disabled}
               arvo={arvo}
               onArvoChange={(newArvo: string) => {
-                setArvo(newArvo);
+                let newOsallistuminen = osallistuminen;
                 if (
                   newArvo &&
                   osallistuminen === ValintakoeOsallistuminenTulos.MERKITSEMATTA
                 ) {
-                  setOsallistuminen(ValintakoeOsallistuminenTulos.OSALLISTUI);
+                  newOsallistuminen = ValintakoeOsallistuminenTulos.OSALLISTUI;
                 }
+                onChange({
+                  osallistuminen: newOsallistuminen,
+                  hakemusOid,
+                  koeTunniste: koe.tunniste,
+                  arvo: newArvo,
+                });
               }}
               arvoId={arvoId}
             />
@@ -125,7 +118,13 @@ export const KoeCell = ({
           id={arvoId}
           value={arvo}
           options={getArvoOptions(koe, t)}
-          onChange={changeSelectArvo}
+          onChange={(event: SelectChangeEvent<string>) => {
+            onChange({
+              arvo: event.target.value.toString(),
+              hakemusOid,
+              koeTunniste: koe.tunniste,
+            });
+          }}
           disabled={disabled}
           clearable
         />
@@ -158,5 +157,38 @@ export const KoeCell = ({
         }}
       />
     </Box>
+  );
+};
+
+export const KoeCell = ({
+  hakemusOid,
+  koe,
+  pistesyottoActorRef,
+}: KoeCellProps) => {
+  const state = useSelector(pistesyottoActorRef, (s) => s);
+
+  const disabled = !state.matches(PisteSyottoStates.IDLE);
+
+  const updateForm = (pisteSyottoFormParams: ChangePisteSyottoFormParams) => {
+    pistesyottoActorRef.send({
+      type: PisteSyottoEvent.ADD_CHANGED_PISTETIETO,
+      ...pisteSyottoFormParams,
+    });
+  };
+
+  const { arvo, osallistuminen } = useOsallistumistieto(pistesyottoActorRef, {
+    hakemusOid,
+    koeTunniste: koe.tunniste,
+  });
+
+  return (
+    <KoeCellUncontrolled
+      hakemusOid={hakemusOid}
+      koe={koe}
+      disabled={disabled}
+      osallistuminen={osallistuminen}
+      onChange={updateForm}
+      arvo={arvo}
+    />
   );
 };

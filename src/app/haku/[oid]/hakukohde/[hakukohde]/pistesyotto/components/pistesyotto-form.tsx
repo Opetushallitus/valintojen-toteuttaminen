@@ -7,12 +7,14 @@ import { FormEvent, useState } from 'react';
 import useToaster from '@/app/hooks/useToaster';
 import {
   PisteSyottoEvent,
-  PisteSyottoStates,
   usePistesyottoMachine,
 } from '../lib/pistesyotto-state';
-import { useMachine } from '@xstate/react';
+import { useActorRef, useSelector } from '@xstate/react';
 import { PisteSyottoActions } from './pistesyotto-actions';
-import { HakukohteenPistetiedot } from '@/app/lib/types/laskenta-types';
+import {
+  HakukohteenPistetiedot,
+  ValintakoeOsallistuminenTulos,
+} from '@/app/lib/types/laskenta-types';
 import useConfirmChangesBeforeNavigation from '@/app/hooks/useConfirmChangesBeforeNavigation';
 import { FormBox } from '@/app/components/form-box';
 
@@ -23,10 +25,10 @@ type PisteSyottoFormParams = {
 };
 
 export type ChangePisteSyottoFormParams = {
-  value: string;
+  arvo?: string;
+  osallistuminen?: ValintakoeOsallistuminenTulos;
   hakemusOid: string;
   koeTunniste: string;
-  updateArvo: boolean;
 };
 
 export const PisteSyottoForm = ({
@@ -43,8 +45,12 @@ export const PisteSyottoForm = ({
     addToast,
   });
 
+  // TODO: dirty pistesyötto-masiinan sisään
   const [dirty, setDirty] = useState(false);
-  const [state, send] = useMachine(syottoMachine);
+
+  const pistesyottoActorRef = useActorRef(syottoMachine);
+
+  const state = useSelector(pistesyottoActorRef, (s) => s);
 
   useConfirmChangesBeforeNavigation(dirty);
 
@@ -62,16 +68,8 @@ export const PisteSyottoForm = ({
 
   const submitChanges = (event: FormEvent) => {
     setDirty(false);
-    send({ type: PisteSyottoEvent.SAVE });
+    pistesyottoActorRef.send({ type: PisteSyottoEvent.SAVE });
     event.preventDefault();
-  };
-
-  const updateForm = (changeParams: ChangePisteSyottoFormParams) => {
-    send({
-      type: PisteSyottoEvent.ADD_CHANGED_PISTETIETO,
-      ...changeParams,
-    });
-    setDirty(true);
   };
 
   return (
@@ -98,8 +96,7 @@ export const PisteSyottoForm = ({
           sort={sort}
           pistetiedot={pageResults}
           kokeet={koeResults}
-          updateForm={updateForm}
-          disabled={!state.matches(PisteSyottoStates.IDLE)}
+          pistesyottoActorRef={pistesyottoActorRef}
         />
       </TablePaginationWrapper>
     </FormBox>
