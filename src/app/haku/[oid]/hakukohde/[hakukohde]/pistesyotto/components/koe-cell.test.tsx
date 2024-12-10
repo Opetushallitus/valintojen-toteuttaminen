@@ -43,7 +43,7 @@ const renderKoeCell = ({
   return render(
     <KoeCellUncontrolled
       hakemusOid={HAKEMUS_OID}
-      arvo={arvo ?? KOE_PISTEET.arvo}
+      arvo={arvo ?? KOE_PISTEET.arvo ?? ''}
       osallistuminen={osallistuminen ?? KOE_PISTEET.osallistuminen}
       koe={KOE}
       onChange={() => {}}
@@ -59,7 +59,7 @@ describe('KoeCell', () => {
   test('Show both inputs when osallistuminen="OSALLISTUI"', () => {
     renderKoeCell({ osallistuminen: ValintakoeOsallistuminenTulos.OSALLISTUI });
     expect(
-      screen.queryByRole('textbox', { name: 'validaatio.numero.syota' }),
+      screen.queryByRole('textbox', { name: 'pistesyotto.pisteet' }),
     ).toBeVisible();
 
     const osallistuminenSelect = screen.getByRole('combobox', {
@@ -75,7 +75,7 @@ describe('KoeCell', () => {
     renderKoeCell();
 
     expect(
-      screen.queryByRole('textbox', { name: 'validaatio.numero.syota' }),
+      screen.queryByRole('textbox', { name: 'pistesyotto.pisteet' }),
     ).not.toBeInTheDocument();
 
     const osallistuminenSelect = screen.getByRole('combobox', {

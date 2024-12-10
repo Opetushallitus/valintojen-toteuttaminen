@@ -110,6 +110,7 @@ export const KoeCellUncontrolled = ({
               koeTunniste: koe.tunniste,
             });
           }}
+          inputProps={{ 'aria-label': t('pistesyotto.arvo') }}
           disabled={disabled}
           clearable
         />

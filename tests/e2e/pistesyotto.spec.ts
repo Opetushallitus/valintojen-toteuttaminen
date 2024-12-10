@@ -76,11 +76,9 @@ test('shows success toast when updating value', async ({ page }) => {
         status: 204,
       }),
   );
-  const huiRow = page.getByRole('row', { name: 'Hui Haamu Valitse' });
-  await huiRow.getByLabel('Valitse...').click();
-  await page.getByRole('option', { name: 'Kyllä' }).click();
-  await huiRow.getByLabel('Merkitsemättä').click();
-  await page.getByRole('option', { name: 'Osallistui' }).click();
+  const huiRow = page.getByRole('row', { name: 'Hui Haamu' });
+  await selectOption(page, 'Arvo', 'Kyllä', huiRow);
+  await selectOption(page, 'Osallistumisen tila', 'Osallistui', huiRow);
   await page.getByRole('button', { name: 'Tallenna' }).click();
   await expect(page.getByText('Tiedot tallennettu.')).toBeVisible();
   await getMuiCloseButton(page).click();
@@ -97,11 +95,8 @@ test('shows error toast when updating value', async ({ page }) => {
         body: 'Internal Server Error',
       }),
   );
-  await page
-    .getByRole('row', { name: 'Hui Haamu Valitse' })
-    .getByLabel('Valitse...')
-    .click();
-  await page.getByRole('option', { name: 'Kyllä' }).click();
+  const huiRow = page.getByRole('row', { name: 'Hui Haamu' });
+  await selectOption(page, 'Arvo', 'Kyllä', huiRow);
   await page.getByRole('button', { name: 'Tallenna' }).click();
   await expect(
     page.getByText('Tietojen tallentamisessa tapahtui virhe.'),
@@ -115,9 +110,8 @@ test('shows error toast when updating value', async ({ page }) => {
 test('navigating to another view without saving changes asks for confirmation', async ({
   page,
 }) => {
-  const huiRow = page.getByRole('row', { name: 'Hui Haamu Valitse' });
-  await huiRow.getByLabel('Valitse...').click();
-  await page.getByRole('option', { name: 'Kyllä' }).click();
+  const huiRow = page.getByRole('row', { name: 'Hui Haamu' });
+  await selectOption(page, 'Arvo', 'Kyllä', huiRow);
   await page.getByText('Hakijaryhmät').click();
   const confirmationQuestion = () =>
     page.getByText(

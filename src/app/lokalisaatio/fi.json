@@ -196,7 +196,9 @@
     "tuonti-tulos-taulukko": {
       "virhe": "Virhe",
       "hakemus-oid": "Hakemuksen tekninen tunniste (OID)"
-    }
+    },
+    "pisteet": "Pisteet",
+    "arvo": "Arvo"
   },
   "harkinnanvaraiset": {
     "hae": "Hae hakijan nimellä tai tunnisteilla",

@@ -94,7 +94,7 @@ export enum ValintakoeOsallistuminenTulos {
 
 export type ValintakokeenPisteet = {
   tunniste: string;
-  arvo: string;
+  arvo?: string;
   osallistuminen: ValintakoeOsallistuminenTulos;
   osallistuminenTunniste: string;
 };
