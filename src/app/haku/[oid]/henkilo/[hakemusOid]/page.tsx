@@ -12,7 +12,6 @@ import { HakutoiveetTable } from './components/hakutoiveet-table';
 import { useHenkiloPageData } from './hooks/useHenkiloPageData';
 import { HenkilonHakukohdeTuloksilla } from './lib/henkilo-page-types';
 import { isEmpty } from 'remeda';
-import { ValintakokeenPisteet } from '@/app/lib/types/laskenta-types';
 import { HakutoiveTitle } from './components/hakutoive-title';
 import { KoeCell } from '@/app/haku/[oid]/hakukohde/[hakukohde]/pistesyotto/components/koe-cell';
 import { ValintakoeAvaimet } from '@/app/lib/types/valintaperusteet-types';
@@ -29,7 +28,6 @@ import { useSelector } from '@xstate/react';
 import useToaster from '@/app/hooks/useToaster';
 import { useMemo, use } from 'react';
 import { SpinnerIcon } from '@/app/components/spinner-icon';
-import { AnyActorRef } from 'xstate';
 import { useConfirmChangesBeforeNavigation } from '@/app/hooks/useConfirmChangesBeforeNavigation';
 
 const Range = ({
@@ -47,31 +45,6 @@ const HakukohdeFields = ({
   hakija: HakijaInfo;
   hakukohde: HenkilonHakukohdeTuloksilla;
 }) => {
-  const { addToast } = useToaster();
-
-  const { pisteet } = hakukohde;
-
-  const pistetiedot = useMemo(
-    () => [
-      {
-        ...hakija,
-        valintakokeenPisteet: hakukohde.pisteet!,
-      },
-    ],
-    [hakija, hakukohde.pisteet],
-  );
-
-  const pistesyottoActorRef = usePistesyottoActorRef({
-    hakuOid: hakukohde.hakuOid,
-    hakukohdeOid: hakukohde.oid,
-    pistetiedot,
-    addToast,
-  });
-
-  const isDirty = useIsDirty(pistesyottoActorRef);
-
-  useConfirmChangesBeforeNavigation(isDirty);
-
   return (
     <>
       <Typography
@@ -85,17 +58,9 @@ const HakukohdeFields = ({
         />
       </Typography>
       {hakukohde.kokeet?.map((koe) => {
-        const matchingKoePisteet = pisteet?.find(
-          (p) => p.tunniste === koe.tunniste,
-        );
         return (
-          <Box key={koe.tunniste}>
-            <KoeFields
-              koe={koe}
-              hakija={hakija}
-              pisteet={matchingKoePisteet}
-              pistesyottoActor={pistesyottoActorRef}
-            />
+          <Box key={koe.tunniste} sx={{ paddingBottom: 2 }}>
+            <KoeFields koe={koe} hakukohde={hakukohde} hakija={hakija} />
           </Box>
         );
       })}
@@ -106,28 +71,57 @@ const HakukohdeFields = ({
 const KoeFields = ({
   hakija,
   koe,
-  pistesyottoActor,
+  hakukohde,
 }: {
   hakija: HakijaInfo;
   koe: ValintakoeAvaimet;
-  pisteet?: ValintakokeenPisteet;
-  pistesyottoActor: AnyActorRef;
+  hakukohde: HenkilonHakukohdeTuloksilla;
 }) => {
   const { t } = useTranslations();
 
-  const state = useSelector(pistesyottoActor, (s) => s);
+  const { addToast } = useToaster();
+
+  const matchingKoePisteet = hakukohde.pisteet?.find(
+    (p) => p.tunniste === koe.tunniste,
+  );
+
+  const pistetiedot = useMemo(
+    () => [
+      {
+        ...hakija,
+        valintakokeenPisteet: matchingKoePisteet ? [matchingKoePisteet] : [],
+      },
+    ],
+    [hakija, matchingKoePisteet],
+  );
+
+  const pistesyottoActorRef = usePistesyottoActorRef({
+    hakuOid: hakukohde.hakuOid,
+    hakukohdeOid: hakukohde.oid,
+    pistetiedot,
+    addToast,
+  });
+
+  const isDirty = useIsDirty(pistesyottoActorRef);
+
+  useConfirmChangesBeforeNavigation(isDirty);
+
+  const state = useSelector(pistesyottoActorRef, (s) => s);
 
   const isPending = state.matches(PisteSyottoStates.UPDATING);
+
+  const labelId = `${koe.tunniste}_label`;
 
   return (
     <>
       <Box sx={{ paddingLeft: 1, paddingBottom: 1 }}>
-        <OphTypography variant="label">
+        <OphTypography variant="label" id={labelId}>
           {koe.kuvaus} <Range min={koe.min} max={koe.max} />
         </OphTypography>
       </Box>
       <Divider orientation="horizontal" />
       <Box
+        component="section"
         sx={{
           display: 'flex',
           gap: 2,
@@ -135,11 +129,12 @@ const KoeFields = ({
           marginTop: 1.5,
           alignItems: 'flex-start',
         }}
+        aria-labelledby={labelId}
       >
         <KoeCell
           hakemusOid={hakija.hakemusOid}
           koe={koe}
-          pistesyottoActorRef={pistesyottoActor}
+          pistesyottoActorRef={pistesyottoActorRef}
         />
         <OphButton
           variant="contained"
@@ -147,7 +142,7 @@ const KoeFields = ({
           startIcon={isPending && <SpinnerIcon />}
           disabled={isPending}
           onClick={() => {
-            pistesyottoActor.send({
+            pistesyottoActorRef.send({
               type: PisteSyottoEvent.SAVE,
             });
           }}
@@ -235,7 +230,7 @@ export default function HenkiloPage(props: {
   const hakemusOid = params.hakemusOid;
 
   return (
-    <Stack spacing={2} sx={{ m: 4, width: '100%', overflowX: 'hidden' }}>
+    <Stack spacing={2} sx={{ margin: 4, width: '100%', overflowX: 'hidden' }}>
       <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
         <HenkiloContent hakuOid={hakuOid} hakemusOid={hakemusOid} />
       </QuerySuspenseBoundary>
