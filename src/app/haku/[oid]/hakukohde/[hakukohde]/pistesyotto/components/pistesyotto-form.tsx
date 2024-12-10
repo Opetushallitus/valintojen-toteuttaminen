@@ -3,18 +3,21 @@
 import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
 import { PisteSyottoTable } from './pistesyotto-table';
 import { usePisteSyottoSearchResults } from '../hooks/usePisteSyottoSearch';
-import { FormEvent, useMemo, useState } from 'react';
+import { FormEvent } from 'react';
 import useToaster from '@/app/hooks/useToaster';
 import {
-  createPisteSyottoMachine,
-  PisteSyottoEvents,
-  PisteSyottoStates,
+  PisteSyottoEvent,
+  useIsDirty,
+  usePistesyottoActorRef,
 } from '../lib/pistesyotto-state';
-import { useMachine } from '@xstate/react';
+import { useSelector } from '@xstate/react';
 import { PisteSyottoActions } from './pistesyotto-actions';
-import { HakukohteenPistetiedot } from '@/app/lib/types/laskenta-types';
-import useConfirmChangesBeforeNavigation from '@/app/hooks/useConfirmChangesBeforeNavigation';
+import {
+  HakukohteenPistetiedot,
+  ValintakoeOsallistuminenTulos,
+} from '@/app/lib/types/laskenta-types';
 import { FormBox } from '@/app/components/form-box';
+import { useConfirmChangesBeforeNavigation } from '@/app/hooks/useConfirmChangesBeforeNavigation';
 
 type PisteSyottoFormParams = {
   hakuOid: string;
@@ -23,10 +26,10 @@ type PisteSyottoFormParams = {
 };
 
 export type ChangePisteSyottoFormParams = {
-  value: string;
+  arvo?: string;
+  osallistuminen?: ValintakoeOsallistuminenTulos;
   hakemusOid: string;
   koeTunniste: string;
-  updateArvo: boolean;
 };
 
 export const PisteSyottoForm = ({
@@ -36,19 +39,17 @@ export const PisteSyottoForm = ({
 }: PisteSyottoFormParams) => {
   const { addToast } = useToaster();
 
-  const syottoMachine = useMemo(() => {
-    return createPisteSyottoMachine(
-      hakuOid,
-      hakukohdeOid,
-      pistetulokset.hakemukset,
-      addToast,
-    );
-  }, [hakuOid, hakukohdeOid, pistetulokset, addToast]);
+  const pistesyottoActorRef = usePistesyottoActorRef({
+    hakuOid,
+    hakukohdeOid,
+    pistetiedot: pistetulokset.hakemukset,
+    addToast,
+  });
 
-  const [dirty, setDirty] = useState(false);
-  const [state, send] = useMachine(syottoMachine);
+  const isDirty = useIsDirty(pistesyottoActorRef);
+  const state = useSelector(pistesyottoActorRef, (s) => s);
 
-  useConfirmChangesBeforeNavigation(dirty);
+  useConfirmChangesBeforeNavigation(isDirty);
 
   const {
     page,
@@ -63,20 +64,8 @@ export const PisteSyottoForm = ({
   } = usePisteSyottoSearchResults(pistetulokset);
 
   const submitChanges = (event: FormEvent) => {
-    setDirty(false);
-    send({ type: PisteSyottoEvents.UPDATE });
+    pistesyottoActorRef.send({ type: PisteSyottoEvent.SAVE });
     event.preventDefault();
-  };
-
-  const updateForm = (changeParams: ChangePisteSyottoFormParams) => {
-    send({
-      type: PisteSyottoEvents.ADD_CHANGED_PISTETIETO,
-      value: changeParams.value,
-      hakemusOid: changeParams.hakemusOid,
-      koeTunniste: changeParams.koeTunniste,
-      updateArvo: changeParams.updateArvo,
-    });
-    setDirty(true);
   };
 
   return (
@@ -103,8 +92,7 @@ export const PisteSyottoForm = ({
           sort={sort}
           pistetiedot={pageResults}
           kokeet={koeResults}
-          updateForm={updateForm}
-          disabled={!state.matches(PisteSyottoStates.IDLE)}
+          pistesyottoActorRef={pistesyottoActorRef}
         />
       </TablePaginationWrapper>
     </FormBox>

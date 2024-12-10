@@ -1,6 +1,5 @@
 import { FormBox } from '@/app/components/form-box';
 import { SpinnerIcon } from '@/app/components/spinner-icon';
-import useConfirmChangesBeforeNavigation from '@/app/hooks/useConfirmChangesBeforeNavigation';
 import { useHasChanged } from '@/app/hooks/useHasChanged';
 import useToaster from '@/app/hooks/useToaster';
 import { useTranslations } from '@/app/hooks/useTranslations';
@@ -19,6 +18,7 @@ import { isEmpty } from 'remeda';
 import { harkinnanvaraisetTilatOptions } from '../hooks/useHarkinnanvaraisetHakemukset';
 import { HarkinnanvaraisetActionBar } from './harkinnanvaraiset-action-bar';
 import { HarkinnanvaraisetTable } from './harkinnanvaraiset-table';
+import { useConfirmChangesBeforeNavigation } from '@/app/hooks/useConfirmChangesBeforeNavigation';
 
 const useTallennaMutation = ({
   hakuOid,

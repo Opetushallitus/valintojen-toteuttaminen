@@ -2,7 +2,7 @@
 
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { buildLinkToApplication } from '@/app/lib/ataru';
-import { Stack, Typography } from '@mui/material';
+import { Box, Divider, Stack, Typography } from '@mui/material';
 import { getHenkiloTitle } from '@/app/lib/henkilo-utils';
 import { LabeledInfoItem } from '@/app/components/labeled-info-item';
 import { ExternalLink } from '@/app/components/external-link';
@@ -10,6 +10,178 @@ import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary'
 import { FullClientSpinner } from '@/app/components/client-spinner';
 import { HakutoiveetTable } from './components/hakutoiveet-table';
 import { useHenkiloPageData } from './hooks/useHenkiloPageData';
+import { HenkilonHakukohdeTuloksilla } from './lib/henkilo-page-types';
+import { isEmpty } from 'remeda';
+import { HakutoiveTitle } from './components/hakutoive-title';
+import { KoeCell } from '@/app/haku/[oid]/hakukohde/[hakukohde]/pistesyotto/components/koe-cell';
+import { ValintakoeAvaimet } from '@/app/lib/types/valintaperusteet-types';
+import { NDASH } from '@/app/lib/constants';
+import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
+import {
+  PisteSyottoEvent,
+  PisteSyottoStates,
+  useIsDirty,
+  usePistesyottoActorRef,
+} from '@/app/haku/[oid]/hakukohde/[hakukohde]/pistesyotto/lib/pistesyotto-state';
+import { HakijaInfo } from '@/app/lib/types/ataru-types';
+import { useSelector } from '@xstate/react';
+import useToaster from '@/app/hooks/useToaster';
+import { useMemo, use } from 'react';
+import { SpinnerIcon } from '@/app/components/spinner-icon';
+import { useConfirmChangesBeforeNavigation } from '@/app/hooks/useConfirmChangesBeforeNavigation';
+
+const Range = ({
+  min,
+  max,
+}: {
+  min?: number | string;
+  max?: number | string;
+}) => (min || max ? `${min ?? ''}${NDASH}${max ?? ''}` : '');
+
+const HakukohdeFields = ({
+  hakija,
+  hakukohde,
+}: {
+  hakija: HakijaInfo;
+  hakukohde: HenkilonHakukohdeTuloksilla;
+}) => {
+  return (
+    <>
+      <Typography
+        variant="h4"
+        component="h3"
+        sx={{ paddingLeft: 1, paddingY: 2 }}
+      >
+        <HakutoiveTitle
+          hakutoiveNumero={hakukohde.hakutoiveNumero}
+          hakukohde={hakukohde}
+        />
+      </Typography>
+      {hakukohde.kokeet?.map((koe) => {
+        return (
+          <Box key={koe.tunniste} sx={{ paddingBottom: 2 }}>
+            <KoeFields koe={koe} hakukohde={hakukohde} hakija={hakija} />
+          </Box>
+        );
+      })}
+    </>
+  );
+};
+
+const KoeFields = ({
+  hakija,
+  koe,
+  hakukohde,
+}: {
+  hakija: HakijaInfo;
+  koe: ValintakoeAvaimet;
+  hakukohde: HenkilonHakukohdeTuloksilla;
+}) => {
+  const { t } = useTranslations();
+
+  const { addToast } = useToaster();
+
+  const matchingKoePisteet = hakukohde.pisteet?.find(
+    (p) => p.tunniste === koe.tunniste,
+  );
+
+  const pistetiedot = useMemo(
+    () => [
+      {
+        ...hakija,
+        valintakokeenPisteet: matchingKoePisteet ? [matchingKoePisteet] : [],
+      },
+    ],
+    [hakija, matchingKoePisteet],
+  );
+
+  const pistesyottoActorRef = usePistesyottoActorRef({
+    hakuOid: hakukohde.hakuOid,
+    hakukohdeOid: hakukohde.oid,
+    pistetiedot,
+    addToast,
+  });
+
+  const isDirty = useIsDirty(pistesyottoActorRef);
+
+  useConfirmChangesBeforeNavigation(isDirty);
+
+  const state = useSelector(pistesyottoActorRef, (s) => s);
+
+  const isPending = state.matches(PisteSyottoStates.UPDATING);
+
+  const labelId = `${koe.tunniste}_label`;
+
+  return (
+    <>
+      <Box sx={{ paddingLeft: 1, paddingBottom: 1 }}>
+        <OphTypography variant="label" id={labelId}>
+          {koe.kuvaus} <Range min={koe.min} max={koe.max} />
+        </OphTypography>
+      </Box>
+      <Divider orientation="horizontal" />
+      <Box
+        component="section"
+        sx={{
+          display: 'flex',
+          gap: 2,
+          paddingLeft: 1,
+          marginTop: 1.5,
+          alignItems: 'flex-start',
+        }}
+        aria-labelledby={labelId}
+      >
+        <KoeCell
+          hakemusOid={hakija.hakemusOid}
+          koe={koe}
+          pistesyottoActorRef={pistesyottoActorRef}
+        />
+        <OphButton
+          variant="contained"
+          sx={{ minHeight: '48px' }}
+          startIcon={isPending && <SpinnerIcon />}
+          disabled={isPending}
+          onClick={() => {
+            pistesyottoActorRef.send({
+              type: PisteSyottoEvent.SAVE,
+            });
+          }}
+        >
+          {t('yleinen.tallenna')}
+        </OphButton>
+      </Box>
+    </>
+  );
+};
+
+const Pistesyotto = ({
+  hakija,
+  hakukohteet,
+}: {
+  hakija: HakijaInfo;
+  hakukohteet: Array<HenkilonHakukohdeTuloksilla>;
+}) => {
+  const { t } = useTranslations();
+  const hakukohteetKokeilla = hakukohteet?.filter(
+    (hakukohde) => !isEmpty(hakukohde.kokeet ?? []),
+  );
+
+  return isEmpty(hakukohteetKokeilla) ? null : (
+    <Box sx={{ marginTop: 3 }}>
+      <Typography variant="h3">{t('henkilo.pistesyotto')}</Typography>
+
+      {hakukohteetKokeilla.map((hakukohde) => {
+        return (
+          <HakukohdeFields
+            key={hakukohde.oid}
+            hakija={hakija}
+            hakukohde={hakukohde}
+          />
+        );
+      })}
+    </Box>
+  );
+};
 
 const HenkiloContent = ({
   hakuOid,
@@ -45,20 +217,20 @@ const HenkiloContent = ({
         />
       </Stack>
       <HakutoiveetTable hakukohteet={hakukohteet} hakija={hakija} />
+      <Pistesyotto hakija={hakija} hakukohteet={hakukohteet} />
     </>
   );
 };
 
-export default function HenkiloPage({
-  params,
-}: {
-  params: { oid: string; hakemusOid: string };
+export default function HenkiloPage(props: {
+  params: Promise<{ oid: string; hakemusOid: string }>;
 }) {
+  const params = use(props.params);
   const hakuOid = params.oid;
   const hakemusOid = params.hakemusOid;
 
   return (
-    <Stack spacing={2} sx={{ m: 4, width: '100%', overflowX: 'hidden' }}>
+    <Stack spacing={2} sx={{ margin: 4, width: '100%', overflowX: 'hidden' }}>
       <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
         <HenkiloContent hakuOid={hakuOid} hakemusOid={hakemusOid} />
       </QuerySuspenseBoundary>

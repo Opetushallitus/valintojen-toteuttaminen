@@ -73,13 +73,15 @@ export async function selectOption(
   page: Page,
   name: string,
   expectedOption: string,
+  within?: Locator,
 ) {
-  const combobox = page.getByRole('combobox', {
+  const combobox = (within ?? page).getByRole('combobox', {
     name: new RegExp(`^${name}`),
   });
   const contentId = await combobox.getAttribute('aria-controls');
   await combobox.click();
   const contentIdSelector = contentId ? `#${cssEscape(contentId)}` : '';
+  // Selectin listbox rendataan portalilla juuritasolle
   const listbox = page.locator(contentIdSelector);
 
   await listbox

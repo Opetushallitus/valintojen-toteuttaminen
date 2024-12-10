@@ -1,4 +1,5 @@
 'use client';
+import { use } from 'react';
 
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { TabContainer } from '../components/tab-container';
@@ -262,11 +263,10 @@ function ValintakoekutsutContent({
   );
 }
 
-export default function ValintakoekutsutPage({
-  params,
-}: {
-  params: { oid: string; hakukohde: string };
+export default function ValintakoekutsutPage(props: {
+  params: Promise<{ oid: string; hakukohde: string }>;
 }) {
+  const params = use(props.params);
   return (
     <TabContainer>
       <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>

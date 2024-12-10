@@ -1,4 +1,5 @@
 'use client';
+import { use } from 'react';
 
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { TabContainer } from '../components/tab-container';
@@ -45,11 +46,10 @@ const HarkinnanvaraisetContent = ({
   );
 };
 
-export default function HarkinnanvaraisetPage({
-  params,
-}: {
-  params: { oid: string; hakukohde: string };
+export default function HarkinnanvaraisetPage(props: {
+  params: Promise<{ oid: string; hakukohde: string }>;
 }) {
+  const params = use(props.params);
   return (
     <TabContainer>
       <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>

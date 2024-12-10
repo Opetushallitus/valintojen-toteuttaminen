@@ -6,21 +6,18 @@ import {
 import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { OphInput } from '@/app/components/form/oph-input';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { INPUT_DEBOUNCE_DELAY } from '@/app/lib/constants';
-import { debounce } from '@mui/material';
 import { useState, ChangeEvent } from 'react';
 import { type KoeCellProps } from './koe-cell';
 
 export const ArvoInput = ({
-  pisteTiedot,
-  updateForm,
   koe,
   disabled,
   arvo,
   onArvoChange,
   arvoId,
-}: KoeCellProps & {
+}: Pick<KoeCellProps, 'koe'> & {
   arvo: string;
+  disabled: boolean;
   onArvoChange: (arvo: string) => void;
   arvoId: string;
 }) => {
@@ -42,16 +39,6 @@ export const ArvoInput = ({
     const validationResult = arvoValidator.validate(event.target.value);
     setArvoValid(!validationResult.error);
     if (!validationResult.error) {
-      debounce(
-        () =>
-          updateForm({
-            value: event.target.value,
-            hakemusOid: pisteTiedot.hakemusOid,
-            koeTunniste: koe.tunniste,
-            updateArvo: true,
-          }),
-        INPUT_DEBOUNCE_DELAY,
-      )();
       setHelperText(undefined);
     } else {
       setHelperText([validationResult.helperText ?? '']);
@@ -67,7 +54,7 @@ export const ArvoInput = ({
         <OphInput
           id={arvoId}
           value={arvo}
-          inputProps={{ 'aria-label': t('validaatio.numero.syota') }}
+          inputProps={{ 'aria-label': t('pistesyotto.pisteet') }}
           onChange={changeArvo}
         />
       )}
