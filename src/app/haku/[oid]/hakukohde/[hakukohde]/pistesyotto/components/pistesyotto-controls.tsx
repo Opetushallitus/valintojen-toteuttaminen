@@ -6,6 +6,7 @@ import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { LocalizedSelect } from '@/app/components/localized-select';
 import { OphCheckbox } from '@opetushallitus/oph-design-system';
 import { SearchInput } from '@/app/components/search-input';
+import { OsallistumisenTilaSelect } from '@/app/components/osallistumisen-tila-select';
 
 export const PisteSyottoControls = ({
   kokeet,
@@ -74,29 +75,11 @@ export const PisteSyottoControls = ({
           }}
           label={t('yleinen.tila')}
           renderInput={({ labelId }) => (
-            <LocalizedSelect
+            <OsallistumisenTilaSelect
               id="osallistumisen-tila-select"
               labelId={labelId}
               value={osallistumisenTila}
               onChange={changeOsallistumisenTila}
-              options={[
-                {
-                  value: 'OSALLISTUI',
-                  label: t('valintakoe.osallistumisenTila.OSALLISTUI'),
-                },
-                {
-                  value: 'EI_OSALLISTUNUT',
-                  label: t('valintakoe.osallistumisenTila.EI_OSALLISTUNUT'),
-                },
-                {
-                  value: 'MERKITSEMATTA',
-                  label: t('valintakoe.osallistumisenTila.MERKITSEMATTA'),
-                },
-                {
-                  value: 'EI_VAADITA',
-                  label: t('valintakoe.osallistumisenTila.EI_VAADITA'),
-                },
-              ]}
               clearable
             />
           )}

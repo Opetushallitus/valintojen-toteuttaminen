@@ -5,7 +5,7 @@ import {
   ValintakoeAvaimet,
   ValintakoeInputTyyppi,
 } from '@/app/lib/types/valintaperusteet-types';
-import { Box, SelectChangeEvent, styled } from '@mui/material';
+import { Box, SelectChangeEvent } from '@mui/material';
 import { LocalizedSelect } from '@/app/components/localized-select';
 import { ChangePisteSyottoFormParams } from './pistesyotto-form';
 import { TFunction } from 'i18next';
@@ -17,10 +17,11 @@ import {
 } from '../lib/pistesyotto-state';
 import { AnyActorRef } from 'xstate';
 import { useSelector } from '@xstate/react';
+import { OsallistumisenTilaSelect } from '@/app/components/osallistumisen-tila-select';
 
-const StyledSelect = styled(LocalizedSelect)({
+const KOE_SELECT_STYLE = {
   minWidth: '150px',
-});
+};
 
 export type KoeCellProps = {
   hakemusOid: string;
@@ -99,7 +100,8 @@ export const KoeCellUncontrolled = ({
           )}
         </Box>
       ) : (
-        <StyledSelect
+        <LocalizedSelect
+          sx={KOE_SELECT_STYLE}
           id={arvoId}
           value={arvo}
           options={getArvoOptions(koe, t)}
@@ -115,27 +117,10 @@ export const KoeCellUncontrolled = ({
           clearable
         />
       )}
-      <StyledSelect
+      <OsallistumisenTilaSelect
+        sx={KOE_SELECT_STYLE}
         id={`koe-osallistuminen-${hakemusOid}-${koe.tunniste}`}
         value={osallistuminen}
-        options={[
-          {
-            value: ValintakoeOsallistuminenTulos.OSALLISTUI,
-            label: t('valintakoe.osallistumisenTila.OSALLISTUI'),
-          },
-          {
-            value: ValintakoeOsallistuminenTulos.EI_OSALLISTUNUT,
-            label: t('valintakoe.osallistumisenTila.EI_OSALLISTUNUT'),
-          },
-          {
-            value: ValintakoeOsallistuminenTulos.MERKITSEMATTA,
-            label: t('valintakoe.osallistumisenTila.MERKITSEMATTA'),
-          },
-          {
-            value: ValintakoeOsallistuminenTulos.EI_VAADITA,
-            label: t('valintakoe.osallistumisenTila.EI_VAADITA'),
-          },
-        ]}
         onChange={changeOsallistumisenTila}
         disabled={disabled}
         inputProps={{
