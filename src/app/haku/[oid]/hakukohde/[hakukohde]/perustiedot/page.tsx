@@ -1,4 +1,5 @@
 'use client';
+import { use } from 'react';
 
 import { getSijoittelunTulokset } from '@/app/lib/valinta-tulos-service';
 import { TabContainer } from '../components/tab-container';
@@ -46,11 +47,10 @@ const PerustiedotContent = ({ oid, hakukohde }: PerustiedotParams) => {
   );
 };
 
-export default function PerustiedotTab({
-  params,
-}: {
-  params: PerustiedotParams;
+export default function PerustiedotTab(props: {
+  params: Promise<PerustiedotParams>;
 }) {
+  const params = use(props.params);
   const { t } = useTranslations();
 
   return (

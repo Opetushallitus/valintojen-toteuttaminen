@@ -2,15 +2,15 @@ import { PageLayout } from '@/app/components/page-layout';
 import { HakuTabs } from './components/haku-tabs';
 import { Stack } from '@mui/material';
 
-export default function HakuLayout({
-  children,
-  header,
-  params,
-}: {
+export default async function HakuLayout(props: {
   children: React.ReactNode;
   header: React.ReactNode;
-  params: { oid: string };
+  params: Promise<{ oid: string }>;
 }) {
+  const params = await props.params;
+
+  const { children, header } = props;
+
   return (
     <PageLayout header={header}>
       <Stack

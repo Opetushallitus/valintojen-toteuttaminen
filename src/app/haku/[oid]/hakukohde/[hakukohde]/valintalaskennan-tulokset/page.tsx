@@ -6,7 +6,7 @@ import { Box } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { useLasketutValinnanVaiheet } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
-import React from 'react';
+import React, { use } from 'react';
 import { ValintatapajonoContent } from './components/valintatapajono-content';
 import { useJonosijatSearchParams } from '@/app/hooks/useJonosijatSearch';
 import { FullClientSpinner } from '@/app/components/client-spinner';
@@ -125,11 +125,10 @@ const LasketutValinnanVaiheetContent = ({
   );
 };
 
-export default function ValintalaskennanTuloksetPage({
-  params,
-}: {
-  params: { oid: string; hakukohde: string };
+export default function ValintalaskennanTuloksetPage(props: {
+  params: Promise<{ oid: string; hakukohde: string }>;
 }) {
+  const params = use(props.params);
   return (
     <TabContainer>
       <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>

@@ -6,7 +6,6 @@ import { initReactI18next } from 'react-i18next';
 import { isDev } from '../configuration';
 
 export const createLocalization = () => {
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   i18n
     .use(FetchBackend)
     .use(initReactI18next)

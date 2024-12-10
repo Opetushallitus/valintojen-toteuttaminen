@@ -1,4 +1,5 @@
 'use client';
+import { use } from 'react';
 
 import { TabContainer } from '../components/tab-container';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
@@ -42,11 +43,10 @@ const PisteSyottoContent = ({
   );
 };
 
-export default function PisteSyottoPage({
-  params,
-}: {
-  params: { oid: string; hakukohde: string };
+export default function PisteSyottoPage(props: {
+  params: Promise<{ oid: string; hakukohde: string }>;
 }) {
+  const params = use(props.params);
   const queryClient = useQueryClient();
   queryClient.prefetchQuery(
     pisteTuloksetOptions({

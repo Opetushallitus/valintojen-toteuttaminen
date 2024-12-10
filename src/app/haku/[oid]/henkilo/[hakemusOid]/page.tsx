@@ -17,7 +17,7 @@ import { HakutoiveTitle } from './components/hakutoive-title';
 import { KoeCell } from '@/app/haku/[oid]/hakukohde/[hakukohde]/pistesyotto/components/koe-cell';
 import { ValintakoeAvaimet } from '@/app/lib/types/valintaperusteet-types';
 import { NDASH } from '@/app/lib/constants';
-import { OphButton } from '@opetushallitus/oph-design-system';
+import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import {
   PisteSyottoEvent,
   PisteSyottoStates,
@@ -27,7 +27,7 @@ import {
 import { HakijaInfo } from '@/app/lib/types/ataru-types';
 import { useSelector } from '@xstate/react';
 import useToaster from '@/app/hooks/useToaster';
-import { useMemo } from 'react';
+import { useMemo, use } from 'react';
 import { SpinnerIcon } from '@/app/components/spinner-icon';
 import { AnyActorRef } from 'xstate';
 import { useConfirmChangesBeforeNavigation } from '@/app/hooks/useConfirmChangesBeforeNavigation';
@@ -122,9 +122,9 @@ const KoeFields = ({
   return (
     <>
       <Box sx={{ paddingLeft: 1, paddingBottom: 1 }}>
-        <Typography variant="label">
+        <OphTypography variant="label">
           {koe.kuvaus} <Range min={koe.min} max={koe.max} />
-        </Typography>
+        </OphTypography>
       </Box>
       <Divider orientation="horizontal" />
       <Box
@@ -227,11 +227,10 @@ const HenkiloContent = ({
   );
 };
 
-export default function HenkiloPage({
-  params,
-}: {
-  params: { oid: string; hakemusOid: string };
+export default function HenkiloPage(props: {
+  params: Promise<{ oid: string; hakemusOid: string }>;
 }) {
+  const params = use(props.params);
   const hakuOid = params.oid;
   const hakemusOid = params.hakemusOid;
 
