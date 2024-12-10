@@ -13,7 +13,7 @@ import { useHenkiloPageData } from './hooks/useHenkiloPageData';
 import { HenkilonHakukohdeTuloksilla } from './lib/henkilo-page-types';
 import { isEmpty } from 'remeda';
 import { HakutoiveTitle } from './components/hakutoive-title';
-import { KoeCell } from '@/app/haku/[oid]/hakukohde/[hakukohde]/pistesyotto/components/koe-cell';
+import { KoeCell } from '@/app/components/koe-cell';
 import { ValintakoeAvaimet } from '@/app/lib/types/valintaperusteet-types';
 import { NDASH } from '@/app/lib/constants';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';

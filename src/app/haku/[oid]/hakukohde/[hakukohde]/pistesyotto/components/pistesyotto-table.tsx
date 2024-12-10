@@ -10,7 +10,7 @@ import {
 } from '@/app/components/table/table-columns';
 import { ListTable } from '@/app/components/table/list-table';
 import { isNotPartOfThisHakukohde } from '../lib/pistesyotto-utils';
-import { KoeCell } from './koe-cell';
+import { KoeCell } from '@/app/components/koe-cell';
 import { AnyActorRef } from 'xstate';
 
 export const PisteSyottoTable = ({

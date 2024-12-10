@@ -7,14 +7,14 @@ import {
 } from '@/app/lib/types/valintaperusteet-types';
 import { Box, SelectChangeEvent } from '@mui/material';
 import { LocalizedSelect } from '@/app/components/localized-select';
-import { ChangePisteSyottoFormParams } from './pistesyotto-form';
+import { ChangePisteSyottoFormParams } from '../haku/[oid]/hakukohde/[hakukohde]/pistesyotto/components/pistesyotto-form';
 import { TFunction } from 'i18next';
 import { ArvoInput } from './arvo-input';
 import {
   PisteSyottoEvent,
   PisteSyottoStates,
   useOsallistumistieto,
-} from '../lib/pistesyotto-state';
+} from '../haku/[oid]/hakukohde/[hakukohde]/pistesyotto/lib/pistesyotto-state';
 import { AnyActorRef } from 'xstate';
 import { useSelector } from '@xstate/react';
 import { OsallistumisenTilaSelect } from '@/app/components/osallistumisen-tila-select';
