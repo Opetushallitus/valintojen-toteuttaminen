@@ -3,20 +3,21 @@
 import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
 import { PisteSyottoTable } from './pistesyotto-table';
 import { usePisteSyottoSearchResults } from '../hooks/usePisteSyottoSearch';
-import { FormEvent, useState } from 'react';
+import { FormEvent } from 'react';
 import useToaster from '@/app/hooks/useToaster';
 import {
   PisteSyottoEvent,
-  usePistesyottoMachine,
+  useIsDirty,
+  usePistesyottoActorRef,
 } from '../lib/pistesyotto-state';
-import { useActorRef, useSelector } from '@xstate/react';
+import { useSelector } from '@xstate/react';
 import { PisteSyottoActions } from './pistesyotto-actions';
 import {
   HakukohteenPistetiedot,
   ValintakoeOsallistuminenTulos,
 } from '@/app/lib/types/laskenta-types';
-import useConfirmChangesBeforeNavigation from '@/app/hooks/useConfirmChangesBeforeNavigation';
 import { FormBox } from '@/app/components/form-box';
+import { useConfirmChangesBeforeNavigation } from '@/app/hooks/useConfirmChangesBeforeNavigation';
 
 type PisteSyottoFormParams = {
   hakuOid: string;
@@ -38,21 +39,17 @@ export const PisteSyottoForm = ({
 }: PisteSyottoFormParams) => {
   const { addToast } = useToaster();
 
-  const syottoMachine = usePistesyottoMachine({
+  const pistesyottoActorRef = usePistesyottoActorRef({
     hakuOid,
     hakukohdeOid,
     pistetiedot: pistetulokset.hakemukset,
     addToast,
   });
 
-  // TODO: dirty pistesyötto-masiinan sisään
-  const [dirty, setDirty] = useState(false);
-
-  const pistesyottoActorRef = useActorRef(syottoMachine);
-
+  const isDirty = useIsDirty(pistesyottoActorRef);
   const state = useSelector(pistesyottoActorRef, (s) => s);
 
-  useConfirmChangesBeforeNavigation(dirty);
+  useConfirmChangesBeforeNavigation(isDirty);
 
   const {
     page,
@@ -67,7 +64,6 @@ export const PisteSyottoForm = ({
   } = usePisteSyottoSearchResults(pistetulokset);
 
   const submitChanges = (event: FormEvent) => {
-    setDirty(false);
     pistesyottoActorRef.send({ type: PisteSyottoEvent.SAVE });
     event.preventDefault();
   };

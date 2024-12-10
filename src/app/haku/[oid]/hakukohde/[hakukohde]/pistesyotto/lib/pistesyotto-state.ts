@@ -4,8 +4,9 @@ import {
   ValintakoeOsallistuminenTulos,
 } from '@/app/lib/types/laskenta-types';
 import { updatePisteetForHakukohde } from '@/app/lib/valintalaskentakoostepalvelu';
-import { useSelector } from '@xstate/react';
+import { useActorRef, useSelector } from '@xstate/react';
 import { useMemo } from 'react';
+import { isDeepEqual, isEmpty } from 'remeda';
 import { AnyActorRef, assign, createMachine, fromPromise } from 'xstate';
 
 export type PisteSyottoContext = {
@@ -66,28 +67,56 @@ export const createPisteMachine = (
           [PisteSyottoEvent.ADD_CHANGED_PISTETIETO]: {
             actions: assign({
               changedPistetiedot: ({ context, event }) => {
-                let hakenut = context.changedPistetiedot.find(
+                const changedPistetieto = context.changedPistetiedot.find(
                   (h) => h.hakemusOid === event.hakemusOid,
                 );
-                const changedPisteetExists: boolean = Boolean(hakenut);
-                hakenut =
-                  hakenut ||
-                  context.pistetiedot.find(
-                    (h) => h.hakemusOid === event.hakemusOid,
-                  );
-                const koe = hakenut?.valintakokeenPisteet.find(
-                  (k) => k.tunniste === event.koeTunniste,
+                const existingPistetieto = context.pistetiedot.find(
+                  (h) => h.hakemusOid === event.hakemusOid,
                 );
-                if (hakenut && koe) {
+
+                const changedKoe =
+                  changedPistetieto?.valintakokeenPisteet?.find(
+                    (k) => k.tunniste === event.koeTunniste,
+                  );
+
+                const existingKoe =
+                  existingPistetieto?.valintakokeenPisteet?.find(
+                    (k) => k.tunniste === event.koeTunniste,
+                  );
+
+                const pistetieto = changedPistetieto || existingPistetieto;
+                const koe = changedKoe || existingKoe;
+
+                if (pistetieto && koe) {
                   koe.arvo = event.arvo ?? koe.arvo;
                   koe.osallistuminen =
                     event.osallistuminen ?? koe.osallistuminen;
-                  if (changedPisteetExists) {
+
+                  if (changedPistetieto) {
+                    let newPisteet = changedPistetieto?.valintakokeenPisteet;
+
+                    // kokeen pistetieto sama kuin alkuperäinen
+                    if (isDeepEqual(changedKoe, existingKoe)) {
+                      newPisteet = newPisteet?.filter(
+                        (p) => p.tunniste !== event.koeTunniste,
+                      );
+                    }
+
+                    // pistetiedolla ei enää muokattuja kokeen pisteitä, voidaan poistaa
+                    if (isEmpty(newPisteet ?? [])) {
+                      return context.changedPistetiedot.filter(
+                        (p) => p.hakemusOid !== event.hakemusOid,
+                      );
+                    }
+
+                    // pistetiedolla edelleen muokattuja kokeen pisteitä. Vaihdetaan muokattuun pistetietoon.
+                    pistetieto.valintakokeenPisteet = newPisteet;
+
                     return context.changedPistetiedot.map((h) =>
-                      h.hakemusOid === event.hakemusOid ? hakenut : h,
+                      h.hakemusOid === event.hakemusOid ? pistetieto : h,
                     );
                   } else {
-                    return [...context.changedPistetiedot, hakenut];
+                    return [...context.changedPistetiedot, pistetieto];
                   }
                 }
                 return context.changedPistetiedot;
@@ -201,13 +230,13 @@ type PistesyottoMachineParams = {
   addToast: (toast: Toast) => void;
 };
 
-export const usePistesyottoMachine = ({
+export const usePistesyottoActorRef = ({
   hakuOid,
   hakukohdeOid,
   pistetiedot,
   addToast,
 }: PistesyottoMachineParams) => {
-  return useMemo(() => {
+  const machine = useMemo(() => {
     return createPisteSyottoMachine(
       hakuOid,
       hakukohdeOid,
@@ -215,6 +244,8 @@ export const usePistesyottoMachine = ({
       addToast,
     );
   }, [hakuOid, hakukohdeOid, pistetiedot, addToast]);
+
+  return useActorRef(machine);
 };
 
 export const useOsallistumistieto = (
@@ -238,3 +269,9 @@ export const useOsallistumistieto = (
     };
   });
 };
+
+export const useIsDirty = (pistesyottoActorRef: AnyActorRef) =>
+  useSelector(
+    pistesyottoActorRef,
+    (s) => s.context.changedPistetiedot.length !== 0,
+  );

@@ -5,7 +5,7 @@ import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter';
 import { checkAccessibility } from './lib/checkAccessibility';
 import { Toaster } from './components/toaster';
 import Script from 'next/script';
-import { configuration } from './lib/configuration';
+import { configuration, isDev } from './lib/configuration';
 import { LocalizedThemeProvider } from './components/localized-theme-provider';
 import { OphNextJsThemeProvider } from '@opetushallitus/oph-design-system/next/theme';
 import PermissionProvider from './components/permission-provider';
@@ -13,6 +13,7 @@ import { THEME_OVERRIDES } from './lib/theme';
 import { GlobalModalProvider } from './components/global-modal';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import NextTopLoader from 'nextjs-toploader';
+
 export const metadata: Metadata = {
   title: 'Valintojen Toteuttaminen',
   description: 'Valintojen toteuttamisen käyttöliittymä',
@@ -27,7 +28,7 @@ export default async function RootLayout({
     <html lang="fi">
       <Script src={configuration.raamitUrl} />
       <body>
-        <NextTopLoader />
+        {isDev && <NextTopLoader />}
         <AppRouterCacheProvider>
           {/* Initialisoidaan ensin lokalisoimaton teema, jotta ensimmäisten spinnereiden tyylit tulee oikein. */}
           <OphNextJsThemeProvider variant="oph" overrides={THEME_OVERRIDES}>

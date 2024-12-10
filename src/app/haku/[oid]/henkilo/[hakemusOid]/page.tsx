@@ -21,14 +21,16 @@ import { OphButton } from '@opetushallitus/oph-design-system';
 import {
   PisteSyottoEvent,
   PisteSyottoStates,
-  usePistesyottoMachine,
+  useIsDirty,
+  usePistesyottoActorRef,
 } from '@/app/haku/[oid]/hakukohde/[hakukohde]/pistesyotto/lib/pistesyotto-state';
 import { HakijaInfo } from '@/app/lib/types/ataru-types';
-import { useActorRef, useSelector } from '@xstate/react';
+import { useSelector } from '@xstate/react';
 import useToaster from '@/app/hooks/useToaster';
 import { useMemo } from 'react';
 import { SpinnerIcon } from '@/app/components/spinner-icon';
 import { AnyActorRef } from 'xstate';
+import { useConfirmChangesBeforeNavigation } from '@/app/hooks/useConfirmChangesBeforeNavigation';
 
 const Range = ({
   min,
@@ -59,14 +61,16 @@ const HakukohdeFields = ({
     [hakija, hakukohde.pisteet],
   );
 
-  const pistesyottoMachine = usePistesyottoMachine({
+  const pistesyottoActorRef = usePistesyottoActorRef({
     hakuOid: hakukohde.hakuOid,
     hakukohdeOid: hakukohde.oid,
     pistetiedot,
     addToast,
   });
 
-  const pistesyottoActorRef = useActorRef(pistesyottoMachine);
+  const isDirty = useIsDirty(pistesyottoActorRef);
+
+  useConfirmChangesBeforeNavigation(isDirty);
 
   return (
     <>
