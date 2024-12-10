@@ -63,17 +63,10 @@ export const KoeCellUncontrolled = ({
   const arvoId = `koe-arvo-${hakemusOid}-${koe.tunniste}`;
 
   const changeOsallistumisenTila = (event: SelectChangeEvent<string>) => {
-    const newOsallistuminen = event.target
-      .value as ValintakoeOsallistuminenTulos;
-    let newArvo = arvo;
-    if (newOsallistuminen !== ValintakoeOsallistuminenTulos.OSALLISTUI) {
-      newArvo = '';
-    }
     onChange({
       osallistuminen: event.target.value as ValintakoeOsallistuminenTulos,
       hakemusOid,
       koeTunniste: koe.tunniste,
-      arvo: newArvo,
     });
   };
 
@@ -95,15 +88,7 @@ export const KoeCellUncontrolled = ({
               disabled={disabled}
               arvo={arvo}
               onArvoChange={(newArvo: string) => {
-                let newOsallistuminen = osallistuminen;
-                if (
-                  newArvo &&
-                  osallistuminen === ValintakoeOsallistuminenTulos.MERKITSEMATTA
-                ) {
-                  newOsallistuminen = ValintakoeOsallistuminenTulos.OSALLISTUI;
-                }
                 onChange({
-                  osallistuminen: newOsallistuminen,
                   hakemusOid,
                   koeTunniste: koe.tunniste,
                   arvo: newArvo,

@@ -1,18 +1,11 @@
 import { describe, expect, test, vi } from 'vitest';
-import {
-  queryByAttribute,
-  render,
-  screen,
-  waitFor,
-  within,
-} from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { KoeCellUncontrolled } from './koe-cell';
 import { ValintakoeInputTyyppi } from '@/app/lib/types/valintaperusteet-types';
 import {
   ValintakoeOsallistuminenTulos,
   ValintakokeenPisteet,
 } from '@/app/lib/types/laskenta-types';
-import userEvent from '@testing-library/user-event';
 
 vi.mock('@/app/hooks/useTranslations', () => ({
   useTranslations: () => {
@@ -95,92 +88,4 @@ describe('KoeCell', () => {
       ),
     );
   });
-
-  test('Change osallistuminen from "MERKITSEMATTA" to "OSALLISTUI", when changing pisteet', async () => {
-    renderKoeCell({
-      osallistuminen: ValintakoeOsallistuminenTulos.MERKITSEMATTA,
-      arvo: '',
-    });
-
-    const pisteetInput = screen.getByRole('textbox', {
-      name: 'validaatio.numero.syota',
-    });
-
-    expect(pisteetInput).toHaveValue('');
-
-    const osallistuminenSelect = screen.getByRole('combobox', {
-      name: 'pistesyotto.osallistumisen-tila',
-    });
-
-    expect(osallistuminenSelect).toHaveTextContent(
-      getOsallistuminenTranslation(ValintakoeOsallistuminenTulos.MERKITSEMATTA),
-    );
-
-    await userEvent.type(pisteetInput, '10');
-
-    expect(osallistuminenSelect).toHaveTextContent(
-      getOsallistuminenTranslation(ValintakoeOsallistuminenTulos.OSALLISTUI),
-    );
-  });
-
-  test.each([
-    ValintakoeOsallistuminenTulos.EI_OSALLISTUNUT,
-    ValintakoeOsallistuminenTulos.MERKITSEMATTA,
-    ValintakoeOsallistuminenTulos.EI_VAADITA,
-  ])(
-    'Clear pisteet, when changing osallistuminen from "%s" to "OSALLISTUI"',
-    async (newOsallistuminen: ValintakoeOsallistuminenTulos) => {
-      const result = renderKoeCell({
-        osallistuminen: ValintakoeOsallistuminenTulos.OSALLISTUI,
-        arvo: '10',
-      });
-
-      let pisteetInput = screen.getByRole('textbox', {
-        name: 'validaatio.numero.syota',
-      });
-
-      expect(pisteetInput).toHaveValue('10');
-
-      const osallistuminenSelect = screen.getByRole('combobox', {
-        name: 'pistesyotto.osallistumisen-tila',
-      });
-
-      const listboxId = osallistuminenSelect.getAttribute('aria-controls')!;
-      await userEvent.click(osallistuminenSelect);
-
-      let listbox = within(
-        queryByAttribute('id', result.baseElement, listboxId)!,
-      );
-
-      await userEvent.click(
-        listbox.getByText(getOsallistuminenTranslation(newOsallistuminen)),
-      );
-
-      await waitFor(() => {
-        expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
-      });
-
-      await userEvent.click(osallistuminenSelect);
-
-      listbox = within(queryByAttribute('id', result.baseElement, listboxId)!);
-
-      await userEvent.click(
-        listbox.getByText(
-          getOsallistuminenTranslation(
-            ValintakoeOsallistuminenTulos.OSALLISTUI,
-          ),
-        ),
-      );
-
-      await waitFor(() => {
-        expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
-      });
-
-      pisteetInput = screen.getByRole('textbox', {
-        name: 'validaatio.numero.syota',
-      });
-
-      expect(pisteetInput).toHaveValue('');
-    },
-  );
 });

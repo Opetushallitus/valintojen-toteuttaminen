@@ -88,9 +88,29 @@ export const createPisteMachine = (
                 const koe = changedKoe || existingKoe;
 
                 if (pistetieto && koe) {
-                  koe.arvo = event.arvo ?? koe.arvo;
-                  koe.osallistuminen =
-                    event.osallistuminen ?? koe.osallistuminen;
+                  const newArvo = event.arvo;
+
+                  if (
+                    newArvo &&
+                    koe.osallistuminen ===
+                      ValintakoeOsallistuminenTulos.MERKITSEMATTA
+                  ) {
+                    koe.osallistuminen =
+                      ValintakoeOsallistuminenTulos.OSALLISTUI;
+                  } else {
+                    koe.osallistuminen =
+                      event.osallistuminen ?? koe.osallistuminen;
+                  }
+
+                  if (
+                    event.osallistuminen &&
+                    event.osallistuminen !==
+                      ValintakoeOsallistuminenTulos.OSALLISTUI
+                  ) {
+                    koe.arvo = '';
+                  } else {
+                    koe.arvo = event.arvo ?? koe.arvo;
+                  }
 
                   if (changedPistetieto) {
                     let newPisteet = changedPistetieto?.valintakokeenPisteet;
@@ -109,6 +129,7 @@ export const createPisteMachine = (
                       );
                     }
 
+                    // Jos arvo muuttuu
                     // pistetiedolla edelleen muokattuja kokeen pisteitä. Vaihdetaan muokattuun pistetietoon.
                     pistetieto.valintakokeenPisteet = newPisteet;
 
