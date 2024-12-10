@@ -25,6 +25,7 @@ export const HakukohdeTabLink = ({
         pathname: `/haku/${hakuOid}/hakukohde/${hakukohdeOid}/${tabRoute}`,
         query: hakukohdeSearchParam && { hksearch: hakukohdeSearchParam },
       }}
+      prefetch={false}
     >
       {children}
     </Link>
