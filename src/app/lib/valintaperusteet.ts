@@ -151,6 +151,24 @@ export const getValintakoeAvaimetHakukohteelle = async (
   });
 };
 
+export const getValintakoeAvaimetHakukohteille = async ({
+  hakukohdeOids,
+}: {
+  hakukohdeOids: Array<string>;
+}) => {
+  const avaimet = await Promise.all(
+    hakukohdeOids.map((hakukohdeOid) =>
+      getValintakoeAvaimetHakukohteelle(hakukohdeOid),
+    ),
+  );
+
+  return Object.fromEntries(
+    hakukohdeOids.map((hakukohdeOid, index) => {
+      return [hakukohdeOid, avaimet[index]];
+    }),
+  );
+};
+
 export const getValintakokeet = async (hakukohdeOid: string) => {
   const response = await client.get<Array<Valintakoe>>(
     configuration.hakukohdeValintakokeetUrl({ hakukohdeOid }),

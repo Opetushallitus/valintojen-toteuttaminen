@@ -12,14 +12,14 @@ import { useState, ChangeEvent } from 'react';
 import { type KoeCellProps } from './koe-cell';
 
 export const ArvoInput = ({
-  pisteTiedot,
+  hakemusOid,
   updateForm,
   koe,
   disabled,
   arvo,
   onArvoChange,
   arvoId,
-}: KoeCellProps & {
+}: Omit<KoeCellProps, 'koePisteet'> & {
   arvo: string;
   onArvoChange: (arvo: string) => void;
   arvoId: string;
@@ -46,7 +46,7 @@ export const ArvoInput = ({
         () =>
           updateForm({
             value: event.target.value,
-            hakemusOid: pisteTiedot.hakemusOid,
+            hakemusOid,
             koeTunniste: koe.tunniste,
             updateArvo: true,
           }),
