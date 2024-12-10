@@ -37,7 +37,7 @@ const config = ts.config(
   },
   {
     ...playwright.configs['flat/recommended'],
-    files: ['./tests/**/*.ts'],
+    files: ['tests/e2e/**/*.ts'],
     rules: {
       ...playwright.configs['flat/recommended'].rules,
       '@typescript-eslint/no-floating-promises': 'error',

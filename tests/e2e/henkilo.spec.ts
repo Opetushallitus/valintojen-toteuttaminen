@@ -8,6 +8,7 @@ import HAKENEET from './fixtures/hakeneet.json';
 import POSTI_00100 from './fixtures/posti_00100.json';
 import HAKEMUKSEN_VALINTALASKENTA_TULOKSET from './fixtures/hakemuksen-valintalaskenta-tulokset.json';
 import HAKEMUKSEN_SIJOITTELU_TULOKSET from './fixtures/hakemuksen-sijoittelu-tulokset.json';
+import PISTETIEDOT_HAKEMUKSELLE from './fixtures/pistetiedot_hakemukselle.json';
 import { configuration } from '@/app/lib/configuration';
 import { hakemusValinnanTulosFixture } from './fixtures/hakemus-valinnan-tulos';
 import {
@@ -15,11 +16,16 @@ import {
   SijoittelunTila,
   VastaanottoTila,
 } from '@/app/lib/types/sijoittelu-types';
-import { TuloksenTila } from '@/app/lib/types/laskenta-types';
+import {
+  TuloksenTila,
+  ValintakoeOsallistuminenTulos,
+} from '@/app/lib/types/laskenta-types';
 import { forEachObj, isShallowEqual } from 'remeda';
 
+const HAKUKOHDE_OID = '1.2.246.562.20.00000000000000045105';
+
 const VALINNAN_TULOS_RESULT = hakemusValinnanTulosFixture({
-  hakukohdeOid: '1.2.246.562.20.00000000000000045105',
+  hakukohdeOid: HAKUKOHDE_OID,
   hakemusOid: '1.2.246.562.11.00000000000001796027',
   valintatapajonoOid: '17093042998533736417074016063604',
   henkiloOid: '1.2.246.562.24.69259807406',
@@ -77,6 +83,17 @@ test.beforeEach(async ({ page }) => {
     (route) => {
       return route.fulfill({
         json: VALINNAN_TULOS_RESULT,
+      });
+    },
+  );
+
+  await page.route(
+    configuration.koostetutPistetiedotHakemukselleUrl({
+      hakemusOid: '1.2.246.562.11.00000000000001796027',
+    }),
+    (route) => {
+      return route.fulfill({
+        json: PISTETIEDOT_HAKEMUKSELLE,
       });
     },
   );
@@ -233,20 +250,29 @@ test('Displays selected henkilö info with hakutoive but without valintalaskenta
     'Kuoppamäki 905, 00100 HELSINKI',
   );
 
+  const accordionHeadingText =
+    'Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs)';
+
+  const accordionHeading = page.getByRole('cell', {
+    name: accordionHeadingText,
+  });
+
   await expect(
-    page.getByText(
-      'Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs)',
-    ),
-  ).toBeVisible();
-  await expect(
-    page.getByRole('link', {
+    accordionHeading.getByRole('link', {
       name: 'Tampereen yliopisto, Rakennetun ympäristön tiedekunta',
     }),
   ).toBeVisible();
 
-  await expect(page.getByText('Ei valintalaskennan tuloksia')).toBeHidden();
-  await page.getByRole('button', { name: 'Näytä hakutoiveen tiedot' }).click();
-  await expect(page.getByText('Ei valintalaskennan tuloksia')).toBeVisible();
+  const accordionContent = page.getByLabel(accordionHeadingText);
+  await expect(
+    accordionContent.getByText('Ei valintalaskennan tuloksia'),
+  ).toBeHidden();
+  await accordionHeading
+    .getByRole('button', { name: 'Näytä hakutoiveen tiedot' })
+    .click();
+  await expect(
+    accordionContent.getByText('Ei valintalaskennan tuloksia'),
+  ).toBeVisible();
 });
 
 test('Displays selected henkilö hakutoiveet with laskenta and valinta results', async ({
@@ -606,5 +632,152 @@ test('Show notification on valinta save error', async ({ page }) => {
     page.getByText(
       'Valinnan tietojen tallentaminen epäonnistui\nVirhe backendista',
     ),
+  ).toBeVisible();
+});
+
+test('Displays pistesyöttö', async ({ page }) => {
+  await page.goto(
+    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo/1.2.246.562.11.00000000000001796027',
+  );
+
+  await expectAllSpinnersHidden(page);
+
+  const pistesyottoHeading = page.getByRole('heading', { name: 'Pistesyöttö' });
+  await expect(pistesyottoHeading).toBeVisible();
+
+  const nakkikoe = page.getByRole('region', {
+    name: 'Nakkikoe, oletko nakkisuojassa?',
+  });
+
+  await expect(nakkikoe).toBeVisible();
+
+  const nakkiKyllaInput = nakkikoe.getByText('Kyllä');
+  await expect(nakkiKyllaInput).toBeVisible();
+  const nakkiOsallistuiInput = nakkikoe.getByText('Osallistui', {
+    exact: true,
+  });
+  await expect(nakkiOsallistuiInput).toBeVisible();
+
+  const nakkiTallennaButton = nakkikoe.getByRole('button', {
+    name: 'Tallenna',
+  });
+
+  await expect(nakkiTallennaButton).toBeEnabled();
+
+  const koksakoe = page.getByRole('region', {
+    name: `Köksäkokeen arvosana 4\u201310`,
+  });
+
+  await expect(koksakoe).toBeVisible();
+
+  const koksaPisteetInput = koksakoe.getByLabel('Pisteet');
+  await expect(koksaPisteetInput).toBeVisible();
+  const koksaOsallistuiInput = koksakoe.getByText('Osallistui', {
+    exact: true,
+  });
+  await expect(koksaOsallistuiInput).toBeVisible();
+
+  const koksaTallennaButton = koksakoe.getByRole('button', {
+    name: 'Tallenna',
+  });
+  await expect(koksaTallennaButton).toBeEnabled();
+});
+
+test('Sends right data when saving pistesyotto and shows success toast', async ({
+  page,
+}) => {
+  const pisteetSaveUrl = configuration.koostetutPistetiedotHakukohteelleUrl({
+    hakuOid: '1.2.246.562.29.00000000000000045102',
+    hakukohdeOid: HAKUKOHDE_OID,
+  });
+
+  await page.route(pisteetSaveUrl, (route) => {
+    if (route.request().method() === 'PUT') {
+      return route.fulfill({
+        status: 200,
+      });
+    }
+  });
+
+  await page.goto(
+    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo/1.2.246.562.11.00000000000001796027',
+  );
+
+  await expectAllSpinnersHidden(page);
+
+  const pistesyottoHeading = page.getByRole('heading', { name: 'Pistesyöttö' });
+  await expect(pistesyottoHeading).toBeVisible();
+
+  const nakkikoe = page.getByRole('region', {
+    name: 'Nakkikoe, oletko nakkisuojassa?',
+  });
+
+  await selectOption(page, 'Osallistumisen tila', 'Ei osallistunut', nakkikoe);
+
+  const nakkiTallennaButton = nakkikoe.getByRole('button', {
+    name: 'Tallenna',
+  });
+
+  const [saveRes] = await Promise.all([
+    page.waitForRequest(
+      (request) =>
+        request.url() === pisteetSaveUrl && request.method() === 'PUT',
+    ),
+    nakkiTallennaButton.click(),
+  ]);
+
+  expect(saveRes.postDataJSON()).toMatchObject([
+    {
+      oid: '1.2.246.562.11.00000000000001796027',
+      personOid: '1.2.246.562.24.69259807406',
+      firstNames: 'Ruhtinas',
+      lastName: 'Nukettaja',
+      additionalData: {
+        'nakki-osallistuminen': ValintakoeOsallistuminenTulos.EI_OSALLISTUNUT,
+      },
+    },
+  ]);
+
+  await expect(page.getByText('Tiedot tallennettu')).toBeVisible();
+});
+
+test('Saving pistesyöttö shows error toast', async ({ page }) => {
+  const pisteetSaveUrl = configuration.koostetutPistetiedotHakukohteelleUrl({
+    hakuOid: '1.2.246.562.29.00000000000000045102',
+    hakukohdeOid: HAKUKOHDE_OID,
+  });
+
+  await page.route(pisteetSaveUrl, (route) => {
+    if (route.request().method() === 'PUT') {
+      return route.fulfill({
+        status: 400,
+      });
+    }
+  });
+
+  await page.goto(
+    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo/1.2.246.562.11.00000000000001796027',
+  );
+
+  const nakkikoe = page.getByRole('region', {
+    name: 'Nakkikoe, oletko nakkisuojassa?',
+  });
+
+  await selectOption(page, 'Osallistumisen tila', 'Ei osallistunut', nakkikoe);
+
+  const nakkiTallennaButton = nakkikoe.getByRole('button', {
+    name: 'Tallenna',
+  });
+
+  await Promise.all([
+    page.waitForRequest(
+      (request) =>
+        request.url() === pisteetSaveUrl && request.method() === 'PUT',
+    ),
+    nakkiTallennaButton.click(),
+  ]);
+
+  await expect(
+    page.getByText('Tietojen tallentamisessa tapahtui virhe.'),
   ).toBeVisible();
 });

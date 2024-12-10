@@ -54,7 +54,7 @@ export const ArvoInput = ({
         <OphInput
           id={arvoId}
           value={arvo}
-          inputProps={{ 'aria-label': t('validaatio.numero.syota') }}
+          inputProps={{ 'aria-label': t('pistesyotto.pisteet') }}
           onChange={changeArvo}
         />
       )}
