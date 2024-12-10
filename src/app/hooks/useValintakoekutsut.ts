@@ -2,11 +2,11 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getValintakoekutsutData } from '../lib/valintalaskentakoostepalvelu';
 import {
-  createValintakoekutsutHakijoittain,
-  createValintakoekutsutKokeittain,
+  selectValintakoekutsutHakijoittain,
+  selectValintakoekutsutKokeittain,
   ValintakoekutsutHakijoittain,
   ValintakoekutsutKokeittain,
-} from '../lib/createValintakoekutsut';
+} from '../lib/select-valintakoekutsut';
 import {
   GetValintakoekutsutParams,
   ValintakoekutsutData,
@@ -38,7 +38,7 @@ export const useValintakoekutsutHakijoittain = ({
     hakuOid,
     hakukohdeOid,
     select: (data) =>
-      createValintakoekutsutHakijoittain(
+      selectValintakoekutsutHakijoittain(
         { hakukohdeOid, vainKutsuttavat },
         data,
       ),
@@ -54,6 +54,6 @@ export const useValintakoekutsutKokeittain = ({
     hakuOid,
     hakukohdeOid,
     select: (data) =>
-      createValintakoekutsutKokeittain({ hakukohdeOid, vainKutsuttavat }, data),
+      selectValintakoekutsutKokeittain({ hakukohdeOid, vainKutsuttavat }, data),
   });
 };
