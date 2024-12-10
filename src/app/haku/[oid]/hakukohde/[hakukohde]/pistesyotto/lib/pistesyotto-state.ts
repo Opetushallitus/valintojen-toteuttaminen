@@ -4,6 +4,7 @@ import {
   ValintakoeOsallistuminenTulos,
 } from '@/app/lib/types/laskenta-types';
 import { updatePisteetForHakukohde } from '@/app/lib/valintalaskentakoostepalvelu';
+import { useMemo } from 'react';
 import { assign, createMachine, fromPromise } from 'xstate';
 
 export type PisteSyottoContext = {
@@ -19,10 +20,22 @@ export enum PisteSyottoStates {
   ERROR = 'ERROR',
 }
 
-export enum PisteSyottoEvents {
-  UPDATE = 'UPDATE',
+export enum PisteSyottoEvent {
+  SAVE = 'SAVE',
   ADD_CHANGED_PISTETIETO = 'ADD_CHANGED_PISTETIETO',
 }
+
+export type PistesyottoSaveEvent = {
+  type: PisteSyottoEvent.SAVE;
+};
+
+export type PistesyottoChangedPistetietoEvent = {
+  type: PisteSyottoEvent.ADD_CHANGED_PISTETIETO;
+  hakemusOid: string;
+  koeTunniste: string;
+  value: string;
+  updateArvo: boolean;
+};
 
 export const createPisteSyottoMachine = (
   hakuOid: string,
@@ -33,14 +46,18 @@ export const createPisteSyottoMachine = (
   const pisteMachine = createMachine({
     id: `PistesyottoMachine-${hakukohdeOid}`,
     initial: PisteSyottoStates.IDLE,
+    types: {} as {
+      context: PisteSyottoContext;
+      events: PistesyottoSaveEvent | PistesyottoChangedPistetietoEvent;
+    },
     context: {
       pistetiedot,
       changedPistetiedot: [],
-    } as PisteSyottoContext,
+    },
     states: {
       [PisteSyottoStates.IDLE]: {
         on: {
-          [PisteSyottoEvents.ADD_CHANGED_PISTETIETO]: {
+          [PisteSyottoEvent.ADD_CHANGED_PISTETIETO]: {
             actions: assign({
               changedPistetiedot: ({ context, event }) => {
                 let hakenut = context.changedPistetiedot.find(
@@ -74,7 +91,7 @@ export const createPisteSyottoMachine = (
               },
             }),
           },
-          [PisteSyottoEvents.UPDATE]: [
+          [PisteSyottoEvent.SAVE]: [
             {
               guard: 'hasChangedPistetiedot',
               target: PisteSyottoStates.UPDATING,
@@ -91,7 +108,7 @@ export const createPisteSyottoMachine = (
       },
       [PisteSyottoStates.UPDATING]: {
         invoke: {
-          src: 'updatePistetiedot',
+          src: 'savePistetiedot',
           input: ({ context }) => context.changedPistetiedot,
           onDone: {
             target: PisteSyottoStates.UPDATE_COMPLETED,
@@ -157,11 +174,34 @@ export const createPisteSyottoMachine = (
         }),
     },
     actors: {
-      updatePistetiedot: fromPromise(
+      savePistetiedot: fromPromise(
         ({ input }: { input: HakemuksenPistetiedot[] }) => {
           return updatePisteetForHakukohde(hakuOid, hakukohdeOid, input);
         },
       ),
     },
   });
+};
+
+type PistesyottoMachineParams = {
+  hakuOid: string;
+  hakukohdeOid: string;
+  pistetiedot: HakemuksenPistetiedot[];
+  addToast: (toast: Toast) => void;
+};
+
+export const usePistesyottoMachine = ({
+  hakuOid,
+  hakukohdeOid,
+  pistetiedot,
+  addToast,
+}: PistesyottoMachineParams) => {
+  return useMemo(() => {
+    return createPisteSyottoMachine(
+      hakuOid,
+      hakukohdeOid,
+      pistetiedot,
+      addToast,
+    );
+  }, [hakuOid, hakukohdeOid, pistetiedot, addToast]);
 };
