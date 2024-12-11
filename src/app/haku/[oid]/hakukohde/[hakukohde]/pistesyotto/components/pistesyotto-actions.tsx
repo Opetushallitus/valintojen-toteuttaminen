@@ -1,7 +1,7 @@
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { CircularProgress, Stack } from '@mui/material';
 import { AnyMachineSnapshot } from 'xstate';
-import { PisteSyottoStates } from '../lib/pistesyotto-state';
+import { PisteSyottoStates } from '@/app/lib/state/pistesyotto-state';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { ExcelUploadButton } from './pistesyotto-excel-upload-button';
 import { ExcelDownloadButton } from './pistesyotto-excel-download-button';

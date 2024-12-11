@@ -13,7 +13,7 @@ import { useHenkiloPageData } from './hooks/useHenkiloPageData';
 import { HenkilonHakukohdeTuloksilla } from './lib/henkilo-page-types';
 import { isEmpty } from 'remeda';
 import { HakutoiveTitle } from './components/hakutoive-title';
-import { KoeCell } from '@/app/components/koe-cell';
+import { KoeInputs } from '@/app/components/koe-inputs';
 import { ValintakoeAvaimet } from '@/app/lib/types/valintaperusteet-types';
 import { NDASH } from '@/app/lib/constants';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
@@ -22,7 +22,7 @@ import {
   PisteSyottoStates,
   useIsDirty,
   usePistesyottoActorRef,
-} from '@/app/haku/[oid]/hakukohde/[hakukohde]/pistesyotto/lib/pistesyotto-state';
+} from '@/app/lib/state/pistesyotto-state';
 import { HakijaInfo } from '@/app/lib/types/ataru-types';
 import { useSelector } from '@xstate/react';
 import useToaster from '@/app/hooks/useToaster';
@@ -131,7 +131,7 @@ const KoeFields = ({
         }}
         aria-labelledby={labelId}
       >
-        <KoeCell
+        <KoeInputs
           hakemusOid={hakija.hakemusOid}
           koe={koe}
           pistesyottoActorRef={pistesyottoActorRef}

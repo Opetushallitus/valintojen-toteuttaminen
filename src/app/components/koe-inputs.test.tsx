@@ -1,17 +1,11 @@
 import { describe, expect, test, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { KoeCellUncontrolled } from './koe-cell';
+import { KoeInputsStateless } from './koe-inputs';
 import { ValintakoeInputTyyppi } from '@/app/lib/types/valintaperusteet-types';
 import {
   ValintakoeOsallistuminenTulos,
   ValintakokeenPisteet,
 } from '@/app/lib/types/laskenta-types';
-
-vi.mock('@/app/hooks/useTranslations', () => ({
-  useTranslations: () => {
-    return { t: (x: string) => x };
-  },
-}));
 
 const HAKEMUS_OID = '1';
 
@@ -33,21 +27,25 @@ const KOE = {
   inputTyyppi: ValintakoeInputTyyppi.INPUT,
 };
 
-const renderKoeCell = ({
+const renderKoeInputs = ({
   osallistuminen,
   arvo,
 }: {
   osallistuminen?: ValintakoeOsallistuminenTulos;
   arvo?: string;
 } = {}) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const tFn: any = vi.fn().mockImplementation((x) => x);
+
   return render(
-    <KoeCellUncontrolled
+    <KoeInputsStateless
       hakemusOid={HAKEMUS_OID}
       arvo={arvo ?? KOE_PISTEET.arvo ?? ''}
       osallistuminen={osallistuminen ?? KOE_PISTEET.osallistuminen}
       koe={KOE}
       onChange={() => {}}
       disabled={false}
+      t={tFn}
     />,
   );
 };
@@ -55,9 +53,11 @@ const renderKoeCell = ({
 const getOsallistuminenTranslation = (tulos: ValintakoeOsallistuminenTulos) =>
   `valintakoe.osallistumisenTila.${tulos}`;
 
-describe('KoeCell', () => {
+describe('KoeInputsStateless', () => {
   test('Show both inputs when osallistuminen="OSALLISTUI"', () => {
-    renderKoeCell({ osallistuminen: ValintakoeOsallistuminenTulos.OSALLISTUI });
+    renderKoeInputs({
+      osallistuminen: ValintakoeOsallistuminenTulos.OSALLISTUI,
+    });
     expect(
       screen.queryByRole('textbox', { name: 'pistesyotto.pisteet' }),
     ).toBeVisible();
@@ -72,7 +72,7 @@ describe('KoeCell', () => {
   });
 
   test('Hide piste-input when osallistuminen="EI_OSALLISTUNUT"', () => {
-    renderKoeCell();
+    renderKoeInputs();
 
     expect(
       screen.queryByRole('textbox', { name: 'pistesyotto.pisteet' }),

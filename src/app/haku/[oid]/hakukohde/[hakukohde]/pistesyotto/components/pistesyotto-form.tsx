@@ -9,7 +9,7 @@ import {
   PisteSyottoEvent,
   useIsDirty,
   usePistesyottoActorRef,
-} from '../lib/pistesyotto-state';
+} from '@/app/lib/state/pistesyotto-state';
 import { useSelector } from '@xstate/react';
 import { PisteSyottoActions } from './pistesyotto-actions';
 import {

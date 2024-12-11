@@ -8,9 +8,9 @@ import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { OphInput } from '@/app/components/form/oph-input';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { useState, ChangeEvent } from 'react';
-import { type KoeCellProps } from './koe-cell';
+import { type KoeCellProps } from './koe-inputs';
 
-export const ArvoInput = ({
+export const PisteetInput = ({
   koe,
   disabled,
   arvo,

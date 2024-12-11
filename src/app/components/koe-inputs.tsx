@@ -9,12 +9,12 @@ import { Box, SelectChangeEvent } from '@mui/material';
 import { LocalizedSelect } from '@/app/components/localized-select';
 import { ChangePisteSyottoFormParams } from '../haku/[oid]/hakukohde/[hakukohde]/pistesyotto/components/pistesyotto-form';
 import { TFunction } from 'i18next';
-import { ArvoInput } from './arvo-input';
+import { PisteetInput } from './pisteet-input';
 import {
   PisteSyottoEvent,
   PisteSyottoStates,
   useOsallistumistieto,
-} from '../haku/[oid]/hakukohde/[hakukohde]/pistesyotto/lib/pistesyotto-state';
+} from '../lib/state/pistesyotto-state';
 import { AnyActorRef } from 'xstate';
 import { useSelector } from '@xstate/react';
 import { OsallistumisenTilaSelect } from '@/app/components/osallistumisen-tila-select';
@@ -46,21 +46,55 @@ const getArvoOptions = (koe: ValintakoeAvaimet, t: TFunction) => {
   }
 };
 
-export const KoeCellUncontrolled = ({
+const ArvoSelect = ({
+  id,
+  hakemusOid,
+  koe,
+  disabled,
+  arvo,
+  onChange,
+  t,
+}: Omit<KoeCellProps, 'pistesyottoActorRef'> & {
+  id: string;
+  arvo: string;
+  osallistuminen: ValintakoeOsallistuminenTulos;
+  disabled: boolean;
+  onChange: (event: ChangePisteSyottoFormParams) => void;
+  t: TFunction;
+}) => (
+  <LocalizedSelect
+    sx={KOE_SELECT_STYLE}
+    id={id}
+    value={arvo}
+    options={getArvoOptions(koe, t)}
+    onChange={(event: SelectChangeEvent<string>) => {
+      onChange({
+        arvo: event.target.value.toString(),
+        hakemusOid,
+        koeTunniste: koe.tunniste,
+      });
+    }}
+    inputProps={{ 'aria-label': t('pistesyotto.arvo') }}
+    disabled={disabled}
+    clearable
+  />
+);
+
+export const KoeInputsStateless = ({
   hakemusOid,
   koe,
   disabled,
   arvo,
   osallistuminen,
   onChange,
+  t,
 }: Omit<KoeCellProps, 'pistesyottoActorRef'> & {
   arvo: string;
   osallistuminen: ValintakoeOsallistuminenTulos;
   disabled: boolean;
   onChange: (event: ChangePisteSyottoFormParams) => void;
+  t: TFunction;
 }) => {
-  const { t } = useTranslations();
-
   const arvoId = `koe-arvo-${hakemusOid}-${koe.tunniste}`;
 
   const changeOsallistumisenTila = (event: SelectChangeEvent<string>) => {
@@ -84,7 +118,7 @@ export const KoeCellUncontrolled = ({
       {koe.inputTyyppi === ValintakoeInputTyyppi.INPUT ? (
         <Box sx={{ width: '80px' }}>
           {osallistuminen !== ValintakoeOsallistuminenTulos.EI_OSALLISTUNUT && (
-            <ArvoInput
+            <PisteetInput
               koe={koe}
               disabled={disabled}
               arvo={arvo}
@@ -100,21 +134,15 @@ export const KoeCellUncontrolled = ({
           )}
         </Box>
       ) : (
-        <LocalizedSelect
-          sx={KOE_SELECT_STYLE}
+        <ArvoSelect
           id={arvoId}
-          value={arvo}
-          options={getArvoOptions(koe, t)}
-          onChange={(event: SelectChangeEvent<string>) => {
-            onChange({
-              arvo: event.target.value.toString(),
-              hakemusOid,
-              koeTunniste: koe.tunniste,
-            });
-          }}
-          inputProps={{ 'aria-label': t('pistesyotto.arvo') }}
+          hakemusOid={hakemusOid}
+          koe={koe}
           disabled={disabled}
-          clearable
+          arvo={arvo}
+          onChange={onChange}
+          osallistuminen={osallistuminen}
+          t={t}
         />
       )}
       <OsallistumisenTilaSelect
@@ -131,16 +159,18 @@ export const KoeCellUncontrolled = ({
   );
 };
 
-export const KoeCell = ({
+export const KoeInputs = ({
   hakemusOid,
   koe,
   pistesyottoActorRef,
 }: KoeCellProps) => {
   const state = useSelector(pistesyottoActorRef, (s) => s);
 
+  const { t } = useTranslations();
+
   const disabled = !state.matches(PisteSyottoStates.IDLE);
 
-  const updateForm = (pisteSyottoFormParams: ChangePisteSyottoFormParams) => {
+  const onChange = (pisteSyottoFormParams: ChangePisteSyottoFormParams) => {
     pistesyottoActorRef.send({
       type: PisteSyottoEvent.ADD_CHANGED_PISTETIETO,
       ...pisteSyottoFormParams,
@@ -153,13 +183,14 @@ export const KoeCell = ({
   });
 
   return (
-    <KoeCellUncontrolled
+    <KoeInputsStateless
       hakemusOid={hakemusOid}
       koe={koe}
       disabled={disabled}
       osallistuminen={osallistuminen}
-      onChange={updateForm}
+      onChange={onChange}
       arvo={arvo}
+      t={t}
     />
   );
 };

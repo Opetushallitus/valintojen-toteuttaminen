@@ -10,7 +10,7 @@ import {
 } from '@/app/components/table/table-columns';
 import { ListTable } from '@/app/components/table/list-table';
 import { isNotPartOfThisHakukohde } from '../lib/pistesyotto-utils';
-import { KoeCell } from '@/app/components/koe-cell';
+import { KoeInputs } from '@/app/components/koe-inputs';
 import { AnyActorRef } from 'xstate';
 
 export const PisteSyottoTable = ({
@@ -41,7 +41,7 @@ export const PisteSyottoTable = ({
           return isNotPartOfThisHakukohde(matchingKoePisteet) ? (
             <ReadOnlyKoeCell koePisteet={matchingKoePisteet} />
           ) : (
-            <KoeCell
+            <KoeInputs
               hakemusOid={props.hakemusOid}
               koe={koe}
               pistesyottoActorRef={pistesyottoActorRef}
