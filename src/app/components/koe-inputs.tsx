@@ -7,16 +7,14 @@ import {
 } from '@/app/lib/types/valintaperusteet-types';
 import { Box, SelectChangeEvent } from '@mui/material';
 import { LocalizedSelect } from '@/app/components/localized-select';
-import { ChangePisteSyottoFormParams } from '../haku/[oid]/hakukohde/[hakukohde]/pistesyotto/components/pistesyotto-form';
 import { TFunction } from 'i18next';
 import { PisteetInput } from './pisteet-input';
 import {
-  PisteSyottoEvent,
-  PisteSyottoStates,
-  useOsallistumistieto,
+  PistesyottoActorRef,
+  PistesyottoChangeParams,
+  usePistesyottoActorRef,
+  useKoePistetiedot,
 } from '../lib/state/pistesyotto-state';
-import { AnyActorRef } from 'xstate';
-import { useSelector } from '@xstate/react';
 import { OsallistumisenTilaSelect } from '@/app/components/osallistumisen-tila-select';
 
 const KOE_SELECT_STYLE = {
@@ -26,7 +24,7 @@ const KOE_SELECT_STYLE = {
 export type KoeCellProps = {
   hakemusOid: string;
   koe: ValintakoeAvaimet;
-  pistesyottoActorRef: AnyActorRef;
+  pistesyottoActorRef: PistesyottoActorRef;
 };
 
 const getArvoOptions = (koe: ValintakoeAvaimet, t: TFunction) => {
@@ -57,9 +55,9 @@ const ArvoSelect = ({
 }: Omit<KoeCellProps, 'pistesyottoActorRef'> & {
   id: string;
   arvo: string;
-  osallistuminen: ValintakoeOsallistuminenTulos;
+  osallistuminen?: ValintakoeOsallistuminenTulos;
   disabled: boolean;
-  onChange: (event: ChangePisteSyottoFormParams) => void;
+  onChange: (event: PistesyottoChangeParams) => void;
   t: TFunction;
 }) => (
   <LocalizedSelect
@@ -90,9 +88,9 @@ export const KoeInputsStateless = ({
   t,
 }: Omit<KoeCellProps, 'pistesyottoActorRef'> & {
   arvo: string;
-  osallistuminen: ValintakoeOsallistuminenTulos;
+  osallistuminen?: ValintakoeOsallistuminenTulos;
   disabled: boolean;
-  onChange: (event: ChangePisteSyottoFormParams) => void;
+  onChange: (event: PistesyottoChangeParams) => void;
   t: TFunction;
 }) => {
   const arvoId = `koe-arvo-${hakemusOid}-${koe.tunniste}`;
@@ -164,20 +162,11 @@ export const KoeInputs = ({
   koe,
   pistesyottoActorRef,
 }: KoeCellProps) => {
-  const state = useSelector(pistesyottoActorRef, (s) => s);
-
   const { t } = useTranslations();
+  const { onKoeChange, isUpdating } =
+    usePistesyottoActorRef(pistesyottoActorRef);
 
-  const disabled = !state.matches(PisteSyottoStates.IDLE);
-
-  const onChange = (pisteSyottoFormParams: ChangePisteSyottoFormParams) => {
-    pistesyottoActorRef.send({
-      type: PisteSyottoEvent.ADD_CHANGED_PISTETIETO,
-      ...pisteSyottoFormParams,
-    });
-  };
-
-  const { arvo, osallistuminen } = useOsallistumistieto(pistesyottoActorRef, {
+  const { arvo, osallistuminen } = useKoePistetiedot(pistesyottoActorRef, {
     hakemusOid,
     koeTunniste: koe.tunniste,
   });
@@ -186,9 +175,9 @@ export const KoeInputs = ({
     <KoeInputsStateless
       hakemusOid={hakemusOid}
       koe={koe}
-      disabled={disabled}
+      disabled={isUpdating}
       osallistuminen={osallistuminen}
-      onChange={onChange}
+      onChange={onKoeChange}
       arvo={arvo}
       t={t}
     />

@@ -7,7 +7,7 @@ import { updatePisteetForHakukohde } from '@/app/lib/valintalaskentakoostepalvel
 import { useActorRef, useSelector } from '@xstate/react';
 import { useMemo } from 'react';
 import { clone, isEmpty } from 'remeda';
-import { AnyActorRef, assign, createMachine, fromPromise } from 'xstate';
+import { ActorRefFrom, assign, createMachine, fromPromise } from 'xstate';
 
 export type PisteSyottoContext = {
   pistetiedot: HakemuksenPistetiedot[];
@@ -23,25 +23,28 @@ export enum PisteSyottoStates {
 }
 
 export enum PisteSyottoEvent {
-  SAVE = 'SAVE',
-  ADD_CHANGED_PISTETIETO = 'ADD_CHANGED_PISTETIETO',
+  UPDATE = 'UPDATE',
+  PISTETIETO_CHANGED = 'PISTETIETO_CHANGED',
 }
 
 type PistesyottoAnyEvent =
-  | PistesyottoSaveEvent
+  | PistesyottoUpdateEvent
   | PistesyottoChangedPistetietoEvent;
 
-export type PistesyottoSaveEvent = {
-  type: PisteSyottoEvent.SAVE;
+export type PistesyottoUpdateEvent = {
+  type: PisteSyottoEvent.UPDATE;
 };
 
-export type PistesyottoChangedPistetietoEvent = {
-  type: PisteSyottoEvent.ADD_CHANGED_PISTETIETO;
+export type PistesyottoChangeParams = {
   hakemusOid: string;
   koeTunniste: string;
   arvo?: string;
   osallistuminen?: ValintakoeOsallistuminenTulos;
 };
+
+export type PistesyottoChangedPistetietoEvent = {
+  type: PisteSyottoEvent.PISTETIETO_CHANGED;
+} & PistesyottoChangeParams;
 
 const isKoeValuesEqual = (
   oldKoe:
@@ -58,6 +61,10 @@ const isKoeValuesEqual = (
     oldArvo === newKoe?.arvo
   );
 };
+
+export type PistesyottoActorRef = ActorRefFrom<
+  ReturnType<typeof createPisteMachine>
+>;
 
 export const createPisteMachine = (
   hakukohdeOid: string,
@@ -80,7 +87,7 @@ export const createPisteMachine = (
     states: {
       [PisteSyottoStates.IDLE]: {
         on: {
-          [PisteSyottoEvent.ADD_CHANGED_PISTETIETO]: {
+          [PisteSyottoEvent.PISTETIETO_CHANGED]: {
             actions: assign({
               changedPistetiedot: ({ context, event }) => {
                 const changedPistetieto = context.changedPistetiedot.find(
@@ -158,7 +165,7 @@ export const createPisteMachine = (
               },
             }),
           },
-          [PisteSyottoEvent.SAVE]: [
+          [PisteSyottoEvent.UPDATE]: [
             {
               guard: 'hasChangedPistetiedot',
               target: PisteSyottoStates.UPDATING,
@@ -175,7 +182,7 @@ export const createPisteMachine = (
       },
       [PisteSyottoStates.UPDATING]: {
         invoke: {
-          src: 'savePistetiedot',
+          src: 'updatePistetiedot',
           input: ({ context }) => context.changedPistetiedot,
           onDone: {
             target: PisteSyottoStates.UPDATE_COMPLETED,
@@ -249,7 +256,7 @@ export const createPisteSyottoMachine = (
         }),
     },
     actors: {
-      savePistetiedot: fromPromise(
+      updatePistetiedot: fromPromise(
         ({ input }: { input: HakemuksenPistetiedot[] }) => {
           return updatePisteetForHakukohde(hakuOid, hakukohdeOid, input);
         },
@@ -265,7 +272,7 @@ type PistesyottoMachineParams = {
   addToast: (toast: Toast) => void;
 };
 
-export const usePistesyottoActorRef = ({
+export const usePistesyottoState = ({
   hakuOid,
   hakukohdeOid,
   pistetiedot,
@@ -280,32 +287,53 @@ export const usePistesyottoActorRef = ({
     );
   }, [hakuOid, hakukohdeOid, pistetiedot, addToast]);
 
-  return useActorRef(machine);
+  const actorRef = useActorRef(machine);
+  return usePistesyottoActorRef(actorRef);
 };
 
-export const useOsallistumistieto = (
-  pistesyottoActor: AnyActorRef,
+export const usePistesyottoActorRef = (actorRef: PistesyottoActorRef) => {
+  const snapshot = useSelector(actorRef, (s) => s);
+  const isDirty = useIsDirty(actorRef);
+  return {
+    actorRef,
+    snapshot,
+    isUpdating: snapshot.matches(PisteSyottoStates.UPDATING),
+    onKoeChange: (params: PistesyottoChangeParams) => {
+      actorRef.send({
+        type: PisteSyottoEvent.PISTETIETO_CHANGED,
+        ...params,
+      });
+    },
+    savePistetiedot: () => {
+      actorRef.send({ type: PisteSyottoEvent.UPDATE });
+    },
+    isDirty,
+  };
+};
+
+export const useKoePistetiedot = (
+  pistesyottoActor: PistesyottoActorRef,
   { hakemusOid, koeTunniste }: { hakemusOid: string; koeTunniste: string },
 ) => {
   return useSelector(pistesyottoActor, (s) => {
-    const pistetieto =
+    const koe = (
       s.context.changedPistetiedot.find(
         (p: { hakemusOid: string }) => p.hakemusOid === hakemusOid,
       ) ??
       s.context.pistetiedot.find(
         (p: { hakemusOid: string }) => p.hakemusOid === hakemusOid,
-      );
-    const machineKoe = pistetieto?.valintakokeenPisteet.find(
+      )
+    )?.valintakokeenPisteet.find(
       (p: { tunniste: string }) => p.tunniste === koeTunniste,
     );
     return {
-      arvo: machineKoe.arvo ?? '',
-      osallistuminen: machineKoe.osallistuminen,
+      arvo: koe?.arvo ?? '',
+      osallistuminen: koe?.osallistuminen,
     };
   });
 };
 
-export const useIsDirty = (pistesyottoActorRef: AnyActorRef) =>
+export const useIsDirty = (pistesyottoActorRef: PistesyottoActorRef) =>
   useSelector(
     pistesyottoActorRef,
     (s) => s.context.changedPistetiedot.length !== 0,

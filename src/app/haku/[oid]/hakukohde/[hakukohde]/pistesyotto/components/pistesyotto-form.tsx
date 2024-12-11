@@ -5,17 +5,9 @@ import { PisteSyottoTable } from './pistesyotto-table';
 import { usePisteSyottoSearchResults } from '../hooks/usePisteSyottoSearch';
 import { FormEvent } from 'react';
 import useToaster from '@/app/hooks/useToaster';
-import {
-  PisteSyottoEvent,
-  useIsDirty,
-  usePistesyottoActorRef,
-} from '@/app/lib/state/pistesyotto-state';
-import { useSelector } from '@xstate/react';
+import { usePistesyottoState } from '@/app/lib/state/pistesyotto-state';
 import { PisteSyottoActions } from './pistesyotto-actions';
-import {
-  HakukohteenPistetiedot,
-  ValintakoeOsallistuminenTulos,
-} from '@/app/lib/types/laskenta-types';
+import { HakukohteenPistetiedot } from '@/app/lib/types/laskenta-types';
 import { FormBox } from '@/app/components/form-box';
 import { useConfirmChangesBeforeNavigation } from '@/app/hooks/useConfirmChangesBeforeNavigation';
 
@@ -25,13 +17,6 @@ type PisteSyottoFormParams = {
   pistetulokset: HakukohteenPistetiedot;
 };
 
-export type ChangePisteSyottoFormParams = {
-  arvo?: string;
-  osallistuminen?: ValintakoeOsallistuminenTulos;
-  hakemusOid: string;
-  koeTunniste: string;
-};
-
 export const PisteSyottoForm = ({
   hakuOid,
   hakukohdeOid,
@@ -39,15 +24,17 @@ export const PisteSyottoForm = ({
 }: PisteSyottoFormParams) => {
   const { addToast } = useToaster();
 
-  const pistesyottoActorRef = usePistesyottoActorRef({
+  const {
+    actorRef: pistesyottoActorRef,
+    isDirty,
+    savePistetiedot,
+    isUpdating,
+  } = usePistesyottoState({
     hakuOid,
     hakukohdeOid,
     pistetiedot: pistetulokset.hakemukset,
     addToast,
   });
-
-  const isDirty = useIsDirty(pistesyottoActorRef);
-  const state = useSelector(pistesyottoActorRef, (s) => s);
 
   useConfirmChangesBeforeNavigation(isDirty);
 
@@ -64,7 +51,7 @@ export const PisteSyottoForm = ({
   } = usePisteSyottoSearchResults(pistetulokset);
 
   const submitChanges = (event: FormEvent) => {
-    pistesyottoActorRef.send({ type: PisteSyottoEvent.SAVE });
+    savePistetiedot();
     event.preventDefault();
   };
 
@@ -75,7 +62,7 @@ export const PisteSyottoForm = ({
       data-test-id="pistesyotto-form"
     >
       <PisteSyottoActions
-        state={state}
+        isUpdating={isUpdating}
         hakuOid={hakuOid}
         hakukohdeOid={hakukohdeOid}
       />

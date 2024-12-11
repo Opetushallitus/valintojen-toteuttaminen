@@ -17,14 +17,8 @@ import { KoeInputs } from '@/app/components/koe-inputs';
 import { ValintakoeAvaimet } from '@/app/lib/types/valintaperusteet-types';
 import { NDASH } from '@/app/lib/constants';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
-import {
-  PisteSyottoEvent,
-  PisteSyottoStates,
-  useIsDirty,
-  usePistesyottoActorRef,
-} from '@/app/lib/state/pistesyotto-state';
+import { usePistesyottoState } from '@/app/lib/state/pistesyotto-state';
 import { HakijaInfo } from '@/app/lib/types/ataru-types';
-import { useSelector } from '@xstate/react';
 import useToaster from '@/app/hooks/useToaster';
 import { useMemo, use } from 'react';
 import { SpinnerIcon } from '@/app/components/spinner-icon';
@@ -95,20 +89,19 @@ const KoeFields = ({
     [hakija, matchingKoePisteet],
   );
 
-  const pistesyottoActorRef = usePistesyottoActorRef({
+  const {
+    actorRef: pistesyottoActorRef,
+    isUpdating,
+    isDirty,
+    savePistetiedot,
+  } = usePistesyottoState({
     hakuOid: hakukohde.hakuOid,
     hakukohdeOid: hakukohde.oid,
     pistetiedot,
     addToast,
   });
 
-  const isDirty = useIsDirty(pistesyottoActorRef);
-
   useConfirmChangesBeforeNavigation(isDirty);
-
-  const state = useSelector(pistesyottoActorRef, (s) => s);
-
-  const isPending = state.matches(PisteSyottoStates.UPDATING);
 
   const labelId = `${koe.tunniste}_label`;
 
@@ -139,12 +132,10 @@ const KoeFields = ({
         <OphButton
           variant="contained"
           sx={{ minHeight: '48px' }}
-          startIcon={isPending && <SpinnerIcon />}
-          disabled={isPending}
+          startIcon={isUpdating && <SpinnerIcon />}
+          disabled={isUpdating}
           onClick={() => {
-            pistesyottoActorRef.send({
-              type: PisteSyottoEvent.SAVE,
-            });
+            savePistetiedot();
           }}
         >
           {t('yleinen.tallenna')}

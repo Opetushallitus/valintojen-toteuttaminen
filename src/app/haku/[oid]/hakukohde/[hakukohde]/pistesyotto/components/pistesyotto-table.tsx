@@ -11,7 +11,7 @@ import {
 import { ListTable } from '@/app/components/table/list-table';
 import { isNotPartOfThisHakukohde } from '../lib/pistesyotto-utils';
 import { KoeInputs } from '@/app/components/koe-inputs';
-import { AnyActorRef } from 'xstate';
+import { PistesyottoActorRef } from '@/app/lib/state/pistesyotto-state';
 
 export const PisteSyottoTable = ({
   pistetiedot,
@@ -24,7 +24,7 @@ export const PisteSyottoTable = ({
   sort: string;
   setSort: (sort: string) => void;
   kokeet: ValintakoeAvaimet[];
-  pistesyottoActorRef: AnyActorRef;
+  pistesyottoActorRef: PistesyottoActorRef;
 }) => {
   const { t } = useTranslations();
 

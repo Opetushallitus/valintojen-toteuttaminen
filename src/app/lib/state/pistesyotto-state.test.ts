@@ -45,7 +45,7 @@ describe('createPisteMachine', () => {
     });
     const actor = initPistesyottoState(pistetieto);
     actor.send({
-      type: PisteSyottoEvent.ADD_CHANGED_PISTETIETO,
+      type: PisteSyottoEvent.PISTETIETO_CHANGED,
       hakemusOid: '1',
       koeTunniste: '2',
       osallistuminen: ValintakoeOsallistuminenTulos.OSALLISTUI,
@@ -62,7 +62,7 @@ describe('createPisteMachine', () => {
     );
 
     actor.send({
-      type: PisteSyottoEvent.ADD_CHANGED_PISTETIETO,
+      type: PisteSyottoEvent.PISTETIETO_CHANGED,
       hakemusOid: '1',
       koeTunniste: '2',
       osallistuminen: ValintakoeOsallistuminenTulos.OSALLISTUI,
@@ -86,7 +86,7 @@ describe('createPisteMachine', () => {
     });
     const actor = initPistesyottoState(pistetieto);
     actor.send({
-      type: PisteSyottoEvent.ADD_CHANGED_PISTETIETO,
+      type: PisteSyottoEvent.PISTETIETO_CHANGED,
       hakemusOid: '1',
       koeTunniste: '2',
       osallistuminen: ValintakoeOsallistuminenTulos.OSALLISTUI,
@@ -103,7 +103,7 @@ describe('createPisteMachine', () => {
     );
 
     actor.send({
-      type: PisteSyottoEvent.ADD_CHANGED_PISTETIETO,
+      type: PisteSyottoEvent.PISTETIETO_CHANGED,
       hakemusOid: '1',
       koeTunniste: '2',
       osallistuminen: ValintakoeOsallistuminenTulos.EI_OSALLISTUNUT,
@@ -122,7 +122,7 @@ describe('createPisteMachine', () => {
     });
     const actor = initPistesyottoState(pistetieto);
     actor.send({
-      type: PisteSyottoEvent.ADD_CHANGED_PISTETIETO,
+      type: PisteSyottoEvent.PISTETIETO_CHANGED,
       hakemusOid: '1',
       koeTunniste: '2',
       arvo: '8.0',
@@ -152,7 +152,7 @@ describe('createPisteMachine', () => {
       });
       const actor = initPistesyottoState(pistetieto);
       actor.send({
-        type: PisteSyottoEvent.ADD_CHANGED_PISTETIETO,
+        type: PisteSyottoEvent.PISTETIETO_CHANGED,
         hakemusOid: '1',
         koeTunniste: '2',
         osallistuminen: newOsallistuminen,
