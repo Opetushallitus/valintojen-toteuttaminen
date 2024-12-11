@@ -8,7 +8,7 @@ import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { OphInput } from '@/app/components/form/oph-input';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { useState, ChangeEvent } from 'react';
-import { type KoeCellProps } from './koe-inputs';
+import { type KoeInputsProps } from './koe-inputs';
 
 export const PisteetInput = ({
   koe,
@@ -16,7 +16,7 @@ export const PisteetInput = ({
   arvo,
   onArvoChange,
   arvoId,
-}: Pick<KoeCellProps, 'koe'> & {
+}: Pick<KoeInputsProps, 'koe'> & {
   arvo: string;
   disabled: boolean;
   onArvoChange: (arvo: string) => void;

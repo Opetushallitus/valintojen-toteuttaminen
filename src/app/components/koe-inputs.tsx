@@ -21,7 +21,7 @@ const KOE_SELECT_STYLE = {
   minWidth: '150px',
 };
 
-export type KoeCellProps = {
+export type KoeInputsProps = {
   hakemusOid: string;
   koe: ValintakoeAvaimet;
   pistesyottoActorRef: PistesyottoActorRef;
@@ -52,7 +52,7 @@ const ArvoSelect = ({
   arvo,
   onChange,
   t,
-}: Omit<KoeCellProps, 'pistesyottoActorRef'> & {
+}: Omit<KoeInputsProps, 'pistesyottoActorRef'> & {
   id: string;
   arvo: string;
   osallistuminen?: ValintakoeOsallistuminenTulos;
@@ -86,7 +86,7 @@ export const KoeInputsStateless = ({
   osallistuminen,
   onChange,
   t,
-}: Omit<KoeCellProps, 'pistesyottoActorRef'> & {
+}: Omit<KoeInputsProps, 'pistesyottoActorRef'> & {
   arvo: string;
   osallistuminen?: ValintakoeOsallistuminenTulos;
   disabled: boolean;
@@ -161,7 +161,7 @@ export const KoeInputs = ({
   hakemusOid,
   koe,
   pistesyottoActorRef,
-}: KoeCellProps) => {
+}: KoeInputsProps) => {
   const { t } = useTranslations();
   const { onKoeChange, isUpdating } =
     usePistesyottoActorRef(pistesyottoActorRef);
