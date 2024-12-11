@@ -38,7 +38,7 @@ const initPistesyottoState = (pistetiedot: HakemuksenPistetiedot) => {
 };
 
 describe('createPisteMachine', () => {
-  test('updates pistetiedot', async () => {
+  test('updates arvo twice', async () => {
     const pistetieto = generatePistetiedot({
       arvo: '8.0',
       osallistuminen: ValintakoeOsallistuminenTulos.OSALLISTUI,
@@ -48,17 +48,33 @@ describe('createPisteMachine', () => {
       type: PisteSyottoEvent.ADD_CHANGED_PISTETIETO,
       hakemusOid: '1',
       koeTunniste: '2',
-      osallistuminen: ValintakoeOsallistuminenTulos.EI_OSALLISTUNUT,
-      arvo: '',
+      osallistuminen: ValintakoeOsallistuminenTulos.OSALLISTUI,
+      arvo: '8.',
     });
 
-    const changedPistetiedot =
-      actor.getSnapshot().context.changedPistetiedot?.[0];
+    let changedPistetiedot = actor.getSnapshot().context.changedPistetiedot;
 
-    expect(changedPistetiedot).toMatchObject(
+    expect(changedPistetiedot[0]).toMatchObject(
       generatePistetiedot({
-        arvo: '',
-        osallistuminen: ValintakoeOsallistuminenTulos.EI_OSALLISTUNUT,
+        arvo: '8.',
+        osallistuminen: ValintakoeOsallistuminenTulos.OSALLISTUI,
+      }),
+    );
+
+    actor.send({
+      type: PisteSyottoEvent.ADD_CHANGED_PISTETIETO,
+      hakemusOid: '1',
+      koeTunniste: '2',
+      osallistuminen: ValintakoeOsallistuminenTulos.OSALLISTUI,
+      arvo: '8.1',
+    });
+
+    changedPistetiedot = actor.getSnapshot().context.changedPistetiedot;
+
+    expect(changedPistetiedot[0]).toMatchObject(
+      generatePistetiedot({
+        arvo: '8.1',
+        osallistuminen: ValintakoeOsallistuminenTulos.OSALLISTUI,
       }),
     );
   });

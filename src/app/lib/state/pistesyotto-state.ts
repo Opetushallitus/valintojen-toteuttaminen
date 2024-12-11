@@ -128,7 +128,7 @@ export const createPisteMachine = (
                   }
 
                   if (changedPistetieto) {
-                    let newPisteet = changedPistetieto.valintakokeenPisteet;
+                    let newPisteet = pistetieto.valintakokeenPisteet;
 
                     // muuttunut kokeen pistetieto sama kuin alkuperäinen
                     if (isKoeValuesEqual(existingKoe, koe)) {
