@@ -1,7 +1,6 @@
 'use client';
 
 import { assign, fromPromise, setup } from 'xstate';
-import { Laskenta, laskentaReducer } from './valinnan-hallinta-types';
 import {
   Valinnanvaihe,
   ValinnanvaiheTyyppi,
@@ -26,6 +25,16 @@ import { useMachine } from '@xstate/react';
 import { HaunAsetukset } from '@/app/lib/types/haun-asetukset';
 
 const POLLING_INTERVAL = 5000;
+
+export type Laskenta = {
+  errorMessage?: string | string[] | null;
+  calculatedTime?: Date | number | null;
+  runningLaskenta?: LaskentaStart;
+};
+
+const laskentaReducer = (state: Laskenta, action: Laskenta): Laskenta => {
+  return Object.assign({}, state, action);
+};
 
 export type StartLaskentaParams = {
   haku: Haku;
@@ -260,7 +269,7 @@ export const createLaskentaMachine = (
         ],
       },
       [LaskentaStates.ERROR_LASKENTA]: {
-        id: 'ERROR_LASKENTA',
+        id: LaskentaStates.ERROR_LASKENTA,
         always: [{ target: LaskentaStates.IDLE }],
       },
       [LaskentaStates.COMPLETED]: {

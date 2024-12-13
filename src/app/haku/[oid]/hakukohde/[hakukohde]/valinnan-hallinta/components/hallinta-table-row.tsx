@@ -11,7 +11,7 @@ import {
   LaskentaEvents,
   LaskentaStates,
   useLaskentaState,
-} from '../lib/laskenta-state';
+} from '@/app/lib/state/laskenta-state';
 import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
 import { useToaster } from '@/app/hooks/useToaster';
 import { Valinnanvaihe } from '@/app/lib/types/valintaperusteet-types';

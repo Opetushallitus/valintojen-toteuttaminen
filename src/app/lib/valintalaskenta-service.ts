@@ -119,6 +119,19 @@ export const kaynnistaLaskenta = async ({
   };
 };
 
+export const keskeytaLaskenta = async ({
+  hakuOid,
+  laskentaUuid,
+}: {
+  hakuOid: string;
+  laskentaUuid: string;
+}): Promise<null> => {
+  await client.delete<null>(
+    `${configuration.valintalaskentaServiceUrl}valintalaskentakerralla/haku/${hakuOid}/${laskentaUuid}`,
+  );
+  return null;
+};
+
 export const getLaskennanTilaHakukohteelle = async (
   loadingUrl: string,
 ): Promise<LaskentaErrorSummary> => {
@@ -214,6 +227,7 @@ export const getLaskennanSeurantaTiedot = async (loadingUrl: string) => {
     hakukohteitaYhteensa: response.data?.hakukohteitaYhteensa,
     hakukohteitaValmiina: response.data?.hakukohteitaValmiina,
     hakukohteitaKeskeytetty: response.data?.hakukohteitaKeskeytetty,
+    jonosija: response.data?.jonosija,
   };
 };
 
