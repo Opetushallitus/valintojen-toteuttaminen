@@ -33,7 +33,7 @@
     "@mui/icons-material": "^6.1.10",
     "@mui/material": "^6.1.10",
     "@mui/material-nextjs": "^6.1.9",
-    "@opetushallitus/oph-design-system": "github:opetushallitus/oph-design-system#v0.1.7",
+    "@opetushallitus/oph-design-system": "github:opetushallitus/oph-design-system#OK-674",
     "@tanstack/react-query": "^5.62.3",
     "@tanstack/react-query-devtools": "^5.62.3",
     "@xstate/react": "^5.0.0",

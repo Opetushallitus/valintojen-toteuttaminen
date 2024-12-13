@@ -6,7 +6,6 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import Confirm from './confirm';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
-import ErrorRow from './error-row';
 import {
   LaskentaEvents,
   LaskentaStates,
@@ -16,6 +15,7 @@ import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
 import { useToaster } from '@/app/hooks/useToaster';
 import { Valinnanvaihe } from '@/app/lib/types/valintaperusteet-types';
 import { HaunAsetukset } from '@/app/lib/types/haun-asetukset';
+import { ErrorRow } from './error-row';
 
 type HallintaTableRowParams = {
   haku: Haku;

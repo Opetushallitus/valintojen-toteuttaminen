@@ -19,7 +19,6 @@ import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
 import HallintaTableRow from './hallinta-table-row';
 import Confirm from './confirm';
 import { getHakukohteenLasketutValinnanvaiheet } from '@/app/lib/valintalaskenta-service';
-import ErrorRow from './error-row';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
 import {
   LaskentaEvents,
@@ -29,6 +28,7 @@ import {
 import { useToaster } from '@/app/hooks/useToaster';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { HaunAsetukset } from '@/app/lib/types/haun-asetukset';
+import { ErrorRow } from './error-row';
 
 type HallintaTableParams = {
   haku: Haku;
