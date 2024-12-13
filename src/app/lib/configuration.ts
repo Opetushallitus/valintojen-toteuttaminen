@@ -14,6 +14,9 @@ type ValintatapajonoStatusParams = {
   status: boolean;
 };
 
+const VALINTALASKENTAKERRALLA_VANHA =
+  process.env.NEXT_PUBLIC_VALINTALASKENTAKERRALLA_VANHA === 'true';
+
 export const configuration = {
   // yleiset
   raamitUrl: `${DOMAIN}/virkailija-raamit/apply-raamit.js`,
@@ -59,6 +62,9 @@ export const configuration = {
   // valintalaskenta-laskenta-service
   valintalaskentaServiceLogin: `${DOMAIN}/valintalaskenta-laskenta-service/auth/login`,
   valintalaskentaServiceUrl: `${DOMAIN}/valintalaskenta-laskenta-service/resources/`,
+  valintalaskentakerrallaUrl: VALINTALASKENTAKERRALLA_VANHA
+    ? `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintalaskentakerralla`
+    : `${DOMAIN}/valintalaskenta-laskenta-service/resources/valintalaskentakerralla`,
   hakemuksenLasketutValinnanvaiheetUrl: ({
     hakuOid,
     hakemusOid,

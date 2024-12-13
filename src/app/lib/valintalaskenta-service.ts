@@ -101,7 +101,7 @@ export const kaynnistaLaskenta = async ({
   const singleHakukohde = hakukohteet.length === 1 ? hakukohteet[0] : undefined;
   const laskentaUrl = formSearchParamsForStartLaskenta({
     laskentaUrl: new URL(
-      `${configuration.valintalaskentaServiceUrl}valintalaskentakerralla/haku/${haku.oid}/tyyppi/HAKUKOHDE/whitelist/true?`,
+      `${configuration.valintalaskentakerrallaUrl}/haku/${haku.oid}/tyyppi/HAKUKOHDE/whitelist/true?`,
     ),
     haku,
     hakukohde: singleHakukohde,
@@ -127,7 +127,7 @@ export const keskeytaLaskenta = async ({
   laskentaUuid: string;
 }): Promise<null> => {
   await client.delete<null>(
-    `${configuration.valintalaskentaServiceUrl}valintalaskentakerralla/haku/${hakuOid}/${laskentaUuid}`,
+    `${configuration.valintalaskentakerrallaUrl}/haku/${hakuOid}/${laskentaUuid}`,
   );
   return null;
 };
@@ -141,7 +141,7 @@ export const getLaskennanTilaHakukohteelle = async (
       ilmoitukset: [{ otsikko: string; tyyppi: string }] | null;
     }>;
   }>(
-    `${configuration.valintalaskentaServiceUrl}valintalaskentakerralla/status/${loadingUrl}/yhteenveto`,
+    `${configuration.valintalaskentakerrallaUrl}/status/${loadingUrl}/yhteenveto`,
   );
   return response.data?.hakukohteet
     ?.filter((hk) => hk.ilmoitukset?.some((i) => i.tyyppi === 'VIRHE'))
