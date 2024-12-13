@@ -7,7 +7,6 @@ import {
 } from './laskenta-state';
 import { client } from '@/app/lib/http-client';
 import { Tila } from '@/app/lib/types/kouta-types';
-import { translateName } from '@/app/lib/localization/translation-utils';
 import { createActor, waitFor } from 'xstate';
 
 describe('Laskenta states', async () => {
@@ -34,7 +33,6 @@ describe('Laskenta states', async () => {
       },
     ],
     sijoitellaanko: false,
-    translateEntity: translateName,
   };
 
   let actor = createActor(createLaskentaMachine(LASKENTAPARAMS, vi.fn()));

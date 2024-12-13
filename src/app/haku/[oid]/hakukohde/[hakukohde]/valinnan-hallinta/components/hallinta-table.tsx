@@ -17,7 +17,6 @@ import {
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
 import HallintaTableRow from './hallinta-table-row';
-import { sijoitellaankoHaunHakukohteetLaskennanYhteydessa } from '@/app/lib/kouta';
 import Confirm from './confirm';
 import { getHakukohteenLasketutValinnanvaiheet } from '@/app/lib/valintalaskenta-service';
 import ErrorRow from './error-row';
@@ -25,10 +24,8 @@ import { toFormattedDateTimeString } from '@/app/lib/localization/translation-ut
 import {
   LaskentaEvents,
   LaskentaStates,
-  createLaskentaMachine,
+  useLaskentaState,
 } from '../lib/laskenta-state';
-import { useMachine } from '@xstate/react';
-import { useMemo } from 'react';
 import { useToaster } from '@/app/hooks/useToaster';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { HaunAsetukset } from '@/app/lib/types/haun-asetukset';
@@ -44,25 +41,15 @@ const HallintaTable = ({
   haku,
   haunAsetukset,
 }: HallintaTableParams) => {
-  const { t, translateEntity } = useTranslations();
+  const { t } = useTranslations();
   const { addToast } = useToaster();
 
-  const laskentaMachine = useMemo(() => {
-    return createLaskentaMachine(
-      {
-        haku,
-        hakukohteet: [hakukohde],
-        sijoitellaanko: sijoitellaankoHaunHakukohteetLaskennanYhteydessa(
-          haku,
-          haunAsetukset,
-        ),
-        translateEntity,
-      },
-      addToast,
-    );
-  }, [haku, hakukohde, haunAsetukset, translateEntity, addToast]);
-
-  const [state, send] = useMachine(laskentaMachine);
+  const [state, send] = useLaskentaState({
+    haku,
+    haunAsetukset,
+    hakukohteet: hakukohde,
+    addToast,
+  });
 
   const [valinnanvaiheetQuery, lasketutValinnanvaiheetQuery] =
     useSuspenseQueries({
