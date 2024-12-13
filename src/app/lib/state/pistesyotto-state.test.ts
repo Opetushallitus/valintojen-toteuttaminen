@@ -3,7 +3,10 @@ import {
   ValintakoeOsallistuminenTulos,
 } from '@/app/lib/types/laskenta-types';
 import { describe, expect, test } from 'vitest';
-import { createPisteMachine, PisteSyottoEvent } from './pistesyotto-state';
+import {
+  createPisteSyottoMachine,
+  PisteSyottoEvent,
+} from './pistesyotto-state';
 import { createActor } from 'xstate';
 
 type GeneratePistetiedotProps = {
@@ -31,13 +34,18 @@ const generatePistetiedot = ({
 });
 
 const initPistesyottoState = (pistetiedot: HakemuksenPistetiedot) => {
-  const machine = createPisteMachine('hakukohde-oid', [pistetiedot]);
+  const machine = createPisteSyottoMachine(
+    'haku-oid',
+    'hakukohde-oid',
+    [pistetiedot],
+    () => {},
+  );
   const actor = createActor(machine);
   actor.start();
   return actor;
 };
 
-describe('createPisteMachine', () => {
+describe('createPisteSyottoMachine', () => {
   test('updates arvo twice', async () => {
     const pistetieto = generatePistetiedot({
       arvo: '8.0',

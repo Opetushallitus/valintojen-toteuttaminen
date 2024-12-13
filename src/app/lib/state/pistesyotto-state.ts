@@ -63,12 +63,88 @@ const isKoeValuesEqual = (
 };
 
 export type PistesyottoActorRef = ActorRefFrom<
-  ReturnType<typeof createPisteMachine>
+  ReturnType<typeof createPisteSyottoMachine>
 >;
 
-export const createPisteMachine = (
+const pistetietoChangeReducer = ({
+  context,
+  event,
+}: {
+  context: PisteSyottoContext;
+  event: PistesyottoChangedPistetietoEvent;
+}) => {
+  const changedPistetieto = context.changedPistetiedot.find(
+    (h) => h.hakemusOid === event.hakemusOid,
+  );
+  const existingPistetieto = context.pistetiedot.find(
+    (h) => h.hakemusOid === event.hakemusOid,
+  );
+
+  const existingKoe = existingPistetieto?.valintakokeenPisteet?.find(
+    (k) => k.tunniste === event.koeTunniste,
+  );
+
+  const pistetieto = clone(changedPistetieto || existingPistetieto);
+  const koe = pistetieto?.valintakokeenPisteet.find(
+    (k) => k.tunniste === event.koeTunniste,
+  );
+
+  if (pistetieto && koe) {
+    const newArvo = event.arvo;
+
+    if (
+      newArvo &&
+      koe.osallistuminen === ValintakoeOsallistuminenTulos.MERKITSEMATTA
+    ) {
+      koe.osallistuminen = ValintakoeOsallistuminenTulos.OSALLISTUI;
+    } else {
+      koe.osallistuminen = event.osallistuminen ?? koe.osallistuminen;
+    }
+
+    if (
+      event.osallistuminen &&
+      event.osallistuminen !== ValintakoeOsallistuminenTulos.OSALLISTUI
+    ) {
+      koe.arvo = '';
+    } else {
+      koe.arvo = event.arvo ?? koe.arvo;
+    }
+
+    if (changedPistetieto) {
+      let newPisteet = pistetieto.valintakokeenPisteet;
+
+      // muuttunut kokeen pistetieto sama kuin alkuperäinen
+      if (isKoeValuesEqual(existingKoe, koe)) {
+        newPisteet = newPisteet?.filter(
+          (p) => p.tunniste !== event.koeTunniste,
+        );
+      }
+
+      // pistetiedolla ei enää muokattuja kokeen pisteitä, voidaan poistaa
+      if (isEmpty(newPisteet ?? [])) {
+        return context.changedPistetiedot.filter(
+          (p) => p.hakemusOid !== event.hakemusOid,
+        );
+      }
+
+      // pistetiedolla edelleen muokattuja kokeen pisteitä. Vaihdetaan muokattuun pistetietoon.
+      pistetieto.valintakokeenPisteet = newPisteet;
+
+      return context.changedPistetiedot.map((h) =>
+        h.hakemusOid === event.hakemusOid ? pistetieto : h,
+      );
+    } else {
+      return [...context.changedPistetiedot, pistetieto];
+    }
+  }
+  return context.changedPistetiedot;
+};
+
+export const createPisteSyottoMachine = (
+  hakuOid: string,
   hakukohdeOid: string,
   pistetiedot: Array<HakemuksenPistetiedot>,
+  addToast: (toast: Toast) => void,
 ) => {
   return createMachine({
     id: `PistesyottoMachine-${hakukohdeOid}`,
@@ -89,80 +165,7 @@ export const createPisteMachine = (
         on: {
           [PisteSyottoEvent.PISTETIETO_CHANGED]: {
             actions: assign({
-              changedPistetiedot: ({ context, event }) => {
-                const changedPistetieto = context.changedPistetiedot.find(
-                  (h) => h.hakemusOid === event.hakemusOid,
-                );
-                const existingPistetieto = context.pistetiedot.find(
-                  (h) => h.hakemusOid === event.hakemusOid,
-                );
-
-                const existingKoe =
-                  existingPistetieto?.valintakokeenPisteet?.find(
-                    (k) => k.tunniste === event.koeTunniste,
-                  );
-
-                const pistetieto = clone(
-                  changedPistetieto || existingPistetieto,
-                );
-                const koe = pistetieto?.valintakokeenPisteet.find(
-                  (k) => k.tunniste === event.koeTunniste,
-                );
-
-                if (pistetieto && koe) {
-                  const newArvo = event.arvo;
-
-                  if (
-                    newArvo &&
-                    koe.osallistuminen ===
-                      ValintakoeOsallistuminenTulos.MERKITSEMATTA
-                  ) {
-                    koe.osallistuminen =
-                      ValintakoeOsallistuminenTulos.OSALLISTUI;
-                  } else {
-                    koe.osallistuminen =
-                      event.osallistuminen ?? koe.osallistuminen;
-                  }
-
-                  if (
-                    event.osallistuminen &&
-                    event.osallistuminen !==
-                      ValintakoeOsallistuminenTulos.OSALLISTUI
-                  ) {
-                    koe.arvo = '';
-                  } else {
-                    koe.arvo = event.arvo ?? koe.arvo;
-                  }
-
-                  if (changedPistetieto) {
-                    let newPisteet = pistetieto.valintakokeenPisteet;
-
-                    // muuttunut kokeen pistetieto sama kuin alkuperäinen
-                    if (isKoeValuesEqual(existingKoe, koe)) {
-                      newPisteet = newPisteet?.filter(
-                        (p) => p.tunniste !== event.koeTunniste,
-                      );
-                    }
-
-                    // pistetiedolla ei enää muokattuja kokeen pisteitä, voidaan poistaa
-                    if (isEmpty(newPisteet ?? [])) {
-                      return context.changedPistetiedot.filter(
-                        (p) => p.hakemusOid !== event.hakemusOid,
-                      );
-                    }
-
-                    // pistetiedolla edelleen muokattuja kokeen pisteitä. Vaihdetaan muokattuun pistetietoon.
-                    pistetieto.valintakokeenPisteet = newPisteet;
-
-                    return context.changedPistetiedot.map((h) =>
-                      h.hakemusOid === event.hakemusOid ? pistetieto : h,
-                    );
-                  } else {
-                    return [...context.changedPistetiedot, pistetieto];
-                  }
-                }
-                return context.changedPistetiedot;
-              },
+              changedPistetiedot: pistetietoChangeReducer,
             }),
           },
           [PisteSyottoEvent.UPDATE]: [
@@ -226,17 +229,7 @@ export const createPisteMachine = (
         ],
       },
     },
-  });
-};
-
-export const createPisteSyottoMachine = (
-  hakuOid: string,
-  hakukohdeOid: string,
-  pistetiedot: Array<HakemuksenPistetiedot>,
-  addToast: (toast: Toast) => void,
-) => {
-  const pisteMachine = createPisteMachine(hakukohdeOid, pistetiedot);
-  return pisteMachine.provide({
+  }).provide({
     guards: {
       hasChangedPistetiedot: ({ context }) =>
         context.changedPistetiedot.length > 0,
