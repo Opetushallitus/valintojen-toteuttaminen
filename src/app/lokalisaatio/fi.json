@@ -410,6 +410,8 @@
     "valintalaskenta-save-success": "Valintalaskennan tietojen tallentaminen onnistui",
     "valintalaskenta-delete-error": "Valintalaskennan muokkauksen poistaminen epäonnistui",
     "valintalaskenta-delete-success": "Valintalaskennan muokkauksen poistaminen onnistui",
-    "pistesyotto": "Pistesyöttö"
+    "pistesyotto": "Pistesyöttö",
+    "suorita-valintalaskenta": "Suorita valintalaskenta",
+    "keskeyta-valintalaskenta": "Keskeytä valintalaskenta"
   }
 }
