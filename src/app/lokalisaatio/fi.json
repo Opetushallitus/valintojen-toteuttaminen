@@ -412,6 +412,7 @@
     "valintalaskenta-delete-success": "Valintalaskennan muokkauksen poistaminen onnistui",
     "pistesyotto": "Pistesyöttö",
     "suorita-valintalaskenta": "Suorita valintalaskenta",
-    "keskeyta-valintalaskenta": "Keskeytä valintalaskenta"
+    "keskeyta-valintalaskenta": "Keskeytä valintalaskenta",
+    "valintalaskenta": "Valintalaskenta"
   }
 }

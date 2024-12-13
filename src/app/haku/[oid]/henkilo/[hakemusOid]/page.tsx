@@ -2,7 +2,7 @@
 
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { buildLinkToApplication } from '@/app/lib/ataru';
-import { LinearProgress, Stack, styled, Typography } from '@mui/material';
+import { Box, Stack, styled, Typography } from '@mui/material';
 import { getHenkiloTitle } from '@/app/lib/henkilo-utils';
 import { LabeledInfoItem } from '@/app/components/labeled-info-item';
 import { ExternalLink } from '@/app/components/external-link';
@@ -22,19 +22,41 @@ import { withDefaultProps } from '@/app/lib/mui-utils';
 const PROGRESSBAR_HEIGHT = '42px';
 
 const ProgressBar = ({ value }: { value: number }) => {
+  const valuePercent = `${value}%`;
   return (
-    <LinearProgress
-      value={value}
-      variant="determinate"
+    <Box
+      role="progressbar"
+      aria-valuenow={value}
+      aria-valuetext={valuePercent}
+      aria-valuemin={0}
+      aria-valuemax={100}
       sx={{
+        position: 'relative',
         display: 'block',
         height: PROGRESSBAR_HEIGHT,
+        border: `1px solid ${ophColors.grey300}`,
         maxWidth: '700px',
         borderRadius: '2px',
-        border: `1px solid ${ophColors.grey300}`,
-        backgroundColor: ophColors.white,
-        '& .MuiLinearProgress-barColorPrimary': {
+        '&:before, &:after': {
+          position: 'absolute',
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          content: `"${valuePercent}"`,
+          height: '100%',
+          lineHeight: PROGRESSBAR_HEIGHT,
+          paddingLeft: 2,
+          userSelect: 'none',
+        },
+        '&:before': {
+          backgroundColor: ophColors.white,
+          color: ophColors.grey900,
+          width: '100%',
+        },
+        '&:after': {
           backgroundColor: ophColors.cyan1,
+          color: ophColors.white,
+          width: valuePercent,
+          transition: 'width 0.2s linear',
         },
       }}
     />
@@ -62,7 +84,7 @@ const Valintalaskenta = () => {
           <OphTypography variant="h4">
             {t('henkilo.valintalaskenta')}
           </OphTypography>
-          <ProgressBar value={10} />
+          <ProgressBar value={5} />
           <LaskentaButton
             onClick={() => {
               setLaskentaKaynnissa(false);
