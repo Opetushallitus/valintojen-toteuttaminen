@@ -22,15 +22,17 @@ describe('Laskenta states', async () => {
       nimi: { fi: 'Haku' },
       tila: Tila.JULKAISTU,
     },
-    hakukohde: {
-      oid: 'hakukohde-oid',
-      hakuOid: 'haku-oid',
-      nimi: { fi: 'hakukohde' },
-      jarjestyspaikkaHierarkiaNimi: { fi: 'Paikka' },
-      organisaatioNimi: {},
-      organisaatioOid: 'organisaatio-oid',
-      voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita: false,
-    },
+    hakukohteet: [
+      {
+        oid: 'hakukohde-oid',
+        hakuOid: 'haku-oid',
+        nimi: { fi: 'hakukohde' },
+        jarjestyspaikkaHierarkiaNimi: { fi: 'Paikka' },
+        organisaatioNimi: {},
+        organisaatioOid: 'organisaatio-oid',
+        voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita: false,
+      },
+    ],
     sijoitellaanko: false,
     translateEntity: translateName,
   };

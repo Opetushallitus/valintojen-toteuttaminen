@@ -9,7 +9,6 @@ import {
   getLaskennanSeurantaTiedot,
   getLaskennanTilaHakukohteelle,
   kaynnistaLaskenta,
-  kaynnistaLaskentaHakukohteenValinnanvaiheille,
 } from '@/app/lib/valintalaskenta-service';
 import { FetchError } from '@/app/lib/common';
 import { Toast } from '@/app/hooks/useToaster';
@@ -18,12 +17,13 @@ import {
   LaskentaStart,
   SeurantaTiedot,
 } from '@/app/lib/types/laskenta-types';
+import { prop } from 'remeda';
 
 const POLLING_INTERVAL = 5000;
 
 export type StartLaskentaParams = {
   haku: Haku;
-  hakukohde: Hakukohde;
+  hakukohteet: Array<Hakukohde>;
   valinnanvaiheTyyppi?: ValinnanvaiheTyyppi;
   sijoitellaanko: boolean;
   valinnanvaiheNumber?: number;
@@ -75,6 +75,12 @@ export const createLaskentaMachine = (
   params: StartLaskentaParams,
   addToast: (toast: Toast) => void,
 ) => {
+  const valinnanvaiheSelected: boolean = Boolean(params.valinnanvaiheNimi);
+  const keyPartValinnanvaihe = valinnanvaiheSelected
+    ? `-valinnanvaihe_${params.valinnanvaiheNumber ?? 0}`
+    : '';
+
+  const machineKey = `haku_${params.haku.oid}-hakukohteet_${params.hakukohteet.map(prop('oid')).join('_')}${keyPartValinnanvaihe}`;
   return setup({
     types: {
       context: {} as LaskentaContext,
@@ -83,23 +89,14 @@ export const createLaskentaMachine = (
       startLaskenta: fromPromise(
         ({ input }: { input: StartLaskentaParams }) => {
           return tryAndParseError<LaskentaStart>(async () => {
-            if (input.valinnanvaiheTyyppi && input.valinnanvaiheNumber) {
-              return await kaynnistaLaskenta(
-                input.haku,
-                input.hakukohde,
-                input.valinnanvaiheTyyppi,
+            return await kaynnistaLaskenta({
+              haku: input.haku,
+              hakukohteet: input.hakukohteet,
+              valinnanvaiheTyyppi: input.valinnanvaiheTyyppi,
+              sijoitellaankoHaunHakukohteetLaskennanYhteydessa:
                 input.sijoitellaanko,
-                input.valinnanvaiheNumber,
-                input.translateEntity,
-              );
-            } else {
-              return await kaynnistaLaskentaHakukohteenValinnanvaiheille(
-                input.haku,
-                input.hakukohde,
-                input.sijoitellaanko,
-                input.translateEntity,
-              );
-            }
+              valinnanvaihe: input.valinnanvaiheNumber,
+            });
           });
         },
       ),
@@ -125,7 +122,7 @@ export const createLaskentaMachine = (
       }),
     },
   }).createMachine({
-    id: `LaskentaMachine-${params.hakukohde.oid}-${params.valinnanvaiheNumber ?? ''}`,
+    id: `LaskentaMachine-${machineKey}`,
     initial: LaskentaStates.IDLE,
     context: {
       laskenta: {},
@@ -271,18 +268,13 @@ export const createLaskentaMachine = (
               }),
           }),
           ({ context }) => {
-            const wholeHakukohde: boolean =
-              !context.startLaskentaParams.valinnanvaiheNimi;
-            const keyPartValinnanvaihe = wholeHakukohde
-              ? ''
-              : `-${context.startLaskentaParams.valinnanvaiheNumber ?? 0}`;
-            const key = `laskenta-completed-for-${context.startLaskentaParams.hakukohde.oid}${keyPartValinnanvaihe}`;
-            const message = wholeHakukohde
-              ? 'valinnanhallinta.valmis'
-              : 'valinnanhallinta.valmisvalinnanvaihe';
-            const messageParams = wholeHakukohde
-              ? undefined
-              : { nimi: context.startLaskentaParams.valinnanvaiheNimi ?? '' };
+            const key = `laskenta-completed-for-${machineKey}`;
+            const message = valinnanvaiheSelected
+              ? 'valinnanhallinta.valmisvalinnanvaihe'
+              : 'valinnanhallinta.valmis';
+            const messageParams = valinnanvaiheSelected
+              ? { nimi: context.startLaskentaParams.valinnanvaiheNimi ?? '' }
+              : undefined;
             addToast({ key, message, type: 'success', messageParams });
           },
         ],

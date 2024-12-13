@@ -38,9 +38,9 @@ import {
   HarkinnanvaraisestiHyvaksytty,
 } from './types/harkinnanvaraiset-types';
 import { queryOptions } from '@tanstack/react-query';
-import { TranslatedName } from './localization/localization-types';
 import { getFullnameOfHakukohde, Haku, Hakukohde } from './types/kouta-types';
 import { ValinnanvaiheTyyppi } from './types/valintaperusteet-types';
+import { translateName } from './localization/translation-utils';
 
 const formSearchParamsForStartLaskenta = ({
   laskentaUrl,
@@ -49,24 +49,22 @@ const formSearchParamsForStartLaskenta = ({
   valinnanvaiheTyyppi,
   sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
   valinnanvaihe,
-  translateEntity,
 }: {
   laskentaUrl: URL;
   haku: Haku;
-  hakukohde: Hakukohde;
+  hakukohde?: Hakukohde;
   valinnanvaiheTyyppi?: ValinnanvaiheTyyppi;
   sijoitellaankoHaunHakukohteetLaskennanYhteydessa: boolean;
   valinnanvaihe?: number;
-  translateEntity: (translateable: TranslatedName) => string;
 }): URL => {
   laskentaUrl.searchParams.append(
     'erillishaku',
     '' + sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
   );
-  laskentaUrl.searchParams.append('haunnimi', translateEntity(haku.nimi));
+  laskentaUrl.searchParams.append('haunnimi', translateName(haku.nimi));
   laskentaUrl.searchParams.append(
     'nimi',
-    getFullnameOfHakukohde(hakukohde, translateEntity),
+    hakukohde ? getFullnameOfHakukohde(hakukohde, translateName) : '',
   );
   if (valinnanvaihe && valinnanvaiheTyyppi !== ValinnanvaiheTyyppi.VALINTAKOE) {
     laskentaUrl.searchParams.append('valinnanvaihe', '' + valinnanvaihe);
@@ -81,59 +79,39 @@ const formSearchParamsForStartLaskenta = ({
 };
 
 type LaskentaStatusResponseData = {
+  latausUrl: string;
   lisatiedot: {
     luotiinkoUusiLaskenta: boolean;
   };
-  latausUrl: string;
 };
 
-export const kaynnistaLaskenta = async (
-  haku: Haku,
-  hakukohde: Hakukohde,
-  valinnanvaiheTyyppi: ValinnanvaiheTyyppi,
-  sijoitellaankoHaunHakukohteetLaskennanYhteydessa: boolean,
-  valinnanvaihe: number,
-  translateEntity: (translateable: TranslatedName) => string,
-): Promise<LaskentaStart> => {
+export const kaynnistaLaskenta = async ({
+  haku,
+  hakukohteet,
+  valinnanvaiheTyyppi,
+  sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
+  valinnanvaihe,
+}: {
+  haku: Haku;
+  hakukohteet: Array<Hakukohde>;
+  valinnanvaiheTyyppi?: ValinnanvaiheTyyppi;
+  sijoitellaankoHaunHakukohteetLaskennanYhteydessa: boolean;
+  valinnanvaihe?: number;
+}): Promise<LaskentaStart> => {
+  const singleHakukohde = hakukohteet.length === 1 ? hakukohteet[0] : undefined;
   const laskentaUrl = formSearchParamsForStartLaskenta({
     laskentaUrl: new URL(
       `${configuration.valintalaskentaServiceUrl}valintalaskentakerralla/haku/${haku.oid}/tyyppi/HAKUKOHDE/whitelist/true?`,
     ),
     haku,
-    hakukohde,
+    hakukohde: singleHakukohde,
     valinnanvaiheTyyppi: valinnanvaiheTyyppi,
     sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
     valinnanvaihe,
-    translateEntity,
   });
   const response = await client.post<LaskentaStatusResponseData>(
     laskentaUrl.toString(),
-    [hakukohde.oid],
-  );
-  return {
-    startedNewLaskenta: response.data?.lisatiedot?.luotiinkoUusiLaskenta,
-    loadingUrl: response.data?.latausUrl,
-  };
-};
-
-export const kaynnistaLaskentaHakukohteenValinnanvaiheille = async (
-  haku: Haku,
-  hakukohde: Hakukohde,
-  sijoitellaankoHaunHakukohteetLaskennanYhteydessa: boolean,
-  translateEntity: (translateable: TranslatedName) => string,
-): Promise<LaskentaStart> => {
-  const laskentaUrl = formSearchParamsForStartLaskenta({
-    laskentaUrl: new URL(
-      `${configuration.valintalaskentaServiceUrl}valintalaskentakerralla/haku/${haku.oid}/tyyppi/HAKUKOHDE/whitelist/true?`,
-    ),
-    haku,
-    hakukohde,
-    sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
-    translateEntity,
-  });
-  const response = await client.post<LaskentaStatusResponseData>(
-    laskentaUrl.toString(),
-    [hakukohde.oid],
+    hakukohteet.map(prop('oid')),
   );
   return {
     startedNewLaskenta: response.data?.lisatiedot?.luotiinkoUusiLaskenta,
