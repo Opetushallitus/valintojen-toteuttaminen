@@ -1,8 +1,9 @@
 import React from 'react';
 import { isProd, isTesting } from './configuration';
+import { isServer } from './common';
 
 export function checkAccessibility() {
-  if (typeof window !== 'undefined' && !isProd && !isTesting) {
+  if (!isServer && !isProd && !isTesting) {
     Promise.all([import('@axe-core/react'), import('react-dom')]).then(
       ([axe, ReactDOM]) => axe.default(React, ReactDOM, 1000),
     );

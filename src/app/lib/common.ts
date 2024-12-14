@@ -66,3 +66,5 @@ export function downloadBlob(fileName: string, data: Blob) {
   window.URL.revokeObjectURL(url);
   link.remove();
 }
+
+export const isServer = typeof window === 'undefined';
