@@ -11,9 +11,7 @@ export function withDefaultProps<P extends React.ComponentPropsWithoutRef<any>>(
   const ComponentWithDefaultProps = forwardRef<
     ComponentRef<ComponentType<P>>,
     P
-  >((props, ref) => (
-    <Component {...defaultProps} {...props} {...defaultProps} ref={ref} />
-  ));
+  >((props, ref) => <Component {...defaultProps} {...props} ref={ref} />);
 
   ComponentWithDefaultProps.displayName = displayName;
   return ComponentWithDefaultProps;

@@ -1,15 +1,18 @@
 import { expect, test, vi, describe, afterEach, beforeEach } from 'vitest';
 import {
   createLaskentaMachine,
-  LaskentaEvents,
-  LaskentaStates,
+  LaskentaEventType,
+  LaskentaState,
   StartLaskentaParams,
 } from './laskenta-state';
 import { client } from '@/app/lib/http-client';
 import { Tila } from '@/app/lib/types/kouta-types';
 import { createActor, waitFor } from 'xstate';
+import { range } from 'remeda';
 
-describe('Laskenta states', async () => {
+const LASKENTA_URL = 'urlmistatulosladataan';
+
+describe('Laskenta state', async () => {
   const LASKENTAPARAMS: StartLaskentaParams = {
     haku: {
       oid: 'haku-oid',
@@ -51,15 +54,15 @@ describe('Laskenta states', async () => {
       buildDummyLaskentaStart(),
     );
     vi.spyOn(client, 'get').mockImplementation(() => buildSeurantaTiedot());
-    await actor.send({ type: LaskentaEvents.START });
-    await actor.send({ type: LaskentaEvents.CONFIRM });
+    await actor.send({ type: LaskentaEventType.START });
+    actor.send({ type: LaskentaEventType.CONFIRM });
     const state = await waitFor(actor, (state) =>
       state.matches({
-        [LaskentaStates.PROCESSING]: LaskentaStates.PROCESSING_WAITING,
+        [LaskentaState.PROCESSING]: LaskentaState.PROCESSING_WAITING,
       }),
     );
     expect(state.context.laskenta.runningLaskenta?.loadingUrl).toEqual(
-      'urlmistatulosladataan',
+      LASKENTA_URL,
     );
     expect(
       state.context.laskenta.runningLaskenta?.startedNewLaskenta,
@@ -74,16 +77,21 @@ describe('Laskenta states', async () => {
     vi.spyOn(client, 'post').mockImplementationOnce(() =>
       buildDummyLaskentaStart(),
     );
-    vi.spyOn(client, 'get').mockImplementation(() =>
-      buildSeurantaTiedot(true, 1),
-    );
-    await actor.send({ type: LaskentaEvents.START });
-    await actor.send({ type: LaskentaEvents.CONFIRM });
+    vi.spyOn(client, 'get').mockImplementation((url) => {
+      if (url.toString().includes('seuranta')) {
+        return buildSeurantaTiedot(true, 1);
+      } else if (url.toString().includes('yhteenveto')) {
+        return buildYhteenveto('VALMIS', 1);
+      }
+      return Promise.reject();
+    });
+    actor.send({ type: LaskentaEventType.START });
+    actor.send({ type: LaskentaEventType.CONFIRM });
     const state = await waitFor(actor, (state) =>
-      state.matches(LaskentaStates.IDLE),
+      state.matches(LaskentaState.IDLE),
     );
     expect(state.context.laskenta.runningLaskenta?.loadingUrl).toEqual(
-      'urlmistatulosladataan',
+      LASKENTA_URL,
     );
     expect(
       state.context.laskenta.runningLaskenta?.startedNewLaskenta,
@@ -99,10 +107,10 @@ describe('Laskenta states', async () => {
     vi.spyOn(client, 'post').mockRejectedValueOnce(
       () => new Error('testerror'),
     );
-    await actor.send({ type: LaskentaEvents.START });
-    await actor.send({ type: LaskentaEvents.CONFIRM });
+    actor.send({ type: LaskentaEventType.START });
+    actor.send({ type: LaskentaEventType.CONFIRM });
     const state = await waitFor(actor, (state) =>
-      state.matches(LaskentaStates.IDLE),
+      state.matches(LaskentaState.IDLE),
     );
     expect(state.context.error).toBeDefined();
   });
@@ -114,13 +122,13 @@ describe('Laskenta states', async () => {
     vi.spyOn(client, 'get').mockImplementationOnce(() =>
       buildSeurantaTiedot(true, 0, 1),
     );
-    await actor.send({ type: LaskentaEvents.START });
-    await actor.send({ type: LaskentaEvents.CONFIRM });
+    actor.send({ type: LaskentaEventType.START });
+    actor.send({ type: LaskentaEventType.CONFIRM });
     const state = await waitFor(actor, (state) =>
-      state.matches(LaskentaStates.IDLE),
+      state.matches(LaskentaState.IDLE),
     );
     expect(state.context.laskenta.runningLaskenta?.loadingUrl).toEqual(
-      'urlmistatulosladataan',
+      LASKENTA_URL,
     );
     expect(
       state.context.laskenta.runningLaskenta?.startedNewLaskenta,
@@ -135,7 +143,7 @@ describe('Laskenta states', async () => {
 
 const buildDummyLaskentaStart = () => {
   const laskenta = {
-    latausUrl: 'urlmistatulosladataan',
+    latausUrl: LASKENTA_URL,
     lisatiedot: { luotiinkoUusiLaskenta: true },
   };
   return Promise.resolve({ headers: new Headers(), data: laskenta });
@@ -153,4 +161,33 @@ const buildSeurantaTiedot = (
     hakukohteitaKeskeytetty,
   };
   return Promise.resolve({ headers: new Headers(), data: seuranta });
+};
+
+const buildYhteenveto = (
+  tila: 'VALMIS' | 'PERUUTETTU',
+  hakukohteitaValmiina = 0,
+  hakukohteitaKeskeytetty = 0,
+) => {
+  const yhteenvetoValmiit = range(0, hakukohteitaValmiina).map(
+    (hakukohdeOid) => ({
+      hakukohdeOid,
+      tila: 'VALMIS',
+    }),
+  );
+
+  const yhteenvatKeskeytetty = range(0, hakukohteitaKeskeytetty).map(
+    (hakukohdeOid) => ({
+      hakukohdeOid,
+      tila: 'VIRHE',
+    }),
+  );
+
+  const yhteenveto = {
+    hakukohteet: [...yhteenvetoValmiit, ...yhteenvatKeskeytetty],
+    tila,
+  };
+
+  console.log({ yhteenveto });
+
+  return Promise.resolve({ headers: new Headers(), data: yhteenveto });
 };

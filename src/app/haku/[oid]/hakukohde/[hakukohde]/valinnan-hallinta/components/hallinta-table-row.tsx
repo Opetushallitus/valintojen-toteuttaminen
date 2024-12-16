@@ -7,8 +7,8 @@ import { OphButton } from '@opetushallitus/oph-design-system';
 import Confirm from './confirm';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
 import {
-  LaskentaEvents,
-  LaskentaStates,
+  LaskentaEventType,
+  LaskentaState,
   useLaskentaState,
 } from '@/app/lib/state/laskenta-state';
 import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
@@ -49,15 +49,15 @@ const HallintaTableRow = ({
   });
 
   const start = () => {
-    send({ type: LaskentaEvents.START });
+    send({ type: LaskentaEventType.START });
   };
 
   const cancelConfirmation = () => {
-    send({ type: LaskentaEvents.CANCEL });
+    send({ type: LaskentaEventType.CANCEL });
   };
 
   const confirm = async () => {
-    send({ type: LaskentaEvents.CONFIRM });
+    send({ type: LaskentaEventType.CONFIRM });
   };
 
   return (
@@ -86,7 +86,7 @@ const HallintaTableRow = ({
         <TableCell sx={{ verticalAlign: 'top' }}>{t(vaihe.tyyppi)}</TableCell>
         <TableCell>
           {isLaskentaUsedForValinnanvaihe(vaihe) &&
-            !state.matches(LaskentaStates.WAITING_CONFIRMATION) && (
+            !state.matches(LaskentaState.WAITING_CONFIRMATION) && (
               <Box
                 sx={{
                   display: 'flex',
@@ -97,13 +97,13 @@ const HallintaTableRow = ({
                 <OphButton
                   variant="outlined"
                   disabled={
-                    !state.matches(LaskentaStates.IDLE) || areAllLaskentaRunning
+                    !state.matches(LaskentaState.IDLE) || areAllLaskentaRunning
                   }
                   onClick={() => start()}
                 >
                   {t('valinnanhallinta.kaynnista')}
                 </OphButton>
-                {state.matches(LaskentaStates.PROCESSING) && (
+                {state.matches(LaskentaState.PROCESSING) && (
                   <CircularProgress
                     aria-label={t('valinnanhallinta.lasketaan')}
                   />
@@ -111,7 +111,7 @@ const HallintaTableRow = ({
               </Box>
             )}
           {isLaskentaUsedForValinnanvaihe(vaihe) &&
-            state.matches(LaskentaStates.WAITING_CONFIRMATION) && (
+            state.matches(LaskentaState.WAITING_CONFIRMATION) && (
               <Confirm cancel={cancelConfirmation} confirm={confirm} />
             )}
           {!isLaskentaUsedForValinnanvaihe(vaihe) && !vaihe.valisijoittelu && (

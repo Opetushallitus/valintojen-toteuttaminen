@@ -6,6 +6,7 @@ import { ListTableColumn } from '@/app/components/table/table-types';
 import { makeCountColumn } from '@/app/components/table/table-columns';
 import { ListTable } from '@/app/components/table/list-table';
 import { OphLink } from '@opetushallitus/oph-design-system';
+import { isTranslatedName } from '@/app/lib/localization/translation-utils';
 
 export const HakuTable = ({
   haut,
@@ -25,7 +26,7 @@ export const HakuTable = ({
         key: 'nimi',
         render: (haku) => (
           <OphLink href={`/haku/${haku.oid}`} sx={{ textDecoration: 'none' }}>
-            {typeof haku.nimi == 'object'
+            {isTranslatedName(haku.nimi)
               ? translateEntity(haku.nimi)
               : haku.nimi}
           </OphLink>

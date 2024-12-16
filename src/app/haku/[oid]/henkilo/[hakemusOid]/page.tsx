@@ -19,8 +19,12 @@ import {
 } from '@opetushallitus/oph-design-system';
 import { withDefaultProps } from '@/app/lib/mui-utils';
 import {
-  LaskentaEvents,
-  LaskentaStates,
+  LaskentaActorRef,
+  LaskentaEvent,
+  LaskentaEventType,
+  LaskentaMachineSnapshot,
+  LaskentaState,
+  useLaskentaError,
   useLaskentaState,
 } from '@/app/lib/state/laskenta-state';
 import { HenkilonHakukohdeTuloksilla } from './lib/henkilo-page-types';
@@ -30,14 +34,14 @@ import { useHaku } from '@/app/hooks/useHaku';
 import { HaunAsetukset } from '@/app/lib/types/haun-asetukset';
 import { Haku } from '@/app/lib/types/kouta-types';
 import { OphModalDialog } from '@/app/components/oph-modal-dialog';
+import { ErrorAlert } from '@/app/components/error-alert';
 import { useSelector } from '@xstate/react';
+import { SeurantaTiedot } from '@/app/lib/types/laskenta-types';
 
 const PROGRESSBAR_HEIGHT = '42px';
 
 const ProgressBar = ({ value }: { value: number }) => {
   const valuePercent = `${value}%`;
-
-  console.log({ valuePercent });
   return (
     <Box
       role="progressbar"
@@ -99,7 +103,7 @@ const ConfirmationModalDialog = ({
     <OphModalDialog
       open={open}
       title={t('valinnanhallinta.varmista')}
-      maxWidth="md"
+      maxWidth="sm"
       actions={
         <>
           <OphButton
@@ -124,6 +128,122 @@ const ConfirmationModalDialog = ({
   );
 };
 
+const LaskentaStateButton = ({
+  state,
+  send,
+}: {
+  state: LaskentaMachineSnapshot;
+  send: (event: LaskentaEvent) => void;
+}) => {
+  const { t } = useTranslations();
+
+  switch (true) {
+    case state.hasTag('stopped') && !state.hasTag('finished'):
+      return (
+        <LaskentaButton
+          onClick={() => {
+            send({ type: LaskentaEventType.START });
+          }}
+        >
+          {t('henkilo.suorita-valintalaskenta')}
+        </LaskentaButton>
+      );
+    case state.hasTag('started'):
+      return (
+        <LaskentaButton
+          variant="outlined"
+          disabled={state.hasTag('canceling')}
+          onClick={() => {
+            send({ type: LaskentaEventType.CANCEL });
+          }}
+        >
+          {t('henkilo.keskeyta-valintalaskenta')}
+        </LaskentaButton>
+      );
+    case state.hasTag('finished'):
+      return (
+        <LaskentaButton
+          variant="outlined"
+          onClick={() => {
+            send({ type: LaskentaEventType.RESET_RESULTS });
+          }}
+        >
+          {t('henkilo.sulje-laskennan-tiedot')}
+        </LaskentaButton>
+      );
+    default:
+      return null;
+  }
+};
+
+const getLaskentaStatusText = (
+  state: LaskentaMachineSnapshot,
+  seurantaTiedot?: SeurantaTiedot | null,
+) => {
+  switch (true) {
+    case state.hasTag('canceling'):
+      return 'Keskeytetään laskentaa... ';
+    case state.matches(LaskentaState.STARTING) ||
+      (state.hasTag('started') && seurantaTiedot == null):
+      return 'Käynnistetään laskentaa... ';
+    case state.hasTag('started'):
+      return seurantaTiedot?.jonosija
+        ? `Tehtävä on laskennassa jonosijalla ${seurantaTiedot?.jonosija}. `
+        : `Tehtävä on laskennassa parhaillaan. `;
+    case state.hasTag('completed'):
+      return 'Laskenta on päättynyt. ';
+    default:
+      return '';
+  }
+};
+
+const LaskentaStateResult = ({ actorRef }: { actorRef: LaskentaActorRef }) => {
+  const { t } = useTranslations();
+
+  const laskentaError = useLaskentaError(actorRef);
+
+  const state = useSelector(actorRef, (s) => s);
+
+  const seurantaTiedot = state.context.seurantaTiedot;
+
+  const valmiinaProsentti = seurantaTiedot
+    ? Math.round(
+        (100 *
+          (seurantaTiedot?.hakukohteitaValmiina +
+            seurantaTiedot?.hakukohteitaKeskeytetty)) /
+          seurantaTiedot?.hakukohteitaYhteensa,
+      )
+    : 0;
+
+  switch (true) {
+    case state.matches({ [LaskentaState.IDLE]: LaskentaState.ERROR }):
+      return (
+        <ErrorAlert
+          title={t('henkilo.valintalaskenta-epaonnistui')}
+          message={laskentaError}
+        />
+      );
+    case state.hasTag('started') || state.hasTag('finished'):
+      return (
+        <>
+          <OphTypography variant="h4">
+            {t('henkilo.valintalaskenta')}
+          </OphTypography>
+          <ProgressBar value={valmiinaProsentti} />
+          <Typography>
+            {getLaskentaStatusText(state, seurantaTiedot)}
+            {seurantaTiedot &&
+              `Hakukohteita valmiina ${seurantaTiedot.hakukohteitaValmiina}/${seurantaTiedot.hakukohteitaYhteensa}. `}
+            {state.hasTag('finished') &&
+              `Suorittamattomia hakukohteita ${seurantaTiedot?.hakukohteitaKeskeytetty ?? 0}.`}
+          </Typography>
+        </>
+      );
+    default:
+      return null;
+  }
+};
+
 const HenkilonValintalaskenta = ({
   haku,
   haunAsetukset,
@@ -133,8 +253,6 @@ const HenkilonValintalaskenta = ({
   haunAsetukset: HaunAsetukset;
   hakukohteet: Array<HenkilonHakukohdeTuloksilla>;
 }) => {
-  const { t } = useTranslations();
-
   const { addToast } = useToaster();
 
   const [state, send, actorRef] = useLaskentaState({
@@ -144,86 +262,20 @@ const HenkilonValintalaskenta = ({
     addToast,
   });
 
-  const seurantaTiedot = useSelector(actorRef, (s) => s.context.seurantaTiedot);
-
-  const valmiinaProsentti = seurantaTiedot
-    ? Math.round(
-        100 *
-          (seurantaTiedot?.hakukohteitaValmiina /
-            seurantaTiedot?.hakukohteitaYhteensa),
-      )
-    : 0;
-
-  console.log({ value: state.value, seurantaTiedot });
-
   return (
     <Stack spacing={2}>
       <ConfirmationModalDialog
-        open={state.matches(LaskentaStates.WAITING_CONFIRMATION)}
+        open={state.matches(LaskentaState.WAITING_CONFIRMATION)}
         onAnswer={(answer: boolean) => {
           if (answer) {
-            send({ type: LaskentaEvents.CONFIRM });
+            send({ type: LaskentaEventType.CONFIRM });
           } else {
-            send({ type: LaskentaEvents.CANCEL });
+            send({ type: LaskentaEventType.CANCEL });
           }
         }}
       />
-      {state.matches(LaskentaStates.COMPLETED) && (
-        <>
-          <OphTypography variant="h4">
-            {t('henkilo.valintalaskenta')}
-          </OphTypography>
-          <ProgressBar value={valmiinaProsentti} />
-          {seurantaTiedot && (
-            <Typography>
-              Hakukohteita valmiina {seurantaTiedot?.hakukohteitaValmiina}/
-              {seurantaTiedot?.hakukohteitaYhteensa}
-            </Typography>
-          )}
-          <LaskentaButton
-            onClick={() => {
-              send({ type: LaskentaEvents.CANCEL });
-            }}
-          >
-            {t('henkilo.sulje')}
-          </LaskentaButton>
-        </>
-      )}
-      {(state.matches(LaskentaStates.PROCESSING) ||
-        state.matches(LaskentaStates.STARTING) ||
-        state.matches(LaskentaStates.ERROR_LASKENTA)) && (
-        <>
-          <OphTypography variant="h4">
-            {t('henkilo.valintalaskenta')}
-          </OphTypography>
-          <ProgressBar value={valmiinaProsentti} />
-          {seurantaTiedot && (
-            <Typography>
-              {seurantaTiedot?.jonosija &&
-                `Tehtävä on laskennassa jonosijalla ${seurantaTiedot?.jonosija}. `}
-              Hakukohteita valmiina {seurantaTiedot?.hakukohteitaValmiina}/
-              {seurantaTiedot?.hakukohteitaYhteensa}
-            </Typography>
-          )}
-          <LaskentaButton
-            onClick={() => {
-              send({ type: LaskentaEvents.CANCEL });
-            }}
-          >
-            {t('henkilo.keskeyta-valintalaskenta')}
-          </LaskentaButton>
-        </>
-      )}
-      {(state.matches(LaskentaStates.IDLE) ||
-        state.matches(LaskentaStates.WAITING_CONFIRMATION)) && (
-        <LaskentaButton
-          onClick={() => {
-            send({ type: LaskentaEvents.START });
-          }}
-        >
-          {t('henkilo.suorita-valintalaskenta')}
-        </LaskentaButton>
-      )}
+      <LaskentaStateResult actorRef={actorRef} />
+      <LaskentaStateButton state={state} send={send} />
     </Stack>
   );
 };
