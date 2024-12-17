@@ -1,3 +1,4 @@
+import { ErrorWithIcon } from '@/app/components/error-with-icon';
 import { ExternalLink } from '@/app/components/external-link';
 import { createModal, useOphModalProps } from '@/app/components/global-modal';
 import { OphModalDialog } from '@/app/components/oph-modal-dialog';
@@ -7,9 +8,7 @@ import { buildLinkToApplication } from '@/app/lib/ataru';
 import { OphApiError } from '@/app/lib/common';
 import { SijoittelunHakemusValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
 import { ValinnanTulosUpdateErrorResult } from '@/app/lib/types/valinta-tulos-types';
-import { Error } from '@mui/icons-material';
 import {
-  Box,
   TableContainer,
   Table,
   TableHead,
@@ -49,17 +48,6 @@ export const SijoittelunTulosErrorModalDialog = createModal(
     );
   },
 );
-
-const ErrorWithIcon = ({ children }: { children: string }) => {
-  return (
-    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-      <Error color="error" />
-      <Box component="span" sx={{ paddingLeft: 1 }}>
-        {children}
-      </Box>
-    </Box>
-  );
-};
 
 const SijoittelunTulosTallennusError = ({
   error,

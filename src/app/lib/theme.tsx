@@ -24,6 +24,11 @@ export const styled: typeof muiStyled = (
 export const notLarge = (theme: Theme) => theme.breakpoints.down('lg');
 
 export const THEME_OVERRIDES: ThemeOptions = {
+  palette: {
+    info: {
+      main: ophColors.cyan1,
+    },
+  },
   components: {
     MuiInputBase: {
       styleOverrides: {
