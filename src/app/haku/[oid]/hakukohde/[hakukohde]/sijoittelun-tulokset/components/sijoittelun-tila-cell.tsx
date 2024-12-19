@@ -8,11 +8,14 @@ import { ChangeEvent, useState } from 'react';
 import { SijoittelunTulosStyledCell } from './sijoittelun-tulos-styled-cell';
 import { Box, InputAdornment, SelectChangeEvent, styled } from '@mui/material';
 import { LocalizedSelect } from '@/app/components/localized-select';
-import { OphInput } from '@/app/components/form/oph-input';
 import { isKorkeakouluHaku } from '@/app/lib/kouta';
 import { Haku } from '@/app/lib/types/kouta-types';
 import { SijoittelunTuloksetChangeEvent } from '../lib/sijoittelun-tulokset-state';
-import { ophColors, OphCheckbox } from '@opetushallitus/oph-design-system';
+import {
+  ophColors,
+  OphCheckbox,
+  OphInput,
+} from '@opetushallitus/oph-design-system';
 import { Language } from '@/app/lib/localization/localization-types';
 import { getReadableHakemuksenTila } from '@/app/lib/sijoittelun-tulokset-utils';
 
