@@ -17,8 +17,7 @@ import { TableHeaderCell } from './table-header-cell';
 import { EMPTY_ARRAY, EMPTY_STRING_SET } from '@/app/lib/common';
 import { TableHeaderCheckbox, TableRowCheckbox } from './table-checkboxes';
 import { ListTableColumn, Row } from './table-types';
-import { styled } from '@/app/lib/theme';
-import { DEFAULT_BOX_BORDER } from '@/app/lib/constants';
+import { DEFAULT_BOX_BORDER, styled } from '@/app/lib/theme';
 
 const StyledTable = styled(Table)({
   width: '100%',

@@ -1,8 +1,7 @@
 'use client';
 
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { ophColors, styled } from '@/app/lib/theme';
-import { DEFAULT_BOX_BORDER } from '@/app/lib/constants';
+import { DEFAULT_BOX_BORDER, ophColors, styled } from '@/app/lib/theme';
 import { hakukohdeQueryOptions } from '@/app/hooks/useHakukohde';
 import { hakuQueryOptions } from '@/app/hooks/useHaku';
 import { OphTypography } from '@opetushallitus/oph-design-system';

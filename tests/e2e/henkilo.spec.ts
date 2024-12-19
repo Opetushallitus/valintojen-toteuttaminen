@@ -21,6 +21,7 @@ import {
   ValintakoeOsallistuminenTulos,
 } from '@/app/lib/types/laskenta-types';
 import { forEachObj, isShallowEqual } from 'remeda';
+import { NDASH } from '@/app/lib/constants';
 
 const HAKUKOHDE_OID = '1.2.246.562.20.00000000000000045105';
 
@@ -419,7 +420,7 @@ test('Shows valintalaskenta edit modal with info', async ({ page }) => {
     valintalaskentaMuokkausModal.getByLabel('Hakija', { exact: true }),
   ).toHaveText('Nukettaja Ruhtinas');
   await expect(valintalaskentaMuokkausModal.getByLabel('Hakutoive')).toHaveText(
-    '1. Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs) \u2013 Tampereen yliopisto, Rakennetun ympäristön tiedekunta',
+    `1. Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs) ${NDASH} Tampereen yliopisto, Rakennetun ympäristön tiedekunta`,
   );
   await expect(
     valintalaskentaMuokkausModal.getByLabel('Valintatapajono'),
@@ -538,7 +539,7 @@ test('Shows valinta edit modal with info', async ({ page }) => {
   ).toHaveText('Nukettaja Ruhtinas');
 
   await expect(valintaMuokkausModal.getByLabel('Hakutoive')).toHaveText(
-    '1. Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs) \u2013 Tampereen yliopisto, Rakennetun ympäristön tiedekunta',
+    `1. Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs) ${NDASH} Tampereen yliopisto, Rakennetun ympäristön tiedekunta`,
   );
 
   await expect(
@@ -665,7 +666,7 @@ test('Displays pistesyöttö', async ({ page }) => {
   await expect(nakkiTallennaButton).toBeEnabled();
 
   const koksakoe = page.getByRole('region', {
-    name: `Köksäkokeen arvosana 4\u201310`,
+    name: `Köksäkokeen arvosana 4${NDASH}10`,
   });
 
   await expect(koksakoe).toBeVisible();
