@@ -196,7 +196,9 @@
     "tuonti-tulos-taulukko": {
       "virhe": "Virhe",
       "hakemus-oid": "Hakemuksen tekninen tunniste (OID)"
-    }
+    },
+    "pisteet": "Pisteet",
+    "arvo": "Arvo"
   },
   "harkinnanvaraiset": {
     "hae": "Hae hakijan nimellä tai tunnisteilla",
@@ -407,6 +409,7 @@
     "valintalaskenta-save-error": "Valintalaskennan tietojen tallentaminen epäonnistui",
     "valintalaskenta-save-success": "Valintalaskennan tietojen tallentaminen onnistui",
     "valintalaskenta-delete-error": "Valintalaskennan muokkauksen poistaminen epäonnistui",
-    "valintalaskenta-delete-success": "Valintalaskennan muokkauksen poistaminen onnistui"
+    "valintalaskenta-delete-success": "Valintalaskennan muokkauksen poistaminen onnistui",
+    "pistesyotto": "Pistesyöttö"
   }
 }

@@ -107,7 +107,7 @@ export const configuration = {
   valintalaskentaKoostePalveluUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/`,
   kayttaaValintalaskentaaUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintaperusteet/hakukohde/${hakukohdeOid}/kayttaaValintalaskentaa`,
-  koostetutPistetiedot: ({
+  koostetutPistetiedotHakukohteelleUrl: ({
     hakuOid,
     hakukohdeOid,
   }: {
@@ -115,6 +115,12 @@ export const configuration = {
     hakukohdeOid: string;
   }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/haku/${hakuOid}/hakukohde/${hakukohdeOid}`,
+  koostetutPistetiedotHakemukselleUrl: ({
+    hakemusOid,
+  }: {
+    hakemusOid: string;
+  }) =>
+    `${DOMAIN}/valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/hakemus/${hakemusOid}`,
   valintalaskennanTulosExcelUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintalaskentaexcel/valintalaskennantulos/aktivoi?hakukohdeOid=${hakukohdeOid}`,
 

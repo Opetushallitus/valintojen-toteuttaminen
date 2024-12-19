@@ -4,8 +4,7 @@ import { Box, Typography } from '@mui/material';
 import { PageContent } from './page-content';
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
 import { useTranslations } from '../hooks/useTranslations';
-import { DEFAULT_BOX_BORDER } from '../lib/constants';
-import { styled } from '@/app/lib/theme';
+import { DEFAULT_BOX_BORDER, styled } from '@/app/lib/theme';
 import { responsivePadding } from '../lib/responsive-padding';
 
 export type HeaderProps = {

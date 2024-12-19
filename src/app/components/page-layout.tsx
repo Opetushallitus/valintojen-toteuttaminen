@@ -1,9 +1,8 @@
 'use client';
 import { Box, Stack, styled } from '@mui/material';
-import { DEFAULT_BOX_BORDER } from '../lib/constants';
 import { ophColors } from '@opetushallitus/oph-design-system';
 import { PageContent } from './page-content';
-import { notLarge } from '../lib/theme';
+import { DEFAULT_BOX_BORDER, notLarge } from '@/app/lib/theme';
 
 const ContentWrapper = styled(PageContent)(({ theme }) => ({
   padding: theme.spacing(4),

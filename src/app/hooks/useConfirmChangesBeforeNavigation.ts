@@ -15,7 +15,7 @@ const restoreOriginalPush = (router: AppRouterInstance) => {
   router.push = router.originalPush;
 };
 
-export default function useConfirmChangesBeforeNavigation(isDirty: boolean) {
+export function useConfirmChangesBeforeNavigation(isDirty: boolean) {
   const { addToast } = useToaster();
   const router = useRouter();
 

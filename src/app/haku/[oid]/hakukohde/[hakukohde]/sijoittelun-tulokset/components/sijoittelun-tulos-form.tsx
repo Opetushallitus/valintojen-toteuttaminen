@@ -5,7 +5,6 @@ import { FormEvent, useMemo, useState } from 'react';
 import useToaster from '@/app/hooks/useToaster';
 import { useMachine } from '@xstate/react';
 import { styled } from '@mui/material';
-import useConfirmChangesBeforeNavigation from '@/app/hooks/useConfirmChangesBeforeNavigation';
 import { SijoittelunTuloksetActions } from './sijoittelun-tulos-actions';
 import {
   createSijoittelunTuloksetMachine,
@@ -19,6 +18,7 @@ import { Haku } from '@/app/lib/types/kouta-types';
 import { useSijoittelunTulosSearch } from '../hooks/useSijoittelunTuloksetSearch';
 import { SijoittelunTulosTable } from './sijoittelun-tulos-table';
 import { useTranslations } from '@/app/hooks/useTranslations';
+import { useConfirmChangesBeforeNavigation } from '@/app/hooks/useConfirmChangesBeforeNavigation';
 
 type SijoittelunTuloksetFormParams = {
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;

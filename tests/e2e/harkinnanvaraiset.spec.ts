@@ -7,6 +7,7 @@ import {
   selectOption,
 } from './playwright-utils';
 import { configuration } from '@/app/lib/configuration';
+import { NDASH } from '@/app/lib/constants';
 
 async function goToHarkinnanvaraiset(page: Page) {
   await page.goto(
@@ -83,19 +84,19 @@ test('displays harkinnanvaraiset', async ({ page }) => {
     '',
     'Dacula Kreivi',
     'Sosiaaliset syyt',
-    '\u2013',
+    NDASH,
   ]);
   await checkRow(contentRows.nth(2), [
     '',
     'Purukumi Puru',
     'Oppimisvaikeudet',
-    '\u2013',
+    NDASH,
   ]);
   await checkRow(contentRows.nth(3), [
     '',
     'Hui Haamu',
     'Riittämätön tutkintokielen taito',
-    '\u2013',
+    NDASH,
   ]);
 });
 

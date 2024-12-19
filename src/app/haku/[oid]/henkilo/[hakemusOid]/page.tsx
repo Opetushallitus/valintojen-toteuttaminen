@@ -10,6 +10,8 @@ import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary'
 import { FullClientSpinner } from '@/app/components/client-spinner';
 import { HakutoiveetTable } from './components/hakutoiveet-table';
 import { useHenkiloPageData } from './hooks/useHenkiloPageData';
+import { use } from 'react';
+import { HenkilonPistesyotto } from './components/henkilon-pistesyotto';
 
 const HenkiloContent = ({
   hakuOid,
@@ -45,20 +47,20 @@ const HenkiloContent = ({
         />
       </Stack>
       <HakutoiveetTable hakukohteet={hakukohteet} hakija={hakija} />
+      <HenkilonPistesyotto hakija={hakija} hakukohteet={hakukohteet} />
     </>
   );
 };
 
-export default function HenkiloPage({
-  params,
-}: {
-  params: { oid: string; hakemusOid: string };
+export default function HenkiloPage(props: {
+  params: Promise<{ oid: string; hakemusOid: string }>;
 }) {
+  const params = use(props.params);
   const hakuOid = params.oid;
   const hakemusOid = params.hakemusOid;
 
   return (
-    <Stack spacing={2} sx={{ m: 4, width: '100%', overflowX: 'hidden' }}>
+    <Stack spacing={2} sx={{ margin: 4, width: '100%', overflowX: 'hidden' }}>
       <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
         <HenkiloContent hakuOid={hakuOid} hakemusOid={hakemusOid} />
       </QuerySuspenseBoundary>

@@ -2,9 +2,9 @@ import { describe, expect, test } from 'vitest';
 import VALINTAKOKEET from '@tests/e2e/fixtures/valintakokeet.json';
 import VALINTAKOEOSALLISTUMISET from '@tests/e2e/fixtures/valintakoeosallistumiset.json';
 import {
-  createValintakoekutsutHakijoittain,
-  createValintakoekutsutKokeittain,
-} from './createValintakoekutsut';
+  selectValintakoekutsutHakijoittain,
+  selectValintakoekutsutKokeittain,
+} from './select-valintakoekutsut';
 import { HakutoiveValintakoeOsallistumiset } from './types/valintalaskentakoostepalvelu-types';
 
 const HAKEMUKSET_BY_OID = {
@@ -34,9 +34,9 @@ const HAKEMUKSET_BY_OID = {
   },
 } as const;
 
-describe('createValintakoekutsutKokeittain', () => {
+describe('selectValintakoekutsutKokeittain', () => {
   test('Return also kutsut with other osallistuminen when vainKutsuttavat=false', async () => {
-    const result = createValintakoekutsutKokeittain(
+    const result = selectValintakoekutsutKokeittain(
       {
         hakukohdeOid: '1.2.246.562.20.00000000000000045105',
         vainKutsuttavat: false,
@@ -94,7 +94,7 @@ describe('createValintakoekutsutKokeittain', () => {
   });
 
   test('Return only kutsut with osallistuminen=OSALLISTUU when vainKutsuttavat=true', async () => {
-    const result = createValintakoekutsutKokeittain(
+    const result = selectValintakoekutsutKokeittain(
       {
         hakukohdeOid: '1.2.246.562.20.00000000000000045105',
         vainKutsuttavat: true,
@@ -143,7 +143,7 @@ describe('createValintakoekutsutKokeittain', () => {
   });
 
   test('Return valintakoe with empty kutsut, when valintakokeet data only', async () => {
-    const result = createValintakoekutsutKokeittain(
+    const result = selectValintakoekutsutKokeittain(
       {
         hakukohdeOid: '1.2.246.562.20.00000000000000045105',
         vainKutsuttavat: true,
@@ -163,7 +163,7 @@ describe('createValintakoekutsutKokeittain', () => {
   });
 
   test('Return all kutsut with overwritten osallistuminen=OSALLISTUU when kutsutaankokaikki=true', async () => {
-    const result = createValintakoekutsutKokeittain(
+    const result = selectValintakoekutsutKokeittain(
       {
         hakukohdeOid: '1.2.246.562.20.00000000000000045105',
         vainKutsuttavat: true,
@@ -226,9 +226,9 @@ describe('createValintakoekutsutKokeittain', () => {
 
 const AKTIIVISET_VALINTAKOKEET = VALINTAKOKEET.filter((v) => v.aktiivinen);
 
-describe('createValintakoekutsutHakijoittain', () => {
+describe('selectValintakoekutsutHakijoittain', () => {
   test('Return also kutsut with other osallistuminen when vainKutsuttavat=false', async () => {
-    const result = createValintakoekutsutHakijoittain(
+    const result = selectValintakoekutsutHakijoittain(
       {
         hakukohdeOid: '1.2.246.562.20.00000000000000045105',
         vainKutsuttavat: false,
@@ -300,7 +300,7 @@ describe('createValintakoekutsutHakijoittain', () => {
   });
 
   test('Return only kutsut with osallistuminen=OSALLISTUU when vainKutsuttavat=true', async () => {
-    const result = createValintakoekutsutHakijoittain(
+    const result = selectValintakoekutsutHakijoittain(
       {
         hakukohdeOid: '1.2.246.562.20.00000000000000045105',
         vainKutsuttavat: true,
@@ -359,7 +359,7 @@ describe('createValintakoekutsutHakijoittain', () => {
   });
 
   test('Return valintakoe with empty kutsut, when valintakokeet data only', async () => {
-    const result = createValintakoekutsutHakijoittain(
+    const result = selectValintakoekutsutHakijoittain(
       {
         hakukohdeOid: '1.2.246.562.20.00000000000000045105',
         vainKutsuttavat: true,
@@ -381,7 +381,7 @@ describe('createValintakoekutsutHakijoittain', () => {
       ...v,
       kutsutaankoKaikki: true,
     }));
-    const result = createValintakoekutsutHakijoittain(
+    const result = selectValintakoekutsutHakijoittain(
       {
         hakukohdeOid: '1.2.246.562.20.00000000000000045105',
         vainKutsuttavat: true,

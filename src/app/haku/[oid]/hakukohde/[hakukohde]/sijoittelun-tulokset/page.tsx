@@ -1,4 +1,5 @@
 'use client';
+import { use } from 'react';
 
 import { TabContainer } from '../components/tab-container';
 import { useTranslations } from '@/app/hooks/useTranslations';
@@ -90,11 +91,10 @@ const SijoitteluContent = ({
   );
 };
 
-export default function SijoittelunTuloksetPage({
-  params,
-}: {
-  params: { oid: string; hakukohde: string };
+export default function SijoittelunTuloksetPage(props: {
+  params: Promise<{ oid: string; hakukohde: string }>;
 }) {
+  const params = use(props.params);
   const { data: haku } = useHaku({ hakuOid: params.oid });
   const { data: haunAsetukset } = useHaunAsetukset({ hakuOid: params.oid });
 

@@ -6,10 +6,9 @@ import {
   KeyboardDoubleArrowRight as KeyboardDoubleArrowRightIcon,
 } from '@mui/icons-material';
 import React from 'react';
-import { ophColors, styled } from '@/app/lib/theme';
+import { DEFAULT_BOX_BORDER, ophColors, styled } from '@/app/lib/theme';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { OphButton } from '@opetushallitus/oph-design-system';
-import { DEFAULT_BOX_BORDER } from '@/app/lib/constants';
 
 const MINIMIZED_PANEL_WIDTH = '60px';
 

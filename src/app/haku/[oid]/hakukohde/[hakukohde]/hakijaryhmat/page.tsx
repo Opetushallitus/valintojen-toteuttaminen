@@ -1,4 +1,5 @@
 'use client';
+import { use } from 'react';
 
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { TabContainer } from '../components/tab-container';
@@ -78,11 +79,10 @@ const HakijaryhmatContent = ({
   );
 };
 
-export default function HakijaryhmatPage({
-  params,
-}: {
-  params: { oid: string; hakukohde: string };
+export default function HakijaryhmatPage(props: {
+  params: Promise<{ oid: string; hakukohde: string }>;
 }) {
+  const params = use(props.params);
   return (
     <TabContainer>
       <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>

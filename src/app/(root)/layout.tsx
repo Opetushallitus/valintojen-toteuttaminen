@@ -4,9 +4,9 @@ import { AccessTime as AccessTimeIcon } from '@mui/icons-material';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Box, Typography } from '@mui/material';
 import { PageLayout } from '@/app/components/page-layout';
-import { DEFAULT_BOX_BORDER } from '@/app/lib/constants';
 import { Header } from '@/app/components/header';
 import { responsivePadding } from '../lib/responsive-padding';
+import { DEFAULT_BOX_BORDER } from '@/app/lib/theme';
 
 const IconHeaderBlock = ({
   title,

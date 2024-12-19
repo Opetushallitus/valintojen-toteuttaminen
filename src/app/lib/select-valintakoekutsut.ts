@@ -94,7 +94,7 @@ const forEachValintakoekutsu = (
   });
 };
 
-export function createValintakoekutsutKokeittain(
+export function selectValintakoekutsutKokeittain(
   {
     hakukohdeOid,
     vainKutsuttavat = false,
@@ -144,7 +144,7 @@ export function createValintakoekutsutKokeittain(
   return kutsutKokeittain;
 }
 
-export function createValintakoekutsutHakijoittain(
+export function selectValintakoekutsutHakijoittain(
   {
     hakukohdeOid,
     vainKutsuttavat = false,

@@ -1,4 +1,5 @@
 'use client';
+import { use } from 'react';
 
 import HallintaTable from './components/hallinta-table';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
@@ -46,11 +47,10 @@ const ValinnanHallintaContent = ({
     />
   );
 };
-export default function ValinnanHallintaPage({
-  params,
-}: {
-  params: { oid: string; hakukohde: string };
+export default function ValinnanHallintaPage(props: {
+  params: Promise<{ oid: string; hakukohde: string }>;
 }) {
+  const params = use(props.params);
   return (
     <TabContainer>
       <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
