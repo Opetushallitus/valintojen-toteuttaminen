@@ -1,7 +1,7 @@
 import { getCookies } from './cookie';
 import { redirect } from 'next/navigation';
 import { configuration } from './configuration';
-import { FetchError } from './common';
+import { FetchError, isServer } from './common';
 import { isPlainObject } from 'remeda';
 
 export type HttpClientResponse<D> = {
@@ -35,7 +35,7 @@ const noContent = (response: Response) => {
 const redirectToLogin = () => {
   const loginUrl = new URL(configuration.loginUrl);
   loginUrl.searchParams.set('service', window.location.href);
-  if (typeof window === 'undefined') {
+  if (isServer) {
     redirect(loginUrl.toString());
   } else {
     window.location.replace(loginUrl.toString());

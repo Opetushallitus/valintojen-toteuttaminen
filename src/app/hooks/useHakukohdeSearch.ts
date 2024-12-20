@@ -11,6 +11,8 @@ import {
 import { useTranslations } from './useTranslations';
 import { getHakukohteetQueryOptions } from '../lib/kouta';
 import { useUserPermissions } from './useUserPermissions';
+import { isEmpty, sortBy, toLowerCase } from 'remeda';
+import { isHakukohdeOid } from '@/app/lib/common';
 
 export const useHakukohdeSearchParams = () => {
   const [searchPhrase, setSearchPhrase] = useQueryState(
@@ -37,20 +39,57 @@ export const useHakukohdeSearchResults = (hakuOid: string) => {
     getHakukohteetQueryOptions(hakuOid, userPermissions),
   );
 
+  const sortedHakukohteet = useMemo(() => {
+    return sortBy(hakukohteet, (hakukohde: Hakukohde) =>
+      translateEntity(hakukohde.nimi),
+    );
+  }, [hakukohteet, translateEntity]);
+
+  const hakukohdeMatchTargets = useMemo(
+    () =>
+      sortedHakukohteet.map((hakukohde) =>
+        toLowerCase(
+          translateEntity(hakukohde.nimi) +
+            '#' +
+            translateEntity(hakukohde.jarjestyspaikkaHierarkiaNimi),
+        ),
+      ),
+    [sortedHakukohteet, translateEntity],
+  );
+
   const { searchPhrase } = useHakukohdeSearchParams();
 
+  const searchPhraseWords = useMemo(
+    () =>
+      searchPhrase
+        .toLowerCase()
+        .split(/\s+/)
+        .filter((s) => !isEmpty(s)),
+    [searchPhrase],
+  );
+
   const results = useMemo(() => {
-    return hakukohteet.filter(
-      (hakukohde: Hakukohde) =>
-        translateEntity(hakukohde.nimi)
-          .toLowerCase()
-          .includes(searchPhrase?.toLowerCase() ?? '') ||
-        translateEntity(hakukohde.jarjestyspaikkaHierarkiaNimi)
-          .toLowerCase()
-          .includes(searchPhrase?.toLowerCase() || '') ||
-        hakukohde.oid.includes(searchPhrase?.toLowerCase() || ''),
-    );
-  }, [hakukohteet, searchPhrase, translateEntity]);
+    if (isHakukohdeOid(searchPhrase)) {
+      const matchingHakukohde = sortedHakukohteet.find(
+        (hakukohde) => hakukohde.oid === searchPhrase,
+      );
+      return matchingHakukohde ? [matchingHakukohde] : [];
+    } else if (!isEmpty(searchPhraseWords)) {
+      return sortedHakukohteet.filter((_, index) => {
+        const hakukohdeTarget = hakukohdeMatchTargets[index];
+        return searchPhraseWords.every((word) =>
+          hakukohdeTarget.includes(word),
+        );
+      });
+    } else {
+      return sortedHakukohteet;
+    }
+  }, [
+    sortedHakukohteet,
+    searchPhrase,
+    searchPhraseWords,
+    hakukohdeMatchTargets,
+  ]);
 
   return {
     results,

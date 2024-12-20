@@ -6,6 +6,7 @@ import { FlatCompat } from '@eslint/eslintrc';
 import ts from 'typescript-eslint';
 import playwright from 'eslint-plugin-playwright';
 import eslintConfigPrettier from 'eslint-config-prettier';
+import vitest from '@vitest/eslint-plugin';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -44,6 +45,16 @@ const config = ts.config(
       'playwright/expect-expect': 'off',
       'playwright/no-conditional-in-test': 'off',
       'playwright/no-conditional-expect': 'off',
+    },
+  },
+  {
+    files: ['src/**/*.test.ts*'], // or any other pattern
+    plugins: {
+      vitest,
+    },
+    rules: {
+      ...vitest.configs.recommended.rules, // you can also use vitest.configs.all.rules to enable all rules
+      'vitest/max-nested-describe': ['error', { max: 2 }], // you can also modify rules' behavior using option like this
     },
   },
 );

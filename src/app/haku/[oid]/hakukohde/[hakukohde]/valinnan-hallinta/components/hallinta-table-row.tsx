@@ -6,19 +6,16 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import Confirm from './confirm';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
-import ErrorRow from './error-row';
-import { useMachine } from '@xstate/react';
 import {
-  LaskentaEvents,
-  LaskentaStates,
-  createLaskentaMachine,
-} from '../lib/laskenta-state';
-import { useMemo } from 'react';
+  LaskentaEventType,
+  LaskentaState,
+  useLaskentaState,
+} from '@/app/lib/state/laskenta-state';
 import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
-import { sijoitellaankoHaunHakukohteetLaskennanYhteydessa } from '@/app/lib/kouta';
 import { useToaster } from '@/app/hooks/useToaster';
 import { Valinnanvaihe } from '@/app/lib/types/valintaperusteet-types';
 import { HaunAsetukset } from '@/app/lib/types/haun-asetukset';
+import { ErrorRow } from './error-row';
 
 type HallintaTableRowParams = {
   haku: Haku;
@@ -39,48 +36,28 @@ const HallintaTableRow = ({
   areAllLaskentaRunning,
   lastCalculated,
 }: HallintaTableRowParams) => {
-  const { t, translateEntity } = useTranslations();
+  const { t } = useTranslations();
   const { addToast } = useToaster();
 
-  const laskentaMachine = useMemo(() => {
-    return createLaskentaMachine(
-      {
-        haku,
-        hakukohde,
-        sijoitellaanko: sijoitellaankoHaunHakukohteetLaskennanYhteydessa(
-          haku,
-          haunAsetukset,
-        ),
-        valinnanvaiheTyyppi: vaihe.tyyppi,
-        valinnanvaiheNumber: index,
-        valinnanvaiheNimi: vaihe.nimi,
-        translateEntity,
-      },
-      addToast,
-    );
-  }, [
+  const [state, send] = useLaskentaState({
     haku,
-    hakukohde,
     haunAsetukset,
-    translateEntity,
-    index,
-    vaihe.tyyppi,
+    hakukohteet: hakukohde,
+    vaihe,
     addToast,
-    vaihe.nimi,
-  ]);
-
-  const [state, send] = useMachine(laskentaMachine);
+    valinnanvaiheNumber: index,
+  });
 
   const start = () => {
-    send({ type: LaskentaEvents.START });
+    send({ type: LaskentaEventType.START });
   };
 
   const cancelConfirmation = () => {
-    send({ type: LaskentaEvents.CANCEL });
+    send({ type: LaskentaEventType.CANCEL });
   };
 
   const confirm = async () => {
-    send({ type: LaskentaEvents.CONFIRM });
+    send({ type: LaskentaEventType.CONFIRM });
   };
 
   return (
@@ -109,7 +86,7 @@ const HallintaTableRow = ({
         <TableCell sx={{ verticalAlign: 'top' }}>{t(vaihe.tyyppi)}</TableCell>
         <TableCell>
           {isLaskentaUsedForValinnanvaihe(vaihe) &&
-            !state.matches(LaskentaStates.WAITING_CONFIRMATION) && (
+            !state.matches(LaskentaState.WAITING_CONFIRMATION) && (
               <Box
                 sx={{
                   display: 'flex',
@@ -120,13 +97,13 @@ const HallintaTableRow = ({
                 <OphButton
                   variant="outlined"
                   disabled={
-                    !state.matches(LaskentaStates.IDLE) || areAllLaskentaRunning
+                    !state.matches(LaskentaState.IDLE) || areAllLaskentaRunning
                   }
                   onClick={() => start()}
                 >
                   {t('valinnanhallinta.kaynnista')}
                 </OphButton>
-                {state.matches(LaskentaStates.PROCESSING) && (
+                {state.matches(LaskentaState.PROCESSING) && (
                   <CircularProgress
                     aria-label={t('valinnanhallinta.lasketaan')}
                   />
@@ -134,7 +111,7 @@ const HallintaTableRow = ({
               </Box>
             )}
           {isLaskentaUsedForValinnanvaihe(vaihe) &&
-            state.matches(LaskentaStates.WAITING_CONFIRMATION) && (
+            state.matches(LaskentaState.WAITING_CONFIRMATION) && (
               <Confirm cancel={cancelConfirmation} confirm={confirm} />
             )}
           {!isLaskentaUsedForValinnanvaihe(vaihe) && !vaihe.valisijoittelu && (

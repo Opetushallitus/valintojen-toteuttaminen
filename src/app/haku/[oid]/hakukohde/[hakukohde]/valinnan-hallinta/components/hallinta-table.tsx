@@ -17,21 +17,18 @@ import {
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
 import HallintaTableRow from './hallinta-table-row';
-import { sijoitellaankoHaunHakukohteetLaskennanYhteydessa } from '@/app/lib/kouta';
 import Confirm from './confirm';
 import { getHakukohteenLasketutValinnanvaiheet } from '@/app/lib/valintalaskenta-service';
-import ErrorRow from './error-row';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
 import {
-  LaskentaEvents,
-  LaskentaStates,
-  createLaskentaMachine,
-} from '../lib/laskenta-state';
-import { useMachine } from '@xstate/react';
-import { useMemo } from 'react';
+  LaskentaEventType,
+  LaskentaState,
+  useLaskentaState,
+} from '@/app/lib/state/laskenta-state';
 import { useToaster } from '@/app/hooks/useToaster';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { HaunAsetukset } from '@/app/lib/types/haun-asetukset';
+import { ErrorRow } from './error-row';
 
 type HallintaTableParams = {
   haku: Haku;
@@ -44,25 +41,15 @@ const HallintaTable = ({
   haku,
   haunAsetukset,
 }: HallintaTableParams) => {
-  const { t, translateEntity } = useTranslations();
+  const { t } = useTranslations();
   const { addToast } = useToaster();
 
-  const laskentaMachine = useMemo(() => {
-    return createLaskentaMachine(
-      {
-        haku,
-        hakukohde,
-        sijoitellaanko: sijoitellaankoHaunHakukohteetLaskennanYhteydessa(
-          haku,
-          haunAsetukset,
-        ),
-        translateEntity,
-      },
-      addToast,
-    );
-  }, [haku, hakukohde, haunAsetukset, translateEntity, addToast]);
-
-  const [state, send] = useMachine(laskentaMachine);
+  const [state, send] = useLaskentaState({
+    haku,
+    haunAsetukset,
+    hakukohteet: hakukohde,
+    addToast,
+  });
 
   const [valinnanvaiheetQuery, lasketutValinnanvaiheetQuery] =
     useSuspenseQueries({
@@ -79,15 +66,15 @@ const HallintaTable = ({
     });
 
   const confirm = async () => {
-    send({ type: LaskentaEvents.CONFIRM });
+    send({ type: LaskentaEventType.CONFIRM });
   };
 
   const start = () => {
-    send({ type: LaskentaEvents.START });
+    send({ type: LaskentaEventType.START });
   };
 
   const cancel = () => {
-    send({ type: LaskentaEvents.CANCEL });
+    send({ type: LaskentaEventType.CANCEL });
   };
 
   if (valinnanvaiheetQuery.data.length === 0) {
@@ -128,7 +115,7 @@ const HallintaTable = ({
                     (a) => a.valinnanvaiheoid === vaihe.oid,
                   )?.createdAt
                 }
-                areAllLaskentaRunning={state.matches(LaskentaStates.PROCESSING)}
+                areAllLaskentaRunning={state.matches(LaskentaState.PROCESSING)}
               />
             ))}
           </TableBody>
@@ -144,12 +131,12 @@ const HallintaTable = ({
             rowGap: 2,
           }}
         >
-          {!state.matches(LaskentaStates.WAITING_CONFIRMATION) && (
+          {!state.matches(LaskentaState.WAITING_CONFIRMATION) && (
             <OphButton
               variant="contained"
               onClick={start}
               disabled={
-                !state.matches(LaskentaStates.IDLE) ||
+                !state.matches(LaskentaState.IDLE) ||
                 !valinnanvaiheetQuery.data.some((vaihe) =>
                   isLaskentaUsedForValinnanvaihe(vaihe),
                 ) ||
@@ -159,10 +146,10 @@ const HallintaTable = ({
               {t('valinnanhallinta.kaynnistakaikki')}
             </OphButton>
           )}
-          {state.matches(LaskentaStates.WAITING_CONFIRMATION) && (
+          {state.matches(LaskentaState.WAITING_CONFIRMATION) && (
             <Confirm cancel={cancel} confirm={confirm} />
           )}
-          {state.matches(LaskentaStates.PROCESSING) && (
+          {state.matches(LaskentaState.PROCESSING) && (
             <CircularProgress aria-label={t('valinnanhallinta.lasketaan')} />
           )}
           {containsValisijoittelu && (

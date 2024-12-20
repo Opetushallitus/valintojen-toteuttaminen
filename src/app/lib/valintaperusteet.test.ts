@@ -88,7 +88,7 @@ test('laskenta is not used for valinnanvaihe when jonos are not using laskenta',
   expect(isLaskentaUsedForValinnanvaihe(vaihe)).toBeFalsy();
 });
 
-test('laskenta is not used for valinnanvaihe when jonos best before date has passed ', () => {
+test('laskenta is not used for valinnanvaihe when jonos best before date has passed', () => {
   const vaihe: Valinnanvaihe = {
     aktiivinen: true,
     jonot: [

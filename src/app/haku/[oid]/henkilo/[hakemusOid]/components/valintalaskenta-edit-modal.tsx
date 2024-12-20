@@ -4,9 +4,12 @@ import {
   useOphModalProps,
 } from '@/app/components/global-modal';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { OphButton, OphSelect } from '@opetushallitus/oph-design-system';
+import {
+  OphButton,
+  OphInput,
+  OphSelect,
+} from '@opetushallitus/oph-design-system';
 import { Stack } from '@mui/material';
-import { OphInput } from '@/app/components/form/oph-input';
 import { useEffect, useState } from 'react';
 import { LaskettuJono } from '@/app/hooks/useLasketutValinnanVaiheet';
 import {

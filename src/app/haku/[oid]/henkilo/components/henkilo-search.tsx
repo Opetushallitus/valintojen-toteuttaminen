@@ -1,10 +1,11 @@
 'use client';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Search } from '@mui/icons-material';
-import { InputAdornment, OutlinedInput } from '@mui/material';
+import { InputAdornment } from '@mui/material';
 import { ChangeEvent } from 'react';
 import { useHenkiloSearchParams } from '../hooks/useHenkiloSearch';
 import { OphFormControl } from '@/app/components/form/oph-form-control';
+import { OphInput } from '@opetushallitus/oph-design-system';
 
 export const HenkiloSearch = () => {
   const { searchPhrase, setSearchPhrase } = useHenkiloSearchParams();
@@ -22,7 +23,7 @@ export const HenkiloSearch = () => {
       helperText={t('henkilo.hae-helpertext')}
       renderInput={() => {
         return (
-          <OutlinedInput
+          <OphInput
             key={searchPhrase}
             id="henkilo-search"
             name="henkilo-search"

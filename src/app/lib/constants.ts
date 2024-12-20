@@ -15,3 +15,5 @@ export const DEFAULT_NUQS_OPTIONS = {
 } as const;
 
 export const NDASH = '\u2013';
+
+export const TRANSITION_DURATION = '200ms';
