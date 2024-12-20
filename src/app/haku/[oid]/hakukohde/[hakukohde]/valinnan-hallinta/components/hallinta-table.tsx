@@ -51,7 +51,7 @@ const HallintaTable = ({
     return createLaskentaMachine(
       {
         haku,
-        hakukohde,
+        hakukohteet: [hakukohde],
         sijoitellaanko: sijoitellaankoHaunHakukohteetLaskennanYhteydessa(
           haku,
           haunAsetukset,
