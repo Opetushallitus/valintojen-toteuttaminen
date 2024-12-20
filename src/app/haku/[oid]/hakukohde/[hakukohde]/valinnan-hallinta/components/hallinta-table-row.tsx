@@ -7,15 +7,12 @@ import { OphButton } from '@opetushallitus/oph-design-system';
 import Confirm from './confirm';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
 import ErrorRow from './error-row';
-import { useMachine } from '@xstate/react';
 import {
   LaskentaEvents,
   LaskentaStates,
-  createLaskentaMachine,
+  useLaskentaState,
 } from '../lib/laskenta-state';
-import { useMemo } from 'react';
 import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
-import { sijoitellaankoHaunHakukohteetLaskennanYhteydessa } from '@/app/lib/kouta';
 import { useToaster } from '@/app/hooks/useToaster';
 import { Valinnanvaihe } from '@/app/lib/types/valintaperusteet-types';
 import { HaunAsetukset } from '@/app/lib/types/haun-asetukset';
@@ -39,37 +36,17 @@ const HallintaTableRow = ({
   areAllLaskentaRunning,
   lastCalculated,
 }: HallintaTableRowParams) => {
-  const { t, translateEntity } = useTranslations();
+  const { t } = useTranslations();
   const { addToast } = useToaster();
 
-  const laskentaMachine = useMemo(() => {
-    return createLaskentaMachine(
-      {
-        haku,
-        hakukohteet: [hakukohde],
-        sijoitellaanko: sijoitellaankoHaunHakukohteetLaskennanYhteydessa(
-          haku,
-          haunAsetukset,
-        ),
-        valinnanvaiheTyyppi: vaihe.tyyppi,
-        valinnanvaiheNumber: index,
-        valinnanvaiheNimi: vaihe.nimi,
-        translateEntity,
-      },
-      addToast,
-    );
-  }, [
+  const [state, send] = useLaskentaState({
     haku,
-    hakukohde,
     haunAsetukset,
-    translateEntity,
-    index,
-    vaihe.tyyppi,
+    hakukohteet: hakukohde,
+    vaihe,
     addToast,
-    vaihe.nimi,
-  ]);
-
-  const [state, send] = useMachine(laskentaMachine);
+    valinnanvaiheNumber: index,
+  });
 
   const start = () => {
     send({ type: LaskentaEvents.START });

@@ -2,22 +2,28 @@
 
 import { assign, fromPromise, setup } from 'xstate';
 import { Laskenta, laskentaReducer } from './valinnan-hallinta-types';
-import { ValinnanvaiheTyyppi } from '@/app/lib/types/valintaperusteet-types';
+import {
+  Valinnanvaihe,
+  ValinnanvaiheTyyppi,
+} from '@/app/lib/types/valintaperusteet-types';
 import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
-import { TranslatedName } from '@/app/lib/localization/localization-types';
 import {
   getLaskennanSeurantaTiedot,
   getLaskennanTilaHakukohteelle,
   kaynnistaLaskenta,
 } from '@/app/lib/valintalaskenta-service';
 import { FetchError } from '@/app/lib/common';
-import { Toast } from '@/app/hooks/useToaster';
+import useToaster, { Toast } from '@/app/hooks/useToaster';
 import {
   LaskentaErrorSummary,
   LaskentaStart,
   SeurantaTiedot,
 } from '@/app/lib/types/laskenta-types';
 import { prop } from 'remeda';
+import { useMemo } from 'react';
+import { sijoitellaankoHaunHakukohteetLaskennanYhteydessa } from '@/app/lib/kouta';
+import { useMachine } from '@xstate/react';
+import { HaunAsetukset } from '@/app/lib/types/haun-asetukset';
 
 const POLLING_INTERVAL = 5000;
 
@@ -28,7 +34,6 @@ export type StartLaskentaParams = {
   sijoitellaanko: boolean;
   valinnanvaiheNumber?: number;
   valinnanvaiheNimi?: string;
-  translateEntity: (translateable: TranslatedName) => string;
 };
 
 export type LaskentaContext = {
@@ -281,4 +286,46 @@ export const createLaskentaMachine = (
       },
     },
   });
+};
+
+type LaskentaStateParams = {
+  haku: Haku;
+  haunAsetukset: HaunAsetukset;
+  hakukohteet: Hakukohde | Array<Hakukohde>;
+  vaihe?: Valinnanvaihe;
+  valinnanvaiheNumber?: number;
+  addToast: (toast: Toast) => void;
+};
+
+export const useLaskentaState = ({
+  haku,
+  haunAsetukset,
+  hakukohteet,
+  vaihe,
+  valinnanvaiheNumber,
+}: LaskentaStateParams) => {
+  const { addToast } = useToaster();
+
+  const laskentaMachine = useMemo(() => {
+    return createLaskentaMachine(
+      {
+        haku,
+        hakukohteet: Array.isArray(hakukohteet) ? hakukohteet : [hakukohteet],
+        sijoitellaanko: sijoitellaankoHaunHakukohteetLaskennanYhteydessa(
+          haku,
+          haunAsetukset,
+        ),
+        ...(vaihe && valinnanvaiheNumber
+          ? {
+              valinnanvaiheTyyppi: vaihe.tyyppi,
+              valinnanvaiheNumber,
+              valinnanvaiheNimi: vaihe.nimi,
+            }
+          : {}),
+      },
+      addToast,
+    );
+  }, [haku, hakukohteet, haunAsetukset, vaihe, valinnanvaiheNumber, addToast]);
+
+  return useMachine(laskentaMachine);
 };
