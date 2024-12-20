@@ -25,7 +25,7 @@ import {
   LaskentaEvents,
   LaskentaStates,
   useLaskentaState,
-} from '../lib/laskenta-state';
+} from '@/app/lib/state/laskenta-state';
 import { useToaster } from '@/app/hooks/useToaster';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { HaunAsetukset } from '@/app/lib/types/haun-asetukset';

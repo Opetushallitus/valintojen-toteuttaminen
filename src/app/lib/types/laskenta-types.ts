@@ -66,10 +66,11 @@ export type LaskettuValinnanVaiheModel = {
 };
 
 export type SeurantaTiedot = {
-  tila: 'VALMIS' | 'MENEILLAAN';
+  tila: 'VALMIS' | 'MENEILLAAN' | 'ALOITTAMATTA';
   hakukohteitaYhteensa: number;
   hakukohteitaValmiina: number;
   hakukohteitaKeskeytetty: number;
+  jonosija: number | null;
 };
 
 export type LaskentaStart = {
