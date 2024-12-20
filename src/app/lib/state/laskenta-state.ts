@@ -12,7 +12,6 @@ import {
   kaynnistaLaskenta,
   keskeytaLaskenta,
 } from '@/app/lib/valintalaskenta-service';
-import { FetchError } from '@/app/lib/common';
 import useToaster, { Toast } from '@/app/hooks/useToaster';
 import {
   LaskentaSummary,
@@ -23,9 +22,8 @@ import {
 import { prop } from 'remeda';
 import { useMemo } from 'react';
 import { sijoitellaankoHaunHakukohteetLaskennanYhteydessa } from '@/app/lib/kouta';
-import { useSelector } from '@xstate/react';
+import { useMachine, useSelector } from '@xstate/react';
 import { HaunAsetukset } from '@/app/lib/types/haun-asetukset';
-import { useXstateMachine } from '../xstate-utils';
 
 const POLLING_INTERVAL = 5000;
 
@@ -87,22 +85,9 @@ export type LaskentaEvent = {
   type: LaskentaEventType;
 };
 
-const tryAndParseError = async <T>(wrappedFn: () => Promise<T>) => {
-  try {
-    return await wrappedFn();
-  } catch (e) {
-    if (e instanceof FetchError) {
-      const message = e.message;
-      throw message;
-    }
-    throw e;
-  }
-};
 export type LaskentaStateTags =
   | 'stopped'
   | 'started'
-  | 'finished'
-  | 'error'
   | 'completed'
   | 'canceling';
 
@@ -127,6 +112,7 @@ export const createLaskentaMachine = (
     laskenta: {},
     startLaskentaParams: params,
     seurantaTiedot: null,
+    // Laskennan yhteenveto
     summary: null,
     // Laskennan yhteenvedon virheilmoitukset
     errorSummary: null,
@@ -143,35 +129,33 @@ export const createLaskentaMachine = (
     actors: {
       startLaskenta: fromPromise(
         ({ input }: { input: StartLaskentaParams }) => {
-          return tryAndParseError<LaskentaStart>(async () => {
-            return await kaynnistaLaskenta({
-              haku: input.haku,
-              hakukohteet: input.hakukohteet,
-              valinnanvaiheTyyppi: input.valinnanvaiheTyyppi,
-              sijoitellaankoHaunHakukohteetLaskennanYhteydessa:
-                input.sijoitellaanko,
-              valinnanvaihe: input.valinnanvaiheNumber,
-            });
+          return kaynnistaLaskenta({
+            haku: input.haku,
+            hakukohteet: input.hakukohteet,
+            valinnanvaiheTyyppi: input.valinnanvaiheTyyppi,
+            sijoitellaankoHaunHakukohteetLaskennanYhteydessa:
+              input.sijoitellaanko,
+            valinnanvaihe: input.valinnanvaiheNumber,
           });
         },
       ),
       pollLaskenta: fromPromise(({ input }: { input: Laskenta }) => {
-        return tryAndParseError<SeurantaTiedot>(async () => {
-          if (input.runningLaskenta) {
-            return await getLaskennanSeurantaTiedot(
-              input.runningLaskenta.loadingUrl,
-            );
-          }
-          throw 'Tried to fetch seurantatiedot without having access to started laskenta';
-        });
+        if (input.runningLaskenta) {
+          return getLaskennanSeurantaTiedot(input.runningLaskenta.loadingUrl);
+        }
+        return Promise.reject(
+          Error(
+            'Tried to fetch seurantatiedot without having access to started laskenta',
+          ),
+        );
       }),
       fetchSummary: fromPromise(({ input }: { input: Laskenta }) => {
-        return tryAndParseError<LaskentaSummary>(async () => {
-          if (input.runningLaskenta) {
-            return getLaskennanYhteenveto(input.runningLaskenta.loadingUrl);
-          }
-          throw 'Tried to fetch summary without having access to laskenta';
-        });
+        if (input.runningLaskenta) {
+          return getLaskennanYhteenveto(input.runningLaskenta.loadingUrl);
+        }
+        return Promise.reject(
+          Error('Tried to fetch summary without having access to laskenta'),
+        );
       }),
       stopLaskenta: fromPromise(({ input }: { input: Laskenta }) => {
         if (input.runningLaskenta) {
@@ -179,11 +163,15 @@ export const createLaskentaMachine = (
             laskentaUuid: input.runningLaskenta.loadingUrl,
           });
         }
-        throw 'Failed to stop laskenta without having access to started laskenta';
+        return Promise.reject(
+          Error(
+            'Failed to stop laskenta without having access to started laskenta',
+          ),
+        );
       }),
     },
   }).createMachine({
-    /** @xstate-layout N4IgpgJg5mDOIC5QAoC2BDAxgCwJYDswBKAOgEkARAGQFEBiAZQBUBBAJSYG0AGAXUVAAHAPaxcAF1zD8AkAA9EAJgAcAThLcAjMoDsOgMyrlANlUAWY4oA0IAJ6JlmksZ0BWbtz1HNZ1ToC+-jZoWHiEpJS0dGw0DDRMAPoxDACqVEwMPPxIICJiktKyCgiKmoo6JK5lOi5mrvoqyjb2CDoWJMqepfo1xmbcxoHBGDgExCQA6ixkTGQAcgDiCQDCAPJzAGJkbACyLLPrdGub2ztZsnkSUjI5xYqq6lq6BkamFtZ2iPpmTgbKZnUfqVFMZNAEgiAQqNwpNprNFit1ltdvsyIdliw5ssaFRzjlLgUbqA7g8NNo9IYTOZLM0lFpnAMQVodOUjGYhpCRmFxsx2PCFnQINIwCQCAA3YQAaxFUO5pF5HHmCwQ4uEmHQhKyeKEoiuhVuiFcHxadScoOMrhefR03DM3w5srG8tYisWdDAACcPcIPSRBAAbDUAMx9qBIjphCv5KvwEvVmr42tyusJRUQfW4JH0jh6jjMnXKOlpCDtrmcbVUin0mlUlgsPgdXKdJAACmxVtiGAwlYwmKsW0mCdc0wh6vpKt9S2pHMZlE1PghNB4y4pV-9FAC6q5QY3Qs22x3Yt3FiQNvFlgAJHtCwii2NSmVNmEHzvHhan89XxYxuMa65avgLhTYcDRKPxnD8RQqh6YxuEtfRix0cwSFUBpFGZAFYIsXdoXGF8jyVD8mEvHtPW9X0A2DUNwyfPD21fQiz2Ir9lVVeN-0TQD8WA-ViUQTQBKcbwehZfp-iNYtK1+GsdE0BpXH6e5wWGPdn3ogiTymGYezkWBxA1EV0CDcRPWQdwPCIOgIzow8u0IrT+UHHiiXkBwqxIMplAUgx9DQgxixcYxKiXBoTEnRxVBwuVW3UuyTwoeIaF2eYaASFtVioKhER2FtaAOOY6Cc-IQL4xdBJQnM9A3bhxONRAdDUEgam+I1XC8ytsIhazSHwuL3wSpgkp2FK0oyrK1hyvK0QKzhNGyHVit41zWjcSofltOTuEMIxi0cRQsx+NqygtWCtCi5smJIhFUh2PY2AATUFYU7wlaUaNU8ZLpYhIbru+6fzVP9pAA+bk0Wlzik0bcnCg4xtv0bhSjMDcAoGLNPBkrckeUzkPtIL6lR+lJbvYR6yJ9P1A3EEMPTDbqiKupZftJgH2OBzjQaHJbIehkhYfhxGfBRhdZKChrSgeNp+l886YQGoaRuZh7Cq4ha9Qh-jdGUSoPA3dwTDUcwAv6DzqT0drJ3ZLraNIeXkrmVKlce2bOeckdyW18y9Zq2cHjMYtXFUMtlAaME3Fkp5BmtvGSGYfsW2vZ7VTe+m45bBPvzYoH8BBoDwZHAwzGcWdlBURGQX0C1i2zCpakrataw3UErZU3DnXj0ivQpyjqeo1O+3TpVWez3PuPz0DC+Lucy9XOGq4XXz1DrqsazrZvAghfBhAgOBZG6vP1ZHABaOSPJZbN0NtHotrqhAj7LB5H7cSvTFh5RZfGSIaAP1NQPQpDgrlFqPURo1dfCVDcCHbcUF2quA-hEagNA-QejAGKKQABXeAY9D5-2qIAmobQQFzmLHaCoUEfY1HMG0Qw8DyCIPIHMbSLAqBkAAFo0AoD-Eqy0qz3EqKYRGDQYKoQQiLdo5laxuD6EHLatCv4kCSu2NgCQqAsAYAAaRoHMVgXDuZKDwVUIBhDQrzhaCXLMaFNDGGbjJOB0c250NoLHAeLYOG6I1iUAx1RgEmJIUYPmq8fjWMMJaRQcj6ETVyolTh2Df6lWBBUQxBC6i+IXK4bcEELDZhnFYy0tCHKE2OMiPY+V3Ejm+B0IBYIHjQNrKYpQqgnCI0aekkw6S0K0KjEqMpoE7SZn0OZWSjTGnoVUCQ3yWZ6hLg8DmbwtDepvh6aVQwTVuCQQag8JcWEA5zg6AMgZHhfKzjBPM2Kb4GYsSWctXQqz1mGy2baRCqhMwCS2pXRpcFZL6FObZc5BTFhXOKKhdQ7TtyVxtNmFwAVS5NT+KYSucEBmaB+QxeKiV7apXSplbKUTSmxO4cUMwNQ1rTKgivGqoiWgzlNg1IRgdEYuFoQTa6xM-qAv4nrLM2g5z9DtPs-2Is4bOFXrJKGpdYKRXsdFO2w0HZExJg9dli4LSZmecyVc8kfj1IQBaIuCMhmEKND4HG-cO4AvxXosqDQOiWnSVUEuLhKVKAybaDcc4kLVjglHQIQA */
+    /** @xstate-layout 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-cKFQPn-3PN8-Bp9uQ-05CoFkgscHKVBU9EyCJtlsNQQFPa3stzNDKLhEK49eiPCdgMd4OCG64qZtlZes1V7zVKuVMJoyiVqOKL4B4FYqjvCSuuD0OFXiHh6iYF0-8TAsqeS9acZNnn8scS2B4FIcHJRqFg7+e4qQAmku8TsuhyzgksRCtOUczZQvNBYXquEgS1mxslNC+jT7aUPFyaSR9cKvH0JY1uK8152pjg65cbheoBxMOCQOfg9AV3XG2XQ65EVzI5IEQIQA */
     id: `LaskentaMachine-${machineKey}`,
     initial: LaskentaState.IDLE,
     context: initialContext,
@@ -207,15 +195,14 @@ export const createLaskentaMachine = (
           },
           [LaskentaState.ERROR]: {
             id: LaskentaState.ERROR,
-            tags: ['error'],
           },
           [LaskentaState.COMPLETED_WITH_ERRORS]: {
             id: LaskentaState.COMPLETED_WITH_ERRORS,
-            tags: ['finished', 'error', 'completed'],
+            tags: ['completed'],
           },
           [LaskentaState.COMPLETED]: {
             id: LaskentaState.COMPLETED,
-            tags: ['finished', 'completed'],
+            tags: ['completed'],
             entry: [
               assign({
                 laskenta: ({ context }) =>
@@ -357,9 +344,6 @@ export const createLaskentaMachine = (
                     };
                   })[0],
               seurantaTiedot: ({ event, context }) => {
-                console.log(event.output);
-                console.log(context.errorSummary);
-
                 const hakukohteitaYhteensa =
                   context.seurantaTiedot?.hakukohteitaYhteensa ?? 0;
 
@@ -369,10 +353,12 @@ export const createLaskentaMachine = (
                   )?.length ?? 0;
                 const hakukohteitaKeskeytetty =
                   hakukohteitaYhteensa - hakukohteitaValmiina;
+                const tila = event.output.tila ?? context?.seurantaTiedot?.tila;
 
                 return context.seurantaTiedot
                   ? {
                       ...context.seurantaTiedot,
+                      tila,
                       hakukohteitaValmiina:
                         hakukohteitaYhteensa - hakukohteitaKeskeytetty,
                       hakukohteitaKeskeytetty,
@@ -453,7 +439,7 @@ export const useLaskentaState = ({
     );
   }, [haku, hakukohteet, haunAsetukset, vaihe, valinnanvaiheNumber, addToast]);
 
-  return useXstateMachine(laskentaMachine);
+  return useMachine(laskentaMachine);
 };
 
 export const useLaskentaError = (actorRef: LaskentaActorRef) => {
@@ -461,5 +447,7 @@ export const useLaskentaError = (actorRef: LaskentaActorRef) => {
   const laskenta = useSelector(actorRef, (state) => state.context.laskenta);
   const hasError = laskenta.errorMessage != null || error;
 
-  return hasError ? (laskenta.errorMessage ?? '' + error) : '';
+  return hasError
+    ? (laskenta.errorMessage ?? '' + (error?.message ?? error))
+    : '';
 };
