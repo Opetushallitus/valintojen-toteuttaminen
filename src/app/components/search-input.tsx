@@ -1,9 +1,10 @@
 import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Search } from '@mui/icons-material';
-import { InputAdornment, OutlinedInput } from '@mui/material';
+import { InputAdornment } from '@mui/material';
 import { ChangeEvent } from 'react';
 import { styled } from '@/app/lib/theme';
+import { OphInput } from '@opetushallitus/oph-design-system';
 
 const StyledContol = styled(OphFormControl)({
   flexGrow: 0,
@@ -39,7 +40,7 @@ export const SearchInput = ({
       sx={sx ?? {}}
       label={t(label ?? 'hakeneet.hae')}
       renderInput={({ labelId }) => (
-        <OutlinedInput
+        <OphInput
           id={name}
           name={name}
           inputProps={{ 'aria-labelledby': labelId }}

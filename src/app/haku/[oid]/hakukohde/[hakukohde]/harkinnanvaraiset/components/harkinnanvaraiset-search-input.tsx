@@ -1,9 +1,10 @@
 import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { Search } from '@mui/icons-material';
-import { InputAdornment, OutlinedInput } from '@mui/material';
+import { InputAdornment } from '@mui/material';
 import { useHarkinnanvaraisetSearchParams } from '../hooks/useHarkinnanvaraisetSearchParams';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { ChangeEvent } from 'react';
+import { OphInput } from '@opetushallitus/oph-design-system';
 
 export const HarkinnanvaraisetSearchInput = () => {
   const { searchPhrase, setSearchPhrase } = useHarkinnanvaraisetSearchParams();
@@ -20,7 +21,7 @@ export const HarkinnanvaraisetSearchInput = () => {
         textAlign: 'left',
       }}
       renderInput={({ labelId }) => (
-        <OutlinedInput
+        <OphInput
           inputProps={{ 'aria-labelledby': labelId }}
           defaultValue={searchPhrase}
           onChange={handleSearchChange}

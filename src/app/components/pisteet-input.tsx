@@ -5,10 +5,10 @@ import {
   numberValidator,
 } from '@/app/components/form/input-validators';
 import { OphFormControl } from '@/app/components/form/oph-form-control';
-import { OphInput } from '@/app/components/form/oph-input';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { useState, ChangeEvent } from 'react';
 import { type KoeInputsProps } from './koe-inputs';
+import { OphInput } from '@opetushallitus/oph-design-system';
 
 export const PisteetInput = ({
   koe,

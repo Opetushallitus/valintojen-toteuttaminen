@@ -1,7 +1,8 @@
 import { useHakukohdeSearchParams } from '@/app/hooks/useHakukohdeSearch';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Search } from '@mui/icons-material';
-import { FormControl, InputAdornment, OutlinedInput } from '@mui/material';
+import { FormControl, InputAdornment } from '@mui/material';
+import { OphInput } from '@opetushallitus/oph-design-system';
 import { ChangeEvent } from 'react';
 
 export const HakukohdeSearch = () => {
@@ -18,7 +19,7 @@ export const HakukohdeSearch = () => {
         paddingRight: 2,
       }}
     >
-      <OutlinedInput
+      <OphInput
         key={searchPhrase}
         id="hakukohde-search"
         name="hakukohde-search"
