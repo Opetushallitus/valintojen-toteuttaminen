@@ -1,0 +1,16 @@
+{
+  "lastmodified": "2024-01-01 12:00:00",
+  "hakukohteittain": {
+    "1.2.246.562.20.00000000000000045105": {
+      "applicationAdditionalDataDTO": {
+        "oid": "1.2.246.562.11.00000000000001796027",
+        "additionalData": {
+          "nakki": "true",
+          "nakki-osallistuminen": "OSALLISTUI",
+          "koksa": "8",
+          "koksa-osallistuminen": "OSALLISTUI"
+        }
+      }
+    }
+  }
+}

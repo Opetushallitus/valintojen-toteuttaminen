@@ -19,6 +19,8 @@ import {
 import { notFound } from 'next/navigation';
 import { useMemo } from 'react';
 import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
+import { getKoePisteetForHakemus } from '@/app/lib/valintalaskentakoostepalvelu';
+import { getValintakoeAvaimetHakukohteille } from '@/app/lib/valintaperusteet';
 
 const useAtaruHakemus = ({
   hakuOid,
@@ -103,23 +105,36 @@ export const useHenkiloPageData = ({
 
   const { data: userPermissions } = useUserPermissions();
 
-  const [{ data: koutaHakukohteet }, { data: postitoimipaikka }] =
-    useSuspenseQueries({
-      queries: [
-        getHakukohteetQueryOptions(hakuOid, userPermissions),
-        {
-          queryKey: ['getPostitoimipaikka', hakemus.postinumero],
-          queryFn: () => getPostitoimipaikka(hakemus.postinumero),
-        },
-      ],
-    });
+  const [
+    { data: koutaHakukohteet },
+    { data: postitoimipaikka },
+    { data: pisteetByHakukohde },
+    { data: kokeetByHakukohde },
+  ] = useSuspenseQueries({
+    queries: [
+      getHakukohteetQueryOptions(hakuOid, userPermissions),
+      {
+        queryKey: ['getPostitoimipaikka', hakemus.postinumero],
+        queryFn: () => getPostitoimipaikka(hakemus.postinumero),
+      },
+
+      {
+        queryKey: ['getPisteetForHakemus', hakemusOid],
+        queryFn: () => getKoePisteetForHakemus({ hakemusOid, hakukohdeOids }),
+      },
+      {
+        queryKey: ['getValintakoeAvaimetHaukohteille', hakukohdeOids],
+        queryFn: () => getValintakoeAvaimetHakukohteille({ hakukohdeOids }),
+      },
+    ],
+  });
 
   const hakukohteet: Array<HenkilonHakukohdeTuloksilla> = useMemo(() => {
     return pipe(
       koutaHakukohteet,
       filter((h) => hakukohdeOids.includes(h.oid)),
       sortBy((h) => hakukohdeOids.indexOf(h.oid)),
-      map((hakukohde) => {
+      map((hakukohde, index) => {
         const valinnanTulos = valinnanTuloksetByHakukohde?.[hakukohde.oid];
 
         const sijoittelunTulos =
@@ -134,11 +149,11 @@ export const useHenkiloPageData = ({
 
         return {
           ...hakukohde,
+          hakutoiveNumero: index + 1,
           valinnanvaiheet: selectValinnanvaiheet({
             lasketutValinnanvaiheet:
               valinnanvaiheetByHakukohde?.[hakukohde.oid],
           }),
-          sijoittelunTulokset: sijoittelunTuloksetByHakukohde?.[hakukohde.oid],
           valinnanTulos: valinnanTulos
             ? {
                 ...valinnanTulos,
@@ -149,6 +164,8 @@ export const useHenkiloPageData = ({
                 ),
               }
             : undefined,
+          kokeet: kokeetByHakukohde[hakukohde.oid],
+          pisteet: pisteetByHakukohde[hakukohde.oid],
         };
       }),
     );
@@ -159,6 +176,8 @@ export const useHenkiloPageData = ({
     sijoittelunTuloksetByHakukohde,
     valinnanTuloksetByHakukohde,
     valinnanTuloksetResponse.lastModified,
+    kokeetByHakukohde,
+    pisteetByHakukohde,
   ]);
 
   return { hakukohteet, hakija, postitoimipaikka };

@@ -1,7 +1,5 @@
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { CircularProgress, Stack } from '@mui/material';
-import { AnyMachineSnapshot } from 'xstate';
-import { PisteSyottoStates } from '../lib/pistesyotto-state';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { ExcelUploadButton } from './pistesyotto-excel-upload-button';
 import { ExcelDownloadButton } from './pistesyotto-excel-download-button';
@@ -9,11 +7,11 @@ import { ExcelDownloadButton } from './pistesyotto-excel-download-button';
 export const PisteSyottoActions = ({
   hakuOid,
   hakukohdeOid,
-  state,
+  isUpdating,
 }: {
   hakuOid: string;
   hakukohdeOid: string;
-  state: AnyMachineSnapshot;
+  isUpdating: boolean;
 }) => {
   const { t } = useTranslations();
 
@@ -25,14 +23,10 @@ export const PisteSyottoActions = ({
         alignItems: 'flex-start',
       }}
     >
-      <OphButton
-        type="submit"
-        variant="contained"
-        disabled={!state.matches(PisteSyottoStates.IDLE)}
-      >
+      <OphButton type="submit" variant="contained" disabled={isUpdating}>
         {t('yleinen.tallenna')}
       </OphButton>
-      {state.matches(PisteSyottoStates.UPDATING) && (
+      {isUpdating && (
         <CircularProgress aria-label={t('valinnanhallinta.lasketaan')} />
       )}
       <ExcelDownloadButton hakuOid={hakuOid} hakukohdeOid={hakukohdeOid} />

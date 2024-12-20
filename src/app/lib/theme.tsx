@@ -21,6 +21,8 @@ export const styled: typeof muiStyled = (
   });
 };
 
+export const DEFAULT_BOX_BORDER = `2px solid ${ophColors.grey100}`;
+
 export const notLarge = (theme: Theme) => theme.breakpoints.down('lg');
 
 export const THEME_OVERRIDES: ThemeOptions = {

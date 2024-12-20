@@ -1,6 +1,5 @@
 'use client';
-import { HakemuksenPistetiedot } from '@/app/lib/types/laskenta-types';
-import { ValintakoeAvaimet } from '@/app/lib/types/valintaperusteet-types';
+import { ValintakokeenPisteet } from '@/app/lib/types/laskenta-types';
 import { Box, styled, Typography } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { NOT_READABLE_REASON_MAP } from '../lib/pistesyotto-utils';
@@ -13,24 +12,19 @@ const StyledCell = styled(Box)({
 });
 
 export const ReadOnlyKoeCell = ({
-  pisteTiedot,
-  koe,
+  koePisteet,
 }: {
-  pisteTiedot: HakemuksenPistetiedot;
-  koe: ValintakoeAvaimet;
+  koePisteet?: ValintakokeenPisteet;
 }) => {
   const { t } = useTranslations();
 
-  const pisteet = pisteTiedot.valintakokeenPisteet.find(
-    (vp) => vp.tunniste === koe.tunniste,
-  );
-  const notReadableReason = pisteet?.osallistuminen
-    ? NOT_READABLE_REASON_MAP[pisteet?.osallistuminen]
+  const notReadableReason = koePisteet?.osallistuminen
+    ? NOT_READABLE_REASON_MAP[koePisteet?.osallistuminen]
     : '';
 
   return (
     <StyledCell>
-      <Typography>{pisteet?.arvo}</Typography>
+      <Typography>{koePisteet?.arvo}</Typography>
       <Typography>{t(notReadableReason)}</Typography>
     </StyledCell>
   );

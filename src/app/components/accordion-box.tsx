@@ -1,7 +1,7 @@
 'use client';
 import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
-import { DEFAULT_BOX_BORDER } from '@/app/lib/constants';
 import { ExpandMore } from '@mui/icons-material';
+import { DEFAULT_BOX_BORDER } from '@/app/lib/theme';
 
 export const AccordionBox = ({
   id,

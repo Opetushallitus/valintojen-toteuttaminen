@@ -1,13 +1,14 @@
 import { Stack } from '@mui/material';
 import HakukohdeTabs from '../components/hakukohde-tabs';
 
-export default function HakuLayout({
-  children,
-  params,
-}: {
+export default async function HakuLayout(props: {
   children: React.ReactNode;
-  params: { oid: string; hakukohde: string };
+  params: Promise<{ oid: string; hakukohde: string }>;
 }) {
+  const params = await props.params;
+
+  const { children } = props;
+
   return (
     <Stack
       sx={{
