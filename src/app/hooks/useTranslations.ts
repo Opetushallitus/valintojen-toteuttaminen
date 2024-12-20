@@ -15,7 +15,7 @@ export const useTranslations = () => {
         ? translateName(translateable, i18n.language as Language)
         : '';
     },
-    [i18n],
+    [i18n.language],
   );
 
   return { t, translateEntity, language: i18n.language as Language, i18n };
