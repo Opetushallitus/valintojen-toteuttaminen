@@ -9,6 +9,8 @@ export const isProd = process.env.NODE_ENV === 'production';
 
 export const isTesting = process.env.TEST === 'true';
 
+export const xstateInspect = process.env.XSTATE_INSPECT === 'true';
+
 type ValintatapajonoStatusParams = {
   valintatapajonoOid: string;
   status: boolean;

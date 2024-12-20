@@ -21,8 +21,8 @@ import Confirm from './confirm';
 import { getHakukohteenLasketutValinnanvaiheet } from '@/app/lib/valintalaskenta-service';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
 import {
-  LaskentaEvents,
-  LaskentaStates,
+  LaskentaEventType,
+  LaskentaState,
   useLaskentaState,
 } from '@/app/lib/state/laskenta-state';
 import { useToaster } from '@/app/hooks/useToaster';
@@ -66,15 +66,15 @@ const HallintaTable = ({
     });
 
   const confirm = async () => {
-    send({ type: LaskentaEvents.CONFIRM });
+    send({ type: LaskentaEventType.CONFIRM });
   };
 
   const start = () => {
-    send({ type: LaskentaEvents.START });
+    send({ type: LaskentaEventType.START });
   };
 
   const cancel = () => {
-    send({ type: LaskentaEvents.CANCEL });
+    send({ type: LaskentaEventType.CANCEL });
   };
 
   if (valinnanvaiheetQuery.data.length === 0) {
@@ -115,7 +115,7 @@ const HallintaTable = ({
                     (a) => a.valinnanvaiheoid === vaihe.oid,
                   )?.createdAt
                 }
-                areAllLaskentaRunning={state.matches(LaskentaStates.PROCESSING)}
+                areAllLaskentaRunning={state.matches(LaskentaState.PROCESSING)}
               />
             ))}
           </TableBody>
@@ -131,12 +131,12 @@ const HallintaTable = ({
             rowGap: 2,
           }}
         >
-          {!state.matches(LaskentaStates.WAITING_CONFIRMATION) && (
+          {!state.matches(LaskentaState.WAITING_CONFIRMATION) && (
             <OphButton
               variant="contained"
               onClick={start}
               disabled={
-                !state.matches(LaskentaStates.IDLE) ||
+                !state.matches(LaskentaState.IDLE) ||
                 !valinnanvaiheetQuery.data.some((vaihe) =>
                   isLaskentaUsedForValinnanvaihe(vaihe),
                 ) ||
@@ -146,10 +146,10 @@ const HallintaTable = ({
               {t('valinnanhallinta.kaynnistakaikki')}
             </OphButton>
           )}
-          {state.matches(LaskentaStates.WAITING_CONFIRMATION) && (
+          {state.matches(LaskentaState.WAITING_CONFIRMATION) && (
             <Confirm cancel={cancel} confirm={confirm} />
           )}
-          {state.matches(LaskentaStates.PROCESSING) && (
+          {state.matches(LaskentaState.PROCESSING) && (
             <CircularProgress aria-label={t('valinnanhallinta.lasketaan')} />
           )}
           {containsValisijoittelu && (

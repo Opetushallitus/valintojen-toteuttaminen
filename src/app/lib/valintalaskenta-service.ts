@@ -11,7 +11,7 @@ import {
   HakijaryhmanHakija,
   HakukohteenHakijaryhma,
   JarjestyskriteeriTila,
-  LaskentaErrorSummary,
+  LaskentaSummary,
   LaskentaStart,
   LaskettuValinnanVaiheModel,
   SeurantaTiedot,
@@ -120,42 +120,22 @@ export const kaynnistaLaskenta = async ({
 };
 
 export const keskeytaLaskenta = async ({
-  hakuOid,
   laskentaUuid,
 }: {
-  hakuOid: string;
   laskentaUuid: string;
-}): Promise<null> => {
-  await client.delete<null>(
-    `${configuration.valintalaskentakerrallaUrl}/haku/${hakuOid}/${laskentaUuid}`,
+}): Promise<void> => {
+  await client.delete<void>(
+    `${configuration.valintalaskentakerrallaUrl}/haku/${laskentaUuid}`,
   );
-  return null;
 };
 
-export const getLaskennanTilaHakukohteelle = async (
+export const getLaskennanYhteenveto = async (
   loadingUrl: string,
-): Promise<LaskentaErrorSummary> => {
-  const response = await client.get<{
-    hakukohteet: Array<{
-      hakukohdeOid: string;
-      ilmoitukset: [{ otsikko: string; tyyppi: string }] | null;
-    }>;
-  }>(
+): Promise<LaskentaSummary> => {
+  const response = await client.get<LaskentaSummary>(
     `${configuration.valintalaskentakerrallaUrl}/status/${loadingUrl}/yhteenveto`,
   );
-  return response.data?.hakukohteet
-    ?.filter((hk) => hk.ilmoitukset?.some((i) => i.tyyppi === 'VIRHE'))
-    .map(
-      (hakukohde: {
-        hakukohdeOid: string;
-        ilmoitukset: [{ otsikko: string }] | null;
-      }) => {
-        return {
-          hakukohdeOid: hakukohde.hakukohdeOid,
-          notifications: hakukohde.ilmoitukset?.map((i) => i.otsikko),
-        };
-      },
-    )[0];
+  return response.data;
 };
 
 export const getHakukohteenLasketutValinnanvaiheet = async (

@@ -66,7 +66,7 @@ export type LaskettuValinnanVaiheModel = {
 };
 
 export type SeurantaTiedot = {
-  tila: 'VALMIS' | 'MENEILLAAN' | 'ALOITTAMATTA';
+  tila: 'VALMIS' | 'MENEILLAAN' | 'ALOITTAMATTA' | 'PERUUTETTU';
   hakukohteitaYhteensa: number;
   hakukohteitaValmiina: number;
   hakukohteitaKeskeytetty: number;
@@ -80,7 +80,19 @@ export type LaskentaStart = {
 
 export type LaskentaErrorSummary = {
   hakukohdeOid: string;
-  notifications: string[] | undefined;
+  notifications: Array<string> | undefined;
+};
+
+export type LaskentaSummary = {
+  tila: 'PERUUTETTU' | 'VALMIS';
+  hakukohteet: Array<{
+    hakukohdeOid: string;
+    tila: 'TEKEMATTA' | 'VALMIS' | 'VIRHE';
+    ilmoitukset: Array<{ otsikko: string; tyyppi: string }>;
+  }>;
+  ilmoitus?: {
+    otsikko: string;
+  };
 };
 
 export enum ValintakoeOsallistuminenTulos {
