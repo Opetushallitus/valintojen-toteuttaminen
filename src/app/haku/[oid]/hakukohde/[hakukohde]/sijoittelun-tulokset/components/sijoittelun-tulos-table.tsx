@@ -37,7 +37,7 @@ export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
   title,
   key,
   render: (props) => <span>{props[amountProp] as number}</span>,
-  style: { width: 0 },
+  style: { width: 0, paddingRight: '1rem' },
 });
 
 const TRANSLATIONS_PREFIX = 'sijoittelun-tulokset.taulukko';
