@@ -23,6 +23,7 @@ import {
   HakemuksetStateChangeEvent,
   SijoittelunTuloksetChangeEvent,
 } from '../lib/sijoittelun-tulokset-state';
+import { OtherActionsCell } from './other-actions-cell';
 
 export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
   title,
@@ -132,7 +133,9 @@ export const SijoittelunTulosTable = ({
       makeColumnWithCustomRender<SijoittelunHakemusValintatiedoilla>({
         title: t(`${TRANSLATIONS_PREFIX}.toiminnot`),
         key: 'toiminnot',
-        renderFn: () => <span>...</span>,
+        renderFn: (props) => (
+          <OtherActionsCell hakemus={props} disabled={disabled} />
+        ),
         sortable: false,
       }),
     ].filter((a) => a !== null);

@@ -285,6 +285,11 @@
       "maksuntila": "Maksun tila",
       "toiminnot": "Toiminnot",
       "valitse-hakemus": "Valitse hakijan {{hakijanNimi}} hakemus"
+    },
+    "toiminnot": {
+      "muutoshistoria": "Muutoshistoria",
+      "hyvaksymiskirje": "Hyväksymiskirje",
+      "laheta-vastaanottoposti": "Lähetä vastaanottoposti"
     }
   },
   "valinnan-tulokset": {
