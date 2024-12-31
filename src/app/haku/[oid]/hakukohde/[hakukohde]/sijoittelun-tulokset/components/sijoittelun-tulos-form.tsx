@@ -14,7 +14,7 @@ import {
   SijoittelunTuloksetStates,
 } from '../lib/sijoittelun-tulokset-state';
 import { SijoitteluajonValintatapajonoValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
-import { Haku } from '@/app/lib/types/kouta-types';
+import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
 import { useSijoittelunTulosSearch } from '../hooks/useSijoittelunTuloksetSearch';
 import { SijoittelunTulosTable } from './sijoittelun-tulos-table';
 import { useTranslations } from '@/app/hooks/useTranslations';
@@ -23,7 +23,8 @@ import { useConfirmChangesBeforeNavigation } from '@/app/hooks/useConfirmChanges
 type SijoittelunTuloksetFormParams = {
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
   haku: Haku;
-  hakukohdeOid: string;
+  hakukohde: Hakukohde;
+  sijoitteluajoId: string;
   lastModified: string;
   publishAllowed: boolean;
 };
@@ -34,8 +35,9 @@ const StyledForm = styled('form')({
 
 export const SijoittelunTulosForm = ({
   valintatapajono,
-  hakukohdeOid,
+  hakukohde,
   haku,
+  sijoitteluajoId,
   lastModified,
   publishAllowed,
 }: SijoittelunTuloksetFormParams) => {
@@ -45,13 +47,13 @@ export const SijoittelunTulosForm = ({
 
   const syottoMachine = useMemo(() => {
     return createSijoittelunTuloksetMachine(
-      hakukohdeOid,
+      hakukohde.oid,
       valintatapajono.oid,
       valintatapajono.hakemukset,
       lastModified,
       addToast,
     );
-  }, [hakukohdeOid, valintatapajono, addToast, lastModified]);
+  }, [hakukohde, valintatapajono, addToast, lastModified]);
 
   const [state, send] = useMachine(syottoMachine);
 
@@ -110,7 +112,9 @@ export const SijoittelunTulosForm = ({
       >
         <SijoittelunTulosTable
           haku={haku}
+          hakukohde={hakukohde}
           hakemukset={pageResults}
+          sijoitteluajoId={sijoitteluajoId}
           sort={sort}
           setSort={setSort}
           updateForm={updateForm}

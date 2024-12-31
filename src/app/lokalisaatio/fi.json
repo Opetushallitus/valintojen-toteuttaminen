@@ -289,7 +289,9 @@
     "toiminnot": {
       "muutoshistoria": "Muutoshistoria",
       "hyvaksymiskirje": "Hyväksymiskirje",
-      "laheta-vastaanottoposti": "Lähetä vastaanottoposti"
+      "laheta-vastaanottoposti": "Lähetä vastaanottoposti",
+      "hyvaksymiskirje-hakemukselle-luotu": "Muodostettu hyväksymiskirje hakemukselle",
+      "hyvaksymiskirje-hakemukselle-luotu-epaonnistui": "Hyväksymiskirjeen muodostaminen hakemukselle epäonnistui"
     }
   },
   "valinnan-tulokset": {

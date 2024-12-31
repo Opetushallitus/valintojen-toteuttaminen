@@ -14,6 +14,9 @@ import {
   MailOutline,
   InsertDriveFileOutlined,
 } from '@mui/icons-material';
+import { luoHyvaksymiskirjeetPDF } from '@/app/lib/valintalaskentakoostepalvelu';
+import { Hakukohde } from '@/app/lib/types/kouta-types';
+import useToaster from '@/app/hooks/useToaster';
 
 const StyledListItemText = styled(ListItemText)(() => ({
   span: {
@@ -27,22 +30,52 @@ const StyledListItemIcon = styled(ListItemIcon)(() => ({
 
 export const OtherActionsCell = ({
   hakemus,
+  hakukohde,
   disabled,
+  sijoitteluajoId,
 }: {
   hakemus: SijoittelunHakemusValintatiedoilla;
+  hakukohde: Hakukohde;
   disabled: boolean;
+  sijoitteluajoId: string;
 }) => {
   const { t } = useTranslations();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const buttonId = `other-actions-menu-${hakemus.hakemusOid}`;
+  const { addToast } = useToaster();
 
   const showMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
   const closeMenu = () => setAnchorEl(null);
+
+  const createHyvaksymiskirjePDFs = async () => {
+    try {
+      await luoHyvaksymiskirjeetPDF(
+        [hakemus.hakemusOid],
+        sijoitteluajoId,
+        hakukohde,
+      );
+      addToast({
+        key: 'hyvaksymiskirje-hakemus',
+        message:
+          'sijoittelun-tulokset.toiminnot.hyvaksymiskirje-hakemukselle-luotu',
+        type: 'success',
+      });
+    } catch (e) {
+      addToast({
+        key: 'hyvaksymiskirje-hakemus-virhe',
+        message:
+          'sijoittelun-tulokset.toiminnot.hyvaksymiskirje-hakemukselle-luotu-epaonnistui',
+        type: 'error',
+      });
+      console.error(e);
+    }
+    closeMenu();
+  };
 
   return (
     <>
@@ -71,7 +104,7 @@ export const OtherActionsCell = ({
             {t('sijoittelun-tulokset.toiminnot.muutoshistoria')}
           </StyledListItemText>
         </MenuItem>
-        <MenuItem onClick={closeMenu}>
+        <MenuItem onClick={createHyvaksymiskirjePDFs}>
           <StyledListItemIcon>
             <InsertDriveFileOutlined />
           </StyledListItemIcon>

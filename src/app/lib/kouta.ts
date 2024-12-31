@@ -66,6 +66,14 @@ export function isToisenAsteenYhteisHaku(haku: Haku): boolean {
   );
 }
 
+export function isToinenAsteKohdejoukko(haku: Haku): boolean {
+  return [
+    'haunkohdejoukko_11',
+    'haunkohdejoukko_17',
+    'haunkohdejoukko_20',
+  ].some((hkj) => haku.kohdejoukkoKoodiUri.startsWith(hkj));
+}
+
 export function isKorkeakouluHaku(haku: Haku): boolean {
   return haku.kohdejoukkoKoodiUri.startsWith('haunkohdejoukko_12');
 }

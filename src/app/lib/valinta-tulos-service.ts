@@ -86,6 +86,7 @@ type SijoitteluajonTuloksetResponseData = {
       },
     ];
   }>;
+  sijoitteluajoId: string;
   hakijaryhmat: Array<{ oid: string; kiintio: number }>;
 };
 
@@ -120,6 +121,7 @@ type SijoitteluajonTuloksetWithValintaEsitysResponseData = {
     valintatapajonoOid: string;
     hyvaksytty?: string;
   }>;
+
   lastModified: string;
   sijoittelunTulokset: Omit<SijoitteluajonTuloksetResponseData, 'hakijaryhmat'>;
   kirjeLahetetty: [
@@ -230,6 +232,7 @@ const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
       };
     });
   return {
+    sijoitteluajoId: data.sijoittelunTulokset.sijoitteluajoId,
     valintatapajonot: sijoitteluajonTulokset,
     lastModified: data.lastModified,
   };
