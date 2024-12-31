@@ -1,4 +1,4 @@
-import { TranslatedName } from '../localization/localization-types';
+import { Language, TranslatedName } from '../localization/localization-types';
 
 const STARTING_YEAR = 2019; // check earliest kouta haku
 
@@ -48,6 +48,7 @@ export type Hakukohde = {
   organisaatioNimi: TranslatedName;
   jarjestyspaikkaHierarkiaNimi: TranslatedName;
   voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita: boolean;
+  opetuskielet: Set<Language>;
 };
 
 export enum Tila {

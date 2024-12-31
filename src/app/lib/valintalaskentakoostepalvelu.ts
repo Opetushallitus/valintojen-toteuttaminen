@@ -29,6 +29,7 @@ import { HakutoiveValintakoeOsallistumiset } from './types/valintalaskentakooste
 import { HarkinnanvaraisuudenSyy } from './types/harkinnanvaraiset-types';
 import { ValintakoeAvaimet } from './types/valintaperusteet-types';
 import { Hakukohde } from './types/kouta-types';
+import { getOpetuskieliCode } from './kouta';
 
 export const getHakukohteenValintatuloksetIlmanHakijanTilaa = async (
   hakuOid: string,
@@ -458,6 +459,7 @@ export const luoHyvaksymiskirjeetPDF = async (
   sijoitteluajoId: string,
   hakukohde: Hakukohde,
 ) => {
+  const opetuskieliCode = (getOpetuskieliCode(hakukohde) || 'fi').toUpperCase();
   const body = {
     hakuOid: hakukohde.hakuOid,
     hakukohdeOid: hakukohde.oid,
@@ -466,7 +468,7 @@ export const luoHyvaksymiskirjeetPDF = async (
     tarjoajaOid: hakukohde.organisaatioOid, //tarjoajaoids[0]?,
     hakukohdeNimi: hakukohde.nimi.fi,
     tag: hakukohde.oid,
-    langCode: 'fi', //HakukohdeNimiService.getOpetusKieliCode(hakukohde)
+    langCode: opetuskieliCode,
     templateName: 'hyvaksymiskirje',
   };
   await client.post(configuration.hyvaksymiskirjeetUrl, body);
