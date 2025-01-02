@@ -465,7 +465,7 @@ export const luoHyvaksymiskirjeetPDF = async (
     hakukohdeOid: hakukohde.oid,
     sijoitteluajoId,
     hakemusOids,
-    tarjoajaOid: hakukohde.organisaatioOid, //tarjoajaoids[0]?,
+    tarjoajaOid: hakukohde.tarjoajaOid,
     hakukohdeNimi: hakukohde.nimi.fi,
     tag: hakukohde.oid,
     langCode: opetuskieliCode,

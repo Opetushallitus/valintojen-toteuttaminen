@@ -5,7 +5,7 @@ import { Haku, Hakukohde, Tila } from './types/kouta-types';
 import { client } from './http-client';
 import { Language, TranslatedName } from './localization/localization-types';
 import { UserPermissions } from './permissions';
-import { addProp, pick } from 'remeda';
+import { addProp, pick, pipe } from 'remeda';
 import { HaunAsetukset } from './types/haun-asetukset';
 
 type HakuResponseData = {
@@ -105,12 +105,13 @@ type HakukohdeResponseData = {
   jarjestyspaikkaHierarkiaNimi: TranslatedName;
   voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita: boolean;
   opetuskieliKoodiUrit: string[];
+  tarjoaja: string;
 };
 
-const mapToHakukohde = (hakukohdeData: HakukohdeResponseData) => {
+const mapToHakukohde = (hakukohdeData: HakukohdeResponseData): Hakukohde => {
   const opetuskielet: Language[] = hakukohdeData.opetuskieliKoodiUrit
     .flatMap((koodiUri) => {
-      // huom: tässä ei ole käsitelty kaikkia mahdollisia opetuskieliä:
+      // huom: tässä ei ole käsitelty kaikkia mahdollisia opetuskieliä
       switch (koodiUri.split('#')[0]) {
         case 'oppilaitoksenopetuskieli_1':
           return ['fi'];
@@ -123,7 +124,7 @@ const mapToHakukohde = (hakukohdeData: HakukohdeResponseData) => {
       }
     })
     .filter((v) => v !== undefined) as Array<Language>;
-  return addProp(
+  return pipe(
     pick(hakukohdeData, [
       'oid',
       'hakuOid',
@@ -133,8 +134,8 @@ const mapToHakukohde = (hakukohdeData: HakukohdeResponseData) => {
       'jarjestyspaikkaHierarkiaNimi',
       'voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita',
     ]),
-    'opetuskielet',
-    new Set(opetuskielet),
+    addProp('opetuskielet', new Set(opetuskielet)),
+    addProp('tarjoajaOid', hakukohdeData.tarjoaja),
   );
 };
 

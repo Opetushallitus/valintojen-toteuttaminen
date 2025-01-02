@@ -33,6 +33,8 @@ describe('Laskenta state', async () => {
         organisaatioNimi: {},
         organisaatioOid: 'organisaatio-oid',
         voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita: false,
+        tarjoajaOid: 'tarjoaja-oid',
+        opetuskielet: new Set(['fi']),
       },
     ],
     sijoitellaanko: false,

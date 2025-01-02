@@ -31,6 +31,8 @@ const HAKUKOHDE_BASE: Hakukohde = {
     fi: 'testi-järjestypaikkahierarkia-nimi',
   },
   voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita: false,
+  tarjoajaOid: '6.6.7',
+  opetuskielet: new Set(['fi']),
 };
 
 const PERMISSIONS_BASE: UserPermissions = {
