@@ -294,7 +294,13 @@
       "hyvaksymiskirje-hakemukselle-luotu-epaonnistui": "Hyväksymiskirjeen muodostaminen hakemukselle epäonnistui",
       "vastaanottoposti-hakemukselle-ei-lahetettavia": "Lähetys epäonnistui, tarkasta hakemuksen tiedot",
       "vastaanottoposti-hakemukselle-lahetetty": "Sähköpostin lähetys onnistui",
-      "vastaanottoposti-hakemukselle-virhe": "Sähköpostin lähetys epäonnistui"
+      "vastaanottoposti-hakemukselle-virhe": "Sähköpostin lähetys epäonnistui",
+      "muutoshistoria-virhe": "Muutoshistorian lataus epäonnistui"
+    },
+    "muokkaushistoria": {
+      "otsikko": "Muokkaushistoria",
+      "ajankohta": "Muokkausajankohta",
+      "muutos": "Muutos"
     }
   },
   "valinnan-tulokset": {

@@ -1,11 +1,13 @@
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { SijoittelunHakemusValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
 import {
+  Box,
   ListItemIcon,
   ListItemText,
   Menu,
   MenuItem,
   styled,
+  Typography,
 } from '@mui/material';
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
 import { useState } from 'react';
@@ -17,7 +19,92 @@ import {
 import { luoHyvaksymiskirjeetPDF } from '@/app/lib/valintalaskentakoostepalvelu';
 import { Hakukohde } from '@/app/lib/types/kouta-types';
 import useToaster from '@/app/hooks/useToaster';
-import { sendVastaanottopostiHakemukselle } from '@/app/lib/valinta-tulos-service';
+import {
+  changeHistoryForHakemus,
+  sendVastaanottopostiHakemukselle,
+} from '@/app/lib/valinta-tulos-service';
+import {
+  createModal,
+  showModal,
+  useOphModalProps,
+} from '@/app/components/global-modal';
+import { HakemusChangeEvent } from '@/app/lib/types/valinta-tulos-types';
+import { OphModalDialog } from '@/app/components/oph-modal-dialog';
+import {
+  makeColumnWithCustomRender,
+  makeGenericColumn,
+} from '@/app/components/table/table-columns';
+import { ListTable } from '@/app/components/table/list-table';
+
+const HistoryModalContent = ({
+  changeHistory,
+}: {
+  changeHistory: HakemusChangeEvent[];
+}) => {
+  const { t } = useTranslations();
+
+  const parseMuutos = (muutos: string | boolean) => {
+    if (typeof muutos === 'boolean') {
+      if (!muutos) {
+        return t('yleinen.ei');
+      }
+      return t('yleinen.kylla');
+    }
+    return muutos;
+  };
+
+  const columns = [
+    makeGenericColumn<HakemusChangeEvent>({
+      title: 'sijoittelun-tulokset.muutoshistoria.ajankohta',
+      key: 'changeTime',
+      valueProp: 'changeTime',
+    }),
+    makeColumnWithCustomRender<HakemusChangeEvent>({
+      title: 'sijoittelun-tulokset.muutoshistoria.muutos',
+      key: 'changes',
+      renderFn: (props) =>
+        props.changes.map((c, index) => (
+          <Box key={`change-detail-${index}`}>
+            {c.field}: {parseMuutos(c.to)}
+          </Box>
+        )),
+      sortable: false,
+    }),
+  ];
+  return (
+    <ListTable rowKeyProp="changeTime" columns={columns} rows={changeHistory} />
+  );
+};
+
+const ChangeHistoryModal = createModal(
+  ({
+    changeHistory,
+    hakemus,
+  }: {
+    changeHistory: HakemusChangeEvent[];
+    hakemus: SijoittelunHakemusValintatiedoilla;
+  }) => {
+    const modalProps = useOphModalProps();
+    const { t } = useTranslations();
+    return (
+      <OphModalDialog
+        {...modalProps}
+        title={t('sijoittelun-tulokset.muokkaushistoria.otsikko')}
+        maxWidth="md"
+        actions={
+          <OphButton variant="outlined" onClick={modalProps.onClose}>
+            {t('yleinen.sulje')}
+          </OphButton>
+        }
+      >
+        <Typography variant="body1" sx={{ marginBottom: '1rem' }}>
+          {hakemus.hakijanNimi}
+        </Typography>
+        <HistoryModalContent changeHistory={changeHistory} />
+      </OphModalDialog>
+    );
+  },
+);
 
 const StyledListItemText = styled(ListItemText)(() => ({
   span: {
@@ -108,6 +195,24 @@ export const OtherActionsCell = ({
     closeMenu();
   };
 
+  const showChangeHistoryForHakemus = async () => {
+    try {
+      const history = await changeHistoryForHakemus(
+        hakemus.hakemusOid,
+        hakemus.valintatapajonoOid,
+      );
+      showModal(ChangeHistoryModal, { changeHistory: history, hakemus });
+    } catch (e) {
+      addToast({
+        key: 'muutoshistoria-hakemukselle-virhe',
+        message: 'sijoittelun-tulokset.toiminnot.muutoshistoria-virhe',
+        type: 'error',
+      });
+      console.error(e);
+    }
+    closeMenu();
+  };
+
   return (
     <>
       <OphButton
@@ -127,7 +232,7 @@ export const OtherActionsCell = ({
           'aria-labelledby': buttonId,
         }}
       >
-        <MenuItem onClick={closeMenu}>
+        <MenuItem onClick={showChangeHistoryForHakemus}>
           <StyledListItemIcon>
             <History />
           </StyledListItemIcon>

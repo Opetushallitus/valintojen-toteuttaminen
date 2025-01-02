@@ -18,6 +18,7 @@ import {
 import { MaksunTila, Maksuvelvollisuus } from './types/ataru-types';
 import { FetchError, OphApiError } from './common';
 import {
+  HakemusChangeEvent,
   ValinnanTulosModel,
   ValinnanTulosUpdateErrorResult,
 } from './types/valinta-tulos-types';
@@ -483,4 +484,34 @@ export const sendVastaanottopostiHakemukselle = async (
     { hakemusOid },
   );
   return response.data as string[];
+};
+
+type ChangeHistoryEventResponse = {
+  timestamp: string;
+  changes: [
+    {
+      field: string;
+      from: string | boolean;
+      to: string | boolean;
+    },
+  ];
+};
+
+export const changeHistoryForHakemus = async (
+  hakemusOid: string,
+  valintatapajonoOid: string,
+): Promise<HakemusChangeEvent[]> => {
+  const response = await client.get<Array<ChangeHistoryEventResponse>>(
+    configuration.muutoshistoriaHakemukselleUrl({
+      hakemusOid,
+      valintatapajonoOid,
+    }),
+  );
+  console.log(response.data);
+  return response.data.map((ce) => {
+    return {
+      changeTime: ce.timestamp,
+      changes: ce.changes,
+    };
+  });
 };

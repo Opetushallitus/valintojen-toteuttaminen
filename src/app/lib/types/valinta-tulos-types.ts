@@ -28,3 +28,14 @@ export type ValinnanTulosModel = {
   hyvaksyttyVarasijalta: boolean;
   hyvaksyPeruuntunut: boolean;
 };
+
+export type HakemusChangeDetail = {
+  field: string;
+  from: string | boolean;
+  to: string | boolean;
+};
+
+export type HakemusChangeEvent = {
+  changeTime: string;
+  changes: HakemusChangeDetail[];
+};
