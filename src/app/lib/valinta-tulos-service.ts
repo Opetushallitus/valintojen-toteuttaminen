@@ -474,3 +474,13 @@ export const getValinnanTulokset = async ({
     data: indexBy(data.map(prop('valinnantulos')), prop('hakukohdeOid')),
   };
 };
+
+export const sendVastaanottopostiHakemukselle = async (
+  hakemusOid: string,
+): Promise<string[]> => {
+  const response = await client.post(
+    `${configuration.vastaanottopostiHakemukselleUrl({ hakemusOid })}`,
+    { hakemusOid },
+  );
+  return response.data as string[];
+};

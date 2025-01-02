@@ -17,6 +17,7 @@ import {
 import { luoHyvaksymiskirjeetPDF } from '@/app/lib/valintalaskentakoostepalvelu';
 import { Hakukohde } from '@/app/lib/types/kouta-types';
 import useToaster from '@/app/hooks/useToaster';
+import { sendVastaanottopostiHakemukselle } from '@/app/lib/valinta-tulos-service';
 
 const StyledListItemText = styled(ListItemText)(() => ({
   span: {
@@ -77,6 +78,36 @@ export const OtherActionsCell = ({
     closeMenu();
   };
 
+  const sendVastaanottoposti = async () => {
+    try {
+      const data = await sendVastaanottopostiHakemukselle(hakemus.hakemusOid);
+      if (!data || data.length < 1) {
+        addToast({
+          key: 'vastaanottoposti-hakemus-empty',
+          message:
+            'sijoittelun-tulokset.toiminnot.vastaanottoposti-hakemukselle-ei-lahetettavia',
+          type: 'error',
+        });
+      } else {
+        addToast({
+          key: 'vastaanottoposti-hakemus',
+          message:
+            'sijoittelun-tulokset.toiminnot.vastaanottoposti-hakemukselle-lahetetty',
+          type: 'success',
+        });
+      }
+    } catch (e) {
+      addToast({
+        key: 'vastaanottoposti-hakemus-virhe',
+        message:
+          'sijoittelun-tulokset.toiminnot.vastaanottoposti-hakemukselle-virhe',
+        type: 'error',
+      });
+      console.error(e);
+    }
+    closeMenu();
+  };
+
   return (
     <>
       <OphButton
@@ -112,7 +143,7 @@ export const OtherActionsCell = ({
             {t('sijoittelun-tulokset.toiminnot.hyvaksymiskirje')}
           </StyledListItemText>
         </MenuItem>
-        <MenuItem onClick={closeMenu}>
+        <MenuItem onClick={sendVastaanottoposti}>
           <StyledListItemIcon>
             <MailOutline />
           </StyledListItemIcon>

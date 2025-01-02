@@ -291,7 +291,10 @@
       "hyvaksymiskirje": "Hyväksymiskirje",
       "laheta-vastaanottoposti": "Lähetä vastaanottoposti",
       "hyvaksymiskirje-hakemukselle-luotu": "Muodostettu hyväksymiskirje hakemukselle",
-      "hyvaksymiskirje-hakemukselle-luotu-epaonnistui": "Hyväksymiskirjeen muodostaminen hakemukselle epäonnistui"
+      "hyvaksymiskirje-hakemukselle-luotu-epaonnistui": "Hyväksymiskirjeen muodostaminen hakemukselle epäonnistui",
+      "vastaanottoposti-hakemukselle-ei-lahetettavia": "Lähetys epäonnistui, tarkasta hakemuksen tiedot",
+      "vastaanottoposti-hakemukselle-lahetetty": "Sähköpostin lähetys onnistui",
+      "vastaanottoposti-hakemukselle-virhe": "Sähköpostin lähetys epäonnistui"
     }
   },
   "valinnan-tulokset": {

@@ -166,6 +166,8 @@ export const configuration = {
     `${DOMAIN}/valinta-tulos-service/auth/valinnan-tulos/${valintatapajonoOid}`,
   hakemuksenValinnanTulosUrl: ({ hakemusOid }: { hakemusOid: string }) =>
     `${DOMAIN}/valinta-tulos-service/auth/valinnan-tulos/hakemus/?hakemusOid=${hakemusOid}`,
+  vastaanottopostiHakemukselleUrl: ({ hakemusOid }: { hakemusOid: string }) =>
+    `${DOMAIN}/valinta-tulos-service/auth/emailer/run/hakemus/${hakemusOid}`,
 
   // -------------------------------------------------------------------------------------------------
   // valintalaskenta-ui (vanha käyttöliittymä)
