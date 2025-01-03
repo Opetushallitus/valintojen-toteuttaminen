@@ -50,22 +50,29 @@ const HistoryModalContent = ({
       }
       return t('yleinen.kylla');
     }
-    return muutos;
+    return t(`sijoittelun-tulokset.muokkaushistoria.muutokset.${muutos}`, {
+      defaultValue: muutos,
+    });
   };
+
+  const parseKey = (key: string) =>
+    t(`sijoittelun-tulokset.muokkaushistoria.muutokset.${key}`, {
+      defaultValue: key,
+    });
 
   const columns = [
     makeGenericColumn<HakemusChangeEvent>({
-      title: 'sijoittelun-tulokset.muutoshistoria.ajankohta',
+      title: 'sijoittelun-tulokset.muokkaushistoria.ajankohta',
       key: 'changeTime',
       valueProp: 'changeTime',
     }),
     makeColumnWithCustomRender<HakemusChangeEvent>({
-      title: 'sijoittelun-tulokset.muutoshistoria.muutos',
+      title: 'sijoittelun-tulokset.muokkaushistoria.muutos',
       key: 'changes',
       renderFn: (props) =>
         props.changes.map((c, index) => (
           <Box key={`change-detail-${index}`}>
-            {c.field}: {parseMuutos(c.to)}
+            {parseKey(c.field)}: {parseMuutos(c.to)}
           </Box>
         )),
       sortable: false,

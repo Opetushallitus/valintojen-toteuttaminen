@@ -22,6 +22,7 @@ import {
   ValinnanTulosModel,
   ValinnanTulosUpdateErrorResult,
 } from './types/valinta-tulos-types';
+import { toFormattedDateTimeString } from './localization/translation-utils';
 
 type SijoittelunTulosResponseData = {
   valintatapajonoNimi: string;
@@ -507,11 +508,13 @@ export const changeHistoryForHakemus = async (
       valintatapajonoOid,
     }),
   );
-  console.log(response.data);
   return response.data.map((ce) => {
+    const changes = ce.changes.filter(
+      (c) => c.field !== 'valinnantilanViimeisinMuutos',
+    );
     return {
-      changeTime: ce.timestamp,
-      changes: ce.changes,
+      changeTime: toFormattedDateTimeString(ce.timestamp),
+      changes,
     };
   });
 };
