@@ -13,6 +13,7 @@ import {
   History,
   MailOutline,
   InsertDriveFileOutlined,
+  MoreHoriz,
 } from '@mui/icons-material';
 import { luoHyvaksymiskirjeetPDF } from '@/app/lib/valintalaskentakoostepalvelu';
 import { Hakukohde } from '@/app/lib/types/kouta-types';
@@ -139,9 +140,8 @@ export const OtherActionsCell = ({
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
         onClick={showMenu}
-      >
-        ...
-      </OphButton>
+        startIcon={<MoreHoriz />}
+      />
       <Menu
         anchorEl={anchorEl}
         open={open}
