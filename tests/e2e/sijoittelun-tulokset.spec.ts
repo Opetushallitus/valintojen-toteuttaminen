@@ -419,6 +419,119 @@ test.describe('accepting valintaesitys', () => {
   });
 });
 
+test.describe('other actions of hakemus', () => {
+  test('show changehistory', async ({ page }) => {
+    await page.route(
+      '*/**/valinta-tulos-service/auth/muutoshistoria*',
+      async (route) => {
+        await route.fulfill({
+          status: 200,
+          json: [
+            {
+              changes: [
+                {
+                  field: 'valinnantilanViimeisinMuutos',
+                  from: '2024-05-14T09:52:43.341+03:00',
+                  to: '2024-10-02T14:38:11.336+03:00',
+                },
+                {
+                  field: 'valinnantila',
+                  from: 'HYLATTY',
+                  to: 'PERUUNTUNUT',
+                },
+              ],
+              timestamp: '2024-10-02T14:36:00.955506+03:00',
+            },
+            {
+              changes: [
+                {
+                  field: 'valinnantilanViimeisinMuutos',
+                  to: '2024-05-14T09:52:43.341+03:00',
+                },
+                {
+                  field: 'valinnantila',
+                  to: 'HYLATTY',
+                },
+                {
+                  field: 'hyvaksyttyVarasijalta',
+                  to: false,
+                },
+                {
+                  field: 'hyvaksyPeruuntunut',
+                  to: false,
+                },
+                {
+                  field: 'julkaistavissa',
+                  to: false,
+                },
+              ],
+              timestamp: '2024-05-14T09:52:41.927195+03:00',
+            },
+          ],
+        });
+      },
+    );
+    await page
+      .locator(
+        '[id="other-actions-menu-1\\.2\\.246\\.562\\.11\\.00000000000001796027"]',
+      )
+      .click();
+    await expect(page.getByText('Muutoshistoria')).toBeVisible();
+    await page.getByText('Muutoshistoria').click();
+    await expect(page.getByText('Muokkausajankohta')).toBeVisible();
+    await expect(page.getByLabel('Muutoshistoria')).toContainText(
+      'Sijoittelun tila: Peruuntunut',
+    );
+    await expect(page.getByLabel('Muutoshistoria')).toContainText(
+      'Sijoittelun tila: Hylätty',
+    );
+    await page.getByText('Sulje').click();
+    await expect(page.getByText('Muokkausajankohta')).toBeHidden();
+  });
+
+  test('create hyväksymiskirje', async ({ page }) => {
+    await page.route(
+      '*/**/valintalaskentakoostepalvelu/resources/viestintapalvelu/hyvaksymiskirjeet/aktivoi*',
+      async (route) => {
+        await route.fulfill({
+          status: 200,
+          body: 'OK',
+        });
+      },
+    );
+    await page
+      .locator(
+        '[id="other-actions-menu-1\\.2\\.246\\.562\\.11\\.00000000000001796027"]',
+      )
+      .click();
+    await expect(page.getByText('Hyväksymiskirje')).toBeVisible();
+    await page.getByText('Hyväksymiskirje').click();
+    await expect(
+      page.getByText('Muodostettu hyväksymiskirje hakemukselle'),
+    ).toBeVisible();
+  });
+
+  test('send vastaanottoposti', async ({ page }) => {
+    await page.route(
+      '*/**/valinta-tulos-service/auth/emailer/run/hakemus/1.2.246.562.11.00000000000001796027',
+      async (route) => {
+        await route.fulfill({
+          status: 200,
+          json: ['1.2.246.562.11.00000000000001796027'],
+        });
+      },
+    );
+    await page
+      .locator(
+        '[id="other-actions-menu-1\\.2\\.246\\.562\\.11\\.00000000000001796027"]',
+      )
+      .click();
+    await expect(page.getByText('Lähetä vastaanottoposti')).toBeVisible();
+    await page.getByText('Lähetä vastaanottoposti').click();
+    await expect(page.getByText('Sähköpostin lähetys onnistui')).toBeVisible();
+  });
+});
+
 async function goToSijoittelunTulokset(page: Page) {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/sijoittelun-tulokset',

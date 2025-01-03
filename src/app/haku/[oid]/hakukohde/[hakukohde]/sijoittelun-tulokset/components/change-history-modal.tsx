@@ -31,24 +31,24 @@ const HistoryModalContent = ({
       }
       return t('yleinen.kylla');
     }
-    return t(`sijoittelun-tulokset.muokkaushistoria.muutokset.${muutos}`, {
+    return t(`sijoittelun-tulokset.muutoshistoria.muutokset.${muutos}`, {
       defaultValue: muutos,
     });
   };
 
   const parseKey = (key: string) =>
-    t(`sijoittelun-tulokset.muokkaushistoria.muutokset.${key}`, {
+    t(`sijoittelun-tulokset.muutoshistoria.muutokset.${key}`, {
       defaultValue: key,
     });
 
   const columns = [
     makeGenericColumn<HakemusChangeEvent>({
-      title: 'sijoittelun-tulokset.muokkaushistoria.ajankohta',
+      title: 'sijoittelun-tulokset.muutoshistoria.ajankohta',
       key: 'changeTime',
       valueProp: 'changeTime',
     }),
     makeColumnWithCustomRender<HakemusChangeEvent>({
-      title: 'sijoittelun-tulokset.muokkaushistoria.muutos',
+      title: 'sijoittelun-tulokset.muutoshistoria.muutos',
       key: 'changes',
       renderFn: (props) =>
         props.changes.map((c, index) => (
@@ -98,7 +98,7 @@ export const ChangeHistoryModal = createModal(
     return (
       <OphModalDialog
         {...modalProps}
-        title={t('sijoittelun-tulokset.muokkaushistoria.otsikko')}
+        title={t('sijoittelun-tulokset.muutoshistoria.otsikko')}
         maxWidth="md"
         actions={
           <OphButton variant="outlined" onClick={modalProps.onClose}>

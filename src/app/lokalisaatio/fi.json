@@ -297,8 +297,8 @@
       "vastaanottoposti-hakemukselle-virhe": "Sähköpostin lähetys epäonnistui",
       "muutoshistoria-virhe": "Muutoshistorian lataus epäonnistui"
     },
-    "muokkaushistoria": {
-      "otsikko": "Muokkaushistoria",
+    "muutoshistoria": {
+      "otsikko": "Muutoshistoria",
       "ajankohta": "Muokkausajankohta",
       "muutos": "Muutos",
       "muutokset": {
