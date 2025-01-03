@@ -36,6 +36,8 @@ export type HakemusChangeDetail = {
 };
 
 export type HakemusChangeEvent = {
+  rowKey: string;
+  changeTimeUnformatted: string;
   changeTime: string;
   changes: HakemusChangeDetail[];
 };

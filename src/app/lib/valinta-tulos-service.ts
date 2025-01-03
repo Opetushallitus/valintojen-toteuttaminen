@@ -508,11 +508,13 @@ export const changeHistoryForHakemus = async (
       valintatapajonoOid,
     }),
   );
-  return response.data.map((ce) => {
+  return response.data.map((ce, index) => {
     const changes = ce.changes.filter(
       (c) => c.field !== 'valinnantilanViimeisinMuutos',
     );
     return {
+      rowKey: `${index}-${ce.timestamp}`,
+      changeTimeUnformatted: ce.timestamp,
       changeTime: toFormattedDateTimeString(ce.timestamp),
       changes,
     };

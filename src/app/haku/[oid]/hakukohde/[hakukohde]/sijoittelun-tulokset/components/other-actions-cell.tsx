@@ -10,7 +10,7 @@ import {
   Typography,
 } from '@mui/material';
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   History,
   MailOutline,
@@ -35,11 +35,16 @@ import {
   makeGenericColumn,
 } from '@/app/components/table/table-columns';
 import { ListTable } from '@/app/components/table/list-table';
+import { getSortParts } from '@/app/components/table/table-utils';
 
 const HistoryModalContent = ({
   changeHistory,
+  sort,
+  setSort,
 }: {
   changeHistory: HakemusChangeEvent[];
+  sort: string;
+  setSort: (s: string) => void;
 }) => {
   const { t } = useTranslations();
 
@@ -79,7 +84,13 @@ const HistoryModalContent = ({
     }),
   ];
   return (
-    <ListTable rowKeyProp="changeTime" columns={columns} rows={changeHistory} />
+    <ListTable
+      rowKeyProp="rowKey"
+      columns={columns}
+      rows={changeHistory}
+      sort={sort}
+      setSort={setSort}
+    />
   );
 };
 
@@ -93,6 +104,21 @@ const ChangeHistoryModal = createModal(
   }) => {
     const modalProps = useOphModalProps();
     const { t } = useTranslations();
+
+    const [sort, setSort] = useState<string>('changeTime:desc');
+
+    const sortedHistory = useMemo(() => {
+      const { direction } = getSortParts(sort);
+      return changeHistory.sort((a, b) => {
+        const aTime = new Date(a.changeTimeUnformatted).getTime();
+        const bTime = new Date(b.changeTimeUnformatted).getTime();
+        if (direction === 'asc') {
+          return aTime - bTime;
+        }
+        return bTime - aTime;
+      });
+    }, [sort, changeHistory]);
+
     return (
       <OphModalDialog
         {...modalProps}
@@ -107,7 +133,11 @@ const ChangeHistoryModal = createModal(
         <Typography variant="body1" sx={{ marginBottom: '1rem' }}>
           {hakemus.hakijanNimi}
         </Typography>
-        <HistoryModalContent changeHistory={changeHistory} />
+        <HistoryModalContent
+          changeHistory={sortedHistory}
+          sort={sort}
+          setSort={setSort}
+        />
       </OphModalDialog>
     );
   },
