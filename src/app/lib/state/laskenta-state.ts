@@ -329,7 +329,7 @@ export const createLaskentaMachine = (
             target: LaskentaState.DETERMINE_SUMMARY,
             actions: assign({
               summary: ({ event }) => event.output,
-              // TODO: Poista errorSummary, kun virheiden esittäminen on yhdenmukaistettu myös sijoittelun tulokset näkymässä
+              // TODO: Poista errorSummary, kun virheiden esittäminen on yhdenmukaistettu myös "valinnan hallinta"-näkymässä
               errorSummary: ({ event }) =>
                 event.output?.hakukohteet
                   ?.filter((hk) =>

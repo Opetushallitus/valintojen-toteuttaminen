@@ -187,7 +187,5 @@ const buildYhteenveto = (
     tila,
   };
 
-  console.log({ yhteenveto });
-
   return Promise.resolve({ headers: new Headers(), data: yhteenveto });
 };
