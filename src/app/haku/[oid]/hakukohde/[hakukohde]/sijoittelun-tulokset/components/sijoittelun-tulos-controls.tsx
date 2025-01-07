@@ -10,6 +10,7 @@ import {
 import { Haku } from '@/app/lib/types/kouta-types';
 import { isKorkeakouluHaku } from '@/app/lib/kouta';
 import { SearchInput } from '@/app/components/search-input';
+import { OtherActionsHakukohdeButton } from './other-actions-hakukohde-button';
 
 export const SijoittelunTulosControls = ({ haku }: { haku: Haku }) => {
   const {
@@ -89,6 +90,9 @@ export const SijoittelunTulosControls = ({ haku }: { haku: Haku }) => {
             label={t('sijoittelun-tulokset.nayta-ehdolliset')}
           />
         )}
+      </Box>
+      <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+        <OtherActionsHakukohdeButton disabled={false} />
       </Box>
     </Box>
   );
