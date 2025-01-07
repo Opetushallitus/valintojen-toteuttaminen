@@ -17,7 +17,7 @@ export type OphModalDialogProps = Pick<
 > & {
   titleAlign?: 'center' | 'left';
   contentAlign?: 'center' | 'left';
-  children: React.ReactNode;
+  children?: React.ReactNode;
   title: string;
   actions?: React.ReactNode;
   onClose?: (

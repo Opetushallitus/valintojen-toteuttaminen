@@ -66,3 +66,8 @@ export function downloadBlob(fileName: string, data: Blob) {
   window.URL.revokeObjectURL(url);
   link.remove();
 }
+
+export const isServer = typeof window === 'undefined';
+
+export const isHakukohdeOid = (value: string) =>
+  /^1\.2\.246\.562\.20\.\d{20}$/.test(value);

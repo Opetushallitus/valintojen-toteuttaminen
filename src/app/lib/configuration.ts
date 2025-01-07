@@ -9,10 +9,15 @@ export const isProd = process.env.NODE_ENV === 'production';
 
 export const isTesting = process.env.TEST === 'true';
 
+export const xstateInspect = process.env.XSTATE_INSPECT === 'true';
+
 type ValintatapajonoStatusParams = {
   valintatapajonoOid: string;
   status: boolean;
 };
+
+const VALINTALASKENTAKERRALLA_VANHA =
+  process.env.NEXT_PUBLIC_VALINTALASKENTAKERRALLA_VANHA === 'true';
 
 export const configuration = {
   // yleiset
@@ -59,6 +64,9 @@ export const configuration = {
   // valintalaskenta-laskenta-service
   valintalaskentaServiceLogin: `${DOMAIN}/valintalaskenta-laskenta-service/auth/login`,
   valintalaskentaServiceUrl: `${DOMAIN}/valintalaskenta-laskenta-service/resources/`,
+  valintalaskentakerrallaUrl: VALINTALASKENTAKERRALLA_VANHA
+    ? `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintalaskentakerralla`
+    : `${DOMAIN}/valintalaskenta-laskenta-service/resources/valintalaskentakerralla`,
   hakemuksenLasketutValinnanvaiheetUrl: ({
     hakuOid,
     hakemusOid,

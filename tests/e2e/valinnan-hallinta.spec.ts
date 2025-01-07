@@ -102,8 +102,10 @@ test('shows success toast when laskenta completes', async ({ page }) => {
     async (route) => {
       await route.fulfill({
         json: {
+          tila: 'VALMIS',
           hakukohteet: [
             {
+              tila: 'VALMIS',
               hakukohde: '1.2.246.562.20.00000000000000045105',
               ilmoitukset: [],
             },

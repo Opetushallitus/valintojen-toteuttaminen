@@ -17,6 +17,8 @@ export default function ReactQueryClientProvider({
             retry: 1,
             throwOnError: true,
             staleTime: 10 * 1000,
+            refetchOnWindowFocus: false,
+            refetchOnReconnect: false,
           },
         },
       }),

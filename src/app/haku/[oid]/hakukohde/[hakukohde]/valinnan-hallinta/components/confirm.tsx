@@ -7,6 +7,7 @@ type ConfirmParams = {
   cancel: () => void;
 };
 
+// TODO: Korvaa ConfirmationModalDialog-komponentilla
 const Confirm = ({ confirm, cancel }: ConfirmParams) => {
   const { t } = useTranslations();
 

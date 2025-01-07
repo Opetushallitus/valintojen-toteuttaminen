@@ -1,5 +1,6 @@
 'use client';
 import { ErrorView } from './components/error-view';
+import { LocalizedThemeProvider } from './components/localized-theme-provider';
 
 export default function GlobalError({
   error,
@@ -11,7 +12,9 @@ export default function GlobalError({
   return (
     <html>
       <body>
-        <ErrorView error={error} reset={reset} />
+        <LocalizedThemeProvider>
+          <ErrorView error={error} reset={reset} />
+        </LocalizedThemeProvider>
       </body>
     </html>
   );

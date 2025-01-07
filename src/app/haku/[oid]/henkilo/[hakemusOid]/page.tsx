@@ -12,6 +12,9 @@ import { HakutoiveetTable } from './components/hakutoiveet-table';
 import { useHenkiloPageData } from './hooks/useHenkiloPageData';
 import { use } from 'react';
 import { HenkilonPistesyotto } from './components/henkilon-pistesyotto';
+import { useHaunAsetukset } from '@/app/hooks/useHaunAsetukset';
+import { useHaku } from '@/app/hooks/useHaku';
+import { HenkilonValintalaskenta } from './components/henkilon-valintalaskenta';
 
 const HenkiloContent = ({
   hakuOid,
@@ -22,6 +25,9 @@ const HenkiloContent = ({
 }) => {
   const { t, translateEntity } = useTranslations();
 
+  const { data: haku } = useHaku({ hakuOid });
+  const { data: haunAsetukset } = useHaunAsetukset({ hakuOid });
+
   const { hakukohteet, hakija, postitoimipaikka } = useHenkiloPageData({
     hakuOid,
     hakemusOid,
@@ -30,7 +36,12 @@ const HenkiloContent = ({
   return (
     <>
       <Typography variant="h2">{getHenkiloTitle(hakija)}</Typography>
-      <Stack direction="row" spacing="4vw">
+      <HenkilonValintalaskenta
+        hakukohteet={hakukohteet}
+        haku={haku}
+        haunAsetukset={haunAsetukset}
+      />
+      <Stack direction="row" spacing="4vw" sx={{ paddingTop: 1 }}>
         <LabeledInfoItem
           label={t('henkilo.hakemus-oid')}
           value={

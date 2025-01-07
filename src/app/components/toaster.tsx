@@ -50,6 +50,7 @@ const InfoToast = ({
   );
 };
 
+// TODO: Korvaa ConfirmationModalDialog-komponentilla
 const ConfirmToast = ({ toast }: { toast: Toast }) => {
   const { t } = useTranslations();
   const { removeToast } = useToaster();

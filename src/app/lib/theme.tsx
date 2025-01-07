@@ -27,15 +27,6 @@ export const notLarge = (theme: Theme) => theme.breakpoints.down('lg');
 
 export const THEME_OVERRIDES: ThemeOptions = {
   components: {
-    MuiInputBase: {
-      styleOverrides: {
-        root: {
-          borderColor: ophColors.grey800,
-          borderRadius: '2px',
-          height: '48px',
-        },
-      },
-    },
     MuiDialog: {
       defaultProps: {
         fullWidth: true,

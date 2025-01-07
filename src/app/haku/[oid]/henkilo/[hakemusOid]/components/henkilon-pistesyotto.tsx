@@ -85,7 +85,6 @@ const KokeenPistesyotto = ({
         />
         <OphButton
           variant="contained"
-          sx={{ minHeight: '48px' }}
           startIcon={isUpdating && <SpinnerIcon />}
           disabled={isUpdating}
           onClick={() => {

@@ -24,10 +24,11 @@ import { forEachObj, isShallowEqual } from 'remeda';
 import { NDASH } from '@/app/lib/constants';
 
 const HAKUKOHDE_OID = '1.2.246.562.20.00000000000000045105';
+const NUKETTAJA_HAKEMUS_OID = '1.2.246.562.11.00000000000001796027';
 
 const VALINNAN_TULOS_RESULT = hakemusValinnanTulosFixture({
   hakukohdeOid: HAKUKOHDE_OID,
-  hakemusOid: '1.2.246.562.11.00000000000001796027',
+  hakemusOid: NUKETTAJA_HAKEMUS_OID,
   valintatapajonoOid: '17093042998533736417074016063604',
   henkiloOid: '1.2.246.562.24.69259807406',
   valinnantila: SijoittelunTila.HYVAKSYTTY,
@@ -50,15 +51,13 @@ test.beforeEach(async ({ page }) => {
 
   await page.route(configuration.hakemuksetUrl, (route) => {
     return route.fulfill({
-      json: HAKENEET.filter(
-        ({ oid }) => oid === '1.2.246.562.11.00000000000001793706',
-      ),
+      json: HAKENEET.filter(({ oid }) => oid === NUKETTAJA_HAKEMUS_OID),
     });
   });
   await page.route(
     configuration.hakemuksenLasketutValinnanvaiheetUrl({
       hakuOid: '1.2.246.562.29.00000000000000045102',
-      hakemusOid: '1.2.246.562.11.00000000000001796027',
+      hakemusOid: NUKETTAJA_HAKEMUS_OID,
     }),
     (route) =>
       route.fulfill({
@@ -68,7 +67,7 @@ test.beforeEach(async ({ page }) => {
   await page.route(
     configuration.hakemuksenSijoitteluajonTuloksetUrl({
       hakuOid: '1.2.246.562.29.00000000000000045102',
-      hakemusOid: '1.2.246.562.11.00000000000001796027',
+      hakemusOid: NUKETTAJA_HAKEMUS_OID,
     }),
     (route) => {
       return route.fulfill({
@@ -79,7 +78,7 @@ test.beforeEach(async ({ page }) => {
 
   await page.route(
     configuration.hakemuksenValinnanTulosUrl({
-      hakemusOid: '1.2.246.562.11.00000000000001796027',
+      hakemusOid: NUKETTAJA_HAKEMUS_OID,
     }),
     (route) => {
       return route.fulfill({
@@ -203,7 +202,7 @@ test('Displays selected henkilö info with hakutoive but without valintalaskenta
   await page.route(
     configuration.hakemuksenLasketutValinnanvaiheetUrl({
       hakuOid: '1.2.246.562.29.00000000000000045102',
-      hakemusOid: '1.2.246.562.11.00000000000001796027',
+      hakemusOid: NUKETTAJA_HAKEMUS_OID,
     }),
     (route) =>
       route.fulfill({
@@ -216,7 +215,7 @@ test('Displays selected henkilö info with hakutoive but without valintalaskenta
   await page.route(
     configuration.hakemuksenSijoitteluajonTuloksetUrl({
       hakuOid: '1.2.246.562.29.00000000000000045102',
-      hakemusOid: '1.2.246.562.11.00000000000001796027',
+      hakemusOid: NUKETTAJA_HAKEMUS_OID,
     }),
     (route) => {
       return route.fulfill({
@@ -227,7 +226,7 @@ test('Displays selected henkilö info with hakutoive but without valintalaskenta
 
   await page.route(
     configuration.hakemuksenValinnanTulosUrl({
-      hakemusOid: '1.2.246.562.11.00000000000001796027',
+      hakemusOid: NUKETTAJA_HAKEMUS_OID,
     }),
     (route) => {
       return route.fulfill({
@@ -325,7 +324,7 @@ test('Displays selected henkilö hakutoiveet with laskenta results only', async 
   await page.route(
     configuration.hakemuksenSijoitteluajonTuloksetUrl({
       hakuOid: '1.2.246.562.29.00000000000000045102',
-      hakemusOid: '1.2.246.562.11.00000000000001796027',
+      hakemusOid: NUKETTAJA_HAKEMUS_OID,
     }),
     (route) => {
       return route.fulfill({
@@ -336,7 +335,7 @@ test('Displays selected henkilö hakutoiveet with laskenta results only', async 
 
   await page.route(
     configuration.hakemuksenValinnanTulosUrl({
-      hakemusOid: '1.2.246.562.11.00000000000001796027',
+      hakemusOid: NUKETTAJA_HAKEMUS_OID,
     }),
     (route) => {
       return route.fulfill({
@@ -451,7 +450,7 @@ test('Sends valintalaskenta save request with right values and shows success not
   page,
 }) => {
   const muokkausUrl = configuration.jarjestyskriteeriMuokkausUrl({
-    hakemusOid: '1.2.246.562.11.00000000000001796027',
+    hakemusOid: NUKETTAJA_HAKEMUS_OID,
     valintatapajonoOid: '17093042998533736417074016063604',
     jarjestyskriteeriPrioriteetti: 0,
   });
@@ -500,7 +499,7 @@ test('Sends valintalaskenta save request with right values and shows success not
 test('Show notification on valintalaskenta save error', async ({ page }) => {
   await page.route(
     configuration.jarjestyskriteeriMuokkausUrl({
-      hakemusOid: '1.2.246.562.11.00000000000001796027',
+      hakemusOid: NUKETTAJA_HAKEMUS_OID,
       valintatapajonoOid: '17093042998533736417074016063604',
       jarjestyskriteeriPrioriteetti: 0,
     }),
@@ -636,149 +635,345 @@ test('Show notification on valinta save error', async ({ page }) => {
   ).toBeVisible();
 });
 
-test('Displays pistesyöttö', async ({ page }) => {
-  await page.goto(
-    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo/1.2.246.562.11.00000000000001796027',
-  );
+test.describe('Pistesyöttö', () => {
+  test('Displays pistesyöttö', async ({ page }) => {
+    await page.goto(
+      '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo/1.2.246.562.11.00000000000001796027',
+    );
 
-  await expectAllSpinnersHidden(page);
+    await expectAllSpinnersHidden(page);
 
-  const pistesyottoHeading = page.getByRole('heading', { name: 'Pistesyöttö' });
-  await expect(pistesyottoHeading).toBeVisible();
+    const pistesyottoHeading = page.getByRole('heading', {
+      name: 'Pistesyöttö',
+    });
+    await expect(pistesyottoHeading).toBeVisible();
 
-  const nakkikoe = page.getByRole('region', {
-    name: 'Nakkikoe, oletko nakkisuojassa?',
+    const nakkikoe = page.getByRole('region', {
+      name: 'Nakkikoe, oletko nakkisuojassa?',
+    });
+
+    await expect(nakkikoe).toBeVisible();
+
+    const nakkiKyllaInput = nakkikoe.getByText('Kyllä');
+    await expect(nakkiKyllaInput).toBeVisible();
+    const nakkiOsallistuiInput = nakkikoe.getByText('Osallistui', {
+      exact: true,
+    });
+    await expect(nakkiOsallistuiInput).toBeVisible();
+
+    const nakkiTallennaButton = nakkikoe.getByRole('button', {
+      name: 'Tallenna',
+    });
+
+    await expect(nakkiTallennaButton).toBeEnabled();
+
+    const koksakoe = page.getByRole('region', {
+      name: `Köksäkokeen arvosana 4${NDASH}10`,
+    });
+
+    await expect(koksakoe).toBeVisible();
+
+    const koksaPisteetInput = koksakoe.getByLabel('Pisteet');
+    await expect(koksaPisteetInput).toBeVisible();
+    const koksaOsallistuiInput = koksakoe.getByText('Osallistui', {
+      exact: true,
+    });
+    await expect(koksaOsallistuiInput).toBeVisible();
+
+    const koksaTallennaButton = koksakoe.getByRole('button', {
+      name: 'Tallenna',
+    });
+    await expect(koksaTallennaButton).toBeEnabled();
   });
 
-  await expect(nakkikoe).toBeVisible();
+  test('Sends right data when saving pistesyotto and shows success toast', async ({
+    page,
+  }) => {
+    const pisteetSaveUrl = configuration.koostetutPistetiedotHakukohteelleUrl({
+      hakuOid: '1.2.246.562.29.00000000000000045102',
+      hakukohdeOid: HAKUKOHDE_OID,
+    });
 
-  const nakkiKyllaInput = nakkikoe.getByText('Kyllä');
-  await expect(nakkiKyllaInput).toBeVisible();
-  const nakkiOsallistuiInput = nakkikoe.getByText('Osallistui', {
-    exact: true,
-  });
-  await expect(nakkiOsallistuiInput).toBeVisible();
+    await page.route(pisteetSaveUrl, (route) => {
+      if (route.request().method() === 'PUT') {
+        return route.fulfill({
+          status: 200,
+        });
+      }
+    });
 
-  const nakkiTallennaButton = nakkikoe.getByRole('button', {
-    name: 'Tallenna',
-  });
+    await page.goto(
+      '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo/1.2.246.562.11.00000000000001796027',
+    );
 
-  await expect(nakkiTallennaButton).toBeEnabled();
+    await expectAllSpinnersHidden(page);
 
-  const koksakoe = page.getByRole('region', {
-    name: `Köksäkokeen arvosana 4${NDASH}10`,
-  });
+    const pistesyottoHeading = page.getByRole('heading', {
+      name: 'Pistesyöttö',
+    });
+    await expect(pistesyottoHeading).toBeVisible();
 
-  await expect(koksakoe).toBeVisible();
+    const nakkikoe = page.getByRole('region', {
+      name: 'Nakkikoe, oletko nakkisuojassa?',
+    });
 
-  const koksaPisteetInput = koksakoe.getByLabel('Pisteet');
-  await expect(koksaPisteetInput).toBeVisible();
-  const koksaOsallistuiInput = koksakoe.getByText('Osallistui', {
-    exact: true,
-  });
-  await expect(koksaOsallistuiInput).toBeVisible();
+    await selectOption(
+      page,
+      'Osallistumisen tila',
+      'Ei osallistunut',
+      nakkikoe,
+    );
 
-  const koksaTallennaButton = koksakoe.getByRole('button', {
-    name: 'Tallenna',
-  });
-  await expect(koksaTallennaButton).toBeEnabled();
-});
+    const nakkiTallennaButton = nakkikoe.getByRole('button', {
+      name: 'Tallenna',
+    });
 
-test('Sends right data when saving pistesyotto and shows success toast', async ({
-  page,
-}) => {
-  const pisteetSaveUrl = configuration.koostetutPistetiedotHakukohteelleUrl({
-    hakuOid: '1.2.246.562.29.00000000000000045102',
-    hakukohdeOid: HAKUKOHDE_OID,
-  });
+    const [saveRes] = await Promise.all([
+      page.waitForRequest(
+        (request) =>
+          request.url() === pisteetSaveUrl && request.method() === 'PUT',
+      ),
+      nakkiTallennaButton.click(),
+    ]);
 
-  await page.route(pisteetSaveUrl, (route) => {
-    if (route.request().method() === 'PUT') {
-      return route.fulfill({
-        status: 200,
-      });
-    }
-  });
-
-  await page.goto(
-    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo/1.2.246.562.11.00000000000001796027',
-  );
-
-  await expectAllSpinnersHidden(page);
-
-  const pistesyottoHeading = page.getByRole('heading', { name: 'Pistesyöttö' });
-  await expect(pistesyottoHeading).toBeVisible();
-
-  const nakkikoe = page.getByRole('region', {
-    name: 'Nakkikoe, oletko nakkisuojassa?',
-  });
-
-  await selectOption(page, 'Osallistumisen tila', 'Ei osallistunut', nakkikoe);
-
-  const nakkiTallennaButton = nakkikoe.getByRole('button', {
-    name: 'Tallenna',
-  });
-
-  const [saveRes] = await Promise.all([
-    page.waitForRequest(
-      (request) =>
-        request.url() === pisteetSaveUrl && request.method() === 'PUT',
-    ),
-    nakkiTallennaButton.click(),
-  ]);
-
-  expect(saveRes.postDataJSON()).toMatchObject([
-    {
-      oid: '1.2.246.562.11.00000000000001796027',
-      personOid: '1.2.246.562.24.69259807406',
-      firstNames: 'Ruhtinas',
-      lastName: 'Nukettaja',
-      additionalData: {
-        'nakki-osallistuminen': ValintakoeOsallistuminenTulos.EI_OSALLISTUNUT,
+    expect(saveRes.postDataJSON()).toMatchObject([
+      {
+        oid: '1.2.246.562.11.00000000000001796027',
+        personOid: '1.2.246.562.24.69259807406',
+        firstNames: 'Ruhtinas',
+        lastName: 'Nukettaja',
+        additionalData: {
+          'nakki-osallistuminen': ValintakoeOsallistuminenTulos.EI_OSALLISTUNUT,
+        },
       },
-    },
-  ]);
+    ]);
 
-  await expect(page.getByText('Tiedot tallennettu')).toBeVisible();
+    await expect(page.getByText('Tiedot tallennettu')).toBeVisible();
+  });
+
+  test('Saving pistesyöttö shows error toast', async ({ page }) => {
+    const pisteetSaveUrl = configuration.koostetutPistetiedotHakukohteelleUrl({
+      hakuOid: '1.2.246.562.29.00000000000000045102',
+      hakukohdeOid: HAKUKOHDE_OID,
+    });
+
+    await page.route(pisteetSaveUrl, (route) => {
+      if (route.request().method() === 'PUT') {
+        return route.fulfill({
+          status: 400,
+        });
+      }
+    });
+
+    await page.goto(
+      '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo/1.2.246.562.11.00000000000001796027',
+    );
+
+    const nakkikoe = page.getByRole('region', {
+      name: 'Nakkikoe, oletko nakkisuojassa?',
+    });
+
+    await selectOption(
+      page,
+      'Osallistumisen tila',
+      'Ei osallistunut',
+      nakkikoe,
+    );
+
+    const nakkiTallennaButton = nakkikoe.getByRole('button', {
+      name: 'Tallenna',
+    });
+
+    await Promise.all([
+      page.waitForRequest(
+        (request) =>
+          request.url() === pisteetSaveUrl && request.method() === 'PUT',
+      ),
+      nakkiTallennaButton.click(),
+    ]);
+
+    await expect(
+      page.getByText('Tietojen tallentamisessa tapahtui virhe.'),
+    ).toBeVisible();
+  });
 });
 
-test('Saving pistesyöttö shows error toast', async ({ page }) => {
-  const pisteetSaveUrl = configuration.koostetutPistetiedotHakukohteelleUrl({
-    hakuOid: '1.2.246.562.29.00000000000000045102',
-    hakukohdeOid: HAKUKOHDE_OID,
-  });
-
-  await page.route(pisteetSaveUrl, (route) => {
-    if (route.request().method() === 'PUT') {
-      return route.fulfill({
-        status: 400,
-      });
-    }
-  });
-
+const startLaskenta = async (page: Page) => {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo/1.2.246.562.11.00000000000001796027',
   );
 
-  const nakkikoe = page.getByRole('region', {
-    name: 'Nakkikoe, oletko nakkisuojassa?',
+  const valintalaskentaButton = page.getByRole('button', {
+    name: 'Suorita valintalaskenta',
   });
 
-  await selectOption(page, 'Osallistumisen tila', 'Ei osallistunut', nakkikoe);
+  await expect(valintalaskentaButton).toBeVisible();
+  await valintalaskentaButton.click();
 
-  const nakkiTallennaButton = nakkikoe.getByRole('button', {
-    name: 'Tallenna',
+  await page.getByRole('button', { name: 'Kyllä' }).click();
+};
+
+test.describe('Valintalaskenta', () => {
+  test('shows error when starting valintalaskenta fails', async ({ page }) => {
+    await page.route(
+      '*/**/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000045102/tyyppi/HAKUKOHDE/whitelist/true**',
+      async (route) => {
+        await route.fulfill({ status: 500, body: 'Unknown error' });
+      },
+    );
+    await startLaskenta(page);
+
+    const error = page.getByText('Valintalaskenta epäonnistuiUnknown error');
+    await expect(error).toBeVisible();
   });
 
-  await Promise.all([
-    page.waitForRequest(
-      (request) =>
-        request.url() === pisteetSaveUrl && request.method() === 'PUT',
-    ),
-    nakkiTallennaButton.click(),
-  ]);
+  test('succesfully starts laskenta and shows yhteenveto errors', async ({
+    page,
+  }) => {
+    await page.route(
+      '*/**/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000045102/tyyppi/HAKUKOHDE/whitelist/true**',
+      async (route) => {
+        const started = {
+          lisatiedot: {
+            luotiinkoUusiLaskenta: true,
+          },
+          latausUrl: '12345abs',
+        };
+        await route.fulfill({
+          json: started,
+        });
+      },
+    );
+    await page.route(
+      '*/**/valintalaskenta-laskenta-service/resources/seuranta/yhteenveto/12345abs',
+      async (route) => {
+        const seuranta = {
+          tila: 'VALMIS',
+          hakukohteitaYhteensa: 1,
+          hakukohteitaValmiina: 1,
+          hakukohteitaKeskeytetty: 0,
+        };
+        await route.fulfill({
+          json: seuranta,
+        });
+      },
+    );
+    await page.route(
+      '*/**/resources/valintalaskentakerralla/status/12345abs/yhteenveto',
+      async (route) => {
+        await route.fulfill({
+          json: {
+            hakukohteet: [
+              {
+                hakukohdeOid: '1.2.246.562.20.00000000000000045105',
+                tila: 'VIRHE',
+                ilmoitukset: [
+                  {
+                    otsikko: 'Unknown Error',
+                  },
+                ],
+              },
+            ],
+          },
+        });
+      },
+    );
+    await startLaskenta(page);
+    await expect(
+      page.getByText(
+        'Laskenta on päättynyt. Hakukohteita valmiina 0/1. Suorittamattomia hakukohteita 1.',
+      ),
+    ).toBeVisible();
 
-  await expect(
-    page.getByText('Tietojen tallentamisessa tapahtui virhe.'),
-  ).toBeVisible();
+    await page
+      .getByRole('button', { name: 'Näytä suorittamattomat hakukohteet' })
+      .click();
+
+    await expect(
+      page.getByText(
+        `Tampereen yliopisto, Rakennetun ympäristön tiedekunta ${NDASH} Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs) (1.2.246.562.20.00000000000000045105)`,
+      ),
+    ).toBeVisible();
+    await expect(page.getByText('Unknown Error')).toBeVisible();
+
+    await expect(
+      page.getByRole('button', { name: 'Suorita valintalaskenta' }),
+    ).toBeHidden();
+
+    await page.getByRole('button', { name: 'Sulje laskennan tiedot' }).click();
+
+    await expect(
+      page.getByRole('button', { name: 'Suorita valintalaskenta' }),
+    ).toBeVisible();
+  });
+
+  test('shows results with success toast', async ({ page }) => {
+    await page.route(
+      '*/**/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000045102/tyyppi/HAKUKOHDE/whitelist/true**',
+      async (route) => {
+        const started = {
+          lisatiedot: {
+            luotiinkoUusiLaskenta: true,
+          },
+          latausUrl: '12345abs',
+        };
+        await route.fulfill({
+          json: started,
+        });
+      },
+    );
+    await page.route(
+      '*/**/valintalaskenta-laskenta-service/resources/seuranta/yhteenveto/12345abs',
+      async (route) => {
+        await route.fulfill({
+          json: {
+            tila: 'VALMIS',
+            hakukohteitaYhteensa: 1,
+            hakukohteitaValmiina: 1,
+            hakukohteitaKeskeytetty: 0,
+          },
+        });
+      },
+    );
+    await page.route(
+      '*/**/resources/valintalaskentakerralla/status/12345abs/yhteenveto',
+      async (route) => {
+        await route.fulfill({
+          json: {
+            tila: 'VALMIS',
+            hakukohteet: [
+              {
+                hakukohdeOid: '1.2.246.562.20.00000000000000045105',
+                tila: 'VALMIS',
+                ilmoitukset: [],
+              },
+            ],
+          },
+        });
+      },
+    );
+    await startLaskenta(page);
+    await expect(
+      page.getByText(
+        'Laskenta on päättynyt. Hakukohteita valmiina 1/1. Suorittamattomia hakukohteita 0.',
+      ),
+    ).toBeVisible();
+    await expect(
+      page.getByText('Laskenta suoritettu onnistuneesti'),
+    ).toBeVisible();
+
+    await expect(
+      page.getByRole('button', { name: 'Näytä suorittamattomat hakukohteet' }),
+    ).toBeHidden();
+
+    await expect(
+      page.getByRole('button', { name: 'Suorita valintalaskenta' }),
+    ).toBeHidden();
+
+    await page.getByRole('button', { name: 'Sulje laskennan tiedot' }).click();
+
+    await expect(
+      page.getByRole('button', { name: 'Suorita valintalaskenta' }),
+    ).toBeVisible();
+  });
 });
