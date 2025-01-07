@@ -135,6 +135,7 @@ export type SijoitteluajonTulokset = {
 };
 
 export type SijoitteluajonTuloksetValintatiedoilla = {
+  sijoitteluajoId: string;
   valintatapajonot: SijoitteluajonValintatapajonoValintatiedoilla[];
   lastModified: string;
 };

@@ -18,9 +18,11 @@ import {
 import { MaksunTila, Maksuvelvollisuus } from './types/ataru-types';
 import { FetchError, OphApiError } from './common';
 import {
+  HakemusChangeEvent,
   ValinnanTulosModel,
   ValinnanTulosUpdateErrorResult,
 } from './types/valinta-tulos-types';
+import { toFormattedDateTimeString } from './localization/translation-utils';
 
 type SijoittelunTulosResponseData = {
   valintatapajonoNimi: string;
@@ -86,6 +88,7 @@ type SijoitteluajonTuloksetResponseData = {
       },
     ];
   }>;
+  sijoitteluajoId: string;
   hakijaryhmat: Array<{ oid: string; kiintio: number }>;
 };
 
@@ -120,6 +123,7 @@ type SijoitteluajonTuloksetWithValintaEsitysResponseData = {
     valintatapajonoOid: string;
     hyvaksytty?: string;
   }>;
+
   lastModified: string;
   sijoittelunTulokset: Omit<SijoitteluajonTuloksetResponseData, 'hakijaryhmat'>;
   kirjeLahetetty: [
@@ -230,6 +234,7 @@ const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
       };
     });
   return {
+    sijoitteluajoId: data.sijoittelunTulokset.sijoitteluajoId,
     valintatapajonot: sijoitteluajonTulokset,
     lastModified: data.lastModified,
   };
@@ -470,4 +475,48 @@ export const getValinnanTulokset = async ({
     lastModified: headers.get('X-Last-Modified'),
     data: indexBy(data.map(prop('valinnantulos')), prop('hakukohdeOid')),
   };
+};
+
+export const sendVastaanottopostiHakemukselle = async (
+  hakemusOid: string,
+): Promise<string[]> => {
+  const response = await client.post(
+    `${configuration.vastaanottopostiHakemukselleUrl({ hakemusOid })}`,
+    { hakemusOid },
+  );
+  return response.data as string[];
+};
+
+type ChangeHistoryEventResponse = {
+  timestamp: string;
+  changes: [
+    {
+      field: string;
+      from: string | boolean;
+      to: string | boolean;
+    },
+  ];
+};
+
+export const changeHistoryForHakemus = async (
+  hakemusOid: string,
+  valintatapajonoOid: string,
+): Promise<HakemusChangeEvent[]> => {
+  const response = await client.get<Array<ChangeHistoryEventResponse>>(
+    configuration.muutoshistoriaHakemukselleUrl({
+      hakemusOid,
+      valintatapajonoOid,
+    }),
+  );
+  return response.data.map((ce, index) => {
+    const changes = ce.changes.filter(
+      (c) => c.field !== 'valinnantilanViimeisinMuutos',
+    );
+    return {
+      rowKey: `${index}-${ce.timestamp}`,
+      changeTimeUnformatted: ce.timestamp,
+      changeTime: toFormattedDateTimeString(ce.timestamp),
+      changes,
+    };
+  });
 };

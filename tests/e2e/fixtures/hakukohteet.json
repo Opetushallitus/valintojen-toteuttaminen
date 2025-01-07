@@ -85,7 +85,8 @@
       "fi": "Tampereen yliopisto, Rakennetun ympäristön tiedekunta",
       "sv": "Tammerfors universitet, Rakennetun ympäristön tiedekunta",
       "en": "Tampere University, Faculty of Built Environment"
-    }
+    },
+    "opetuskieliKoodiUrit": ["oppilaitoksenopetuskieli_4"]
   },
   {
     "oid": "1.2.246.562.20.00000000000000045103",
@@ -173,7 +174,8 @@
       "sv": "Tammerfors universitet, Tekniikan ja luonnontieteiden tiedekunta",
       "fi": "Tampereen yliopisto, Tekniikan ja luonnontieteiden tiedekunta",
       "en": "Tampere University, Faculty of Engineering and Natural Sciences"
-    }
+    },
+    "opetuskieliKoodiUrit": ["oppilaitoksenopetuskieli_4"]
   },
   {
     "oid": "1.2.246.562.20.00000000000000045104",
@@ -261,7 +263,8 @@
       "sv": "Tammerfors universitet, Tekniikan ja luonnontieteiden tiedekunta",
       "fi": "Tampereen yliopisto, Tekniikan ja luonnontieteiden tiedekunta",
       "en": "Tampere University, Faculty of Engineering and Natural Sciences"
-    }
+    },
+    "opetuskieliKoodiUrit": ["oppilaitoksenopetuskieli_4"]
   },
   {
     "oid": "1.2.246.562.20.00000000000000024094",

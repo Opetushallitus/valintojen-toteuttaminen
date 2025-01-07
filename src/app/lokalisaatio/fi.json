@@ -285,6 +285,46 @@
       "maksuntila": "Maksun tila",
       "toiminnot": "Toiminnot",
       "valitse-hakemus": "Valitse hakijan {{hakijanNimi}} hakemus"
+    },
+    "toiminnot": {
+      "menu": "Muut toiminnot",
+      "muutoshistoria": "Muutoshistoria",
+      "hyvaksymiskirje": "Hyväksymiskirje",
+      "laheta-vastaanottoposti": "Lähetä vastaanottoposti",
+      "hyvaksymiskirje-hakemukselle-luotu": "Muodostettu hyväksymiskirje hakemukselle",
+      "hyvaksymiskirje-hakemukselle-luotu-epaonnistui": "Hyväksymiskirjeen muodostaminen hakemukselle epäonnistui",
+      "vastaanottoposti-hakemukselle-ei-lahetettavia": "Lähetys epäonnistui, tarkasta hakemuksen tiedot",
+      "vastaanottoposti-hakemukselle-lahetetty": "Sähköpostin lähetys onnistui",
+      "vastaanottoposti-hakemukselle-virhe": "Sähköpostin lähetys epäonnistui",
+      "muutoshistoria-virhe": "Muutoshistorian lataus epäonnistui"
+    },
+    "muutoshistoria": {
+      "otsikko": "Muutoshistoria",
+      "ajankohta": "Muokkausajankohta",
+      "muutos": "Muutos",
+      "muutokset": {
+        "julkaistavissa": "Julkaistavissa",
+        "valinnantila": "Sijoittelun tila",
+        "hyvaksyttyVarasijalta": "Hyväksytty varasijalta",
+        "hyvaksyPeruuntunut": "Hyväksy peruuntunut",
+        "ilmoittautumistila": "Ilmoittautumistila",
+        "vastaanottotila": "Vastaanottotila",
+        "HYVAKSYTTY": "Hyväksytty",
+        "HYLATTY": "Hylätty",
+        "VARALLA": "Varalla",
+        "PERUUNTUNUT": "Peruuntunut",
+        "LASNA_SYKSY": "Läsnä syksy, poissa kevät",
+        "LASNA_KOKO_LUKUVUOSI": "Läsnä (koko lukuvuosi)",
+        "LASNA": "Läsnä",
+        "EI_TEHTY": "Ei tehty",
+        "VASTAANOTTANUT_SITOVASTI": "Vastaanottanut sitovasti",
+        "EI_VASTAANOTETTU_MAARA_AIKANA": "Ei vastaanotettu määräaikana",
+        "ehdollisenHyvaksymisenEhtoEN": "Ehdollisen hyväksymisen ehto (EN)",
+        "ehdollisenHyvaksymisenEhtoFI": "Ehdollisen hyväksymisen ehto (FI)",
+        "ehdollisenHyvaksymisenEhtoSV": "Ehdollisen hyväksymisen ehto (SV)",
+        "ehdollisenHyvaksymisenEhtoKoodi": "Ehdollisen hyväksymisen ehtokoodi",
+        "ehdollisestiHyvaksyttavissa": "Ehdollisesti hyväksyttävissä"
+      }
     }
   },
   "valinnan-tulokset": {

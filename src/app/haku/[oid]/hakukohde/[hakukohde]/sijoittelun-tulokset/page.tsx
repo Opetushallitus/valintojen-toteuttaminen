@@ -15,20 +15,23 @@ import { SijoittelunTulosContent } from './components/sijoittelun-tulos-content'
 import { SijoittelunTulosControls } from './components/sijoittelun-tulos-controls';
 import { useHaku } from '@/app/hooks/useHaku';
 import { useHaunAsetukset } from '@/app/hooks/useHaunAsetukset';
-import { Haku } from '@/app/lib/types/kouta-types';
+import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
 import { FullClientSpinner } from '@/app/components/client-spinner';
 import { HaunAsetukset } from '@/app/lib/types/haun-asetukset';
 import { useUserPermissions } from '@/app/hooks/useUserPermissions';
 import { canHakuBePublished } from '@/app/lib/sijoittelun-tulokset-utils';
+import { useHakukohde } from '@/app/hooks/useHakukohde';
 
 type SijoitteluContentParams = {
   haku: Haku;
+  hakukohde: Hakukohde;
   hakukohdeOid: string;
   haunAsetukset: HaunAsetukset;
 };
 
 const SijoitteluContent = ({
   haku,
+  hakukohde,
   hakukohdeOid,
   haunAsetukset,
 }: SijoitteluContentParams) => {
@@ -80,7 +83,8 @@ const SijoitteluContent = ({
             valintatapajono={jono}
             key={jono.oid}
             haku={haku}
-            hakukohdeOid={hakukohdeOid}
+            hakukohde={hakukohde}
+            sijoitteluajoId={tulokset.sijoitteluajoId}
             lastModified={tulokset.lastModified}
             publishAllowed={
               permissions.admin || canHakuBePublished(haku, haunAsetukset)
@@ -96,6 +100,7 @@ export default function SijoittelunTuloksetPage(props: {
 }) {
   const params = use(props.params);
   const { data: haku } = useHaku({ hakuOid: params.oid });
+  const { data: hakukohde } = useHakukohde({ hakukohdeOid: params.hakukohde });
   const { data: haunAsetukset } = useHaunAsetukset({ hakuOid: params.oid });
 
   return (
@@ -103,6 +108,7 @@ export default function SijoittelunTuloksetPage(props: {
       <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
         <SijoitteluContent
           haku={haku}
+          hakukohde={hakukohde}
           hakukohdeOid={params.hakukohde}
           haunAsetukset={haunAsetukset}
         />

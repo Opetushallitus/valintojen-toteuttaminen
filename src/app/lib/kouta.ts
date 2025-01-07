@@ -3,9 +3,9 @@
 import { configuration } from './configuration';
 import { Haku, Hakukohde, Tila } from './types/kouta-types';
 import { client } from './http-client';
-import { TranslatedName } from './localization/localization-types';
+import { Language, TranslatedName } from './localization/localization-types';
 import { UserPermissions } from './permissions';
-import { pick } from 'remeda';
+import { addProp, pick, pipe } from 'remeda';
 import { HaunAsetukset } from './types/haun-asetukset';
 
 type HakuResponseData = {
@@ -66,12 +66,27 @@ export function isToisenAsteenYhteisHaku(haku: Haku): boolean {
   );
 }
 
+export function isToinenAsteKohdejoukko(haku: Haku): boolean {
+  return [
+    'haunkohdejoukko_11',
+    'haunkohdejoukko_17',
+    'haunkohdejoukko_20',
+  ].some((hkj) => haku.kohdejoukkoKoodiUri.startsWith(hkj));
+}
+
 export function isKorkeakouluHaku(haku: Haku): boolean {
   return haku.kohdejoukkoKoodiUri.startsWith('haunkohdejoukko_12');
 }
 
 export function isHarkinnanvarainenHakukohde(hakukohde: Hakukohde): boolean {
   return hakukohde.voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita;
+}
+
+export function getOpetuskieliCode(hakukohde: Hakukohde): Language | null {
+  if (hakukohde.opetuskielet.has('fi')) return 'fi';
+  if (hakukohde.opetuskielet.has('sv')) return 'sv';
+  if (hakukohde.opetuskielet.has('en')) return 'en';
+  return null;
 }
 
 export async function getHaku(oid: string): Promise<Haku> {
@@ -89,18 +104,40 @@ type HakukohdeResponseData = {
   organisaatioNimi: TranslatedName;
   jarjestyspaikkaHierarkiaNimi: TranslatedName;
   voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita: boolean;
+  opetuskieliKoodiUrit: string[];
+  tarjoaja: string;
 };
 
-const mapToHakukohde = (hakukohdeData: HakukohdeResponseData) =>
-  pick(hakukohdeData, [
-    'oid',
-    'hakuOid',
-    'nimi',
-    'organisaatioOid',
-    'organisaatioNimi',
-    'jarjestyspaikkaHierarkiaNimi',
-    'voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita',
-  ]);
+const mapToHakukohde = (hakukohdeData: HakukohdeResponseData): Hakukohde => {
+  const opetuskielet: Language[] = hakukohdeData.opetuskieliKoodiUrit
+    .flatMap((koodiUri) => {
+      // huom: tässä ei ole käsitelty kaikkia mahdollisia opetuskieliä
+      switch (koodiUri.split('#')[0]) {
+        case 'oppilaitoksenopetuskieli_1':
+          return ['fi'];
+        case 'oppilaitoksenopetuskieli_2':
+          return ['sv'];
+        case 'oppilaitoksenopetuskieli_3':
+          return ['fi', 'sv'];
+        case 'oppilaitoksenopetuskieli_4':
+          return ['en'];
+      }
+    })
+    .filter((v) => v !== undefined) as Array<Language>;
+  return pipe(
+    pick(hakukohdeData, [
+      'oid',
+      'hakuOid',
+      'nimi',
+      'organisaatioOid',
+      'organisaatioNimi',
+      'jarjestyspaikkaHierarkiaNimi',
+      'voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita',
+    ]),
+    addProp('opetuskielet', new Set(opetuskielet)),
+    addProp('tarjoajaOid', hakukohdeData.tarjoaja),
+  );
+};
 
 export async function getHakukohteet(
   hakuOid: string,
