@@ -45,7 +45,7 @@ export type LasketutValinnanvaiheet = Array<
   }
 >;
 
-export const selectValinnanvaiheet = <
+export const selectLasketutValinnanvaiheet = <
   H extends Record<string, unknown> = Record<string, never>,
 >({
   lasketutValinnanvaiheet,
@@ -114,7 +114,7 @@ export const useLasketutValinnanVaiheet = ({
 
   const hakemuksetByOid = indexBy(hakemukset ?? [], prop('hakemusOid'));
 
-  return selectValinnanvaiheet<AdditionalHakemusFields>({
+  return selectLasketutValinnanvaiheet<AdditionalHakemusFields>({
     lasketutValinnanvaiheet,
     selectHakemusFields(hakemusOid) {
       const hakemus = hakemuksetByOid[hakemusOid];
