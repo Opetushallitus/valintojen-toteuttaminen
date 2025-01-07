@@ -139,6 +139,7 @@ export const OtherActionsCell = ({
         disabled={disabled}
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
+        aria-label={t('sijoittelun-tulokset.toiminnot.menu')}
         onClick={showMenu}
         startIcon={<MoreHoriz />}
       />
