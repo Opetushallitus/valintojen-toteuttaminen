@@ -178,7 +178,6 @@ export const SijoittelunTulosTable = ({
         selection={selection}
         onSelectionChange={setSelection}
         translateHeader={false}
-        sx={{ overflowX: 'auto', width: 'unset' }}
         getRowCheckboxLabel={({ hakijanNimi }) =>
           t(`${TRANSLATIONS_PREFIX}.valitse-hakemus`, {
             hakijanNimi,

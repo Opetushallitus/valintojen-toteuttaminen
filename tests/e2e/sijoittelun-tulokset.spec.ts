@@ -472,9 +472,8 @@ test.describe('other actions of hakemus', () => {
       },
     );
     await page
-      .locator(
-        '[id="other-actions-menu-1\\.2\\.246\\.562\\.11\\.00000000000001796027"]',
-      )
+      .getByRole('row', { name: 'Nukettaja Ruhtinas' })
+      .getByRole('button', { name: 'Muut toiminnot' })
       .click();
     await expect(page.getByText('Muutoshistoria')).toBeVisible();
     await page.getByText('Muutoshistoria').click();
@@ -500,9 +499,8 @@ test.describe('other actions of hakemus', () => {
       },
     );
     await page
-      .locator(
-        '[id="other-actions-menu-1\\.2\\.246\\.562\\.11\\.00000000000001796027"]',
-      )
+      .getByRole('row', { name: 'Nukettaja Ruhtinas' })
+      .getByRole('button', { name: 'Muut toiminnot' })
       .click();
     await expect(page.getByText('Hyväksymiskirje')).toBeVisible();
     await page.getByText('Hyväksymiskirje').click();
@@ -522,9 +520,8 @@ test.describe('other actions of hakemus', () => {
       },
     );
     await page
-      .locator(
-        '[id="other-actions-menu-1\\.2\\.246\\.562\\.11\\.00000000000001796027"]',
-      )
+      .getByRole('row', { name: 'Nukettaja Ruhtinas' })
+      .getByRole('button', { name: 'Muut toiminnot' })
       .click();
     await expect(page.getByText('Lähetä vastaanottoposti')).toBeVisible();
     await page.getByText('Lähetä vastaanottoposti').click();

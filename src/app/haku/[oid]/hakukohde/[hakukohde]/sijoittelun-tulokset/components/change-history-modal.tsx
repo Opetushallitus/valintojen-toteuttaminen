@@ -12,6 +12,7 @@ import {
 } from '@/app/components/table/table-columns';
 import { ListTable } from '@/app/components/table/list-table';
 import { getSortParts } from '@/app/components/table/table-utils';
+import { sortBy } from 'remeda';
 
 const HistoryModalContent = ({
   changeHistory,
@@ -26,10 +27,7 @@ const HistoryModalContent = ({
 
   const parseMuutos = (muutos: string | boolean) => {
     if (typeof muutos === 'boolean') {
-      if (!muutos) {
-        return t('yleinen.ei');
-      }
-      return t('yleinen.kylla');
+      return !muutos ? t('yleinen.ei') : t('yleinen.kylla');
     }
     return t(`sijoittelun-tulokset.muutoshistoria.muutokset.${muutos}`, {
       defaultValue: muutos,
@@ -85,14 +83,10 @@ export const ChangeHistoryModal = createModal(
 
     const sortedHistory = useMemo(() => {
       const { direction } = getSortParts(sort);
-      return changeHistory.sort((a, b) => {
-        const aTime = new Date(a.changeTimeUnformatted).getTime();
-        const bTime = new Date(b.changeTimeUnformatted).getTime();
-        if (direction === 'asc') {
-          return aTime - bTime;
-        }
-        return bTime - aTime;
-      });
+      return sortBy(changeHistory, [
+        (event) => new Date(event.changeTimeUnformatted).getTime(),
+        direction || 'desc',
+      ]);
     }, [sort, changeHistory]);
 
     return (
@@ -106,7 +100,7 @@ export const ChangeHistoryModal = createModal(
           </OphButton>
         }
       >
-        <Typography variant="body1" sx={{ marginBottom: '1rem' }}>
+        <Typography variant="body1" sx={{ marginBottom: 2 }}>
           {hakemus.hakijanNimi}
         </Typography>
         <HistoryModalContent
