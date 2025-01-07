@@ -962,6 +962,11 @@ test.describe('Valintalaskenta', () => {
       page.getByText('Laskenta suoritettu onnistuneesti'),
     ).toBeVisible();
 
+    const suljeTiedotButton = page.getByRole('button', {
+      name: 'Sulje laskennan tiedot',
+    });
+    await expect(suljeTiedotButton).toBeVisible();
+
     await expect(
       page.getByRole('button', { name: 'Näytä suorittamattomat hakukohteet' }),
     ).toBeHidden();
@@ -970,7 +975,7 @@ test.describe('Valintalaskenta', () => {
       page.getByRole('button', { name: 'Suorita valintalaskenta' }),
     ).toBeHidden();
 
-    await page.getByRole('button', { name: 'Sulje laskennan tiedot' }).click();
+    await suljeTiedotButton.click();
 
     await expect(
       page.getByRole('button', { name: 'Suorita valintalaskenta' }),

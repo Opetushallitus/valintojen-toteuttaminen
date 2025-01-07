@@ -1,6 +1,7 @@
 import { ErrorWithIcon } from '@/app/components/error-with-icon';
 import { SimpleAccordion } from '@/app/components/simple-accordion';
 import { useTranslations } from '@/app/hooks/useTranslations';
+import { isEmpty } from '@/app/lib/common';
 import { NDASH } from '@/app/lib/constants';
 import { LaskentaActorRef } from '@/app/lib/state/laskenta-state';
 import { Hakukohde } from '@/app/lib/types/kouta-types';
@@ -25,7 +26,7 @@ export const SuorittamattomatHakukohteet = ({
     s.context.summary?.hakukohteet.filter((hk) => hk?.tila !== 'VALMIS'),
   );
 
-  return summaryErrors ? (
+  return isEmpty(summaryErrors) ? null : (
     <SimpleAccordion
       titleOpen={t('henkilo.piilota-suorittamattomat-hakukohteet')}
       titleClosed={t('henkilo.nayta-suorittamattomat-hakukohteet')}
@@ -72,5 +73,5 @@ export const SuorittamattomatHakukohteet = ({
         })}
       </Stack>
     </SimpleAccordion>
-  ) : null;
+  );
 };
