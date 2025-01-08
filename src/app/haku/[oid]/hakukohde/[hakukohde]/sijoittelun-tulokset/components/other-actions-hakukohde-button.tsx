@@ -15,7 +15,9 @@ import {
   InsertDriveFileOutlined,
   ArrowDropDown,
 } from '@mui/icons-material';
-//import useToaster from '@/app/hooks/useToaster';
+import { Hakukohde } from '@/app/lib/types/kouta-types';
+import { sendVastaanottopostiHakukohteelle } from '@/app/lib/valinta-tulos-service';
+import useToaster from '@/app/hooks/useToaster';
 
 const StyledListItemText = styled(ListItemText)(() => ({
   span: {
@@ -29,21 +31,53 @@ const StyledListItemIcon = styled(ListItemIcon)(() => ({
 
 export const OtherActionsHakukohdeButton = ({
   disabled,
+  hakukohde,
 }: {
   disabled: boolean;
+  hakukohde: Hakukohde;
 }) => {
   const { t } = useTranslations();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const buttonId = `other-actions-hakukohde-menu`;
-  //const { addToast } = useToaster();
+  const { addToast } = useToaster();
 
   const showMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
   const closeMenu = () => setAnchorEl(null);
+
+  const sendVastaanottoposti = async () => {
+    try {
+      const data = await sendVastaanottopostiHakukohteelle(hakukohde.oid);
+      if (!data || data.length < 1) {
+        addToast({
+          key: 'vastaanottoposti-hakemus-empty',
+          message:
+            'sijoittelun-tulokset.toiminnot.vastaanottoposti-hakukohteelle-ei-lahetettavia',
+          type: 'error',
+        });
+      } else {
+        addToast({
+          key: 'vastaanottoposti-hakemus',
+          message:
+            'sijoittelun-tulokset.toiminnot.vastaanottoposti-hakukohteelle-lahetetty',
+          type: 'success',
+        });
+      }
+    } catch (e) {
+      addToast({
+        key: 'vastaanottoposti-hakemus-virhe',
+        message:
+          'sijoittelun-tulokset.toiminnot.vastaanottoposti-hakukohteelle-virhe',
+        type: 'error',
+      });
+      console.error(e);
+    }
+    closeMenu();
+  };
 
   return (
     <>
@@ -67,7 +101,7 @@ export const OtherActionsHakukohdeButton = ({
           'aria-labelledby': buttonId,
         }}
       >
-        <MenuItem onClick={closeMenu}>
+        <MenuItem onClick={sendVastaanottoposti}>
           <StyledListItemIcon>
             <MailOutline />
           </StyledListItemIcon>
