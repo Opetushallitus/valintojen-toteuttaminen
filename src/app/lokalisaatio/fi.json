@@ -320,6 +320,9 @@
       "vastaanottoposti-hakemukselle-ei-lahetettavia": "Lähetys epäonnistui, tarkasta hakemuksen tiedot",
       "vastaanottoposti-hakemukselle-lahetetty": "Sähköpostin lähetys onnistui",
       "vastaanottoposti-hakemukselle-virhe": "Sähköpostin lähetys epäonnistui",
+      "vastaanottoposti-hakukohteelle-ei-lahetettavia": "Lähetykset epäonnistui, tarkasta hakukohteen tiedot",
+      "vastaanottoposti-hakukohteelle-lahetetty": "Sähköpostien lähetys onnistui",
+      "vastaanottoposti-hakukohteelle-virhe": "Sähköpostien lähetys epäonnistui",
       "muutoshistoria-virhe": "Muutoshistorian lataus epäonnistui"
     },
     "muutoshistoria": {

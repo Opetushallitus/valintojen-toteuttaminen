@@ -7,12 +7,18 @@ import {
   OphCheckbox,
   OphFormFieldWrapper,
 } from '@opetushallitus/oph-design-system';
-import { Haku } from '@/app/lib/types/kouta-types';
+import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
 import { isKorkeakouluHaku } from '@/app/lib/kouta';
 import { SearchInput } from '@/app/components/search-input';
 import { OtherActionsHakukohdeButton } from './other-actions-hakukohde-button';
 
-export const SijoittelunTulosControls = ({ haku }: { haku: Haku }) => {
+export const SijoittelunTulosControls = ({
+  haku,
+  hakukohde,
+}: {
+  haku: Haku;
+  hakukohde: Hakukohde;
+}) => {
   const {
     searchPhrase,
     setSearchPhrase,
@@ -92,7 +98,7 @@ export const SijoittelunTulosControls = ({ haku }: { haku: Haku }) => {
         )}
       </Box>
       <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-        <OtherActionsHakukohdeButton disabled={false} />
+        <OtherActionsHakukohdeButton disabled={false} hakukohde={hakukohde} />
       </Box>
     </Box>
   );

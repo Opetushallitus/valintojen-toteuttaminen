@@ -176,6 +176,12 @@ export const configuration = {
     `${DOMAIN}/valinta-tulos-service/auth/valinnan-tulos/hakemus/?hakemusOid=${hakemusOid}`,
   vastaanottopostiHakemukselleUrl: ({ hakemusOid }: { hakemusOid: string }) =>
     `${DOMAIN}/valinta-tulos-service/auth/emailer/run/hakemus/${hakemusOid}`,
+  vastaanottopostiHakukohteelleUrl: ({
+    hakukohdeOid,
+  }: {
+    hakukohdeOid: string;
+  }) =>
+    `${DOMAIN}/valinta-tulos-service/auth/emailer/run/hakukohde/${hakukohdeOid}`,
   muutoshistoriaHakemukselleUrl: ({
     hakemusOid,
     valintatapajonoOid,
