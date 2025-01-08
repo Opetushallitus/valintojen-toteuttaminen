@@ -18,6 +18,7 @@ import {
 import { Hakukohde } from '@/app/lib/types/kouta-types';
 import { sendVastaanottopostiHakukohteelle } from '@/app/lib/valinta-tulos-service';
 import useToaster from '@/app/hooks/useToaster';
+import { configuration } from '@/app/lib/configuration';
 
 const StyledListItemText = styled(ListItemText)(() => ({
   span: {
@@ -32,9 +33,15 @@ const StyledListItemIcon = styled(ListItemIcon)(() => ({
 export const OtherActionsHakukohdeButton = ({
   disabled,
   hakukohde,
+  hyvaksymiskirjeDocumentId,
+  osoitetarraDocumentId,
+  tulosDocumentId,
 }: {
   disabled: boolean;
   hakukohde: Hakukohde;
+  hyvaksymiskirjeDocumentId: string | null;
+  osoitetarraDocumentId: string | null;
+  tulosDocumentId: string | null;
 }) => {
   const { t } = useTranslations();
 
@@ -75,6 +82,15 @@ export const OtherActionsHakukohdeButton = ({
         type: 'error',
       });
       console.error(e);
+    }
+    closeMenu();
+  };
+
+  const openDocument = async (documentId: string | null) => {
+    if (documentId) {
+      window.open(
+        configuration.lataaDokumenttiUrl({ dokumenttiId: documentId }),
+      );
     }
     closeMenu();
   };
@@ -128,7 +144,10 @@ export const OtherActionsHakukohdeButton = ({
             {t('sijoittelun-tulokset.toiminnot.hyvaksymiskirje-hakukohde-ei')}
           </StyledListItemText>
         </MenuItem>
-        <MenuItem onClick={closeMenu}>
+        <MenuItem
+          onClick={() => openDocument(hyvaksymiskirjeDocumentId)}
+          disabled={!hyvaksymiskirjeDocumentId}
+        >
           <StyledListItemIcon>
             <FileDownloadOutlined />
           </StyledListItemIcon>
@@ -147,7 +166,10 @@ export const OtherActionsHakukohdeButton = ({
             {t('sijoittelun-tulokset.toiminnot.osoitetarrat')}
           </StyledListItemText>
         </MenuItem>
-        <MenuItem onClick={closeMenu}>
+        <MenuItem
+          onClick={() => openDocument(osoitetarraDocumentId)}
+          disabled={!osoitetarraDocumentId}
+        >
           <StyledListItemIcon>
             <FileDownloadOutlined />
           </StyledListItemIcon>
@@ -156,7 +178,10 @@ export const OtherActionsHakukohdeButton = ({
           </StyledListItemText>
         </MenuItem>
         <Divider />
-        <MenuItem onClick={closeMenu}>
+        <MenuItem
+          onClick={() => openDocument(tulosDocumentId)}
+          disabled={!tulosDocumentId}
+        >
           <StyledListItemIcon>
             <FileDownloadOutlined />
           </StyledListItemIcon>

@@ -25,7 +25,10 @@ import {
   getValintakoeAvaimetHakukohteille,
 } from './valintaperusteet';
 import { ValintakoekutsutData } from './types/valintakoekutsut-types';
-import { HakutoiveValintakoeOsallistumiset } from './types/valintalaskentakoostepalvelu-types';
+import {
+  DokumenttiTyyppi,
+  HakutoiveValintakoeOsallistumiset,
+} from './types/valintalaskentakoostepalvelu-types';
 import { HarkinnanvaraisuudenSyy } from './types/harkinnanvaraiset-types';
 import { ValintakoeAvaimet } from './types/valintaperusteet-types';
 import { Hakukohde } from './types/kouta-types';
@@ -574,4 +577,14 @@ export const luoHyvaksymiskirjeetPDF = async (
     templateName: 'hyvaksymiskirje',
   };
   await client.post(configuration.hyvaksymiskirjeetUrl, body);
+};
+
+export const getDocumentIdForHakukohde = async (
+  hakukohdeOid: string,
+  documentType: DokumenttiTyyppi,
+): Promise<string | null> => {
+  const res = await client.get<[{ documentId: string }]>(
+    configuration.dokumentitUrl({ tyyppi: documentType, hakukohdeOid }),
+  );
+  return res.data?.length > 0 ? res.data[0]?.documentId : null;
 };

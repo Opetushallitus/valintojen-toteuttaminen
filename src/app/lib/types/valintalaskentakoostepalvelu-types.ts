@@ -31,3 +31,8 @@ export type HakutoiveValintakoeOsallistumiset = {
     }>;
   }>;
 };
+
+export type DokumenttiTyyppi =
+  | 'hyvaksymiskirjeet'
+  | 'sijoitteluntulokset'
+  | 'osoitetarrat';

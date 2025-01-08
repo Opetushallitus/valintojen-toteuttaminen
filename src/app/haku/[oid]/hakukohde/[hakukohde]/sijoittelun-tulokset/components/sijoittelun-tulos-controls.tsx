@@ -11,6 +11,8 @@ import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
 import { isKorkeakouluHaku } from '@/app/lib/kouta';
 import { SearchInput } from '@/app/components/search-input';
 import { OtherActionsHakukohdeButton } from './other-actions-hakukohde-button';
+import { useSuspenseQueries } from '@tanstack/react-query';
+import { getDocumentIdForHakukohde } from '@/app/lib/valintalaskentakoostepalvelu';
 
 export const SijoittelunTulosControls = ({
   haku,
@@ -31,6 +33,37 @@ export const SijoittelunTulosControls = ({
   } = useSijoittelunTulosSearchParams();
 
   const { t } = useTranslations();
+
+  const [
+    hyvaksymiskirjeDocumentQuery,
+    osoitetarraDocumentQuery,
+    tuloksetDocumentQuery,
+  ] = useSuspenseQueries({
+    queries: [
+      {
+        queryKey: [
+          'getDocumentIdForHakukohde',
+          'hyvaksymiskirjeet',
+          hakukohde.oid,
+        ],
+        queryFn: () =>
+          getDocumentIdForHakukohde(hakukohde.oid, 'hyvaksymiskirjeet'),
+      },
+      {
+        queryKey: ['getDocumentIdForHakukohde', 'osoitetarrat', hakukohde.oid],
+        queryFn: () => getDocumentIdForHakukohde(hakukohde.oid, 'osoitetarrat'),
+      },
+      {
+        queryKey: [
+          'getDocumentIdForHakukohde',
+          'sijoitteluntulokset',
+          hakukohde.oid,
+        ],
+        queryFn: () =>
+          getDocumentIdForHakukohde(hakukohde.oid, 'sijoitteluntulokset'),
+      },
+    ],
+  });
 
   const changeSijoittelunTila = (e: SelectChangeEvent) => {
     setSijoittelunTila(e.target.value);
@@ -98,7 +131,17 @@ export const SijoittelunTulosControls = ({
         )}
       </Box>
       <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-        <OtherActionsHakukohdeButton disabled={false} hakukohde={hakukohde} />
+        {hyvaksymiskirjeDocumentQuery.isSuccess &&
+          osoitetarraDocumentQuery.isSuccess &&
+          tuloksetDocumentQuery.isSuccess && (
+            <OtherActionsHakukohdeButton
+              disabled={false}
+              hakukohde={hakukohde}
+              hyvaksymiskirjeDocumentId={hyvaksymiskirjeDocumentQuery.data}
+              osoitetarraDocumentId={osoitetarraDocumentQuery.data}
+              tulosDocumentId={tuloksetDocumentQuery.data}
+            />
+          )}
       </Box>
     </Box>
   );

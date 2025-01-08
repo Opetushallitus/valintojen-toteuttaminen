@@ -1,3 +1,5 @@
+import { DokumenttiTyyppi } from './types/valintalaskentakoostepalvelu-types';
+
 export const DOMAIN =
   process.env.APP_URL ?? process.env.VIRKAILIJA_URL ?? 'https://localhost:3404';
 
@@ -147,6 +149,14 @@ export const configuration = {
   hyvaksymiskirjeetUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/hyvaksymiskirjeet/aktivoi`,
   dokumenttiSeurantaUrl: ({ uuid }: { uuid: string }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/dokumentinseuranta/${uuid}`,
+  dokumentitUrl: ({
+    tyyppi,
+    hakukohdeOid,
+  }: {
+    tyyppi: DokumenttiTyyppi;
+    hakukohdeOid: string;
+  }) =>
+    `${DOMAIN}/valintalaskentakoostepalvelu/resources/dokumentit/${tyyppi}/${hakukohdeOid}`,
   dokumenttiProsessiUrl: ({ id }: { id: string }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/dokumenttiprosessi/${id}`,
   lataaDokumenttiUrl: ({ dokumenttiId }: { dokumenttiId: string }) =>
