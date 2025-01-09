@@ -1,6 +1,5 @@
 'use client';
 import { Box } from '@mui/material';
-import { LaskettuValinnanVaiheModel } from '@/app/lib/types/laskenta-types';
 import { AccordionBox } from '@/app/components/accordion-box';
 import { useJonosijatSearch } from '@/app/hooks/useJonosijatSearch';
 import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
@@ -13,6 +12,8 @@ import { useUserPermissions } from '@/app/hooks/useUserPermissions';
 import {
   JonoSijaWithHakijaInfo,
   LaskettuJonoWithHakijaInfo,
+  LaskettuValinnanvaihe,
+  LaskettuValinnanvaiheInfo,
 } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { getValintatapaJonoNimi } from '@/app/lib/valintalaskenta-utils';
@@ -69,13 +70,60 @@ const JonoActions = ({
   );
 };
 
-export const ValintatapajonoContent = ({
+export type LaskettuValintatapajonoContentProps = {
+  hakukohdeOid: string;
+  valinnanVaihe: LaskettuValinnanvaiheInfo;
+  jono: LaskettuJonoWithHakijaInfo;
+};
+
+export const LaskettuValintatapajonoContent = ({
+  hakukohdeOid,
+  valinnanVaihe,
+  jono,
+}: LaskettuValintatapajonoContentProps) => {
+  const { t } = useTranslations();
+  const label =
+    t('yleinen.sivutus') +
+    ': ' +
+    getValintatapaJonoNimi({
+      valinnanVaiheNimi: valinnanVaihe.nimi,
+      jonoNimi: jono.nimi,
+    });
+
+  return (
+    <Box
+      key={jono.oid}
+      sx={{
+        width: '100%',
+      }}
+    >
+      <AccordionBox
+        id={valinnanVaihe.valinnanvaiheoid}
+        title={
+          <ValintatapajonoAccordionTitle
+            valinnanVaihe={valinnanVaihe}
+            jono={jono}
+          />
+        }
+      >
+        <JonoActions hakukohdeOid={hakukohdeOid} jono={jono} />
+        <PaginatedValintatapajonoTable
+          label={label}
+          jonoId={jono.valintatapajonooid}
+          jonosijat={jono.jonosijat}
+        />
+      </AccordionBox>
+    </Box>
+  );
+};
+
+export const ValintatapajonoIlmanLaskentaaContent = ({
   hakukohdeOid,
   valinnanVaihe,
   jono,
 }: {
   hakukohdeOid: string;
-  valinnanVaihe: Omit<LaskettuValinnanVaiheModel, 'valintatapajonot'>;
+  valinnanVaihe: LaskettuValinnanvaihe;
   jono: LaskettuJonoWithHakijaInfo;
 }) => {
   const { t } = useTranslations();
@@ -86,6 +134,7 @@ export const ValintatapajonoContent = ({
       valinnanVaiheNimi: valinnanVaihe.nimi,
       jonoNimi: jono.nimi,
     });
+
   return (
     <Box
       key={jono.oid}

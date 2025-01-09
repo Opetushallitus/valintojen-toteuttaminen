@@ -117,7 +117,6 @@ export const useHenkiloPageData = ({
         queryKey: ['getPostitoimipaikka', hakemus.postinumero],
         queryFn: () => getPostitoimipaikka(hakemus.postinumero),
       },
-
       {
         queryKey: ['getPisteetForHakemus', hakemusOid],
         queryFn: () => getKoePisteetForHakemus({ hakemusOid, hakukohdeOids }),
@@ -153,6 +152,8 @@ export const useHenkiloPageData = ({
           valinnanvaiheet: selectLasketutValinnanvaiheet({
             lasketutValinnanvaiheet:
               valinnanvaiheetByHakukohde?.[hakukohde.oid],
+            hakemukset: [{ hakemusOid, hakijaOid: hakija.hakijaOid }],
+            valinnanvaiheetIlmanLaskentaa: [], // TODO: Nouda valinnanvaiheet ilman laskentaa
           }),
           valinnanTulos: valinnanTulos
             ? {
@@ -178,6 +179,8 @@ export const useHenkiloPageData = ({
     valinnanTuloksetResponse.lastModified,
     kokeetByHakukohde,
     pisteetByHakukohde,
+    hakemusOid,
+    hakija.hakijaOid,
   ]);
 
   return { hakukohteet, hakija, postitoimipaikka };

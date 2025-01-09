@@ -249,7 +249,9 @@
       "valintatieto": "Valintatieto",
       "muutoksen-syy": "Muutoksen syy"
     },
-    "virhe-vie-kaikki-taulukkolaskentaan": "Taulukkolaskentaan viemisessä tapahtui virhe!"
+    "virhe-vie-kaikki-taulukkolaskentaan": "Taulukkolaskentaan viemisessä tapahtui virhe!",
+    "valinnanvaiheet-ilman-laskentaa": "Valinnanvaiheet, joissa ei käytetä laskentaa",
+    "lasketut-valinnanvaiheet": "Lasketut valinnanvaiheet"
   },
   "sijoittelun-tulokset": {
     "otsikko": "Sijoittelun tulokset",

@@ -53,6 +53,7 @@ type ValinnanvaiheModel = {
       eiLasketaPaivamaaranJalkeen: string;
       prioriteetti: number;
       kaytetaanValintalaskentaa: boolean;
+      automaattinenSijoitteluunSiirto: boolean;
     },
   ];
 };
@@ -74,6 +75,7 @@ const selectValinnanvaihe = (vaihe: ValinnanvaiheModel) => {
         prioriteetti: jono.prioriteetti,
         eiLasketaPaivamaaranJalkeen,
         kaytetaanValintalaskentaa: jono.kaytetaanValintalaskentaa,
+        automaattinenSijoitteluunSiirto: jono.automaattinenSijoitteluunSiirto,
       };
     })
     .sort((j1, j2) => j1.prioriteetti - j2.prioriteetti);
