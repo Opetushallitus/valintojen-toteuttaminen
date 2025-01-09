@@ -53,6 +53,12 @@ const StyledTableBody = styled(TableBody)({
     },
   },
 });
+export type ListTablePaginationProps = {
+  page: number;
+  setPage: (page: number) => void;
+  pageSize: number;
+  label?: string;
+};
 
 interface ListTableProps<T extends Row>
   extends React.ComponentProps<typeof StyledTable> {
@@ -62,11 +68,7 @@ interface ListTableProps<T extends Row>
   setSort?: (sort: string) => void;
   translateHeader?: boolean;
   rowKeyProp: keyof T;
-  pagination?: {
-    page: number;
-    setPage: (page: number) => void;
-    pageSize: number;
-  };
+  pagination?: ListTablePaginationProps;
   getRowCheckboxLabel?: (row: T) => string;
   checkboxSelection?: boolean;
   selection?: Set<string>;
@@ -198,6 +200,7 @@ export const ListTable = <T extends Row>({
       </TableWrapper>
       {pagination && (
         <TablePagination
+          label={pagination.label}
           page={pagination.page}
           setPage={pagination.setPage}
           pageSize={pagination.pageSize}

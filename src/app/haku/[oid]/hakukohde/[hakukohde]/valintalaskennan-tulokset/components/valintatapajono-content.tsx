@@ -2,7 +2,6 @@
 import { Box } from '@mui/material';
 import { AccordionBox } from '@/app/components/accordion-box';
 import { useJonosijatSearch } from '@/app/hooks/useJonosijatSearch';
-import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
 import { LaskettuValintatapajonoTable } from './laskettu-valintatapajono-table';
 import { ValintatapajonoAccordionTitle } from './valintatapajono-accordion-title';
 import { SijoitteluStatusChangeButton } from './sijoittelu-status-change-button';
@@ -19,33 +18,30 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { getValintatapaJonoNimi } from '@/app/lib/valintalaskenta-utils';
 
 const PaginatedValintatapajonoTable = ({
-  label,
+  paginationLabel,
   jonoId,
   jonosijat,
 }: {
-  label: string;
+  paginationLabel: string;
   jonoId: string;
   jonosijat: Array<JonoSijaWithHakijaInfo>;
 }) => {
-  const { results, pageResults, sort, setSort, pageSize, setPage, page } =
+  const { results, sort, setSort, pageSize, setPage, page } =
     useJonosijatSearch(jonoId, jonosijat);
 
   return (
-    <TablePaginationWrapper
-      label={label}
-      totalCount={results?.length ?? 0}
-      pageSize={pageSize}
-      setPageNumber={setPage}
-      pageNumber={page}
-      countHidden={true}
-    >
-      <LaskettuValintatapajonoTable
-        setSort={setSort}
-        sort={sort}
-        jonoId={jonoId}
-        jonosijat={pageResults}
-      />
-    </TablePaginationWrapper>
+    <LaskettuValintatapajonoTable
+      setSort={setSort}
+      sort={sort}
+      jonoId={jonoId}
+      jonosijat={results}
+      pagination={{
+        page,
+        setPage,
+        pageSize,
+        label: paginationLabel,
+      }}
+    />
   );
 };
 
@@ -82,14 +78,6 @@ export const LaskettuValintatapajonoContent = ({
   jono,
 }: LaskettuValintatapajonoContentProps) => {
   const { t } = useTranslations();
-  const label =
-    t('yleinen.sivutus') +
-    ': ' +
-    getValintatapaJonoNimi({
-      valinnanVaiheNimi: valinnanVaihe.nimi,
-      jonoNimi: jono.nimi,
-    });
-
   return (
     <Box
       key={jono.oid}
@@ -108,7 +96,14 @@ export const LaskettuValintatapajonoContent = ({
       >
         <JonoActions hakukohdeOid={hakukohdeOid} jono={jono} />
         <PaginatedValintatapajonoTable
-          label={label}
+          paginationLabel={
+            t('yleinen.sivutus') +
+            ': ' +
+            getValintatapaJonoNimi({
+              valinnanVaiheNimi: valinnanVaihe.nimi,
+              jonoNimi: jono.nimi,
+            })
+          }
           jonoId={jono.valintatapajonooid}
           jonosijat={jono.jonosijat}
         />
@@ -153,7 +148,7 @@ export const ValintatapajonoIlmanLaskentaaContent = ({
       >
         <JonoActions hakukohdeOid={hakukohdeOid} jono={jono} />
         <PaginatedValintatapajonoTable
-          label={label}
+          paginationLabel={label}
           jonoId={jono.valintatapajonooid}
           jonosijat={jono.jonosijat}
         />

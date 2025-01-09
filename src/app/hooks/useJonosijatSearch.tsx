@@ -78,17 +78,11 @@ export const useJonosijatSearch = (
       : filtered;
   }, [jonoTulos, searchPhrase, sort, translateEntity]);
 
-  const pageResults = useMemo(() => {
-    const start = pageSize * (page - 1);
-    return results.slice(start, start + pageSize);
-  }, [results, page, pageSize]);
-
   return {
     page,
     setPage,
     pageSize,
     setPageSize,
-    pageResults,
     results,
     sort,
     setSort,
