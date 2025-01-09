@@ -9,41 +9,13 @@ import { useSijoitteluStatusMutation } from '../hooks/useSijoitteluStatusMutatio
 import { useHakukohde } from '@/app/hooks/useHakukohde';
 import { useUserPermissions } from '@/app/hooks/useUserPermissions';
 import {
-  JonoSijaWithHakijaInfo,
   LaskettuJonoWithHakijaInfo,
   LaskettuValinnanvaihe,
   LaskettuValinnanvaiheInfo,
 } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { getValintatapaJonoNimi } from '@/app/lib/valintalaskenta-utils';
-
-const PaginatedValintatapajonoTable = ({
-  paginationLabel,
-  jonoId,
-  jonosijat,
-}: {
-  paginationLabel: string;
-  jonoId: string;
-  jonosijat: Array<JonoSijaWithHakijaInfo>;
-}) => {
-  const { results, sort, setSort, pageSize, setPage, page } =
-    useJonosijatSearch(jonoId, jonosijat);
-
-  return (
-    <LaskettuValintatapajonoTable
-      setSort={setSort}
-      sort={sort}
-      jonoId={jonoId}
-      jonosijat={results}
-      pagination={{
-        page,
-        setPage,
-        pageSize,
-        label: paginationLabel,
-      }}
-    />
-  );
-};
+import { IlmanLaskentaaValintatapajonoTable } from './ilman-laskentaa-valintatapajono-table';
 
 const JonoActions = ({
   hakukohdeOid,
@@ -77,6 +49,11 @@ export const LaskettuValintatapajonoContent = ({
   valinnanVaihe,
   jono,
 }: LaskettuValintatapajonoContentProps) => {
+  const { valintatapajonooid, jonosijat } = jono;
+
+  const { results, sort, setSort, pageSize, setPage, page } =
+    useJonosijatSearch(valintatapajonooid, jonosijat);
+
   const { t } = useTranslations();
   return (
     <Box
@@ -95,17 +72,23 @@ export const LaskettuValintatapajonoContent = ({
         }
       >
         <JonoActions hakukohdeOid={hakukohdeOid} jono={jono} />
-        <PaginatedValintatapajonoTable
-          paginationLabel={
-            t('yleinen.sivutus') +
-            ': ' +
-            getValintatapaJonoNimi({
-              valinnanVaiheNimi: valinnanVaihe.nimi,
-              jonoNimi: jono.nimi,
-            })
-          }
-          jonoId={jono.valintatapajonooid}
-          jonosijat={jono.jonosijat}
+        <LaskettuValintatapajonoTable
+          setSort={setSort}
+          sort={sort}
+          jonoId={valintatapajonooid}
+          jonosijat={results}
+          pagination={{
+            page,
+            setPage,
+            pageSize,
+            label:
+              t('yleinen.sivutus') +
+              ': ' +
+              getValintatapaJonoNimi({
+                valinnanVaiheNimi: valinnanVaihe.nimi,
+                jonoNimi: jono.nimi,
+              }),
+          }}
         />
       </AccordionBox>
     </Box>
@@ -122,13 +105,11 @@ export const ValintatapajonoIlmanLaskentaaContent = ({
   jono: LaskettuJonoWithHakijaInfo;
 }) => {
   const { t } = useTranslations();
-  const label =
-    t('yleinen.sivutus') +
-    ': ' +
-    getValintatapaJonoNimi({
-      valinnanVaiheNimi: valinnanVaihe.nimi,
-      jonoNimi: jono.nimi,
-    });
+
+  const { valintatapajonooid, jonosijat } = jono;
+
+  const { results, sort, setSort, pageSize, setPage, page } =
+    useJonosijatSearch(valintatapajonooid, jonosijat);
 
   return (
     <Box
@@ -147,10 +128,23 @@ export const ValintatapajonoIlmanLaskentaaContent = ({
         }
       >
         <JonoActions hakukohdeOid={hakukohdeOid} jono={jono} />
-        <PaginatedValintatapajonoTable
-          paginationLabel={label}
-          jonoId={jono.valintatapajonooid}
-          jonosijat={jono.jonosijat}
+        <IlmanLaskentaaValintatapajonoTable
+          setSort={setSort}
+          sort={sort}
+          valintatapajonoOid={valintatapajonooid}
+          jonosijat={results}
+          pagination={{
+            page,
+            setPage,
+            pageSize,
+            label:
+              t('yleinen.sivutus') +
+              ': ' +
+              getValintatapaJonoNimi({
+                valinnanVaiheNimi: valinnanVaihe.nimi,
+                jonoNimi: jono.nimi,
+              }),
+          }}
         />
       </AccordionBox>
     </Box>
