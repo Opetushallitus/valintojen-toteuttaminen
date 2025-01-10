@@ -117,10 +117,11 @@ export const KoeInputsStateless = ({
         <Box sx={{ width: '80px' }}>
           {osallistuminen !== ValintakoeOsallistuminenTulos.EI_OSALLISTUNUT && (
             <PisteetInput
-              koe={koe}
+              min={koe.min}
+              max={koe.min}
               disabled={disabled}
-              arvo={arvo}
-              onArvoChange={(newArvo: string) => {
+              value={arvo}
+              onChange={(newArvo: string) => {
                 onChange({
                   hakemusOid,
                   koeTunniste: koe.tunniste,
