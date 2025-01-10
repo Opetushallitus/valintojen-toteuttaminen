@@ -3,17 +3,22 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { OphButton } from '@opetushallitus/oph-design-system';
 
 export const ConfirmationModalDialog = ({
+  title,
   open,
   onAnswer,
+  children,
 }: {
+  title?: string;
   open: boolean;
+  children?: React.ReactNode;
   onAnswer: (answer: boolean) => void;
 }) => {
   const { t } = useTranslations();
   return (
     <OphModalDialog
       open={open}
-      title={t('valinnanhallinta.varmista')}
+      onClose={() => onAnswer(false)}
+      title={title ?? t('valinnanhallinta.varmista')}
       maxWidth="sm"
       actions={
         <>
@@ -35,6 +40,8 @@ export const ConfirmationModalDialog = ({
           </OphButton>
         </>
       }
-    />
+    >
+      {children}
+    </OphModalDialog>
   );
 };

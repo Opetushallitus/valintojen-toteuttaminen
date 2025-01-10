@@ -3,54 +3,63 @@ import {
   ListTable,
   ListTablePaginationProps,
 } from '@/app/components/table/list-table';
-import {
-  createHakijaColumn,
-  makeCountColumn,
-  makeGenericColumn,
-} from '@/app/components/table/table-columns';
+import { createHakijaColumn } from '@/app/components/table/table-columns';
 import { ListTableColumn } from '@/app/components/table/table-types';
 import { JonoSijaWithHakijaInfo } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { useTranslations } from '@/app/hooks/useTranslations';
+import { OphInput } from '@opetushallitus/oph-design-system';
 import { useMemo } from 'react';
+import { ArvoType } from './valintatapajono-content';
+import { PisteetInput } from '@/app/components/pisteet-input';
 
 const TRANSLATIONS_PREFIX = 'valintalaskennan-tulokset.taulukko';
 
-const jonosijaColumn = makeCountColumn<JonoSijaWithHakijaInfo>({
+const JonosijaInput = ({ value }: { value?: number }) => {
+  // TODO: Validoi syöte
+  return (
+    <OphInput
+      type="number"
+      value={value}
+      sx={{ width: '80px' }}
+      inputProps={{ min: 1 }}
+    />
+  );
+};
+
+const jonosijaColumn: ListTableColumn<JonoSijaWithHakijaInfo> = {
   title: `${TRANSLATIONS_PREFIX}.jonosija`,
   key: 'jonosija',
-  amountProp: 'jonosija',
-});
+  render: ({ jonosija }) => {
+    return <JonosijaInput value={jonosija} />;
+  },
+};
 
-const hakutoiveColumn = makeGenericColumn<JonoSijaWithHakijaInfo>({
-  title: `${TRANSLATIONS_PREFIX}.hakutoive`,
-  key: 'hakutoiveNumero',
-  valueProp: 'hakutoiveNumero',
-});
+const KuvausInput = ({ value }: { value: string }) => {
+  return <OphInput value={value} />;
+};
+
+type JonoColumn = ListTableColumn<JonoSijaWithHakijaInfo>;
 
 export const IlmanLaskentaaValintatapajonoTable = ({
   jonosijat,
   setSort,
   sort,
   pagination,
+  arvoType,
 }: {
   jonosijat: Array<JonoSijaWithHakijaInfo>;
   valintatapajonoOid: string;
   sort: string;
   setSort: (sort: string) => void;
   pagination: ListTablePaginationProps;
+  arvoType: ArvoType;
 }) => {
-  const { t, translateEntity } = useTranslations();
+  const { t } = useTranslations();
 
-  const columns: Array<ListTableColumn<JonoSijaWithHakijaInfo>> = useMemo(
+  const columns: Array<JonoColumn> = useMemo(
     () => [
-      jonosijaColumn,
+      ...(arvoType === 'jonosija' ? [jonosijaColumn] : []),
       createHakijaColumn(),
-      {
-        title: `${TRANSLATIONS_PREFIX}.pisteet`,
-        key: 'pisteet',
-        render: ({ pisteet }) => <span>{pisteet}</span>,
-      },
-      hakutoiveColumn,
       {
         title: `${TRANSLATIONS_PREFIX}.valintatieto`,
         key: 'tuloksenTila',
@@ -58,13 +67,35 @@ export const IlmanLaskentaaValintatapajonoTable = ({
           <span>{t(`tuloksenTila.${props.tuloksenTila}`)}</span>
         ),
       },
+      ...(arvoType === 'kokonaispisteet'
+        ? [
+            {
+              title: `valintalaskennan-tulokset.kokonaispisteet`,
+              key: 'pisteet',
+              render: ({ pisteet }) => <PisteetInput value={pisteet} />,
+            } as JonoColumn,
+          ]
+        : []),
       {
-        title: `${TRANSLATIONS_PREFIX}.muutoksen-syy`,
-        key: 'muutoksenSyy',
-        render: (props) => <span>{translateEntity(props.muutoksenSyy)}</span>,
+        title: `${TRANSLATIONS_PREFIX}.kuvaus-fi`,
+        key: 'muutoksenSyy.fi',
+        render: (props) => <KuvausInput value={props.muutoksenSyy?.fi ?? ''} />,
+        sortable: false,
+      },
+      {
+        title: `${TRANSLATIONS_PREFIX}.kuvaus-sv`,
+        key: 'muutoksenSyy.sv',
+        render: (props) => <KuvausInput value={props.muutoksenSyy?.sv ?? ''} />,
+        sortable: false,
+      },
+      {
+        title: `${TRANSLATIONS_PREFIX}.kuvaus-en`,
+        key: 'muutoksenSyy.en',
+        render: (props) => <KuvausInput value={props.muutoksenSyy?.en ?? ''} />,
+        sortable: false,
       },
     ],
-    [t, translateEntity],
+    [t, arvoType],
   );
 
   return (

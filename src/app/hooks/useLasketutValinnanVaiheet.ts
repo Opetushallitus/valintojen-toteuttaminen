@@ -14,6 +14,7 @@ import {
   flatMap,
   groupBy,
   indexBy,
+  isNumber,
   map,
   mapKeys,
   pipe,
@@ -71,16 +72,28 @@ export type LasketutValinnanvaiheetWithHakijaInfo = Array<
   LaskettuValinnanvaihe<AdditionalHakemusFields>
 >;
 
-const selectJonosijaFields = (jonosija?: JonoSijaModel) => {
-  const jarjestyskriteeri = jonosija?.jarjestyskriteerit?.[0];
+const selectJonosijaFields = (jonosijaData?: JonoSijaModel) => {
+  const jarjestyskriteeri = jonosijaData?.jarjestyskriteerit?.[0];
+
+  const arvo = jarjestyskriteeri?.arvo;
+  let jonosija = jonosijaData?.jonosija;
+
+  /* Järjestyskriteerin pisteiden (arvo-kenttä) negatiivisia arvoja käytetään jonosijojen manuaaliseen tallentamiseen.
+   * Näin saadaan haluttu järjestys ilman oikeita pistetietoja.
+   * Palautetaan arvosta muodostettu jonosija, jotta se voidaan esittää käyttäjälle oikein.
+   */
+  if (isNumber(arvo) && arvo < 0) {
+    jonosija = -arvo;
+  }
+
   return {
-    jonosija: jonosija?.jonosija,
-    harkinnanvarainen: jonosija?.harkinnanvarainen,
-    prioriteetti: jonosija?.prioriteetti,
-    jarjestyskriteerit: jonosija?.jarjestyskriteerit,
-    hakutoiveNumero: jonosija?.prioriteetti,
+    jonosija,
+    harkinnanvarainen: jonosijaData?.harkinnanvarainen,
+    prioriteetti: jonosijaData?.prioriteetti,
+    jarjestyskriteerit: jonosijaData?.jarjestyskriteerit,
+    hakutoiveNumero: jonosijaData?.prioriteetti,
     pisteet: jarjestyskriteeri?.arvo,
-    tuloksenTila: jonosija?.tuloksenTila ?? TuloksenTila.MAARITTELEMATON,
+    tuloksenTila: jonosijaData?.tuloksenTila ?? TuloksenTila.MAARITTELEMATON,
     muutoksenSyy: mapKeys(jarjestyskriteeri?.kuvaus ?? {}, (key) =>
       key.toLowerCase(),
     ),
@@ -129,6 +142,7 @@ export const selectLasketutValinnanvaiheet = <
             jono.automaattinenSijoitteluunSiirto ??
             laskettuJono?.valmisSijoiteltavaksi,
           siirretaanSijoitteluun: laskettuJono?.siirretaanSijoitteluun,
+          kaytetaanKokonaispisteita: laskettuJono?.kaytetaanKokonaispisteita,
           jonosijat: pipe(
             // Jos valintalaskenta ei ole käytössä, täydennetään "tyhjät" jonosijat kaikille hakemuksille, jotta voidaan
             // näyttää kaikki hakemukset ja mahdollistaa tulosten syöttäminen käsin
