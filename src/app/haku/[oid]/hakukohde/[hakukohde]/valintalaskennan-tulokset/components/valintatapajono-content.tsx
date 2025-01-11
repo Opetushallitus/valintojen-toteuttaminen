@@ -10,7 +10,6 @@ import { useHakukohde } from '@/app/hooks/useHakukohde';
 import { useUserPermissions } from '@/app/hooks/useUserPermissions';
 import {
   LaskettuJonoWithHakijaInfo,
-  LaskettuValinnanvaihe,
   LaskettuValinnanvaiheInfo,
 } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { useTranslations } from '@/app/hooks/useTranslations';
@@ -21,6 +20,7 @@ import { ArvoTypeChangeConfirmationModal } from './arvo-type-change-confirmation
 import { showModal } from '@/app/components/global-modal';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { SpinnerIcon } from '@/app/components/spinner-icon';
+import { Haku } from '@/app/lib/types/kouta-types';
 
 const LaskettuVaiheActions = ({
   hakukohdeOid,
@@ -119,6 +119,7 @@ const LaskennatonVaiheActions = ({
 };
 
 export type LaskettuValintatapajonoContentProps = {
+  haku: Haku;
   hakukohdeOid: string;
   valinnanVaihe: LaskettuValinnanvaiheInfo;
   jono: LaskettuJonoWithHakijaInfo;
@@ -176,14 +177,11 @@ export const LaskettuValintatapajonoContent = ({
 };
 
 export const ValintatapajonoIlmanLaskentaaContent = ({
+  haku,
   hakukohdeOid,
   valinnanVaihe,
   jono,
-}: {
-  hakukohdeOid: string;
-  valinnanVaihe: LaskettuValinnanvaihe;
-  jono: LaskettuJonoWithHakijaInfo;
-}) => {
+}: LaskettuValintatapajonoContentProps) => {
   const { t } = useTranslations();
 
   const { valintatapajonooid, jonosijat } = jono;
@@ -218,6 +216,7 @@ export const ValintatapajonoIlmanLaskentaaContent = ({
           setArvoType={setArvoType}
         />
         <IlmanLaskentaaValintatapajonoTable
+          haku={haku}
           setSort={setSort}
           sort={sort}
           valintatapajonoOid={valintatapajonooid}
