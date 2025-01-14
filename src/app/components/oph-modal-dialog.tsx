@@ -45,7 +45,7 @@ export const OphModalDialog = ({
     <Dialog
       fullWidth={fullWidth}
       maxWidth={maxWidth}
-      sx={{ minWidth: '500px' }}
+      sx={{ minWidth: '500px', position: 'absolute' }}
       open={open}
       aria-labelledby={modalTitleId}
       onClose={onClose}
@@ -72,7 +72,9 @@ export const OphModalDialog = ({
           />
         )}
       </DialogTitle>
-      <DialogContent sx={{ textAlign: contentAlign }}>{children}</DialogContent>
+      <DialogContent sx={{ textAlign: contentAlign, position: 'relative' }}>
+        {children}
+      </DialogContent>
       {actions && <DialogActions>{actions}</DialogActions>}
     </Dialog>
   );
