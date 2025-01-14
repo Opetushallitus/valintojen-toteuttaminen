@@ -36,8 +36,11 @@
     "valitse-kaikki": "Valitse kaikki",
     "tuo-taulukkolaskennasta": "Tuo taulukkolaskennasta",
     "sulje": "Sulje",
-    "muokkaa": "Muokkaa",
-    "aika": "Aika"
+    "muokkaa": "Muokkaa"
+  },
+  "kalenteri": {
+    "aika": "Aika",
+    "syote-vihje": "pp.kk.vvvv hh.mm"
   },
   "haku-tabs": {
     "navigaatio": "Haun näkymävalitsin",
