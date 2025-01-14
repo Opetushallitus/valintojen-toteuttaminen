@@ -19,6 +19,8 @@ import { Hakukohde } from '@/app/lib/types/kouta-types';
 import { sendVastaanottopostiHakukohteelle } from '@/app/lib/valinta-tulos-service';
 import useToaster from '@/app/hooks/useToaster';
 import { configuration } from '@/app/lib/configuration';
+import { LetterTemplateModal } from './letter-template-modal';
+import { showModal } from '@/app/components/global-modal';
 
 const StyledListItemText = styled(ListItemText)(() => ({
   span: {
@@ -55,6 +57,11 @@ export const OtherActionsHakukohdeButton = ({
   };
 
   const closeMenu = () => setAnchorEl(null);
+
+  const openLetterTemplateModal = async () => {
+    showModal(LetterTemplateModal, { title: 'Title' });
+    closeMenu();
+  };
 
   const sendVastaanottoposti = async () => {
     try {
@@ -128,7 +135,7 @@ export const OtherActionsHakukohdeButton = ({
           </StyledListItemText>
         </MenuItem>
         <Divider />
-        <MenuItem onClick={closeMenu}>
+        <MenuItem onClick={openLetterTemplateModal}>
           <StyledListItemIcon>
             <InsertDriveFileOutlined />
           </StyledListItemIcon>
