@@ -61,7 +61,8 @@ export const ValintakoekutsutExcelDownloadButton = ({
     <DownloadButton
       Component={Component}
       disabled={selection && selection.size === 0}
-      mutation={excelMutation}
+      isLoading={excelMutation.isPending}
+      onClick={() => excelMutation.mutate()}
     >
       {t('yleinen.vie-taulukkolaskentaan')}
     </DownloadButton>

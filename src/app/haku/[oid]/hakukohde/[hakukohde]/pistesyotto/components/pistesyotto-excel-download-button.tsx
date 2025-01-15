@@ -33,7 +33,7 @@ const useExcelDownloadMutation = ({
   });
 };
 
-export const ExcelDownloadButton = ({
+export const PistesyottoExcelDownloadButton = ({
   hakuOid,
   hakukohdeOid,
 }: {
@@ -48,7 +48,10 @@ export const ExcelDownloadButton = ({
   });
 
   return (
-    <DownloadButton mutation={excelMutation}>
+    <DownloadButton
+      isLoading={excelMutation.isPending}
+      onClick={() => excelMutation.mutate()}
+    >
       {t('yleinen.vie-taulukkolaskentaan')}
     </DownloadButton>
   );

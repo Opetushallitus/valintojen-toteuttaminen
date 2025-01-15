@@ -69,7 +69,8 @@ const OsoitetarratDownloadButton = ({
     <DownloadButton
       Component={ActionBar.Button}
       disabled={selection.size === 0}
-      mutation={osoitetarratMutation}
+      isLoading={osoitetarratMutation.isPending}
+      onClick={() => osoitetarratMutation.mutate()}
       startIcon={<NoteOutlined />}
     >
       {t('valintakoekutsut.muodosta-osoitetarrat')}

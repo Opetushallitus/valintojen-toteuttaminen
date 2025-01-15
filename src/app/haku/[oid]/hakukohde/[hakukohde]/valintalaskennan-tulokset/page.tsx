@@ -65,7 +65,10 @@ const ExcelDownloadButton = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
   const { t } = useTranslations();
 
   return (
-    <DownloadButton mutation={mutation}>
+    <DownloadButton
+      isLoading={mutation.isPending}
+      onClick={() => mutation.mutate()}
+    >
       {t('valintalaskennan-tulokset.vie-kaikki-taulukkolaskentaan')}
     </DownloadButton>
   );
