@@ -7,7 +7,6 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import {
   OphButton,
   OphInput,
-  OphSelect,
 } from '@opetushallitus/oph-design-system';
 import { Stack } from '@mui/material';
 import { useEffect, useState } from 'react';
@@ -33,6 +32,7 @@ import {
 import { isEmpty } from 'remeda';
 import { InlineFormControl, PaddedLabel } from './inline-form-control';
 import { EditModalDialog } from './edit-modal-dialog';
+import { LocalizedSelect } from '@/app/components/localized-select';
 
 const ModalActions = ({
   onClose,
@@ -99,7 +99,7 @@ const JarjestyskriteeriFields = ({
           </PaddedLabel>
         }
         renderInput={({ labelId }) => (
-          <OphSelect
+          <LocalizedSelect
             sx={{ width: '100%' }}
             labelId={labelId}
             value={value.tila}
@@ -315,7 +315,7 @@ export const ValintalaskentaEditModal = createModal<{
           <PaddedLabel>{t('henkilo.taulukko.jarjestyskriteeri')}</PaddedLabel>
         }
         renderInput={({ labelId }) => (
-          <OphSelect
+          <LocalizedSelect
             sx={{ width: '100%' }}
             labelId={labelId}
             value={jarjestyskriteeriPrioriteetti.toString()}

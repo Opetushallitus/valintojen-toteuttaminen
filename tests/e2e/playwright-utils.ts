@@ -1,7 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { Locator, Page, Route, expect } from '@playwright/test';
 import path from 'path';
-import cssEscape from 'css.escape';
 
 export const expectPageAccessibilityOk = async (page: Page) => {
   const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
@@ -78,11 +77,11 @@ export async function selectOption(
   const combobox = (within ?? page).getByRole('combobox', {
     name: new RegExp(`^${name}`),
   });
-  const contentId = await combobox.getAttribute('aria-controls');
+
   await combobox.click();
-  const contentIdSelector = contentId ? `#${cssEscape(contentId)}` : '';
-  // Selectin listbox rendataan portalilla juuritasolle
-  const listbox = page.locator(contentIdSelector);
+
+  // Selectin listbox rendataan juuritasolle
+  const listbox = page.locator('#select-menu').getByRole('listbox');
 
   await listbox
     .getByRole('option', { name: expectedOption, exact: true })

@@ -5,7 +5,7 @@ import {
 } from '@/app/components/global-modal';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Stack } from '@mui/material';
-import { OphButton, OphSelect } from '@opetushallitus/oph-design-system';
+import { OphButton } from '@opetushallitus/oph-design-system';
 import { InlineFormControl, PaddedLabel } from './inline-form-control';
 import useToaster from '@/app/hooks/useToaster';
 import {
@@ -29,6 +29,7 @@ import { ValinnanTulosUpdateErrorResult } from '@/app/lib/types/valinta-tulos-ty
 import { HttpClientResponse } from '@/app/lib/http-client';
 import { EditModalDialog } from './edit-modal-dialog';
 import { ValinnanTulosLisatiedoilla } from '../lib/henkilo-page-types';
+import { LocalizedSelect } from '@/app/components/localized-select';
 
 const ModalActions = ({
   onClose,
@@ -204,7 +205,7 @@ export const ValinnanTilatEditModal = createModal<{
             <PaddedLabel>{t('henkilo.taulukko.vastaanoton-tila')}</PaddedLabel>
           }
           renderInput={({ labelId }) => (
-            <OphSelect
+            <LocalizedSelect
               sx={{ width: '100%' }}
               labelId={labelId}
               value={vastaanottoTila}
@@ -222,7 +223,7 @@ export const ValinnanTilatEditModal = createModal<{
             </PaddedLabel>
           }
           renderInput={({ labelId }) => (
-            <OphSelect
+            <LocalizedSelect
               sx={{ width: '100%' }}
               labelId={labelId}
               value={ilmoittautumisTila}

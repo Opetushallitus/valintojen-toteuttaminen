@@ -9,6 +9,7 @@ export const LocalizedSelect = (
   return (
     <OphSelect
       inputProps={{ 'aria-label': t('yleinen.valitsevaihtoehto') }}
+      MenuProps={{ id: 'select-menu' }}
       placeholder={t('yleinen.valitse')}
       {...props}
     />
