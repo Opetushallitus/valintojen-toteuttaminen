@@ -4,12 +4,17 @@ import { createModal, useOphModalProps } from '@/app/components/global-modal';
 import { OphModalDialog } from '@/app/components/oph-modal-dialog';
 import { useState } from 'react';
 import { CalendarComponent } from './calendar-component';
+import { EditorComponent } from './editor-component';
 
 const TemplateModalContent = () => {
   const [deadlineDate, setDeadlineDate] = useState<Date | null>(null);
+  const [templateBody, setTemplateBody] = useState<string>("");
 
   return (
-    <CalendarComponent selectedValue={deadlineDate} setDate={setDeadlineDate} />
+    <>
+      <EditorComponent editorContent={templateBody} setContentChanged={setTemplateBody}/>
+      <CalendarComponent selectedValue={deadlineDate} setDate={setDeadlineDate} />
+    </>
   );
 };
 
