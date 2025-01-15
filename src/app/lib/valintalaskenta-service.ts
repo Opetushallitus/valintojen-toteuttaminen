@@ -1,6 +1,6 @@
 'use client';
 
-import { LaskettuJonoWithHakijaInfo } from '../hooks/useLasketutValinnanVaiheet';
+import { LaskettuJonoWithHakijaInfo } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { booleanToString } from './common';
 import { configuration } from './configuration';
 import { client } from './http-client';
@@ -494,4 +494,21 @@ export const deleteJonosijanJarjestyskriteeri = ({
       jarjestyskriteeriPrioriteetti,
     }),
   );
+};
+
+export const saveValinnanvaiheTulokset = ({
+  hakukohde,
+  valinnanvaihe,
+}: {
+  hakukohde: Pick<Hakukohde, 'oid' | 'tarjoajaOid'>;
+  valinnanvaihe: LaskettuValinnanVaiheModel;
+}) => {
+  const url = new URL(
+    configuration.hakukohteenLasketutValinnanVaiheetUrl({
+      hakukohdeOid: hakukohde.oid,
+    }),
+  );
+
+  url.searchParams.set('tarjoajaOid', hakukohde.tarjoajaOid);
+  return client.post<LaskettuValinnanVaiheModel>(url, valinnanvaihe);
 };

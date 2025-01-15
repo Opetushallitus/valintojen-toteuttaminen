@@ -62,7 +62,7 @@ export type LaskettuValinnanVaiheModel = {
   valinnanvaiheoid: string;
   hakuOid: string;
   nimi: string;
-  createdAt: number;
+  createdAt: number | null;
   valintatapajonot?: Array<LaskettuValintatapajonoModel>;
 };
 

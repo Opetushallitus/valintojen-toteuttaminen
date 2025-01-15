@@ -6,9 +6,8 @@ import {
 import { createHakijaColumn } from '@/app/components/table/table-columns';
 import { ListTableColumn } from '@/app/components/table/table-types';
 import { JonoSijaWithHakijaInfo } from '@/app/hooks/useLasketutValinnanVaiheet';
-import { OphInput, OphSelect } from '@opetushallitus/oph-design-system';
+import { OphInput } from '@opetushallitus/oph-design-system';
 import { useMemo } from 'react';
-import { ArvoType } from './valintatapajono-content';
 import { PisteetInput } from '@/app/components/pisteet-input';
 import { useTuloksenTilaOptions } from '@/app/hooks/useTuloksenTilaOptions';
 import {
@@ -16,10 +15,31 @@ import {
   isKorkeakouluHaku,
 } from '@/app/lib/kouta';
 import { Haku } from '@/app/lib/types/kouta-types';
+import { LocalizedSelect } from '@/app/components/localized-select';
+import {
+  JonoTulosActorRef,
+  useHakemusJonoTulos,
+  useJonoTulosActorRef,
+  useSelectedJarjestysperuste,
+} from '@/app/lib/state/jono-tulos-state';
+import { TuloksenTila } from '@/app/lib/types/laskenta-types';
+import { Language } from '@/app/lib/localization/localization-types';
 
 const TRANSLATIONS_PREFIX = 'valintalaskennan-tulokset.taulukko';
 
-const JonosijaInput = ({ value }: { value?: number }) => {
+type JonoColumn = ListTableColumn<JonoSijaWithHakijaInfo>;
+
+const JonosijaInput = ({
+  jonoTulosActorRef,
+  hakemusOid,
+}: {
+  jonoTulosActorRef: JonoTulosActorRef;
+  hakemusOid: string;
+}) => {
+  const { onJonoTulosChange } = useJonoTulosActorRef(jonoTulosActorRef);
+
+  const hakemusJonoTulos = useHakemusJonoTulos(jonoTulosActorRef, hakemusOid);
+  const value = hakemusJonoTulos.jonosija ?? '';
   // TODO: Validoi syöte
   return (
     <OphInput
@@ -27,23 +47,100 @@ const JonosijaInput = ({ value }: { value?: number }) => {
       value={value}
       sx={{ width: '80px' }}
       inputProps={{ min: 1 }}
+      onChange={(e) =>
+        onJonoTulosChange({
+          hakemusOid,
+          jonosija: e.target.value,
+        })
+      }
     />
   );
 };
 
-const jonosijaColumn: ListTableColumn<JonoSijaWithHakijaInfo> = {
-  title: `${TRANSLATIONS_PREFIX}.jonosija`,
-  key: 'jonosija',
-  render: ({ jonosija }) => {
-    return <JonosijaInput value={jonosija} />;
-  },
+const TuloksenTilaSelect = ({
+  jonoTulosActorRef,
+  haku,
+  hakemusOid,
+}: {
+  jonoTulosActorRef: JonoTulosActorRef;
+  haku: Haku;
+  hakemusOid: string;
+}) => {
+  const { onJonoTulosChange } = useJonoTulosActorRef(jonoTulosActorRef);
+
+  const hakemusJonoTulos = useHakemusJonoTulos(jonoTulosActorRef, hakemusOid);
+  const value = hakemusJonoTulos.tuloksenTila ?? '';
+
+  const tuloksenTilaOptions = useTuloksenTilaOptions({
+    harkinnanvarainen: !(
+      isKorkeakouluHaku(haku) || isAmmatillinenErityisopetus(haku)
+    ),
+  });
+
+  return (
+    <LocalizedSelect
+      value={value}
+      options={tuloksenTilaOptions}
+      sx={{ width: '100%' }}
+      onChange={(e) => {
+        const tuloksenTila = e.target.value;
+        onJonoTulosChange({
+          hakemusOid,
+          tuloksenTila: tuloksenTila as TuloksenTila,
+        });
+      }}
+    />
+  );
 };
 
-const KuvausInput = ({ value }: { value: string }) => {
-  return <OphInput value={value} />;
+const KokonaispisteetInput = ({
+  jonoTulosActorRef,
+  hakemusOid,
+}: {
+  jonoTulosActorRef: JonoTulosActorRef;
+  hakemusOid: string;
+}) => {
+  const { onJonoTulosChange } = useJonoTulosActorRef(jonoTulosActorRef);
+  const hakemusJonoTulos = useHakemusJonoTulos(jonoTulosActorRef, hakemusOid);
+  const value = hakemusJonoTulos.pisteet ?? '';
+  return (
+    <PisteetInput
+      value={value}
+      onChange={(newPisteet) =>
+        onJonoTulosChange({ hakemusOid, pisteet: newPisteet })
+      }
+    />
+  );
 };
 
-type JonoColumn = ListTableColumn<JonoSijaWithHakijaInfo>;
+const KuvausInput = ({
+  jonoTulosActorRef,
+  hakemusOid,
+  language,
+}: {
+  jonoTulosActorRef: JonoTulosActorRef;
+  hakemusOid: string;
+  language: Language;
+}) => {
+  const { onJonoTulosChange } = useJonoTulosActorRef(jonoTulosActorRef);
+  const hakemusJonoTulos = useHakemusJonoTulos(jonoTulosActorRef, hakemusOid);
+  const value = hakemusJonoTulos.muutoksenSyy ?? {};
+
+  return (
+    <OphInput
+      value={value?.[language] ?? ''}
+      onChange={(e) => {
+        onJonoTulosChange({
+          hakemusOid,
+          kuvaus: {
+            ...value,
+            [language]: e.target.value,
+          },
+        });
+      }}
+    />
+  );
+};
 
 export const IlmanLaskentaaValintatapajonoTable = ({
   haku,
@@ -51,7 +148,7 @@ export const IlmanLaskentaaValintatapajonoTable = ({
   setSort,
   sort,
   pagination,
-  arvoType,
+  jonoTulosActorRef,
 }: {
   haku: Haku;
   jonosijat: Array<JonoSijaWithHakijaInfo>;
@@ -59,58 +156,93 @@ export const IlmanLaskentaaValintatapajonoTable = ({
   sort: string;
   setSort: (sort: string) => void;
   pagination: ListTablePaginationProps;
-  arvoType: ArvoType;
+  jonoTulosActorRef: JonoTulosActorRef;
 }) => {
-  const tuloksenTilaOptions = useTuloksenTilaOptions({
-    harkinnanvarainen: !(
-      isKorkeakouluHaku(haku) || isAmmatillinenErityisopetus(haku)
-    ),
-  });
+  const [selectedJarjestysperuste] =
+    useSelectedJarjestysperuste(jonoTulosActorRef);
 
   const columns: Array<JonoColumn> = useMemo(
     () => [
-      ...(arvoType === 'jonosija' ? [jonosijaColumn] : []),
+      ...(selectedJarjestysperuste === 'jonosija'
+        ? [
+            {
+              title: `${TRANSLATIONS_PREFIX}.jonosija`,
+              key: 'jonosija',
+              render: ({ hakemusOid }) => {
+                return (
+                  <JonosijaInput
+                    jonoTulosActorRef={jonoTulosActorRef}
+                    hakemusOid={hakemusOid}
+                  />
+                );
+              },
+            } as JonoColumn,
+          ]
+        : []),
       createHakijaColumn(),
       {
         title: `${TRANSLATIONS_PREFIX}.valintatieto`,
         key: 'tuloksenTila',
         render: (props) => (
-          <OphSelect
-            value={props.tuloksenTila}
-            options={tuloksenTilaOptions}
-            onChange={() => {}}
+          <TuloksenTilaSelect
+            jonoTulosActorRef={jonoTulosActorRef}
+            haku={haku}
+            hakemusOid={props.hakemusOid}
           />
         ),
       },
-      ...(arvoType === 'kokonaispisteet'
+      ...(selectedJarjestysperuste === 'kokonaispisteet'
         ? [
             {
               title: `valintalaskennan-tulokset.kokonaispisteet`,
               key: 'pisteet',
-              render: ({ pisteet }) => <PisteetInput value={pisteet} />,
+              render: ({ hakemusOid }) => (
+                <KokonaispisteetInput
+                  jonoTulosActorRef={jonoTulosActorRef}
+                  hakemusOid={hakemusOid}
+                />
+              ),
             } as JonoColumn,
           ]
         : []),
       {
         title: `${TRANSLATIONS_PREFIX}.kuvaus-fi`,
         key: 'muutoksenSyy.fi',
-        render: (props) => <KuvausInput value={props.muutoksenSyy?.fi ?? ''} />,
+        render: ({ hakemusOid }) => (
+          <KuvausInput
+            jonoTulosActorRef={jonoTulosActorRef}
+            hakemusOid={hakemusOid}
+            language="fi"
+          />
+        ),
         sortable: false,
       },
       {
         title: `${TRANSLATIONS_PREFIX}.kuvaus-sv`,
         key: 'muutoksenSyy.sv',
-        render: (props) => <KuvausInput value={props.muutoksenSyy?.sv ?? ''} />,
+        render: ({ hakemusOid }) => (
+          <KuvausInput
+            jonoTulosActorRef={jonoTulosActorRef}
+            hakemusOid={hakemusOid}
+            language="sv"
+          />
+        ),
         sortable: false,
       },
       {
         title: `${TRANSLATIONS_PREFIX}.kuvaus-en`,
         key: 'muutoksenSyy.en',
-        render: (props) => <KuvausInput value={props.muutoksenSyy?.en ?? ''} />,
+        render: ({ hakemusOid }) => (
+          <KuvausInput
+            jonoTulosActorRef={jonoTulosActorRef}
+            hakemusOid={hakemusOid}
+            language="en"
+          />
+        ),
         sortable: false,
       },
     ],
-    [tuloksenTilaOptions, arvoType],
+    [jonoTulosActorRef, selectedJarjestysperuste, haku],
   );
 
   return (

@@ -30,7 +30,7 @@ export function isTranslatedName(value: unknown): value is TranslatedName {
 }
 
 export function toFormattedDateTimeString(
-  value?: number | Date | string,
+  value?: number | Date | string | null,
 ): string {
   if (isNullish(value)) {
     return '';

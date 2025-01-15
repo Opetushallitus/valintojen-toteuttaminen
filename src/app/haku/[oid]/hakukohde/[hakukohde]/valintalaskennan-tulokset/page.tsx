@@ -128,8 +128,8 @@ const ValinnanvaiheetContent = ({
   return (
     <Stack gap={2} sx={{ width: '100%' }}>
       <ValinnanvaiheGroupResults
-        haku={haku}
         title={t('valintalaskennan-tulokset.valinnanvaiheet-ilman-laskentaa')}
+        haku={haku}
         hakukohdeOid={hakukohdeOid}
         vaiheet={valinnanvaiheetIlmanLaskentaa}
         JonoContentComponent={ValintatapajonoIlmanLaskentaaContent}

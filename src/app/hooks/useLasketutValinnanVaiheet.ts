@@ -1,5 +1,5 @@
 'use client';
-import { useSuspenseQueries } from '@tanstack/react-query';
+import { queryOptions, useSuspenseQueries } from '@tanstack/react-query';
 import { getHakukohteenLasketutValinnanvaiheet } from '../lib/valintalaskenta-service';
 import { getHakemukset } from '../lib/ataru';
 import { TranslatedName } from '../lib/localization/localization-types';
@@ -25,15 +25,27 @@ import { HakemuksenTila } from '@/app/lib/types/ataru-types';
 import { getValinnanvaiheetIlmanLaskentaa } from '../lib/valintaperusteet';
 import { Valinnanvaihe } from '../lib/types/valintaperusteet-types';
 
+export const hakukohteenLasketutValinnanvaiheetQueryOptions = (
+  hakukohdeOid: string,
+) =>
+  queryOptions({
+    queryKey: ['getHakukohteenLasketutValinnanvaiheet', hakukohdeOid],
+    queryFn: () => getHakukohteenLasketutValinnanvaiheet(hakukohdeOid),
+  });
+
 export type JonoSija<
-  A extends Record<string, unknown> = Record<string, never>,
-> = Omit<Partial<JonoSijaModel>, 'harkinnanvarainen' | 'prioriteetti'> & {
+  A extends Record<string, unknown> = Record<string, unknown>,
+> = Omit<
+  Partial<JonoSijaModel>,
+  'harkinnanvarainen' | 'prioriteetti' | 'jonosija'
+> & {
   hakemusOid: string;
   hakijaOid: string;
-  pisteet?: number;
+  pisteet?: string;
   hakutoiveNumero?: number;
-  tuloksenTila?: string;
+  tuloksenTila?: TuloksenTila;
   muutoksenSyy?: TranslatedName;
+  jonosija?: string;
 } & A;
 
 type AdditionalHakemusFields = {
@@ -44,7 +56,7 @@ type AdditionalHakemusFields = {
 export type JonoSijaWithHakijaInfo = JonoSija<AdditionalHakemusFields>;
 
 export type LaskettuJono<
-  A extends Record<string, unknown> = Record<string, never>,
+  A extends Record<string, unknown> = Record<string, unknown>,
 > = Omit<LaskettuValintatapajonoModel, 'jonosijat'> & {
   jonosijat: Array<JonoSija<A>>;
 };
@@ -53,19 +65,17 @@ export type LaskettuJonoWithHakijaInfo = LaskettuJono<AdditionalHakemusFields>;
 
 export type LaskettuValinnanvaiheInfo = Omit<
   LaskettuValinnanVaiheModel,
-  'valintatapajonot' | 'hakuOid' | 'createdAt'
-> & {
-  createdAt?: number;
-};
+  'valintatapajonot' | 'hakuOid'
+>;
 
 export type LaskettuValinnanvaihe<
-  A extends Record<string, unknown> = Record<string, never>,
+  A extends Record<string, unknown> = Record<string, unknown>,
 > = LaskettuValinnanvaiheInfo & {
   valintatapajonot?: Array<LaskettuJono<A>>;
 };
 
 export type LasketutValinnanvaiheet<
-  A extends Record<string, unknown> = Record<string, never>,
+  A extends Record<string, unknown> = Record<string, unknown>,
 > = Array<LaskettuValinnanvaihe<A>>;
 
 export type LasketutValinnanvaiheetWithHakijaInfo = Array<
@@ -92,8 +102,8 @@ const selectJonosijaFields = (jonosijaData?: JonoSijaModel) => {
     prioriteetti: jonosijaData?.prioriteetti,
     jarjestyskriteerit: jonosijaData?.jarjestyskriteerit,
     hakutoiveNumero: jonosijaData?.prioriteetti,
-    pisteet: jarjestyskriteeri?.arvo,
-    tuloksenTila: jonosijaData?.tuloksenTila ?? TuloksenTila.MAARITTELEMATON,
+    pisteet: jarjestyskriteeri?.arvo?.toString(),
+    tuloksenTila: jonosijaData?.tuloksenTila as TuloksenTila | undefined,
     muutoksenSyy: mapKeys(jarjestyskriteeri?.kuvaus ?? {}, (key) =>
       key.toLowerCase(),
     ),
@@ -130,7 +140,7 @@ export const selectLasketutValinnanvaiheet = <
       jarjestysnumero: 0,
       valinnanvaiheoid: vaihe.oid,
       nimi: vaihe.nimi,
-      createdAt: undefined,
+      createdAt: null,
       valintatapajonot: vaihe.jonot.map((jono) => {
         const laskettuJono = lasketutJonotByOid?.[jono.oid]?.[0];
         return {
@@ -216,10 +226,7 @@ export const useLasketutValinnanVaiheet = ({
         queryKey: ['getHakemukset', hakuOid, hakukohdeOid],
         queryFn: () => getHakemukset({ hakuOid, hakukohdeOid }),
       },
-      {
-        queryKey: ['getLasketutValinnanVaiheet', hakukohdeOid],
-        queryFn: () => getHakukohteenLasketutValinnanvaiheet(hakukohdeOid),
-      },
+      hakukohteenLasketutValinnanvaiheetQueryOptions(hakukohdeOid),
       {
         queryKey: ['getValinnanvaiheetIlmanLaskentaa', hakukohdeOid],
         queryFn: () => getValinnanvaiheetIlmanLaskentaa(hakukohdeOid),

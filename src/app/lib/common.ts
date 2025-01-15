@@ -71,3 +71,9 @@ export const isServer = typeof window === 'undefined';
 
 export const isHakukohdeOid = (value: string) =>
   /^1\.2\.246\.562\.20\.\d{20}$/.test(value);
+
+export type GenericEvent = {
+  key: string;
+  message: string;
+  type: 'error' | 'success';
+};
