@@ -32,6 +32,8 @@ import {
 import useToaster from '@/app/hooks/useToaster';
 import { GenericEvent } from '@/app/lib/common';
 import { QueryClient, useQueryClient } from '@tanstack/react-query';
+import { FileDownloadButton } from '@/app/components/file-download-button';
+import { getValintatapajonoTulosExcel } from '@/app/lib/valintalaskentakoostepalvelu';
 
 const LaskettuVaiheActions = ({
   hakukohde,
@@ -110,6 +112,20 @@ const LaskennatonVaiheActions = ({
         permissions={permissions}
         statusMutation={statusMutation}
       />
+      <FileDownloadButton
+        defaultFileName="valintalaskennan-tulokset.xlsx"
+        getFile={() =>
+          getValintatapajonoTulosExcel({
+            hakuOid: hakukohde.hakuOid,
+            hakukohdeOid: hakukohde.oid,
+            valintatapajonoOid: jono.valintatapajonooid,
+          })
+        }
+        errorKey="get-valintatapajono-tulos-excel-error"
+        errorMessage="valintalaskennan-tulokset.virhe-vie-taulukkolaskentaan"
+      >
+        {t('yleinen.vie-taulukkolaskentaan')}
+      </FileDownloadButton>
       <ToggleButtonGroup
         color="primary"
         value={jarjestysPeruste}

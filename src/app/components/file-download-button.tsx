@@ -13,7 +13,7 @@ type FileDownloadProps = {
   defaultFileName: string;
   errorKey: string;
   errorMessage: string;
-} & Omit<ButtonProps, 'onClick' | 'loading'>;
+} & Omit<ButtonProps, 'onClick' | 'loading' | 'loadingPosition'>;
 
 export function FileDownloadButton({
   defaultFileName,

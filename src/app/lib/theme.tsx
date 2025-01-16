@@ -91,5 +91,10 @@ export const THEME_OVERRIDES: ThemeOptions = {
         }),
       },
     },
+    MuiButton: {
+      defaultProps: {
+        loadingPosition: 'start',
+      },
+    },
   },
 };
