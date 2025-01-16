@@ -18,7 +18,7 @@ export const Button = withDefaultProps(
     },
   })),
   { variant: 'text' },
-);
+) as typeof OphButton;
 
 export const Container = styled(Box)(({ theme }) => ({
   display: 'flex',

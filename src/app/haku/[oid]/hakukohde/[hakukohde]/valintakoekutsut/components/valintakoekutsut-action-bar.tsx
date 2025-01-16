@@ -7,43 +7,8 @@ import {
   GetValintakoeExcelParams,
   getValintakoeOsoitetarrat,
 } from '@/app/lib/valintalaskentakoostepalvelu';
-import { downloadBlob } from '@/app/lib/common';
-import { useMutation } from '@tanstack/react-query';
-import useToaster from '@/app/hooks/useToaster';
-import { DownloadButton } from '@/app/components/download-button';
-import { ValintakoekutsutDownloadProps } from '@/app/lib/types/valintakoekutsut-types';
 import { ValintakoekutsutExcelDownloadButton } from './valintakoekutsut-excel-download-button';
-
-const useOsoitetarratMutation = ({
-  hakuOid,
-  hakukohdeOid,
-  valintakoeTunniste,
-  selection,
-}: Omit<ValintakoekutsutDownloadProps, 'valintakoeTunniste'> & {
-  valintakoeTunniste: string;
-}) => {
-  const { addToast } = useToaster();
-
-  return useMutation({
-    mutationFn: async () => {
-      const { fileName, blob } = await getValintakoeOsoitetarrat({
-        hakuOid,
-        hakukohdeOid,
-        valintakoeTunniste,
-        hakemusOids: selection && Array.from(selection),
-      });
-      downloadBlob(fileName ?? 'osoitetarrat.pdf', blob);
-    },
-    onError: (e) => {
-      addToast({
-        key: 'get-osoitetarrat',
-        message: 'valintakoekutsut.virhe-osoitetarrat',
-        type: 'error',
-      });
-      console.error(e);
-    },
-  });
-};
+import { FileDownloadButton } from '@/app/components/file-download-button';
 
 const OsoitetarratDownloadButton = ({
   hakuOid,
@@ -58,22 +23,25 @@ const OsoitetarratDownloadButton = ({
 }) => {
   const { t } = useTranslation();
 
-  const osoitetarratMutation = useOsoitetarratMutation({
-    hakuOid,
-    hakukohdeOid,
-    valintakoeTunniste,
-    selection,
-  });
-
   return (
-    <DownloadButton
-      Component={ActionBar.Button}
+    <FileDownloadButton
+      component={ActionBar.Button}
       disabled={selection.size === 0}
-      mutation={osoitetarratMutation}
       startIcon={<NoteOutlined />}
+      getFile={() =>
+        getValintakoeOsoitetarrat({
+          hakuOid,
+          hakukohdeOid,
+          valintakoeTunniste,
+          hakemusOids: Array.from(selection),
+        })
+      }
+      errorKey="get-osoitetarrat-error"
+      errorMessage="valintakoekutsut.virhe-osoitetarrat"
+      defaultFileName="osoitetarrat.pdf"
     >
       {t('valintakoekutsut.muodosta-osoitetarrat')}
-    </DownloadButton>
+    </FileDownloadButton>
   );
 };
 
@@ -101,7 +69,7 @@ export const ValintakoekutsutActionBar = ({
       </Box>
       <ActionBar.Divider />
       <ValintakoekutsutExcelDownloadButton
-        Component={ActionBar.Button}
+        component={ActionBar.Button}
         hakuOid={hakuOid}
         hakukohdeOid={hakukohdeOid}
         valintakoeTunniste={[valintakoeTunniste]}

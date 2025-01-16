@@ -1,69 +1,40 @@
-import { DownloadButton } from '@/app/components/download-button';
-import useToaster from '@/app/hooks/useToaster';
+import { FileDownloadButton } from '@/app/components/file-download-button';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { downloadBlob } from '@/app/lib/common';
-import { ValintakoekutsutDownloadProps } from '@/app/lib/types/valintakoekutsut-types';
 import { getValintakoeExcel } from '@/app/lib/valintalaskentakoostepalvelu';
-import { useMutation } from '@tanstack/react-query';
-
-const useExcelDownloadMutation = ({
-  hakuOid,
-  hakukohdeOid,
-  valintakoeTunniste,
-  selection,
-}: ValintakoekutsutDownloadProps) => {
-  const { addToast } = useToaster();
-
-  return useMutation({
-    mutationFn: async () => {
-      const { fileName, blob } = await getValintakoeExcel({
-        hakuOid,
-        hakukohdeOid,
-        valintakoeTunniste,
-        hakemusOids: selection && Array.from(selection),
-      });
-      downloadBlob(fileName ?? 'valintakoekutsut.xls', blob);
-    },
-    onError: (e) => {
-      addToast({
-        key: 'get-valintakoe-excel',
-        message: 'valintakoekutsut.virhe-vie-taulukkolaskentaan',
-        type: 'error',
-      });
-      console.error(e);
-    },
-  });
-};
+import { OphButton } from '@opetushallitus/oph-design-system';
 
 export const ValintakoekutsutExcelDownloadButton = ({
   hakuOid,
   hakukohdeOid,
   valintakoeTunniste,
   selection,
-  Component,
+  component = OphButton,
 }: {
   hakuOid: string;
   hakukohdeOid: string;
   valintakoeTunniste: Array<string>;
   selection?: Set<string>;
-  Component?: React.ComponentType;
+  component?: typeof OphButton;
 }) => {
   const { t } = useTranslations();
 
-  const excelMutation = useExcelDownloadMutation({
-    hakuOid,
-    hakukohdeOid,
-    valintakoeTunniste,
-    selection,
-  });
-
   return (
-    <DownloadButton
-      Component={Component}
+    <FileDownloadButton
+      component={component}
       disabled={selection && selection.size === 0}
-      mutation={excelMutation}
+      defaultFileName="valintakoekutsut.xls"
+      errorKey="get-valintakoe-excel-error"
+      errorMessage="valintakoekutsut.virhe-vie-taulukkolaskentaan"
+      getFile={() =>
+        getValintakoeExcel({
+          hakuOid,
+          hakukohdeOid,
+          valintakoeTunniste,
+          hakemusOids: selection && Array.from(selection),
+        })
+      }
     >
       {t('yleinen.vie-taulukkolaskentaan')}
-    </DownloadButton>
+    </FileDownloadButton>
   );
 };
