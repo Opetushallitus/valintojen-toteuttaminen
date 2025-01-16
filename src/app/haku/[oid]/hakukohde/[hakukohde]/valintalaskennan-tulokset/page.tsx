@@ -17,10 +17,7 @@ import {
 } from './components/valintatapajono-content';
 import { useJonosijatSearchParams } from '@/app/hooks/useJonosijatSearch';
 import { FullClientSpinner } from '@/app/components/client-spinner';
-import { downloadBlob, isEmpty } from '@/app/lib/common';
-import { DownloadButton } from '@/app/components/download-button';
-import useToaster from '@/app/hooks/useToaster';
-import { useMutation } from '@tanstack/react-query';
+import { isEmpty } from '@/app/lib/common';
 import { getValintalaskennanTulosExcel } from '@/app/lib/valintalaskentakoostepalvelu';
 import { NoResults } from '@/app/components/no-results';
 import { SearchInput } from '@/app/components/search-input';
@@ -28,49 +25,29 @@ import { OphTypography } from '@opetushallitus/oph-design-system';
 import { groupBy } from 'remeda';
 import { Haku } from '@/app/lib/types/kouta-types';
 import { useHaku } from '@/app/hooks/useHaku';
+import { FileDownloadButton } from '@/app/components/file-download-button';
 
 type LasketutValinnanvaiheetParams = {
   hakuOid: string;
   hakukohdeOid: string;
 };
 
-const useExcelDownloadMutation = ({
+const LaskennanTuloksetExcelDownloadButton = ({
   hakukohdeOid,
 }: {
   hakukohdeOid: string;
 }) => {
-  const { addToast } = useToaster();
-
-  return useMutation({
-    mutationFn: async () => {
-      const { fileName, blob } = await getValintalaskennanTulosExcel({
-        hakukohdeOid,
-      });
-      downloadBlob(fileName ?? 'valintalaskennan-tulokset.xls', blob);
-    },
-    onError: (e) => {
-      addToast({
-        key: 'get-valintakoe-excel',
-        message:
-          'valintalaskennan-tulokset.virhe-vie-kaikki-taulukkolaskentaan',
-        type: 'error',
-      });
-      console.error(e);
-    },
-  });
-};
-
-const ExcelDownloadButton = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
-  const mutation = useExcelDownloadMutation({ hakukohdeOid });
   const { t } = useTranslations();
 
   return (
-    <DownloadButton
-      isLoading={mutation.isPending}
-      onClick={() => mutation.mutate()}
+    <FileDownloadButton
+      errorKey="get-valintalaskennan-tulos-excel-error"
+      errorMessage="valintalaskennan-tulokset.virhe-vie-kaikki-taulukkolaskentaan"
+      defaultFileName="valintalaskennan-tulokset.xlsx"
+      getFile={() => getValintalaskennanTulosExcel({ hakukohdeOid })}
     >
       {t('valintalaskennan-tulokset.vie-kaikki-taulukkolaskentaan')}
-    </DownloadButton>
+    </FileDownloadButton>
   );
 };
 
@@ -195,7 +172,7 @@ const ValintalaskennanTuloksetContent = ({
             setSearchPhrase={setSearchPhrase}
             name="valintalaskennan-tulokset-search"
           />
-          <ExcelDownloadButton hakukohdeOid={hakukohdeOid} />
+          <LaskennanTuloksetExcelDownloadButton hakukohdeOid={hakukohdeOid} />
         </Box>
         <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
       </Box>

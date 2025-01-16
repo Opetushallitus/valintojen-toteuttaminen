@@ -1,5 +1,5 @@
 import { configuration } from './configuration';
-import { abortableClient, client, HttpClientResponse } from './http-client';
+import { abortableClient, client, createFileResult } from './http-client';
 import { HenkilonValintaTulos } from './types/sijoittelu-types';
 import {
   HakemuksenPistetiedot,
@@ -258,16 +258,6 @@ export type GetValintakoeExcelParams = {
   hakemusOids?: Array<string>;
   valintakoeTunniste: Array<string>;
 };
-
-const getContentFilename = (headers: Headers) => {
-  const contentDisposition = headers.get('content-disposition');
-  return contentDisposition?.match(/ filename="(.*)"$/)?.[1];
-};
-
-const createFileResult = async (response: HttpClientResponse<Blob>) => ({
-  fileName: getContentFilename(response.headers),
-  blob: response.data,
-});
 
 const downloadProcessDocument = async (processId: string) => {
   const processRes = await client.get<{
