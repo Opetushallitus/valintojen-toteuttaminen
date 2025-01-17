@@ -56,10 +56,6 @@ export type EditorProps = {
   setContentChanged: (value: string) => void;
 };
 
-function onError(error: Error) {
-  console.error(error);
-}
-
 export const EditorComponent = (
   {editorContent, setContentChanged}: EditorProps
 ) => {

@@ -16,6 +16,8 @@ const CALENDAR_CLASSNAME = 'oph-calendar';
 
 const CalendarStyles = styled(Box)(({ theme }) => ({
   '.oph-calendar': {
+    border: 'none',
+    boxShadow: '2px 2px 8px 0px rgba(0,0,0,0.17)',
     '.react-datepicker': {
       '&__header': {
         backgroundColor: ophColors.white,
@@ -31,23 +33,36 @@ const CalendarStyles = styled(Box)(({ theme }) => ({
         height: '2rem',
         lineHeight: '2rem',
         verticalAlign: 'bottom',
+        '&:focus': {
+          outline: `2px solid ${ophColors.black}`,
+        },
       },
-      '&__day--selected, &__day--keyboard-selected, &__day:hover:not(&__day--disabled)':
+      '&__day--selected, &__day--keyboard-selected':
         {
           backgroundColor: ophColors.blue2,
           borderRadius: 45,
           color: ophColors.white,
         },
+      '&__day:hover:not(&__day--disabled)': {
+        backgroundColor: ophColors.lightBlue2,
+        borderRadius: 45,
+      },
       '&__day-name': {
         color: ophColors.grey400,
         width: '2rem',
         marginTop: '0.5rem',
       },
     },
+    '.react-datepicker__time-container': {
+      borderColor: ophColors.grey200,
+    },
     '.react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item':
       {
         height: 'unset',
         marginBottom: '0.2rem',
+        '&:focus': {
+          outline: `2px solid ${ophColors.black}`,
+        },  
       },
     '.react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item--selected':
       {
@@ -58,13 +73,15 @@ const CalendarStyles = styled(Box)(({ theme }) => ({
       },
     '.react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item:hover':
       {
-        backgroundColor: ophColors.blue2,
-        color: ophColors.white,
+        backgroundColor: ophColors.lightBlue2,
       },
     '&__navigation': {
       marginTop: '0.25rem',
       marginLeft: '0.7rem',
       marginRight: '0.7rem',
+      '&:focus': {
+        outline: `2px solid ${ophColors.black}`,
+      }, 
       '&-icon': {
         border: '1px solid',
         borderColor: ophColors.grey300,

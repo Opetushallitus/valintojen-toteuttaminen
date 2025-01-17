@@ -35,7 +35,6 @@ import { HarkinnanvaraisuudenSyy } from './types/harkinnanvaraiset-types';
 import { ValintakoeAvaimet } from './types/valintaperusteet-types';
 import { Hakukohde } from './types/kouta-types';
 import { getOpetuskieliCode } from './kouta';
-import { Language } from './localization/localization-types';
 
 export const getHakukohteenValintatuloksetIlmanHakijanTilaa = async (
   hakuOid: string,
