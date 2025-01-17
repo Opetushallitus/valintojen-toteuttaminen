@@ -27,7 +27,8 @@ const Editor = forwardRef(
       ref.current = quill;
 
       if (defaultValueRef.current) {
-        quill.setContents(defaultValueRef.current);
+        const delta = quill.clipboard.convert(defaultValueRef.current);
+        quill.setContents(delta);
       }
 
       quill.on(Quill.events.TEXT_CHANGE, (...args) => {
@@ -63,7 +64,15 @@ export const EditorComponent = (
   {editorContent, setContentChanged}: EditorProps
 ) => {
 
-  const quillRef = useRef();
+  const quillRef = useRef({defaultValue: editorContent});
+
+  useEffect(() => {
+    const quill = quillRef.current;
+    if (quill instanceof Quill) {
+      const delta = quill.clipboard.convert({html: editorContent});
+      quill.setContents(delta);
+    }
+  }, [editorContent])
 
   return (
     <Editor ref={quillRef}/>);

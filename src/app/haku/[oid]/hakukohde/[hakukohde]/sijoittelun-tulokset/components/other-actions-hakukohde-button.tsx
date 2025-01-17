@@ -59,7 +59,7 @@ export const OtherActionsHakukohdeButton = ({
   const closeMenu = () => setAnchorEl(null);
 
   const openLetterTemplateModal = async () => {
-    showModal(LetterTemplateModal, { title: 'Title' });
+    showModal(LetterTemplateModal, { title: 'Title', hakukohde: hakukohde, template: 'hyvaksymiskirje' });
     closeMenu();
   };
 
