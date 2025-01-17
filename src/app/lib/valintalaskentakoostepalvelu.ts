@@ -28,6 +28,8 @@ import { ValintakoekutsutData } from './types/valintakoekutsut-types';
 import {
   DokumenttiTyyppi,
   HakutoiveValintakoeOsallistumiset,
+  Kirjepohja,
+  KirjepohjaNimi,
 } from './types/valintalaskentakoostepalvelu-types';
 import { HarkinnanvaraisuudenSyy } from './types/harkinnanvaraiset-types';
 import { ValintakoeAvaimet } from './types/valintaperusteet-types';
@@ -577,6 +579,30 @@ export const luoHyvaksymiskirjeetPDF = async (
     templateName: 'hyvaksymiskirje',
   };
   await client.post(configuration.hyvaksymiskirjeetUrl, body);
+};
+
+type TemplateResponse = {
+  name: string;
+  templateReplacements: Array<{name: string, defaultValue: string}>;
+}
+
+export const getKirjepohjatHakukohteelle = async (
+  kirjepohjanNimi: KirjepohjaNimi,
+  hakukohde: Hakukohde
+): Promise<Array<Kirjepohja>> => {
+  const opetuskieliCode = (getOpetuskieliCode(hakukohde) || 'fi').toUpperCase();
+  const res = await client.get<Array<TemplateResponse>>(configuration.kirjepohjat(
+    {
+      templateName: kirjepohjanNimi, 
+      language: opetuskieliCode, 
+      tarjoajaOid: hakukohde.tarjoajaOid, 
+      tag: hakukohde.oid, 
+      hakuOid: hakukohde.hakuOid
+    }));
+  return res.data.map(tr => {
+    const content = tr.templateReplacements.find(r => r.name === 'sisalto')?.defaultValue;
+    return {nimi: tr.name, sisalto: content || ''}
+  });
 };
 
 export const getDocumentIdForHakukohde = async (

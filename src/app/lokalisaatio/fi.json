@@ -498,5 +498,10 @@
     "tehtava-on-laskennassa-jonosijalla": "Tehtävä on laskennassa jonosijalla",
     "tehtava-on-laskennassa-parhaillaan": "Tehtävä on laskennassa parhaillaan",
     "laskenta-on-paattynyt": "Laskenta on päättynyt"
+  },
+  "kirjepohja": {
+    "default": "OPH:n oletuspohja",
+    "organizationLatest": "Organisaation viimeisin",
+    "organizationLatestByTag": "Hakukohteen viimeisin"
   }
 }

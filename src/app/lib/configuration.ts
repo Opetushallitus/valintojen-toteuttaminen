@@ -146,6 +146,8 @@ export const configuration = {
   startExportValintakoeOsoitetarratUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/osoitetarrat/aktivoi`,
   startExportOsoitetarratHakemuksilleUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/osoitetarrat/hakemuksille/aktivoi`,
   startExportPistesyottoExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/pistesyotto/vienti`,
+  kirjepohjat: ({templateName, language, tarjoajaOid, tag, hakuOid}: {templateName: string, language: string, tag: string, tarjoajaOid: string, hakuOid: string}) => 
+    `${DOMAIN}/valintalaskentakoostepalvelu/resources/proxy/viestintapalvelu/template/getHistory?templateName=${templateName}&languageCode=${language}&oid=${tarjoajaOid}&tag=${tag}&applicationPeriod=${hakuOid}`,
   hyvaksymiskirjeetUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/hyvaksymiskirjeet/aktivoi`,
   dokumenttiSeurantaUrl: ({ uuid }: { uuid: string }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/dokumentinseuranta/${uuid}`,
