@@ -35,7 +35,7 @@
     "@mui/material-nextjs": "^6.2.1",
     "@opetushallitus/oph-design-system": "github:opetushallitus/oph-design-system#v0.1.8",
     "@tanstack/react-query": "^5.62.8",
-    "@tanstack/react-query-devtools": "^5.62.8",
+    "@tanstack/react-query-devtools": "^5.62.11",
     "@xstate/react": "^5.0.0",
     "date-fns": "^4.1.0",
     "i18next": "^24.2.0",
