@@ -35,7 +35,12 @@ import { HarkinnanvaraisuudenSyy } from './types/harkinnanvaraiset-types';
 import { ValintakoeAvaimet } from './types/valintaperusteet-types';
 import { Hakukohde } from './types/kouta-types';
 import { getOpetuskieliCode } from './kouta';
-import { translateName } from './localization/translation-utils';
+import {
+  INPUT_DATE_FORMAT,
+  INPUT_TIME_FORMAT,
+  toFormattedDateTimeString,
+  translateName,
+} from './localization/translation-utils';
 import { AssertionError } from 'assert';
 
 export const getHakukohteenValintatuloksetIlmanHakijanTilaa = async (
@@ -568,45 +573,61 @@ export const luoHyvaksymiskirjeetPDF = async ({
   sijoitteluajoId,
   hakukohde,
   letterBody,
-  deadline
+  deadline,
 }: {
   hakemusOids?: string[],
   sijoitteluajoId: string,
   hakukohde: Hakukohde,
   letterBody: string,
-  deadline?: Date,
+  deadline?: Date | null,
 }): Promise<FileResult> => {
   console.log(letterBody);
   const hakukohdeNimi = translateName(hakukohde.nimi);
   const opetuskieliCode = (getOpetuskieliCode(hakukohde) || 'fi').toUpperCase();
-  const queryParams = `hakuOid=${hakukohde.hakuOid}&hakukohdeOid=${hakukohde.oid}&sijoitteluajoId=${sijoitteluajoId}&tarjoajaOid=${hakukohde.tarjoajaOid}&hakukohdeNimi=${hakukohdeNimi}&lang=${opetuskieliCode}&templateName=hyvaksymiskirje`;
-  const body = {hakemusOids: hakemusOids, letterBodyText: letterBody, tag: hakukohde.oid};
-  const startProcessResponse = await client.post<{id: string}>(`${configuration.hyvaksymiskirjeetUrl}?${queryParams}`, body);
+  const pvm = deadline
+    ? toFormattedDateTimeString(deadline, INPUT_DATE_FORMAT)
+    : null;
+  const time = deadline
+    ? toFormattedDateTimeString(deadline, INPUT_TIME_FORMAT)
+    : null;
+  const queryParams = `hakuOid=${hakukohde.hakuOid}&hakukohdeOid=${hakukohde.oid}&sijoitteluajoId=${sijoitteluajoId}&tarjoajaOid=${hakukohde.tarjoajaOid}&hakukohdeNimi=${hakukohdeNimi}&lang=${opetuskieliCode}&templateName=hyvaksymiskirje&palautusPvm=${pvm}&palautusAika=${time}`;
+  const body = {
+    hakemusOids: hakemusOids,
+    letterBodyText: letterBody.replaceAll('&nbsp;', ' '),
+    tag: hakukohde.oid,
+  };
+  const startProcessResponse = await client.post<{ id: string }>(
+    `${configuration.hyvaksymiskirjeetUrl}?${queryParams}`,
+    body,
+  );
   const kirjeetProcessId = startProcessResponse?.data?.id;
   return await downloadProcessDocument(kirjeetProcessId);
 };
 
 type TemplateResponse = {
   name: string;
-  templateReplacements: Array<{name: string, defaultValue: string}>;
-}
+  templateReplacements: Array<{ name: string; defaultValue: string }>;
+};
 
 export const getKirjepohjatHakukohteelle = async (
   kirjepohjanNimi: KirjepohjaNimi,
-  hakukohde: Hakukohde
+  hakukohde: Hakukohde,
 ): Promise<Array<Kirjepohja>> => {
   const opetuskieliCode = (getOpetuskieliCode(hakukohde) || 'fi').toUpperCase();
-  const res = await client.get<Array<TemplateResponse>>(configuration.kirjepohjat(
-    {
-      templateName: kirjepohjanNimi, 
-      language: opetuskieliCode, 
-      tarjoajaOid: hakukohde.tarjoajaOid, 
-      tag: hakukohde.oid, 
-      hakuOid: hakukohde.hakuOid
-    }));
-  return res.data.map(tr => {
-    const content = tr.templateReplacements.find(r => r.name === 'sisalto')?.defaultValue;
-    return {nimi: tr.name, sisalto: content || ''}
+  const res = await client.get<Array<TemplateResponse>>(
+    configuration.kirjepohjat({
+      templateName: kirjepohjanNimi,
+      language: opetuskieliCode,
+      tarjoajaOid: hakukohde.tarjoajaOid,
+      tag: hakukohde.oid,
+      hakuOid: hakukohde.hakuOid,
+    }),
+  );
+  return res.data.map((tr) => {
+    const content = tr.templateReplacements.find(
+      (r) => r.name === 'sisalto',
+    )?.defaultValue;
+    return { nimi: tr.name, sisalto: content || '' };
   });
 };
 

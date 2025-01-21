@@ -5,10 +5,16 @@ import { OphModalDialog } from '@/app/components/oph-modal-dialog';
 import { useState } from 'react';
 import { CalendarComponent } from './calendar-component';
 import { EditorComponent } from './editor-component';
-import { Kirjepohja, KirjepohjaNimi } from '@/app/lib/types/valintalaskentakoostepalvelu-types';
+import {
+  Kirjepohja,
+  KirjepohjaNimi,
+} from '@/app/lib/types/valintalaskentakoostepalvelu-types';
 import { Hakukohde } from '@/app/lib/types/kouta-types';
 import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
-import { getKirjepohjatHakukohteelle, luoHyvaksymiskirjeetPDF } from '@/app/lib/valintalaskentakoostepalvelu';
+import {
+  getKirjepohjatHakukohteelle,
+  luoHyvaksymiskirjeetPDF,
+} from '@/app/lib/valintalaskentakoostepalvelu';
 import { SpinnerIcon } from '@/app/components/spinner-icon';
 import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { LocalizedSelect } from '@/app/components/localized-select';
@@ -18,22 +24,35 @@ import { DownloadButton } from '@/app/components/download-button';
 import { Button } from '@mui/material';
 
 export type LetterTemplateModalProps = {
-  title: string,
-  template: KirjepohjaNimi,
-  hakukohde: Hakukohde,
-  sijoitteluajoId: string,
-}
+  title: string;
+  template: KirjepohjaNimi;
+  hakukohde: Hakukohde;
+  sijoitteluajoId: string;
+};
 
-const TemplateModalContent = ({pohjat, templateBody, setTemplateBody, setLetterBody, deadlineDate, setDeadlineDate}: {pohjat: Kirjepohja[], templateBody: string, setTemplateBody: (val: string) => void, setLetterBody: (val: string) => void, deadlineDate: Date | null, setDeadlineDate: (date: Date | null) => void}) => {
-
+const TemplateModalContent = ({
+  pohjat,
+  templateBody,
+  setTemplateBody,
+  setLetterBody,
+  deadlineDate,
+  setDeadlineDate,
+}: {
+  pohjat: Kirjepohja[];
+  templateBody: string;
+  setTemplateBody: (val: string) => void;
+  setLetterBody: (val: string) => void;
+  deadlineDate: Date | null;
+  setDeadlineDate: (date: Date | null) => void;
+}) => {
   const { t } = useTranslations();
   const [usedPohja, setUsedPohja] = useState<Kirjepohja>(pohjat[0]);
 
   const changeUsedPohja = (event: SelectChangeEvent<string>) => {
-    const pohja = pohjat.find(p => p.nimi === event.target.value)!;
+    const pohja = pohjat.find((p) => p.nimi === event.target.value)!;
     setUsedPohja(pohja);
-    setTemplateBody(pohja?.sisalto || "");
-  }
+    setTemplateBody(pohja?.sisalto || '');
+  };
 
   return (
     <>
@@ -50,29 +69,46 @@ const TemplateModalContent = ({pohjat, templateBody, setTemplateBody, setLetterB
             labelId={labelId}
             value={usedPohja?.nimi || ''}
             onChange={changeUsedPohja}
-            options={pohjat.map(p => 
-              ({value: p.nimi, label: t(`kirjepohja.${p.nimi}`, p.nimi)}))}
+            options={pohjat.map((p) => ({
+              value: p.nimi,
+              label: t(`kirjepohja.${p.nimi}`, p.nimi),
+            }))}
             clearable
           />
         )}
       />
-      <EditorComponent editorContent={templateBody} setContentChanged={setLetterBody}/>
-      <CalendarComponent selectedValue={deadlineDate} setDate={setDeadlineDate} />
+      <EditorComponent
+        editorContent={templateBody}
+        setContentChanged={setLetterBody}
+      />
+      <CalendarComponent
+        selectedValue={deadlineDate}
+        setDate={setDeadlineDate}
+      />
     </>
   );
 };
 
-type DownloadButtonProps = { hakukohde: Hakukohde, sijoitteluajoId: string, letterBody: string, deadline: Date | null };
+type DownloadButtonProps = {
+  hakukohde: Hakukohde;
+  sijoitteluajoId: string;
+  letterBody: string;
+  deadline: Date | null;
+};
 
-const useLettersMutation = ({ hakukohde, sijoitteluajoId, letterBody, deadline }: DownloadButtonProps) => {
-
+const useLettersMutation = ({
+  hakukohde,
+  sijoitteluajoId,
+  letterBody,
+  deadline,
+}: DownloadButtonProps) => {
   return useMutation({
     mutationFn: async () => {
       const { fileName, blob } = await luoHyvaksymiskirjeetPDF({
         hakukohde,
         sijoitteluajoId,
         letterBody,
-        deadline: undefined,
+        deadline,
       });
       downloadBlob(fileName ?? 'kirjeet.pdf', blob);
     },
@@ -83,38 +119,35 @@ const useLettersMutation = ({ hakukohde, sijoitteluajoId, letterBody, deadline }
 };
 
 const LettersDownloadButton = (props: DownloadButtonProps) => {
-
   const lettersMutation = useLettersMutation(props);
 
   return (
-    <DownloadButton
-      Component={Button}
-      mutation={lettersMutation}
-    >
+    <DownloadButton Component={Button} mutation={lettersMutation}>
       Muodosta kirjeet
     </DownloadButton>
   );
 };
 
 export const LetterTemplateModal = createModal(
-  ({hakukohde, title, template, sijoitteluajoId}: LetterTemplateModalProps) => {
-
+  ({
+    hakukohde,
+    title,
+    template,
+    sijoitteluajoId,
+  }: LetterTemplateModalProps) => {
     const modalProps = useOphModalProps();
 
     const { t } = useTranslations();
 
     const { data: pohjat, isLoading } = useSuspenseQuery({
-      queryKey: [
-        'getKirjepohjat',
-        hakukohde.hakuOid,
-        template,
-        hakukohde.oid,
-      ],
-      queryFn: () => getKirjepohjatHakukohteelle(template, hakukohde)
+      queryKey: ['getKirjepohjat', hakukohde.hakuOid, template, hakukohde.oid],
+      queryFn: () => getKirjepohjatHakukohteelle(template, hakukohde),
     });
 
     const [deadlineDate, setDeadlineDate] = useState<Date | null>(null);
-    const [templateBody, setTemplateBody] = useState<string>(pohjat[0]?.sisalto || "");
+    const [templateBody, setTemplateBody] = useState<string>(
+      pohjat[0]?.sisalto || '',
+    );
     const [letterBody, setLetterBody] = useState<string>(templateBody);
 
     return (
@@ -124,7 +157,12 @@ export const LetterTemplateModal = createModal(
         maxWidth="md"
         actions={
           <>
-            <LettersDownloadButton deadline={deadlineDate} hakukohde={hakukohde} letterBody={letterBody} sijoitteluajoId={sijoitteluajoId} />
+            <LettersDownloadButton
+              deadline={deadlineDate}
+              hakukohde={hakukohde}
+              letterBody={letterBody}
+              sijoitteluajoId={sijoitteluajoId}
+            />
             <OphButton variant="outlined" onClick={modalProps.onClose}>
               {t('yleinen.peruuta')}
             </OphButton>
@@ -132,7 +170,16 @@ export const LetterTemplateModal = createModal(
         }
       >
         {isLoading && <SpinnerIcon />}
-        {!isLoading && <TemplateModalContent pohjat={pohjat} setLetterBody={setLetterBody} templateBody={templateBody} setTemplateBody={setTemplateBody} deadlineDate={deadlineDate} setDeadlineDate={setDeadlineDate}/>}
+        {!isLoading && (
+          <TemplateModalContent
+            pohjat={pohjat}
+            setLetterBody={setLetterBody}
+            templateBody={templateBody}
+            setTemplateBody={setTemplateBody}
+            deadlineDate={deadlineDate}
+            setDeadlineDate={setDeadlineDate}
+          />
+        )}
       </OphModalDialog>
     );
   },

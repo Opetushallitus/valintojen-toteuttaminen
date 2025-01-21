@@ -29,15 +29,20 @@ export function isTranslatedName(value: unknown): value is TranslatedName {
   );
 }
 
+export const DEFAULT_DATE_TIME_FORMAT = 'd.M.yyyy HH:mm:ss';
+export const INPUT_DATE_FORMAT = 'dd.MM.yyyy';
+export const INPUT_TIME_FORMAT = 'HH:mm';
+
 export function toFormattedDateTimeString(
   value?: number | Date | string | null,
+  formatStr: string = DEFAULT_DATE_TIME_FORMAT,
 ): string {
   if (isNullish(value)) {
     return '';
   }
   try {
     const zonedDate = toFinnishDate(new Date(value));
-    return format(zonedDate, 'd.M.yyyy HH:mm:ss');
+    return format(zonedDate, formatStr);
   } catch (error) {
     console.warn(error);
     console.warn(
