@@ -30,6 +30,7 @@ import { HarkinnanvaraisuudenSyy } from './types/harkinnanvaraiset-types';
 import { ValintakoeAvaimet } from './types/valintaperusteet-types';
 import { Hakukohde } from './types/kouta-types';
 import { getOpetuskieliCode } from './kouta';
+import { AssertionError } from 'assert';
 
 export const getHakukohteenValintatuloksetIlmanHakijanTilaa = async (
   hakuOid: string,
@@ -259,20 +260,44 @@ export type GetValintakoeExcelParams = {
   valintakoeTunniste: Array<string>;
 };
 
-const downloadProcessDocument = async (processId: string) => {
-  const processRes = await client.get<{
-    dokumenttiId: string;
-    kasittelyssa: boolean;
-    keskeytetty: boolean;
-    kokonaistyo: {
-      valmis: boolean;
-    };
-    poikkeukset: Array<{
-      viesti: string;
-    }>;
-  }>(configuration.dokumenttiProsessiUrl({ id: processId }));
+const pollDocumentProcess = async (processId: string) => {
+  let pollTimes = 10;
 
-  const { dokumenttiId, poikkeukset } = processRes.data;
+  while (pollTimes) {
+    const processRes = await client.get<{
+      dokumenttiId: string;
+      kasittelyssa: boolean;
+      keskeytetty: boolean;
+      kokonaistyo: {
+        valmis: boolean;
+      };
+      poikkeukset: Array<{
+        viesti: string;
+      }>;
+    }>(configuration.dokumenttiProsessiUrl({ id: processId }));
+    pollTimes -= 1;
+
+    const { data } = processRes;
+
+    if (data.kokonaistyo?.valmis || data.keskeytetty) {
+      return data;
+    } else if (pollTimes === 0) {
+      throw new OphApiError(
+        processRes,
+        'Dokumentin prosessointi aikakatkaistiin',
+      );
+    }
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+  }
+  throw new AssertionError({
+    message: 'Dokumentin prosessoinnin pollaus päättyi ilman tulosta!',
+  });
+};
+
+const downloadProcessDocument = async (processId: string) => {
+  const data = await pollDocumentProcess(processId);
+
+  const { dokumenttiId, poikkeukset } = data;
 
   if (!isEmpty(poikkeukset)) {
     const errorMessages = poikkeukset.map(prop('viesti')).join('\n');
@@ -282,6 +307,7 @@ const downloadProcessDocument = async (processId: string) => {
   const documentRes = await client.get<Blob>(
     configuration.lataaDokumenttiUrl({ dokumenttiId }),
   );
+
   return createFileResult(documentRes);
 };
 

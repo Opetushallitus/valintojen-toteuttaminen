@@ -139,7 +139,7 @@ const FileSelector = forwardRef<FileSelectorRef, FileSelectorProps>(
   },
 );
 
-export const ExcelUploadButton = ({
+export const PistesyottoExcelUploadButton = ({
   hakuOid,
   hakukohdeOid,
 }: {
