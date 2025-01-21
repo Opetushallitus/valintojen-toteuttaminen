@@ -1,5 +1,5 @@
 import { configuration } from './configuration';
-import { abortableClient, client, createFileResult } from './http-client';
+import { abortableClient, client, createFileResult, FileResult } from './http-client';
 import { HenkilonValintaTulos } from './types/sijoittelu-types';
 import {
   HakemuksenPistetiedot,
@@ -35,6 +35,7 @@ import { HarkinnanvaraisuudenSyy } from './types/harkinnanvaraiset-types';
 import { ValintakoeAvaimet } from './types/valintaperusteet-types';
 import { Hakukohde } from './types/kouta-types';
 import { getOpetuskieliCode } from './kouta';
+import { translateName } from './localization/translation-utils';
 import { AssertionError } from 'assert';
 
 export const getHakukohteenValintatuloksetIlmanHakijanTilaa = async (
@@ -265,6 +266,7 @@ export type GetValintakoeExcelParams = {
   valintakoeTunniste: Array<string>;
 };
 
+//TODO: poista tämä OK-800 yhteydessä ja käytä toista pollausfunktiota
 const pollDocumentProcess = async (processId: string) => {
   let pollTimes = 10;
 
@@ -561,24 +563,27 @@ export const getUsesValintalaskenta = async ({
   return res.data.kayttaaValintalaskentaa;
 };
 
-export const luoHyvaksymiskirjeetPDF = async (
-  hakemusOids: string[],
+export const luoHyvaksymiskirjeetPDF = async ({
+  hakemusOids,
+  sijoitteluajoId,
+  hakukohde,
+  letterBody,
+  deadline
+}: {
+  hakemusOids?: string[],
   sijoitteluajoId: string,
   hakukohde: Hakukohde,
-) => {
+  letterBody: string,
+  deadline?: Date,
+}): Promise<FileResult> => {
+  console.log(letterBody);
+  const hakukohdeNimi = translateName(hakukohde.nimi);
   const opetuskieliCode = (getOpetuskieliCode(hakukohde) || 'fi').toUpperCase();
-  const body = {
-    hakuOid: hakukohde.hakuOid,
-    hakukohdeOid: hakukohde.oid,
-    sijoitteluajoId,
-    hakemusOids,
-    tarjoajaOid: hakukohde.tarjoajaOid,
-    hakukohdeNimi: hakukohde.nimi.fi,
-    tag: hakukohde.oid,
-    langCode: opetuskieliCode,
-    templateName: 'hyvaksymiskirje',
-  };
-  await client.post(configuration.hyvaksymiskirjeetUrl, body);
+  const queryParams = `hakuOid=${hakukohde.hakuOid}&hakukohdeOid=${hakukohde.oid}&sijoitteluajoId=${sijoitteluajoId}&tarjoajaOid=${hakukohde.tarjoajaOid}&hakukohdeNimi=${hakukohdeNimi}&lang=${opetuskieliCode}&templateName=hyvaksymiskirje`;
+  const body = {hakemusOids: hakemusOids, letterBodyText: letterBody, tag: hakukohde.oid};
+  const startProcessResponse = await client.post<{id: string}>(`${configuration.hyvaksymiskirjeetUrl}?${queryParams}`, body);
+  const kirjeetProcessId = startProcessResponse?.data?.id;
+  return await downloadProcessDocument(kirjeetProcessId);
 };
 
 type TemplateResponse = {

@@ -38,12 +38,14 @@ export const OtherActionsHakukohdeButton = ({
   hyvaksymiskirjeDocumentId,
   osoitetarraDocumentId,
   tulosDocumentId,
+  sijoitteluajoId,
 }: {
   disabled: boolean;
   hakukohde: Hakukohde;
   hyvaksymiskirjeDocumentId: string | null;
   osoitetarraDocumentId: string | null;
   tulosDocumentId: string | null;
+  sijoitteluajoId: string;
 }) => {
   const { t } = useTranslations();
 
@@ -59,7 +61,7 @@ export const OtherActionsHakukohdeButton = ({
   const closeMenu = () => setAnchorEl(null);
 
   const openLetterTemplateModal = async () => {
-    showModal(LetterTemplateModal, { title: 'Title', hakukohde: hakukohde, template: 'hyvaksymiskirje' });
+    showModal(LetterTemplateModal, { title: 'Title', hakukohde: hakukohde, template: 'hyvaksymiskirje', sijoitteluajoId });
     closeMenu();
   };
 

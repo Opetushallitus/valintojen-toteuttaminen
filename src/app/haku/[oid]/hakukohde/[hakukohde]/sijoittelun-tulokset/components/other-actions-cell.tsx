@@ -61,11 +61,12 @@ export const OtherActionsCell = ({
 
   const createHyvaksymiskirjePDFs = async () => {
     try {
-      await luoHyvaksymiskirjeetPDF(
-        [hakemus.hakemusOid],
+      await luoHyvaksymiskirjeetPDF({
+        hakemusOids: [hakemus.hakemusOid],
         sijoitteluajoId,
         hakukohde,
-      );
+        letterBody: "" //TODO:FIX!
+      });
       addToast({
         key: 'hyvaksymiskirje-hakemus',
         message:

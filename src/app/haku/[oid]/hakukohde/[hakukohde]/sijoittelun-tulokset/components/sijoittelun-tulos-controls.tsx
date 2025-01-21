@@ -17,9 +17,11 @@ import { getDocumentIdForHakukohde } from '@/app/lib/valintalaskentakoostepalvel
 export const SijoittelunTulosControls = ({
   haku,
   hakukohde,
+  sijoitteluajoId
 }: {
   haku: Haku;
   hakukohde: Hakukohde;
+  sijoitteluajoId: string | undefined;
 }) => {
   const {
     searchPhrase,
@@ -131,7 +133,7 @@ export const SijoittelunTulosControls = ({
         )}
       </Box>
       <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-        {hyvaksymiskirjeDocumentQuery.isSuccess &&
+        {sijoitteluajoId && hyvaksymiskirjeDocumentQuery.isSuccess &&
           osoitetarraDocumentQuery.isSuccess &&
           tuloksetDocumentQuery.isSuccess && (
             <OtherActionsHakukohdeButton
@@ -140,6 +142,7 @@ export const SijoittelunTulosControls = ({
               hyvaksymiskirjeDocumentId={hyvaksymiskirjeDocumentQuery.data}
               osoitetarraDocumentId={osoitetarraDocumentQuery.data}
               tulosDocumentId={tuloksetDocumentQuery.data}
+              sijoitteluajoId={sijoitteluajoId}
             />
           )}
       </Box>

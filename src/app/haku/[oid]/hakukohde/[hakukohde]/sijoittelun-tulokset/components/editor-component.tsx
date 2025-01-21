@@ -1,19 +1,13 @@
-import React, { forwardRef, useEffect, useLayoutEffect, useRef } from 'react';
+import React, { forwardRef, useEffect, useRef } from 'react';
 import Quill from 'quill';
 import 'quill/dist/quill.snow.css';
 
 // Editor is an uncontrolled React component
 const Editor = forwardRef(
-  ({ defaultValue, onTextChange, onSelectionChange }, ref) => {
+  ({ defaultValue, setContentChanged }, ref) => {
     const containerRef = useRef(null);
     const defaultValueRef = useRef(defaultValue);
-    const onTextChangeRef = useRef(onTextChange);
-    const onSelectionChangeRef = useRef(onSelectionChange);
-
-    useLayoutEffect(() => {
-      onTextChangeRef.current = onTextChange;
-      onSelectionChangeRef.current = onSelectionChange;
-    });
+    const contentChangedRef = useRef(setContentChanged);
 
     useEffect(() => {
       const container = containerRef.current;
@@ -32,11 +26,7 @@ const Editor = forwardRef(
       }
 
       quill.on(Quill.events.TEXT_CHANGE, (...args) => {
-        onTextChangeRef.current?.(...args);
-      });
-
-      quill.on(Quill.events.SELECTION_CHANGE, (...args) => {
-        onSelectionChangeRef.current?.(...args);
+        contentChangedRef?.current?.(quill.getSemanticHTML());
       });
 
       return () => {
@@ -60,7 +50,7 @@ export const EditorComponent = (
   {editorContent, setContentChanged}: EditorProps
 ) => {
 
-  const quillRef = useRef({defaultValue: editorContent});
+  const quillRef = useRef({defaultValue: editorContent, setContentChanged});
 
   useEffect(() => {
     const quill = quillRef.current;
@@ -71,6 +61,6 @@ export const EditorComponent = (
   }, [editorContent])
 
   return (
-    <Editor ref={quillRef}/>);
+    <Editor ref={quillRef} defaultValue={editorContent} setContentChanged={setContentChanged}/>);
 };
 
