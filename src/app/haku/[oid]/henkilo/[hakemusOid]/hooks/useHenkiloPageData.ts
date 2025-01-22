@@ -151,7 +151,7 @@ export const useHenkiloPageData = ({
           hakutoiveNumero: index + 1,
           valinnanvaiheet: selectLasketutValinnanvaiheet({
             lasketutValinnanvaiheet:
-              valinnanvaiheetByHakukohde?.[hakukohde.oid],
+              valinnanvaiheetByHakukohde?.[hakukohde.oid] ?? [],
             hakemukset: [{ hakemusOid, hakijaOid: hakija.hakijaOid }],
             valinnanvaiheetIlmanLaskentaa: [], // TODO: Nouda valinnanvaiheet ilman laskentaa
           }),
