@@ -192,7 +192,7 @@ const LaskennatonVaiheActions = ({
     <Stack
       direction="row"
       gap={2}
-      sx={{ alignItems: 'flex-start', marginBottom: 1 }}
+      sx={{ alignItems: 'flex-start', marginBottom: 1, flexWrap: 'wrap' }}
     >
       <OphButton
         variant="contained"
