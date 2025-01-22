@@ -4,10 +4,8 @@ import {
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query';
-import { forwardRef, useImperativeHandle, useRef } from 'react';
 import { pisteTuloksetOptions } from '../hooks/usePisteTulokset';
 import { PistesyottoTuontiError } from './pistesyotto-excel-upload-error';
-import { FileUploadOutlined } from '@mui/icons-material';
 import useToaster from '@/app/hooks/useToaster';
 import { putPistesyottoExcel } from '@/app/lib/valintalaskentakoostepalvelu';
 import { OphModalDialog } from '@/app/components/oph-modal-dialog';
@@ -20,6 +18,7 @@ import {
   useOphModalProps,
 } from '@/app/components/global-modal';
 import { SpinnerModal } from '@/app/components/spinner-modal';
+import { FileUploadButton } from '@/app/components/file-upload-button';
 
 const refetchPisteTulokset = ({
   queryClient,
@@ -102,43 +101,6 @@ const useExcelUploadMutation = ({
   });
 };
 
-type FileSelectorRef = { openFileSelector: () => void };
-type FileSelectorProps = { onFileSelect: (file: File) => void };
-
-const FileSelector = forwardRef<FileSelectorRef, FileSelectorProps>(
-  function renderFileInput({ onFileSelect }, ref) {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const innerRef = useRef<HTMLInputElement>(null);
-
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useImperativeHandle(ref, () => {
-      return {
-        openFileSelector: () => {
-          innerRef.current?.click();
-        },
-      };
-    });
-
-    return (
-      <input
-        ref={innerRef}
-        type="file"
-        style={{ display: 'none' }}
-        onChange={(event) => {
-          const files = event.currentTarget.files;
-          if (files) {
-            onFileSelect(files[0]);
-          }
-          if (innerRef.current) {
-            // Tyhjennetään kentän arvo, jotta onChange kutsutaan myös seuraavalla kerralla, vaikka valitaan sama tiedosto
-            innerRef.current.value = '';
-          }
-        }}
-      />
-    );
-  },
-);
-
 export const PistesyottoExcelUploadButton = ({
   hakuOid,
   hakukohdeOid,
@@ -148,28 +110,16 @@ export const PistesyottoExcelUploadButton = ({
 }) => {
   const { t } = useTranslations();
 
-  const { mutate, isPending } = useExcelUploadMutation({
+  const mutation = useExcelUploadMutation({
     hakuOid,
     hakukohdeOid,
   });
 
-  const fileSelectorRef = useRef<FileSelectorRef>(null);
-
   return (
-    <>
-      <FileSelector
-        ref={fileSelectorRef}
-        onFileSelect={(file) => mutate({ file })}
-      />
-      <OphButton
-        disabled={isPending}
-        startIcon={<FileUploadOutlined />}
-        onClick={() => {
-          fileSelectorRef?.current?.openFileSelector();
-        }}
-      >
-        {t('yleinen.tuo-taulukkolaskennasta')}
-      </OphButton>
-    </>
+    <FileUploadButton
+      isUploading={mutation.isPending}
+      onFileSelect={(file) => mutation.mutate({ file })}
+      buttonText={t('yleinen.tuo-taulukkolaskennasta')}
+    />
   );
 };
