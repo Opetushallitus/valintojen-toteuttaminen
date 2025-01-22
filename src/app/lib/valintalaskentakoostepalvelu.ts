@@ -388,6 +388,31 @@ export const getValintalaskennanTulosExcel = async ({
   return createFileResult(excelRes);
 };
 
+type ValintatapaJonoTulosExcelProps = {
+  hakuOid: string;
+  hakukohdeOid: string;
+  valintatapajonoOid: string;
+};
+
+export const getValintatapajonoTulosExcel = async ({
+  hakuOid,
+  hakukohdeOid,
+  valintatapajonoOid,
+}: ValintatapaJonoTulosExcelProps) => {
+  const urlWithQuery = new URL(
+    configuration.startExportValintatapajonoTulosExcelUrl,
+  );
+  urlWithQuery.searchParams.append('hakuOid', hakuOid);
+  urlWithQuery.searchParams.append('hakukohdeOid', hakukohdeOid);
+  urlWithQuery.searchParams.append('valintatapajonoOid', valintatapajonoOid);
+
+  const excelRes = await client.post<{ id: string }>(urlWithQuery, {});
+
+  const excelProcessId = excelRes?.data?.id;
+
+  return await downloadProcessDocument(excelProcessId);
+};
+
 export const getPistesyottoExcel = async ({
   hakuOid,
   hakukohdeOid,
