@@ -11,7 +11,7 @@ import { getHakukohteetQueryOptions } from '@/app/lib/kouta';
 import { useUserPermissions } from '@/app/hooks/useUserPermissions';
 import { filter, map, pipe, prop, sortBy } from 'remeda';
 import { hakemuksenLasketutValinnanvaiheetQueryOptions } from '@/app/lib/valintalaskenta-service';
-import { selectValinnanvaiheet } from '@/app/hooks/useLasketutValinnanVaiheet';
+import { selectLasketutValinnanvaiheet } from '@/app/hooks/useLasketutValinnanVaiheet';
 import {
   getLatestSijoitteluajonTuloksetForHakemus,
   getValinnanTulokset,
@@ -150,7 +150,7 @@ export const useHenkiloPageData = ({
         return {
           ...hakukohde,
           hakutoiveNumero: index + 1,
-          valinnanvaiheet: selectValinnanvaiheet({
+          valinnanvaiheet: selectLasketutValinnanvaiheet({
             lasketutValinnanvaiheet:
               valinnanvaiheetByHakukohde?.[hakukohde.oid],
           }),

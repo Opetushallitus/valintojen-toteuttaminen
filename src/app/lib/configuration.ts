@@ -54,7 +54,12 @@ export const configuration = {
     `${DOMAIN}/valintaperusteet-service/resources/V2valintaperusteet/${valintatapajonoOid}/automaattinenSiirto?status=${status}`,
   hakukohdeValintakokeetUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
     `${DOMAIN}/valintaperusteet-service/resources/hakukohde/${hakukohdeOid}/valintakoe`,
-
+  valinnanvaiheetIlmanlaskentaaUrl: ({
+    hakukohdeOid,
+  }: {
+    hakukohdeOid: string;
+  }) =>
+    `${DOMAIN}/valintaperusteet-service/resources/hakukohde/${hakukohdeOid}/ilmanlaskentaa`,
   // -------------------------------------------------------------------------------------------------
   // ataru
   ataruEditoriLogin: `${DOMAIN}/lomake-editori/auth/cas`,
