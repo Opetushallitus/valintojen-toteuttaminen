@@ -1,5 +1,10 @@
 import { configuration } from './configuration';
-import { abortableClient, client, createFileResult, FileResult } from './http-client';
+import {
+  abortableClient,
+  client,
+  createFileResult,
+  FileResult,
+} from './http-client';
 import { HenkilonValintaTulos } from './types/sijoittelu-types';
 import {
   HakemuksenPistetiedot,
@@ -272,10 +277,13 @@ export type GetValintakoeExcelParams = {
 };
 
 //TODO: poista tämä OK-800 yhteydessä ja käytä toista pollausfunktiota
-const pollDocumentProcess = async (processId: string) => {
+const pollDocumentProcess = async (
+  processId: string,
+  infiniteWait: boolean,
+) => {
   let pollTimes = 10;
 
-  while (pollTimes) {
+  while (pollTimes || infiniteWait) {
     const processRes = await client.get<{
       dokumenttiId: string;
       kasittelyssa: boolean;
@@ -293,7 +301,7 @@ const pollDocumentProcess = async (processId: string) => {
 
     if (data.kokonaistyo?.valmis || data.keskeytetty) {
       return data;
-    } else if (pollTimes === 0) {
+    } else if (pollTimes === 0 && !infiniteWait) {
       throw new OphApiError(
         processRes,
         'Dokumentin prosessointi aikakatkaistiin',
@@ -306,8 +314,11 @@ const pollDocumentProcess = async (processId: string) => {
   });
 };
 
-const downloadProcessDocument = async (processId: string) => {
-  const data = await pollDocumentProcess(processId);
+const downloadProcessDocument = async (
+  processId: string,
+  infiniteWait: boolean = false,
+) => {
+  const data = await pollDocumentProcess(processId, infiniteWait);
 
   const { dokumenttiId, poikkeukset } = data;
 
@@ -575,11 +586,11 @@ export const luoHyvaksymiskirjeetPDF = async ({
   letterBody,
   deadline,
 }: {
-  hakemusOids?: string[],
-  sijoitteluajoId: string,
-  hakukohde: Hakukohde,
-  letterBody: string,
-  deadline?: Date | null,
+  hakemusOids?: string[];
+  sijoitteluajoId: string;
+  hakukohde: Hakukohde;
+  letterBody: string;
+  deadline?: Date | null;
 }): Promise<FileResult> => {
   console.log(letterBody);
   const hakukohdeNimi = translateName(hakukohde.nimi);
@@ -601,7 +612,7 @@ export const luoHyvaksymiskirjeetPDF = async ({
     body,
   );
   const kirjeetProcessId = startProcessResponse?.data?.id;
-  return await downloadProcessDocument(kirjeetProcessId);
+  return await downloadProcessDocument(kirjeetProcessId, true);
 };
 
 type TemplateResponse = {

@@ -2,7 +2,7 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { createModal, useOphModalProps } from '@/app/components/global-modal';
 import { OphModalDialog } from '@/app/components/oph-modal-dialog';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { CalendarComponent } from './calendar-component';
 import { EditorComponent } from './editor-component';
 import {
@@ -10,7 +10,7 @@ import {
   KirjepohjaNimi,
 } from '@/app/lib/types/valintalaskentakoostepalvelu-types';
 import { Hakukohde } from '@/app/lib/types/kouta-types';
-import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import {
   getKirjepohjatHakukohteelle,
   luoHyvaksymiskirjeetPDF,
@@ -19,9 +19,7 @@ import { SpinnerIcon } from '@/app/components/spinner-icon';
 import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { LocalizedSelect } from '@/app/components/localized-select';
 import { SelectChangeEvent } from '@mui/material/Select';
-import { downloadBlob } from '@/app/lib/common';
-import { DownloadButton } from '@/app/components/download-button';
-import { Button } from '@mui/material';
+import { useFileDownloadMutation } from '@/app/hooks/useFileDownloadMutation';
 
 export type LetterTemplateModalProps = {
   title: string;
@@ -96,35 +94,39 @@ type DownloadButtonProps = {
   deadline: Date | null;
 };
 
-const useLettersMutation = ({
+const LettersDownloadButton = ({
   hakukohde,
   sijoitteluajoId,
   letterBody,
   deadline,
 }: DownloadButtonProps) => {
-  return useMutation({
-    mutationFn: async () => {
-      const { fileName, blob } = await luoHyvaksymiskirjeetPDF({
+  const getFile = useCallback(
+    () =>
+      luoHyvaksymiskirjeetPDF({
         hakukohde,
         sijoitteluajoId,
         letterBody,
         deadline,
-      });
-      downloadBlob(fileName ?? 'kirjeet.pdf', blob);
-    },
+      }),
+    [hakukohde, deadline, sijoitteluajoId, letterBody],
+  );
+
+  const mutation = useFileDownloadMutation({
     onError: (e) => {
       console.error(e);
     },
+    getFile,
+    defaultFileName: 'kirjeet.pdf',
   });
-};
-
-const LettersDownloadButton = (props: DownloadButtonProps) => {
-  const lettersMutation = useLettersMutation(props);
 
   return (
-    <DownloadButton Component={Button} mutation={lettersMutation}>
+    <OphButton
+      variant="contained"
+      loading={mutation.isPending}
+      onClick={() => mutation.mutate()}
+    >
       Muodosta kirjeet
-    </DownloadButton>
+    </OphButton>
   );
 };
 
@@ -157,15 +159,15 @@ export const LetterTemplateModal = createModal(
         maxWidth="md"
         actions={
           <>
+            <OphButton variant="outlined" onClick={modalProps.onClose}>
+              {t('yleinen.peruuta')}
+            </OphButton>
             <LettersDownloadButton
               deadline={deadlineDate}
               hakukohde={hakukohde}
               letterBody={letterBody}
               sijoitteluajoId={sijoitteluajoId}
             />
-            <OphButton variant="outlined" onClick={modalProps.onClose}>
-              {t('yleinen.peruuta')}
-            </OphButton>
           </>
         }
       >
