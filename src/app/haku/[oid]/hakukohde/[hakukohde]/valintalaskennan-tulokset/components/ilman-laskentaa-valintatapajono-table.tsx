@@ -39,11 +39,13 @@ const JonosijaInput = ({
   const { onJonoTulosChange } = useJonoTulosActorRef(jonoTulosActorRef);
 
   const hakemusJonoTulos = useHakemusJonoTulos(jonoTulosActorRef, hakemusOid);
+  const tuloksenTila = hakemusJonoTulos.tuloksenTila;
   const value = hakemusJonoTulos.jonosija ?? '';
   // TODO: Validoi syöte
   return (
     <OphInput
       type="number"
+      disabled={tuloksenTila === TuloksenTila.HYLATTY}
       value={value}
       sx={{ width: '80px' }}
       inputProps={{ min: 1 }}
@@ -102,10 +104,13 @@ const KokonaispisteetInput = ({
 }) => {
   const { onJonoTulosChange } = useJonoTulosActorRef(jonoTulosActorRef);
   const hakemusJonoTulos = useHakemusJonoTulos(jonoTulosActorRef, hakemusOid);
+  const tuloksenTila = hakemusJonoTulos.tuloksenTila;
   const value = hakemusJonoTulos.pisteet ?? '';
+
   return (
     <PisteetInput
       value={value}
+      disabled={tuloksenTila === TuloksenTila.HYLATTY}
       onChange={(newPisteet) =>
         onJonoTulosChange({ hakemusOid, pisteet: newPisteet })
       }

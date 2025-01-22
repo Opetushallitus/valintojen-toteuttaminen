@@ -104,12 +104,20 @@ const jonoTulosChangeReducer = ({
     newTuloksenTila = TuloksenTila.HYVAKSYTTAVISSA;
   }
 
+  let newJonosija = event.jonosija ?? existingHakemusJonoTulos.jonosija ?? '';
+  let newPisteet = event.pisteet ?? existingHakemusJonoTulos.pisteet ?? '';
+
+  if (newTuloksenTila === TuloksenTila.HYLATTY) {
+    newJonosija = '';
+    newPisteet = '';
+  }
+
   context.changedJonoTulokset[hakemusOid] = {
     hakemusOid,
     hakijaOid: existingHakemusJonoTulos.hakijaOid,
     tuloksenTila: newTuloksenTila,
-    pisteet: event.pisteet ?? existingHakemusJonoTulos.pisteet ?? '',
-    jonosija: event.jonosija ?? existingHakemusJonoTulos.jonosija ?? '',
+    jonosija: newJonosija,
+    pisteet: newPisteet,
     muutoksenSyy: event.kuvaus ?? existingHakemusJonoTulos.muutoksenSyy ?? {},
   };
 
