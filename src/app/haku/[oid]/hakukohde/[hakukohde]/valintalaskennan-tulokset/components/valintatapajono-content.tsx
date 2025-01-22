@@ -18,7 +18,7 @@ import { getValintatapaJonoNimi } from '@/app/lib/valintalaskenta-utils';
 import { IlmanLaskentaaValintatapajonoTable } from './ilman-laskentaa-valintatapajono-table';
 import { useCallback } from 'react';
 import { ArvoTypeChangeConfirmationModal } from './arvo-type-change-confirmation-modal';
-import { showModal } from '@/app/components/global-modal';
+import { hideModal, showModal } from '@/app/components/global-modal';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { SpinnerIcon } from '@/app/components/spinner-icon';
 import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
@@ -30,10 +30,19 @@ import {
   useSelectedJarjestysperuste,
 } from '@/app/lib/state/jono-tulos-state';
 import useToaster from '@/app/hooks/useToaster';
-import { GenericEvent } from '@/app/lib/common';
-import { QueryClient, useQueryClient } from '@tanstack/react-query';
+import { GenericEvent, OphApiError } from '@/app/lib/common';
+import {
+  QueryClient,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { FileDownloadButton } from '@/app/components/file-download-button';
-import { getValintatapajonoTulosExcel } from '@/app/lib/valintalaskentakoostepalvelu';
+import {
+  getValintatapajonoTulosExcel,
+  saveValintatapajonoTulosExcel,
+} from '@/app/lib/valintalaskentakoostepalvelu';
+import { FileSelectButton } from '@/app/components/file-select-button';
+import { SpinnerModal } from '@/app/components/spinner-modal';
 
 const LaskettuVaiheActions = ({
   hakukohde,
@@ -52,6 +61,96 @@ const LaskettuVaiheActions = ({
       permissions={permissions}
       statusMutation={statusMutation}
     />
+  );
+};
+const refetchLaskennanTulokset = ({
+  queryClient,
+  hakukohdeOid,
+}: {
+  queryClient: QueryClient;
+  hakukohdeOid: string;
+}) => {
+  const options = hakukohteenLasketutValinnanvaiheetQueryOptions(hakukohdeOid);
+  queryClient.resetQueries(options);
+  queryClient.invalidateQueries(options);
+};
+
+const useJonoExcelUploadMutation = ({
+  hakuOid,
+  hakukohdeOid,
+  valintatapajonoOid,
+}: {
+  hakuOid: string;
+  hakukohdeOid: string;
+  valintatapajonoOid: string;
+}) => {
+  const { addToast } = useToaster();
+  const { t } = useTranslations();
+
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ file }: { file: File }) => {
+      showModal(SpinnerModal, {
+        title: t(
+          'valintalaskennan-tulokset.tuodaan-tuloksia-taulukkolaskennasta',
+        ),
+      });
+      return await saveValintatapajonoTulosExcel({
+        hakuOid,
+        hakukohdeOid,
+        valintatapajonoOid,
+        file,
+      });
+    },
+    onError: (error) => {
+      hideModal(SpinnerModal);
+      // Tuonti onnistui osittain -> ladataan muuttuneet tulokset
+      if (error instanceof OphApiError) {
+        refetchLaskennanTulokset({ queryClient, hakukohdeOid });
+      }
+      addToast({
+        key: 'upload-valintatapajono-excel-error',
+        message: 'valintalaskennan-tulokset.virhe-vie-taulukkolaskentaan',
+        type: 'error',
+      });
+    },
+    onSuccess: () => {
+      // Ladataan muuttuneet pistetulokset
+      refetchLaskennanTulokset({ queryClient, hakukohdeOid });
+      hideModal(SpinnerModal);
+      addToast({
+        key: 'put-pistesyotto-excel-success',
+        message: 'pistesyotto.tuo-valintalaskennasta-onnistui',
+        type: 'success',
+      });
+    },
+  });
+};
+
+const JonoExcelUploadButton = ({
+  hakuOid,
+  hakukohdeOid,
+  valintatapajonoOid,
+}: {
+  hakuOid: string;
+  hakukohdeOid: string;
+  valintatapajonoOid: string;
+}) => {
+  const { t } = useTranslations();
+  const { mutate } = useJonoExcelUploadMutation({
+    hakuOid,
+    hakukohdeOid,
+    valintatapajonoOid,
+  });
+  return (
+    <FileSelectButton
+      onFileSelect={(file) => {
+        mutate({ file });
+      }}
+    >
+      {t('yleinen.tuo-taulukkolaskennasta')}
+    </FileSelectButton>
   );
 };
 
@@ -126,6 +225,11 @@ const LaskennatonVaiheActions = ({
       >
         {t('yleinen.vie-taulukkolaskentaan')}
       </FileDownloadButton>
+      <JonoExcelUploadButton
+        hakuOid={hakukohde.hakuOid}
+        hakukohdeOid={hakukohde.oid}
+        valintatapajonoOid={jono.oid}
+      />
       <ToggleButtonGroup
         color="primary"
         value={jarjestysPeruste}
@@ -203,18 +307,6 @@ export const LaskettuValintatapajonoContent = ({
   );
 };
 
-const refetchTulokset = ({
-  queryClient,
-  hakukohdeOid,
-}: {
-  queryClient: QueryClient;
-  hakukohdeOid: string;
-}) => {
-  const options = hakukohteenLasketutValinnanvaiheetQueryOptions(hakukohdeOid);
-  queryClient.resetQueries(options);
-  queryClient.invalidateQueries(options);
-};
-
 export const ValintatapajonoIlmanLaskentaaContent = ({
   haku,
   hakukohdeOid,
@@ -237,7 +329,7 @@ export const ValintatapajonoIlmanLaskentaaContent = ({
   const onEvent = useCallback(
     (event: GenericEvent) => {
       if (event.type === 'success') {
-        refetchTulokset({
+        refetchLaskennanTulokset({
           queryClient,
           hakukohdeOid,
         });

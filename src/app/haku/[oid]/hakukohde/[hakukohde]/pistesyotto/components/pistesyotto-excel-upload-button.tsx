@@ -7,7 +7,7 @@ import {
 import { pisteTuloksetOptions } from '../hooks/usePisteTulokset';
 import { PistesyottoTuontiError } from './pistesyotto-excel-upload-error';
 import useToaster from '@/app/hooks/useToaster';
-import { putPistesyottoExcel } from '@/app/lib/valintalaskentakoostepalvelu';
+import { savePistesyottoExcel } from '@/app/lib/valintalaskentakoostepalvelu';
 import { OphModalDialog } from '@/app/components/oph-modal-dialog';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { OphApiError } from '@/app/lib/common';
@@ -18,7 +18,7 @@ import {
   useOphModalProps,
 } from '@/app/components/global-modal';
 import { SpinnerModal } from '@/app/components/spinner-modal';
-import { FileUploadButton } from '@/app/components/file-upload-button';
+import { FileSelectButton } from '@/app/components/file-select-button';
 
 const refetchPisteTulokset = ({
   queryClient,
@@ -74,7 +74,7 @@ const useExcelUploadMutation = ({
       showModal(SpinnerModal, {
         title: t('pistesyotto.tuodaan-pistetietoja-taulukkolaskennasta'),
       });
-      return await putPistesyottoExcel({
+      return await savePistesyottoExcel({
         hakuOid,
         hakukohdeOid,
         excelFile: file,
@@ -116,10 +116,11 @@ export const PistesyottoExcelUploadButton = ({
   });
 
   return (
-    <FileUploadButton
-      isUploading={mutation.isPending}
+    <FileSelectButton
+      loading={mutation.isPending}
       onFileSelect={(file) => mutation.mutate({ file })}
-      buttonText={t('yleinen.tuo-taulukkolaskennasta')}
-    />
+    >
+      {t('yleinen.tuo-taulukkolaskennasta')}
+    </FileSelectButton>
   );
 };

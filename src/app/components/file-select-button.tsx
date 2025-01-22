@@ -1,6 +1,7 @@
 import { FileUploadOutlined } from '@mui/icons-material';
+import { ButtonProps } from '@mui/material';
 import { OphButton } from '@opetushallitus/oph-design-system';
-import React, { forwardRef, useRef, useImperativeHandle } from 'react';
+import { forwardRef, useRef, useImperativeHandle } from 'react';
 
 type FileSelectorRef = { openFileSelector: () => void };
 type FileSelectorProps = { onFileSelect: (file: File) => void };
@@ -38,28 +39,30 @@ const FileSelector = forwardRef<FileSelectorRef, FileSelectorProps>(
   },
 );
 
-export const FileUploadButton = ({
-  isUploading,
-  buttonText,
-  onFileSelect,
-}: {
-  isUploading: boolean;
+export type FileSelectButtonProps = {
   onFileSelect: (file: File) => void;
-  buttonText: string;
-}) => {
+} & Omit<ButtonProps, 'onClick'>;
+
+export const FileSelectButton = ({
+  children,
+  loading,
+  onFileSelect,
+  ...props
+}: FileSelectButtonProps) => {
   const fileSelectorRef = useRef<FileSelectorRef>(null);
 
   return (
     <>
       <FileSelector ref={fileSelectorRef} onFileSelect={onFileSelect} />
       <OphButton
-        disabled={isUploading}
+        loading={loading}
         startIcon={<FileUploadOutlined />}
         onClick={() => {
           fileSelectorRef?.current?.openFileSelector();
         }}
+        {...props}
       >
-        {buttonText}
+        {children}
       </OphButton>
     </>
   );

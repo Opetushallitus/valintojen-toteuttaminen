@@ -413,6 +413,67 @@ export const getValintatapajonoTulosExcel = async ({
   return await downloadProcessDocument(excelProcessId);
 };
 
+const pollDocumentSeuranta = async (uuid: string) => {
+  let pollTimes = 10;
+
+  while (pollTimes) {
+    const documentRes = await client.get<{
+      uuid: string;
+      kuvaus: string;
+      valmis: boolean;
+      virheilmoitukset: Array<{ tyyppi: string; ilmoitus: string }> | null;
+      dokumenttiId: string | null;
+      virheita: boolean;
+    }>(configuration.dokumenttiSeurantaUrl({ uuid }));
+    pollTimes -= 1;
+    const resData = documentRes.data;
+    if (resData.valmis || resData.virheita) {
+      if (resData.virheita) {
+        throw new OphApiError(
+          documentRes,
+          resData.virheilmoitukset?.[0].ilmoitus,
+        );
+      }
+      return {
+        uuid,
+        kuvaus: resData.kuvaus,
+      };
+    } else if (pollTimes === 0) {
+      throw new OphApiError(documentRes, 'Dokumentin seuranta aikakatkaistiin');
+    }
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+  }
+  throw new AssertionError({
+    message: 'Dokumentin seurannan pollaus päättyi ilman tulosta!',
+  });
+};
+
+export const saveValintatapajonoTulosExcel = async ({
+  hakuOid,
+  hakukohdeOid,
+  valintatapajonoOid,
+  file,
+}: ValintatapaJonoTulosExcelProps & { file: File }) => {
+  const urlWithQuery = new URL(
+    configuration.startImportValintatapajonoTulosExcelUrl,
+  );
+  urlWithQuery.searchParams.append('hakuOid', hakuOid);
+  urlWithQuery.searchParams.append('hakukohdeOid', hakukohdeOid);
+  urlWithQuery.searchParams.append('valintatapajonoOid', valintatapajonoOid);
+
+  const res = await client.post<string>(
+    urlWithQuery,
+    await file.arrayBuffer(),
+    {
+      headers: {
+        'content-type': 'application/octet-stream',
+      },
+    },
+  );
+
+  await pollDocumentSeuranta(res.data);
+};
+
 export const getPistesyottoExcel = async ({
   hakuOid,
   hakukohdeOid,
@@ -432,7 +493,7 @@ export const getPistesyottoExcel = async ({
   return await downloadProcessDocument(excelProcessId);
 };
 
-export const putPistesyottoExcel = async ({
+export const savePistesyottoExcel = async ({
   hakuOid,
   hakukohdeOid,
   excelFile,
