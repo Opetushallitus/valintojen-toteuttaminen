@@ -7,34 +7,10 @@ import {
   NoteOutlined,
 } from '@mui/icons-material';
 import { ActionBar } from '@/app/components/action-bar';
-import { useMutation } from '@tanstack/react-query';
-import useToaster from '@/app/hooks/useToaster';
-import { DownloadButton } from '@/app/components/download-button';
 import { getOsoitetarratHakemuksille } from '@/app/lib/valintalaskentakoostepalvelu';
-import { downloadBlob } from '@/app/lib/common';
 import { HarkinnanvaraisetTilatByHakemusOids } from '@/app/lib/types/harkinnanvaraiset-types';
-
-const useOsoitetarratMutation = ({ selection }: { selection: Set<string> }) => {
-  const { addToast } = useToaster();
-
-  return useMutation({
-    mutationFn: async () => {
-      const { fileName, blob } = await getOsoitetarratHakemuksille({
-        tag: 'harkinnanvaraiset',
-        hakemusOids: Array.from(selection),
-      });
-      downloadBlob(fileName ?? 'osoitetarrat.pdf', blob);
-    },
-    onError: (e) => {
-      addToast({
-        key: 'get-osoitetarrat',
-        message: 'harkinnanvaraiset.virhe-osoitetarrat',
-        type: 'error',
-      });
-      console.error(e);
-    },
-  });
-};
+import { FileDownloadButton } from '@/app/components/file-download-button';
+import { useCallback } from 'react';
 
 const HyvaksyValitutButton = ({
   selection,
@@ -71,19 +47,27 @@ const OsoitetarratDownloadButton = ({
 }) => {
   const { t } = useTranslation();
 
-  const osoitetarratMutation = useOsoitetarratMutation({
-    selection,
-  });
+  const getFile = useCallback(
+    () =>
+      getOsoitetarratHakemuksille({
+        tag: 'harkinnanvaraiset',
+        hakemusOids: Array.from(selection),
+      }),
+    [selection],
+  );
 
   return (
-    <DownloadButton
-      Component={ActionBar.Button}
+    <FileDownloadButton
+      component={ActionBar.Button}
       disabled={selection.size === 0}
-      mutation={osoitetarratMutation}
       startIcon={<NoteOutlined />}
+      defaultFileName="osoitetarrat.pdf"
+      getFile={getFile}
+      errorKey="get-osoitetarrat-error"
+      errorMessage="harkinnanvaraiset.virhe-osoitetarrat"
     >
       {t('harkinnanvaraiset.muodosta-osoitetarrat')}
-    </DownloadButton>
+    </FileDownloadButton>
   );
 };
 

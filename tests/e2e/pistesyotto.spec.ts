@@ -202,7 +202,7 @@ test.describe('Excel export', () => {
         ),
       async (route) => {
         await route.fulfill({
-          json: { dokumenttiId: 'doc_id' },
+          json: { dokumenttiId: 'doc_id', kokonaistyo: { valmis: true } },
         });
       },
     );

@@ -9,6 +9,23 @@ export type HttpClientResponse<D> = {
   data: D;
 };
 
+const getContentFilename = (headers: Headers) => {
+  const contentDisposition = headers.get('content-disposition');
+  return contentDisposition?.match(/ filename="(.*)"$/)?.[1];
+};
+
+export type FileResult = {
+  fileName?: string;
+  blob: Blob;
+};
+
+export const createFileResult = async (
+  response: HttpClientResponse<Blob>,
+): Promise<FileResult> => ({
+  fileName: getContentFilename(response.headers),
+  blob: response.data,
+});
+
 const doFetch = async (request: Request) => {
   try {
     const response = await fetch(request);
