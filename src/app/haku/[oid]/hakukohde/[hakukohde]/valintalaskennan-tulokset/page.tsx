@@ -24,6 +24,8 @@ import { SearchInput } from '@/app/components/search-input';
 import { FileDownloadButton } from '@/app/components/file-download-button';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { groupBy } from 'remeda';
+import { Haku } from '@/app/lib/types/kouta-types';
+import { useHaku } from '@/app/hooks/useHaku';
 
 type LasketutValinnanvaiheetParams = {
   hakuOid: string;
@@ -52,10 +54,12 @@ const LaskennanTuloksetExcelDownloadButton = ({
 const ValinnanvaiheGroupResults = ({
   title,
   hakukohdeOid,
+  haku,
   vaiheet,
   JonoContentComponent,
 }: {
   title: string;
+  haku: Haku;
   hakukohdeOid: string;
   vaiheet?: LasketutValinnanvaiheetWithHakijaInfo;
   JonoContentComponent: React.ComponentType<LaskettuValintatapajonoContentProps>;
@@ -69,6 +73,7 @@ const ValinnanvaiheGroupResults = ({
             return (
               <JonoContentComponent
                 key={jono.oid}
+                haku={haku}
                 hakukohdeOid={hakukohdeOid}
                 jono={jono}
                 valinnanVaihe={vaihe}
@@ -83,9 +88,11 @@ const ValinnanvaiheGroupResults = ({
 
 const ValinnanvaiheetContent = ({
   hakukohdeOid,
+  haku,
   valinnanvaiheet,
 }: {
   hakukohdeOid: string;
+  haku: Haku;
   valinnanvaiheet: LasketutValinnanvaiheetWithHakijaInfo;
 }) => {
   const { t } = useTranslations();
@@ -101,6 +108,7 @@ const ValinnanvaiheetContent = ({
   return (
     <Stack gap={2} sx={{ width: '100%' }}>
       <ValinnanvaiheGroupResults
+        haku={haku}
         title={t('valintalaskennan-tulokset.valinnanvaiheet-ilman-laskentaa')}
         hakukohdeOid={hakukohdeOid}
         vaiheet={valinnanvaiheetIlmanLaskentaa}
@@ -108,6 +116,7 @@ const ValinnanvaiheetContent = ({
       />
       <ValinnanvaiheGroupResults
         title={t('valintalaskennan-tulokset.lasketut-valinnanvaiheet')}
+        haku={haku}
         hakukohdeOid={hakukohdeOid}
         vaiheet={lasketutValinnanvaiheet}
         JonoContentComponent={LaskettuValintatapajonoContent}
@@ -124,6 +133,8 @@ const ValintalaskennanTuloksetContent = ({
     hakuOid,
     hakukohdeOid,
   });
+
+  const { data: haku } = useHaku({ hakuOid });
 
   const { searchPhrase, setSearchPhrase, pageSize, setPageSize } =
     useJonosijatSearchParams();
@@ -166,6 +177,7 @@ const ValintalaskennanTuloksetContent = ({
         <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
       </Box>
       <ValinnanvaiheetContent
+        haku={haku}
         hakukohdeOid={hakukohdeOid}
         valinnanvaiheet={valinnanvaiheet}
       />

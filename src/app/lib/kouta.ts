@@ -66,11 +66,15 @@ export function isToisenAsteenYhteisHaku(haku: Haku): boolean {
   );
 }
 
+export const isAmmatillinenErityisopetus = (haku: Haku) =>
+  haku.kohdejoukkoKoodiUri.startsWith('haunkohdejoukko_20');
+
+// TODO: Tätä ei nyt käytetä missään? Eikä tässä taida olla kaikkia toisen asteen kohdejoukkojakaan?
 export function isToinenAsteKohdejoukko(haku: Haku): boolean {
   return [
-    'haunkohdejoukko_11',
-    'haunkohdejoukko_17',
-    'haunkohdejoukko_20',
+    'haunkohdejoukko_11', // perusopetuksen jälkeisen koulutuksen yhteishaku
+    'haunkohdejoukko_17', // perusopetuksen jälkeinen valmistava koulutus
+    'haunkohdejoukko_20', // erityisopetuksena järjestettävä ammatillinen koulutus
   ].some((hkj) => haku.kohdejoukkoKoodiUri.startsWith(hkj));
 }
 

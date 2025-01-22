@@ -11,7 +11,6 @@ import {
 import { Stack } from '@mui/material';
 import { useState } from 'react';
 import { LaskettuJono } from '@/app/hooks/useLasketutValinnanVaiheet';
-import { TuloksenTila } from '@/app/lib/types/laskenta-types';
 import { Hakukohde } from '@/app/lib/types/kouta-types';
 import { HakutoiveTitle } from './hakutoive-title';
 import { isEmpty } from 'remeda';
@@ -23,6 +22,7 @@ import { JarjestyskriteeriParams } from './jarjestyskriteeri-types';
 import { hakemuksenLasketutValinnanvaiheetQueryOptions } from '@/app/lib/valintalaskenta-service';
 import useToaster from '@/app/hooks/useToaster';
 import { QueryClient, useQueryClient } from '@tanstack/react-query';
+import { useTuloksenTilaOptions } from '@/app/hooks/useTuloksenTilaOptions';
 
 const ModalActions = ({
   onClose,
@@ -65,10 +65,10 @@ const JarjestyskriteeriFields = ({
 }) => {
   const { t } = useTranslations();
 
-  const tuloksenTilaOptions = Object.values(TuloksenTila).map((v) => ({
-    value: v,
-    label: t('tuloksenTila.' + v),
-  }));
+  const tuloksenTilaOptions = useTuloksenTilaOptions({
+    // TODO: Tarvitseeko tässä näyttää valinta "hyväksytty harkinnanvaraisesti"? Vanhassa kälissä ei ole näytetty.
+    harkinnanvarainen: false,
+  });
 
   return (
     <>

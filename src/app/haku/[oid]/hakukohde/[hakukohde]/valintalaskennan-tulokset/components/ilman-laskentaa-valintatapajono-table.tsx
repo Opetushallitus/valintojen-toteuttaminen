@@ -6,11 +6,16 @@ import {
 import { createHakijaColumn } from '@/app/components/table/table-columns';
 import { ListTableColumn } from '@/app/components/table/table-types';
 import { JonoSijaWithHakijaInfo } from '@/app/hooks/useLasketutValinnanVaiheet';
-import { useTranslations } from '@/app/hooks/useTranslations';
-import { OphInput } from '@opetushallitus/oph-design-system';
+import { OphInput, OphSelect } from '@opetushallitus/oph-design-system';
 import { useMemo } from 'react';
 import { ArvoType } from './valintatapajono-content';
 import { PisteetInput } from '@/app/components/pisteet-input';
+import { useTuloksenTilaOptions } from '@/app/hooks/useTuloksenTilaOptions';
+import {
+  isAmmatillinenErityisopetus,
+  isKorkeakouluHaku,
+} from '@/app/lib/kouta';
+import { Haku } from '@/app/lib/types/kouta-types';
 
 const TRANSLATIONS_PREFIX = 'valintalaskennan-tulokset.taulukko';
 
@@ -41,12 +46,14 @@ const KuvausInput = ({ value }: { value: string }) => {
 type JonoColumn = ListTableColumn<JonoSijaWithHakijaInfo>;
 
 export const IlmanLaskentaaValintatapajonoTable = ({
+  haku,
   jonosijat,
   setSort,
   sort,
   pagination,
   arvoType,
 }: {
+  haku: Haku;
   jonosijat: Array<JonoSijaWithHakijaInfo>;
   valintatapajonoOid: string;
   sort: string;
@@ -54,7 +61,11 @@ export const IlmanLaskentaaValintatapajonoTable = ({
   pagination: ListTablePaginationProps;
   arvoType: ArvoType;
 }) => {
-  const { t } = useTranslations();
+  const tuloksenTilaOptions = useTuloksenTilaOptions({
+    harkinnanvarainen: !(
+      isKorkeakouluHaku(haku) || isAmmatillinenErityisopetus(haku)
+    ),
+  });
 
   const columns: Array<JonoColumn> = useMemo(
     () => [
@@ -64,7 +75,11 @@ export const IlmanLaskentaaValintatapajonoTable = ({
         title: `${TRANSLATIONS_PREFIX}.valintatieto`,
         key: 'tuloksenTila',
         render: (props) => (
-          <span>{t(`tuloksenTila.${props.tuloksenTila}`)}</span>
+          <OphSelect
+            value={props.tuloksenTila}
+            options={tuloksenTilaOptions}
+            onChange={() => {}}
+          />
         ),
       },
       ...(arvoType === 'kokonaispisteet'
@@ -95,7 +110,7 @@ export const IlmanLaskentaaValintatapajonoTable = ({
         sortable: false,
       },
     ],
-    [t, arvoType],
+    [tuloksenTilaOptions, arvoType],
   );
 
   return (
