@@ -14,7 +14,7 @@ const makeSubtitle = ({
   prioriteetti,
   t,
 }: {
-  createdAt?: number;
+  createdAt: number | null;
   prioriteetti: number;
   t: TFunction;
 }) => {

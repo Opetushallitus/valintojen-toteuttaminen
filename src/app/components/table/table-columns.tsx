@@ -86,7 +86,7 @@ export const makeCountColumn = <T extends Record<string, unknown>>({
 }: {
   title: string;
   key: string;
-  amountProp: KeysMatching<T, number | undefined>;
+  amountProp: KeysMatching<T, number | string | undefined>;
 }): ListTableColumn<T> => ({
   title,
   key,

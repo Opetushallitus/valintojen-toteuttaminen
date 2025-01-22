@@ -18,7 +18,6 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
 import HallintaTableRow from './hallinta-table-row';
 import Confirm from './confirm';
-import { getHakukohteenLasketutValinnanvaiheet } from '@/app/lib/valintalaskenta-service';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
 import {
   LaskentaEventType,
@@ -29,6 +28,7 @@ import { useToaster } from '@/app/hooks/useToaster';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { HaunAsetukset } from '@/app/lib/types/haun-asetukset';
 import { ErrorRow } from './error-row';
+import { hakukohteenLasketutValinnanvaiheetQueryOptions } from '@/app/hooks/useLasketutValinnanVaiheet';
 
 type HallintaTableParams = {
   haku: Haku;
@@ -58,10 +58,7 @@ const HallintaTable = ({
           queryKey: ['getValinnanvaiheet', hakukohde.oid],
           queryFn: () => getValinnanvaiheet(hakukohde.oid),
         },
-        {
-          queryKey: ['getLasketutValinnanvaiheet', hakukohde.oid],
-          queryFn: () => getHakukohteenLasketutValinnanvaiheet(hakukohde.oid),
-        },
+        hakukohteenLasketutValinnanvaiheetQueryOptions(hakukohde.oid),
       ],
     });
 

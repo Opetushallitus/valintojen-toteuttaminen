@@ -9,29 +9,39 @@ import { useSijoitteluStatusMutation } from '../hooks/useSijoitteluStatusMutatio
 import { useHakukohde } from '@/app/hooks/useHakukohde';
 import { useUserPermissions } from '@/app/hooks/useUserPermissions';
 import {
+  hakukohteenLasketutValinnanvaiheetQueryOptions,
   LaskettuJonoWithHakijaInfo,
   LaskettuValinnanvaiheInfo,
 } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { getValintatapaJonoNimi } from '@/app/lib/valintalaskenta-utils';
 import { IlmanLaskentaaValintatapajonoTable } from './ilman-laskentaa-valintatapajono-table';
-import { useState } from 'react';
+import { useCallback } from 'react';
 import { ArvoTypeChangeConfirmationModal } from './arvo-type-change-confirmation-modal';
 import { showModal } from '@/app/components/global-modal';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { SpinnerIcon } from '@/app/components/spinner-icon';
-import { Haku } from '@/app/lib/types/kouta-types';
+import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
+import {
+  JarjestysPeruste,
+  JonoTulosActorRef,
+  useJonoTulosActorRef,
+  useJonotulosState,
+  useSelectedJarjestysperuste,
+} from '@/app/lib/state/jono-tulos-state';
+import useToaster from '@/app/hooks/useToaster';
+import { GenericEvent } from '@/app/lib/common';
+import { QueryClient, useQueryClient } from '@tanstack/react-query';
 
 const LaskettuVaiheActions = ({
-  hakukohdeOid,
+  hakukohde,
   jono,
 }: {
-  hakukohdeOid: string;
+  hakukohde: Hakukohde;
   jono: LaskettuJonoWithHakijaInfo;
 }) => {
-  const { data: hakukohde } = useHakukohde({ hakukohdeOid });
   const { data: permissions } = useUserPermissions();
-  const statusMutation = useSijoitteluStatusMutation(hakukohdeOid);
+  const statusMutation = useSijoitteluStatusMutation(hakukohde.oid);
 
   return (
     <SijoitteluStatusChangeButton
@@ -43,43 +53,41 @@ const LaskettuVaiheActions = ({
   );
 };
 
-export type ArvoType = 'kokonaispisteet' | 'jonosija';
-
 const LaskennatonVaiheActions = ({
-  hakukohdeOid,
+  hakukohde,
   jono,
-  arvoType,
-  setArvoType,
+  jonoTulosActorRef,
 }: {
-  hakukohdeOid: string;
+  hakukohde: Hakukohde;
   jono: LaskettuJonoWithHakijaInfo;
-  arvoType: ArvoType;
-  setArvoType: (newArvoType: ArvoType) => void;
+  jonoTulosActorRef: JonoTulosActorRef;
 }) => {
-  const { data: hakukohde } = useHakukohde({ hakukohdeOid });
   const { data: permissions } = useUserPermissions();
-  const statusMutation = useSijoitteluStatusMutation(hakukohdeOid);
+  const statusMutation = useSijoitteluStatusMutation(hakukohde.oid);
+
+  const { saveJonoTulos, isUpdating } = useJonoTulosActorRef(jonoTulosActorRef);
+
+  const [jarjestysPeruste, setJarjestysPeruste] =
+    useSelectedJarjestysperuste(jonoTulosActorRef);
 
   const { t } = useTranslations();
 
   const onArvoTypeChange = (
     _event: React.MouseEvent<HTMLElement>,
-    newArvoType: string,
+    newJarjestysPeruste: string | null,
   ) => {
-    showModal(ArvoTypeChangeConfirmationModal, {
-      text:
-        newArvoType === 'jonosija'
-          ? 'Jos siirryt käyttämään jonosijoja, kokonaispisteet poistetaan.'
-          : 'Jos siirryt käyttämään kokonaispisteitä, jonosijat poistetaan.',
-      onConfirm: () => {
-        setArvoType(newArvoType as ArvoType);
-        // TODO: tyhjennä jonosijat/kokonaispisteet
-      },
-    });
+    if (newJarjestysPeruste) {
+      showModal(ArvoTypeChangeConfirmationModal, {
+        text:
+          newJarjestysPeruste === 'jonosija'
+            ? t('valintalaskennan-tulokset.jonosija-valinta-varoitus')
+            : t('valintalaskennan-tulokset.kokonaispisteet-valinta-varoitus'),
+        onConfirm: () => {
+          setJarjestysPeruste(newJarjestysPeruste as JarjestysPeruste);
+        },
+      });
+    }
   };
-
-  // TODO: Tallennus
-  const isPending = false;
 
   return (
     <Stack
@@ -90,8 +98,9 @@ const LaskennatonVaiheActions = ({
       <OphButton
         variant="contained"
         type="submit"
-        disabled={isPending}
-        startIcon={isPending ? <SpinnerIcon /> : null}
+        disabled={isUpdating}
+        onClick={() => saveJonoTulos()}
+        startIcon={isUpdating ? <SpinnerIcon /> : null}
       >
         {t('yleinen.tallenna')}
       </OphButton>
@@ -103,7 +112,7 @@ const LaskennatonVaiheActions = ({
       />
       <ToggleButtonGroup
         color="primary"
-        value={arvoType}
+        value={jarjestysPeruste}
         onChange={onArvoTypeChange}
         exclusive
       >
@@ -132,6 +141,8 @@ export const LaskettuValintatapajonoContent = ({
 }: LaskettuValintatapajonoContentProps) => {
   const { valintatapajonooid, jonosijat } = jono;
 
+  const { data: hakukohde } = useHakukohde({ hakukohdeOid });
+
   const { results, sort, setSort, pageSize, setPage, page } =
     useJonosijatSearch(valintatapajonooid, jonosijat);
 
@@ -152,7 +163,7 @@ export const LaskettuValintatapajonoContent = ({
           />
         }
       >
-        <LaskettuVaiheActions hakukohdeOid={hakukohdeOid} jono={jono} />
+        <LaskettuVaiheActions hakukohde={hakukohde} jono={jono} />
         <LaskettuValintatapajonoTable
           setSort={setSort}
           sort={sort}
@@ -176,6 +187,18 @@ export const LaskettuValintatapajonoContent = ({
   );
 };
 
+const refetchTulokset = ({
+  queryClient,
+  hakukohdeOid,
+}: {
+  queryClient: QueryClient;
+  hakukohdeOid: string;
+}) => {
+  const options = hakukohteenLasketutValinnanvaiheetQueryOptions(hakukohdeOid);
+  queryClient.resetQueries(options);
+  queryClient.invalidateQueries(options);
+};
+
 export const ValintatapajonoIlmanLaskentaaContent = ({
   haku,
   hakukohdeOid,
@@ -189,9 +212,31 @@ export const ValintatapajonoIlmanLaskentaaContent = ({
   const { results, sort, setSort, pageSize, setPage, page } =
     useJonosijatSearch(valintatapajonooid, jonosijat);
 
-  const [arvoType, setArvoType] = useState<ArvoType>(
-    jono.kaytetaanKokonaispisteita ? 'kokonaispisteet' : 'jonosija',
+  const { addToast } = useToaster();
+
+  const { data: hakukohde } = useHakukohde({ hakukohdeOid });
+
+  const queryClient = useQueryClient();
+
+  const onEvent = useCallback(
+    (event: GenericEvent) => {
+      if (event.type === 'success') {
+        refetchTulokset({
+          queryClient,
+          hakukohdeOid,
+        });
+      }
+      addToast(event);
+    },
+    [addToast, queryClient, hakukohdeOid],
   );
+
+  const { actorRef: jonoTulosActorRef } = useJonotulosState({
+    valinnanvaihe: valinnanVaihe,
+    hakukohde,
+    laskettuJono: jono,
+    onEvent,
+  });
 
   return (
     <Box
@@ -210,10 +255,9 @@ export const ValintatapajonoIlmanLaskentaaContent = ({
         }
       >
         <LaskennatonVaiheActions
-          hakukohdeOid={hakukohdeOid}
+          jonoTulosActorRef={jonoTulosActorRef}
+          hakukohde={hakukohde}
           jono={jono}
-          arvoType={arvoType}
-          setArvoType={setArvoType}
         />
         <IlmanLaskentaaValintatapajonoTable
           haku={haku}
@@ -221,7 +265,7 @@ export const ValintatapajonoIlmanLaskentaaContent = ({
           sort={sort}
           valintatapajonoOid={valintatapajonooid}
           jonosijat={results}
-          arvoType={arvoType}
+          jonoTulosActorRef={jonoTulosActorRef}
           pagination={{
             page,
             setPage,
