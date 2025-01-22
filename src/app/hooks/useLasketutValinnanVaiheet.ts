@@ -7,55 +7,155 @@ import {
   JonoSijaModel,
   LaskettuValinnanVaiheModel,
   LaskettuValintatapajonoModel,
+  TuloksenTila,
 } from '../lib/types/laskenta-types';
-import { indexBy, map, mapKeys, omit, pipe, prop, sortBy } from 'remeda';
+import {
+  concat,
+  flatMap,
+  groupBy,
+  indexBy,
+  map,
+  mapKeys,
+  pipe,
+  prop,
+  sortBy,
+} from 'remeda';
 import { HakemuksenTila } from '@/app/lib/types/ataru-types';
+import { getValinnanvaiheetIlmanLaskentaa } from '../lib/valintaperusteet';
+import { Valinnanvaihe } from '../lib/types/valintaperusteet-types';
 
-export type JonoSija = Omit<
-  JonoSijaModel,
-  'harkinnanvarainen' | 'prioriteetti'
-> & {
+export type JonoSija<
+  A extends Record<string, unknown> = Record<string, never>,
+> = Omit<Partial<JonoSijaModel>, 'harkinnanvarainen' | 'prioriteetti'> & {
+  hakemusOid: string;
+  hakijaOid: string;
   pisteet?: number;
   hakutoiveNumero?: number;
   tuloksenTila?: string;
   muutoksenSyy?: TranslatedName;
-};
+} & A;
 
 type AdditionalHakemusFields = {
   hakijanNimi: string;
   hakemuksenTila: HakemuksenTila;
 };
 
-export type JonoSijaWithHakijaInfo = JonoSija & AdditionalHakemusFields;
+export type JonoSijaWithHakijaInfo = JonoSija<AdditionalHakemusFields>;
 
-export type LaskettuJono = Omit<LaskettuValintatapajonoModel, 'jonosijat'> & {
-  jonosijat: Array<JonoSija>;
+export type LaskettuJono<
+  A extends Record<string, unknown> = Record<string, never>,
+> = Omit<LaskettuValintatapajonoModel, 'jonosijat'> & {
+  jonosijat: Array<JonoSija<A>>;
 };
 
-export type LaskettuJonoWithHakijaInfo = Omit<
-  LaskettuValintatapajonoModel,
-  'jonosijat'
+export type LaskettuJonoWithHakijaInfo = LaskettuJono<AdditionalHakemusFields>;
+
+export type LaskettuValinnanvaiheInfo = Omit<
+  LaskettuValinnanVaiheModel,
+  'valintatapajonot' | 'hakuOid' | 'createdAt'
 > & {
-  jonosijat: Array<JonoSijaWithHakijaInfo>;
+  createdAt?: number;
 };
 
-export type LasketutValinnanvaiheet = Array<
-  Omit<LaskettuValinnanVaiheModel, 'valintatapajonot'> & {
-    valintatapajonot?: Array<LaskettuJono>;
-  }
+export type LaskettuValinnanvaihe<
+  A extends Record<string, unknown> = Record<string, never>,
+> = LaskettuValinnanvaiheInfo & {
+  valintatapajonot?: Array<LaskettuJono<A>>;
+};
+
+export type LasketutValinnanvaiheet<
+  A extends Record<string, unknown> = Record<string, never>,
+> = Array<LaskettuValinnanvaihe<A>>;
+
+export type LasketutValinnanvaiheetWithHakijaInfo = Array<
+  LaskettuValinnanvaihe<AdditionalHakemusFields>
 >;
 
+const selectJonosijaFields = (jonosija?: JonoSijaModel) => {
+  const jarjestyskriteeri = jonosija?.jarjestyskriteerit?.[0];
+  return {
+    jonosija: jonosija?.jonosija,
+    harkinnanvarainen: jonosija?.harkinnanvarainen,
+    prioriteetti: jonosija?.prioriteetti,
+    jarjestyskriteerit: jonosija?.jarjestyskriteerit,
+    hakutoiveNumero: jonosija?.prioriteetti,
+    pisteet: jarjestyskriteeri?.arvo,
+    tuloksenTila: jonosija?.tuloksenTila ?? TuloksenTila.MAARITTELEMATON,
+    muutoksenSyy: mapKeys(jarjestyskriteeri?.kuvaus ?? {}, (key) =>
+      key.toLowerCase(),
+    ),
+  };
+};
+
 export const selectLasketutValinnanvaiheet = <
-  H extends Record<string, unknown> = Record<string, never>,
+  HakemusOut extends Record<string, unknown> = Record<string, unknown>,
+  HakemusIn extends { hakemusOid: string; hakijaOid: string } = {
+    hakemusOid: string;
+    hakijaOid: string;
+  },
 >({
   lasketutValinnanvaiheet,
+  valinnanvaiheetIlmanLaskentaa,
+  hakemukset,
   selectHakemusFields,
 }: {
-  lasketutValinnanvaiheet?: Array<LaskettuValinnanVaiheModel>;
-  selectHakemusFields?: (hakemusOid: string) => H;
+  lasketutValinnanvaiheet: Array<LaskettuValinnanVaiheModel>;
+  valinnanvaiheetIlmanLaskentaa: Array<Valinnanvaihe>;
+  hakemukset: Array<HakemusIn>;
+  selectHakemusFields?: (hakemusOid: string) => HakemusOut;
 }) => {
+  const ilmanLaskentaaOids = map(valinnanvaiheetIlmanLaskentaa, prop('oid'));
+
+  const lasketutJonotByOid = pipe(
+    lasketutValinnanvaiheet,
+    flatMap((vaihe) => vaihe.valintatapajonot ?? []),
+    groupBy(prop('oid')),
+  );
+
+  const vaiheetIlmanLaskentaa = map(valinnanvaiheetIlmanLaskentaa, (vaihe) => {
+    return {
+      jarjestysnumero: 0,
+      valinnanvaiheoid: vaihe.oid,
+      nimi: vaihe.nimi,
+      createdAt: undefined,
+      valintatapajonot: vaihe.jonot.map((jono) => {
+        const laskettuJono = lasketutJonotByOid?.[jono.oid]?.[0];
+        return {
+          oid: jono.oid,
+          nimi: jono.nimi,
+          valintatapajonooid: jono.oid,
+          prioriteetti: jono.prioriteetti,
+          valmisSijoiteltavaksi:
+            jono.automaattinenSijoitteluunSiirto ??
+            laskettuJono?.valmisSijoiteltavaksi,
+          siirretaanSijoitteluun: laskettuJono?.siirretaanSijoitteluun,
+          jonosijat: pipe(
+            // Jos valintalaskenta ei ole käytössä, täydennetään "tyhjät" jonosijat kaikille hakemuksille, jotta voidaan
+            // näyttää kaikki hakemukset ja mahdollistaa tulosten syöttäminen käsin
+            hakemukset,
+            map((hakemus) => {
+              const jonosija = laskettuJono?.jonosijat?.find(
+                (jonosijaCandidate) =>
+                  jonosijaCandidate.hakemusOid === hakemus.hakemusOid,
+              );
+              return {
+                ...selectJonosijaFields(jonosija),
+                hakemusOid: hakemus.hakemusOid,
+                hakijaOid: hakemus.hakijaOid,
+                ...(selectHakemusFields?.(hakemus.hakemusOid) ??
+                  ({} as HakemusOut)),
+              };
+            }),
+          ),
+        };
+      }),
+    };
+  });
+
   return pipe(
-    lasketutValinnanvaiheet ?? [],
+    lasketutValinnanvaiheet.filter(
+      (vaihe) => !ilmanLaskentaaOids.includes(vaihe.valinnanvaiheoid),
+    ) ?? [],
     map((valinnanVaihe) => {
       return {
         ...valinnanVaihe,
@@ -64,21 +164,14 @@ export const selectLasketutValinnanvaiheet = <
             return {
               ...valintatapajono,
               jonosijat: pipe(
-                valintatapajono?.jonosijat,
+                valintatapajono.jonosijat,
                 map((jonosija) => {
-                  const jarjestyskriteeri = jonosija.jarjestyskriteerit?.[0];
-
                   return {
-                    ...omit(jonosija, ['harkinnanvarainen', 'prioriteetti']),
-                    ...((selectHakemusFields?.(jonosija.hakemusOid) ??
-                      {}) as H),
-                    hakutoiveNumero: jonosija.prioriteetti,
-                    pisteet: jarjestyskriteeri?.arvo,
-                    tuloksenTila: jonosija.tuloksenTila,
-                    muutoksenSyy: mapKeys(
-                      jarjestyskriteeri?.kuvaus ?? {},
-                      (key) => key.toLowerCase(),
-                    ),
+                    ...selectJonosijaFields(jonosija),
+                    hakemusOid: jonosija.hakemusOid,
+                    hakijaOid: jonosija.hakijaOid,
+                    ...(selectHakemusFields?.(jonosija.hakemusOid) ??
+                      ({} as HakemusOut)),
                   };
                 }),
               ),
@@ -88,6 +181,7 @@ export const selectLasketutValinnanvaiheet = <
       };
     }),
     sortBy([prop('jarjestysnumero'), 'desc']),
+    (lasketutVaiheet) => concat(vaiheetIlmanLaskentaa, lasketutVaiheet),
   );
 };
 
@@ -97,25 +191,34 @@ export const useLasketutValinnanVaiheet = ({
 }: {
   hakuOid: string;
   hakukohdeOid: string;
-}) => {
-  const [{ data: hakemukset }, { data: lasketutValinnanvaiheet }] =
-    useSuspenseQueries({
-      queries: [
-        {
-          queryKey: ['getHakemukset', hakuOid, hakukohdeOid],
-          queryFn: () => getHakemukset({ hakuOid, hakukohdeOid }),
-        },
-        {
-          queryKey: ['getLasketutValinnanVaiheet', hakukohdeOid],
-          queryFn: () => getHakukohteenLasketutValinnanvaiheet(hakukohdeOid),
-        },
-      ],
-    });
+}): LasketutValinnanvaiheet<AdditionalHakemusFields> => {
+  const [
+    { data: hakemukset },
+    { data: lasketutValinnanvaiheet },
+    { data: valinnanvaiheetIlmanLaskentaa },
+  ] = useSuspenseQueries({
+    queries: [
+      {
+        queryKey: ['getHakemukset', hakuOid, hakukohdeOid],
+        queryFn: () => getHakemukset({ hakuOid, hakukohdeOid }),
+      },
+      {
+        queryKey: ['getLasketutValinnanVaiheet', hakukohdeOid],
+        queryFn: () => getHakukohteenLasketutValinnanvaiheet(hakukohdeOid),
+      },
+      {
+        queryKey: ['getValinnanvaiheetIlmanLaskentaa', hakukohdeOid],
+        queryFn: () => getValinnanvaiheetIlmanLaskentaa(hakukohdeOid),
+      },
+    ],
+  });
 
   const hakemuksetByOid = indexBy(hakemukset ?? [], prop('hakemusOid'));
 
   return selectLasketutValinnanvaiheet<AdditionalHakemusFields>({
     lasketutValinnanvaiheet,
+    valinnanvaiheetIlmanLaskentaa,
+    hakemukset,
     selectHakemusFields(hakemusOid) {
       const hakemus = hakemuksetByOid[hakemusOid];
       return {

@@ -1,16 +1,34 @@
 'use client';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { LaskettuValinnanVaiheModel } from '@/app/lib/types/laskenta-types';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
-import { LaskettuJonoWithHakijaInfo } from '@/app/hooks/useLasketutValinnanVaiheet';
+import {
+  LaskettuJonoWithHakijaInfo,
+  LaskettuValinnanvaihe,
+} from '@/app/hooks/useLasketutValinnanVaiheet';
 import { getValintatapaJonoNimi } from '@/app/lib/valintalaskenta-utils';
 import { AccordionBoxTitle } from '@/app/components/accordion-box-title';
+import { TFunction } from 'i18next';
+
+const makeSubtitle = ({
+  createdAt,
+  prioriteetti,
+  t,
+}: {
+  createdAt?: number;
+  prioriteetti: number;
+  t: TFunction;
+}) => {
+  const createdPart = createdAt
+    ? `${toFormattedDateTimeString(createdAt)} | `
+    : '';
+  return `(` + createdPart + `${t('yleinen.prioriteetti')}: ${prioriteetti})`;
+};
 
 export const ValintatapajonoAccordionTitle = ({
   valinnanVaihe,
   jono,
 }: {
-  valinnanVaihe: LaskettuValinnanVaiheModel;
+  valinnanVaihe: LaskettuValinnanvaihe;
   jono: LaskettuJonoWithHakijaInfo;
 }) => {
   const { t } = useTranslations();
@@ -21,10 +39,11 @@ export const ValintatapajonoAccordionTitle = ({
         valinnanVaiheNimi: valinnanVaihe.nimi,
         jonoNimi: jono.nimi,
       })}
-      subTitle={
-        `(${toFormattedDateTimeString(valinnanVaihe.createdAt)}` +
-        ` | ${t('yleinen.prioriteetti')}: ${jono.prioriteetti})`
-      }
+      subTitle={makeSubtitle({
+        createdAt: valinnanVaihe.createdAt,
+        prioriteetti: jono.prioriteetti,
+        t,
+      })}
     />
   );
 };

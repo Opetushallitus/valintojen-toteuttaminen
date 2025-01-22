@@ -2,12 +2,19 @@
 
 import { TabContainer } from '../components/tab-container';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
-import { Box } from '@mui/material';
+import { Box, Stack } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { useLasketutValinnanVaiheet } from '@/app/hooks/useLasketutValinnanVaiheet';
+import {
+  LasketutValinnanvaiheetWithHakijaInfo,
+  useLasketutValinnanVaiheet,
+} from '@/app/hooks/useLasketutValinnanVaiheet';
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
-import { use } from 'react';
-import { ValintatapajonoContent } from './components/valintatapajono-content';
+import React, { use } from 'react';
+import {
+  LaskettuValintatapajonoContent,
+  LaskettuValintatapajonoContentProps,
+  ValintatapajonoIlmanLaskentaaContent,
+} from './components/valintatapajono-content';
 import { useJonosijatSearchParams } from '@/app/hooks/useJonosijatSearch';
 import { FullClientSpinner } from '@/app/components/client-spinner';
 import { isEmpty } from '@/app/lib/common';
@@ -15,6 +22,8 @@ import { getValintalaskennanTulosExcel } from '@/app/lib/valintalaskentakoostepa
 import { NoResults } from '@/app/components/no-results';
 import { SearchInput } from '@/app/components/search-input';
 import { FileDownloadButton } from '@/app/components/file-download-button';
+import { OphTypography } from '@opetushallitus/oph-design-system';
+import { groupBy } from 'remeda';
 
 type LasketutValinnanvaiheetParams = {
   hakuOid: string;
@@ -40,11 +49,78 @@ const LaskennanTuloksetExcelDownloadButton = ({
   );
 };
 
-const LasketutValinnanVaiheetContent = ({
+const ValinnanvaiheGroupResults = ({
+  title,
+  hakukohdeOid,
+  vaiheet,
+  JonoContentComponent,
+}: {
+  title: string;
+  hakukohdeOid: string;
+  vaiheet?: LasketutValinnanvaiheetWithHakijaInfo;
+  JonoContentComponent: React.ComponentType<LaskettuValintatapajonoContentProps>;
+}) => {
+  return (
+    vaiheet && (
+      <Stack gap={2}>
+        <OphTypography variant="h2">{title}</OphTypography>
+        {vaiheet?.map((vaihe) =>
+          vaihe.valintatapajonot?.map((jono) => {
+            return (
+              <JonoContentComponent
+                key={jono.oid}
+                hakukohdeOid={hakukohdeOid}
+                jono={jono}
+                valinnanVaihe={vaihe}
+              />
+            );
+          }),
+        )}
+      </Stack>
+    )
+  );
+};
+
+const ValinnanvaiheetContent = ({
+  hakukohdeOid,
+  valinnanvaiheet,
+}: {
+  hakukohdeOid: string;
+  valinnanvaiheet: LasketutValinnanvaiheetWithHakijaInfo;
+}) => {
+  const { t } = useTranslations();
+
+  const { valinnanvaiheetIlmanLaskentaa, lasketutValinnanvaiheet } = groupBy(
+    valinnanvaiheet,
+    (vaihe) =>
+      vaihe.createdAt
+        ? 'lasketutValinnanvaiheet'
+        : 'valinnanvaiheetIlmanLaskentaa',
+  );
+
+  return (
+    <Stack gap={2} sx={{ width: '100%' }}>
+      <ValinnanvaiheGroupResults
+        title={t('valintalaskennan-tulokset.valinnanvaiheet-ilman-laskentaa')}
+        hakukohdeOid={hakukohdeOid}
+        vaiheet={valinnanvaiheetIlmanLaskentaa}
+        JonoContentComponent={ValintatapajonoIlmanLaskentaaContent}
+      />
+      <ValinnanvaiheGroupResults
+        title={t('valintalaskennan-tulokset.lasketut-valinnanvaiheet')}
+        hakukohdeOid={hakukohdeOid}
+        vaiheet={lasketutValinnanvaiheet}
+        JonoContentComponent={LaskettuValintatapajonoContent}
+      />
+    </Stack>
+  );
+};
+
+const ValintalaskennanTuloksetContent = ({
   hakuOid,
   hakukohdeOid,
 }: LasketutValinnanvaiheetParams) => {
-  const valinnanVaiheet = useLasketutValinnanVaiheet({
+  const valinnanvaiheet = useLasketutValinnanVaiheet({
     hakuOid,
     hakukohdeOid,
   });
@@ -53,7 +129,7 @@ const LasketutValinnanVaiheetContent = ({
     useJonosijatSearchParams();
   const { t } = useTranslations();
 
-  return isEmpty(valinnanVaiheet) ? (
+  return isEmpty(valinnanvaiheet) ? (
     <NoResults text={t('valintalaskennan-tulokset.ei-tuloksia')} />
   ) : (
     <Box
@@ -89,18 +165,10 @@ const LasketutValinnanVaiheetContent = ({
         </Box>
         <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
       </Box>
-      {valinnanVaiheet.map((valinnanVaihe) =>
-        valinnanVaihe.valintatapajonot?.map((jono) => {
-          return (
-            <ValintatapajonoContent
-              key={jono.oid}
-              hakukohdeOid={hakukohdeOid}
-              jono={jono}
-              valinnanVaihe={valinnanVaihe}
-            />
-          );
-        }),
-      )}
+      <ValinnanvaiheetContent
+        hakukohdeOid={hakukohdeOid}
+        valinnanvaiheet={valinnanvaiheet}
+      />
     </Box>
   );
 };
@@ -112,7 +180,7 @@ export default function ValintalaskennanTuloksetPage(props: {
   return (
     <TabContainer>
       <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
-        <LasketutValinnanVaiheetContent
+        <ValintalaskennanTuloksetContent
           hakuOid={params.oid}
           hakukohdeOid={params.hakukohde}
         />

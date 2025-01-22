@@ -134,25 +134,25 @@ type JarjestyskriteeriParams = {
   selite: string;
 };
 
-const useMuokkausParams = (jarjestyskriteeri: Jarjestyskriteeri) => {
+const useMuokkausParams = (jarjestyskriteeri?: Jarjestyskriteeri) => {
   const [muokkausParams, setMuokkausParams] = useState<JarjestyskriteeriParams>(
     () => ({
-      tila: jarjestyskriteeri.tila,
-      arvo: jarjestyskriteeri.arvo?.toString() ?? '',
-      selite: jarjestyskriteeri.kuvaus?.FI ?? '',
+      tila: jarjestyskriteeri?.tila ?? TuloksenTila.MAARITTELEMATON,
+      arvo: jarjestyskriteeri?.arvo?.toString() ?? '',
+      selite: jarjestyskriteeri?.kuvaus?.FI ?? '',
     }),
   );
 
   const jarjestyskriteeriChanged = useHasChanged(
-    jarjestyskriteeri.prioriteetti,
+    jarjestyskriteeri?.prioriteetti,
   );
 
   useEffect(() => {
     if (jarjestyskriteeriChanged) {
       setMuokkausParams({
-        tila: jarjestyskriteeri.tila,
-        arvo: jarjestyskriteeri.arvo?.toString() ?? '',
-        selite: jarjestyskriteeri.kuvaus?.FI ?? '',
+        tila: jarjestyskriteeri?.tila ?? TuloksenTila.MAARITTELEMATON,
+        arvo: jarjestyskriteeri?.arvo?.toString() ?? '',
+        selite: jarjestyskriteeri?.kuvaus?.FI ?? '',
       });
     }
   }, [jarjestyskriteeri, jarjestyskriteeriChanged]);
@@ -246,19 +246,19 @@ export const ValintalaskentaEditModal = createModal<{
     useState<number>(0);
 
   const jarjestyskriteeri =
-    jonosija.jarjestyskriteerit[jarjestyskriteeriPrioriteetti];
+    jonosija.jarjestyskriteerit?.[jarjestyskriteeriPrioriteetti];
 
-  const [muokkausParams, setMuokkausParams] =
-    useMuokkausParams(jarjestyskriteeri);
-
-  const jarjestyskriteeriOptions = jonosija.jarjestyskriteerit.map(
-    ({ nimi, prioriteetti }) => ({
-      value: prioriteetti.toString(),
-      label: nimi,
-    }),
+  const [muokkausParams, setMuokkausParams] = useMuokkausParams(
+    jarjestyskriteeri!,
   );
 
-  const { mutate: mutateJarjestyskriteeri, isPending: isPending } =
+  const jarjestyskriteeriOptions =
+    jonosija.jarjestyskriteerit?.map(({ nimi, prioriteetti }) => ({
+      value: prioriteetti.toString(),
+      label: nimi,
+    })) ?? [];
+
+  const { mutate: mutateJarjestyskriteeri, isPending } =
     useJarjestyskriteeriMutation({
       hakemusOid: jonosija.hakemusOid,
       valintatapajonoOid: valintatapajono.oid,
