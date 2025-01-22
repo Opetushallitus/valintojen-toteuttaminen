@@ -499,6 +499,15 @@
     "tehtava-on-laskennassa-parhaillaan": "Tehtävä on laskennassa parhaillaan",
     "laskenta-on-paattynyt": "Laskenta on päättynyt"
   },
+  "kirje-modaali": {
+    "otsikko-hyvaksymiskirjeet": "Hyväksymiskirjeiden muodostaminen",
+    "valmispohja": "Valmispohja",
+    "sisalto": "Kirjeen sisältö",
+    "muodosta": "Muodosta kirjeet",
+    "kohdejoukko": "Kohdejoukko",
+    "kohdejoukko-hyvaksytyt": "Kaikki hyväksytyt",
+    "kohdejoukko-luvattomat": "Vain ne hyväksytyt, jotka eivät ole antaneet lupaa päätöksen toimittamiseen sähköisesti"
+  },
   "kirjepohja": {
     "default": "OPH:n oletuspohja",
     "organizationLatest": "Organisaation viimeisin",

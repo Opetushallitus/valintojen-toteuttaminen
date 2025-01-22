@@ -61,7 +61,12 @@ export const OtherActionsHakukohdeButton = ({
   const closeMenu = () => setAnchorEl(null);
 
   const openLetterTemplateModal = async () => {
-    showModal(LetterTemplateModal, { title: 'Title', hakukohde: hakukohde, template: 'hyvaksymiskirje', sijoitteluajoId });
+    showModal(LetterTemplateModal, {
+      title: 'kirje-modaali.otsikko-hyvaksymiskirjeet',
+      hakukohde: hakukohde,
+      template: 'hyvaksymiskirje',
+      sijoitteluajoId,
+    });
     closeMenu();
   };
 

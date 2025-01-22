@@ -585,12 +585,14 @@ export const luoHyvaksymiskirjeetPDF = async ({
   hakukohde,
   letterBody,
   deadline,
+  onlyForbidden,
 }: {
   hakemusOids?: string[];
   sijoitteluajoId: string;
   hakukohde: Hakukohde;
   letterBody: string;
   deadline?: Date | null;
+  onlyForbidden: boolean;
 }): Promise<FileResult> => {
   console.log(letterBody);
   const hakukohdeNimi = translateName(hakukohde.nimi);
@@ -601,7 +603,7 @@ export const luoHyvaksymiskirjeetPDF = async ({
   const time = deadline
     ? toFormattedDateTimeString(deadline, INPUT_TIME_FORMAT)
     : null;
-  const queryParams = `hakuOid=${hakukohde.hakuOid}&hakukohdeOid=${hakukohde.oid}&sijoitteluajoId=${sijoitteluajoId}&tarjoajaOid=${hakukohde.tarjoajaOid}&hakukohdeNimi=${hakukohdeNimi}&lang=${opetuskieliCode}&templateName=hyvaksymiskirje&palautusPvm=${pvm}&palautusAika=${time}`;
+  const queryParams = `hakuOid=${hakukohde.hakuOid}&hakukohdeOid=${hakukohde.oid}&sijoitteluajoId=${sijoitteluajoId}&tarjoajaOid=${hakukohde.tarjoajaOid}&hakukohdeNimi=${hakukohdeNimi}&lang=${opetuskieliCode}&templateName=hyvaksymiskirje&palautusPvm=${pvm}&palautusAika=${time}&vainTulosEmailinKieltaneet=${onlyForbidden}`;
   const body = {
     hakemusOids: hakemusOids,
     letterBodyText: letterBody.replaceAll('&nbsp;', ' '),

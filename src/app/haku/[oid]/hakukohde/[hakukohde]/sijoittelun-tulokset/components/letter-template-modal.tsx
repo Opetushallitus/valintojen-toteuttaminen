@@ -20,6 +20,7 @@ import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { LocalizedSelect } from '@/app/components/localized-select';
 import { SelectChangeEvent } from '@mui/material/Select';
 import { useFileDownloadMutation } from '@/app/hooks/useFileDownloadMutation';
+import { FormControlLabel, Radio, RadioGroup } from '@mui/material';
 
 export type LetterTemplateModalProps = {
   title: string;
@@ -35,6 +36,8 @@ const TemplateModalContent = ({
   setLetterBody,
   deadlineDate,
   setDeadlineDate,
+  onlyForbidden,
+  setOnlyForbidden,
 }: {
   pohjat: Kirjepohja[];
   templateBody: string;
@@ -42,6 +45,8 @@ const TemplateModalContent = ({
   setLetterBody: (val: string) => void;
   deadlineDate: Date | null;
   setDeadlineDate: (date: Date | null) => void;
+  onlyForbidden: boolean;
+  setOnlyForbidden: (val: boolean) => void;
 }) => {
   const { t } = useTranslations();
   const [usedPohja, setUsedPohja] = useState<Kirjepohja>(pohjat[0]);
@@ -55,12 +60,35 @@ const TemplateModalContent = ({
   return (
     <>
       <OphFormControl
+        label={t('kirje-modaali.kohdejoukko')}
+        renderInput={({ labelId }) => (
+          <RadioGroup
+            aria-labelledby={labelId}
+            value={onlyForbidden}
+            onChange={(event) =>
+              setOnlyForbidden(event.target.value === 'true')
+            }
+          >
+            <FormControlLabel
+              value={false}
+              control={<Radio />}
+              label={t('kirje-modaali.kohdejoukko-hyvaksytyt')}
+            />
+            <FormControlLabel
+              value={true}
+              control={<Radio />}
+              label={t('kirje-modaali.kohdejoukko-luvattomat')}
+            />
+          </RadioGroup>
+        )}
+      />
+      <OphFormControl
         sx={{
           width: 'auto',
           minWidth: '140px',
           textAlign: 'left',
         }}
-        label={t('sijoittelun-tulokset.taulukko.tila')}
+        label={t('kirje-modaali.valmispohja')}
         renderInput={({ labelId }) => (
           <LocalizedSelect
             id="kirjepohja-select"
@@ -92,6 +120,7 @@ type DownloadButtonProps = {
   sijoitteluajoId: string;
   letterBody: string;
   deadline: Date | null;
+  onlyForbidden: boolean;
 };
 
 const LettersDownloadButton = ({
@@ -99,7 +128,9 @@ const LettersDownloadButton = ({
   sijoitteluajoId,
   letterBody,
   deadline,
+  onlyForbidden,
 }: DownloadButtonProps) => {
+  const { t } = useTranslations();
   const getFile = useCallback(
     () =>
       luoHyvaksymiskirjeetPDF({
@@ -107,8 +138,9 @@ const LettersDownloadButton = ({
         sijoitteluajoId,
         letterBody,
         deadline,
+        onlyForbidden,
       }),
-    [hakukohde, deadline, sijoitteluajoId, letterBody],
+    [hakukohde, deadline, sijoitteluajoId, letterBody, onlyForbidden],
   );
 
   const mutation = useFileDownloadMutation({
@@ -125,7 +157,7 @@ const LettersDownloadButton = ({
       loading={mutation.isPending}
       onClick={() => mutation.mutate()}
     >
-      Muodosta kirjeet
+      {t('kirje-modaali.muodosta')}
     </OphButton>
   );
 };
@@ -146,6 +178,7 @@ export const LetterTemplateModal = createModal(
       queryFn: () => getKirjepohjatHakukohteelle(template, hakukohde),
     });
 
+    const [onlyForbidden, setOnlyForbidden] = useState<boolean>(false);
     const [deadlineDate, setDeadlineDate] = useState<Date | null>(null);
     const [templateBody, setTemplateBody] = useState<string>(
       pohjat[0]?.sisalto || '',
@@ -167,6 +200,7 @@ export const LetterTemplateModal = createModal(
               hakukohde={hakukohde}
               letterBody={letterBody}
               sijoitteluajoId={sijoitteluajoId}
+              onlyForbidden={onlyForbidden}
             />
           </>
         }
@@ -180,6 +214,8 @@ export const LetterTemplateModal = createModal(
             setTemplateBody={setTemplateBody}
             deadlineDate={deadlineDate}
             setDeadlineDate={setDeadlineDate}
+            onlyForbidden={onlyForbidden}
+            setOnlyForbidden={setOnlyForbidden}
           />
         )}
       </OphModalDialog>
