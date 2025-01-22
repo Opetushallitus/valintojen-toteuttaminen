@@ -22,8 +22,8 @@ import {
   sortBy,
 } from 'remeda';
 import { HakemuksenTila } from '@/app/lib/types/ataru-types';
-import { getValinnanvaiheetIlmanLaskentaa } from '../lib/valintaperusteet';
-import { Valinnanvaihe } from '../lib/types/valintaperusteet-types';
+import { valinnanvaiheetIlmanLaskentaaQueryOptions } from '@/app/lib/valintaperusteet';
+import { Valinnanvaihe } from '@/app/lib/types/valintaperusteet-types';
 
 export const hakukohteenLasketutValinnanvaiheetQueryOptions = (
   hakukohdeOid: string,
@@ -227,10 +227,7 @@ export const useLasketutValinnanVaiheet = ({
         queryFn: () => getHakemukset({ hakuOid, hakukohdeOid }),
       },
       hakukohteenLasketutValinnanvaiheetQueryOptions(hakukohdeOid),
-      {
-        queryKey: ['getValinnanvaiheetIlmanLaskentaa', hakukohdeOid],
-        queryFn: () => getValinnanvaiheetIlmanLaskentaa(hakukohdeOid),
-      },
+      valinnanvaiheetIlmanLaskentaaQueryOptions(hakukohdeOid),
     ],
   });
 

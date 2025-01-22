@@ -1,5 +1,6 @@
 'use client';
 
+import { queryOptions } from '@tanstack/react-query';
 import { configuration } from './configuration';
 import { client } from './http-client';
 import {
@@ -96,6 +97,15 @@ export const getValinnanvaiheet = async (
     `${configuration.valintaperusteetUrl}hakukohde/${hakukohdeOid}/valinnanvaihe?withValisijoitteluTieto=true`,
   );
   return response.data.map(selectValinnanvaihe);
+};
+
+export const valinnanvaiheetIlmanLaskentaaQueryOptions = (
+  hakukohdeOid: string,
+) => {
+  return queryOptions({
+    queryKey: ['getValinnanvaiheetIlmanLaskentaa', hakukohdeOid],
+    queryFn: () => getValinnanvaiheetIlmanLaskentaa(hakukohdeOid),
+  });
 };
 
 export const getValinnanvaiheetIlmanLaskentaa = async (
