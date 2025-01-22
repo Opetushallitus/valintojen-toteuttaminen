@@ -37,7 +37,7 @@ export const useJonosijatSearchParams = (id?: string) => {
       .withDefault(DEFAULT_PAGE_SIZE),
   );
 
-  const [sort, setSort] = useQueryState('sort', DEFAULT_NUQS_OPTIONS);
+  const [sort, setSort] = useQueryState(`sort-${id}`, DEFAULT_NUQS_OPTIONS);
 
   const searchPhraseChanged = useHasChanged(searchPhrase);
 

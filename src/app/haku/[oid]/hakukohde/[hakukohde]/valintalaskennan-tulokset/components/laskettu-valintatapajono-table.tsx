@@ -42,7 +42,7 @@ export const LaskettuValintatapajonoTable = ({
   const columns: Array<ListTableColumn<JonoSijaWithHakijaInfo>> = useMemo(
     () => [
       jonosijaColumn,
-      createHakijaColumn('valintalaskennan-tulokset'),
+      createHakijaColumn(),
       {
         title: `${TRANSLATIONS_PREFIX}.pisteet`,
         key: 'pisteet',
