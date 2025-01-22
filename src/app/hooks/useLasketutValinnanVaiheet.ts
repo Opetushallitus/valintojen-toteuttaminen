@@ -97,7 +97,7 @@ const selectJonosijaFields = (jonosijaData?: JonoSijaModel) => {
   }
 
   return {
-    jonosija,
+    jonosija: jonosija?.toString(),
     harkinnanvarainen: jonosijaData?.harkinnanvarainen,
     prioriteetti: jonosijaData?.prioriteetti,
     jarjestyskriteerit: jonosijaData?.jarjestyskriteerit,
