@@ -115,6 +115,7 @@ const useJonoExcelUploadMutation = ({
       });
     },
     onSuccess: () => {
+      hideModal(SpinnerModal);
       // Ladataan muuttuneet pistetulokset
       refetchLaskennanTulokset({ queryClient, hakukohdeOid });
       addToast({
