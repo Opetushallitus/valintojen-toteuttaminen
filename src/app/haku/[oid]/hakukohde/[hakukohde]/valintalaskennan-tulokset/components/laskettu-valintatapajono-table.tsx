@@ -1,5 +1,8 @@
 'use client';
-import { ListTable } from '@/app/components/table/list-table';
+import {
+  ListTable,
+  ListTablePaginationProps,
+} from '@/app/components/table/list-table';
 import {
   createHakijaColumn,
   makeCountColumn,
@@ -31,11 +34,13 @@ export const LaskettuValintatapajonoTable = ({
   jonoId,
   setSort,
   sort,
+  pagination,
 }: {
   jonosijat: Array<JonoSijaWithHakijaInfo>;
   jonoId: string;
   sort: string;
   setSort: (sort: string) => void;
+  pagination: ListTablePaginationProps;
 }) => {
   const { t, translateEntity } = useTranslations();
 
@@ -85,6 +90,7 @@ export const LaskettuValintatapajonoTable = ({
       rows={jonosijat}
       sort={sort}
       setSort={setSort}
+      pagination={pagination}
     />
   );
 };

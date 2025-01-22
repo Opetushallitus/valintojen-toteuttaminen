@@ -90,7 +90,7 @@ export const makeCountColumn = <T extends Record<string, unknown>>({
 }): ListTableColumn<T> => ({
   title,
   key,
-  render: (props) => <span>{(props[amountProp] ?? 0) as number}</span>,
+  render: (props) => <span>{(props[amountProp] as number) ?? ''}</span>,
   style: { width: 0 },
 });
 
