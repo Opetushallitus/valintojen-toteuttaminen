@@ -20,7 +20,6 @@ import { useCallback } from 'react';
 import { ArvoTypeChangeConfirmationModal } from './arvo-type-change-confirmation-modal';
 import { hideModal, showModal } from '@/app/components/global-modal';
 import { OphButton } from '@opetushallitus/oph-design-system';
-import { SpinnerIcon } from '@/app/components/spinner-icon';
 import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
 import {
   JarjestysPeruste,
@@ -199,9 +198,8 @@ const LaskennatonVaiheActions = ({
       <OphButton
         variant="contained"
         type="submit"
-        disabled={isUpdating}
         onClick={() => saveJonoTulos()}
-        startIcon={isUpdating ? <SpinnerIcon /> : null}
+        loading={isUpdating}
       >
         {t('yleinen.tallenna')}
       </OphButton>

@@ -5,22 +5,9 @@ import { OphButton } from '@opetushallitus/oph-design-system';
 import { useSijoitteluStatusMutation } from '../hooks/useSijoitteluStatusMutation';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { LaskettuJonoWithHakijaInfo } from '@/app/hooks/useLasketutValinnanVaiheet';
-import { SpinnerIcon } from '@/app/components/spinner-icon';
 
-const SijoitteluButton = ({
-  isLoading,
-  disabled,
-  startIcon,
-  ...props
-}: ButtonProps & { isLoading: boolean }) => {
-  return (
-    <OphButton
-      {...props}
-      disabled={isLoading || disabled}
-      variant="outlined"
-      startIcon={isLoading ? <SpinnerIcon /> : startIcon}
-    />
-  );
+const SijoitteluButton = ({ ...props }: ButtonProps) => {
+  return <OphButton {...props} variant="outlined" />;
 };
 
 export const SijoitteluStatusChangeButton = ({
@@ -45,7 +32,7 @@ export const SijoitteluStatusChangeButton = ({
     case !jono.valmisSijoiteltavaksi && jono.siirretaanSijoitteluun:
       return (
         <SijoitteluButton
-          isLoading={statusMutation.isPending}
+          loading={statusMutation.isPending}
           disabled={!hasOphUpdate && !hasOrgCrud}
           onClick={() => statusMutation.mutate({ jono, status: true })}
         >
@@ -55,7 +42,7 @@ export const SijoitteluStatusChangeButton = ({
     case jono.valmisSijoiteltavaksi && jono.siirretaanSijoitteluun:
       return (
         <SijoitteluButton
-          isLoading={statusMutation.isPending}
+          loading={statusMutation.isPending}
           disabled={!hasOphUpdate}
           onClick={() => statusMutation.mutate({ jono, status: false })}
         >

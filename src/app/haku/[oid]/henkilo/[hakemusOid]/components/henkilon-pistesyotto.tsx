@@ -10,7 +10,6 @@ import { usePistesyottoState } from '@/app/lib/state/pistesyotto-state';
 import { HakijaInfo } from '@/app/lib/types/ataru-types';
 import useToaster from '@/app/hooks/useToaster';
 import { useMemo } from 'react';
-import { SpinnerIcon } from '@/app/components/spinner-icon';
 import { useConfirmChangesBeforeNavigation } from '@/app/hooks/useConfirmChangesBeforeNavigation';
 import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
 import { HakutoiveTitle } from './hakutoive-title';
@@ -85,8 +84,7 @@ const KokeenPistesyotto = ({
         />
         <OphButton
           variant="contained"
-          startIcon={isUpdating && <SpinnerIcon />}
-          disabled={isUpdating}
+          loading={isUpdating}
           onClick={() => {
             savePistetiedot();
           }}
