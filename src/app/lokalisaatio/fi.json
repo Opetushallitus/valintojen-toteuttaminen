@@ -247,11 +247,16 @@
       "hakutoive": "Hakutoive",
       "pisteet": "Pisteet",
       "valintatieto": "Valintatieto",
-      "muutoksen-syy": "Muutoksen syy"
+      "muutoksen-syy": "Muutoksen syy",
+      "kuvaus-fi": "Kuvaus (FI)",
+      "kuvaus-sv": "Kuvaus (SV)",
+      "kuvaus-en": "Kuvaus (EN)"
     },
     "virhe-vie-kaikki-taulukkolaskentaan": "Taulukkolaskentaan viemisessä tapahtui virhe!",
     "valinnanvaiheet-ilman-laskentaa": "Valinnanvaiheet, joissa ei käytetä laskentaa",
-    "lasketut-valinnanvaiheet": "Lasketut valinnanvaiheet"
+    "lasketut-valinnanvaiheet": "Lasketut valinnanvaiheet",
+    "jonosija": "Jonosija",
+    "kokonaispisteet": "Kokonaispisteet"
   },
   "sijoittelun-tulokset": {
     "otsikko": "Sijoittelun tulokset",

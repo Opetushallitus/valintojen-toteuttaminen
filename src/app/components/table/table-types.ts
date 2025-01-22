@@ -4,7 +4,8 @@ export type KeysMatching<O, T> = {
 
 export type ListTableColumn<P> = {
   title?: string;
-  key: keyof P;
+  // TODO: Key ja sortable pois. Tilalle sortBy-funktio.
+  key: string;
   render: (props: P) => React.ReactNode;
   style?: React.CSSProperties;
   sortable?: boolean;

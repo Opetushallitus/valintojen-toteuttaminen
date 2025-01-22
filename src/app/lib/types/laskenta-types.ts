@@ -54,6 +54,7 @@ export type LaskettuValintatapajonoModel = {
   jonosijat: Array<JonoSijaModel>;
   valmisSijoiteltavaksi: boolean;
   siirretaanSijoitteluun: boolean;
+  kaytetaanKokonaispisteita: boolean;
 };
 
 export type LaskettuValinnanVaiheModel = {

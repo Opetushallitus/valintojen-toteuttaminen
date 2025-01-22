@@ -7,7 +7,7 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { LaskettuJonoWithHakijaInfo } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { SpinnerIcon } from '@/app/components/spinner-icon';
 
-export const SijoitteluButton = ({
+const SijoitteluButton = ({
   isLoading,
   disabled,
   startIcon,
@@ -18,7 +18,6 @@ export const SijoitteluButton = ({
       {...props}
       disabled={isLoading || disabled}
       variant="outlined"
-      sx={{ marginBottom: 1 }}
       startIcon={isLoading ? <SpinnerIcon /> : startIcon}
     />
   );
