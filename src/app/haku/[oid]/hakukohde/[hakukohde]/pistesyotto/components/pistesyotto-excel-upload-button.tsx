@@ -94,7 +94,7 @@ const useExcelUploadMutation = ({
       hideModal(SpinnerModal);
       addToast({
         key: 'put-pistesyotto-excel-success',
-        message: 'pistesyotto.tuo-valintalaskennasta-onnistui',
+        message: 'pistesyotto.tuo-taulukkolaskennasta-onnistui',
         type: 'success',
       });
     },

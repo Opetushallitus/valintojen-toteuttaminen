@@ -110,17 +110,16 @@ const useJonoExcelUploadMutation = ({
       }
       addToast({
         key: 'upload-valintatapajono-excel-error',
-        message: 'valintalaskennan-tulokset.virhe-vie-taulukkolaskentaan',
+        message: 'valintalaskennan-tulokset.virhe-tuo-taulukkolaskennasta',
         type: 'error',
       });
     },
     onSuccess: () => {
       // Ladataan muuttuneet pistetulokset
       refetchLaskennanTulokset({ queryClient, hakukohdeOid });
-      hideModal(SpinnerModal);
       addToast({
-        key: 'put-pistesyotto-excel-success',
-        message: 'pistesyotto.tuo-valintalaskennasta-onnistui',
+        key: 'upload-valintatapajono-excel-success',
+        message: 'valintalaskennan-tulokset.tuo-taulukkolaskennasta-onnistui',
         type: 'success',
       });
     },
