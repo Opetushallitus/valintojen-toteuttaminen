@@ -20,7 +20,13 @@ import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { LocalizedSelect } from '@/app/components/localized-select';
 import { SelectChangeEvent } from '@mui/material/Select';
 import { useFileDownloadMutation } from '@/app/hooks/useFileDownloadMutation';
-import { FormControlLabel, Radio, RadioGroup } from '@mui/material';
+import {
+  Box,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
+  styled,
+} from '@mui/material';
 
 export type LetterTemplateModalProps = {
   title: string;
@@ -28,6 +34,19 @@ export type LetterTemplateModalProps = {
   hakukohde: Hakukohde;
   sijoitteluajoId: string;
 };
+
+const CustomRadio = styled(Radio)(() => ({
+  padding: 0,
+  '&:first-child': {
+    padding: '5px 0',
+  },
+}));
+
+const CustomContainer = styled(Box)(() => ({
+  display: 'flex',
+  flexDirection: 'column',
+  rowGap: '1rem',
+}));
 
 const TemplateModalContent = ({
   pohjat,
@@ -58,7 +77,7 @@ const TemplateModalContent = ({
   };
 
   return (
-    <>
+    <CustomContainer>
       <OphFormControl
         label={t('kirje-modaali.kohdejoukko')}
         renderInput={({ labelId }) => (
@@ -71,12 +90,12 @@ const TemplateModalContent = ({
           >
             <FormControlLabel
               value={false}
-              control={<Radio />}
+              control={<CustomRadio />}
               label={t('kirje-modaali.kohdejoukko-hyvaksytyt')}
             />
             <FormControlLabel
               value={true}
-              control={<Radio />}
+              control={<CustomRadio />}
               label={t('kirje-modaali.kohdejoukko-luvattomat')}
             />
           </RadioGroup>
@@ -111,7 +130,7 @@ const TemplateModalContent = ({
         selectedValue={deadlineDate}
         setDate={setDeadlineDate}
       />
-    </>
+    </CustomContainer>
   );
 };
 
