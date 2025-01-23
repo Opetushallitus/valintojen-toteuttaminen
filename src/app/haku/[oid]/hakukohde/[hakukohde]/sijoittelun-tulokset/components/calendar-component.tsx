@@ -3,7 +3,7 @@ import { Box, InputAdornment, styled } from '@mui/material';
 import { ophColors, OphInput } from '@opetushallitus/oph-design-system';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { forwardRef, ReactNode, Ref } from 'react';
+import { forwardRef, ReactNode, useRef } from 'react';
 import { OphFormControl } from '@/app/components/form/oph-form-control';
 import {
   CalendarTodayOutlined,
@@ -37,12 +37,11 @@ const CalendarStyles = styled(Box)(({ theme }) => ({
           outline: `2px solid ${ophColors.black}`,
         },
       },
-      '&__day--selected, &__day--keyboard-selected':
-        {
-          backgroundColor: ophColors.blue2,
-          borderRadius: 45,
-          color: ophColors.white,
-        },
+      '&__day--selected, &__day--keyboard-selected': {
+        backgroundColor: ophColors.blue2,
+        borderRadius: 45,
+        color: ophColors.white,
+      },
       '&__day:hover:not(&__day--disabled)': {
         backgroundColor: ophColors.lightBlue2,
         borderRadius: 45,
@@ -62,7 +61,7 @@ const CalendarStyles = styled(Box)(({ theme }) => ({
         marginBottom: '0.2rem',
         '&:focus': {
           outline: `2px solid ${ophColors.black}`,
-        },  
+        },
       },
     '.react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item--selected':
       {
@@ -81,7 +80,7 @@ const CalendarStyles = styled(Box)(({ theme }) => ({
       marginRight: '0.7rem',
       '&:focus': {
         outline: `2px solid ${ophColors.black}`,
-      }, 
+      },
       '&-icon': {
         border: '1px solid',
         borderColor: ophColors.grey300,
@@ -109,7 +108,7 @@ interface CalendarInputProps {
 }
 
 export type CalendarProps = {
-  selectedValue: Date | null | undefined;
+  selectedValue?: Date | null;
   setDate: (value: Date | null) => void;
 };
 
@@ -118,22 +117,25 @@ export const CalendarComponent = ({
   setDate,
 }: CalendarProps) => {
   const { t, language } = useTranslations();
-  const CustomInput = forwardRef<Ref<HTMLInputElement>, CalendarInputProps>(
-    (props, ref) => (
-      <StyledOphInput
-        placeholder={t('kalenteri.syote-vihje')}
-        value={props.value}
-        onClick={props.onClick}
-        ref={ref as Ref<HTMLInputElement>}
-        endAdornment={
-          <InputAdornment position="end">
-            <CalendarTodayOutlined style={{ color: ophColors.blue2 }} />
-          </InputAdornment>
-        }
-      />
-    ),
+
+  const refCustomInput = useRef<HTMLInputElement>(null);
+
+  const CustomInput = forwardRef<HTMLInputElement, CalendarInputProps>(
+    function renderCalendarInput(props, ref) {
+      return (
+        <StyledOphInput
+          placeholder={t('kalenteri.syote-vihje')}
+          ref={ref}
+          {...props}
+          endAdornment={
+            <InputAdornment position="end">
+              <CalendarTodayOutlined style={{ color: ophColors.blue2 }} />
+            </InputAdornment>
+          }
+        />
+      );
+    },
   );
-  CustomInput.displayName = 'calendar-time-input';
 
   return (
     <CalendarStyles>
@@ -145,11 +147,12 @@ export const CalendarComponent = ({
             selected={selectedValue}
             onChange={(date) => setDate(date)}
             minDate={new Date()}
-            customInput={<CustomInput />}
+            customInput={<CustomInput ref={refCustomInput} />}
             calendarClassName={CALENDAR_CLASSNAME}
             showTimeSelect
             timeCaption={t('kalenteri.aika')}
             dateFormat="dd.MM.yyyy HH:mm"
+            strictParsing={true}
             formatWeekDay={(wd) => capitalize(wd).substring(0, 2)}
             locale={language}
             placeholderText={t('kalenteri.syote-vihje')}

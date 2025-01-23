@@ -45,7 +45,7 @@ export const OphModalDialog = ({
     <Dialog
       fullWidth={fullWidth}
       maxWidth={maxWidth}
-      sx={{ minWidth: '500px', position: 'absolute' }}
+      sx={{ minWidth: '500px' }}
       open={open}
       aria-labelledby={modalTitleId}
       onClose={onClose}
