@@ -24,6 +24,7 @@ import {
 } from '@/app/lib/state/jono-tulos-state';
 import { TuloksenTila } from '@/app/lib/types/laskenta-types';
 import { Language } from '@/app/lib/localization/localization-types';
+import { useTranslations } from '@/app/hooks/useTranslations';
 
 const TRANSLATIONS_PREFIX = 'valintalaskennan-tulokset.taulukko';
 
@@ -41,6 +42,7 @@ const JonosijaInput = ({
   const hakemusJonoTulos = useHakemusJonoTulos(jonoTulosActorRef, hakemusOid);
   const tuloksenTila = hakemusJonoTulos.tuloksenTila;
   const value = hakemusJonoTulos.jonosija ?? '';
+  const { t } = useTranslations();
   // TODO: Validoi syöte
   return (
     <OphInput
@@ -48,7 +50,10 @@ const JonosijaInput = ({
       disabled={tuloksenTila === TuloksenTila.HYLATTY}
       value={value}
       sx={{ width: '80px' }}
-      inputProps={{ min: 1 }}
+      inputProps={{
+        min: 1,
+        'aria-label': t('valintalaskennan-tulokset.taulukko.jonosija'),
+      }}
       onChange={(e) =>
         onJonoTulosChange({
           hakemusOid,
@@ -122,10 +127,12 @@ const KuvausInput = ({
   jonoTulosActorRef,
   hakemusOid,
   language,
+  label,
 }: {
   jonoTulosActorRef: JonoTulosActorRef;
   hakemusOid: string;
   language: Language;
+  label: string;
 }) => {
   const { onJonoTulosChange } = useJonoTulosActorRef(jonoTulosActorRef);
   const hakemusJonoTulos = useHakemusJonoTulos(jonoTulosActorRef, hakemusOid);
@@ -134,6 +141,7 @@ const KuvausInput = ({
   return (
     <OphInput
       value={value?.[language] ?? ''}
+      inputProps={{ 'aria-label': label }}
       onChange={(e) => {
         onJonoTulosChange({
           hakemusOid,
@@ -165,6 +173,8 @@ export const IlmanLaskentaaValintatapajonoTable = ({
 }) => {
   const [selectedJarjestysperuste] =
     useSelectedJarjestysperuste(jonoTulosActorRef);
+
+  const { t } = useTranslations();
 
   const columns: Array<JonoColumn> = useMemo(
     () => [
@@ -199,7 +209,7 @@ export const IlmanLaskentaaValintatapajonoTable = ({
       ...(selectedJarjestysperuste === 'kokonaispisteet'
         ? [
             {
-              title: `valintalaskennan-tulokset.kokonaispisteet`,
+              title: 'valintalaskennan-tulokset.kokonaispisteet',
               key: 'pisteet',
               render: ({ hakemusOid }) => (
                 <KokonaispisteetInput
@@ -210,44 +220,24 @@ export const IlmanLaskentaaValintatapajonoTable = ({
             } as JonoColumn,
           ]
         : []),
-      {
-        title: `${TRANSLATIONS_PREFIX}.kuvaus-fi`,
-        key: 'muutoksenSyy.fi',
-        render: ({ hakemusOid }) => (
-          <KuvausInput
-            jonoTulosActorRef={jonoTulosActorRef}
-            hakemusOid={hakemusOid}
-            language="fi"
-          />
-        ),
-        sortable: false,
-      },
-      {
-        title: `${TRANSLATIONS_PREFIX}.kuvaus-sv`,
-        key: 'muutoksenSyy.sv',
-        render: ({ hakemusOid }) => (
-          <KuvausInput
-            jonoTulosActorRef={jonoTulosActorRef}
-            hakemusOid={hakemusOid}
-            language="sv"
-          />
-        ),
-        sortable: false,
-      },
-      {
-        title: `${TRANSLATIONS_PREFIX}.kuvaus-en`,
-        key: 'muutoksenSyy.en',
-        render: ({ hakemusOid }) => (
-          <KuvausInput
-            jonoTulosActorRef={jonoTulosActorRef}
-            hakemusOid={hakemusOid}
-            language="en"
-          />
-        ),
-        sortable: false,
-      },
+      ...(['fi', 'sv', 'en'] as Array<Language>).map(
+        (lang) =>
+          ({
+            title: `${TRANSLATIONS_PREFIX}.kuvaus-${lang}`,
+            key: `muutoksenSyy.${lang}`,
+            render: ({ hakemusOid }) => (
+              <KuvausInput
+                jonoTulosActorRef={jonoTulosActorRef}
+                hakemusOid={hakemusOid}
+                language={lang}
+                label={t(`${TRANSLATIONS_PREFIX}.kuvaus-${lang}`)}
+              />
+            ),
+            sortable: false,
+          }) as JonoColumn,
+      ),
     ],
-    [jonoTulosActorRef, selectedJarjestysperuste, haku],
+    [t, jonoTulosActorRef, selectedJarjestysperuste, haku],
   );
 
   return (
