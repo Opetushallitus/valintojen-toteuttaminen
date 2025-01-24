@@ -501,10 +501,12 @@
   },
   "kirje-modaali": {
     "otsikko-hyvaksymiskirjeet": "Hyväksymiskirjeiden muodostaminen",
+    "otsikko-hyvaksymiskirje": "Hyväksymiskirjeen muodostaminen",
     "otsikko-ei-hyvaksymiskirjeet": "Ei-hyväksymiskirjeiden muodostaminen",
     "valmispohja": "Valmispohja",
     "sisalto": "Kirjeen sisältö",
     "muodosta": "Muodosta kirjeet",
+    "muodosta-kirje": "Muodosta kirje",
     "kohdejoukko": "Kohdejoukko",
     "kohdejoukko-hyvaksytyt": "Kaikki hyväksytyt",
     "kohdejoukko-luvattomat": "Vain ne hyväksytyt, jotka eivät ole antaneet lupaa päätöksen toimittamiseen sähköisesti"

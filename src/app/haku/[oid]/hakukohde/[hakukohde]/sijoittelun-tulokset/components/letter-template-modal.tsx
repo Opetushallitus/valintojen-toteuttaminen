@@ -35,6 +35,7 @@ export type LetterTemplateModalProps = {
   template: KirjepohjaNimi;
   hakukohde: Hakukohde;
   sijoitteluajoId: string;
+  hakemusOids?: Array<string>;
 };
 
 const CustomRadio = styled(Radio)(() => ({
@@ -137,8 +138,10 @@ const TargetRadioGroup = ({
 
 const LettersDownloadButton = ({
   getFile,
+  singleLetter = false,
 }: {
   getFile: () => Promise<FileResult>;
+  singleLetter?: boolean;
 }) => {
   const { t } = useTranslations();
 
@@ -156,7 +159,11 @@ const LettersDownloadButton = ({
       loading={mutation.isPending}
       onClick={() => mutation.mutate()}
     >
-      {t('kirje-modaali.muodosta')}
+      {t(
+        singleLetter
+          ? 'kirje-modaali.muodosta-kirje'
+          : 'kirje-modaali.muodosta',
+      )}
     </OphButton>
   );
 };
@@ -167,6 +174,7 @@ export const AcceptedLetterTemplateModal = createModal(
     title,
     template,
     sijoitteluajoId,
+    hakemusOids,
   }: LetterTemplateModalProps) => {
     const modalProps = useOphModalProps();
 
@@ -192,8 +200,16 @@ export const AcceptedLetterTemplateModal = createModal(
           letterBody,
           deadline: deadlineDate,
           onlyForbidden,
+          hakemusOids,
         }),
-      [hakukohde, deadlineDate, sijoitteluajoId, letterBody, onlyForbidden],
+      [
+        hakukohde,
+        deadlineDate,
+        sijoitteluajoId,
+        letterBody,
+        onlyForbidden,
+        hakemusOids,
+      ],
     );
 
     return (
@@ -206,17 +222,22 @@ export const AcceptedLetterTemplateModal = createModal(
             <OphButton variant="outlined" onClick={modalProps.onClose}>
               {t('yleinen.peruuta')}
             </OphButton>
-            <LettersDownloadButton getFile={getFile} />
+            <LettersDownloadButton
+              singleLetter={hakemusOids && hakemusOids.length === 1}
+              getFile={getFile}
+            />
           </>
         }
       >
         {isLoading && <SpinnerIcon />}
         {!isLoading && (
           <CustomContainer>
-            <TargetRadioGroup
-              onlyForbidden={onlyForbidden}
-              setOnlyForbidden={setOnlyForbidden}
-            />
+            {(!hakemusOids || hakemusOids.length !== 1) && (
+              <TargetRadioGroup
+                onlyForbidden={onlyForbidden}
+                setOnlyForbidden={setOnlyForbidden}
+              />
+            )}
             <TemplateSection
               pohjat={pohjat}
               templateBody={templateBody}

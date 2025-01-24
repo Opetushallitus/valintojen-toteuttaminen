@@ -15,7 +15,6 @@ import {
   InsertDriveFileOutlined,
   MoreHoriz,
 } from '@mui/icons-material';
-import { luoHyvaksymiskirjeetPDF } from '@/app/lib/valintalaskentakoostepalvelu';
 import { Hakukohde } from '@/app/lib/types/kouta-types';
 import useToaster from '@/app/hooks/useToaster';
 import {
@@ -24,6 +23,7 @@ import {
 } from '@/app/lib/valinta-tulos-service';
 import { showModal } from '@/app/components/global-modal';
 import { ChangeHistoryModal } from './change-history-modal';
+import { AcceptedLetterTemplateModal } from './letter-template-modal';
 
 const StyledListItemText = styled(ListItemText)(() => ({
   span: {
@@ -60,28 +60,13 @@ export const OtherActionsCell = ({
   const closeMenu = () => setAnchorEl(null);
 
   const createHyvaksymiskirjePDFs = async () => {
-    try {
-      await luoHyvaksymiskirjeetPDF({
-        hakemusOids: [hakemus.hakemusOid],
-        sijoitteluajoId,
-        hakukohde,
-        letterBody: "" //TODO:FIX!
-      });
-      addToast({
-        key: 'hyvaksymiskirje-hakemus',
-        message:
-          'sijoittelun-tulokset.toiminnot.hyvaksymiskirje-hakemukselle-luotu',
-        type: 'success',
-      });
-    } catch (e) {
-      addToast({
-        key: 'hyvaksymiskirje-hakemus-virhe',
-        message:
-          'sijoittelun-tulokset.toiminnot.hyvaksymiskirje-hakemukselle-luotu-epaonnistui',
-        type: 'error',
-      });
-      console.error(e);
-    }
+    showModal(AcceptedLetterTemplateModal, {
+      title: 'kirje-modaali.otsikko-hyvaksymiskirje',
+      hakukohde: hakukohde,
+      template: 'hyvaksymiskirje',
+      sijoitteluajoId,
+      hakemusOids: [hakemus.hakemusOid],
+    });
     closeMenu();
   };
 
