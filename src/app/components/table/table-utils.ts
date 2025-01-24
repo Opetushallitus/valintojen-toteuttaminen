@@ -1,25 +1,30 @@
 import { TranslatedName } from '@/app/lib/localization/localization-types';
 import { isTranslatedName } from '@/app/lib/localization/translation-utils';
-import { isNullish } from 'remeda';
+import { isNullish, pathOr, stringToPath } from 'remeda';
 
 export type SortDirection = 'asc' | 'desc';
 
-export const byProp = <
-  T extends Record<
-    string,
-    string | number | TranslatedName | boolean | undefined | object | null
-  >,
->(
+type PropValue =
+  | string
+  | number
+  | TranslatedName
+  | boolean
+  | undefined
+  | object
+  | null;
+
+export const byProp = <T extends Record<string, PropValue>>(
   key: string,
   direction: SortDirection = 'asc',
   translateEntity: (entity: TranslatedName) => string,
 ) => {
   const asc = direction === 'asc';
   return (a: T, b: T) => {
-    const aKey = a[key] ?? '';
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    const aKey = pathOr(a, stringToPath(key), '' as any);
     const aProp = isTranslatedName(aKey) ? translateEntity(aKey) : aKey;
 
-    const bKey = b[key] ?? '';
+    const bKey = pathOr(b, stringToPath(key), '' as any);
     const bProp = isTranslatedName(bKey) ? translateEntity(bKey) : bKey;
 
     // Järjestetään tyhjät arvot aina loppuun
