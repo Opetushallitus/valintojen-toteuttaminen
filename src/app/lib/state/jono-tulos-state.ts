@@ -12,11 +12,14 @@ import {
   LaskettuValinnanvaiheInfo,
 } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { GenericEvent, isEmpty } from '@/app/lib/common';
+import { produce } from 'immer';
 import {
   constant,
   filter,
   fromEntries,
+  isDeepEqual,
   isNonNullish,
+  isNullish,
   map,
   mapKeys,
   pipe,
@@ -62,7 +65,7 @@ export type JonoTulosUpdateEvent = {
   type: JonoTulosEventType.UPDATE;
 };
 
-type JonoTulosContextInput = {
+export type JonoTulosContextInput = {
   hakukohde: HakukohdeJonoTulosProps;
   valinnanvaihe: LaskettuValinnanvaiheInfo;
   valintatapajono: LaskettuJono;
@@ -95,6 +98,10 @@ export type JarjestysperusteChangeEvent = {
 
 export type JonoTulosActorRef = ActorRefFrom<typeof jonoTulosMachine>;
 
+const isJonoTulosEqual = (tulos1: JonoSija, tulos2: JonoSija) => {
+  return isDeepEqual(tulos1, tulos2);
+};
+
 const jonoTulosChangeReducer = ({
   context,
   event,
@@ -104,19 +111,12 @@ const jonoTulosChangeReducer = ({
 }) => {
   const { hakemusOid } = event;
 
+  const oldJonoTulos = context.jonoTulokset[hakemusOid];
+
   const existingHakemusJonoTulos =
     context.changedJonoTulokset[hakemusOid] ?? context.jonoTulokset[hakemusOid];
 
-  let newTuloksenTila =
-    event.tuloksenTila ?? existingHakemusJonoTulos.tuloksenTila;
-
-  if (
-    (event.pisteet !== existingHakemusJonoTulos.pisteet ||
-      event.jonosija !== existingHakemusJonoTulos.jonosija) &&
-    existingHakemusJonoTulos.tuloksenTila === TuloksenTila.MAARITTELEMATON
-  ) {
-    newTuloksenTila = TuloksenTila.HYVAKSYTTAVISSA;
-  }
+  let newTuloksenTila = event.tuloksenTila ?? existingHakemusJonoTulos.tuloksenTila;
 
   let newJonosija = event.jonosija ?? existingHakemusJonoTulos.jonosija ?? '';
   let newPisteet = event.pisteet ?? existingHakemusJonoTulos.pisteet ?? '';
@@ -126,16 +126,36 @@ const jonoTulosChangeReducer = ({
     newPisteet = '';
   }
 
-  context.changedJonoTulokset[hakemusOid] = {
+  if (
+    ((isNonNullish(event.pisteet) &&
+      event.pisteet !== existingHakemusJonoTulos.pisteet) ||
+      (isNonNullish(event.jonosija) &&
+        event.jonosija !== existingHakemusJonoTulos.jonosija)) &&
+    (isNullish(existingHakemusJonoTulos.tuloksenTila) ||
+      [TuloksenTila.MAARITTELEMATON].includes(
+        existingHakemusJonoTulos.tuloksenTila,
+      ))
+  ) {
+    newTuloksenTila = TuloksenTila.HYVAKSYTTAVISSA;
+  }
+
+  const newJonoTulos = {
     hakemusOid,
     hakijaOid: existingHakemusJonoTulos.hakijaOid,
     tuloksenTila: newTuloksenTila,
+    muutoksenSyy: event.kuvaus ?? existingHakemusJonoTulos.muutoksenSyy ?? {},
+    jarjestyskriteerit: existingHakemusJonoTulos.jarjestyskriteerit,
     jonosija: newJonosija,
     pisteet: newPisteet,
-    muutoksenSyy: event.kuvaus ?? existingHakemusJonoTulos.muutoksenSyy ?? {},
   };
 
-  return context.changedJonoTulokset;
+  return produce(context.changedJonoTulokset, (draftTulokset) => {
+    if (isJonoTulosEqual(oldJonoTulos, newJonoTulos)) {
+      delete draftTulokset[hakemusOid];
+    } else {
+      draftTulokset[hakemusOid] = newJonoTulos;
+    }
+  });
 };
 
 const resetContext = (input: JonoTulosContextInput) => {
@@ -150,14 +170,14 @@ const resetContext = (input: JonoTulosContextInput) => {
       ($) => fromEntries($),
     ),
     changedJonoTulokset: {},
-    jarjestysPeruste: input.valintatapajono.kaytetaanKokonaispisteita
+    jarjestysPeruste: (input.valintatapajono.kaytetaanKokonaispisteita
       ? 'kokonaispisteet'
-      : ('jonosija' as JarjestysPeruste),
+      : 'jonosija') as JarjestysPeruste,
   };
 };
 
 export const jonoTulosMachine = createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QAoC2BDAxgCwJYDswBKAOgEkARAGQFEBiAKQHkA5JgFQFUqmBlAfQDCACQCCLAOI0KAbQAMAXUSgADgHtYuAC641+ZSAAeiAEwB2OSQAsAVjlyTATgCMADgBszz64A0IAJ6mjlYkzlburo4AzNE2LlEmAL6JfmhYeISklLR0nAAKFKLsNPJKSCDqmjp6BsYIds7WJnY2Vq5eUWbOfoEIJu6OJAORrq0JzmZWyakYOATE5NT0+YXFMs5lqhrauvrldeaNzs0O4RaOFz2m9iRyjhGuCY72Nq9R0yBpc5kkK0VkkjoED0YBIBAAbmoANagr4ZBZ-dgAiQICFqTDoar4UqlAyVHY1faIZxydw2W5RZxRMkOczualXPo2MwkMzudnRUavGzuMwfOHzUiI5F0MAAJzFajFJBUABtMQAzKWoEgCn7CySo-CQjFYnGKPHbLG1RCedwkEyUqJ3KJRDzRRyM9pDMx2UlmS2jRzmfmzeGkGgAJUDTEDdFx5XxxqJCC8gzMrldzh5cbJVisjOp5ImTnTrRJdr5KU+fsFvwKRRoQiYAFk8rRihRwwbI0bdibY84vCRHA0EnIojYuxNM2YWRczMF3FZnhc5F5ksX8GoIHADGriIaqu2YwBadyM3fki4n09n97FjdZJZbgl7UB1BIhMYJqzOb0JzqZ6Khe7PWztGOciJr66RlhqEi3tGD6IK4JiuKExw2HBZh2i4HqMpaJgkNSg5kgMQ5kjYoHfAsQYhoGUE7jBCBWCYo4som74OPSbjvlYRYzGB6oVsU1Z1g20hUYSNHHAmFruP06ZkmEhGZm+PYmG4jijG+rTSYuiRAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QCkD2A7VAVArgG1VgFkBDAYwAsBLdMAOgEkARAGQFEBiZAeQDlusAVRbcAygH0AwgAkAgrwDibJgG0ADAF1EoAA6EqAFyoZtIAB6IAtAGYAjNboBOZwCYAbNYAca+47VqAFgAaEABPK1tPOjcAtTdbF2cAgFYXaxiAdgBfLJC0TFwCYnJqWkZWTgAlNlE2LHUtJBA9WENjdFMLBFtHNzpvfzVrNWTbDOSMzxDwhEtenLyMbHxCUkoaemZ2LllK5BqsAE1RAAU2SsFRLDYpOUVlBtMWtpMmrp6+gf9h0fHJ6YiAQCCxA+WWRTWpU2FQ4ghOTFk10eTWeRleoC6MVsTkcdkcngJGTcLk81gBs1ssToARi+ICLhJjkSnmBuVBS0KqxKG3K2zhCKRtkaun0aI6b0QH36gyGIzGEymYSsLliILBnOK6zK-MRDEUHAgGHoNAAbqgANb0dUrTVQug6rB6hQIU2oMgkMUNZEi1pizqIax2Ogk8ZxWxDUbJNzk5JRNzEgJ0jIBBLhxysxYFG2QnkOp0cMAAJ0LqELdB0eA9ADNSwBbOjWiHc7Xw3WKF3oM3uz2ab3NUXtf0IQPYkPJMMR2xR8m2MZ0dIq1zWDJxEbJNUc7PN+jnSrcSocPuowcShAuNRReXfOV-RUzAKk6WDH7yyYbrNNrX0B03STcIgnOw1xMIemhPAO6LmAGc5qMmzhuOmngqgyM5EnQcQuOuIKYBAcCmI2XJfuBvonhiVjpNizhMh43i+P4wRKrM1guBk84yg+hLOFhmbgoRdpbGwxEvOKZEIGo5Iqmo768bauato6ihCX6p7iYxy4BHQ3Hsh+fE8ru+5KaRUFiTGyTJE+16-Aq0kajmLYCr+-6AXUyiGZBXSqTMCFqGxz43tZORZEAA */
   id: 'JonoTulosMachine',
   initial: JonoTulosState.IDLE,
   context: ({ input }: { input: JonoTulosContextInput }) => {
@@ -189,14 +209,15 @@ export const jonoTulosMachine = createMachine({
             changedJonoTulokset: ({ context }) => {
               return pipe(
                 values(context.jonoTulokset),
+                // Löytyy tallennettuja järjestyskriteereitä, eli tuloksia
                 filter((jonoTulos) => !isEmpty(jonoTulos.jarjestyskriteerit)),
                 map((jonoTulos) => {
                   return [
                     jonoTulos.hakemusOid,
                     {
                       ...jonoTulos,
-                      pisteet: undefined,
-                      jonosija: undefined,
+                      pisteet: '',
+                      jonosija: '',
                       tuloksenTila: TuloksenTila.MAARITTELEMATON,
                     },
                   ] as const;
@@ -225,7 +246,7 @@ export const jonoTulosMachine = createMachine({
       invoke: {
         src: 'updateJonoTulos',
         input: ({ context }) => {
-          const vv: LaskettuValinnanVaiheModel = {
+          const valinnanvaihe: LaskettuValinnanVaiheModel = {
             ...context.valinnanvaihe,
             hakuOid: context.hakukohde.hakuOid,
           };
@@ -236,7 +257,7 @@ export const jonoTulosMachine = createMachine({
           const kaytetaanKokonaispisteita =
             context.jarjestysPeruste === 'kokonaispisteet';
 
-          vv.valintatapajonot = [
+          valinnanvaihe.valintatapajonot = [
             {
               ...valintatapajono,
               oid: valintatapajono.oid,
@@ -322,7 +343,7 @@ export const jonoTulosMachine = createMachine({
                 }),
             },
           ];
-          return { valinnanvaihe: vv, hakukohde: context.hakukohde };
+          return { valinnanvaihe, hakukohde: context.hakukohde };
         },
         onDone: {
           target: JonoTulosState.UPDATE_COMPLETED,
@@ -375,7 +396,7 @@ export const jonoTulosMachine = createMachine({
     successNotify: ({ context }) =>
       context.onEvent({
         key: `jonotulos-updated-for-${context.hakukohde.oid}`,
-        message: 'valintalaskennan-tulokset.jonotulos-valmis',
+        message: 'valintalaskennan-tulokset.jonotulos-update-success',
         type: 'success',
       }),
   },
@@ -427,7 +448,7 @@ export const useJonotulosState = ({
 
   const onEventCb = useCallback(onEvent, [onEvent]);
 
-  // Resetoidaan konteksti kun data muuttuu. useActorRefin input ei tee tätä automaattisesti
+  // Resetoidaan konteksti kun data muuttuu. Aktoria ei käynnistetä uudelleen automaattisesti kun input muuttuu.
   // https://stately.ai/docs/input#passing-new-data-to-an-actor
   useEffect(() => {
     actorRef.send({
@@ -445,7 +466,7 @@ export const useJonotulosState = ({
 
 export const useJonoTulosActorRef = (actorRef: JonoTulosActorRef) => {
   const snapshot = useSelector(actorRef, (s) => s);
-  const isDirty = useIsDirty(actorRef);
+  const isDirty = useIsJonoTulosDirty(actorRef);
   return {
     actorRef,
     snapshot,
@@ -496,7 +517,7 @@ export const useHakemusJonoTulos = (
   );
 };
 
-export const useIsDirty = (jonoTulosActorRef: JonoTulosActorRef) =>
+export const useIsJonoTulosDirty = (jonoTulosActorRef: JonoTulosActorRef) =>
   useSelector(
     jonoTulosActorRef,
     (s) => !isEmpty(s.context.changedJonoTulokset),

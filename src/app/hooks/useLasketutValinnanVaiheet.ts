@@ -41,11 +41,11 @@ export type JonoSija<
 > & {
   hakemusOid: string;
   hakijaOid: string;
-  pisteet?: string;
   hakutoiveNumero?: number;
   tuloksenTila?: TuloksenTila;
   muutoksenSyy?: TranslatedName;
-  jonosija?: string;
+  pisteet: string;
+  jonosija: string;
 } & A;
 
 type AdditionalHakemusFields = {
@@ -97,12 +97,12 @@ const selectJonosijaFields = (jonosijaData?: JonoSijaModel) => {
   }
 
   return {
-    jonosija: jonosija?.toString(),
+    jonosija: jonosija?.toString() ?? '',
     harkinnanvarainen: jonosijaData?.harkinnanvarainen,
     prioriteetti: jonosijaData?.prioriteetti,
     jarjestyskriteerit: jonosijaData?.jarjestyskriteerit,
     hakutoiveNumero: jonosijaData?.prioriteetti,
-    pisteet: jarjestyskriteeri?.arvo?.toString(),
+    pisteet: jarjestyskriteeri?.arvo?.toString() ?? '',
     tuloksenTila: jonosijaData?.tuloksenTila as TuloksenTila | undefined,
     muutoksenSyy: mapKeys(jarjestyskriteeri?.kuvaus ?? {}, (key) =>
       key.toLowerCase(),

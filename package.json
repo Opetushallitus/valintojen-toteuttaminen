@@ -40,6 +40,7 @@
     "date-fns": "^4.1.0",
     "i18next": "^24.2.1",
     "i18next-fetch-backend": "^6.0.0",
+    "immer": "^10.1.1",
     "next": "^15.1.6",
     "nextjs-toploader": "^3.7.15",
     "nuqs": "^2.3.1",
