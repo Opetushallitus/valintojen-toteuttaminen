@@ -273,6 +273,7 @@ export const LaskettuValintatapajonoContent = ({
       }}
     >
       <AccordionBox
+        headingComponent="h4"
         id={valinnanVaihe.valinnanvaiheoid}
         title={
           <ValintatapajonoAccordionTitle
@@ -352,6 +353,7 @@ export const ValintatapajonoIlmanLaskentaaContent = ({
       }}
     >
       <AccordionBox
+        headingComponent="h4"
         id={valinnanVaihe.valinnanvaiheoid}
         title={
           <ValintatapajonoAccordionTitle

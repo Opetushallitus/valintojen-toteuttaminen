@@ -67,7 +67,9 @@ const ValinnanvaiheGroupResults = ({
   return (
     vaiheet && (
       <Stack gap={2}>
-        <OphTypography variant="h2">{title}</OphTypography>
+        <OphTypography component="h3" variant="h2">
+          {title}
+        </OphTypography>
         {vaiheet?.map((vaihe) =>
           vaihe.valintatapajonot?.map((jono) => {
             return (
