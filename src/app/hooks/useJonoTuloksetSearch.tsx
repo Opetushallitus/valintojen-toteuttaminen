@@ -14,7 +14,7 @@ import { hakemusFilter } from './filters';
 
 const DEFAULT_PAGE_SIZE = 10;
 
-export const useJonosijatSearchParams = (id?: string) => {
+export const useJonoTuloksetSearchParams = (id?: string) => {
   const [searchPhrase, setSearchPhrase] = useQueryState(
     `search`,
     DEFAULT_NUQS_OPTIONS,
@@ -59,14 +59,14 @@ export const useJonosijatSearchParams = (id?: string) => {
   };
 };
 
-export const useJonosijatSearch = (
+export const useJonoTuloksetSearch = (
   jonoId: string,
   jonoTulos: Array<JonoSijaWithHakijaInfo>,
 ) => {
   const { translateEntity } = useTranslations();
 
   const { searchPhrase, page, setPage, pageSize, setPageSize, sort, setSort } =
-    useJonosijatSearchParams(jonoId);
+    useJonoTuloksetSearchParams(jonoId);
 
   const results = useMemo(() => {
     const { orderBy, direction } = getSortParts(sort);

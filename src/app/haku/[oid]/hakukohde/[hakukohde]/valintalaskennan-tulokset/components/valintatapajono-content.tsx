@@ -1,7 +1,7 @@
 'use client';
 import { Box, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { AccordionBox } from '@/app/components/accordion-box';
-import { useJonosijatSearch } from '@/app/hooks/useJonosijatSearch';
+import { useJonoTuloksetSearch } from '@/app/hooks/useJonoTuloksetSearch';
 import { LaskettuValintatapajonoTable } from './laskettu-valintatapajono-table';
 import { ValintatapajonoAccordionTitle } from './valintatapajono-accordion-title';
 import { SijoitteluStatusChangeButton } from './sijoittelu-status-change-button';
@@ -262,7 +262,7 @@ export const LaskettuValintatapajonoContent = ({
   const { data: hakukohde } = useHakukohde({ hakukohdeOid });
 
   const { results, sort, setSort, pageSize, setPage, page } =
-    useJonosijatSearch(valintatapajonooid, jonosijat);
+    useJonoTuloksetSearch(valintatapajonooid, jonosijat);
 
   const { t } = useTranslations();
   return (
@@ -317,7 +317,7 @@ export const ValintatapajonoIlmanLaskentaaContent = ({
   const { valintatapajonooid, jonosijat } = jono;
 
   const { results, sort, setSort, pageSize, setPage, page } =
-    useJonosijatSearch(valintatapajonooid, jonosijat);
+    useJonoTuloksetSearch(valintatapajonooid, jonosijat);
 
   const { addToast } = useToaster();
 

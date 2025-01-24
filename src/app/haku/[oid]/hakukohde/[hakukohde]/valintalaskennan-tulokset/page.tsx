@@ -15,7 +15,7 @@ import {
   LaskettuValintatapajonoContentProps,
   ValintatapajonoIlmanLaskentaaContent,
 } from './components/valintatapajono-content';
-import { useJonosijatSearchParams } from '@/app/hooks/useJonosijatSearch';
+import { useJonoTuloksetSearchParams } from '@/app/hooks/useJonoTuloksetSearch';
 import { FullClientSpinner } from '@/app/components/client-spinner';
 import { isEmpty } from '@/app/lib/common';
 import { getValintalaskennanTulosExcel } from '@/app/lib/valintalaskentakoostepalvelu';
@@ -139,7 +139,7 @@ const ValintalaskennanTuloksetContent = ({
   const { data: haku } = useHaku({ hakuOid });
 
   const { searchPhrase, setSearchPhrase, pageSize, setPageSize } =
-    useJonosijatSearchParams();
+    useJonoTuloksetSearchParams();
   const { t } = useTranslations();
 
   return isEmpty(valinnanvaiheet) ? (
