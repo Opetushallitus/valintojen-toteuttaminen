@@ -1,0 +1,39 @@
+[
+    {
+        "lastModified": "2025-01-16T13:41:38",
+        "nimi": "Varsinainen valinta",
+        "kuvaus": null,
+        "aktiivinen": true,
+        "valinnanVaiheTyyppi": "TAVALLINEN",
+        "oid": "1711376481658-8750199942485536118",
+        "inheritance": true,
+        "jonot": [
+            {
+                "aloituspaikat": 7,
+                "nimi": "Tutkintoon valmentava koulutus",
+                "kuvaus": null,
+                "tyyppi": "valintatapajono_m",
+                "siirretaanSijoitteluun": true,
+                "tasapistesaanto": "ARVONTA",
+                "aktiivinen": true,
+                "valisijoittelu": false,
+                "automaattinenSijoitteluunSiirto": true,
+                "eiVarasijatayttoa": false,
+                "kaikkiEhdonTayttavatHyvaksytaan": false,
+                "varasijat": 0,
+                "varasijaTayttoPaivat": 0,
+                "merkitseMyohAuto": false,
+                "poissaOlevaTaytto": true,
+                "poistetaankoHylatyt": false,
+                "varasijojaKaytetaanAlkaen": null,
+                "varasijojaTaytetaanAsti": null,
+                "eiLasketaPaivamaaranJalkeen": null,
+                "kaytetaanValintalaskentaa": false,
+                "tayttojono": null,
+                "oid": "1711376481685-4698023945423012768",
+                "inheritance": true,
+                "prioriteetti": 0
+            }
+        ]
+    }
+]

@@ -248,9 +248,9 @@
       "pisteet": "Pisteet",
       "valintatieto": "Valintatieto",
       "muutoksen-syy": "Muutoksen syy",
-      "kuvaus-fi": "Kuvaus (FI)",
-      "kuvaus-sv": "Kuvaus (SV)",
-      "kuvaus-en": "Kuvaus (EN)"
+      "kuvaus-fi": "Kuvaus suomeksi",
+      "kuvaus-sv": "Kuvaus ruotsiksi",
+      "kuvaus-en": "Kuvaus englanniksi"
     },
     "virhe-vie-kaikki-taulukkolaskentaan": "Taulukkolaskentaan viemisessä tapahtui virhe!",
     "valinnanvaiheet-ilman-laskentaa": "Valinnanvaiheet, joissa ei käytetä laskentaa",

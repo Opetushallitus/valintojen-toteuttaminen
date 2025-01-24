@@ -1,0 +1,66 @@
+[
+  {
+    "jarjestysnumero": 0,
+    "valinnanvaiheoid": "1711376481658-8750199942485536118",
+    "hakuOid": "1.2.246.562.29.00000000000000045102",
+    "nimi": "Varsinainen valinta",
+    "createdAt": 1704817368170,
+    "valintatapajonot": [
+      {
+        "valintatapajonooid": "1679913593167-8093928466417053918",
+        "nimi": "Tutkintoon valmentava koulutus",
+        "prioriteetti": 0,
+        "aloituspaikat": 0,
+        "siirretaanSijoitteluun": false,
+        "tasasijasaanto": "ARVONTA",
+        "eiVarasijatayttoa": false,
+        "kaikkiEhdonTayttavatHyvaksytaan": false,
+        "poissaOlevaTaytto": null,
+        "kaytetaanValintalaskentaa": false,
+        "valmisSijoiteltavaksi": false,
+        "jonosijat": [
+          {
+            "jonosija": 1,
+            "hakemusOid": "1.2.246.562.11.00000000000001796027",
+            "hakijaOid": "1.2.246.562.24.25732574711",
+            "jarjestyskriteerit": [
+              {
+                "arvo": "10",
+                "tila": "HYVAKSYTTAVISSA",
+                "kuvaus": {
+                  "FI": "Test fi",
+                  "SV": "Test sv", 
+                  "EN": "Test en"
+                },
+                "prioriteetti": 0,
+                "nimi": ""
+              }
+            ],
+            "prioriteetti": 0,
+            "sukunimi": null,
+            "etunimi": null,
+            "harkinnanvarainen": false,
+            "tuloksenTila": "HYVAKSYTTAVISSA",
+            "historiat": null,
+            "syotetytArvot": [],
+            "funktioTulokset": [],
+            "muokattu": false,
+            "hylattyValisijoittelussa": false
+          }
+        ],
+        "aktiivinen": true,
+        "kaytetaanKokonaispisteita": null,
+        "hakija": [],
+        "varasijat": 0,
+        "varasijaTayttoPaivat": 0,
+        "varasijojaKaytetaanAlkaen": null,
+        "varasijojaTaytetaanAsti": null,
+        "tayttojono": null,
+        "sijoitteluajoId": null,
+        "oid": "1679913593167-8093928466417053918"
+      }
+    ],
+    "valintakokeet": [],
+    "valinnanvaihe": 0
+  }
+]
