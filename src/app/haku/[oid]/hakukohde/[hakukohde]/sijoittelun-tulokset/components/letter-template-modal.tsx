@@ -13,6 +13,7 @@ import { Hakukohde } from '@/app/lib/types/kouta-types';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import {
   getKirjepohjatHakukohteelle,
+  luoEiHyvaksymiskirjeetPDF,
   luoHyvaksymiskirjeetPDF,
 } from '@/app/lib/valintalaskentakoostepalvelu';
 import { SpinnerIcon } from '@/app/components/spinner-icon';
@@ -27,6 +28,7 @@ import {
   RadioGroup,
   styled,
 } from '@mui/material';
+import { FileResult } from '@/app/lib/http-client';
 
 export type LetterTemplateModalProps = {
   title: string;
@@ -48,24 +50,16 @@ const CustomContainer = styled(Box)(() => ({
   rowGap: '1rem',
 }));
 
-const TemplateModalContent = ({
+const TemplateSection = ({
   pohjat,
   templateBody,
   setTemplateBody,
   setLetterBody,
-  deadlineDate,
-  setDeadlineDate,
-  onlyForbidden,
-  setOnlyForbidden,
 }: {
   pohjat: Kirjepohja[];
   templateBody: string;
   setTemplateBody: (val: string) => void;
   setLetterBody: (val: string) => void;
-  deadlineDate: Date | null;
-  setDeadlineDate: (date: Date | null) => void;
-  onlyForbidden: boolean;
-  setOnlyForbidden: (val: boolean) => void;
 }) => {
   const { t } = useTranslations();
   const [usedPohja, setUsedPohja] = useState<Kirjepohja>(pohjat[0]);
@@ -77,30 +71,7 @@ const TemplateModalContent = ({
   };
 
   return (
-    <CustomContainer>
-      <OphFormControl
-        label={t('kirje-modaali.kohdejoukko')}
-        renderInput={({ labelId }) => (
-          <RadioGroup
-            aria-labelledby={labelId}
-            value={onlyForbidden}
-            onChange={(event) =>
-              setOnlyForbidden(event.target.value === 'true')
-            }
-          >
-            <FormControlLabel
-              value={false}
-              control={<CustomRadio />}
-              label={t('kirje-modaali.kohdejoukko-hyvaksytyt')}
-            />
-            <FormControlLabel
-              value={true}
-              control={<CustomRadio />}
-              label={t('kirje-modaali.kohdejoukko-luvattomat')}
-            />
-          </RadioGroup>
-        )}
-      />
+    <>
       <OphFormControl
         sx={{
           width: 'auto',
@@ -126,41 +97,50 @@ const TemplateModalContent = ({
         editorContent={templateBody}
         setContentChanged={setLetterBody}
       />
-      <CalendarComponent
-        selectedValue={deadlineDate}
-        setDate={setDeadlineDate}
-      />
-    </CustomContainer>
+    </>
   );
 };
 
-type DownloadButtonProps = {
-  hakukohde: Hakukohde;
-  sijoitteluajoId: string;
-  letterBody: string;
-  deadline: Date | null;
+const TargetRadioGroup = ({
+  onlyForbidden,
+  setOnlyForbidden,
+}: {
   onlyForbidden: boolean;
+  setOnlyForbidden: (val: boolean) => void;
+}) => {
+  const { t } = useTranslations();
+
+  return (
+    <OphFormControl
+      label={t('kirje-modaali.kohdejoukko')}
+      renderInput={({ labelId }) => (
+        <RadioGroup
+          aria-labelledby={labelId}
+          value={onlyForbidden}
+          onChange={(event) => setOnlyForbidden(event.target.value === 'true')}
+        >
+          <FormControlLabel
+            value={false}
+            control={<CustomRadio />}
+            label={t('kirje-modaali.kohdejoukko-hyvaksytyt')}
+          />
+          <FormControlLabel
+            value={true}
+            control={<CustomRadio />}
+            label={t('kirje-modaali.kohdejoukko-luvattomat')}
+          />
+        </RadioGroup>
+      )}
+    />
+  );
 };
 
 const LettersDownloadButton = ({
-  hakukohde,
-  sijoitteluajoId,
-  letterBody,
-  deadline,
-  onlyForbidden,
-}: DownloadButtonProps) => {
+  getFile,
+}: {
+  getFile: () => Promise<FileResult>;
+}) => {
   const { t } = useTranslations();
-  const getFile = useCallback(
-    () =>
-      luoHyvaksymiskirjeetPDF({
-        hakukohde,
-        sijoitteluajoId,
-        letterBody,
-        deadline,
-        onlyForbidden,
-      }),
-    [hakukohde, deadline, sijoitteluajoId, letterBody, onlyForbidden],
-  );
 
   const mutation = useFileDownloadMutation({
     onError: (e) => {
@@ -181,7 +161,7 @@ const LettersDownloadButton = ({
   );
 };
 
-export const LetterTemplateModal = createModal(
+export const AcceptedLetterTemplateModal = createModal(
   ({
     hakukohde,
     title,
@@ -204,6 +184,18 @@ export const LetterTemplateModal = createModal(
     );
     const [letterBody, setLetterBody] = useState<string>(templateBody);
 
+    const getFile = useCallback(
+      () =>
+        luoHyvaksymiskirjeetPDF({
+          hakukohde,
+          sijoitteluajoId,
+          letterBody,
+          deadline: deadlineDate,
+          onlyForbidden,
+        }),
+      [hakukohde, deadlineDate, sijoitteluajoId, letterBody, onlyForbidden],
+    );
+
     return (
       <OphModalDialog
         {...modalProps}
@@ -214,27 +206,86 @@ export const LetterTemplateModal = createModal(
             <OphButton variant="outlined" onClick={modalProps.onClose}>
               {t('yleinen.peruuta')}
             </OphButton>
-            <LettersDownloadButton
-              deadline={deadlineDate}
-              hakukohde={hakukohde}
-              letterBody={letterBody}
-              sijoitteluajoId={sijoitteluajoId}
-              onlyForbidden={onlyForbidden}
-            />
+            <LettersDownloadButton getFile={getFile} />
           </>
         }
       >
         {isLoading && <SpinnerIcon />}
         {!isLoading && (
-          <TemplateModalContent
+          <CustomContainer>
+            <TargetRadioGroup
+              onlyForbidden={onlyForbidden}
+              setOnlyForbidden={setOnlyForbidden}
+            />
+            <TemplateSection
+              pohjat={pohjat}
+              templateBody={templateBody}
+              setTemplateBody={setTemplateBody}
+              setLetterBody={setLetterBody}
+            />
+            <CalendarComponent
+              selectedValue={deadlineDate}
+              setDate={setDeadlineDate}
+            />
+          </CustomContainer>
+        )}
+      </OphModalDialog>
+    );
+  },
+);
+
+export const NonAcceptedLetterTemplateModal = createModal(
+  ({
+    hakukohde,
+    title,
+    template,
+    sijoitteluajoId,
+  }: LetterTemplateModalProps) => {
+    const modalProps = useOphModalProps();
+
+    const { t } = useTranslations();
+
+    const { data: pohjat, isLoading } = useSuspenseQuery({
+      queryKey: ['getKirjepohjat', hakukohde.hakuOid, template, hakukohde.oid],
+      queryFn: () => getKirjepohjatHakukohteelle(template, hakukohde),
+    });
+
+    const [templateBody, setTemplateBody] = useState<string>(
+      pohjat[0]?.sisalto || '',
+    );
+    const [letterBody, setLetterBody] = useState<string>(templateBody);
+
+    const getFile = useCallback(
+      () =>
+        luoEiHyvaksymiskirjeetPDF({
+          hakukohde,
+          sijoitteluajoId,
+          letterBody,
+        }),
+      [hakukohde, sijoitteluajoId, letterBody],
+    );
+
+    return (
+      <OphModalDialog
+        {...modalProps}
+        title={t(title)}
+        maxWidth="md"
+        actions={
+          <>
+            <OphButton variant="outlined" onClick={modalProps.onClose}>
+              {t('yleinen.peruuta')}
+            </OphButton>
+            <LettersDownloadButton getFile={getFile} />
+          </>
+        }
+      >
+        {isLoading && <SpinnerIcon />}
+        {!isLoading && (
+          <TemplateSection
             pohjat={pohjat}
-            setLetterBody={setLetterBody}
             templateBody={templateBody}
             setTemplateBody={setTemplateBody}
-            deadlineDate={deadlineDate}
-            setDeadlineDate={setDeadlineDate}
-            onlyForbidden={onlyForbidden}
-            setOnlyForbidden={setOnlyForbidden}
+            setLetterBody={setLetterBody}
           />
         )}
       </OphModalDialog>

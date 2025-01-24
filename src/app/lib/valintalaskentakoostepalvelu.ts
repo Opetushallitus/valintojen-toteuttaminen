@@ -594,7 +594,6 @@ export const luoHyvaksymiskirjeetPDF = async ({
   deadline?: Date | null;
   onlyForbidden: boolean;
 }): Promise<FileResult> => {
-  console.log(letterBody);
   const hakukohdeNimi = translateName(hakukohde.nimi);
   const opetuskieliCode = (getOpetuskieliCode(hakukohde) || 'fi').toUpperCase();
   const pvm = deadline
@@ -606,6 +605,30 @@ export const luoHyvaksymiskirjeetPDF = async ({
   const queryParams = `hakuOid=${hakukohde.hakuOid}&hakukohdeOid=${hakukohde.oid}&sijoitteluajoId=${sijoitteluajoId}&tarjoajaOid=${hakukohde.tarjoajaOid}&hakukohdeNimi=${hakukohdeNimi}&lang=${opetuskieliCode}&templateName=hyvaksymiskirje&palautusPvm=${pvm}&palautusAika=${time}&vainTulosEmailinKieltaneet=${onlyForbidden}`;
   const body = {
     hakemusOids: hakemusOids,
+    letterBodyText: letterBody.replaceAll('&nbsp;', ' '),
+    tag: hakukohde.oid,
+  };
+  const startProcessResponse = await client.post<{ id: string }>(
+    `${configuration.hyvaksymiskirjeetUrl}?${queryParams}`,
+    body,
+  );
+  const kirjeetProcessId = startProcessResponse?.data?.id;
+  return await downloadProcessDocument(kirjeetProcessId, true);
+};
+
+export const luoEiHyvaksymiskirjeetPDF = async ({
+  sijoitteluajoId,
+  hakukohde,
+  letterBody,
+}: {
+  sijoitteluajoId: string;
+  hakukohde: Hakukohde;
+  letterBody: string;
+}): Promise<FileResult> => {
+  const opetuskieliCode = (getOpetuskieliCode(hakukohde) || 'fi').toUpperCase();
+  const queryParams = `hakuOid=${hakukohde.hakuOid}&hakukohdeOid=${hakukohde.oid}&sijoitteluajoId=${sijoitteluajoId}&tarjoajaOid=${hakukohde.tarjoajaOid}&lang=${opetuskieliCode}&templateName=jalkiohjauskirje`;
+  const body = {
+    hakemusOids: null,
     letterBodyText: letterBody.replaceAll('&nbsp;', ' '),
     tag: hakukohde.oid,
   };

@@ -19,7 +19,10 @@ import { Hakukohde } from '@/app/lib/types/kouta-types';
 import { sendVastaanottopostiHakukohteelle } from '@/app/lib/valinta-tulos-service';
 import useToaster from '@/app/hooks/useToaster';
 import { configuration } from '@/app/lib/configuration';
-import { LetterTemplateModal } from './letter-template-modal';
+import {
+  AcceptedLetterTemplateModal,
+  NonAcceptedLetterTemplateModal,
+} from './letter-template-modal';
 import { showModal } from '@/app/components/global-modal';
 
 const StyledListItemText = styled(ListItemText)(() => ({
@@ -60,11 +63,21 @@ export const OtherActionsHakukohdeButton = ({
 
   const closeMenu = () => setAnchorEl(null);
 
-  const openLetterTemplateModal = async () => {
-    showModal(LetterTemplateModal, {
+  const openAcceptedLetterTemplateModal = async () => {
+    showModal(AcceptedLetterTemplateModal, {
       title: 'kirje-modaali.otsikko-hyvaksymiskirjeet',
       hakukohde: hakukohde,
       template: 'hyvaksymiskirje',
+      sijoitteluajoId,
+    });
+    closeMenu();
+  };
+
+  const openNonAcceptedLetterTemplateModal = async () => {
+    showModal(NonAcceptedLetterTemplateModal, {
+      title: 'kirje-modaali.otsikko-ei-hyvaksymiskirjeet',
+      hakukohde: hakukohde,
+      template: 'jalkiohjauskirje',
       sijoitteluajoId,
     });
     closeMenu();
@@ -142,7 +155,7 @@ export const OtherActionsHakukohdeButton = ({
           </StyledListItemText>
         </MenuItem>
         <Divider />
-        <MenuItem onClick={openLetterTemplateModal}>
+        <MenuItem onClick={openAcceptedLetterTemplateModal}>
           <StyledListItemIcon>
             <InsertDriveFileOutlined />
           </StyledListItemIcon>
@@ -150,7 +163,7 @@ export const OtherActionsHakukohdeButton = ({
             {t('sijoittelun-tulokset.toiminnot.hyvaksymiskirje-hakukohde')}
           </StyledListItemText>
         </MenuItem>
-        <MenuItem onClick={closeMenu}>
+        <MenuItem onClick={openNonAcceptedLetterTemplateModal}>
           <StyledListItemIcon>
             <InsertDriveFileOutlined />
           </StyledListItemIcon>

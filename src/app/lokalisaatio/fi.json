@@ -501,6 +501,7 @@
   },
   "kirje-modaali": {
     "otsikko-hyvaksymiskirjeet": "Hyväksymiskirjeiden muodostaminen",
+    "otsikko-ei-hyvaksymiskirjeet": "Ei-hyväksymiskirjeiden muodostaminen",
     "valmispohja": "Valmispohja",
     "sisalto": "Kirjeen sisältö",
     "muodosta": "Muodosta kirjeet",
