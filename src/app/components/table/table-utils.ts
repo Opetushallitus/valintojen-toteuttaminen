@@ -1,5 +1,6 @@
 import { TranslatedName } from '@/app/lib/localization/localization-types';
 import { isTranslatedName } from '@/app/lib/localization/translation-utils';
+import { isNullish } from 'remeda';
 
 export type SortDirection = 'asc' | 'desc';
 
@@ -20,6 +21,14 @@ export const byProp = <
 
     const bKey = b[key] ?? '';
     const bProp = isTranslatedName(bKey) ? translateEntity(bKey) : bKey;
+
+    // Järjestetään tyhjät arvot aina loppuun
+    if (isNullish(aProp) || aProp === '') {
+      return 1;
+    }
+    if (isNullish(bProp) || bProp === '') {
+      return -1;
+    }
 
     return aProp > bProp ? (asc ? 1 : -1) : bProp > aProp ? (asc ? -1 : 1) : 0;
   };
