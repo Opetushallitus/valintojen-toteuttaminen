@@ -4,10 +4,7 @@ import {
   useOphModalProps,
 } from '@/app/components/global-modal';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import {
-  OphButton,
-  OphInput,
-} from '@opetushallitus/oph-design-system';
+import { OphButton, OphInput } from '@opetushallitus/oph-design-system';
 import { Stack } from '@mui/material';
 import { useState } from 'react';
 import { LaskettuJono } from '@/app/hooks/useLasketutValinnanVaiheet';
@@ -159,7 +156,7 @@ export const ValintalaskentaEditModal = createModal<{
   const jarjestyskriteeriOptions =
     jonosija.jarjestyskriteerit?.map(({ nimi, prioriteetti }) => ({
       value: prioriteetti.toString(),
-      label: nimi,
+      label: `${prioriteetti + 1}. ${nimi}`,
     })) ?? [];
 
   const {
