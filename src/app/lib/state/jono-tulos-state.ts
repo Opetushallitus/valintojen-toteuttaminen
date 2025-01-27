@@ -116,15 +116,16 @@ const jonoTulosChangeReducer = ({
   const existingHakemusJonoTulos =
     context.changedJonoTulokset[hakemusOid] ?? context.jonoTulokset[hakemusOid];
 
-  let newTuloksenTila = event.tuloksenTila ?? existingHakemusJonoTulos.tuloksenTila;
-
   let newJonosija = event.jonosija ?? existingHakemusJonoTulos.jonosija ?? '';
   let newPisteet = event.pisteet ?? existingHakemusJonoTulos.pisteet ?? '';
 
-  if (newTuloksenTila === TuloksenTila.HYLATTY) {
+  if (event.tuloksenTila === TuloksenTila.HYLATTY) {
     newJonosija = '';
     newPisteet = '';
   }
+
+  let newTuloksenTila =
+    event.tuloksenTila ?? existingHakemusJonoTulos.tuloksenTila;
 
   if (
     ((isNonNullish(event.pisteet) &&
@@ -148,6 +149,7 @@ const jonoTulosChangeReducer = ({
     jonosija: newJonosija,
     pisteet: newPisteet,
   };
+  console.log({ newJonoTulos });
 
   return produce(context.changedJonoTulokset, (draftTulokset) => {
     if (isJonoTulosEqual(oldJonoTulos, newJonoTulos)) {

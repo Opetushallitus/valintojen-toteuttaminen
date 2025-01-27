@@ -87,11 +87,35 @@ describe('JonoTulosMachine', () => {
     actor.send(changeEvent);
     const jonoTuloksetSnapshot =
       actor.getSnapshot().context.changedJonoTulokset;
-    console.log(jonoTuloksetSnapshot);
     expect(jonoTuloksetSnapshot['hakemus1']).toMatchObject({
       hakemusOid: 'hakemus1',
       tuloksenTila: TuloksenTila.HYVAKSYTTAVISSA,
       pisteet: '10',
+    });
+  });
+
+  test('should keep tuloksenTila=HYVAKSYTTAVISSA when changing pisteet', () => {
+    const actor = createActor(jonoTulosMachine, {
+      input: mockContextInput({
+        jonoTulos: {
+          tuloksenTila: TuloksenTila.HYVAKSYTTAVISSA,
+        },
+      }),
+    });
+    actor.start();
+    const changeEvent: JonoTulosChangeEvent = {
+      type: JonoTulosEventType.JONOTULOS_CHANGED,
+      hakemusOid: 'hakemus1',
+      pisteet: 'x',
+    };
+    actor.send(changeEvent);
+
+    const jonoTuloksetSnapshot =
+      actor.getSnapshot().context.changedJonoTulokset;
+    expect(jonoTuloksetSnapshot['hakemus1']).toMatchObject({
+      hakemusOid: 'hakemus1',
+      tuloksenTila: TuloksenTila.HYVAKSYTTAVISSA,
+      pisteet: 'x',
     });
   });
 
@@ -110,7 +134,6 @@ describe('JonoTulosMachine', () => {
     actor.send(changeEvent);
     const jonoTuloksetSnapshot =
       actor.getSnapshot().context.changedJonoTulokset;
-    console.log(jonoTuloksetSnapshot);
     expect(jonoTuloksetSnapshot['hakemus1']).toMatchObject({
       hakemusOid: 'hakemus1',
       tuloksenTila: TuloksenTila.HYVAKSYTTAVISSA,
