@@ -16,6 +16,15 @@ const JONOSIJA_TABLE_HEADINGS = [
   'Kuvaus englanniksi',
 ];
 
+const PISTEET_TABLE_HEADINGS = [
+  'Hakija',
+  'Valintatieto',
+  'Kokonaispisteet',
+  'Kuvaus suomeksi',
+  'Kuvaus ruotsiksi',
+  'Kuvaus englanniksi',
+];
+
 test.beforeEach(async ({ page }) => {
   await page.route(
     '**/valintalaskenta-laskenta-service/resources/hakukohde/**',
@@ -83,4 +92,26 @@ test('displays valintalaskennan tulokset', async ({ page }) => {
   const jono1Rows = jono1Content.locator('tbody tr');
 
   await expect(jono1Rows).toHaveCount(4);
+
+  await checkRow(jono1Rows.first(), [
+    '1',
+    'Nukettaja Ruhtinas',
+    'Hyväksyttävissä',
+    'Test fi',
+    'Test sv',
+    'Test en',
+  ]);
+
+  await jono1Content.getByRole('button', { name: 'Kokonaispisteet' }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Kyllä' }).click();
+
+  await checkRow(jono1HeadingRow, PISTEET_TABLE_HEADINGS, 'th');
 });
+
+/** TODO:
+ * - Onnistunut Excel-download
+ * - Epäonnistunut Excel-download
+ * - Onnistunut Excel-upload
+ * - Epäonnistunut Excel-upload
+ * - Tietojen muokkaus ja tallennus, jonosijat ja kokonaispisteet
+ */

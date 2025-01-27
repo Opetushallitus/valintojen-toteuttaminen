@@ -150,7 +150,6 @@ const jonoTulosChangeReducer = ({
     jonosija: newJonosija,
     pisteet: newPisteet,
   };
-  console.log({ newJonoTulos });
 
   return produce(context.changedJonoTulokset, (draftTulokset) => {
     if (isJonoTulosEqual(oldJonoTulos, newJonoTulos)) {

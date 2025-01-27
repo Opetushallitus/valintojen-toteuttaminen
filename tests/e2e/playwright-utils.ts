@@ -28,6 +28,10 @@ export const expectUrlParamToEqual = async (
   expect(param).toEqual(value);
 };
 
+// Poistaa stringin alusta ja lopusta kaikki tyhjät merkit, myös tyhjät unicode-merkit
+export const trimAllWhitespace = (str: string) =>
+  str.replace(/^[\p{Z}\p{C}]+|[\p{Z}\p{C}]+$/gu, '');
+
 export const checkRow = async (
   row: Locator,
   expectedValues: string[],
@@ -36,10 +40,16 @@ export const checkRow = async (
 ) => {
   const cells = row.locator(cellType);
   for (const [index, value] of expectedValues.entries()) {
+    let textContent = trimAllWhitespace(await cells.nth(index).innerText());
+
+    if (textContent.length === 0) {
+      textContent = await cells.nth(index).getByRole('textbox').inputValue();
+    }
+
     if (exact) {
-      await expect(cells.nth(index)).toHaveText(value);
+      expect(textContent).toEqual(value);
     } else {
-      await expect(cells.nth(index)).toContainText(value);
+      expect(textContent).toContain(value);
     }
   }
 };
