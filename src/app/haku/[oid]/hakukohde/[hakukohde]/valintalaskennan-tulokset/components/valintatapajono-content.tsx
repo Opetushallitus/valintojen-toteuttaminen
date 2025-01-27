@@ -24,6 +24,7 @@ import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
 import {
   JarjestysPeruste,
   JonoTulosActorRef,
+  useIsJonoTulosDirty,
   useJonoTulosActorRef,
   useJonotulosState,
   useSelectedJarjestysperuste,
@@ -42,6 +43,7 @@ import {
 } from '@/app/lib/valintalaskentakoostepalvelu';
 import { FileSelectButton } from '@/app/components/file-select-button';
 import { SpinnerModal } from '@/app/components/spinner-modal';
+import { useConfirmChangesBeforeNavigation } from '@/app/hooks/useConfirmChangesBeforeNavigation';
 
 const LaskettuVaiheActions = ({
   hakukohde,
@@ -344,6 +346,9 @@ export const ValintatapajonoIlmanLaskentaaContent = ({
     laskettuJono: jono,
     onEvent,
   });
+
+  const isDirty = useIsJonoTulosDirty(jonoTulosActorRef);
+  useConfirmChangesBeforeNavigation(isDirty);
 
   return (
     <Box
