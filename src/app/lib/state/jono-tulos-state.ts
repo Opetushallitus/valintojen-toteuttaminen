@@ -145,7 +145,7 @@ const jonoTulosChangeReducer = ({
     hakemusOid,
     hakijaOid: existingHakemusJonoTulos.hakijaOid,
     tuloksenTila: newTuloksenTila,
-    muutoksenSyy: event.kuvaus ?? existingHakemusJonoTulos.muutoksenSyy ?? {},
+    kuvaus: event.kuvaus ?? existingHakemusJonoTulos.kuvaus ?? {},
     jarjestyskriteerit: existingHakemusJonoTulos.jarjestyskriteerit,
     jonosija: newJonosija,
     pisteet: newPisteet,
@@ -319,9 +319,7 @@ export const jonoTulosMachine = createMachine({
                     }
 
                     const kuvaus =
-                      changedJonoTulos?.muutoksenSyy ??
-                      jonoTulos.muutoksenSyy ??
-                      {};
+                      changedJonoTulos?.kuvaus ?? jonoTulos.kuvaus ?? {};
 
                     jarjestyskriteerit[0].tila = tuloksenTila;
                     jarjestyskriteerit[0].kuvaus = mapKeys(kuvaus, (key) =>

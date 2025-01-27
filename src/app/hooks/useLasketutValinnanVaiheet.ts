@@ -43,7 +43,7 @@ export type JonoSija<
   hakijaOid: string;
   hakutoiveNumero?: number;
   tuloksenTila?: TuloksenTila;
-  muutoksenSyy?: TranslatedName;
+  kuvaus?: TranslatedName;
   pisteet: string;
   jonosija: string;
 } & A;
@@ -104,7 +104,7 @@ const selectJonosijaFields = (jonosijaData?: JonoSijaModel) => {
     hakutoiveNumero: jonosijaData?.prioriteetti,
     pisteet: jarjestyskriteeri?.arvo?.toString() ?? '',
     tuloksenTila: jonosijaData?.tuloksenTila as TuloksenTila | undefined,
-    muutoksenSyy: mapKeys(jarjestyskriteeri?.kuvaus ?? {}, (key) =>
+    kuvaus: mapKeys(jarjestyskriteeri?.kuvaus ?? {}, (key) =>
       key.toLowerCase(),
     ),
   };

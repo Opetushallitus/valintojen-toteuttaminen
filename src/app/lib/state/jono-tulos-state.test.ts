@@ -20,7 +20,7 @@ const mockContextInput = ({
   jonoTulos?: Partial<JonoSija>;
   jarjestysperuste?: JarjestysPeruste;
 } = {}) => {
-  const { pisteet = '', jonosija = '', tuloksenTila, muutoksenSyy } = jonoTulos;
+  const { pisteet = '', jonosija = '', tuloksenTila, kuvaus } = jonoTulos;
   const arvo = when(
     jarjestysperuste === 'kokonaispisteet'
       ? Number(pisteet)
@@ -44,7 +44,7 @@ const mockContextInput = ({
         {
           tuloksenTila,
           hakemusOid: 'hakemus1',
-          muutoksenSyy,
+          kuvaus,
           hakijaOid: 'hakija1',
           jarjestyskriteerit: jonoTulos
             ? [
@@ -197,7 +197,7 @@ describe('JonoTulosMachine', () => {
       input: mockContextInput({
         jonoTulos: {
           jonosija: '1',
-          muutoksenSyy: {
+          kuvaus: {
             fi: 'test fi',
           },
           tuloksenTila: TuloksenTila.HYVAKSYTTAVISSA,
@@ -221,7 +221,7 @@ describe('JonoTulosMachine', () => {
       hakemusOid: 'hakemus1',
       tuloksenTila: TuloksenTila.HYVAKSYTTAVISSA,
       jonosija: '5',
-      muutoksenSyy: {
+      kuvaus: {
         fi: 'test fi',
       },
     });

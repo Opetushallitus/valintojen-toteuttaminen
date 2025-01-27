@@ -83,14 +83,6 @@ export const THEME_OVERRIDES: ThemeOptions = {
         }),
       },
     },
-    MuiFormHelperText: {
-      styleOverrides: {
-        root: ({ theme }) => ({
-          ...theme.typography.body2,
-          color: ophColors.black,
-        }),
-      },
-    },
     MuiButton: {
       defaultProps: {
         loadingPosition: 'start',

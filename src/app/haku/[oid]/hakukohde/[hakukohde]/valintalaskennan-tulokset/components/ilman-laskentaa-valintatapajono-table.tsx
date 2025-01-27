@@ -130,7 +130,7 @@ const KuvausInput = ({
 }) => {
   const { onJonoTulosChange } = useJonoTulosActorRef(jonoTulosActorRef);
   const hakemusJonoTulos = useHakemusJonoTulos(jonoTulosActorRef, hakemusOid);
-  const value = hakemusJonoTulos.muutoksenSyy ?? {};
+  const value = hakemusJonoTulos.kuvaus ?? {};
 
   return (
     <OphInput
@@ -218,7 +218,7 @@ export const IlmanLaskentaaValintatapajonoTable = ({
         (lang) =>
           ({
             title: `${TRANSLATIONS_PREFIX}.kuvaus-${lang}`,
-            key: `muutoksenSyy.${lang}`,
+            key: `kuvaus.${lang}`,
             render: ({ hakemusOid }) => (
               <KuvausInput
                 jonoTulosActorRef={jonoTulosActorRef}

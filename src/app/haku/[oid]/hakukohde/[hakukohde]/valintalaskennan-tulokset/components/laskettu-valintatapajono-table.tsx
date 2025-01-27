@@ -75,9 +75,9 @@ export const LaskettuValintatapajonoTable = ({
         ),
       },
       {
-        title: `${TRANSLATIONS_PREFIX}.muutoksen-syy`,
-        key: 'muutoksenSyy',
-        render: (props) => <span>{translateEntity(props.muutoksenSyy)}</span>,
+        title: `${TRANSLATIONS_PREFIX}.kuvaus`,
+        key: 'kuvaus',
+        render: (props) => <span>{translateEntity(props.kuvaus)}</span>,
       },
     ],
     [t, jonoId, translateEntity],

@@ -12,7 +12,7 @@ const JONO_TABLE_HEADINGS = [
   'Pisteet',
   'Hakutoive',
   'Valintatieto',
-  'Muutoksen syy',
+  'Kuvaus',
 ];
 
 test.beforeEach(async ({ page }) => {
