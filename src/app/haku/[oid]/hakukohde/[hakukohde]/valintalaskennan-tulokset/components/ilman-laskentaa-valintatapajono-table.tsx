@@ -43,21 +43,15 @@ const JonosijaInput = ({
   const tuloksenTila = hakemusJonoTulos.tuloksenTila;
   const value = hakemusJonoTulos.jonosija ?? '';
   const { t } = useTranslations();
-  // TODO: Validoi syöte
   return (
-    <OphInput
-      type="number"
+    <PisteetInput
       disabled={tuloksenTila === TuloksenTila.HYLATTY}
       value={value}
-      sx={{ width: '80px' }}
-      inputProps={{
-        min: 1,
-        'aria-label': t('valintalaskennan-tulokset.taulukko.jonosija'),
-      }}
-      onChange={(e) =>
+      ariaLabel={t('valintalaskennan-tulokset.taulukko.jonosija')}
+      onChange={(arvo) =>
         onJonoTulosChange({
           hakemusOid,
-          jonosija: e.target.value,
+          jonosija: arvo,
         })
       }
     />

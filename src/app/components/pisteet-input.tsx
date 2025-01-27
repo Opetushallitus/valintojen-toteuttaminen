@@ -16,6 +16,7 @@ export const PisteetInput = ({
   value,
   onChange,
   arvoId,
+  ariaLabel,
 }: {
   min?: number | string;
   max?: number | string;
@@ -23,6 +24,7 @@ export const PisteetInput = ({
   disabled?: boolean;
   onChange?: (arvo: string) => void;
   arvoId?: string;
+  ariaLabel?: string;
 }) => {
   const [arvoValid, setArvoValid] = useState<boolean>(true);
 
@@ -58,7 +60,7 @@ export const PisteetInput = ({
           sx={{ maxWidth: '80px' }}
           id={arvoId}
           value={value}
-          inputProps={{ 'aria-label': t('pistesyotto.pisteet') }}
+          inputProps={{ 'aria-label': ariaLabel ?? t('pistesyotto.pisteet') }}
           onChange={changeArvo}
         />
       )}
