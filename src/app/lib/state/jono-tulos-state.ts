@@ -14,6 +14,7 @@ import {
 import { GenericEvent, isEmpty } from '@/app/lib/common';
 import { produce } from 'immer';
 import {
+  clone,
   constant,
   filter,
   fromEntries,
@@ -279,7 +280,8 @@ export const jonoTulosMachine = createMachine({
                   );
                 })
                 .map((jonoTulos) => {
-                  const jarjestyskriteerit = jonoTulos.jarjestyskriteerit ?? [];
+                  const jarjestyskriteerit =
+                    clone(jonoTulos.jarjestyskriteerit) ?? [];
 
                   const changedJonoTulos =
                     changedJonoTulokset[jonoTulos.hakemusOid];
