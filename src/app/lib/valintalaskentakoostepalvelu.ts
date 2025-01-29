@@ -1,10 +1,5 @@
 import { configuration } from './configuration';
-import {
-  abortableClient,
-  client,
-  createFileResult,
-  FileResult,
-} from './http-client';
+import { abortableClient, client, createFileResult } from './http-client';
 import { HenkilonValintaTulos } from './types/sijoittelu-types';
 import {
   HakemuksenPistetiedot,
@@ -314,7 +309,7 @@ const pollDocumentProcess = async (
   });
 };
 
-const downloadProcessDocument = async (
+const processDocumentAndReturnDocumentId = async (
   processId: string,
   infiniteWait: boolean = false,
 ) => {
@@ -327,6 +322,20 @@ const downloadProcessDocument = async (
     throw Error(errorMessages);
   }
 
+  return dokumenttiId;
+};
+
+const downloadProcessDocument = async (processId: string) => {
+  const dokumenttiId = await processDocumentAndReturnDocumentId(processId);
+
+  const documentRes = await client.get<Blob>(
+    configuration.lataaDokumenttiUrl({ dokumenttiId }),
+  );
+
+  return createFileResult(documentRes);
+};
+
+export const downloadReadyProcessDocument = async (dokumenttiId: string) => {
   const documentRes = await client.get<Blob>(
     configuration.lataaDokumenttiUrl({ dokumenttiId }),
   );
@@ -593,7 +602,7 @@ export const luoHyvaksymiskirjeetPDF = async ({
   letterBody: string;
   deadline?: Date | null;
   onlyForbidden: boolean;
-}): Promise<FileResult> => {
+}): Promise<string> => {
   const hakukohdeNimi = translateName(hakukohde.nimi);
   const opetuskieliCode = (getOpetuskieliCode(hakukohde) || 'fi').toUpperCase();
   const pvm = deadline
@@ -613,7 +622,7 @@ export const luoHyvaksymiskirjeetPDF = async ({
     body,
   );
   const kirjeetProcessId = startProcessResponse?.data?.id;
-  return await downloadProcessDocument(kirjeetProcessId, true);
+  return await processDocumentAndReturnDocumentId(kirjeetProcessId, true);
 };
 
 export const luoEiHyvaksymiskirjeetPDF = async ({
@@ -624,7 +633,7 @@ export const luoEiHyvaksymiskirjeetPDF = async ({
   sijoitteluajoId: string;
   hakukohde: Hakukohde;
   letterBody: string;
-}): Promise<FileResult> => {
+}): Promise<string> => {
   const opetuskieliCode = (getOpetuskieliCode(hakukohde) || 'fi').toUpperCase();
   const queryParams = `hakuOid=${hakukohde.hakuOid}&hakukohdeOid=${hakukohde.oid}&sijoitteluajoId=${sijoitteluajoId}&tarjoajaOid=${hakukohde.tarjoajaOid}&lang=${opetuskieliCode}&templateName=jalkiohjauskirje`;
   const body = {
@@ -637,7 +646,7 @@ export const luoEiHyvaksymiskirjeetPDF = async ({
     body,
   );
   const kirjeetProcessId = startProcessResponse?.data?.id;
-  return await downloadProcessDocument(kirjeetProcessId, true);
+  return await processDocumentAndReturnDocumentId(kirjeetProcessId, true);
 };
 
 type TemplateResponse = {

@@ -10,7 +10,11 @@ import {
   KirjepohjaNimi,
 } from '@/app/lib/types/valintalaskentakoostepalvelu-types';
 import { Hakukohde } from '@/app/lib/types/kouta-types';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import {
+  useMutation,
+  UseMutationResult,
+  useSuspenseQuery,
+} from '@tanstack/react-query';
 import {
   getKirjepohjatHakukohteelle,
   luoEiHyvaksymiskirjeetPDF,
@@ -20,7 +24,6 @@ import { SpinnerIcon } from '@/app/components/spinner-icon';
 import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { LocalizedSelect } from '@/app/components/localized-select';
 import { SelectChangeEvent } from '@mui/material/Select';
-import { useFileDownloadMutation } from '@/app/hooks/useFileDownloadMutation';
 import {
   Box,
   FormControlLabel,
@@ -28,7 +31,7 @@ import {
   RadioGroup,
   styled,
 } from '@mui/material';
-import { FileResult } from '@/app/lib/http-client';
+import { ProgressModalDialog } from './progress-modal-dialog';
 
 export type LetterTemplateModalProps = {
   title: string;
@@ -137,21 +140,13 @@ const TargetRadioGroup = ({
 };
 
 const LettersDownloadButton = ({
-  getFile,
+  mutation,
   singleLetter = false,
 }: {
-  getFile: () => Promise<FileResult>;
+  mutation: UseMutationResult<string, Error, void, unknown>;
   singleLetter?: boolean;
 }) => {
   const { t } = useTranslations();
-
-  const mutation = useFileDownloadMutation({
-    onError: (e) => {
-      console.error(e);
-    },
-    getFile,
-    defaultFileName: 'kirjeet.pdf',
-  });
 
   return (
     <OphButton
@@ -212,7 +207,32 @@ export const AcceptedLetterTemplateModal = createModal(
       ],
     );
 
-    return (
+    const mutation = useMutation({
+      onError: (e) => {
+        console.error(e);
+      },
+      mutationFn: async () => await getFile(),
+    });
+
+    const mutationStarted =
+      mutation.isPending || mutation.isError || mutation.isSuccess;
+    const defaultFileName =
+      hakemusOids?.length === 1
+        ? 'hyvaksymiskirje.pdf'
+        : 'hyvaksymiskirjeet.pdf';
+    const progressMessage =
+      hakemusOids?.length === 1
+        ? 'kirje-modaali.kirje-muodostetaan'
+        : 'kirje-modaali.kirjeet-muodostetaan';
+
+    return mutationStarted ? (
+      <ProgressModalDialog
+        progressMessage={progressMessage}
+        defaultFileName={defaultFileName}
+        title={title}
+        mutation={mutation}
+      />
+    ) : (
       <OphModalDialog
         {...modalProps}
         title={t(title)}
@@ -224,7 +244,7 @@ export const AcceptedLetterTemplateModal = createModal(
             </OphButton>
             <LettersDownloadButton
               singleLetter={hakemusOids && hakemusOids.length === 1}
-              getFile={getFile}
+              mutation={mutation}
             />
           </>
         }
@@ -286,7 +306,24 @@ export const NonAcceptedLetterTemplateModal = createModal(
       [hakukohde, sijoitteluajoId, letterBody],
     );
 
-    return (
+    const mutation = useMutation({
+      onError: (e) => {
+        console.error(e);
+      },
+      mutationFn: async () => await getFile(),
+    });
+
+    const mutationStarted =
+      mutation.isPending || mutation.isError || mutation.isSuccess;
+
+    return mutationStarted ? (
+      <ProgressModalDialog
+        progressMessage="kirje-modaali.kirjeet-muodostetaan"
+        defaultFileName="ei-hyvaksyttyjen-kirjeet.pdf"
+        title={title}
+        mutation={mutation}
+      />
+    ) : (
       <OphModalDialog
         {...modalProps}
         title={t(title)}
@@ -296,7 +333,7 @@ export const NonAcceptedLetterTemplateModal = createModal(
             <OphButton variant="outlined" onClick={modalProps.onClose}>
               {t('yleinen.peruuta')}
             </OphButton>
-            <LettersDownloadButton getFile={getFile} />
+            <LettersDownloadButton mutation={mutation} />
           </>
         }
       >

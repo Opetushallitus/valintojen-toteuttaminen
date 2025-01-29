@@ -14,6 +14,7 @@
     "syksy": "syksy",
     "eiosumia": "Ei hakutuloksia",
     "persivu": "Näytä per sivu:",
+    "lataa": "Lataa",
     "ladataan": "ladataan...",
     "lisatiedot": "Lisätiedot",
     "haku": "Haku",
@@ -36,7 +37,8 @@
     "valitse-kaikki": "Valitse kaikki",
     "tuo-taulukkolaskennasta": "Tuo taulukkolaskennasta",
     "sulje": "Sulje",
-    "muokkaa": "Muokkaa"
+    "muokkaa": "Muokkaa",
+    "suoritus-etenee": "Suoritus etenee virheettömästi ja varoituksetta"
   },
   "kalenteri": {
     "aika": "Aika",
@@ -73,7 +75,8 @@
     "uudelleenyritys": "Yritä uudelleen",
     "tuntematon": "Jokin meni vikaan",
     "tallennus": "Tietojen tallentamisessa tapahtui virhe.",
-    "eimuutoksia": "Ei muutoksia mitä tallentaa."
+    "eimuutoksia": "Ei muutoksia mitä tallentaa.",
+    "tiedosto-lataus": "Tiedoston latauksessa tapahtui virhe."
   },
   "haku": {
     "otsikko": "Haut",
@@ -509,7 +512,9 @@
     "muodosta-kirje": "Muodosta kirje",
     "kohdejoukko": "Kohdejoukko",
     "kohdejoukko-hyvaksytyt": "Kaikki hyväksytyt",
-    "kohdejoukko-luvattomat": "Vain ne hyväksytyt, jotka eivät ole antaneet lupaa päätöksen toimittamiseen sähköisesti"
+    "kohdejoukko-luvattomat": "Vain ne hyväksytyt, jotka eivät ole antaneet lupaa päätöksen toimittamiseen sähköisesti",
+    "kirjeet-muodostetaan": "Kirjeitä muodostetaan....",
+    "kirje-muodostetaan": "Kirjettä muodostetaan...."
   },
   "kirjepohja": {
     "default": "OPH:n oletuspohja",
