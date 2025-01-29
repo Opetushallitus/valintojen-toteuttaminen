@@ -1,6 +1,7 @@
 import { test, expect, Page } from '@playwright/test';
 import {
   checkRow,
+  expectAlertTextVisible,
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
   fixtureFromFile,
@@ -150,11 +151,10 @@ test('shows success toast when successfully updating harkinnanvarainen tila', as
   );
   await selectOption(page, HARKINNANVARAINEN_INPUT_NAME, 'Hyväksytty');
   await page.getByRole('button', { name: 'Tallenna' }).click();
-  const errorDialog = page.getByRole('alert').filter({
-    hasText: 'Harkinnanvaraisten tilojen tallentamisessa tapahtui virhe!',
-  });
-
-  await expect(errorDialog).toBeVisible();
+  await expectAlertTextVisible(
+    page,
+    'Harkinnanvaraisten tilojen tallentamisessa tapahtui virhe!',
+  );
 });
 
 test('shows error toast when failed updating harkinnanvarainen tila', async ({
@@ -172,10 +172,10 @@ test('shows error toast when failed updating harkinnanvarainen tila', async ({
   await selectOption(page, HARKINNANVARAINEN_INPUT_NAME, 'Hyväksytty');
   await page.getByRole('button', { name: 'Tallenna' }).click();
 
-  const successDialog = page.getByRole('alert').filter({
-    hasText: 'Harkinnanvaraisten tilojen tallentaminen onnistui',
-  });
-  await expect(successDialog).toBeVisible();
+  await expectAlertTextVisible(
+    page,
+    'Harkinnanvaraisten tilojen tallentaminen onnistui',
+  );
 });
 
 test('asks for confirmation before navigating to another view without saving changes', async ({

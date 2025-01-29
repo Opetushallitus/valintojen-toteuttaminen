@@ -1,12 +1,13 @@
 import { test, expect, Page } from '@playwright/test';
 import {
   checkRow,
+  mockDocumentExport,
   expectAllSpinnersHidden,
   getMuiCloseButton,
   selectOption,
+  expectAlertTextVisible,
+  startExcelImport,
 } from './playwright-utils';
-import path from 'path';
-import { readFile } from 'fs/promises';
 
 test('displays pistesyotto', async ({ page }) => {
   await goToPisteSyotto(page);
@@ -183,41 +184,12 @@ test.describe('filters', () => {
 
 test.describe('Excel export', () => {
   test('Downloads excel on button press and no errors', async ({ page }) => {
-    await page.route(
-      (url) =>
-        url.pathname.includes(
-          '/valintalaskentakoostepalvelu/resources/pistesyotto/vienti',
-        ),
-      async (route) => {
-        await route.fulfill({
-          json: { id: 'proc_id' },
-        });
-      },
+    await mockDocumentExport(page, (url) =>
+      url.pathname.includes(
+        '/valintalaskentakoostepalvelu/resources/pistesyotto/vienti',
+      ),
     );
 
-    await page.route(
-      (url) =>
-        url.pathname.includes(
-          '/valintalaskentakoostepalvelu/resources/dokumenttiprosessi/proc_id',
-        ),
-      async (route) => {
-        await route.fulfill({
-          json: { dokumenttiId: 'doc_id', kokonaistyo: { valmis: true } },
-        });
-      },
-    );
-    await page.route(
-      (url) =>
-        url.pathname.includes(
-          'valintalaskentakoostepalvelu/resources/dokumentit/lataa/doc_id',
-        ),
-      async (route) => {
-        await route.fulfill({
-          headers: { 'content-type': 'application/octet-stream' },
-          body: await readFile(path.join(__dirname, './fixtures/empty.xls')),
-        });
-      },
-    );
     const downloadPromise = page.waitForEvent('download');
     await page
       .getByRole('button', {
@@ -244,23 +216,12 @@ test.describe('Excel export', () => {
       })
       .click();
     await expectAllSpinnersHidden(page);
-    await expect(
-      page.getByText('Pistetietojen vieminen taulukkolaskentaan epäonnistui'),
-    ).toBeVisible();
+    await expectAlertTextVisible(
+      page,
+      'Pistetietojen vieminen taulukkolaskentaan epäonnistui',
+    );
   });
 });
-
-const startExcelImport = async (page: Page) => {
-  const fileChooserPromise = page.waitForEvent('filechooser');
-  await page
-    .getByRole('button', {
-      name: 'Tuo taulukkolaskennasta',
-    })
-    .click();
-
-  const fileChooser = await fileChooserPromise;
-  await fileChooser.setFiles(path.join(__dirname, './fixtures/empty.xls'));
-};
 
 test.describe('Excel import', () => {
   test('Shows error modal when upload fails completely', async ({ page }) => {
@@ -277,9 +238,9 @@ test.describe('Excel import', () => {
       page.getByText('Tuodaan pistetietoja taulukkolaskennasta'),
     ).toBeVisible();
     await expectAllSpinnersHidden(page);
-    await expect(
-      page.getByText('Pistetietojen tuominen taulukkolaskennasta epäonnistui!'),
-    ).toBeVisible();
+    await page.getByRole('dialog').filter({
+      hasText: 'Pistetietojen tuominen taulukkolaskennasta epäonnistui!',
+    });
   });
 
   test('Shows error modal when upload fails partially', async ({ page }) => {

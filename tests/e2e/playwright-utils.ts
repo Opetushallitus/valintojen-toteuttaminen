@@ -1,6 +1,8 @@
 import AxeBuilder from '@axe-core/playwright';
 import { Locator, Page, Route, expect } from '@playwright/test';
+import { readFile } from 'fs/promises';
 import path from 'path';
+import { isFunction } from 'remeda';
 
 export const expectPageAccessibilityOk = async (page: Page) => {
   const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
@@ -32,24 +34,26 @@ export const expectUrlParamToEqual = async (
 export const trimAllWhitespace = (str: string) =>
   str.replace(/^[\p{Z}\p{C}]+|[\p{Z}\p{C}]+$/gu, '');
 
+export const expectTextboxValue = (value: string) => (locator: Locator) =>
+  expect(locator.getByRole('textbox')).toHaveValue(value);
+
 export const checkRow = async (
   row: Locator,
-  expectedValues: string[],
+  expectedValues: Array<string | ((cell: Locator) => Promise<void>)>,
   cellType: 'th' | 'td' | 'th,td' = 'th,td',
   exact: boolean = true,
 ) => {
   const cells = row.locator(cellType);
-  for (const [index, value] of expectedValues.entries()) {
-    let textContent = trimAllWhitespace(await cells.nth(index).innerText());
-
-    if (textContent.length === 0) {
-      textContent = await cells.nth(index).getByRole('textbox').inputValue();
-    }
-
-    if (exact) {
-      expect(textContent).toEqual(value);
+  for (const [index, expectedValue] of expectedValues.entries()) {
+    const cell = cells.nth(index);
+    if (isFunction(expectedValue)) {
+      await expectedValue(cell);
     } else {
-      expect(textContent).toContain(value);
+      if (exact) {
+        await expect(cell).toHaveText(expectedValue);
+      } else {
+        await expect(cell).toContainText(expectedValue);
+      }
     }
   }
 };
@@ -98,3 +102,98 @@ export async function selectOption(
     .click();
   await expect(combobox).toContainText(expectedOption);
 }
+
+export async function mockDocumentProcess(
+  page: Page,
+  urlMatcher: (url: URL) => boolean,
+  docId: string = 'doc_id',
+) {
+  await page.route(urlMatcher, async (route) => {
+    await route.fulfill({
+      json: { id: 'proc_id' },
+    });
+  });
+  await page.route(
+    (url) =>
+      url.pathname.includes(
+        '/valintalaskentakoostepalvelu/resources/dokumenttiprosessi/proc_id',
+      ),
+    async (route) => {
+      await route.fulfill({
+        json: { dokumenttiId: docId, kokonaistyo: { valmis: true } },
+      });
+    },
+  );
+}
+
+export const mockSeurantaProcess = async (
+  page: Page,
+  urlMatcher: (url: URL) => boolean,
+) => {
+  await page.route(urlMatcher, async (route) => {
+    await route.fulfill({
+      body: 'proc_uuid',
+    });
+  });
+  await page.route(
+    (url) =>
+      url.pathname.includes(
+        '/valintalaskentakoostepalvelu/resources/dokumentinseuranta/proc_uuid',
+      ),
+    async (route) => {
+      await route.fulfill({
+        json: {
+          uuid: 'proc_uuid',
+          valmis: true,
+          dokumenttiId: null,
+          virheilmoitukset: [],
+          virheita: false,
+        },
+      });
+    },
+  );
+};
+
+export async function mockDocumentExport(
+  page: Page,
+  urlMatcher: (url: URL) => boolean,
+) {
+  await mockDocumentProcess(page, urlMatcher);
+  await page.route(
+    (url) =>
+      url.pathname.includes(
+        'valintalaskentakoostepalvelu/resources/dokumentit/lataa/doc_id',
+      ),
+    async (route) => {
+      await route.fulfill({
+        headers: {
+          'content-type': 'application/octet-stream',
+        },
+        body: await readFile(path.join(__dirname, './fixtures/empty.xls')),
+      });
+    },
+  );
+}
+
+export async function expectAlertTextVisible(page: Page, text: string) {
+  const toast = page
+    /** MUI:n modaali asettaa aria-hidden="true" kaikille muille juuritason elementeille, eli myös ToastContainerille.
+     * Täytyy käyttää includeHidden: true, jotta tätä voidaan käyttää myös silloin kun modaali on näkyvissä.
+     */
+
+    .getByRole('alert', { includeHidden: true })
+    .filter({ hasText: text });
+  await expect(toast).toBeVisible();
+}
+
+export const startExcelImport = async (page: Page, within?: Locator) => {
+  const fileChooserPromise = page.waitForEvent('filechooser');
+  await (within ?? page)
+    .getByRole('button', {
+      name: 'Tuo taulukkolaskennasta',
+    })
+    .click();
+
+  const fileChooser = await fileChooserPromise;
+  await fileChooser.setFiles(path.join(__dirname, './fixtures/empty.xls'));
+};
