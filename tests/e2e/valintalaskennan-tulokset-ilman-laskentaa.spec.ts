@@ -217,7 +217,7 @@ test('Fails valintatapajono excel upload', async ({ page }) => {
 
   await expectAlertTextVisible(
     page,
-    'Valintatapajonon tulosten tuominen taulukkolaskennasta epännistui!',
+    'Valintatapajonon tulosten tuomisessa taulukkolaskennasta tapahtui virhe',
   );
 });
 

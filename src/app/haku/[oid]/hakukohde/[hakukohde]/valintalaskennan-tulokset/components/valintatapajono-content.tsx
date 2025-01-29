@@ -44,6 +44,7 @@ import {
 import { FileSelectButton } from '@/app/components/file-select-button';
 import { SpinnerModal } from '@/app/components/spinner-modal';
 import { useConfirmChangesBeforeNavigation } from '@/app/hooks/useConfirmChangesBeforeNavigation';
+import { isEmpty } from 'remeda';
 
 const LaskettuVaiheActions = ({
   hakukohde,
@@ -112,7 +113,9 @@ const useJonoExcelUploadMutation = ({
       }
       addToast({
         key: 'upload-valintatapajono-excel-error',
-        message: 'valintalaskennan-tulokset.virhe-tuo-taulukkolaskennasta',
+        message:
+          t('valintalaskennan-tulokset.virhe-tuo-taulukkolaskennasta') +
+          (isEmpty(error?.message) ? '.' : `: \n${error.message}`),
         type: 'error',
       });
     },
