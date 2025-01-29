@@ -15,7 +15,7 @@ const ToasterContainer = styled(Box)(({ theme }) => ({
   top: theme.spacing(4),
   right: theme.spacing(4),
   bottom: 0,
-  zIndex: 100,
+  zIndex: 99999,
   pointerEvents: 'none',
 }));
 
