@@ -372,14 +372,6 @@ export const jonoTulosMachine = createMachine({
           actions: 'successNotify',
         },
       ],
-      entry: [
-        assign({
-          jonoTulokset: ({ context }) => {
-            // TODO: Yhdistä muuttuneet jonotulokset alkuperäisiin jonotuloksiin ja tyhjennä muuttuneet
-            return context.jonoTulokset;
-          },
-        }),
-      ],
     },
   },
 }).provide({
