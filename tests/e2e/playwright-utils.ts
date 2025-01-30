@@ -30,10 +30,6 @@ export const expectUrlParamToEqual = async (
   expect(param).toEqual(value);
 };
 
-// Poistaa stringin alusta ja lopusta kaikki tyhjät merkit, myös tyhjät unicode-merkit
-export const trimAllWhitespace = (str: string) =>
-  str.replace(/^[\p{Z}\p{C}]+|[\p{Z}\p{C}]+$/gu, '');
-
 export const expectTextboxValue = (value: string) => (locator: Locator) =>
   expect(locator.getByRole('textbox')).toHaveValue(value);
 
@@ -177,10 +173,8 @@ export async function mockDocumentExport(
 
 export async function expectAlertTextVisible(page: Page, text: string) {
   const toast = page
-    /** MUI:n modaali asettaa aria-hidden="true" kaikille muille juuritason elementeille, eli myös ToastContainerille.
-     * Täytyy käyttää includeHidden: true, jotta tätä voidaan käyttää myös silloin kun modaali on näkyvissä.
-     */
-
+    // MUI:n modaali asettaa aria-hidden="true" kaikille muille juuritason elementeille, eli myös ToastContainerille.
+    // Täytyy käyttää includeHidden: true, jotta tämä toimii myös silloin kun modaalin on näkyvissä.
     .getByRole('alert', { includeHidden: true })
     .filter({ hasText: text });
   await expect(toast).toBeVisible();
