@@ -27,6 +27,24 @@ export class OphApiError<D> extends CustomError {
   }
 }
 
+export type OphProcessErrorData = {
+  id: string;
+  message: string;
+  isService?: boolean;
+};
+
+export class OphProcessError extends CustomError {
+  processObject: Array<OphProcessErrorData>;
+
+  constructor(
+    processObject: Array<OphProcessErrorData>,
+    message: string = 'OPH Process error',
+  ) {
+    super(message);
+    this.processObject = processObject;
+  }
+}
+
 const UNAUTHORIZED_MESSAGE =
   'Ei riittäviä käyttöoikeuksia.\n\n Otillräckliga användarrättigheter. \n\n No access rights.';
 

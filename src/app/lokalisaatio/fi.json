@@ -38,7 +38,8 @@
     "tuo-taulukkolaskennasta": "Tuo taulukkolaskennasta",
     "sulje": "Sulje",
     "muokkaa": "Muokkaa",
-    "suoritus-etenee": "Suoritus etenee virheettömästi ja varoituksetta"
+    "suoritus-etenee": "Suoritus etenee virheettömästi ja varoituksetta",
+    "virhe": "Virhe"
   },
   "kalenteri": {
     "aika": "Aika",
@@ -70,13 +71,15 @@
     }
   },
   "virhe": {
+    "varoitukset": "Varoitukset",
     "palvelin": "Palvelinpyyntö epäonnistui!",
     "virhekoodi": "Virhekoodi: ",
     "uudelleenyritys": "Yritä uudelleen",
     "tuntematon": "Jokin meni vikaan",
     "tallennus": "Tietojen tallentamisessa tapahtui virhe.",
     "eimuutoksia": "Ei muutoksia mitä tallentaa.",
-    "tiedosto-lataus": "Tiedoston latauksessa tapahtui virhe."
+    "tiedosto-lataus": "Tiedoston latauksessa tapahtui virhe.",
+    "dokumentin-luonti": "Dokumentin luonti epäonnistui. Yritä uudelleen tai ota yhteyttä ylläpitoon."
   },
   "haku": {
     "otsikko": "Haut",
@@ -520,5 +523,10 @@
     "default": "OPH:n oletuspohja",
     "organizationLatest": "Organisaation viimeisin",
     "organizationLatestByTag": "Hakukohteen viimeisin"
+  },
+  "valintalaskenta": {
+    "hyvaksymiskirjeet": {
+      "eihakijoita": "Ei ole hakijoita, joille kirjeet voisi muodostaa"
+    }
   }
 }

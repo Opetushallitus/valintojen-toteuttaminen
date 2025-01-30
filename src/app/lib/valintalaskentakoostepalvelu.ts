@@ -17,7 +17,13 @@ import {
   pipe,
   prop,
 } from 'remeda';
-import { OphApiError, EMPTY_ARRAY, EMPTY_OBJECT } from './common';
+import {
+  OphApiError,
+  EMPTY_ARRAY,
+  EMPTY_OBJECT,
+  OphProcessError,
+  OphProcessErrorData,
+} from './common';
 import { getHakemukset, getHakijat } from './ataru';
 import {
   getValintakokeet,
@@ -271,6 +277,46 @@ export type GetValintakoeExcelParams = {
   valintakoeTunniste: Array<string>;
 };
 
+type ProcessResponse = {
+  dokumenttiId: string;
+  kasittelyssa: boolean;
+  keskeytetty: boolean;
+  kokonaistyo: {
+    valmis: boolean;
+  };
+  poikkeukset: Array<{
+    tunnisteet: Array<{
+      oid: string;
+      tunniste: string;
+    }>;
+    palvelu: string;
+    viesti: string;
+    palvelukutsu: string;
+  }>;
+  varoitukset: Array<{
+    oid: string;
+    selite: string;
+  }>;
+};
+
+function mapProcessResponseToErrorData(
+  processRes: ProcessResponse,
+): Array<OphProcessErrorData> {
+  const warnings: Array<OphProcessErrorData> = processRes.varoitukset.map(
+    (v) => ({ id: v.oid, message: v.selite }),
+  );
+  return processRes.poikkeukset
+    .flatMap((p) => {
+      const serviceError: Array<OphProcessErrorData> = [
+        { id: p.palvelu, message: p.viesti, isService: true },
+      ];
+      return serviceError.concat(
+        p.tunnisteet.map((t) => ({ id: t.oid, message: t.tunniste })),
+      );
+    })
+    .concat(warnings);
+}
+
 //TODO: poista tämä OK-800 yhteydessä ja käytä toista pollausfunktiota
 const pollDocumentProcess = async (
   processId: string,
@@ -279,17 +325,9 @@ const pollDocumentProcess = async (
   let pollTimes = 10;
 
   while (pollTimes || infiniteWait) {
-    const processRes = await client.get<{
-      dokumenttiId: string;
-      kasittelyssa: boolean;
-      keskeytetty: boolean;
-      kokonaistyo: {
-        valmis: boolean;
-      };
-      poikkeukset: Array<{
-        viesti: string;
-      }>;
-    }>(configuration.dokumenttiProsessiUrl({ id: processId }));
+    const processRes = await client.get<ProcessResponse>(
+      configuration.dokumenttiProsessiUrl({ id: processId }),
+    );
     pollTimes -= 1;
 
     const { data } = processRes;
@@ -315,11 +353,12 @@ const processDocumentAndReturnDocumentId = async (
 ) => {
   const data = await pollDocumentProcess(processId, infiniteWait);
 
-  const { dokumenttiId, poikkeukset } = data;
+  const { dokumenttiId, poikkeukset, varoitukset } = data;
 
-  if (!isEmpty(poikkeukset)) {
-    const errorMessages = poikkeukset.map(prop('viesti')).join('\n');
-    throw Error(errorMessages);
+  if (!isEmpty(poikkeukset) || !isEmpty(varoitukset)) {
+    throw new OphProcessError(mapProcessResponseToErrorData(data));
+    //const errorMessages = poikkeukset.map(prop('viesti')).join('\n');
+    //throw Error(errorMessages);
   }
 
   return dokumenttiId;

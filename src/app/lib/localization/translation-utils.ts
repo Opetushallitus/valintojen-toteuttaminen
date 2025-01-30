@@ -34,7 +34,7 @@ export const INPUT_DATE_FORMAT = 'dd.MM.yyyy';
 export const INPUT_TIME_FORMAT = 'HH:mm';
 
 export function toFormattedDateTimeString(
-  value?: number | Date | string | null,
+  value: number | Date | string | null | undefined,
   formatStr: string = DEFAULT_DATE_TIME_FORMAT,
 ): string {
   if (isNullish(value)) {

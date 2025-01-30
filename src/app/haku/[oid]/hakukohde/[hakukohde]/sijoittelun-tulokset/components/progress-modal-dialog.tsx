@@ -1,8 +1,14 @@
 import { FullClientSpinner } from '@/app/components/client-spinner';
+import { ErrorTable } from '@/app/components/error-table';
 import { FileDownloadButton } from '@/app/components/file-download-button';
 import { useOphModalProps } from '@/app/components/global-modal';
 import { OphModalDialog } from '@/app/components/oph-modal-dialog';
 import { useTranslations } from '@/app/hooks/useTranslations';
+import {
+  isEmpty,
+  OphProcessError,
+  OphProcessErrorData,
+} from '@/app/lib/common';
 import { downloadReadyProcessDocument } from '@/app/lib/valintalaskentakoostepalvelu';
 import { Box, keyframes, styled, Typography } from '@mui/material';
 import { OphButton } from '@opetushallitus/oph-design-system';
@@ -49,6 +55,41 @@ const ProgressContainer = ({
         <ProgressMessage>{t('yleinen.suoritus-etenee')}</ProgressMessage>
       </Box>
     </>
+  );
+};
+
+const ErrorContainer = ({ error }: { error: Error | OphProcessError }) => {
+  const { t } = useTranslations();
+  const errorData: Array<OphProcessErrorData> =
+    error instanceof OphProcessError ? error.processObject : [];
+  const serviceErrors = errorData.filter((e) => e.isService);
+  const normalErrors = errorData.filter((e) => !e.isService);
+
+  return !isEmpty(errorData) ? (
+    <Box sx={{ display: 'flex', rowGap: '0.5rem', flexDirection: 'column' }}>
+      <Typography>{t('virhe.dokumentin-luonti')}</Typography>
+      {!isEmpty(serviceErrors) && (
+        <>
+          {serviceErrors.map((e) => (
+            <Box key={e.id}>
+              <Typography variant="h2">{e.id}</Typography>
+              <Typography>{t(e.message)}</Typography>
+            </Box>
+          ))}
+        </>
+      )}
+      {!isEmpty(normalErrors) && (
+        <Box>
+          <Typography variant="h2">{t('virhe.varoitukset')}</Typography>
+          <ErrorTable error={error} />
+        </Box>
+      )}
+    </Box>
+  ) : (
+    <Box>
+      <Typography>{t('virhe.dokumentin-luonti')}</Typography>
+      <ErrorTable error={error} />
+    </Box>
   );
 };
 
@@ -106,11 +147,8 @@ export const ProgressModalDialog = ({
         </>
       }
     >
-      <>
-        <Typography>
-          {mutation.isError ? 'Virhe' : 'Suoritus valmis'}
-        </Typography>
-      </>
+      {mutation.isError && <ErrorContainer error={mutation.error} />}
+      {mutation.isSuccess && <Typography>Suoritus valmis</Typography>}
     </OphModalDialog>
   );
 };
