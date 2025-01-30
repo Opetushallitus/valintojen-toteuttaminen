@@ -6,7 +6,7 @@ import { Box, Stack } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import {
   LaskennanValinnanvaiheetWithHakijaInfo,
-  useEditableValinnanvaiheTulokset,
+  useEditableValintalaskennanTulokset,
 } from '@/app/hooks/useEditableValintalaskennanTulokset';
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
 import React, { use } from 'react';
@@ -24,6 +24,8 @@ import { Haku } from '@/app/lib/types/kouta-types';
 import { useHaku } from '@/app/hooks/useHaku';
 import { LaskettuValintatapajonoContent } from './components/laskettu-valintatapajono-content';
 import { ValintatapajonoContentProps } from './types/valintatapajono-types';
+import { AccordionBox } from '@/app/components/accordion-box';
+import { ValintatapajonoAccordionTitle } from './components/valintatapajono-accordion-title';
 
 type LasketutValinnanvaiheetParams = {
   hakuOid: string;
@@ -71,13 +73,31 @@ const ValinnanvaiheGroupResults = ({
         {vaiheet?.map((vaihe) =>
           vaihe.valintatapajonot?.map((jono) => {
             return (
-              <JonoContentComponent
+              <Box
                 key={jono.oid}
-                haku={haku}
-                hakukohdeOid={hakukohdeOid}
-                jono={jono}
-                valinnanVaihe={vaihe}
-              />
+                sx={{
+                  width: '100%',
+                }}
+              >
+                <AccordionBox
+                  headingComponent="h4"
+                  id={vaihe.valinnanvaiheoid}
+                  title={
+                    <ValintatapajonoAccordionTitle
+                      valinnanVaihe={vaihe}
+                      jono={jono}
+                    />
+                  }
+                >
+                  <JonoContentComponent
+                    key={jono.oid}
+                    haku={haku}
+                    hakukohdeOid={hakukohdeOid}
+                    jono={jono}
+                    valinnanVaihe={vaihe}
+                  />
+                </AccordionBox>
+              </Box>
             );
           }),
         )}
@@ -129,7 +149,7 @@ const ValintalaskennanTuloksetContent = ({
   hakuOid,
   hakukohdeOid,
 }: LasketutValinnanvaiheetParams) => {
-  const valinnanvaiheet = useEditableValinnanvaiheTulokset({
+  const valinnanvaiheet = useEditableValintalaskennanTulokset({
     hakuOid,
     hakukohdeOid,
   });

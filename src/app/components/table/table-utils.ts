@@ -20,10 +20,11 @@ export const byProp = <T extends Record<string, PropValue>>(
 ) => {
   const asc = direction === 'asc';
   return (a: T, b: T) => {
-    /* eslint-disable @typescript-eslint/no-explicit-any */
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     const aKey = pathOr(a, stringToPath(key), '' as any);
     const aProp = isTranslatedName(aKey) ? translateEntity(aKey) : aKey;
 
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     const bKey = pathOr(b, stringToPath(key), '' as any);
     const bProp = isTranslatedName(bKey) ? translateEntity(bKey) : bKey;
 

@@ -1,8 +1,6 @@
 'use client';
-import { Box, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
-import { AccordionBox } from '@/app/components/accordion-box';
+import { Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { useJonoTuloksetSearch } from '@/app/hooks/useJonoTuloksetSearch';
-import { ValintatapajonoAccordionTitle } from './valintatapajono-accordion-title';
 import { SijoitteluStatusChangeButton } from './sijoittelu-status-change-button';
 import { useSijoitteluStatusMutation } from '../hooks/useSijoitteluStatusMutation';
 import { useHakukohde } from '@/app/hooks/useHakukohde';
@@ -170,48 +168,32 @@ export const LaskennatonValintatapajonoContent = ({
   useConfirmChangesBeforeNavigation(isDirty);
 
   return (
-    <Box
-      key={jono.oid}
-      sx={{
-        width: '100%',
-      }}
-    >
-      <AccordionBox
-        headingComponent="h4"
-        id={valinnanVaihe.valinnanvaiheoid}
-        title={
-          <ValintatapajonoAccordionTitle
-            valinnanVaihe={valinnanVaihe}
-            jono={jono}
-          />
-        }
-      >
-        <LaskennatonVaiheActions
-          jonoTulosActorRef={jonoTulosActorRef}
-          hakukohde={hakukohde}
-          jono={jono}
-        />
-        <LaskennatonValintatapajonoTable
-          haku={haku}
-          setSort={setSort}
-          sort={sort}
-          valintatapajonoOid={valintatapajonooid}
-          jonosijat={results}
-          jonoTulosActorRef={jonoTulosActorRef}
-          pagination={{
-            page,
-            setPage,
-            pageSize,
-            label:
-              t('yleinen.sivutus') +
-              ': ' +
-              getValintatapaJonoNimi({
-                valinnanVaiheNimi: valinnanVaihe.nimi,
-                jonoNimi: jono.nimi,
-              }),
-          }}
-        />
-      </AccordionBox>
-    </Box>
+    <>
+      <LaskennatonVaiheActions
+        jonoTulosActorRef={jonoTulosActorRef}
+        hakukohde={hakukohde}
+        jono={jono}
+      />
+      <LaskennatonValintatapajonoTable
+        haku={haku}
+        setSort={setSort}
+        sort={sort}
+        valintatapajonoOid={valintatapajonooid}
+        jonosijat={results}
+        jonoTulosActorRef={jonoTulosActorRef}
+        pagination={{
+          page,
+          setPage,
+          pageSize,
+          label:
+            t('yleinen.sivutus') +
+            ': ' +
+            getValintatapaJonoNimi({
+              valinnanVaiheNimi: valinnanVaihe.nimi,
+              jonoNimi: jono.nimi,
+            }),
+        }}
+      />
+    </>
   );
 };

@@ -110,15 +110,15 @@ export const PistesyottoExcelUploadButton = ({
 }) => {
   const { t } = useTranslations();
 
-  const mutation = useExcelUploadMutation({
+  const { mutate, isPending } = useExcelUploadMutation({
     hakuOid,
     hakukohdeOid,
   });
 
   return (
     <FileSelectButton
-      loading={mutation.isPending}
-      onFileSelect={(file) => mutation.mutate({ file })}
+      loading={isPending}
+      onFileSelect={(file) => mutate({ file })}
     >
       {t('yleinen.tuo-taulukkolaskennasta')}
     </FileSelectButton>
