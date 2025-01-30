@@ -7,10 +7,10 @@ import { SijoitteluStatusChangeButton } from './sijoittelu-status-change-button'
 import { useSijoitteluStatusMutation } from '../hooks/useSijoitteluStatusMutation';
 import { useHakukohde } from '@/app/hooks/useHakukohde';
 import { useUserPermissions } from '@/app/hooks/useUserPermissions';
-import { LaskettuJonoWithHakijaInfo } from '@/app/hooks/useLasketutValinnanVaiheet';
+import { LaskennanValintatapajonoTulosWithHakijaInfo } from '@/app/hooks/useEditableValintalaskennanTulokset';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { getValintatapaJonoNimi } from '@/app/lib/valintalaskenta-utils';
-import { IlmanLaskentaaValintatapajonoTable } from './laskennaton-valintatapajono-table';
+import { LaskennatonValintatapajonoTable } from './laskennaton-valintatapajono-table';
 import { useCallback } from 'react';
 import { GlobalConfirmationModal } from '@/app/components/global-confirmation-modal';
 import { showModal } from '@/app/components/global-modal';
@@ -40,7 +40,7 @@ const LaskennatonVaiheActions = ({
   jonoTulosActorRef,
 }: {
   hakukohde: Hakukohde;
-  jono: LaskettuJonoWithHakijaInfo;
+  jono: LaskennanValintatapajonoTulosWithHakijaInfo;
   jonoTulosActorRef: JonoTulosActorRef;
 }) => {
   const { data: permissions } = useUserPermissions();
@@ -191,7 +191,7 @@ export const LaskennatonValintatapajonoContent = ({
           hakukohde={hakukohde}
           jono={jono}
         />
-        <IlmanLaskentaaValintatapajonoTable
+        <LaskennatonValintatapajonoTable
           haku={haku}
           setSort={setSort}
           sort={sort}

@@ -5,7 +5,7 @@ import {
 } from '@/app/components/table/list-table';
 import { createHakijaColumn } from '@/app/components/table/table-columns';
 import { ListTableColumn } from '@/app/components/table/table-types';
-import { JonoSijaWithHakijaInfo } from '@/app/hooks/useLasketutValinnanVaiheet';
+import { LaskennanJonosijaTulosWithHakijaInfo } from '@/app/hooks/useEditableValintalaskennanTulokset';
 import { OphInput } from '@opetushallitus/oph-design-system';
 import { useMemo } from 'react';
 import { PisteetInput } from '@/app/components/pisteet-input';
@@ -28,7 +28,7 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 
 const TRANSLATIONS_PREFIX = 'valintalaskennan-tulokset.taulukko';
 
-type JonoColumn = ListTableColumn<JonoSijaWithHakijaInfo>;
+type JonoColumn = ListTableColumn<LaskennanJonosijaTulosWithHakijaInfo>;
 
 const JonosijaInput = ({
   jonoTulosActorRef,
@@ -149,7 +149,7 @@ const KuvausInput = ({
   );
 };
 
-export const IlmanLaskentaaValintatapajonoTable = ({
+export const LaskennatonValintatapajonoTable = ({
   haku,
   jonosijat,
   setSort,
@@ -158,7 +158,7 @@ export const IlmanLaskentaaValintatapajonoTable = ({
   jonoTulosActorRef,
 }: {
   haku: Haku;
-  jonosijat: Array<JonoSijaWithHakijaInfo>;
+  jonosijat: Array<LaskennanJonosijaTulosWithHakijaInfo>;
   valintatapajonoOid: string;
   sort: string;
   setSort: (sort: string) => void;

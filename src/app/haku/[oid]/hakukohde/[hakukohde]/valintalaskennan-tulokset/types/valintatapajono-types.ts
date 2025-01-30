@@ -1,12 +1,12 @@
 import {
-  LaskettuJonoWithHakijaInfo,
-  LaskettuValinnanvaiheInfo,
-} from '@/app/hooks/useLasketutValinnanVaiheet';
+  LaskennanValintatapajonoTulosWithHakijaInfo,
+  LaskennanValinnanvaiheInfo,
+} from '@/app/hooks/useEditableValintalaskennanTulokset';
 import { Haku } from '@/app/lib/types/kouta-types';
 
 export type ValintatapajonoContentProps = {
   haku: Haku;
   hakukohdeOid: string;
-  valinnanVaihe: LaskettuValinnanvaiheInfo;
-  jono: LaskettuJonoWithHakijaInfo;
+  valinnanVaihe: LaskennanValinnanvaiheInfo;
+  jono: LaskennanValintatapajonoTulosWithHakijaInfo;
 };

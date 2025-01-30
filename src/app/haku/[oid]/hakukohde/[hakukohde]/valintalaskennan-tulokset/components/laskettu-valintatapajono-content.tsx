@@ -3,7 +3,7 @@ import { SijoitteluStatusChangeButton } from './sijoittelu-status-change-button'
 import { ValintatapajonoAccordionTitle } from './valintatapajono-accordion-title';
 import { useSijoitteluStatusMutation } from '../hooks/useSijoitteluStatusMutation';
 import { Hakukohde } from '@/app/lib/types/kouta-types';
-import { LaskettuJonoWithHakijaInfo } from '@/app/hooks/useLasketutValinnanVaiheet';
+import { LaskennanValintatapajonoTulosWithHakijaInfo } from '@/app/hooks/useEditableValintalaskennanTulokset';
 import { useHakukohde } from '@/app/hooks/useHakukohde';
 import { useJonoTuloksetSearch } from '@/app/hooks/useJonoTuloksetSearch';
 import { useTranslations } from '@/app/hooks/useTranslations';
@@ -18,7 +18,7 @@ const LaskettuVaiheActions = ({
   jono,
 }: {
   hakukohde: Hakukohde;
-  jono: LaskettuJonoWithHakijaInfo;
+  jono: LaskennanValintatapajonoTulosWithHakijaInfo;
 }) => {
   const { data: permissions } = useUserPermissions();
   const statusMutation = useSijoitteluStatusMutation(hakukohde.oid);

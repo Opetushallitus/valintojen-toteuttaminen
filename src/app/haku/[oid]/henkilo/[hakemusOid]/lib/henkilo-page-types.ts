@@ -1,4 +1,4 @@
-import { LasketutValinnanvaiheet } from '@/app/hooks/useLasketutValinnanVaiheet';
+import { LaskennanValinnanvaiheet } from '@/app/hooks/useEditableValintalaskennanTulokset';
 import { Hakukohde } from '@/app/lib/types/kouta-types';
 import { ValintakokeenPisteet } from '@/app/lib/types/laskenta-types';
 import { ValinnanTulosModel } from '@/app/lib/types/valinta-tulos-types';
@@ -12,7 +12,7 @@ export type ValinnanTulosLisatiedoilla = ValinnanTulosModel & {
 
 export type HenkilonHakukohdeTuloksilla = Hakukohde & {
   hakutoiveNumero: number;
-  valinnanvaiheet?: LasketutValinnanvaiheet;
+  valinnanvaiheet?: LaskennanValinnanvaiheet;
   valinnanTulos?: ValinnanTulosLisatiedoilla;
   kokeet?: Array<ValintakoeAvaimet>;
   pisteet?: Array<ValintakokeenPisteet>;

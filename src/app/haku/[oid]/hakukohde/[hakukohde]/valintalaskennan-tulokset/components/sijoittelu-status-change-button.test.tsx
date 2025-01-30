@@ -4,7 +4,7 @@ import { SijoitteluStatusChangeButton } from './sijoittelu-status-change-button'
 import { useSijoitteluStatusMutation } from '../hooks/useSijoitteluStatusMutation';
 import { UserPermissions } from '@/app/lib/permissions';
 import { OPH_ORGANIZATION_OID } from '@/app/lib/constants';
-import { LaskettuJonoWithHakijaInfo } from '@/app/hooks/useLasketutValinnanVaiheet';
+import { LaskennanValintatapajonoTulosWithHakijaInfo } from '@/app/hooks/useEditableValintalaskennanTulokset';
 
 vi.mock('@/app/hooks/useTranslations', () => ({
   useTranslations: () => {
@@ -40,7 +40,7 @@ const renderSijoitteluButton = ({
           valmisSijoiteltavaksi: true,
           siirretaanSijoitteluun: true,
           ...jono,
-        } as LaskettuJonoWithHakijaInfo
+        } as LaskennanValintatapajonoTulosWithHakijaInfo
       }
       permissions={
         {

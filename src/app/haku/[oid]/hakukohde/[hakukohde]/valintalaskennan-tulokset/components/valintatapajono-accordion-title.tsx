@@ -2,9 +2,9 @@
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
 import {
-  LaskettuJonoWithHakijaInfo,
-  LaskettuValinnanvaihe,
-} from '@/app/hooks/useLasketutValinnanVaiheet';
+  LaskennanValintatapajonoTulosWithHakijaInfo,
+  LaskennanValinnanvaiheTulos,
+} from '@/app/hooks/useEditableValintalaskennanTulokset';
 import { getValintatapaJonoNimi } from '@/app/lib/valintalaskenta-utils';
 import { AccordionBoxTitle } from '@/app/components/accordion-box-title';
 import { TFunction } from 'i18next';
@@ -28,8 +28,8 @@ export const ValintatapajonoAccordionTitle = ({
   valinnanVaihe,
   jono,
 }: {
-  valinnanVaihe: LaskettuValinnanvaihe;
-  jono: LaskettuJonoWithHakijaInfo;
+  valinnanVaihe: LaskennanValinnanvaiheTulos;
+  jono: LaskennanValintatapajonoTulosWithHakijaInfo;
 }) => {
   const { t } = useTranslations();
 

@@ -1,5 +1,5 @@
 import {
-  LaskettuValinnanVaiheModel,
+  ValintalaskennanTulosValinnanvaiheModel,
   TuloksenTila,
 } from '@/app/lib/types/laskenta-types';
 import { useActorRef, useSelector } from '@xstate/react';
@@ -7,10 +7,10 @@ import { useCallback, useEffect } from 'react';
 import { ActorRefFrom, assign, createMachine, fromPromise } from 'xstate';
 import { TranslatedName } from '../localization/localization-types';
 import {
-  JonoSija,
-  LaskettuJono,
-  LaskettuValinnanvaiheInfo,
-} from '@/app/hooks/useLasketutValinnanVaiheet';
+  LaskennanJonosijaTulos,
+  LaskennanValintatapajonoTulos,
+  LaskennanValinnanvaiheInfo,
+} from '@/app/hooks/useEditableValintalaskennanTulokset';
 import { GenericEvent, isEmpty } from '@/app/lib/common';
 import { produce } from 'immer';
 import {
@@ -30,14 +30,14 @@ import {
 import { Hakukohde } from '@/app/lib/types/kouta-types';
 import { saveValinnanvaiheTulokset } from '../valintalaskenta-service';
 
-type JonoTulosByHakemusOid = Record<string, JonoSija>;
+type JonoTulosByHakemusOid = Record<string, LaskennanJonosijaTulos>;
 
 export type JonoTulosContext = {
   jonoTulokset: JonoTulosByHakemusOid;
   changedJonoTulokset: JonoTulosByHakemusOid;
   jarjestysPeruste: JarjestysPeruste;
-  valinnanvaihe: LaskettuValinnanvaiheInfo;
-  valintatapajono: LaskettuJono;
+  valinnanvaihe: LaskennanValinnanvaiheInfo;
+  valintatapajono: LaskennanValintatapajonoTulos;
   onEvent: (toast: GenericEvent) => void;
   hakukohde: HakukohdeJonoTulosProps;
 };
@@ -68,8 +68,8 @@ export type JonoTulosUpdateEvent = {
 
 export type JonoTulosContextInput = {
   hakukohde: HakukohdeJonoTulosProps;
-  valinnanvaihe: LaskettuValinnanvaiheInfo;
-  valintatapajono: LaskettuJono;
+  valinnanvaihe: LaskennanValinnanvaiheInfo;
+  valintatapajono: LaskennanValintatapajonoTulos;
   onEvent: (toast: GenericEvent) => void;
 };
 
@@ -99,7 +99,10 @@ export type JarjestysperusteChangeEvent = {
 
 export type JonoTulosActorRef = ActorRefFrom<typeof jonoTulosMachine>;
 
-const isJonoTulosEqual = (tulos1: JonoSija, tulos2: JonoSija) => {
+const isJonoTulosEqual = (
+  tulos1: LaskennanJonosijaTulos,
+  tulos2: LaskennanJonosijaTulos,
+) => {
   return isDeepEqual(tulos1, tulos2);
 };
 
@@ -248,7 +251,7 @@ export const jonoTulosMachine = createMachine({
       invoke: {
         src: 'updateJonoTulos',
         input: ({ context }) => {
-          const valinnanvaihe: LaskettuValinnanVaiheModel = {
+          const valinnanvaihe: ValintalaskennanTulosValinnanvaiheModel = {
             ...context.valinnanvaihe,
             hakuOid: context.hakukohde.hakuOid,
           };
@@ -399,7 +402,7 @@ export const jonoTulosMachine = createMachine({
         input,
       }: {
         input: {
-          valinnanvaihe: LaskettuValinnanVaiheModel;
+          valinnanvaihe: ValintalaskennanTulosValinnanvaiheModel;
           hakukohde: HakukohdeJonoTulosProps;
         };
       }) => {
@@ -414,8 +417,8 @@ export const jonoTulosMachine = createMachine({
 
 type JonoTulosMachineParams = {
   hakukohde: HakukohdeJonoTulosProps;
-  valinnanvaihe: LaskettuValinnanvaiheInfo;
-  laskettuJono: LaskettuJono;
+  valinnanvaihe: LaskennanValinnanvaiheInfo;
+  laskettuJono: LaskennanValintatapajonoTulos;
   onEvent: (toast: GenericEvent) => void;
 };
 

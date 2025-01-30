@@ -5,9 +5,9 @@ import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary'
 import { Box, Stack } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import {
-  LasketutValinnanvaiheetWithHakijaInfo,
-  useLasketutValinnanVaiheet,
-} from '@/app/hooks/useLasketutValinnanVaiheet';
+  LaskennanValinnanvaiheetWithHakijaInfo,
+  useEditableValinnanvaiheTulokset,
+} from '@/app/hooks/useEditableValintalaskennanTulokset';
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
 import React, { use } from 'react';
 import { LaskennatonValintatapajonoContent } from './components/laskennaton-valintatapajono-content';
@@ -59,7 +59,7 @@ const ValinnanvaiheGroupResults = ({
   title: string;
   haku: Haku;
   hakukohdeOid: string;
-  vaiheet?: LasketutValinnanvaiheetWithHakijaInfo;
+  vaiheet?: LaskennanValinnanvaiheetWithHakijaInfo;
   JonoContentComponent: React.ComponentType<ValintatapajonoContentProps>;
 }) => {
   return (
@@ -93,11 +93,11 @@ const ValinnanvaiheetContent = ({
 }: {
   hakukohdeOid: string;
   haku: Haku;
-  valinnanvaiheet: LasketutValinnanvaiheetWithHakijaInfo;
+  valinnanvaiheet: LaskennanValinnanvaiheetWithHakijaInfo;
 }) => {
   const { t } = useTranslations();
 
-  const { valinnanvaiheetIlmanLaskentaa, lasketutValinnanvaiheet } = groupBy(
+  const { lasketutValinnanvaiheet, valinnanvaiheetIlmanLaskentaa } = groupBy(
     valinnanvaiheet,
     (vaihe) =>
       vaihe.createdAt
@@ -129,7 +129,7 @@ const ValintalaskennanTuloksetContent = ({
   hakuOid,
   hakukohdeOid,
 }: LasketutValinnanvaiheetParams) => {
-  const valinnanvaiheet = useLasketutValinnanVaiheet({
+  const valinnanvaiheet = useEditableValinnanvaiheTulokset({
     hakuOid,
     hakukohdeOid,
   });

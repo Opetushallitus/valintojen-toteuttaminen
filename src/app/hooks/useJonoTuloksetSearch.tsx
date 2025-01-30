@@ -9,7 +9,7 @@ import {
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
 } from '@/app/lib/constants';
 import { useTranslations } from './useTranslations';
-import { JonoSijaWithHakijaInfo } from './useLasketutValinnanVaiheet';
+import { LaskennanJonosijaTulosWithHakijaInfo } from './useEditableValintalaskennanTulokset';
 import { hakemusFilter } from './filters';
 
 const DEFAULT_PAGE_SIZE = 10;
@@ -61,7 +61,7 @@ export const useJonoTuloksetSearchParams = (id?: string) => {
 
 export const useJonoTuloksetSearch = (
   jonoId: string,
-  jonoTulos: Array<JonoSijaWithHakijaInfo>,
+  jonoTulos: Array<LaskennanJonosijaTulosWithHakijaInfo>,
 ) => {
   const { translateEntity } = useTranslations();
 

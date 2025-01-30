@@ -247,7 +247,7 @@ test('Sends edited data to backend when saving', async ({ page }) => {
     page.waitForRequest(
       (req) =>
         req.url().includes(
-          configuration.hakukohteenLasketutValinnanVaiheetUrl({
+          configuration.hakukohteenValintalaskennanTuloksetUrl({
             hakukohdeOid: '1.2.246.562.20.00000000000000045105',
           }),
         ) && req.method() === 'POST',

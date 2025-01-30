@@ -1,6 +1,6 @@
-import { hakukohteenLasketutValinnanvaiheetQueryOptions } from '@/app/hooks/useLasketutValinnanVaiheet';
 import useToaster from '@/app/hooks/useToaster';
 import {
+  hakukohteenValintalaskennanTuloksetQueryOptions,
   muutaSijoittelunStatus,
   MuutaSijoittelunStatusProps,
 } from '@/app/lib/valintalaskenta-service';
@@ -14,7 +14,7 @@ export const useSijoitteluStatusMutation = (hakukohdeOid: string) => {
     mutationFn: async ({ jono, status }: MuutaSijoittelunStatusProps) => {
       await muutaSijoittelunStatus({ jono, status });
       queryClient.setQueryData(
-        hakukohteenLasketutValinnanvaiheetQueryOptions(hakukohdeOid).queryKey,
+        hakukohteenValintalaskennanTuloksetQueryOptions(hakukohdeOid).queryKey,
         (vaiheet) =>
           vaiheet?.map((vaihe) => ({
             ...vaihe,

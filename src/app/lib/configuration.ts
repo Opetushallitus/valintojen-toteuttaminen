@@ -72,7 +72,7 @@ export const configuration = {
   valintalaskentakerrallaUrl: VALINTALASKENTAKERRALLA_VANHA
     ? `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintalaskentakerralla`
     : `${DOMAIN}/valintalaskenta-laskenta-service/resources/valintalaskentakerralla`,
-  hakemuksenLasketutValinnanvaiheetUrl: ({
+  hakemuksenValintalaskennanTuloksetUrl: ({
     hakuOid,
     hakemusOid,
   }: {
@@ -80,7 +80,7 @@ export const configuration = {
     hakemusOid: string;
   }) =>
     `${DOMAIN}/valintalaskenta-laskenta-service/resources/hakemus/${hakuOid}/${hakemusOid}`,
-  hakukohteenLasketutValinnanVaiheetUrl: ({
+  hakukohteenValintalaskennanTuloksetUrl: ({
     hakukohdeOid,
   }: {
     hakukohdeOid: string;

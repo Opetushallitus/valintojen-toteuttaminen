@@ -28,7 +28,7 @@ import { useToaster } from '@/app/hooks/useToaster';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { HaunAsetukset } from '@/app/lib/types/haun-asetukset';
 import { ErrorRow } from './error-row';
-import { hakukohteenLasketutValinnanvaiheetQueryOptions } from '@/app/hooks/useLasketutValinnanVaiheet';
+import { hakukohteenValintalaskennanTuloksetQueryOptions } from '@/app/lib/valintalaskenta-service';
 
 type HallintaTableParams = {
   haku: Haku;
@@ -58,7 +58,7 @@ const HallintaTable = ({
           queryKey: ['getValinnanvaiheet', hakukohde.oid],
           queryFn: () => getValinnanvaiheet(hakukohde.oid),
         },
-        hakukohteenLasketutValinnanvaiheetQueryOptions(hakukohde.oid),
+        hakukohteenValintalaskennanTuloksetQueryOptions(hakukohde.oid),
       ],
     });
 

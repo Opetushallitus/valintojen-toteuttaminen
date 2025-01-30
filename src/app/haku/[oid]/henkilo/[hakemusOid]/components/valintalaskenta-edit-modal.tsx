@@ -7,7 +7,7 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { OphButton, OphInput } from '@opetushallitus/oph-design-system';
 import { Stack } from '@mui/material';
 import { useState } from 'react';
-import { LaskettuJono } from '@/app/hooks/useLasketutValinnanVaiheet';
+import { LaskennanValintatapajonoTulos } from '@/app/hooks/useEditableValintalaskennanTulokset';
 import { Hakukohde } from '@/app/lib/types/kouta-types';
 import { HakutoiveTitle } from './hakutoive-title';
 import { isEmpty } from 'remeda';
@@ -16,7 +16,7 @@ import { EditModalDialog } from './edit-modal-dialog';
 import { LocalizedSelect } from '@/app/components/localized-select';
 import { useJarjestyskriteeriState } from './jarjestyskriteeri-state';
 import { JarjestyskriteeriParams } from './jarjestyskriteeri-types';
-import { hakemuksenLasketutValinnanvaiheetQueryOptions } from '@/app/lib/valintalaskenta-service';
+import { hakemuksenValintalaskennanTuloksetQueryOptions } from '@/app/lib/valintalaskenta-service';
 import useToaster from '@/app/hooks/useToaster';
 import { QueryClient, useQueryClient } from '@tanstack/react-query';
 import { useTuloksenTilaOptions } from '@/app/hooks/useTuloksenTilaOptions';
@@ -124,7 +124,7 @@ const refetchValinnanvaiheet = ({
   hakuOid: string;
   hakemusOid: string;
 }) => {
-  const options = hakemuksenLasketutValinnanvaiheetQueryOptions({
+  const options = hakemuksenValintalaskennanTuloksetQueryOptions({
     hakuOid,
     hakemusOid,
   });
@@ -135,7 +135,7 @@ const refetchValinnanvaiheet = ({
 export const ValintalaskentaEditModal = createModal<{
   hakijanNimi: string;
   hakukohde: Hakukohde;
-  valintatapajono: LaskettuJono;
+  valintatapajono: LaskennanValintatapajonoTulos;
   hakutoiveNumero: number;
 }>(({ hakutoiveNumero, hakijanNimi, hakukohde, valintatapajono }) => {
   const { open, TransitionProps, onClose } = useOphModalProps();

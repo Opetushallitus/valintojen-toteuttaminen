@@ -56,7 +56,7 @@ test.beforeEach(async ({ page }) => {
     });
   });
   await page.route(
-    configuration.hakemuksenLasketutValinnanvaiheetUrl({
+    configuration.hakemuksenValintalaskennanTuloksetUrl({
       hakuOid: '1.2.246.562.29.00000000000000045102',
       hakemusOid: NUKETTAJA_HAKEMUS_OID,
     }),
@@ -201,7 +201,7 @@ test('Displays selected henkilö info with hakutoive but without valintalaskenta
   page,
 }) => {
   await page.route(
-    configuration.hakemuksenLasketutValinnanvaiheetUrl({
+    configuration.hakemuksenValintalaskennanTuloksetUrl({
       hakuOid: '1.2.246.562.29.00000000000000045102',
       hakemusOid: NUKETTAJA_HAKEMUS_OID,
     }),

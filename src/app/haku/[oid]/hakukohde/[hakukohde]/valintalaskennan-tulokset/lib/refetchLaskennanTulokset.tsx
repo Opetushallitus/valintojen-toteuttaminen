@@ -1,4 +1,4 @@
-import { hakukohteenLasketutValinnanvaiheetQueryOptions } from '@/app/hooks/useLasketutValinnanVaiheet';
+import { hakukohteenValintalaskennanTuloksetQueryOptions } from '@/app/lib/valintalaskenta-service';
 import { QueryClient } from '@tanstack/react-query';
 
 export const refetchLaskennanTulokset = ({
@@ -8,7 +8,7 @@ export const refetchLaskennanTulokset = ({
   queryClient: QueryClient;
   hakukohdeOid: string;
 }) => {
-  const options = hakukohteenLasketutValinnanvaiheetQueryOptions(hakukohdeOid);
+  const options = hakukohteenValintalaskennanTuloksetQueryOptions(hakukohdeOid);
   queryClient.resetQueries(options);
   queryClient.invalidateQueries(options);
 };

@@ -10,14 +10,14 @@ import {
   JarjestysPeruste,
 } from './jono-tulos-state';
 import { TuloksenTila } from '../types/laskenta-types';
-import { JonoSija } from '@/app/hooks/useLasketutValinnanVaiheet';
+import { LaskennanJonosijaTulos } from '@/app/hooks/useEditableValintalaskennanTulokset';
 import { when } from 'remeda';
 
 const mockContextInput = ({
   jonoTulos = {},
   jarjestysperuste = 'jonosija',
 }: {
-  jonoTulos?: Partial<JonoSija>;
+  jonoTulos?: Partial<LaskennanJonosijaTulos>;
   jarjestysperuste?: JarjestysPeruste;
 } = {}) => {
   const { pisteet = '', jonosija = '', tuloksenTila, kuvaus } = jonoTulos;
