@@ -29,7 +29,7 @@ export type LaskennanJonosijaTulos<
   A extends Record<string, unknown> = Record<string, unknown>,
 > = Omit<
   Partial<ValintalaskennanValintatapaJonosijaModel>,
-  'harkinnanvarainen' | 'prioriteetti' | 'jonosija'
+  'harkinnanvarainen' | 'jonosija'
 > & {
   hakemusOid: string;
   hakijaOid: string;

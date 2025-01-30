@@ -340,7 +340,7 @@ export const jonoTulosMachine = createMachine({
                     hakijaOid: jonoTulos.hakijaOid,
                     jonosija: jonosijaNumber,
                     tuloksenTila,
-                    prioriteetti: 0, // TODO
+                    prioriteetti: jonoTulos.prioriteetti ?? 0,
                     jarjestyskriteerit,
                     harkinnanvarainen: Boolean(jonoTulos.harkinnanvarainen),
                   };
