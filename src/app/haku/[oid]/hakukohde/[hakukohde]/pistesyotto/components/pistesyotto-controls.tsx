@@ -2,9 +2,11 @@ import { usePisteSyottoSearchParams } from '../hooks/usePisteSyottoSearch';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Box, SelectChangeEvent, Stack } from '@mui/material';
 import { ValintakoeAvaimet } from '@/app/lib/types/valintaperusteet-types';
-import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { LocalizedSelect } from '@/app/components/localized-select';
-import { OphCheckbox } from '@opetushallitus/oph-design-system';
+import {
+  OphCheckbox,
+  OphFormFieldWrapper,
+} from '@opetushallitus/oph-design-system';
 import { SearchInput } from '@/app/components/search-input';
 import { OsallistumisenTilaSelect } from '@/app/components/osallistumisen-tila-select';
 
@@ -46,7 +48,7 @@ export const PisteSyottoControls = ({
           name="pistesyotto-search"
           sx={{ flexGrow: 4 }}
         />
-        <OphFormControl
+        <OphFormFieldWrapper
           sx={{
             width: 'auto',
             minWidth: '140px',
@@ -67,7 +69,7 @@ export const PisteSyottoControls = ({
             />
           )}
         />
-        <OphFormControl
+        <OphFormFieldWrapper
           sx={{
             width: 'auto',
             minWidth: '140px',

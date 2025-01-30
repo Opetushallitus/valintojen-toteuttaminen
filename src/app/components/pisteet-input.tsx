@@ -4,10 +4,12 @@ import {
   InputValidator,
   numberValidator,
 } from '@/app/components/form/input-validators';
-import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { useState, ChangeEvent } from 'react';
-import { OphInput } from '@opetushallitus/oph-design-system';
+import {
+  OphFormFieldWrapper,
+  OphInput,
+} from '@opetushallitus/oph-design-system';
 
 export const PisteetInput = ({
   min,
@@ -37,23 +39,23 @@ export const PisteetInput = ({
     nullable: true,
   });
 
-  const [helperText, setHelperText] = useState<string[] | undefined>();
+  const [errorMessage, setErrorMessage] = useState<string | undefined>();
 
   const changeArvo = (event: ChangeEvent<HTMLInputElement>) => {
     onChange?.(event.target.value);
     const validationResult = arvoValidator.validate(event.target.value);
     setArvoValid(!validationResult.error);
     if (!validationResult.error) {
-      setHelperText(undefined);
+      setErrorMessage(undefined);
     } else {
-      setHelperText([validationResult.helperText ?? '']);
+      setErrorMessage(validationResult.helperText);
     }
   };
 
   return (
-    <OphFormControl
+    <OphFormFieldWrapper
       error={!arvoValid}
-      errorMessages={helperText}
+      errorMessage={errorMessage}
       disabled={disabled}
       renderInput={() => (
         <OphInput

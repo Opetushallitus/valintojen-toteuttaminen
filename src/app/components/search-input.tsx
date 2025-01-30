@@ -1,12 +1,14 @@
-import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Search } from '@mui/icons-material';
 import { InputAdornment } from '@mui/material';
 import { ChangeEvent } from 'react';
 import { styled } from '@/app/lib/theme';
-import { OphInput } from '@opetushallitus/oph-design-system';
+import {
+  OphFormFieldWrapper,
+  OphInput,
+} from '@opetushallitus/oph-design-system';
 
-const StyledContol = styled(OphFormControl)({
+const StyledContol = styled(OphFormFieldWrapper)({
   flexGrow: 0,
   flexBasis: '380px',
   minWidth: '200px',

@@ -1,10 +1,12 @@
-import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { Search } from '@mui/icons-material';
 import { InputAdornment } from '@mui/material';
 import { useHarkinnanvaraisetSearchParams } from '../hooks/useHarkinnanvaraisetSearchParams';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { ChangeEvent } from 'react';
-import { OphInput } from '@opetushallitus/oph-design-system';
+import {
+  OphFormFieldWrapper,
+  OphInput,
+} from '@opetushallitus/oph-design-system';
 
 export const HarkinnanvaraisetSearchInput = () => {
   const { searchPhrase, setSearchPhrase } = useHarkinnanvaraisetSearchParams();
@@ -14,7 +16,7 @@ export const HarkinnanvaraisetSearchInput = () => {
   };
 
   return (
-    <OphFormControl
+    <OphFormFieldWrapper
       label={t('harkinnanvaraiset.hae')}
       sx={{
         minWidth: '380px',
