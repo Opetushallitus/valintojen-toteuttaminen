@@ -17,7 +17,7 @@ import {
   showModal,
   useOphModalProps,
 } from '@/app/components/global-modal';
-import { SpinnerModal } from '@/app/components/spinner-modal';
+import { GlobalSpinnerModal } from '@/app/components/global-spinner-modal';
 import { FileSelectButton } from '@/app/components/file-select-button';
 
 const refetchPisteTulokset = ({
@@ -71,7 +71,7 @@ const useExcelUploadMutation = ({
 
   return useMutation({
     mutationFn: async ({ file }: { file: File }) => {
-      showModal(SpinnerModal, {
+      showModal(GlobalSpinnerModal, {
         title: t('pistesyotto.tuodaan-pistetietoja-taulukkolaskennasta'),
       });
       return await savePistesyottoExcel({
@@ -81,7 +81,7 @@ const useExcelUploadMutation = ({
       });
     },
     onError: (error) => {
-      hideModal(SpinnerModal);
+      hideModal(GlobalSpinnerModal);
       // Tuonti onnistui osittain -> ladataan muuttuneet pistetulokset
       if (error instanceof OphApiError) {
         refetchPisteTulokset({ queryClient, hakuOid, hakukohdeOid });
@@ -91,7 +91,7 @@ const useExcelUploadMutation = ({
     onSuccess: () => {
       // Ladataan muuttuneet pistetulokset
       refetchPisteTulokset({ queryClient, hakuOid, hakukohdeOid });
-      hideModal(SpinnerModal);
+      hideModal(GlobalSpinnerModal);
       addToast({
         key: 'put-pistesyotto-excel-success',
         message: 'pistesyotto.tuo-taulukkolaskennasta-onnistui',

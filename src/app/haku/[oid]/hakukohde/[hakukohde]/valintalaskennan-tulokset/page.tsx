@@ -10,11 +10,7 @@ import {
 } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
 import React, { use } from 'react';
-import {
-  LaskettuValintatapajonoContent,
-  LaskettuValintatapajonoContentProps,
-  ValintatapajonoIlmanLaskentaaContent,
-} from './components/valintatapajono-content';
+import { LaskennatonValintatapajonoContent } from './components/laskennaton-valintatapajono-content';
 import { useJonoTuloksetSearchParams } from '@/app/hooks/useJonoTuloksetSearch';
 import { FullClientSpinner } from '@/app/components/client-spinner';
 import { isEmpty } from '@/app/lib/common';
@@ -26,6 +22,8 @@ import { OphTypography } from '@opetushallitus/oph-design-system';
 import { groupBy } from 'remeda';
 import { Haku } from '@/app/lib/types/kouta-types';
 import { useHaku } from '@/app/hooks/useHaku';
+import { LaskettuValintatapajonoContent } from './components/laskettu-valintatapajono-content';
+import { ValintatapajonoContentProps } from './types/valintatapajono-types';
 
 type LasketutValinnanvaiheetParams = {
   hakuOid: string;
@@ -62,7 +60,7 @@ const ValinnanvaiheGroupResults = ({
   haku: Haku;
   hakukohdeOid: string;
   vaiheet?: LasketutValinnanvaiheetWithHakijaInfo;
-  JonoContentComponent: React.ComponentType<LaskettuValintatapajonoContentProps>;
+  JonoContentComponent: React.ComponentType<ValintatapajonoContentProps>;
 }) => {
   return (
     vaiheet && (
@@ -114,7 +112,7 @@ const ValinnanvaiheetContent = ({
         haku={haku}
         hakukohdeOid={hakukohdeOid}
         vaiheet={valinnanvaiheetIlmanLaskentaa}
-        JonoContentComponent={ValintatapajonoIlmanLaskentaaContent}
+        JonoContentComponent={LaskennatonValintatapajonoContent}
       />
       <ValinnanvaiheGroupResults
         title={t('valintalaskennan-tulokset.lasketut-valinnanvaiheet')}

@@ -2,25 +2,20 @@
 import { Box, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { AccordionBox } from '@/app/components/accordion-box';
 import { useJonoTuloksetSearch } from '@/app/hooks/useJonoTuloksetSearch';
-import { LaskettuValintatapajonoTable } from './laskettu-valintatapajono-table';
 import { ValintatapajonoAccordionTitle } from './valintatapajono-accordion-title';
 import { SijoitteluStatusChangeButton } from './sijoittelu-status-change-button';
 import { useSijoitteluStatusMutation } from '../hooks/useSijoitteluStatusMutation';
 import { useHakukohde } from '@/app/hooks/useHakukohde';
 import { useUserPermissions } from '@/app/hooks/useUserPermissions';
-import {
-  hakukohteenLasketutValinnanvaiheetQueryOptions,
-  LaskettuJonoWithHakijaInfo,
-  LaskettuValinnanvaiheInfo,
-} from '@/app/hooks/useLasketutValinnanVaiheet';
+import { LaskettuJonoWithHakijaInfo } from '@/app/hooks/useLasketutValinnanVaiheet';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { getValintatapaJonoNimi } from '@/app/lib/valintalaskenta-utils';
-import { IlmanLaskentaaValintatapajonoTable } from './ilman-laskentaa-valintatapajono-table';
+import { IlmanLaskentaaValintatapajonoTable } from './laskennaton-valintatapajono-table';
 import { useCallback } from 'react';
-import { ArvoTypeChangeConfirmationModal } from './arvo-type-change-confirmation-modal';
-import { hideModal, showModal } from '@/app/components/global-modal';
+import { GlobalConfirmationModal } from '@/app/components/global-confirmation-modal';
+import { showModal } from '@/app/components/global-modal';
 import { OphButton } from '@opetushallitus/oph-design-system';
-import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
+import { Hakukohde } from '@/app/lib/types/kouta-types';
 import {
   JarjestysPeruste,
   JonoTulosActorRef,
@@ -30,133 +25,14 @@ import {
   useSelectedJarjestysperuste,
 } from '@/app/lib/state/jono-tulos-state';
 import useToaster from '@/app/hooks/useToaster';
-import { GenericEvent, OphApiError } from '@/app/lib/common';
-import {
-  QueryClient,
-  useMutation,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { GenericEvent } from '@/app/lib/common';
+import { useQueryClient } from '@tanstack/react-query';
 import { FileDownloadButton } from '@/app/components/file-download-button';
-import {
-  getValintatapajonoTulosExcel,
-  saveValintatapajonoTulosExcel,
-} from '@/app/lib/valintalaskentakoostepalvelu';
-import { FileSelectButton } from '@/app/components/file-select-button';
-import { SpinnerModal } from '@/app/components/spinner-modal';
+import { getValintatapajonoTulosExcel } from '@/app/lib/valintalaskentakoostepalvelu';
 import { useConfirmChangesBeforeNavigation } from '@/app/hooks/useConfirmChangesBeforeNavigation';
-import { isEmpty } from 'remeda';
-
-const LaskettuVaiheActions = ({
-  hakukohde,
-  jono,
-}: {
-  hakukohde: Hakukohde;
-  jono: LaskettuJonoWithHakijaInfo;
-}) => {
-  const { data: permissions } = useUserPermissions();
-  const statusMutation = useSijoitteluStatusMutation(hakukohde.oid);
-
-  return (
-    <SijoitteluStatusChangeButton
-      organisaatioOid={hakukohde?.organisaatioOid}
-      jono={jono}
-      permissions={permissions}
-      statusMutation={statusMutation}
-    />
-  );
-};
-const refetchLaskennanTulokset = ({
-  queryClient,
-  hakukohdeOid,
-}: {
-  queryClient: QueryClient;
-  hakukohdeOid: string;
-}) => {
-  const options = hakukohteenLasketutValinnanvaiheetQueryOptions(hakukohdeOid);
-  queryClient.resetQueries(options);
-  queryClient.invalidateQueries(options);
-};
-
-const useJonoExcelUploadMutation = ({
-  hakuOid,
-  hakukohdeOid,
-  valintatapajonoOid,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
-  valintatapajonoOid: string;
-}) => {
-  const { addToast } = useToaster();
-  const { t } = useTranslations();
-
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({ file }: { file: File }) => {
-      showModal(SpinnerModal, {
-        title: t(
-          'valintalaskennan-tulokset.tuodaan-tuloksia-taulukkolaskennasta',
-        ),
-      });
-      return await saveValintatapajonoTulosExcel({
-        hakuOid,
-        hakukohdeOid,
-        valintatapajonoOid,
-        file,
-      });
-    },
-    onError: (error) => {
-      hideModal(SpinnerModal);
-      // Tuonti onnistui osittain -> ladataan muuttuneet tulokset
-      if (error instanceof OphApiError) {
-        refetchLaskennanTulokset({ queryClient, hakukohdeOid });
-      }
-      addToast({
-        key: 'upload-valintatapajono-excel-error',
-        message:
-          t('valintalaskennan-tulokset.virhe-tuo-taulukkolaskennasta') +
-          (isEmpty(error?.message) ? '.' : `: \n${error.message}`),
-        type: 'error',
-      });
-    },
-    onSuccess: () => {
-      hideModal(SpinnerModal);
-      // Ladataan muuttuneet pistetulokset
-      refetchLaskennanTulokset({ queryClient, hakukohdeOid });
-      addToast({
-        key: 'upload-valintatapajono-excel-success',
-        message: 'valintalaskennan-tulokset.tuo-taulukkolaskennasta-onnistui',
-        type: 'success',
-      });
-    },
-  });
-};
-
-const JonoExcelUploadButton = ({
-  hakuOid,
-  hakukohdeOid,
-  valintatapajonoOid,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
-  valintatapajonoOid: string;
-}) => {
-  const { t } = useTranslations();
-  const { mutate } = useJonoExcelUploadMutation({
-    hakuOid,
-    hakukohdeOid,
-    valintatapajonoOid,
-  });
-  return (
-    <FileSelectButton
-      onFileSelect={(file) => {
-        mutate({ file });
-      }}
-    >
-      {t('yleinen.tuo-taulukkolaskennasta')}
-    </FileSelectButton>
-  );
-};
+import { ValintatapajonoContentProps } from '../types/valintatapajono-types';
+import { LaskennatonJonoExcelUploadButton } from './laskennaton-jono-excel-upload-button';
+import { refetchLaskennanTulokset } from '../lib/refetchLaskennanTulokset';
 
 const LaskennatonVaiheActions = ({
   hakukohde,
@@ -182,7 +58,8 @@ const LaskennatonVaiheActions = ({
     newJarjestysPeruste: string | null,
   ) => {
     if (newJarjestysPeruste) {
-      showModal(ArvoTypeChangeConfirmationModal, {
+      showModal(GlobalConfirmationModal, {
+        title: t('valintalaskennan-tulokset.vaihdetaanko-jarjestysperustetta'),
         text:
           newJarjestysPeruste === 'jonosija'
             ? t('valintalaskennan-tulokset.jonosija-valinta-varoitus')
@@ -228,7 +105,7 @@ const LaskennatonVaiheActions = ({
       >
         {t('yleinen.vie-taulukkolaskentaan')}
       </FileDownloadButton>
-      <JonoExcelUploadButton
+      <LaskennatonJonoExcelUploadButton
         hakuOid={hakukohde.hakuOid}
         hakukohdeOid={hakukohde.oid}
         valintatapajonoOid={jono.oid}
@@ -250,73 +127,12 @@ const LaskennatonVaiheActions = ({
   );
 };
 
-export type LaskettuValintatapajonoContentProps = {
-  haku: Haku;
-  hakukohdeOid: string;
-  valinnanVaihe: LaskettuValinnanvaiheInfo;
-  jono: LaskettuJonoWithHakijaInfo;
-};
-
-export const LaskettuValintatapajonoContent = ({
-  hakukohdeOid,
-  valinnanVaihe,
-  jono,
-}: LaskettuValintatapajonoContentProps) => {
-  const { valintatapajonooid, jonosijat } = jono;
-
-  const { data: hakukohde } = useHakukohde({ hakukohdeOid });
-
-  const { results, sort, setSort, pageSize, setPage, page } =
-    useJonoTuloksetSearch(valintatapajonooid, jonosijat);
-
-  const { t } = useTranslations();
-  return (
-    <Box
-      key={jono.oid}
-      sx={{
-        width: '100%',
-      }}
-    >
-      <AccordionBox
-        headingComponent="h4"
-        id={valinnanVaihe.valinnanvaiheoid}
-        title={
-          <ValintatapajonoAccordionTitle
-            valinnanVaihe={valinnanVaihe}
-            jono={jono}
-          />
-        }
-      >
-        <LaskettuVaiheActions hakukohde={hakukohde} jono={jono} />
-        <LaskettuValintatapajonoTable
-          setSort={setSort}
-          sort={sort}
-          jonoId={valintatapajonooid}
-          jonosijat={results}
-          pagination={{
-            page,
-            setPage,
-            pageSize,
-            label:
-              t('yleinen.sivutus') +
-              ': ' +
-              getValintatapaJonoNimi({
-                valinnanVaiheNimi: valinnanVaihe.nimi,
-                jonoNimi: jono.nimi,
-              }),
-          }}
-        />
-      </AccordionBox>
-    </Box>
-  );
-};
-
-export const ValintatapajonoIlmanLaskentaaContent = ({
+export const LaskennatonValintatapajonoContent = ({
   haku,
   hakukohdeOid,
   valinnanVaihe,
   jono,
-}: LaskettuValintatapajonoContentProps) => {
+}: ValintatapajonoContentProps) => {
   const { t } = useTranslations();
 
   const { valintatapajonooid, jonosijat } = jono;

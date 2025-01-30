@@ -176,13 +176,8 @@ export const HenkilonValintalaskenta = ({
     <Stack spacing={2}>
       <ConfirmationModalDialog
         open={state.matches(LaskentaState.WAITING_CONFIRMATION)}
-        onAnswer={(answer: boolean) => {
-          if (answer) {
-            send({ type: LaskentaEventType.CONFIRM });
-          } else {
-            send({ type: LaskentaEventType.CANCEL });
-          }
-        }}
+        onConfirm={() => send({ type: LaskentaEventType.CONFIRM })}
+        onCancel={() => send({ type: LaskentaEventType.CANCEL })}
       />
       <LaskentaResult actorRef={actorRef} />
       <LaskentaStateButton state={state} send={send} />

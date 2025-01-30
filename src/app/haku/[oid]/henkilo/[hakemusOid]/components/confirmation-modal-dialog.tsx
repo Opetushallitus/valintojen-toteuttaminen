@@ -5,19 +5,21 @@ import { OphButton } from '@opetushallitus/oph-design-system';
 export const ConfirmationModalDialog = ({
   title,
   open,
-  onAnswer,
   children,
+  onConfirm,
+  onCancel,
 }: {
   title?: string;
   open: boolean;
   children?: React.ReactNode;
-  onAnswer: (answer: boolean) => void;
+  onConfirm: () => void;
+  onCancel: () => void;
 }) => {
   const { t } = useTranslations();
   return (
     <OphModalDialog
       open={open}
-      onClose={() => onAnswer(false)}
+      onClose={() => onCancel()}
       title={title ?? t('valinnanhallinta.varmista')}
       maxWidth="sm"
       actions={
@@ -25,7 +27,7 @@ export const ConfirmationModalDialog = ({
           <OphButton
             variant="contained"
             onClick={() => {
-              onAnswer(true);
+              onConfirm();
             }}
           >
             {t('yleinen.kylla')}
@@ -33,7 +35,7 @@ export const ConfirmationModalDialog = ({
           <OphButton
             variant="outlined"
             onClick={() => {
-              onAnswer(false);
+              onCancel();
             }}
           >
             {t('yleinen.ei')}

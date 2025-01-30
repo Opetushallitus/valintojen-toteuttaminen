@@ -1,26 +1,25 @@
 import { createModal, useOphModalProps } from '@/app/components/global-modal';
 import { ConfirmationModalDialog } from '@/app/haku/[oid]/henkilo/[hakemusOid]/components/confirmation-modal-dialog';
 
-export const ArvoTypeChangeConfirmationModal = createModal<{
+export const GlobalConfirmationModal = createModal<{
   onConfirm: () => void;
   onCancel?: () => void;
   text?: string;
-  title?: string;
+  title: string;
 }>(({ title, text, onConfirm, onCancel }) => {
   const { open, onClose } = useOphModalProps();
 
   return (
     <ConfirmationModalDialog
-      title={title ? title : 'Vaihdetaanko järjestysperustetta?'}
+      title={title}
       open={open}
-      onAnswer={(answer) => {
-        if (answer) {
-          onConfirm();
-          onClose();
-        } else {
-          onCancel?.();
-          onClose();
-        }
+      onConfirm={() => {
+        onConfirm();
+        onClose();
+      }}
+      onCancel={() => {
+        onCancel?.();
+        onClose();
       }}
     >
       {text}

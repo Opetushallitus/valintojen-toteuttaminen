@@ -264,7 +264,8 @@
     "virhe-vie-taulukkolaskentaan": "Valintatapajonon tulosten viemisessä taulukkolaskentaan tapahtui virhe!",
     "tuo-taulukkolaskennasta-onnistui": "Valintatapajonon tulosten tuominen taulukkolaskennasta onnistui!",
     "tuodaan-tuloksia-taulukkolaskennasta": "Tuodaan tuloksia taulukkolaskennasta...",
-    "jonotulos-update-success": "Laskennan tulos päivitettiin onnistuneesti"
+    "jonotulos-update-success": "Laskennan tulos päivitettiin onnistuneesti",
+    "vaihdetaanko-jarjestysperustetta": "Vaihdetaanko järjestysperustetta?"
   },
   "sijoittelun-tulokset": {
     "otsikko": "Sijoittelun tulokset",
