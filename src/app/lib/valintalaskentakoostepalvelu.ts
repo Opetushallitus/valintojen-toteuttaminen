@@ -688,6 +688,24 @@ export const luoEiHyvaksymiskirjeetPDF = async ({
   return await processDocumentAndReturnDocumentId(kirjeetProcessId, true);
 };
 
+export const luoOsoitetarratHakukohteessaHyvaksytyille = async ({
+  sijoitteluajoId,
+  hakukohde,
+}: {
+  sijoitteluajoId: string;
+  hakukohde: Hakukohde;
+}): Promise<string> => {
+  const startProcessResponse = await client.post<{ id: string }>(
+    `${configuration.startExportOsoitetarratSijoittelussaHyvaksytyilleUrl}?sijoitteluajoId=${sijoitteluajoId}&hakuOid=${hakukohde.hakuOid}&hakukohdeOid=${hakukohde.oid}`,
+    {
+      hakemusOids: [],
+      tag: hakukohde.oid,
+    },
+  );
+  const processId = startProcessResponse?.data?.id;
+  return await processDocumentAndReturnDocumentId(processId, true);
+};
+
 type TemplateResponse = {
   name: string;
   templateReplacements: Array<{ name: string; defaultValue: string }>;

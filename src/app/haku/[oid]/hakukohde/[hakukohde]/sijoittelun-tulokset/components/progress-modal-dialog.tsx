@@ -1,7 +1,7 @@
 import { FullClientSpinner } from '@/app/components/client-spinner';
 import { ErrorTable } from '@/app/components/error-table';
 import { FileDownloadButton } from '@/app/components/file-download-button';
-import { useOphModalProps } from '@/app/components/global-modal';
+import { createModal, useOphModalProps } from '@/app/components/global-modal';
 import { OphModalDialog } from '@/app/components/oph-modal-dialog';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import {
@@ -12,7 +12,8 @@ import {
 import { downloadReadyProcessDocument } from '@/app/lib/valintalaskentakoostepalvelu';
 import { Box, keyframes, styled, Typography } from '@mui/material';
 import { OphButton } from '@opetushallitus/oph-design-system';
-import { UseMutationResult } from '@tanstack/react-query';
+import { useMutation, UseMutationResult } from '@tanstack/react-query';
+import { useEffect } from 'react';
 
 const translate = keyframes`
   0%,
@@ -152,3 +153,39 @@ export const ProgressModalDialog = ({
     </OphModalDialog>
   );
 };
+
+export const ProgressModal = createModal(
+  ({
+    title,
+    progressMessage,
+    functionToMutate,
+    defaultFileName,
+  }: {
+    title: string;
+    progressMessage: string;
+    functionToMutate: () => Promise<string>;
+    defaultFileName: string;
+  }) => {
+    const mutation = useMutation({
+      onError: (e) => {
+        console.error(e);
+      },
+      mutationFn: async () => await functionToMutate(),
+    });
+
+    useEffect(() => {
+      if (!(mutation.isPending || mutation.data || mutation.error)) {
+        mutation.mutate();
+      }
+    }, [mutation]);
+
+    return (
+      <ProgressModalDialog
+        title={title}
+        progressMessage={progressMessage}
+        defaultFileName={defaultFileName}
+        mutation={mutation}
+      />
+    );
+  },
+);

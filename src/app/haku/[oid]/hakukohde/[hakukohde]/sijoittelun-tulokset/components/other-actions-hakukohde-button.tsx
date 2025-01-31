@@ -24,6 +24,8 @@ import {
   NonAcceptedLetterTemplateModal,
 } from './letter-template-modal';
 import { showModal } from '@/app/components/global-modal';
+import { ProgressModal } from './progress-modal-dialog';
+import { luoOsoitetarratHakukohteessaHyvaksytyille } from '@/app/lib/valintalaskentakoostepalvelu';
 
 const StyledListItemText = styled(ListItemText)(() => ({
   span: {
@@ -79,6 +81,20 @@ export const OtherActionsHakukohdeButton = ({
       hakukohde: hakukohde,
       template: 'jalkiohjauskirje',
       sijoitteluajoId,
+    });
+    closeMenu();
+  };
+
+  const openOsoitetarratModal = async () => {
+    showModal(ProgressModal, {
+      title: 'Osoitetarrojen muodostaminen',
+      defaultFileName: 'osoitetarrat.pdf',
+      progressMessage: 'Osoitetarroja muodostetaan....',
+      functionToMutate: () =>
+        luoOsoitetarratHakukohteessaHyvaksytyille({
+          sijoitteluajoId,
+          hakukohde,
+        }),
     });
     closeMenu();
   };
@@ -185,7 +201,7 @@ export const OtherActionsHakukohdeButton = ({
           </StyledListItemText>
         </MenuItem>
         <Divider />
-        <MenuItem onClick={closeMenu}>
+        <MenuItem onClick={openOsoitetarratModal}>
           <StyledListItemIcon>
             <InsertDriveFileOutlined />
           </StyledListItemIcon>
