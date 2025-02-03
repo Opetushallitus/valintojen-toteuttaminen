@@ -160,17 +160,24 @@ export const ProgressModal = createModal(
     progressMessage,
     functionToMutate,
     defaultFileName,
+    setDocument,
   }: {
     title: string;
     progressMessage: string;
     functionToMutate: () => Promise<string>;
     defaultFileName: string;
+    setDocument?: (docId: string) => void;
   }) => {
     const mutation = useMutation({
       onError: (e) => {
         console.error(e);
       },
       mutationFn: async () => await functionToMutate(),
+      onSuccess: (data) => {
+        if (setDocument) {
+          setDocument(data);
+        }
+      },
     });
 
     useEffect(() => {

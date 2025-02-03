@@ -39,6 +39,7 @@ export type LetterTemplateModalProps = {
   hakukohde: Hakukohde;
   sijoitteluajoId: string;
   hakemusOids?: Array<string>;
+  setDocument?: (docId: string) => void;
 };
 
 const CustomRadio = styled(Radio)(() => ({
@@ -170,6 +171,7 @@ export const AcceptedLetterTemplateModal = createModal(
     template,
     sijoitteluajoId,
     hakemusOids,
+    setDocument,
   }: LetterTemplateModalProps) => {
     const modalProps = useOphModalProps();
 
@@ -212,6 +214,11 @@ export const AcceptedLetterTemplateModal = createModal(
         console.error(e);
       },
       mutationFn: async () => await getFile(),
+      onSuccess: (data) => {
+        if (setDocument) {
+          setDocument(data);
+        }
+      },
     });
 
     const mutationStarted =

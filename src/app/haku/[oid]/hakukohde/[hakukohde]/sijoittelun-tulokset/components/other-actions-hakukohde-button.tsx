@@ -55,6 +55,13 @@ export const OtherActionsHakukohdeButton = ({
   const { t } = useTranslations();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [hyvaksymiskirje, setHyvaksymiskirjeDocument] = useState<string | null>(
+    hyvaksymiskirjeDocumentId,
+  );
+  const [osoitetarraDocument, setOsoitetarraDocument] = useState<string | null>(
+    osoitetarraDocumentId,
+  );
+
   const open = Boolean(anchorEl);
   const buttonId = `other-actions-hakukohde-menu`;
   const { addToast } = useToaster();
@@ -71,6 +78,7 @@ export const OtherActionsHakukohdeButton = ({
       hakukohde: hakukohde,
       template: 'hyvaksymiskirje',
       sijoitteluajoId,
+      setDocument: setHyvaksymiskirjeDocument,
     });
     closeMenu();
   };
@@ -90,6 +98,7 @@ export const OtherActionsHakukohdeButton = ({
       title: 'Osoitetarrojen muodostaminen',
       defaultFileName: 'osoitetarrat.pdf',
       progressMessage: 'Osoitetarroja muodostetaan....',
+      setDocument: setOsoitetarraDocument,
       functionToMutate: () =>
         luoOsoitetarratHakukohteessaHyvaksytyille({
           sijoitteluajoId,
@@ -188,8 +197,8 @@ export const OtherActionsHakukohdeButton = ({
           </StyledListItemText>
         </MenuItem>
         <MenuItem
-          onClick={() => openDocument(hyvaksymiskirjeDocumentId)}
-          disabled={!hyvaksymiskirjeDocumentId}
+          onClick={() => openDocument(hyvaksymiskirje)}
+          disabled={!hyvaksymiskirje}
         >
           <StyledListItemIcon>
             <FileDownloadOutlined />
@@ -210,8 +219,8 @@ export const OtherActionsHakukohdeButton = ({
           </StyledListItemText>
         </MenuItem>
         <MenuItem
-          onClick={() => openDocument(osoitetarraDocumentId)}
-          disabled={!osoitetarraDocumentId}
+          onClick={() => openDocument(osoitetarraDocument)}
+          disabled={!osoitetarraDocument}
         >
           <StyledListItemIcon>
             <FileDownloadOutlined />
