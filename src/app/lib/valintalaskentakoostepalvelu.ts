@@ -564,6 +564,28 @@ export const getPistesyottoExcel = async ({
   return await downloadProcessDocument(excelProcessId);
 };
 
+export const getSijoittelunTulosExcel = async ({
+  hakuOid,
+  hakukohdeOid,
+  sijoitteluajoId,
+}: {
+  hakuOid: string;
+  hakukohdeOid: string;
+  sijoitteluajoId: string;
+}) => {
+  const urlWithQuery = new URL(configuration.sijoittelunTulosExcelUrl);
+  urlWithQuery.searchParams.append('hakuOid', hakuOid);
+  urlWithQuery.searchParams.append('hakukohdeOid', hakukohdeOid);
+  urlWithQuery.searchParams.append('sijoitteluajoId', sijoitteluajoId);
+  const createResponse = await client.post<{ id: string }>(
+    urlWithQuery.toString(),
+    '',
+  );
+  const excelProcessId = createResponse?.data?.id;
+
+  return await downloadProcessDocument(excelProcessId);
+};
+
 export const savePistesyottoExcel = async ({
   hakuOid,
   hakukohdeOid,

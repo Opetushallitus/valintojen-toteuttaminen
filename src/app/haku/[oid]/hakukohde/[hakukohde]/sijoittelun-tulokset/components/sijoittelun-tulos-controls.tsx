@@ -13,11 +13,12 @@ import { SearchInput } from '@/app/components/search-input';
 import { OtherActionsHakukohdeButton } from './other-actions-hakukohde-button';
 import { useSuspenseQueries } from '@tanstack/react-query';
 import { getDocumentIdForHakukohde } from '@/app/lib/valintalaskentakoostepalvelu';
+import { SijoittelunTuloksetExcelDownloadButton } from './sijoittelun-tulokset-excel-download-button';
 
 export const SijoittelunTulosControls = ({
   haku,
   hakukohde,
-  sijoitteluajoId
+  sijoitteluajoId,
 }: {
   haku: Haku;
   hakukohde: Hakukohde;
@@ -132,8 +133,16 @@ export const SijoittelunTulosControls = ({
           />
         )}
       </Box>
-      <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-        {sijoitteluajoId && hyvaksymiskirjeDocumentQuery.isSuccess &&
+      <Box sx={{ display: 'flex', flexDirection: 'row', columnGap: 2 }}>
+        {sijoitteluajoId && (
+          <SijoittelunTuloksetExcelDownloadButton
+            hakuOid={haku.oid}
+            hakukohdeOid={hakukohde.oid}
+            sijoitteluajoId={sijoitteluajoId}
+          />
+        )}
+        {sijoitteluajoId &&
+          hyvaksymiskirjeDocumentQuery.isSuccess &&
           osoitetarraDocumentQuery.isSuccess &&
           tuloksetDocumentQuery.isSuccess && (
             <OtherActionsHakukohdeButton

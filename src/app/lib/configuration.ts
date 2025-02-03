@@ -140,6 +140,7 @@ export const configuration = {
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintalaskentaexcel/valintalaskennantulos/aktivoi?hakukohdeOid=${hakukohdeOid}`,
   startExportValintatapajonoTulosExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintatapajonolaskenta/vienti`,
   startImportValintatapajonoTulosExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintatapajonolaskenta/tuonti`,
+  sijoittelunTulosExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintalaskentaexcel/sijoitteluntulos/aktivoi`,
   valintakoeOsallistumisetUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintakoe/hakutoive/${hakukohdeOid}`,
   startExportValintakoeExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintalaskentaexcel/valintakoekutsut/aktivoi`,

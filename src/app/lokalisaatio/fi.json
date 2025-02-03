@@ -295,6 +295,7 @@
     "hyvaksytty": "Valintaesitys hyväksytty",
     "ei-tuloksia": "Ei sijoittelun tuloksia hakukohteelle",
     "muuta-vastaanottotieto": "Muuta vastaanottotieto",
+    "virhe-vie-taulukkolaskentaan": "Sijoittelun tulosten vieminen taulukkolaskentaan epäonnistui!",
     "taulukko": {
       "alaotsikko": {
         "aloituspaikat": "Aloituspaikat",
