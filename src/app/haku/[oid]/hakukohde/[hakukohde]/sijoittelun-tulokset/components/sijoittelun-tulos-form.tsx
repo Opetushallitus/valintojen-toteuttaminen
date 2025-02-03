@@ -101,6 +101,8 @@ export const SijoittelunTulosForm = ({
         state={state}
         publishAllowed={publishAllowed}
         publish={publish}
+        valintatapajono={valintatapajono}
+        hakukohde={hakukohde}
       />
       <TablePaginationWrapper
         label={`${t('yleinen.sivutus')} ${valintatapajono.nimi}`}

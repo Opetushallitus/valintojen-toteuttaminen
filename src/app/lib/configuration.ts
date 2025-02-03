@@ -209,6 +209,14 @@ export const configuration = {
     hakukohdeOid: string;
   }) =>
     `${DOMAIN}/valinta-tulos-service/auth/emailer/run/hakukohde/${hakukohdeOid}`,
+  vastaanottopostiJonolleUrl: ({
+    hakukohdeOid,
+    valintatapajonoOid,
+  }: {
+    hakukohdeOid: string;
+    valintatapajonoOid: string;
+  }) =>
+    `${DOMAIN}/valinta-tulos-service/auth/emailer/run/hakukohde/${hakukohdeOid}/valintatapajono/${valintatapajonoOid}`,
   muutoshistoriaHakemukselleUrl: ({
     hakemusOid,
     valintatapajonoOid,

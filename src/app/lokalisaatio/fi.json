@@ -322,6 +322,7 @@
       "hyvaksymiskirje-hakukohde-ei": "Muodosta kirjeet ei-hyväksytyille",
       "hyvaksymiskirje-hakukohde-lataa": "Lataa hyväksymiskirjeet",
       "laheta-vastaanottoposti": "Lähetä vastaanottoposti",
+      "laheta-vastaanottoposti-jonolle": "Lähetä vastaanottoposti jonolle",
       "laheta-vastaanottoposti-hakukohde": "Lähetä vastaanottoposti hakukohteelle",
       "osoitetarrat": "Muodosta hyväksytyille osoitetarrat",
       "osoitetarrat-lataa": "Lataa osoitetarrat",
@@ -334,6 +335,9 @@
       "vastaanottoposti-hakukohteelle-ei-lahetettavia": "Lähetykset epäonnistui, tarkasta hakukohteen tiedot",
       "vastaanottoposti-hakukohteelle-lahetetty": "Sähköpostien lähetys onnistui",
       "vastaanottoposti-hakukohteelle-virhe": "Sähköpostien lähetys epäonnistui",
+      "vastaanottoposti-jonolle-ei-lahetettavia": "Lähetykset epäonnistui, tarkasta valintatapajonon tiedot",
+      "vastaanottoposti-jonolle-lahetetty": "Sähköpostien lähetys onnistui",
+      "vastaanottoposti-jonolle-virhe": "Sähköpostien lähetys epäonnistui",
       "muutoshistoria-virhe": "Muutoshistorian lataus epäonnistui",
       "palautuksen-erapaiva": "Palautuksen eräpäivä vastaanottajalle"
     },

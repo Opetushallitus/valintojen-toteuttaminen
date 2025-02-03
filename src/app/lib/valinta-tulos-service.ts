@@ -499,6 +499,17 @@ export const sendVastaanottopostiHakukohteelle = async (
   return response.data as string[];
 };
 
+export const sendVastaanottopostiValintatapaJonolle = async (
+  hakukohdeOid: string,
+  valintatapajonoOid: string,
+): Promise<string[]> => {
+  const response = await client.post(
+    `${configuration.vastaanottopostiJonolleUrl({ hakukohdeOid, valintatapajonoOid })}`,
+    { hakukohdeOid, jonoOid: valintatapajonoOid },
+  );
+  return response.data as string[];
+};
+
 type ChangeHistoryEventResponse = {
   timestamp: string;
   changes: [
