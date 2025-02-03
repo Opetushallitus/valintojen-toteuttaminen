@@ -2,12 +2,16 @@ export type KeysMatching<O, T> = {
   [K in keyof O]: O[K] extends T ? K : never;
 }[keyof O & string];
 
-export type ListTableColumn<P> = {
+export type ListTableColumn<R extends Row> = {
+  // Sarakkeen otsikko
   title?: string;
-  // TODO: Key ja sortable pois. Tilalle sortBy-funktio.
+  // Sarakkeen avain. Käytetään Reactin key-attribuuttina sekä järjestettäessä kentän tunnisteena. Järjestettäessä tulee siis olla polku Row-olioon.
   key: string;
-  render: (props: P) => React.ReactNode;
+  // Funktio, joka renderöi solun sisällön.
+  render: (props: R) => React.ReactNode;
+  // Tavallisen (ei-otsikkosolu) tyylimäärittelyt
   style?: React.CSSProperties;
+  // Onko taulukko järjestettävissä sarakkeen arvojen mukaan?
   sortable?: boolean;
 };
 
