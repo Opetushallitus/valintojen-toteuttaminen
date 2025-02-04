@@ -494,7 +494,20 @@ test.describe('other actions of hakemus', () => {
       async (route) => {
         await route.fulfill({
           status: 200,
-          body: 'OK',
+          json: { id: 'dokumentti_id' },
+        });
+      },
+    );
+    await page.route(
+      '*/**/valintalaskentakoostepalvelu/resources/dokumenttiprosessi/dokumentti_id',
+      async (route) => {
+        const readyProcess = {
+          kokonaistyo: { valmis: true },
+          dokumenttiId: 'dokumentti_id',
+        };
+        await route.fulfill({
+          status: 200,
+          json: readyProcess,
         });
       },
     );
@@ -502,11 +515,15 @@ test.describe('other actions of hakemus', () => {
       .getByRole('row', { name: 'Nukettaja Ruhtinas' })
       .getByRole('button', { name: 'Muut toiminnot' })
       .click();
-    await expect(page.getByText('Hyväksymiskirje')).toBeVisible();
-    await page.getByText('Hyväksymiskirje').click();
     await expect(
-      page.getByText('Muodostettu hyväksymiskirje hakemukselle'),
+      page.getByText('Hyväksymiskirje', { exact: true }),
     ).toBeVisible();
+    await page.getByText('Hyväksymiskirje', { exact: true }).click();
+    await expect(
+      page.getByText('Hyväksymiskirjeen muodostaminen'),
+    ).toBeVisible();
+    await page.getByRole('button', { name: 'Muodosta kirje' }).click();
+    await expect(page.getByRole('button', { name: 'Lataa' })).toBeVisible();
   });
 
   test('send vastaanottoposti', async ({ page }) => {
@@ -523,8 +540,10 @@ test.describe('other actions of hakemus', () => {
       .getByRole('row', { name: 'Nukettaja Ruhtinas' })
       .getByRole('button', { name: 'Muut toiminnot' })
       .click();
-    await expect(page.getByText('Lähetä vastaanottoposti')).toBeVisible();
-    await page.getByText('Lähetä vastaanottoposti').click();
+    await expect(
+      page.getByText('Lähetä vastaanottoposti', { exact: true }),
+    ).toBeVisible();
+    await page.getByText('Lähetä vastaanottoposti', { exact: true }).click();
     await expect(page.getByText('Sähköpostin lähetys onnistui')).toBeVisible();
   });
 });

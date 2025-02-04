@@ -181,6 +181,26 @@ export default async function playwrightSetup() {
       )
     ) {
       return modifyResponse(response, PISTETIEDOT);
+    } else if (
+      request.url?.includes(
+        'valintalaskentakoostepalvelu/resources/dokumentit/',
+      )
+    ) {
+      return modifyResponse(response, null);
+    } else if (
+      request.url?.includes(
+        'valintalaskentakoostepalvelu/resources/proxy/viestintapalvelu/template/getHistory',
+      )
+    ) {
+      const pohjat = [
+        {
+          name: 'OPH oletuspohja',
+          templateReplacements: [
+            { name: 'sisalto', defaultValue: 'Terve suuri aatelinen!' },
+          ],
+        },
+      ];
+      return modifyResponse(response, pohjat);
     } else {
       console.log('(Backend) mock not implementeded', request.url);
       return;
