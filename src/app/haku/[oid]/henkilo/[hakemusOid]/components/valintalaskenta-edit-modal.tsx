@@ -63,7 +63,6 @@ const JarjestyskriteeriFields = ({
   const { t } = useTranslations();
 
   const tuloksenTilaOptions = useTuloksenTilaOptions({
-    // TODO: Tarvitseeko tässä näyttää valinta "hyväksytty harkinnanvaraisesti"? Vanhassa kälissä ei ole näytetty.
     harkinnanvarainen: false,
   });
 

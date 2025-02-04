@@ -16,7 +16,7 @@ export const useTuloksenTilaOptions = ({
           (value) =>
             !(
               value === TuloksenTila.HYVAKSYTTY_HARKINNANVARAISESTI &&
-              harkinnanvarainen
+              !harkinnanvarainen
             ),
         )
         .map((value) => ({
