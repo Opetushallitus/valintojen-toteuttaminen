@@ -315,7 +315,9 @@ export const jonoTulosMachine = createMachine({
                       if (kaytetaanKokonaispisteita) {
                         jarjestyskriteerit[0].arvo = numberArvo;
                       } else {
-                        // Ei käytetä kokonaispisteitä vaan jonosijoja, jotka tallennetaan negatiivisina arvoina
+                        /* Järjestyskriteerin pisteiden (arvo-kenttä) negatiivisia arvoja käytetään jonosijojen manuaaliseen tallentamiseen.
+                         * Näin saadaan haluttu järjestys ilman oikeita pistetietoja.
+                         */
                         jarjestyskriteerit[0].arvo = -numberArvo;
                       }
                     }

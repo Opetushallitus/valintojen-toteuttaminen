@@ -59,7 +59,7 @@ type ValinnanvaiheModel = {
   ];
 };
 
-const selectValinnanvaihe = (vaihe: ValinnanvaiheModel) => {
+const convertValinnanvaihe = (vaihe: ValinnanvaiheModel): Valinnanvaihe => {
   const tyyppi =
     vaihe.valinnanVaiheTyyppi == 'VALINTAKOE'
       ? ValinnanvaiheTyyppi.VALINTAKOE
@@ -96,7 +96,7 @@ export const getValinnanvaiheet = async (
   const response = await client.get<Array<ValinnanvaiheModel>>(
     `${configuration.valintaperusteetUrl}hakukohde/${hakukohdeOid}/valinnanvaihe?withValisijoitteluTieto=true`,
   );
-  return response.data.map(selectValinnanvaihe);
+  return response.data.map(convertValinnanvaihe);
 };
 
 export const valinnanvaiheetIlmanLaskentaaQueryOptions = (
@@ -115,7 +115,7 @@ export const getValinnanvaiheetIlmanLaskentaa = async (
     configuration.valinnanvaiheetIlmanlaskentaaUrl({ hakukohdeOid }),
   );
 
-  return response.data.map(selectValinnanvaihe);
+  return response.data.map(convertValinnanvaihe);
 };
 
 const determineValintaKoeInputTyyppi = (
