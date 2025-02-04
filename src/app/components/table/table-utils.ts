@@ -1,6 +1,6 @@
 import { TranslatedName } from '@/app/lib/localization/localization-types';
 import { isTranslatedName } from '@/app/lib/localization/translation-utils';
-import { isNullish, pathOr, stringToPath } from 'remeda';
+import { pathOr, pipe, stringToPath, when } from 'remeda';
 
 export type SortDirection = 'asc' | 'desc';
 
@@ -13,30 +13,43 @@ type PropValue =
   | object
   | null;
 
-export const byProp = <T extends Record<string, PropValue>>(
+function getValueByPath<R extends Record<string, PropValue>>(
+  row: R,
   key: string,
+  translateEntity: (entity: TranslatedName) => string,
+): PropValue {
+  return pipe(
+    row,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    pathOr(stringToPath(key), '' as any),
+    when(isTranslatedName, translateEntity),
+  );
+}
+
+export const byProp = <R extends Record<string, PropValue>>(
+  path: string,
   direction: SortDirection = 'asc',
   translateEntity: (entity: TranslatedName) => string,
 ) => {
   const asc = direction === 'asc';
-  return (a: T, b: T) => {
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    const aKey = pathOr(a, stringToPath(key), '' as any);
-    const aProp = isTranslatedName(aKey) ? translateEntity(aKey) : aKey;
+  return (a: R, b: R) => {
+    const aValue = getValueByPath(a, path, translateEntity) ?? '';
+    const bValue = getValueByPath(b, path, translateEntity) ?? '';
 
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    const bKey = pathOr(b, stringToPath(key), '' as any);
-    const bProp = isTranslatedName(bKey) ? translateEntity(bKey) : bKey;
-
-    // Järjestetään tyhjät arvot aina loppuun
-    if (isNullish(aProp) || aProp === '') {
-      return 1;
+    switch (true) {
+      case aValue === '':
+        // Järjestetään tyhjät arvot aina loppuun
+        return 1;
+      case bValue === '':
+        // Järjestetään tyhjät arvot aina loppuun
+        return -1;
+      case aValue > bValue:
+        return asc ? 1 : -1;
+      case aValue < bValue:
+        return asc ? -1 : 1;
+      default:
+        return 0;
     }
-    if (isNullish(bProp) || bProp === '') {
-      return -1;
-    }
-
-    return aProp > bProp ? (asc ? 1 : -1) : bProp > aProp ? (asc ? -1 : 1) : 0;
   };
 };
 
