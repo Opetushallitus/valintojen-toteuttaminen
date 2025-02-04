@@ -1,5 +1,6 @@
 'use client';
 
+import { queryOptions } from '@tanstack/react-query';
 import { configuration } from './configuration';
 import { client } from './http-client';
 import {
@@ -38,60 +39,83 @@ export const getValintaryhma = async (
   return { nimi: response.data.nimi, oid: response.data.oid };
 };
 
+type ValinnanvaiheModel = {
+  oid: string;
+  nimi: string;
+  aktiivinen: boolean;
+  hasValisijoittelu: boolean;
+  valinnanVaiheTyyppi: string;
+  jonot: [
+    {
+      nimi: string;
+      oid: string;
+      aktiivinen: boolean;
+      valisijoittelu: boolean;
+      eiLasketaPaivamaaranJalkeen: string;
+      prioriteetti: number;
+      kaytetaanValintalaskentaa: boolean;
+      automaattinenSijoitteluunSiirto: boolean;
+    },
+  ];
+};
+
+const convertValinnanvaihe = (vaihe: ValinnanvaiheModel): Valinnanvaihe => {
+  const tyyppi =
+    vaihe.valinnanVaiheTyyppi == 'VALINTAKOE'
+      ? ValinnanvaiheTyyppi.VALINTAKOE
+      : ValinnanvaiheTyyppi.TAVALLINEN;
+  const jonot: Valintatapajono[] = vaihe.jonot
+    .filter((jono) => jono.aktiivinen)
+    .map((jono) => {
+      const eiLasketaPaivamaaranJalkeen = jono.eiLasketaPaivamaaranJalkeen
+        ? new Date(jono.eiLasketaPaivamaaranJalkeen)
+        : undefined;
+      return {
+        oid: jono.oid,
+        nimi: jono.nimi,
+        prioriteetti: jono.prioriteetti,
+        eiLasketaPaivamaaranJalkeen,
+        kaytetaanValintalaskentaa: jono.kaytetaanValintalaskentaa,
+        automaattinenSijoitteluunSiirto: jono.automaattinenSijoitteluunSiirto,
+      };
+    })
+    .sort((j1, j2) => j1.prioriteetti - j2.prioriteetti);
+  return {
+    nimi: vaihe.nimi,
+    aktiivinen: vaihe.aktiivinen,
+    valisijoittelu: vaihe.hasValisijoittelu,
+    tyyppi,
+    oid: vaihe.oid,
+    jonot,
+  };
+};
+
 export const getValinnanvaiheet = async (
   hakukohdeOid: string,
 ): Promise<Valinnanvaihe[]> => {
-  const response = await client.get<
-    Array<{
-      oid: string;
-      nimi: string;
-      aktiivinen: boolean;
-      hasValisijoittelu: boolean;
-      valinnanVaiheTyyppi: string;
-      jonot: [
-        {
-          nimi: string;
-          oid: string;
-          aktiivinen: boolean;
-          valisijoittelu: boolean;
-          eiLasketaPaivamaaranJalkeen: string;
-          prioriteetti: number;
-          kaytetaanValintalaskentaa: boolean;
-        },
-      ];
-    }>
-  >(
+  const response = await client.get<Array<ValinnanvaiheModel>>(
     `${configuration.valintaperusteetUrl}hakukohde/${hakukohdeOid}/valinnanvaihe?withValisijoitteluTieto=true`,
   );
-  return response.data.map((vaihe) => {
-    const tyyppi =
-      vaihe.valinnanVaiheTyyppi == 'VALINTAKOE'
-        ? ValinnanvaiheTyyppi.VALINTAKOE
-        : ValinnanvaiheTyyppi.TAVALLINEN;
-    const jonot: Valintatapajono[] = vaihe.jonot
-      .filter((jono) => jono.aktiivinen)
-      .map((jono) => {
-        const eiLasketaPaivamaaranJalkeen = jono.eiLasketaPaivamaaranJalkeen
-          ? new Date(jono.eiLasketaPaivamaaranJalkeen)
-          : undefined;
-        return {
-          oid: jono.oid,
-          nimi: jono.nimi,
-          prioriteetti: jono.prioriteetti,
-          eiLasketaPaivamaaranJalkeen,
-          kaytetaanValintalaskentaa: jono.kaytetaanValintalaskentaa,
-        };
-      })
-      .sort((j1, j2) => j1.prioriteetti - j2.prioriteetti);
-    return {
-      nimi: vaihe.nimi,
-      aktiivinen: vaihe.aktiivinen,
-      valisijoittelu: vaihe.hasValisijoittelu,
-      tyyppi,
-      oid: vaihe.oid,
-      jonot,
-    };
+  return response.data.map(convertValinnanvaihe);
+};
+
+export const valinnanvaiheetIlmanLaskentaaQueryOptions = (
+  hakukohdeOid: string,
+) => {
+  return queryOptions({
+    queryKey: ['getValinnanvaiheetIlmanLaskentaa', hakukohdeOid],
+    queryFn: () => getValinnanvaiheetIlmanLaskentaa(hakukohdeOid),
   });
+};
+
+export const getValinnanvaiheetIlmanLaskentaa = async (
+  hakukohdeOid: string,
+): Promise<Array<Valinnanvaihe>> => {
+  const response = await client.get<Array<ValinnanvaiheModel>>(
+    configuration.valinnanvaiheetIlmanlaskentaaUrl({ hakukohdeOid }),
+  );
+
+  return response.data.map(convertValinnanvaihe);
 };
 
 const determineValintaKoeInputTyyppi = (

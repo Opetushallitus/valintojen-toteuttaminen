@@ -1,27 +1,55 @@
 import { TranslatedName } from '@/app/lib/localization/localization-types';
 import { isTranslatedName } from '@/app/lib/localization/translation-utils';
+import { pathOr, pipe, stringToPath, when } from 'remeda';
 
 export type SortDirection = 'asc' | 'desc';
 
-export const byProp = <
-  T extends Record<
-    string,
-    string | number | TranslatedName | boolean | undefined | object | null
-  >,
->(
+type PropValue =
+  | string
+  | number
+  | TranslatedName
+  | boolean
+  | undefined
+  | object
+  | null;
+
+function getValueByPath<R extends Record<string, PropValue>>(
+  row: R,
   key: string,
+  translateEntity: (entity: TranslatedName) => string,
+): PropValue {
+  return pipe(
+    row,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    pathOr(stringToPath(key), '' as any),
+    when(isTranslatedName, translateEntity),
+  );
+}
+
+export const byProp = <R extends Record<string, PropValue>>(
+  path: string,
   direction: SortDirection = 'asc',
   translateEntity: (entity: TranslatedName) => string,
 ) => {
   const asc = direction === 'asc';
-  return (a: T, b: T) => {
-    const aKey = a[key] ?? '';
-    const aProp = isTranslatedName(aKey) ? translateEntity(aKey) : aKey;
+  return (a: R, b: R) => {
+    const aValue = getValueByPath(a, path, translateEntity) ?? '';
+    const bValue = getValueByPath(b, path, translateEntity) ?? '';
 
-    const bKey = b[key] ?? '';
-    const bProp = isTranslatedName(bKey) ? translateEntity(bKey) : bKey;
-
-    return aProp > bProp ? (asc ? 1 : -1) : bProp > aProp ? (asc ? -1 : 1) : 0;
+    switch (true) {
+      case aValue === '':
+        // Järjestetään tyhjät arvot aina loppuun
+        return 1;
+      case bValue === '':
+        // Järjestetään tyhjät arvot aina loppuun
+        return -1;
+      case aValue > bValue:
+        return asc ? 1 : -1;
+      case aValue < bValue:
+        return asc ? -1 : 1;
+      default:
+        return 0;
+    }
   };
 };
 

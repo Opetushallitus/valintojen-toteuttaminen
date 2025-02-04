@@ -12,13 +12,18 @@ const JONO_TABLE_HEADINGS = [
   'Pisteet',
   'Hakutoive',
   'Valintatieto',
-  'Muutoksen syy',
+  'Kuvaus',
 ];
 
 test.beforeEach(async ({ page }) => {
   await page.route(
-    '**/valintalaskenta-laskenta-service/resources/hakukohde/**',
+    /valintalaskenta-laskenta-service\/resources\/hakukohde\/\S+\/valinnanvaihe/,
     async (route) => await route.fulfill({ json: LASKETUT_VALINNANVAIHEET }),
+  );
+
+  await page.route(
+    /valintaperusteet-service\/resources\/hakukohde\/\S+\/ilmanlaskentaa/,
+    async (route) => await route.fulfill({ json: [] }),
   );
 });
 
@@ -48,6 +53,10 @@ test('displays valintalaskennan tulokset', async ({ page }) => {
       'Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs)',
   );
 
+  await expect(page.getByRole('heading', { level: 3 })).toHaveText(
+    'Lasketut valinnanvaiheet',
+  );
+
   await expect(
     page.getByRole('button', { name: 'Vie kaikki taulukkolaskentaan' }),
   ).toBeVisible();
@@ -57,7 +66,7 @@ test('displays valintalaskennan tulokset', async ({ page }) => {
 
   await expect(
     page.getByRole('heading', {
-      level: 3,
+      level: 4,
       name: jono1HeadingText,
     }),
   ).toBeVisible();
@@ -83,7 +92,7 @@ test('displays valintalaskennan tulokset', async ({ page }) => {
 
   await expect(
     page.getByRole('heading', {
-      level: 3,
+      level: 4,
       name: jono2HeadingText,
     }),
   ).toBeVisible();

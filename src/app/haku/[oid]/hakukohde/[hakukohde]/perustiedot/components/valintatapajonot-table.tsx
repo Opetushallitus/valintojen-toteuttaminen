@@ -7,58 +7,58 @@ import {
 } from '@/app/components/table/table-columns';
 import { isToisenAsteenYhteisHaku } from '@/app/lib/kouta';
 import { Haku } from '@/app/lib/types/kouta-types';
-import { ValintatapajonoTulos } from '@/app/lib/types/sijoittelu-types';
+import { SijoittelunValintatapajonoTulos } from '@/app/lib/types/sijoittelu-types';
 
 export const ValintatapajonotTable = ({
   valintatapajonoTulokset,
   haku,
 }: {
-  valintatapajonoTulokset: ValintatapajonoTulos[];
+  valintatapajonoTulokset: SijoittelunValintatapajonoTulos[];
   haku: Haku;
 }) => {
   const columns = [
-    makeGenericColumn<ValintatapajonoTulos>({
+    makeGenericColumn<SijoittelunValintatapajonoTulos>({
       title: 'perustiedot.taulukko.valintatapajono',
       key: 'valintatapajono',
       valueProp: 'nimi',
     }),
-    makeGenericColumn<ValintatapajonoTulos>({
+    makeGenericColumn<SijoittelunValintatapajonoTulos>({
       title: 'perustiedot.taulukko.aloituspaikat',
       key: 'sijoittelun-aloituspaikat',
       valueProp: 'sijoittelunAloituspaikat',
     }),
-    makeCountColumn<ValintatapajonoTulos>({
+    makeCountColumn<SijoittelunValintatapajonoTulos>({
       title: 'perustiedot.taulukko.hyvaksytyt',
       key: 'hyvaksytyt',
       amountProp: 'hyvaksytty',
     }),
     isToisenAsteenYhteisHaku(haku)
-      ? makeCountColumn<ValintatapajonoTulos>({
+      ? makeCountColumn<SijoittelunValintatapajonoTulos>({
           title: 'perustiedot.taulukko.harkinnanvaraiset',
           key: 'harkinnanvaraisesti-hyvaksytyt',
           amountProp: 'harkinnanvaraisestiHyvaksytty',
         })
-      : makeCountColumn<ValintatapajonoTulos>({
+      : makeCountColumn<SijoittelunValintatapajonoTulos>({
           title: 'perustiedot.taulukko.ehdolliset',
           key: 'ehdollisesti-hyvaksytyt',
           amountProp: 'ehdollisestiHyvaksytty',
         }),
-    makeCountColumn<ValintatapajonoTulos>({
+    makeCountColumn<SijoittelunValintatapajonoTulos>({
       title: 'perustiedot.taulukko.varasijoilla',
       key: 'varasijoilla',
       amountProp: 'varasijoilla',
     }),
-    makeCountColumn<ValintatapajonoTulos>({
+    makeCountColumn<SijoittelunValintatapajonoTulos>({
       title: 'perustiedot.taulukko.vastaanottaneet',
       key: 'vastaanottaneet',
       amountProp: 'vastaanottaneet',
     }),
-    makeCountColumn<ValintatapajonoTulos>({
+    makeCountColumn<SijoittelunValintatapajonoTulos>({
       title: 'perustiedot.taulukko.peruneet',
       key: 'peruneet',
       amountProp: 'paikanPeruneet',
     }),
-    makeCountColumn<ValintatapajonoTulos>({
+    makeCountColumn<SijoittelunValintatapajonoTulos>({
       title: 'perustiedot.taulukko.pisteraja',
       key: 'pisteraja',
       amountProp: 'pisteraja',

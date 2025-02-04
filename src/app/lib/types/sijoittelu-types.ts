@@ -1,6 +1,6 @@
 import { MaksunTila } from './ataru-types';
 
-export type ValintatapajonoTulos = {
+export type SijoittelunValintatapajonoTulos = {
   nimi: string;
   oid: string;
   sijoittelunAloituspaikat: string;

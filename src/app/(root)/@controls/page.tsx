@@ -7,17 +7,17 @@ import { Tila, getHakuAlkamisKaudet } from '@/app/lib/types/kouta-types';
 import { useHakuSearchParams } from '@/app/hooks/useHakuSearch';
 import { useHakutavat } from '@/app/hooks/useHakutavat';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { SpinnerIcon } from '@/app/components/spinner-icon';
 import { LocalizedSelect } from '@/app/components/localized-select';
 import { SearchInput } from '@/app/components/search-input';
+import { OphFormFieldWrapper } from '@opetushallitus/oph-design-system';
 
 const HakutapaSelect = ({
   labelId,
   value: selectedHakutapa,
   onChange,
 }: {
-  labelId: string;
+  labelId?: string;
   value: string;
   onChange: (e: SelectChangeEvent) => void;
 }) => {
@@ -61,7 +61,7 @@ const HakutapaInput = ({
 }) => {
   const { t } = useTranslations();
   return (
-    <OphFormControl
+    <OphFormFieldWrapper
       label={t('haku.hakutapa')}
       sx={{ flex: '1 0 180px', textAlign: 'left' }}
       renderInput={({ labelId }) => (
@@ -120,7 +120,7 @@ export default function HakuControls() {
         sx={{ flexGrow: 4, minWidth: '180px' }}
         label="haku.hae"
       />
-      <OphFormControl
+      <OphFormFieldWrapper
         sx={{
           width: 'auto',
           minWidth: '140px',
@@ -152,7 +152,7 @@ export default function HakuControls() {
         }}
       >
         <HakutapaInput value={selectedHakutapa} onChange={changeHakutapa} />
-        <OphFormControl
+        <OphFormFieldWrapper
           label={t('haku.alkamiskausi')}
           sx={{ textAlign: 'left', flex: '1 0 180px' }}
           renderInput={({ labelId }) => (

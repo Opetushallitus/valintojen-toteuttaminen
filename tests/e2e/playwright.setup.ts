@@ -130,7 +130,9 @@ export default async function playwrightSetup() {
     ) {
       return modifyResponse(response, VALINNANVAIHE);
     } else if (
-      request.url?.includes(`valintaperusteet-service/resources/hakukohde`)
+      /valintaperusteet-service\/resources\/hakukohde\/\S+\/valintaryhma/.test(
+        request.url ?? '',
+      )
     ) {
       return modifyResponse(response, VALINTARYHMA);
     } else if (

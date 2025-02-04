@@ -10,8 +10,8 @@ import { getPostitoimipaikka } from '@/app/lib/koodisto';
 import { getHakukohteetQueryOptions } from '@/app/lib/kouta';
 import { useUserPermissions } from '@/app/hooks/useUserPermissions';
 import { filter, map, pipe, prop, sortBy } from 'remeda';
-import { hakemuksenLasketutValinnanvaiheetQueryOptions } from '@/app/lib/valintalaskenta-service';
-import { selectValinnanvaiheet } from '@/app/hooks/useLasketutValinnanVaiheet';
+import { hakemuksenValintalaskennanTuloksetQueryOptions } from '@/app/lib/valintalaskenta-service';
+import { selectEditableValintalaskennanTulokset } from '@/app/hooks/useEditableValintalaskennanTulokset';
 import {
   getLatestSijoitteluajonTuloksetForHakemus,
   getValinnanTulokset,
@@ -85,7 +85,7 @@ export const useHenkiloPageData = ({
     { data: valinnanTuloksetResponse },
   ] = useSuspenseQueries({
     queries: [
-      hakemuksenLasketutValinnanvaiheetQueryOptions({ hakuOid, hakemusOid }),
+      hakemuksenValintalaskennanTuloksetQueryOptions({ hakuOid, hakemusOid }),
       latestSijoitteluajonTuloksetForHakemusQueryOptions({
         hakuOid,
         hakemusOid,
@@ -117,7 +117,6 @@ export const useHenkiloPageData = ({
         queryKey: ['getPostitoimipaikka', hakemus.postinumero],
         queryFn: () => getPostitoimipaikka(hakemus.postinumero),
       },
-
       {
         queryKey: ['getPisteetForHakemus', hakemusOid],
         queryFn: () => getKoePisteetForHakemus({ hakemusOid, hakukohdeOids }),
@@ -150,9 +149,12 @@ export const useHenkiloPageData = ({
         return {
           ...hakukohde,
           hakutoiveNumero: index + 1,
-          valinnanvaiheet: selectValinnanvaiheet({
-            lasketutValinnanvaiheet:
-              valinnanvaiheetByHakukohde?.[hakukohde.oid],
+          valinnanvaiheet: selectEditableValintalaskennanTulokset({
+            valintalaskennanTulokset:
+              valinnanvaiheetByHakukohde?.[hakukohde.oid] ?? [],
+            hakemukset: [{ hakemusOid, hakijaOid: hakija.hakijaOid }],
+            // Henkilöittäin-näkymässä näytetään laskennattomat valinnanvaiheet vain, jos niille on tallennettu tuloksia
+            laskennattomatValinnanvaiheet: [],
           }),
           valinnanTulos: valinnanTulos
             ? {
@@ -178,6 +180,8 @@ export const useHenkiloPageData = ({
     valinnanTuloksetResponse.lastModified,
     kokeetByHakukohde,
     pisteetByHakukohde,
+    hakemusOid,
+    hakija.hakijaOid,
   ]);
 
   return { hakukohteet, hakija, postitoimipaikka };

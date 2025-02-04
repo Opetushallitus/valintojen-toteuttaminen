@@ -1,5 +1,4 @@
 import { FormBox } from '@/app/components/form-box';
-import { SpinnerIcon } from '@/app/components/spinner-icon';
 import { useHasChanged } from '@/app/hooks/useHasChanged';
 import useToaster from '@/app/hooks/useToaster';
 import { useTranslations } from '@/app/hooks/useTranslations';
@@ -148,8 +147,7 @@ export const HarkinnanvaraisetForm = ({
         variant="contained"
         type="submit"
         sx={{ alignSelf: 'flex-start' }}
-        disabled={isPending}
-        startIcon={isPending ? <SpinnerIcon /> : null}
+        loading={isPending}
       >
         {t('yleinen.tallenna')}
       </OphButton>

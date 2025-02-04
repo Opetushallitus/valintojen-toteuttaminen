@@ -1,5 +1,6 @@
 import { test, expect, Page } from '@playwright/test';
 import {
+  expectAlertTextVisible,
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
   selectOption,
@@ -55,7 +56,7 @@ test.beforeEach(async ({ page }) => {
     });
   });
   await page.route(
-    configuration.hakemuksenLasketutValinnanvaiheetUrl({
+    configuration.hakemuksenValintalaskennanTuloksetUrl({
       hakuOid: '1.2.246.562.29.00000000000000045102',
       hakemusOid: NUKETTAJA_HAKEMUS_OID,
     }),
@@ -200,7 +201,7 @@ test('Displays selected henkilö info with hakutoive but without valintalaskenta
   page,
 }) => {
   await page.route(
-    configuration.hakemuksenLasketutValinnanvaiheetUrl({
+    configuration.hakemuksenValintalaskennanTuloksetUrl({
       hakuOid: '1.2.246.562.29.00000000000000045102',
       hakemusOid: NUKETTAJA_HAKEMUS_OID,
     }),
@@ -491,9 +492,10 @@ test('Sends valintalaskenta save request with right values and shows success not
     }),
   ]);
 
-  await expect(
-    page.getByText('Valintalaskennan tietojen tallentaminen onnistui'),
-  ).toBeVisible();
+  await expectAlertTextVisible(
+    page,
+    'Valintalaskennan tietojen tallentaminen onnistui',
+  );
 });
 
 test('Show notification on valintalaskenta save error', async ({ page }) => {
@@ -519,9 +521,11 @@ test('Show notification on valintalaskenta save error', async ({ page }) => {
   });
 
   await tallennaButton.click();
-  await expect(
-    page.getByText('Valintalaskennan tietojen tallentaminen epäonnistui'),
-  ).toBeVisible();
+
+  await expectAlertTextVisible(
+    page,
+    'Valintalaskennan tietojen tallentaminen epäonnistui',
+  );
 });
 
 test('Shows valinta edit modal with info', async ({ page }) => {
@@ -597,9 +601,10 @@ test('Sends valinta save request with right info and shows success notification'
     }),
   ]);
 
-  await expect(
-    page.getByText('Valinnan tietojen tallentaminen onnistui'),
-  ).toBeVisible();
+  await expectAlertTextVisible(
+    page,
+    'Valinnan tietojen tallentaminen onnistui',
+  );
 });
 
 test('Show notification on valinta save error', async ({ page }) => {
@@ -628,11 +633,10 @@ test('Show notification on valinta save error', async ({ page }) => {
   });
 
   await tallennaButton.click();
-  await expect(
-    page.getByText(
-      'Valinnan tietojen tallentaminen epäonnistui\nVirhe backendista',
-    ),
-  ).toBeVisible();
+  await expectAlertTextVisible(
+    page,
+    'Valinnan tietojen tallentaminen epäonnistui\nVirhe backendista',
+  );
 });
 
 test.describe('Pistesyöttö', () => {
@@ -748,7 +752,7 @@ test.describe('Pistesyöttö', () => {
       },
     ]);
 
-    await expect(page.getByText('Tiedot tallennettu')).toBeVisible();
+    await expectAlertTextVisible(page, 'Tiedot tallennettu');
   });
 
   test('Saving pistesyöttö shows error toast', async ({ page }) => {
@@ -792,9 +796,10 @@ test.describe('Pistesyöttö', () => {
       nakkiTallennaButton.click(),
     ]);
 
-    await expect(
-      page.getByText('Tietojen tallentamisessa tapahtui virhe.'),
-    ).toBeVisible();
+    await expectAlertTextVisible(
+      page,
+      'Tietojen tallentamisessa tapahtui virhe.',
+    );
   });
 });
 
@@ -823,8 +828,10 @@ test.describe('Valintalaskenta', () => {
     );
     await startLaskenta(page);
 
-    const error = page.getByText('Valintalaskenta epäonnistuiUnknown error');
-    await expect(error).toBeVisible();
+    await expectAlertTextVisible(
+      page,
+      'Valintalaskenta epäonnistuiUnknown error',
+    );
   });
 
   test('succesfully starts laskenta and shows yhteenveto errors', async ({
@@ -958,9 +965,8 @@ test.describe('Valintalaskenta', () => {
         'Laskenta on päättynyt. Hakukohteita valmiina 1/1. Suorittamattomia hakukohteita 0.',
       ),
     ).toBeVisible();
-    await expect(
-      page.getByText('Laskenta suoritettu onnistuneesti'),
-    ).toBeVisible();
+
+    await expectAlertTextVisible(page, 'Laskenta suoritettu onnistuneesti');
 
     const suljeTiedotButton = page.getByRole('button', {
       name: 'Sulje laskennan tiedot',

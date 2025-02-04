@@ -6,7 +6,7 @@ import { xstateInspect } from './configuration';
 
 type UseMachineParams = Parameters<typeof useMachine>;
 
-const inspect =
+export const inspect =
   xstateInspect && isServer
     ? undefined
     : (createBrowserInspector()?.inspect ?? undefined);

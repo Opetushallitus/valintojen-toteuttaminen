@@ -14,6 +14,7 @@ export type Valintatapajono = {
   eiLasketaPaivamaaranJalkeen?: Date;
   prioriteetti: number;
   kaytetaanValintalaskentaa: boolean;
+  automaattinenSijoitteluunSiirto?: boolean;
 };
 
 export type Valinnanvaihe = {

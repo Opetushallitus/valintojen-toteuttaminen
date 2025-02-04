@@ -1,6 +1,6 @@
 'use client';
 
-import { LaskettuJonoWithHakijaInfo } from '../hooks/useLasketutValinnanVaiheet';
+import { LaskennanValintatapajonoTulosWithHakijaInfo } from '@/app/hooks/useEditableValintalaskennanTulokset';
 import { booleanToString } from './common';
 import { configuration } from './configuration';
 import { client } from './http-client';
@@ -13,7 +13,7 @@ import {
   JarjestyskriteeriTila,
   LaskentaSummary,
   LaskentaStart,
-  LaskettuValinnanVaiheModel,
+  ValintalaskennanTulosValinnanvaiheModel,
   SeurantaTiedot,
 } from './types/laskenta-types';
 import {
@@ -138,16 +138,24 @@ export const getLaskennanYhteenveto = async (
   return response.data;
 };
 
-export const getHakukohteenLasketutValinnanvaiheet = async (
+export const hakukohteenValintalaskennanTuloksetQueryOptions = (
+  hakukohdeOid: string,
+) =>
+  queryOptions({
+    queryKey: ['getHakukohteenValintalaskennanTulokset', hakukohdeOid],
+    queryFn: () => getHakukohteenValintalaskennanTulokset(hakukohdeOid),
+  });
+
+export const getHakukohteenValintalaskennanTulokset = async (
   hakukohdeOid: string,
 ) => {
-  const response = await client.get<Array<LaskettuValinnanVaiheModel>>(
-    configuration.hakukohteenLasketutValinnanVaiheetUrl({ hakukohdeOid }),
-  );
+  const response = await client.get<
+    Array<ValintalaskennanTulosValinnanvaiheModel>
+  >(configuration.hakukohteenValintalaskennanTuloksetUrl({ hakukohdeOid }));
   return response.data;
 };
 
-export type HakemuksenValintalaskentaData = {
+export type HakemuksenValintalaskennanTuloksetModel = {
   hakuoid: string;
   hakemusoid: string;
   hakijaOid: string;
@@ -156,14 +164,14 @@ export type HakemuksenValintalaskentaData = {
     oid: string;
     prioriteetti: number;
     hakukohdeRyhmaOids: Array<string>;
-    valinnanvaihe: Array<LaskettuValinnanVaiheModel>;
+    valinnanvaihe: Array<ValintalaskennanTulosValinnanvaiheModel>;
     kaikkiJonotSijoiteltu: boolean;
     harkinnanvaraisuus: boolean;
     hakijaryhma: Array<unknown>;
   }>;
 };
 
-export const hakemuksenLasketutValinnanvaiheetQueryOptions = ({
+export const hakemuksenValintalaskennanTuloksetQueryOptions = ({
   hakuOid,
   hakemusOid,
 }: {
@@ -171,21 +179,21 @@ export const hakemuksenLasketutValinnanvaiheetQueryOptions = ({
   hakemusOid: string;
 }) => {
   return queryOptions({
-    queryKey: ['getHakemuksenLasketutValinnanvaiheet', hakuOid, hakemusOid],
+    queryKey: ['getHakemuksenValintalaskennanTulokset', hakuOid, hakemusOid],
     queryFn: () =>
-      getHakemuksenLasketutValinnanvaiheet({ hakuOid, hakemusOid }),
+      getHakemuksenValintalaskennanTulokset({ hakuOid, hakemusOid }),
   });
 };
 
-export const getHakemuksenLasketutValinnanvaiheet = async ({
+export const getHakemuksenValintalaskennanTulokset = async ({
   hakuOid,
   hakemusOid,
 }: {
   hakuOid: string;
   hakemusOid: string;
 }) => {
-  const response = await client.get<HakemuksenValintalaskentaData>(
-    configuration.hakemuksenLasketutValinnanvaiheetUrl({
+  const response = await client.get<HakemuksenValintalaskennanTuloksetModel>(
+    configuration.hakemuksenValintalaskennanTuloksetUrl({
       hakuOid,
       hakemusOid,
     }),
@@ -217,7 +225,10 @@ type MuutaSijoitteluaResponse = {
 };
 
 export type MuutaSijoittelunStatusProps = {
-  jono: Pick<LaskettuJonoWithHakijaInfo, 'oid' | 'prioriteetti'>;
+  jono: Pick<
+    LaskennanValintatapajonoTulosWithHakijaInfo,
+    'oid' | 'prioriteetti'
+  >;
   status: boolean;
 };
 
@@ -225,7 +236,10 @@ export const muutaSijoittelunStatus = async ({
   jono,
   status,
 }: {
-  jono: Pick<LaskettuJonoWithHakijaInfo, 'oid' | 'prioriteetti'>;
+  jono: Pick<
+    LaskennanValintatapajonoTulosWithHakijaInfo,
+    'oid' | 'prioriteetti'
+  >;
   status: boolean;
 }) => {
   const valintatapajonoOid = jono.oid;
@@ -493,5 +507,25 @@ export const deleteJonosijanJarjestyskriteeri = ({
       hakemusOid,
       jarjestyskriteeriPrioriteetti,
     }),
+  );
+};
+
+export const saveValinnanvaiheTulokset = ({
+  hakukohde,
+  valinnanvaihe,
+}: {
+  hakukohde: Pick<Hakukohde, 'oid' | 'tarjoajaOid'>;
+  valinnanvaihe: ValintalaskennanTulosValinnanvaiheModel;
+}) => {
+  const url = new URL(
+    configuration.hakukohteenValintalaskennanTuloksetUrl({
+      hakukohdeOid: hakukohde.oid,
+    }),
+  );
+
+  url.searchParams.set('tarjoajaOid', hakukohde.tarjoajaOid);
+  return client.post<ValintalaskennanTulosValinnanvaiheModel>(
+    url,
+    valinnanvaihe,
   );
 };

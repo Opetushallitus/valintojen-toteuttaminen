@@ -9,12 +9,12 @@ import {
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
 } from '@/app/lib/constants';
 import { useTranslations } from './useTranslations';
-import { JonoSijaWithHakijaInfo } from './useLasketutValinnanVaiheet';
+import { LaskennanJonosijaTulosWithHakijaInfo } from './useEditableValintalaskennanTulokset';
 import { hakemusFilter } from './filters';
 
 const DEFAULT_PAGE_SIZE = 10;
 
-export const useJonosijatSearchParams = (id?: string) => {
+export const useJonoTuloksetSearchParams = (id?: string) => {
   const [searchPhrase, setSearchPhrase] = useQueryState(
     `search`,
     DEFAULT_NUQS_OPTIONS,
@@ -37,7 +37,7 @@ export const useJonosijatSearchParams = (id?: string) => {
       .withDefault(DEFAULT_PAGE_SIZE),
   );
 
-  const [sort, setSort] = useQueryState('sort', DEFAULT_NUQS_OPTIONS);
+  const [sort, setSort] = useQueryState(`sort-${id}`, DEFAULT_NUQS_OPTIONS);
 
   const searchPhraseChanged = useHasChanged(searchPhrase);
 
@@ -59,14 +59,14 @@ export const useJonosijatSearchParams = (id?: string) => {
   };
 };
 
-export const useJonosijatSearch = (
+export const useJonoTuloksetSearch = (
   jonoId: string,
-  jonoTulos: Array<JonoSijaWithHakijaInfo>,
+  jonoTulos: Array<LaskennanJonosijaTulosWithHakijaInfo>,
 ) => {
   const { translateEntity } = useTranslations();
 
   const { searchPhrase, page, setPage, pageSize, setPageSize, sort, setSort } =
-    useJonosijatSearchParams(jonoId);
+    useJonoTuloksetSearchParams(jonoId);
 
   const results = useMemo(() => {
     const { orderBy, direction } = getSortParts(sort);
@@ -78,17 +78,11 @@ export const useJonosijatSearch = (
       : filtered;
   }, [jonoTulos, searchPhrase, sort, translateEntity]);
 
-  const pageResults = useMemo(() => {
-    const start = pageSize * (page - 1);
-    return results.slice(start, start + pageSize);
-  }, [results, page, pageSize]);
-
   return {
     page,
     setPage,
     pageSize,
     setPageSize,
-    pageResults,
     results,
     sort,
     setSort,

@@ -247,9 +247,25 @@
       "hakutoive": "Hakutoive",
       "pisteet": "Pisteet",
       "valintatieto": "Valintatieto",
-      "muutoksen-syy": "Muutoksen syy"
+      "kuvaus": "Kuvaus",
+      "kuvaus-fi": "Kuvaus suomeksi",
+      "kuvaus-sv": "Kuvaus ruotsiksi",
+      "kuvaus-en": "Kuvaus englanniksi"
     },
-    "virhe-vie-kaikki-taulukkolaskentaan": "Taulukkolaskentaan viemisessä tapahtui virhe!"
+    "virhe-vie-kaikki-taulukkolaskentaan": "Taulukkolaskentaan viemisessä tapahtui virhe!",
+    "valinnanvaiheet-ilman-laskentaa": "Valinnanvaiheet, joissa ei käytetä laskentaa",
+    "lasketut-valinnanvaiheet": "Lasketut valinnanvaiheet",
+    "jonosija": "Jonosija",
+    "kokonaispisteet": "Kokonaispisteet",
+    "kokonaispisteet-valinta-varoitus": "Jos siirryt käyttämään kokonaispisteitä, jonosijat poistetaan.",
+    "jonosija-valinta-varoitus": "Jos siirryt käyttämään jonosijoja, kokonaispisteet poistetaan.",
+    "tuo-taulukkolaskennasta": "Tuo taulukkolaskennasta",
+    "virhe-tuo-taulukkolaskennasta": "Valintatapajonon tulosten tuomisessa taulukkolaskennasta tapahtui virhe",
+    "virhe-vie-taulukkolaskentaan": "Valintatapajonon tulosten viemisessä taulukkolaskentaan tapahtui virhe!",
+    "tuo-taulukkolaskennasta-onnistui": "Valintatapajonon tulosten tuominen taulukkolaskennasta onnistui!",
+    "tuodaan-tuloksia-taulukkolaskennasta": "Tuodaan tuloksia taulukkolaskennasta...",
+    "jonotulos-update-success": "Laskennan tulos päivitettiin onnistuneesti",
+    "vaihdetaanko-jarjestysperustetta": "Vaihdetaanko järjestysperustetta?"
   },
   "sijoittelun-tulokset": {
     "otsikko": "Sijoittelun tulokset",

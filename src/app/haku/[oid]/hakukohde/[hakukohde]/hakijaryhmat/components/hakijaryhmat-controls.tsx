@@ -2,9 +2,9 @@ import { useHakijaryhmatSearchParams } from '../hooks/useHakijaryhmatSearch';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Box, SelectChangeEvent } from '@mui/material';
 import { SijoittelunTila } from '@/app/lib/types/sijoittelu-types';
-import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { LocalizedSelect } from '@/app/components/localized-select';
 import { SearchInput } from '@/app/components/search-input';
+import { OphFormFieldWrapper } from '@opetushallitus/oph-design-system';
 
 export const HakijaryhmatControls = () => {
   const {
@@ -50,7 +50,7 @@ export const HakijaryhmatControls = () => {
         setSearchPhrase={setSearchPhrase}
         name="hakijaryhmat-search"
       />
-      <OphFormControl
+      <OphFormFieldWrapper
         sx={{
           width: 'auto',
           minWidth: '140px',
@@ -71,7 +71,7 @@ export const HakijaryhmatControls = () => {
           />
         )}
       />
-      <OphFormControl
+      <OphFormFieldWrapper
         sx={{
           width: 'auto',
           minWidth: '140px',
@@ -90,7 +90,7 @@ export const HakijaryhmatControls = () => {
         )}
       />
 
-      <OphFormControl
+      <OphFormFieldWrapper
         sx={{
           width: 'auto',
           minWidth: '140px',

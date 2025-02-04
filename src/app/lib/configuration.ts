@@ -54,7 +54,12 @@ export const configuration = {
     `${DOMAIN}/valintaperusteet-service/resources/V2valintaperusteet/${valintatapajonoOid}/automaattinenSiirto?status=${status}`,
   hakukohdeValintakokeetUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
     `${DOMAIN}/valintaperusteet-service/resources/hakukohde/${hakukohdeOid}/valintakoe`,
-
+  valinnanvaiheetIlmanlaskentaaUrl: ({
+    hakukohdeOid,
+  }: {
+    hakukohdeOid: string;
+  }) =>
+    `${DOMAIN}/valintaperusteet-service/resources/hakukohde/${hakukohdeOid}/ilmanlaskentaa`,
   // -------------------------------------------------------------------------------------------------
   // ataru
   ataruEditoriLogin: `${DOMAIN}/lomake-editori/auth/cas`,
@@ -67,7 +72,7 @@ export const configuration = {
   valintalaskentakerrallaUrl: VALINTALASKENTAKERRALLA_VANHA
     ? `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintalaskentakerralla`
     : `${DOMAIN}/valintalaskenta-laskenta-service/resources/valintalaskentakerralla`,
-  hakemuksenLasketutValinnanvaiheetUrl: ({
+  hakemuksenValintalaskennanTuloksetUrl: ({
     hakuOid,
     hakemusOid,
   }: {
@@ -75,7 +80,7 @@ export const configuration = {
     hakemusOid: string;
   }) =>
     `${DOMAIN}/valintalaskenta-laskenta-service/resources/hakemus/${hakuOid}/${hakemusOid}`,
-  hakukohteenLasketutValinnanVaiheetUrl: ({
+  hakukohteenValintalaskennanTuloksetUrl: ({
     hakukohdeOid,
   }: {
     hakukohdeOid: string;
@@ -131,7 +136,8 @@ export const configuration = {
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/hakemus/${hakemusOid}`,
   valintalaskennanTulosExcelUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintalaskentaexcel/valintalaskennantulos/aktivoi?hakukohdeOid=${hakukohdeOid}`,
-
+  startExportValintatapajonoTulosExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintatapajonolaskenta/vienti`,
+  startImportValintatapajonoTulosExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintatapajonolaskenta/tuonti`,
   valintakoeOsallistumisetUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintakoe/hakutoive/${hakukohdeOid}`,
   startExportValintakoeExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintalaskentaexcel/valintakoekutsut/aktivoi`,
@@ -139,6 +145,8 @@ export const configuration = {
   startExportOsoitetarratHakemuksilleUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/osoitetarrat/hakemuksille/aktivoi`,
   startExportPistesyottoExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/pistesyotto/vienti`,
   hyvaksymiskirjeetUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/hyvaksymiskirjeet/aktivoi`,
+  dokumenttiSeurantaUrl: ({ uuid }: { uuid: string }) =>
+    `${DOMAIN}/valintalaskentakoostepalvelu/resources/dokumentinseuranta/${uuid}`,
   dokumenttiProsessiUrl: ({ id }: { id: string }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/dokumenttiprosessi/${id}`,
   lataaDokumenttiUrl: ({ dokumenttiId }: { dokumenttiId: string }) =>

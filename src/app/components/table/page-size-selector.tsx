@@ -1,8 +1,8 @@
 'use client';
 import { DEFAULT_PAGE_SIZE, PAGE_SIZES } from '@/app/lib/constants';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { LocalizedSelect } from '@/app/components/localized-select';
+import { OphFormFieldWrapper } from '@opetushallitus/oph-design-system';
 
 const PAGE_SIZE_OPTIONS = PAGE_SIZES.map((size) => ({
   value: size.toString(),
@@ -18,7 +18,7 @@ export const PageSizeSelector = ({
 }) => {
   const { t } = useTranslations();
   return (
-    <OphFormControl
+    <OphFormFieldWrapper
       id="page-size-select"
       label={t('yleinen.persivu')}
       renderInput={({ labelId }) => (

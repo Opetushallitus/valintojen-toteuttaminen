@@ -1,0 +1,69 @@
+import { useUserPermissions } from '@/app/hooks/useUserPermissions';
+import { SijoitteluStatusChangeButton } from './sijoittelu-status-change-button';
+import { useSijoitteluStatusMutation } from '../hooks/useSijoitteluStatusMutation';
+import { Hakukohde } from '@/app/lib/types/kouta-types';
+import { LaskennanValintatapajonoTulosWithHakijaInfo } from '@/app/hooks/useEditableValintalaskennanTulokset';
+import { useHakukohde } from '@/app/hooks/useHakukohde';
+import { useJonoTuloksetSearch } from '@/app/hooks/useJonoTuloksetSearch';
+import { useTranslations } from '@/app/hooks/useTranslations';
+import { LaskettuValintatapajonoTable } from './laskettu-valintatapajono-table';
+import { getValintatapaJonoNimi } from '@/app/lib/valintalaskenta-utils';
+import { ValintatapajonoContentProps } from '../types/valintatapajono-types';
+
+const LaskettuVaiheActions = ({
+  hakukohde,
+  jono,
+}: {
+  hakukohde: Hakukohde;
+  jono: LaskennanValintatapajonoTulosWithHakijaInfo;
+}) => {
+  const { data: permissions } = useUserPermissions();
+  const statusMutation = useSijoitteluStatusMutation(hakukohde.oid);
+
+  return (
+    <SijoitteluStatusChangeButton
+      organisaatioOid={hakukohde?.organisaatioOid}
+      jono={jono}
+      permissions={permissions}
+      statusMutation={statusMutation}
+    />
+  );
+};
+
+export const LaskettuValintatapajonoContent = ({
+  hakukohdeOid,
+  valinnanVaihe,
+  jono,
+}: ValintatapajonoContentProps) => {
+  const { valintatapajonooid, jonosijat } = jono;
+
+  const { data: hakukohde } = useHakukohde({ hakukohdeOid });
+
+  const { results, sort, setSort, pageSize, setPage, page } =
+    useJonoTuloksetSearch(valintatapajonooid, jonosijat);
+
+  const { t } = useTranslations();
+  return (
+    <>
+      <LaskettuVaiheActions hakukohde={hakukohde} jono={jono} />
+      <LaskettuValintatapajonoTable
+        setSort={setSort}
+        sort={sort}
+        jonoId={valintatapajonooid}
+        jonosijat={results}
+        pagination={{
+          page,
+          setPage,
+          pageSize,
+          label:
+            t('yleinen.sivutus') +
+            ': ' +
+            getValintatapaJonoNimi({
+              valinnanVaiheNimi: valinnanVaihe.nimi,
+              jonoNimi: jono.nimi,
+            }),
+        }}
+      />
+    </>
+  );
+};

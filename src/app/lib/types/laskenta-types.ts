@@ -36,7 +36,7 @@ export type Jarjestyskriteeri = {
   };
 };
 
-export type JonoSijaModel = {
+export type ValintalaskennanValintatapaJonosijaModel = {
   jonosija: number;
   hakemusOid: string;
   hakijaOid: string;
@@ -46,23 +46,24 @@ export type JonoSijaModel = {
   jarjestyskriteerit: Array<Jarjestyskriteeri>;
 };
 
-export type LaskettuValintatapajonoModel = {
+export type ValintalaskennanValintatapajonoModel = {
   oid: string;
   nimi: string;
   valintatapajonooid: string;
   prioriteetti: number;
-  jonosijat: Array<JonoSijaModel>;
+  jonosijat: Array<ValintalaskennanValintatapaJonosijaModel>;
   valmisSijoiteltavaksi: boolean;
   siirretaanSijoitteluun: boolean;
+  kaytetaanKokonaispisteita: boolean;
 };
 
-export type LaskettuValinnanVaiheModel = {
+export type ValintalaskennanTulosValinnanvaiheModel = {
   jarjestysnumero: number;
   valinnanvaiheoid: string;
   hakuOid: string;
   nimi: string;
-  createdAt: number;
-  valintatapajonot?: Array<LaskettuValintatapajonoModel>;
+  createdAt: number | null;
+  valintatapajonot?: Array<ValintalaskennanValintatapajonoModel>;
 };
 
 export type SeurantaTiedot = {
@@ -131,4 +132,5 @@ export enum TuloksenTila {
   HYVAKSYTTAVISSA = 'HYVAKSYTTAVISSA',
   HYLATTY = 'HYLATTY',
   MAARITTELEMATON = 'MAARITTELEMATON',
+  HYVAKSYTTY_HARKINNANVARAISESTI = 'HYVAKSYTTY_HARKINNANVARAISESTI',
 }

@@ -4,23 +4,29 @@ import {
   InputValidator,
   numberValidator,
 } from '@/app/components/form/input-validators';
-import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { useState, ChangeEvent } from 'react';
-import { type KoeInputsProps } from './koe-inputs';
-import { OphInput } from '@opetushallitus/oph-design-system';
+import {
+  OphFormFieldWrapper,
+  OphInput,
+} from '@opetushallitus/oph-design-system';
 
 export const PisteetInput = ({
-  koe,
+  min,
+  max,
   disabled,
-  arvo,
-  onArvoChange,
+  value,
+  onChange,
   arvoId,
-}: Pick<KoeInputsProps, 'koe'> & {
-  arvo: string;
-  disabled: boolean;
-  onArvoChange: (arvo: string) => void;
-  arvoId: string;
+  ariaLabel,
+}: {
+  min?: number | string;
+  max?: number | string;
+  value?: number | string;
+  disabled?: boolean;
+  onChange?: (arvo: string) => void;
+  arvoId?: string;
+  ariaLabel?: string;
 }) => {
   const [arvoValid, setArvoValid] = useState<boolean>(true);
 
@@ -28,34 +34,35 @@ export const PisteetInput = ({
 
   const arvoValidator: InputValidator = numberValidator({
     t,
-    min: koe.min,
-    max: koe.max,
+    min,
+    max,
     nullable: true,
   });
 
-  const [helperText, setHelperText] = useState<string[] | undefined>();
+  const [errorMessage, setErrorMessage] = useState<string | undefined>();
 
   const changeArvo = (event: ChangeEvent<HTMLInputElement>) => {
-    onArvoChange(event.target.value);
+    onChange?.(event.target.value);
     const validationResult = arvoValidator.validate(event.target.value);
     setArvoValid(!validationResult.error);
     if (!validationResult.error) {
-      setHelperText(undefined);
+      setErrorMessage(undefined);
     } else {
-      setHelperText([validationResult.helperText ?? '']);
+      setErrorMessage(validationResult.helperText);
     }
   };
 
   return (
-    <OphFormControl
+    <OphFormFieldWrapper
       error={!arvoValid}
-      errorMessages={helperText}
+      errorMessage={errorMessage}
       disabled={disabled}
       renderInput={() => (
         <OphInput
+          sx={{ maxWidth: '80px' }}
           id={arvoId}
-          value={arvo}
-          inputProps={{ 'aria-label': t('pistesyotto.pisteet') }}
+          value={value}
+          inputProps={{ 'aria-label': ariaLabel ?? t('pistesyotto.pisteet') }}
           onChange={changeArvo}
         />
       )}

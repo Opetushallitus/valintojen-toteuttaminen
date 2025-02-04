@@ -1,3 +1,4 @@
+import { isNullish } from 'remeda';
 import { isObject } from '../common';
 import { toFinnishDate } from '../time-utils';
 import { Language, TranslatedName } from './localization-types';
@@ -29,8 +30,11 @@ export function isTranslatedName(value: unknown): value is TranslatedName {
 }
 
 export function toFormattedDateTimeString(
-  value: number | Date | string,
+  value?: number | Date | string | null,
 ): string {
+  if (isNullish(value)) {
+    return '';
+  }
   try {
     const zonedDate = toFinnishDate(new Date(value));
     return format(zonedDate, 'd.M.yyyy HH:mm:ss');

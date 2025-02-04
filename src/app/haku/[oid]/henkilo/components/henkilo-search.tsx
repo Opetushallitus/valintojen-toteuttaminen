@@ -4,8 +4,10 @@ import { Search } from '@mui/icons-material';
 import { InputAdornment } from '@mui/material';
 import { ChangeEvent } from 'react';
 import { useHenkiloSearchParams } from '../hooks/useHenkiloSearch';
-import { OphFormControl } from '@/app/components/form/oph-form-control';
-import { OphInput } from '@opetushallitus/oph-design-system';
+import {
+  OphFormFieldWrapper,
+  OphInput,
+} from '@opetushallitus/oph-design-system';
 
 export const HenkiloSearch = () => {
   const { searchPhrase, setSearchPhrase } = useHenkiloSearchParams();
@@ -15,7 +17,7 @@ export const HenkiloSearch = () => {
   };
 
   return (
-    <OphFormControl
+    <OphFormFieldWrapper
       sx={{
         textAlign: 'left',
         paddingRight: 2,
@@ -40,6 +42,6 @@ export const HenkiloSearch = () => {
           />
         );
       }}
-    ></OphFormControl>
+    ></OphFormFieldWrapper>
   );
 };

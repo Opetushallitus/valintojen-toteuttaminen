@@ -4,12 +4,10 @@ import {
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query';
-import { forwardRef, useImperativeHandle, useRef } from 'react';
 import { pisteTuloksetOptions } from '../hooks/usePisteTulokset';
 import { PistesyottoTuontiError } from './pistesyotto-excel-upload-error';
-import { FileUploadOutlined } from '@mui/icons-material';
 import useToaster from '@/app/hooks/useToaster';
-import { putPistesyottoExcel } from '@/app/lib/valintalaskentakoostepalvelu';
+import { savePistesyottoExcel } from '@/app/lib/valintalaskentakoostepalvelu';
 import { OphModalDialog } from '@/app/components/oph-modal-dialog';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { OphApiError } from '@/app/lib/common';
@@ -19,7 +17,8 @@ import {
   showModal,
   useOphModalProps,
 } from '@/app/components/global-modal';
-import { SpinnerModal } from '@/app/components/spinner-modal';
+import { GlobalSpinnerModal } from '@/app/components/global-spinner-modal';
+import { FileSelectButton } from '@/app/components/file-select-button';
 
 const refetchPisteTulokset = ({
   queryClient,
@@ -72,17 +71,17 @@ const useExcelUploadMutation = ({
 
   return useMutation({
     mutationFn: async ({ file }: { file: File }) => {
-      showModal(SpinnerModal, {
+      showModal(GlobalSpinnerModal, {
         title: t('pistesyotto.tuodaan-pistetietoja-taulukkolaskennasta'),
       });
-      return await putPistesyottoExcel({
+      return await savePistesyottoExcel({
         hakuOid,
         hakukohdeOid,
         excelFile: file,
       });
     },
     onError: (error) => {
-      hideModal(SpinnerModal);
+      hideModal(GlobalSpinnerModal);
       // Tuonti onnistui osittain -> ladataan muuttuneet pistetulokset
       if (error instanceof OphApiError) {
         refetchPisteTulokset({ queryClient, hakuOid, hakukohdeOid });
@@ -92,52 +91,15 @@ const useExcelUploadMutation = ({
     onSuccess: () => {
       // Ladataan muuttuneet pistetulokset
       refetchPisteTulokset({ queryClient, hakuOid, hakukohdeOid });
-      hideModal(SpinnerModal);
+      hideModal(GlobalSpinnerModal);
       addToast({
         key: 'put-pistesyotto-excel-success',
-        message: 'pistesyotto.tuo-valintalaskennasta-onnistui',
+        message: 'pistesyotto.tuo-taulukkolaskennasta-onnistui',
         type: 'success',
       });
     },
   });
 };
-
-type FileSelectorRef = { openFileSelector: () => void };
-type FileSelectorProps = { onFileSelect: (file: File) => void };
-
-const FileSelector = forwardRef<FileSelectorRef, FileSelectorProps>(
-  function renderFileInput({ onFileSelect }, ref) {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const innerRef = useRef<HTMLInputElement>(null);
-
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useImperativeHandle(ref, () => {
-      return {
-        openFileSelector: () => {
-          innerRef.current?.click();
-        },
-      };
-    });
-
-    return (
-      <input
-        ref={innerRef}
-        type="file"
-        style={{ display: 'none' }}
-        onChange={(event) => {
-          const files = event.currentTarget.files;
-          if (files) {
-            onFileSelect(files[0]);
-          }
-          if (innerRef.current) {
-            // Tyhjennetään kentän arvo, jotta onChange kutsutaan myös seuraavalla kerralla, vaikka valitaan sama tiedosto
-            innerRef.current.value = '';
-          }
-        }}
-      />
-    );
-  },
-);
 
 export const PistesyottoExcelUploadButton = ({
   hakuOid,
@@ -153,23 +115,12 @@ export const PistesyottoExcelUploadButton = ({
     hakukohdeOid,
   });
 
-  const fileSelectorRef = useRef<FileSelectorRef>(null);
-
   return (
-    <>
-      <FileSelector
-        ref={fileSelectorRef}
-        onFileSelect={(file) => mutate({ file })}
-      />
-      <OphButton
-        disabled={isPending}
-        startIcon={<FileUploadOutlined />}
-        onClick={() => {
-          fileSelectorRef?.current?.openFileSelector();
-        }}
-      >
-        {t('yleinen.tuo-taulukkolaskennasta')}
-      </OphButton>
-    </>
+    <FileSelectButton
+      loading={isPending}
+      onFileSelect={(file) => mutate({ file })}
+    >
+      {t('yleinen.tuo-taulukkolaskennasta')}
+    </FileSelectButton>
   );
 };

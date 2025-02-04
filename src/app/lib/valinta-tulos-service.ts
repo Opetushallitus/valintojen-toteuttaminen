@@ -12,7 +12,7 @@ import {
   SijoittelunHakemus,
   SijoittelunHakemusValintatiedoilla,
   SijoittelunTila,
-  ValintatapajonoTulos,
+  SijoittelunValintatapajonoTulos,
   VastaanottoTila,
 } from './types/sijoittelu-types';
 import { MaksunTila, Maksuvelvollisuus } from './types/ataru-types';
@@ -42,24 +42,26 @@ type SijoittelunTulosResponseData = {
 export const getSijoittelunTulokset = async (
   hakuOid: string,
   hakukohdeOid: string,
-): Promise<ValintatapajonoTulos[]> => {
+): Promise<SijoittelunValintatapajonoTulos[]> => {
   const response = await client.get<Array<SijoittelunTulosResponseData>>(
     `${configuration.valintaTulosServiceUrl}sijoitteluntulos/yhteenveto/${hakuOid}/hakukohde/${hakukohdeOid}`,
   );
-  const jsonTulokset: ValintatapajonoTulos[] = response.data?.map((tulos) => {
-    return {
-      nimi: tulos.valintatapajonoNimi,
-      oid: tulos.valintatapajonoOid,
-      sijoittelunAloituspaikat: `${tulos.sijoittelunKayttamatAloituspaikat}/${tulos.aloituspaikat}`,
-      hyvaksytty: tulos.hyvaksytyt,
-      ehdollisestiHyvaksytty: tulos.ehdollisestiHyvaksytyt,
-      harkinnanvaraisestiHyvaksytty: tulos.harkinnanvaraisestiHyvaksytty,
-      varasijoilla: tulos.varasijoilla,
-      vastaanottaneet: tulos.paikanVastaanottaneet,
-      paikanPeruneet: tulos.peruneet,
-      pisteraja: tulos.alinHyvaksyttyPistemaara,
-    };
-  });
+  const jsonTulokset: SijoittelunValintatapajonoTulos[] = response.data?.map(
+    (tulos) => {
+      return {
+        nimi: tulos.valintatapajonoNimi,
+        oid: tulos.valintatapajonoOid,
+        sijoittelunAloituspaikat: `${tulos.sijoittelunKayttamatAloituspaikat}/${tulos.aloituspaikat}`,
+        hyvaksytty: tulos.hyvaksytyt,
+        ehdollisestiHyvaksytty: tulos.ehdollisestiHyvaksytyt,
+        harkinnanvaraisestiHyvaksytty: tulos.harkinnanvaraisestiHyvaksytty,
+        varasijoilla: tulos.varasijoilla,
+        vastaanottaneet: tulos.paikanVastaanottaneet,
+        paikanPeruneet: tulos.peruneet,
+        pisteraja: tulos.alinHyvaksyttyPistemaara,
+      };
+    },
+  );
   return jsonTulokset;
 };
 

@@ -4,24 +4,10 @@ import { ButtonProps } from '@mui/material';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { useSijoitteluStatusMutation } from '../hooks/useSijoitteluStatusMutation';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { LaskettuJonoWithHakijaInfo } from '@/app/hooks/useLasketutValinnanVaiheet';
-import { SpinnerIcon } from '@/app/components/spinner-icon';
+import { LaskennanValintatapajonoTulosWithHakijaInfo } from '@/app/hooks/useEditableValintalaskennanTulokset';
 
-export const SijoitteluButton = ({
-  isLoading,
-  disabled,
-  startIcon,
-  ...props
-}: ButtonProps & { isLoading: boolean }) => {
-  return (
-    <OphButton
-      {...props}
-      disabled={isLoading || disabled}
-      variant="outlined"
-      sx={{ marginBottom: 1 }}
-      startIcon={isLoading ? <SpinnerIcon /> : startIcon}
-    />
-  );
+const SijoitteluButton = ({ ...props }: ButtonProps) => {
+  return <OphButton {...props} variant="outlined" />;
 };
 
 export const SijoitteluStatusChangeButton = ({
@@ -31,7 +17,7 @@ export const SijoitteluStatusChangeButton = ({
   statusMutation,
 }: {
   organisaatioOid: string;
-  jono: LaskettuJonoWithHakijaInfo;
+  jono: LaskennanValintatapajonoTulosWithHakijaInfo;
   permissions: UserPermissions;
   statusMutation: ReturnType<typeof useSijoitteluStatusMutation>;
 }) => {
@@ -46,7 +32,7 @@ export const SijoitteluStatusChangeButton = ({
     case !jono.valmisSijoiteltavaksi && jono.siirretaanSijoitteluun:
       return (
         <SijoitteluButton
-          isLoading={statusMutation.isPending}
+          loading={statusMutation.isPending}
           disabled={!hasOphUpdate && !hasOrgCrud}
           onClick={() => statusMutation.mutate({ jono, status: true })}
         >
@@ -56,7 +42,7 @@ export const SijoitteluStatusChangeButton = ({
     case jono.valmisSijoiteltavaksi && jono.siirretaanSijoitteluun:
       return (
         <SijoitteluButton
-          isLoading={statusMutation.isPending}
+          loading={statusMutation.isPending}
           disabled={!hasOphUpdate}
           onClick={() => statusMutation.mutate({ jono, status: false })}
         >

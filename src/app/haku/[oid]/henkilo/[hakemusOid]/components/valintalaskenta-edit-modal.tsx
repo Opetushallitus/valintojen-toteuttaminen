@@ -4,35 +4,22 @@ import {
   useOphModalProps,
 } from '@/app/components/global-modal';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import {
-  OphButton,
-  OphInput,
-} from '@opetushallitus/oph-design-system';
+import { OphButton, OphInput } from '@opetushallitus/oph-design-system';
 import { Stack } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { LaskettuJono } from '@/app/hooks/useLasketutValinnanVaiheet';
-import {
-  Jarjestyskriteeri,
-  TuloksenTila,
-} from '@/app/lib/types/laskenta-types';
+import { useState } from 'react';
+import { LaskennanValintatapajonoTulos } from '@/app/hooks/useEditableValintalaskennanTulokset';
 import { Hakukohde } from '@/app/lib/types/kouta-types';
 import { HakutoiveTitle } from './hakutoive-title';
-import { useHasChanged } from '@/app/hooks/useHasChanged';
-import {
-  QueryClient,
-  useMutation,
-  useQueryClient,
-} from '@tanstack/react-query';
-import useToaster from '@/app/hooks/useToaster';
-import {
-  deleteJonosijanJarjestyskriteeri,
-  hakemuksenLasketutValinnanvaiheetQueryOptions,
-  saveJonosijanJarjestyskriteeri,
-} from '@/app/lib/valintalaskenta-service';
 import { isEmpty } from 'remeda';
 import { InlineFormControl, PaddedLabel } from './inline-form-control';
 import { EditModalDialog } from './edit-modal-dialog';
 import { LocalizedSelect } from '@/app/components/localized-select';
+import { useJarjestyskriteeriState } from './jarjestyskriteeri-state';
+import { JarjestyskriteeriParams } from './jarjestyskriteeri-types';
+import { hakemuksenValintalaskennanTuloksetQueryOptions } from '@/app/lib/valintalaskenta-service';
+import useToaster from '@/app/hooks/useToaster';
+import { QueryClient, useQueryClient } from '@tanstack/react-query';
+import { useTuloksenTilaOptions } from '@/app/hooks/useTuloksenTilaOptions';
 
 const ModalActions = ({
   onClose,
@@ -75,10 +62,9 @@ const JarjestyskriteeriFields = ({
 }) => {
   const { t } = useTranslations();
 
-  const tuloksenTilaOptions = Object.values(TuloksenTila).map((v) => ({
-    value: v,
-    label: t('tuloksenTila.' + v),
-  }));
+  const tuloksenTilaOptions = useTuloksenTilaOptions({
+    harkinnanvarainen: false,
+  });
 
   return (
     <>
@@ -128,38 +114,6 @@ const JarjestyskriteeriFields = ({
   );
 };
 
-type JarjestyskriteeriParams = {
-  tila: string;
-  arvo: string;
-  selite: string;
-};
-
-const useMuokkausParams = (jarjestyskriteeri: Jarjestyskriteeri) => {
-  const [muokkausParams, setMuokkausParams] = useState<JarjestyskriteeriParams>(
-    () => ({
-      tila: jarjestyskriteeri.tila,
-      arvo: jarjestyskriteeri.arvo?.toString() ?? '',
-      selite: jarjestyskriteeri.kuvaus?.FI ?? '',
-    }),
-  );
-
-  const jarjestyskriteeriChanged = useHasChanged(
-    jarjestyskriteeri.prioriteetti,
-  );
-
-  useEffect(() => {
-    if (jarjestyskriteeriChanged) {
-      setMuokkausParams({
-        tila: jarjestyskriteeri.tila,
-        arvo: jarjestyskriteeri.arvo?.toString() ?? '',
-        selite: jarjestyskriteeri.kuvaus?.FI ?? '',
-      });
-    }
-  }, [jarjestyskriteeri, jarjestyskriteeriChanged]);
-
-  return [muokkausParams, setMuokkausParams] as const;
-};
-
 const refetchValinnanvaiheet = ({
   queryClient,
   hakuOid,
@@ -169,7 +123,7 @@ const refetchValinnanvaiheet = ({
   hakuOid: string;
   hakemusOid: string;
 }) => {
-  const options = hakemuksenLasketutValinnanvaiheetQueryOptions({
+  const options = hakemuksenValintalaskennanTuloksetQueryOptions({
     hakuOid,
     hakemusOid,
   });
@@ -177,68 +131,18 @@ const refetchValinnanvaiheet = ({
   queryClient.invalidateQueries(options);
 };
 
-const useJarjestyskriteeriMutation = ({
-  hakuOid,
-  hakemusOid,
-  valintatapajonoOid,
-  jarjestyskriteeriPrioriteetti,
-}: {
-  hakuOid: string;
-  hakemusOid: string;
-  valintatapajonoOid: string;
-  jarjestyskriteeriPrioriteetti: number;
-}) => {
-  const { addToast } = useToaster();
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({
-      mode,
-      ...params
-    }: JarjestyskriteeriParams & { mode: 'save' | 'delete' }) => {
-      if (mode === 'delete') {
-        await deleteJonosijanJarjestyskriteeri({
-          valintatapajonoOid,
-          hakemusOid,
-          jarjestyskriteeriPrioriteetti,
-        });
-      } else {
-        await saveJonosijanJarjestyskriteeri({
-          valintatapajonoOid,
-          hakemusOid,
-          jarjestyskriteeriPrioriteetti,
-          ...params,
-        });
-      }
-    },
-    onError: (e, { mode }) => {
-      addToast({
-        key: `valintalaskenta-${mode}-error`,
-        message: `henkilo.valintalaskenta-${mode}-error`,
-        type: 'error',
-      });
-      console.error(e);
-    },
-    onSuccess: (_, { mode }) => {
-      addToast({
-        key: `valintalaskenta-${mode}-success`,
-        message: `henkilo.valintalaskenta-${mode}-success`,
-        type: 'success',
-      });
-      refetchValinnanvaiheet({ hakuOid, hakemusOid, queryClient });
-      hideModal(ValintalaskentaEditModal);
-    },
-  });
-};
-
 export const ValintalaskentaEditModal = createModal<{
   hakijanNimi: string;
   hakukohde: Hakukohde;
-  valintatapajono: LaskettuJono;
+  valintatapajono: LaskennanValintatapajonoTulos;
   hakutoiveNumero: number;
 }>(({ hakutoiveNumero, hakijanNimi, hakukohde, valintatapajono }) => {
   const { open, TransitionProps, onClose } = useOphModalProps();
   const { t } = useTranslations();
+
+  const { addToast } = useToaster();
+
+  const queryClient = useQueryClient();
 
   const jonosija = valintatapajono.jonosijat?.[0];
 
@@ -246,25 +150,46 @@ export const ValintalaskentaEditModal = createModal<{
     useState<number>(0);
 
   const jarjestyskriteeri =
-    jonosija.jarjestyskriteerit[jarjestyskriteeriPrioriteetti];
+    jonosija.jarjestyskriteerit?.[jarjestyskriteeriPrioriteetti];
 
-  const [muokkausParams, setMuokkausParams] =
-    useMuokkausParams(jarjestyskriteeri);
-
-  const jarjestyskriteeriOptions = jonosija.jarjestyskriteerit.map(
-    ({ nimi, prioriteetti }) => ({
+  const jarjestyskriteeriOptions =
+    jonosija.jarjestyskriteerit?.map(({ nimi, prioriteetti }) => ({
       value: prioriteetti.toString(),
-      label: nimi,
-    }),
-  );
+      label: `${prioriteetti + 1}. ${nimi}`,
+    })) ?? [];
 
-  const { mutate: mutateJarjestyskriteeri, isPending: isPending } =
-    useJarjestyskriteeriMutation({
-      hakemusOid: jonosija.hakemusOid,
-      valintatapajonoOid: valintatapajono.oid,
-      jarjestyskriteeriPrioriteetti,
-      hakuOid: hakukohde.hakuOid,
-    });
+  const {
+    isPending,
+    muokkausParams,
+    setMuokkausParams,
+    saveJarjestyskriteeri,
+    deleteJarjestyskriteeri,
+  } = useJarjestyskriteeriState({
+    hakemusOid: jonosija.hakemusOid,
+    valintatapajonoOid: valintatapajono.valintatapajonooid,
+    jarjestyskriteeri,
+    onError: (e, mode) => {
+      addToast({
+        key: `valintalaskenta-${mode}-error`,
+        message: `henkilo.valintalaskenta-${mode}-error`,
+        type: 'error',
+      });
+      console.error(e);
+    },
+    onSuccess: (mode) => {
+      addToast({
+        key: `valintalaskenta-${mode}-success`,
+        message: `henkilo.valintalaskenta-${mode}-success`,
+        type: 'success',
+      });
+      refetchValinnanvaiheet({
+        hakuOid: hakukohde.hakuOid,
+        hakemusOid: jonosija.hakemusOid,
+        queryClient,
+      });
+      hideModal(ValintalaskentaEditModal);
+    },
+  });
 
   return (
     <EditModalDialog
@@ -277,12 +202,9 @@ export const ValintalaskentaEditModal = createModal<{
       actions={
         <ModalActions
           onClose={onClose}
-          onSave={() =>
-            mutateJarjestyskriteeri({ ...muokkausParams, mode: 'save' })
-          }
-          onDelete={() =>
-            mutateJarjestyskriteeri({ ...muokkausParams, mode: 'delete' })
-          }
+          onSave={() => saveJarjestyskriteeri()}
+          onDelete={() => deleteJarjestyskriteeri()}
+          // Jos kuvaus on olemassa, silloin järjestyskriteeri on tallennettu käsin
           deleteDisabled={isEmpty(jarjestyskriteeri?.kuvaus ?? {})}
         />
       }

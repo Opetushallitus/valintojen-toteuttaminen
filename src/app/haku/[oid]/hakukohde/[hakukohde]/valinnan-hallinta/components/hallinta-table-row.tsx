@@ -24,7 +24,7 @@ type HallintaTableRowParams = {
   vaihe: Valinnanvaihe;
   index: number;
   areAllLaskentaRunning: boolean;
-  lastCalculated: number | undefined;
+  lastCalculated?: number | null;
 };
 
 const HallintaTableRow = ({
