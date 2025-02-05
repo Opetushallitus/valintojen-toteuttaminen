@@ -7,7 +7,7 @@ import {
 
 test.beforeEach(async ({ page }) => await goToSijoittelunTulokset(page));
 
-test('displays sijoittelun tulokset', async ({ page }) => {
+test('näytä "Sijoittelun tulokset" -välilehti ja sisältö', async ({ page }) => {
   await expect(
     page
       .locator('main')
@@ -99,7 +99,7 @@ test('displays sijoittelun tulokset', async ({ page }) => {
   );
 });
 
-test('does not show accept conditionally or payment column when toisen asteen yhteishaku', async ({
+test('ehdollista hyväksyntää ja maksukolumnia ei näytetä toisen asteen yhteishaulla', async ({
   page,
 }) => {
   await page.route(
@@ -141,9 +141,7 @@ test('does not show accept conditionally or payment column when toisen asteen yh
   await expect(page.getByLabel('Ehdollisuuden syy suomeksi')).toBeHidden();
 });
 
-test('shows other selection options for ehdollisuuden syy', async ({
-  page,
-}) => {
+test('näyttää muut valinnat ehdollisuuden syylle', async ({ page }) => {
   const ammSection = page.getByLabel('Todistusvalinta (AMM)(');
   await ammSection.getByLabel('Ehdollinen valinta').click();
   await expect(ammSection.getByText('Valitse...')).toBeVisible();
@@ -161,8 +159,8 @@ test('shows other selection options for ehdollisuuden syy', async ({
   ).toBeVisible();
 });
 
-test.describe('filters', () => {
-  test('filters by name', async ({ page }) => {
+test.describe('suodattimet', () => {
+  test('nimellä', async ({ page }) => {
     const hakuInput = page.getByRole('textbox', {
       name: 'Hae hakijan nimellä tai tunnisteilla',
     });
@@ -176,7 +174,7 @@ test.describe('filters', () => {
     await checkRow(rows.nth(0), ['', '2', 'Dacula Kreivi']);
   });
 
-  test('filters by application oid', async ({ page }) => {
+  test('hakemustunnisteella', async ({ page }) => {
     const hakuInput = page.getByRole('textbox', {
       name: 'Hae hakijan nimellä tai tunnisteilla',
     });
@@ -186,7 +184,7 @@ test.describe('filters', () => {
     await checkRow(rows.nth(0), ['', '', 'Hui Haamu']);
   });
 
-  test('filters henkiloOid', async ({ page }) => {
+  test('henkilötunnisteella', async ({ page }) => {
     const hakuInput = page.getByRole('textbox', {
       name: 'Hae hakijan nimellä tai tunnisteilla',
     });
@@ -196,30 +194,28 @@ test.describe('filters', () => {
     await checkRow(rows.nth(0), ['', '3', 'Purukumi Puru']);
   });
 
-  test('filters by julkaisutila VARALLA', async ({ page }) => {
+  test('julkaisutilalla VARALLA', async ({ page }) => {
     await selectTila(page, 'VARALLA');
     const rows = page.locator('tbody tr');
     await expect(rows).toHaveCount(1);
     await checkRow(rows.nth(0), ['', '3', 'Purukumi Puru']);
   });
 
-  test('filters by julkaisutila HYLÄTTY', async ({ page }) => {
+  test('julkaisutilalla HYLÄTTY', async ({ page }) => {
     await selectTila(page, 'HYLÄTTY');
     const rows = page.locator('tbody tr');
     await expect(rows).toHaveCount(1);
     await checkRow(rows.nth(0), ['', '', 'Hui Haamu']);
   });
 
-  test('filters by showing only changed applications', async ({ page }) => {
+  test('vain muuttuneet hakemukset', async ({ page }) => {
     await page.getByLabel('Näytä vain edellisestä').click();
     const rows = page.locator('tbody tr');
     await expect(rows).toHaveCount(1);
     await checkRow(rows.nth(0), ['', '', 'Hui Haamu']);
   });
 
-  test('filters by showing only conditionally accepted applications', async ({
-    page,
-  }) => {
+  test('ehdollisesti hyväksytyt hakemukset', async ({ page }) => {
     await page.getByLabel('Näytä vain ehdollisesti hyvä').click();
     const rows = page.locator('tbody tr');
     await expect(rows).toHaveCount(1);
@@ -227,8 +223,8 @@ test.describe('filters', () => {
   });
 });
 
-test.describe('select', () => {
-  test('selects all applications', async ({ page }) => {
+test.describe('monivalinta ja massamuutos', () => {
+  test('valitsee kaikki hakemukset', async ({ page }) => {
     await expect(page.getByText('Ei hakijoita valittu')).toHaveCount(2);
     await page
       .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
@@ -238,14 +234,14 @@ test.describe('select', () => {
     await expect(page.getByText('Hakijoita valittu: 3')).toBeVisible();
   });
 
-  test('selects applications', async ({ page }) => {
+  test('valitsee hakemuksia', async ({ page }) => {
     await page.getByLabel('Valitse hakijan Dacula Kreivi').click();
     await expect(page.getByText('Hakijoita valittu: 1')).toBeVisible();
     await page.getByLabel('Valitse hakijan Purukumi Puru').click();
     await expect(page.getByText('Hakijoita valittu: 2')).toBeVisible();
   });
 
-  test('mass changes applications vastaanottotieto', async ({ page }) => {
+  test('massamuutos vastaanottotiedolla', async ({ page }) => {
     await page
       .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
       .getByLabel('Valitse kaikki')
@@ -261,7 +257,7 @@ test.describe('select', () => {
     await expect(page.getByRole('row').getByText('Perunut')).toHaveCount(2);
   });
 
-  test('mass changes applications ilmoittautumistieto', async ({ page }) => {
+  test('massamuutos ilmoittautumistiedolla', async ({ page }) => {
     await page
       .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
       .getByLabel('Valitse kaikki')
@@ -280,8 +276,8 @@ test.describe('select', () => {
   });
 });
 
-test.describe('saving changes', () => {
-  test('informs that there is nothing to save', async ({ page }) => {
+test.describe('tallennus', () => {
+  test('ilmoittaa ettei ole mitään tallennettavaa', async ({ page }) => {
     await page
       .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
       .getByRole('button', { name: 'Tallenna', exact: true })
@@ -290,7 +286,7 @@ test.describe('saving changes', () => {
     await expect(page.getByText('Ei muutoksia mitä tallentaa')).toBeVisible();
   });
 
-  test('saves changes', async ({ page }) => {
+  test('tallentaa muutokset', async ({ page }) => {
     await page.getByText('Maksamatta').click();
     await page.getByRole('option', { name: 'Maksettu' }).click();
     await page
@@ -302,7 +298,7 @@ test.describe('saving changes', () => {
     ).toBeVisible();
   });
 
-  test('saving changes fails', async ({ page }) => {
+  test('tallennus epäonnistuu', async ({ page }) => {
     await page.route(
       '*/**/valinta-tulos-service/auth/lukuvuosimaksu/1.2.246.562.20.00000000000000045105*',
       async (route) => {
@@ -321,7 +317,7 @@ test.describe('saving changes', () => {
     await expect(page.getByText('Unknown error')).toBeVisible();
   });
 
-  test('saving changes partially fails', async ({ page }) => {
+  test('tallennus epäonnistuu osittain', async ({ page }) => {
     await page.route(
       '*/**/valinta-tulos-service/auth/valinnan-tulos/valintatapajono-yo',
       async (route) => {
@@ -358,8 +354,8 @@ test.describe('saving changes', () => {
   });
 });
 
-test.describe('accepting valintaesitys', () => {
-  test('accept', async ({ page }) => {
+test.describe('valintaesityksen hyväksyminen', () => {
+  test('hyväksy', async ({ page }) => {
     await page
       .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
       .getByRole('button', { name: 'Hyväksy ja tallenna' })
@@ -367,7 +363,7 @@ test.describe('accepting valintaesitys', () => {
     await expect(page.getByText('Valintaesitys hyväksytty')).toBeVisible();
   });
 
-  test('save changes and accept', async ({ page }) => {
+  test('tee muutos ja hyväksy', async ({ page }) => {
     await page.getByText('Läsnä (koko lukuvuosi)').click();
     await page.getByRole('option', { name: 'Ei ilmoittautunut' }).click();
     await page
@@ -377,7 +373,7 @@ test.describe('accepting valintaesitys', () => {
     await expect(page.getByText('Valintaesitys hyväksytty')).toBeVisible();
   });
 
-  test('operation fails during saving changes', async ({ page }) => {
+  test('epäonnistuu muutoksia tallentaessa', async ({ page }) => {
     await page.route(
       '*/**/valinta-tulos-service/auth/lukuvuosimaksu/1.2.246.562.20.00000000000000045105*',
       async (route) => {
@@ -401,7 +397,7 @@ test.describe('accepting valintaesitys', () => {
     ).toBeVisible();
   });
 
-  test('accept operation fail', async ({ page }) => {
+  test('hyväksyntä epäonnistuu', async ({ page }) => {
     await page.route(
       '*/**/valinta-tulos-service/auth/valintaesitys/valintatapajono-yo/hyvaksytty*',
       async (route) => {
@@ -419,8 +415,8 @@ test.describe('accepting valintaesitys', () => {
   });
 });
 
-test.describe('other actions of hakemus', () => {
-  test('show changehistory', async ({ page }) => {
+test.describe('muut toiminnot hakemukselle', () => {
+  test('näytä muutoshistoria', async ({ page }) => {
     await page.route(
       '*/**/valinta-tulos-service/auth/muutoshistoria*',
       async (route) => {
@@ -488,7 +484,7 @@ test.describe('other actions of hakemus', () => {
     await expect(page.getByText('Muokkausajankohta')).toBeHidden();
   });
 
-  test('create hyväksymiskirje', async ({ page }) => {
+  test('muodosta hyväksymiskirje', async ({ page }) => {
     await page.route(
       '*/**/valintalaskentakoostepalvelu/resources/viestintapalvelu/hyvaksymiskirjeet/aktivoi*',
       async (route) => {
@@ -526,7 +522,7 @@ test.describe('other actions of hakemus', () => {
     await expect(page.getByRole('button', { name: 'Lataa' })).toBeVisible();
   });
 
-  test('send vastaanottoposti', async ({ page }) => {
+  test('lähetä vastaanottoposti', async ({ page }) => {
     await page.route(
       '*/**/valinta-tulos-service/auth/emailer/run/hakemus/1.2.246.562.11.00000000000001796027',
       async (route) => {
