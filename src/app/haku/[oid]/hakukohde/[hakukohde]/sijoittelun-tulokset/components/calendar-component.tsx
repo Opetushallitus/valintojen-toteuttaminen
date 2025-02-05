@@ -1,10 +1,13 @@
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Box, InputAdornment, styled } from '@mui/material';
-import { ophColors, OphInput } from '@opetushallitus/oph-design-system';
+import {
+  ophColors,
+  OphInput,
+  OphFormFieldWrapper,
+} from '@opetushallitus/oph-design-system';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { forwardRef, ReactNode, useRef } from 'react';
-import { OphFormControl } from '@/app/components/form/oph-form-control';
 import {
   CalendarTodayOutlined,
   KeyboardArrowRight,
@@ -139,7 +142,7 @@ export const CalendarComponent = ({
 
   return (
     <CalendarStyles>
-      <OphFormControl
+      <OphFormFieldWrapper
         label={t('sijoittelun-tulokset.toiminnot.palautuksen-erapaiva')}
         renderInput={({ labelId }) => (
           <DatePicker

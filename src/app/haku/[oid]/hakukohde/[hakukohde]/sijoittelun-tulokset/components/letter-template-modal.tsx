@@ -1,5 +1,8 @@
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { OphButton } from '@opetushallitus/oph-design-system';
+import {
+  OphButton,
+  OphFormFieldWrapper,
+} from '@opetushallitus/oph-design-system';
 import { createModal, useOphModalProps } from '@/app/components/global-modal';
 import { OphModalDialog } from '@/app/components/oph-modal-dialog';
 import { useCallback, useState } from 'react';
@@ -21,7 +24,6 @@ import {
   luoHyvaksymiskirjeetPDF,
 } from '@/app/lib/valintalaskentakoostepalvelu';
 import { SpinnerIcon } from '@/app/components/spinner-icon';
-import { OphFormControl } from '@/app/components/form/oph-form-control';
 import { LocalizedSelect } from '@/app/components/localized-select';
 import { SelectChangeEvent } from '@mui/material/Select';
 import {
@@ -77,7 +79,7 @@ const TemplateSection = ({
 
   return (
     <>
-      <OphFormControl
+      <OphFormFieldWrapper
         sx={{
           width: 'auto',
           minWidth: '140px',
@@ -116,7 +118,7 @@ const TargetRadioGroup = ({
   const { t } = useTranslations();
 
   return (
-    <OphFormControl
+    <OphFormFieldWrapper
       label={t('kirje-modaali.kohdejoukko')}
       renderInput={({ labelId }) => (
         <RadioGroup
