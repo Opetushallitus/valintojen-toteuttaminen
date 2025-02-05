@@ -415,7 +415,7 @@ test.describe('valintaesityksen hyväksyminen', () => {
   });
 });
 
-test.describe('muut toiminnot hakemukselle', () => {
+test.describe('hakemuksen muut toiminnot', () => {
   test('näytä muutoshistoria', async ({ page }) => {
     await page.route(
       '*/**/valinta-tulos-service/auth/muutoshistoria*',
@@ -518,6 +518,12 @@ test.describe('muut toiminnot hakemukselle', () => {
     await expect(
       page.getByText('Hyväksymiskirjeen muodostaminen'),
     ).toBeVisible();
+    await page.getByPlaceholder('pp.kk.vvvv hh.mm').click();
+    await page.getByLabel('Choose lauantaina 15.').click();
+    await page.getByRole('option', { name: '15.30' }).click();
+    await expect(page.getByPlaceholder('pp.kk.vvvv hh.mm')).toHaveValue(
+      '15.02.2025 15:30',
+    );
     await page.getByRole('button', { name: 'Muodosta kirje' }).click();
     await expect(page.getByRole('button', { name: 'Lataa' })).toBeVisible();
   });
@@ -686,6 +692,7 @@ test.describe('hakukohteen muut toiminnot', () => {
 });
 
 async function goToSijoittelunTulokset(page: Page) {
+  await page.clock.setFixedTime(new Date('2025-02-05T12:00:00'));
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/sijoittelun-tulokset',
   );
