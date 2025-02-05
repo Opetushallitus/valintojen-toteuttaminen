@@ -548,6 +548,147 @@ test.describe('other actions of hakemus', () => {
   });
 });
 
+test.describe('hakukohteen muut toiminnot', () => {
+  test('tiedostojen latausvaihtoehdot eivät ole sallittuja', async ({
+    page,
+  }) => {
+    await page.getByLabel('Muut toiminnot hakukohteelle').click();
+    await expect(page.getByText('Lataa hyväksymiskirjeet')).toBeDisabled();
+    await expect(page.getByText('Lataa osoitetarrat')).toBeDisabled();
+    await expect(page.getByText('Lataa tulokset')).toBeDisabled();
+  });
+
+  test('lähetä vastaanottoposti', async ({ page }) => {
+    await page.route(
+      '*/**/valinta-tulos-service/auth/emailer/run/hakukohde/1.2.246.562.20.00000000000000045105',
+      async (route) => {
+        await route.fulfill({
+          status: 200,
+          json: ['1.2.246.562.20.00000000000000045105'],
+        });
+      },
+    );
+    await page.getByLabel('Muut toiminnot hakukohteelle').click();
+    await expect(
+      page.getByText('Lähetä vastaanottoposti hakukohteelle'),
+    ).toBeVisible();
+    await page.getByText('Lähetä vastaanottoposti hakukohteelle').click();
+    await expect(page.getByText('Sähköpostien lähetys onnistui')).toBeVisible();
+  });
+
+  test('muodosta hyväksymiskirjeet', async ({ page }) => {
+    await page.route(
+      '*/**/valintalaskentakoostepalvelu/resources/viestintapalvelu/hyvaksymiskirjeet/aktivoi*',
+      async (route) => {
+        await route.fulfill({
+          status: 200,
+          json: { id: 'dokumentti_id' },
+        });
+      },
+    );
+    await page.route(
+      '*/**/valintalaskentakoostepalvelu/resources/dokumenttiprosessi/dokumentti_id',
+      async (route) => {
+        const readyProcess = {
+          kokonaistyo: { valmis: true },
+          dokumenttiId: 'dokumentti_id',
+        };
+        await route.fulfill({
+          status: 200,
+          json: readyProcess,
+        });
+      },
+    );
+    await page.getByLabel('Muut toiminnot hakukohteelle').click();
+    await expect(page.getByText('Muodosta hyväksymiskirjeet')).toBeVisible();
+    await page.getByText('Muodosta hyväksymiskirjeet').click();
+    await page.getByLabel('Vain ne hyväksytyt, jotka eiv').click();
+    await expect(
+      page.getByText('Hyväksymiskirjeiden muodostaminen'),
+    ).toBeVisible();
+    await page.getByRole('button', { name: 'Muodosta kirjeet' }).click();
+    await expect(page.getByRole('button', { name: 'Lataa' })).toBeVisible();
+    await page.getByLabel('Sulje').click();
+    await expect(
+      page.getByText('Hyväksymiskirjeiden muodostaminen'),
+    ).toBeHidden();
+    await page.getByLabel('Muut toiminnot hakukohteelle').click();
+    await expect(page.getByText('Lataa hyväksymiskirjeet')).toBeEnabled();
+  });
+
+  test('muodosta kirjeet ei-hyväksytyille', async ({ page }) => {
+    await page.route(
+      '*/**/valintalaskentakoostepalvelu/resources/viestintapalvelu/hyvaksymiskirjeet/aktivoi*',
+      async (route) => {
+        await route.fulfill({
+          status: 200,
+          json: { id: 'dokumentti_id' },
+        });
+      },
+    );
+    await page.route(
+      '*/**/valintalaskentakoostepalvelu/resources/dokumenttiprosessi/dokumentti_id',
+      async (route) => {
+        const readyProcess = {
+          kokonaistyo: { valmis: true },
+          dokumenttiId: 'dokumentti_id',
+        };
+        await route.fulfill({
+          status: 200,
+          json: readyProcess,
+        });
+      },
+    );
+    await page.getByLabel('Muut toiminnot hakukohteelle').click();
+    await expect(
+      page.getByText('Muodosta kirjeet ei-hyväksytyille'),
+    ).toBeVisible();
+    await page.getByText('Muodosta kirjeet ei-hyväksytyille').click();
+    await expect(
+      page.getByText('Ei-hyväksymiskirjeiden muodostaminen'),
+    ).toBeVisible();
+    await page.getByText('Terve suuri aatelinen!').fill('Purkka lopussa');
+    await page.getByRole('button', { name: 'Muodosta kirjeet' }).click();
+    await expect(page.getByRole('button', { name: 'Lataa' })).toBeVisible();
+  });
+
+  test('muodosta osoitetarrat', async ({ page }) => {
+    await page.route(
+      '*/**/valintalaskentakoostepalvelu/resources/viestintapalvelu/osoitetarrat/sijoittelussahyvaksytyille/aktivoi*',
+      async (route) => {
+        await route.fulfill({
+          status: 200,
+          json: { id: 'dokumentti_id_tarrat' },
+        });
+      },
+    );
+    await page.route(
+      '*/**/valintalaskentakoostepalvelu/resources/dokumenttiprosessi/dokumentti_id_tarrat',
+      async (route) => {
+        const readyProcess = {
+          kokonaistyo: { valmis: true },
+          dokumenttiId: 'dokumentti_id_tarrat',
+        };
+        await route.fulfill({
+          status: 200,
+          json: readyProcess,
+        });
+      },
+    );
+    await page.getByLabel('Muut toiminnot hakukohteelle').click();
+    await expect(
+      page.getByText('Muodosta hyväksytyille osoitetarrat'),
+    ).toBeVisible();
+    await page.getByText('Muodosta hyväksytyille osoitetarrat').click();
+    await expect(page.getByText('Osoitetarrojen muodostaminen')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Lataa' })).toBeVisible();
+    await page.getByLabel('Sulje').click();
+    await expect(page.getByText('Osoitetarrojen muodostaminen')).toBeHidden();
+    await page.getByLabel('Muut toiminnot hakukohteelle').click();
+    await expect(page.getByText('Lataa osoitetarrat')).toBeEnabled();
+  });
+});
+
 async function goToSijoittelunTulokset(page: Page) {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/sijoittelun-tulokset',

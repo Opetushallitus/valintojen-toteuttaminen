@@ -94,6 +94,7 @@
     }
   ],
   "sijoittelunTulokset": {
+    "sijoitteluajoId": "123456789",
     "valintatapajonot": [
       {
         "oid": "valintatapajono-yo",
