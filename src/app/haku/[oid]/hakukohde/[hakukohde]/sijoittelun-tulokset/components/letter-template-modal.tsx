@@ -6,8 +6,8 @@ import {
 import { createModal, useOphModalProps } from '@/app/components/global-modal';
 import { OphModalDialog } from '@/app/components/oph-modal-dialog';
 import { useCallback, useState } from 'react';
-import { CalendarComponent } from './calendar-component';
-import { EditorComponent } from './editor-component';
+import { CalendarComponent } from '@/app/components/calendar-component';
+import { EditorComponent } from '@/app/components/editor-component';
 import {
   Kirjepohja,
   KirjepohjaNimi,
