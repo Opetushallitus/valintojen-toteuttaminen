@@ -5,13 +5,9 @@ import {
 } from '@opetushallitus/oph-design-system';
 import { createModal, useOphModalProps } from '@/app/components/global-modal';
 import { OphModalDialog } from '@/app/components/oph-modal-dialog';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { CalendarComponent } from '@/app/components/calendar-component';
-import { EditorComponent } from '@/app/components/editor-component';
-import {
-  Kirjepohja,
-  KirjepohjaNimi,
-} from '@/app/lib/types/valintalaskentakoostepalvelu-types';
+import { KirjepohjaNimi } from '@/app/lib/types/valintalaskentakoostepalvelu-types';
 import { Hakukohde } from '@/app/lib/types/kouta-types';
 import {
   useMutation,
@@ -24,11 +20,10 @@ import {
   luoHyvaksymiskirjeetPDF,
 } from '@/app/lib/valintalaskentakoostepalvelu';
 import { SpinnerIcon } from '@/app/components/spinner-icon';
-import { LocalizedSelect } from '@/app/components/localized-select';
-import { SelectChangeEvent } from '@mui/material/Select';
 import { Box, FormControlLabel, Radio, RadioGroup } from '@mui/material';
 import { ProgressModalDialog } from './progress-modal-dialog';
 import { styled } from '@/app/lib/theme';
+import { TemplateSection } from './letter-template-section';
 
 export type LetterTemplateModalProps = {
   title: string;
@@ -51,57 +46,6 @@ const CustomContainer = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
   rowGap: theme.spacing(2),
 }));
-
-const TemplateSection = ({
-  pohjat,
-  templateBody,
-  setTemplateBody,
-  setLetterBody,
-}: {
-  pohjat: Kirjepohja[];
-  templateBody: string;
-  setTemplateBody: (val: string) => void;
-  setLetterBody: (val: string) => void;
-}) => {
-  const { t } = useTranslations();
-  const [usedPohja, setUsedPohja] = useState<Kirjepohja>(pohjat[0]);
-
-  const changeUsedPohja = (event: SelectChangeEvent<string>) => {
-    const pohja = pohjat.find((p) => p.nimi === event.target.value)!;
-    setUsedPohja(pohja);
-    setTemplateBody(pohja?.sisalto || '');
-  };
-
-  return (
-    <>
-      <OphFormFieldWrapper
-        sx={{
-          width: 'auto',
-          minWidth: '140px',
-          textAlign: 'left',
-        }}
-        label={t('kirje-modaali.valmispohja')}
-        renderInput={({ labelId }) => (
-          <LocalizedSelect
-            id="kirjepohja-select"
-            labelId={labelId}
-            value={usedPohja?.nimi || ''}
-            onChange={changeUsedPohja}
-            options={pohjat.map((p) => ({
-              value: p.nimi,
-              label: t(`kirjepohja.${p.nimi}`, p.nimi),
-            }))}
-            clearable
-          />
-        )}
-      />
-      <EditorComponent
-        editorContent={templateBody}
-        onContentChanged={setLetterBody}
-      />
-    </>
-  );
-};
 
 const TargetRadioGroup = ({
   onlyForbidden,
@@ -186,9 +130,12 @@ export const AcceptedLetterTemplateModal = createModal(
     );
     const [letterBody, setLetterBody] = useState<string>(templateBody);
 
-    const getFile = useCallback(
-      () =>
-        luoHyvaksymiskirjeetPDF({
+    const mutation = useMutation({
+      onError: (e) => {
+        console.error(e);
+      },
+      mutationFn: async () =>
+        await luoHyvaksymiskirjeetPDF({
           hakukohde,
           sijoitteluajoId,
           letterBody,
@@ -196,21 +143,6 @@ export const AcceptedLetterTemplateModal = createModal(
           onlyForbidden,
           hakemusOids,
         }),
-      [
-        hakukohde,
-        deadlineDate,
-        sijoitteluajoId,
-        letterBody,
-        onlyForbidden,
-        hakemusOids,
-      ],
-    );
-
-    const mutation = useMutation({
-      onError: (e) => {
-        console.error(e);
-      },
-      mutationFn: async () => await getFile(),
       onSuccess: (data) => {
         if (setDocument) {
           setDocument(data);
@@ -300,21 +232,16 @@ export const NonAcceptedLetterTemplateModal = createModal(
     );
     const [letterBody, setLetterBody] = useState<string>(templateBody);
 
-    const getFile = useCallback(
-      () =>
-        luoEiHyvaksymiskirjeetPDF({
-          hakukohde,
-          sijoitteluajoId,
-          letterBody,
-        }),
-      [hakukohde, sijoitteluajoId, letterBody],
-    );
-
     const mutation = useMutation({
       onError: (e) => {
         console.error(e);
       },
-      mutationFn: async () => await getFile(),
+      mutationFn: async () =>
+        await luoEiHyvaksymiskirjeetPDF({
+          hakukohde,
+          sijoitteluajoId,
+          letterBody,
+        }),
     });
 
     const mutationStarted =
