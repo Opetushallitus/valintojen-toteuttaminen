@@ -26,14 +26,9 @@ import {
 import { SpinnerIcon } from '@/app/components/spinner-icon';
 import { LocalizedSelect } from '@/app/components/localized-select';
 import { SelectChangeEvent } from '@mui/material/Select';
-import {
-  Box,
-  FormControlLabel,
-  Radio,
-  RadioGroup,
-  styled,
-} from '@mui/material';
+import { Box, FormControlLabel, Radio, RadioGroup } from '@mui/material';
 import { ProgressModalDialog } from './progress-modal-dialog';
+import { styled } from '@/app/lib/theme';
 
 export type LetterTemplateModalProps = {
   title: string;
@@ -44,17 +39,17 @@ export type LetterTemplateModalProps = {
   setDocument?: (docId: string) => void;
 };
 
-const CustomRadio = styled(Radio)(() => ({
+const CustomRadio = styled(Radio)(({ theme }) => ({
   padding: 0,
   '&:first-child': {
-    padding: '5px 0',
+    padding: `${theme.spacing(0.3)} 0`,
   },
 }));
 
-const CustomContainer = styled(Box)(() => ({
+const CustomContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
-  rowGap: '1rem',
+  rowGap: theme.spacing(2),
 }));
 
 const TemplateSection = ({
@@ -102,7 +97,7 @@ const TemplateSection = ({
       />
       <EditorComponent
         editorContent={templateBody}
-        setContentChanged={setLetterBody}
+        onContentChanged={setLetterBody}
       />
     </>
   );

@@ -43,7 +43,9 @@
   },
   "kalenteri": {
     "aika": "Aika",
-    "syote-vihje": "pp.kk.vvvv hh.mm"
+    "syote-vihje": "pp.kk.vvvv hh.mm",
+    "edellinen-kuukausi": "Edellinen kuukausi",
+    "seuraava-kuukausi": "Seuraava kuukausi"
   },
   "haku-tabs": {
     "navigaatio": "Haun näkymävalitsin",
@@ -326,6 +328,7 @@
       "laheta-vastaanottoposti-hakukohde": "Lähetä vastaanottoposti hakukohteelle",
       "osoitetarrat": "Muodosta hyväksytyille osoitetarrat",
       "osoitetarrat-lataa": "Lataa osoitetarrat",
+      "osoitetarrat-suoritetaan": "Osoitetarroja muodostetaan...",
       "tulokset-lataa": "Lataa tulokset",
       "hyvaksymiskirje-hakemukselle-luotu": "Muodostettu hyväksymiskirje hakemukselle",
       "hyvaksymiskirje-hakemukselle-luotu-epaonnistui": "Hyväksymiskirjeen muodostaminen hakemukselle epäonnistui",

@@ -1,5 +1,5 @@
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { Box, InputAdornment, styled } from '@mui/material';
+import { Box, InputAdornment } from '@mui/material';
 import {
   ophColors,
   OphInput,
@@ -14,6 +14,7 @@ import {
   KeyboardArrowLeft,
 } from '@mui/icons-material';
 import { capitalize } from 'remeda';
+import { styled } from '../lib/theme';
 
 const CALENDAR_CLASSNAME = 'oph-calendar';
 
@@ -25,7 +26,7 @@ const CalendarStyles = styled(Box)(({ theme }) => ({
       '&__header': {
         backgroundColor: ophColors.white,
         borderBottom: 'none',
-        paddingTop: '0.7rem',
+        paddingTop: theme.spacing(1.3),
         'h2.react-datepicker__current-month, .react-datepicker-time__header': {
           ...theme.typography.label,
         },
@@ -52,7 +53,7 @@ const CalendarStyles = styled(Box)(({ theme }) => ({
       '&__day-name': {
         color: ophColors.grey400,
         width: '2rem',
-        marginTop: '0.5rem',
+        marginTop: theme.spacing(1),
       },
     },
     '.react-datepicker__time-container': {
@@ -61,7 +62,7 @@ const CalendarStyles = styled(Box)(({ theme }) => ({
     '.react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item':
       {
         height: 'unset',
-        marginBottom: '0.2rem',
+        marginBottom: theme.spacing(0.3),
         '&:focus': {
           outline: `2px solid ${ophColors.black}`,
         },
@@ -78,9 +79,9 @@ const CalendarStyles = styled(Box)(({ theme }) => ({
         backgroundColor: ophColors.lightBlue2,
       },
     '&__navigation': {
-      marginTop: '0.25rem',
-      marginLeft: '0.7rem',
-      marginRight: '0.7rem',
+      marginTop: theme.spacing(0.5),
+      marginLeft: theme.spacing(1.3),
+      marginRight: theme.spacing(1.3),
       '&:focus': {
         outline: `2px solid ${ophColors.black}`,
       },
@@ -172,7 +173,7 @@ export const CalendarComponent = ({
             }) => (
               <div>
                 <button
-                  aria-label="Previous Month"
+                  aria-label={t('kalenteri.edellinen-kuukausi')}
                   className={
                     'react-datepicker__navigation react-datepicker__navigation--previous oph-calendar__navigation'
                   }
@@ -189,7 +190,7 @@ export const CalendarComponent = ({
                   )}
                 </span>
                 <button
-                  aria-label="Next Month"
+                  aria-label={t('kalenteri.seuraava-kuukausi')}
                   className={
                     'react-datepicker__navigation react-datepicker__navigation--next oph-calendar__navigation'
                   }

@@ -2,17 +2,24 @@ import React, { forwardRef, useEffect, useRef } from 'react';
 import Quill from 'quill';
 import 'quill/dist/quill.snow.css';
 
-type QuillProps = {
-  defaultValue: string;
-  setContentChanged: (value: string) => void;
+/**
+ * Properties for the Editor component.
+ *
+ * @property {string} editorContent - The content to be displayed in the editor.
+ * @property {function} onContentChanged - Callback function that is called when the content changes in the editor.
+ *
+ */
+export type EditorProps = {
+  editorContent: string;
+  onContentChanged: (value: string) => void;
 };
 
 // Editor is an uncontrolled React component
-const Editor = forwardRef<Quill, QuillProps>(
-  ({ defaultValue, setContentChanged }, ref) => {
+const Editor = forwardRef<Quill, EditorProps>(
+  ({ editorContent, onContentChanged }, ref) => {
     const containerRef = useRef<HTMLDivElement | null>(null);
-    const defaultValueRef = useRef(defaultValue);
-    const contentChangedRef = useRef(setContentChanged);
+    const contentRef = useRef(editorContent);
+    const contentChangedRef = useRef(onContentChanged);
 
     useEffect(() => {
       if (containerRef.current && ref) {
@@ -31,9 +38,9 @@ const Editor = forwardRef<Quill, QuillProps>(
           ref.current = quill;
         }
 
-        if (defaultValueRef.current) {
+        if (contentRef.current) {
           const delta = quill.clipboard.convert({
-            html: defaultValueRef.current,
+            html: contentRef.current,
           });
           quill.setContents(delta);
         }
@@ -58,14 +65,9 @@ const Editor = forwardRef<Quill, QuillProps>(
 
 Editor.displayName = 'Editor';
 
-export type EditorProps = {
-  editorContent: string;
-  setContentChanged: (value: string) => void;
-};
-
 export const EditorComponent = ({
   editorContent,
-  setContentChanged,
+  onContentChanged,
 }: EditorProps) => {
   const quillRef = useRef<Quill | null>(null);
 
@@ -80,8 +82,8 @@ export const EditorComponent = ({
   return (
     <Editor
       ref={quillRef}
-      defaultValue={editorContent}
-      setContentChanged={setContentChanged}
+      editorContent={editorContent}
+      onContentChanged={onContentChanged}
     />
   );
 };
