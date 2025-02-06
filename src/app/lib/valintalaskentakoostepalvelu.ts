@@ -331,7 +331,6 @@ const pollDocumentProcess = async (
     pollTimes -= 1;
 
     const { data } = processRes;
-
     if (data.kokonaistyo?.valmis || data.keskeytetty) {
       return data;
     } else if (pollTimes === 0 && !infiniteWait) {
@@ -672,14 +671,27 @@ export const luoHyvaksymiskirjeetPDF = async ({
   const time = deadline
     ? toFormattedDateTimeString(deadline, INPUT_TIME_FORMAT)
     : null;
-  const queryParams = `hakuOid=${hakukohde.hakuOid}&hakukohdeOid=${hakukohde.oid}&sijoitteluajoId=${sijoitteluajoId}&tarjoajaOid=${hakukohde.tarjoajaOid}&hakukohdeNimi=${hakukohdeNimi}&lang=${opetuskieliCode}&templateName=hyvaksymiskirje&palautusPvm=${pvm}&palautusAika=${time}&vainTulosEmailinKieltaneet=${onlyForbidden}`;
+  const urlWithQuery = new URL(configuration.hyvaksymiskirjeetUrl);
+  urlWithQuery.searchParams.append('hakuOid', hakukohde.hakuOid);
+  urlWithQuery.searchParams.append('hakukohdeOid', hakukohde.oid);
+  urlWithQuery.searchParams.append('sijoitteluajoId', sijoitteluajoId);
+  urlWithQuery.searchParams.append('tarjoajaOid', hakukohde.tarjoajaOid);
+  urlWithQuery.searchParams.append('hakukohdeNimi', hakukohdeNimi);
+  urlWithQuery.searchParams.append('lang', opetuskieliCode);
+  urlWithQuery.searchParams.append('templateName', 'hyvaksymiskirje');
+  urlWithQuery.searchParams.append('palautusPvm', '' + pvm);
+  urlWithQuery.searchParams.append('palautusAika', '' + time);
+  urlWithQuery.searchParams.append(
+    'vainTulosEmailinKieltaneet',
+    '' + onlyForbidden,
+  );
   const body = {
     hakemusOids: hakemusOids,
     letterBodyText: letterBody.replaceAll('&nbsp;', ' '),
     tag: hakukohde.oid,
   };
   const startProcessResponse = await client.post<{ id: string }>(
-    `${configuration.hyvaksymiskirjeetUrl}?${queryParams}`,
+    urlWithQuery.toString(),
     body,
   );
   const kirjeetProcessId = startProcessResponse?.data?.id;
@@ -696,14 +708,20 @@ export const luoEiHyvaksymiskirjeetPDF = async ({
   letterBody: string;
 }): Promise<string> => {
   const opetuskieliCode = (getOpetuskieliCode(hakukohde) || 'fi').toUpperCase();
-  const queryParams = `hakuOid=${hakukohde.hakuOid}&hakukohdeOid=${hakukohde.oid}&sijoitteluajoId=${sijoitteluajoId}&tarjoajaOid=${hakukohde.tarjoajaOid}&lang=${opetuskieliCode}&templateName=jalkiohjauskirje`;
+  const urlWithQuery = new URL(configuration.hyvaksymiskirjeetUrl);
+  urlWithQuery.searchParams.append('hakuOid', hakukohde.hakuOid);
+  urlWithQuery.searchParams.append('hakukohdeOid', hakukohde.oid);
+  urlWithQuery.searchParams.append('sijoitteluajoId', sijoitteluajoId);
+  urlWithQuery.searchParams.append('tarjoajaOid', hakukohde.tarjoajaOid);
+  urlWithQuery.searchParams.append('lang', opetuskieliCode);
+  urlWithQuery.searchParams.append('templateName', 'jalkiohjauskirje');
   const body = {
     hakemusOids: null,
     letterBodyText: letterBody.replaceAll('&nbsp;', ' '),
     tag: hakukohde.oid,
   };
   const startProcessResponse = await client.post<{ id: string }>(
-    `${configuration.hyvaksymiskirjeetUrl}?${queryParams}`,
+    urlWithQuery.toString(),
     body,
   );
   const kirjeetProcessId = startProcessResponse?.data?.id;
