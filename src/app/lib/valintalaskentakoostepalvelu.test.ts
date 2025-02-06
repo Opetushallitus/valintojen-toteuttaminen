@@ -7,8 +7,10 @@ import {
   getValintakoekutsutData,
   luoEiHyvaksymiskirjeetPDF,
   luoHyvaksymiskirjeetPDF,
+  luoOsoitetarratHakukohteessaHyvaksytyille,
 } from './valintalaskentakoostepalvelu';
 import { Language } from './localization/localization-types';
+import { Hakukohde } from './types/kouta-types';
 
 const HAKEMUKSET_BY_OID = {
   '1.2.246.562.11.00000000000001796027': {
@@ -55,6 +57,18 @@ const HAKEMUKSET_BY_OID = {
     lahiosoite: 'Yläpääntie 875',
     postinumero: '00100',
   },
+};
+
+const HAKUKOHDE: Hakukohde = {
+  oid: '1.2.246.562.20.00000000000000045109',
+  hakuOid: '1.2.246.562.29.00000000000000045103',
+  tarjoajaOid: '1.2.246.562.10.00000000000000045100',
+  nimi: { fi: 'Palindromien vääntäjien erikoistuminen' },
+  opetuskielet: new Set<Language>(['fi']),
+  organisaatioNimi: { fi: 'Saippuakauppiaitten innostuneet sonnit' },
+  organisaatioOid: '1.2.3.4.5.6',
+  jarjestyspaikkaHierarkiaNimi: { fi: 'Saippuakauppa' },
+  voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita: false,
 };
 
 describe('getValintakoekutsutData', () => {
@@ -186,20 +200,9 @@ describe('getValintakoekutsutData', () => {
   });
 });
 
-describe('letters', () => {
+describe('letters and poststamps', () => {
   beforeEach(() => {
-    const clientSpy = vi.spyOn(client, 'post');
     const processDocumentSpy = vi.spyOn(client, 'get');
-
-    clientSpy.mockImplementationOnce((url) => {
-      if (url.toString().includes('/hyvaksymiskirjeet')) {
-        return Promise.resolve({
-          headers: new Headers(),
-          data: { id: 'process-id' },
-        });
-      }
-      return Promise.reject();
-    });
 
     processDocumentSpy.mockImplementationOnce((url) => {
       if (url.toString().includes('/dokumenttiprosessi')) {
@@ -224,20 +227,20 @@ describe('letters', () => {
   });
 
   test('Creates acceptance letters process and returns document id to poll', async () => {
+    const clientSpy = vi.spyOn(client, 'post');
+    clientSpy.mockImplementationOnce((url) => {
+      if (url.toString().includes('/hyvaksymiskirjeet')) {
+        return Promise.resolve({
+          headers: new Headers(),
+          data: { id: 'process-id' },
+        });
+      }
+      return Promise.reject();
+    });
     const result = await luoHyvaksymiskirjeetPDF({
       hakemusOids: ['1.2.246.562.11.00000000000001796027'],
       sijoitteluajoId: 'sijoitteluajo-id',
-      hakukohde: {
-        oid: '1.2.246.562.20.00000000000000045109',
-        hakuOid: '1.2.246.562.29.00000000000000045103',
-        tarjoajaOid: '1.2.246.562.10.00000000000000045100',
-        nimi: { fi: 'Palindromien vääntäjien erikoistuminen' },
-        opetuskielet: new Set<Language>(['fi']),
-        organisaatioNimi: { fi: 'Saippuakauppiaitten innostuneet sonnit' },
-        organisaatioOid: '1.2.3.4.5.6',
-        jarjestyspaikkaHierarkiaNimi: { fi: 'Saippuakauppa' },
-        voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita: false,
-      },
+      hakukohde: HAKUKOHDE,
       letterBody: 'saippuakivikauppias',
       deadline: new Date(),
       onlyForbidden: false,
@@ -246,20 +249,38 @@ describe('letters', () => {
   });
 
   test('Creates non-acceptance letters process and returns document id to poll', async () => {
+    const clientSpy = vi.spyOn(client, 'post');
+    clientSpy.mockImplementationOnce((url) => {
+      if (url.toString().includes('/hyvaksymiskirjeet')) {
+        return Promise.resolve({
+          headers: new Headers(),
+          data: { id: 'process-id' },
+        });
+      }
+      return Promise.reject();
+    });
     const result = await luoEiHyvaksymiskirjeetPDF({
       sijoitteluajoId: 'sijoitteluajo-id',
-      hakukohde: {
-        oid: '1.2.246.562.20.00000000000000045109',
-        hakuOid: '1.2.246.562.29.00000000000000045103',
-        tarjoajaOid: '1.2.246.562.10.00000000000000045100',
-        nimi: { fi: 'Palindromien vääntäjien erikoistuminen' },
-        opetuskielet: new Set<Language>(['fi']),
-        organisaatioNimi: { fi: 'Saippuakauppiaitten innostuneet sonnit' },
-        organisaatioOid: '1.2.3.4.5.6',
-        jarjestyspaikkaHierarkiaNimi: { fi: 'Saippuakauppa' },
-        voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita: false,
-      },
+      hakukohde: HAKUKOHDE,
       letterBody: 'saippuakivikauppias',
+    });
+    expect(result).toBe('document-id');
+  });
+
+  test('Creates poststamps process and returns document id to poll', async () => {
+    const clientSpy = vi.spyOn(client, 'post');
+    clientSpy.mockImplementationOnce((url) => {
+      if (url.toString().includes('/osoitetarrat')) {
+        return Promise.resolve({
+          headers: new Headers(),
+          data: { id: 'process-id' },
+        });
+      }
+      return Promise.reject();
+    });
+    const result = await luoOsoitetarratHakukohteessaHyvaksytyille({
+      sijoitteluajoId: 'sijoitteluajo-id',
+      hakukohde: HAKUKOHDE,
     });
     expect(result).toBe('document-id');
   });

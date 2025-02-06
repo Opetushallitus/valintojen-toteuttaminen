@@ -355,9 +355,14 @@ const processDocumentAndReturnDocumentId = async (
   const { dokumenttiId, poikkeukset, varoitukset } = data;
 
   if (!isEmpty(poikkeukset) || !isEmpty(varoitukset)) {
+    console.error(
+      'Exception caught while processing document: ',
+      (poikkeukset ?? [])
+        .map(prop('viesti'))
+        .concat((varoitukset ?? []).map((v) => `${v.oid}: ${v.selite}`))
+        .join('\n'),
+    );
     throw new OphProcessError(mapProcessResponseToErrorData(data));
-    //const errorMessages = poikkeukset.map(prop('viesti')).join('\n');
-    //throw Error(errorMessages);
   }
 
   return dokumenttiId;
@@ -735,8 +740,14 @@ export const luoOsoitetarratHakukohteessaHyvaksytyille = async ({
   sijoitteluajoId: string;
   hakukohde: Hakukohde;
 }): Promise<string> => {
+  const urlWithQuery = new URL(
+    configuration.startExportOsoitetarratSijoittelussaHyvaksytyilleUrl,
+  );
+  urlWithQuery.searchParams.append('sijoitteluajoId', sijoitteluajoId);
+  urlWithQuery.searchParams.append('hakuOid', hakukohde.hakuOid);
+  urlWithQuery.searchParams.append('hakukohdeOid', hakukohde.oid);
   const startProcessResponse = await client.post<{ id: string }>(
-    `${configuration.startExportOsoitetarratSijoittelussaHyvaksytyilleUrl}?sijoitteluajoId=${sijoitteluajoId}&hakuOid=${hakukohde.hakuOid}&hakukohdeOid=${hakukohde.oid}`,
+    urlWithQuery.toString(),
     {
       hakemusOids: [],
       tag: hakukohde.oid,
