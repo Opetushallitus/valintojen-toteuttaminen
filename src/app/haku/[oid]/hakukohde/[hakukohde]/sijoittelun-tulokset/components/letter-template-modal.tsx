@@ -348,12 +348,14 @@ export const NonAcceptedLetterTemplateModal = createModal(
       >
         {isLoading && <SpinnerIcon />}
         {!isLoading && (
-          <TemplateSection
-            pohjat={pohjat}
-            templateBody={templateBody}
-            setTemplateBody={setTemplateBody}
-            setLetterBody={setLetterBody}
-          />
+          <CustomContainer>
+            <TemplateSection
+              pohjat={pohjat}
+              templateBody={templateBody}
+              setTemplateBody={setTemplateBody}
+              setLetterBody={setLetterBody}
+            />
+          </CustomContainer>
         )}
       </OphModalDialog>
     );
