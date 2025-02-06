@@ -251,7 +251,7 @@ describe('letters and poststamps', () => {
   test('Creates non-acceptance letters process and returns document id to poll', async () => {
     const clientSpy = vi.spyOn(client, 'post');
     clientSpy.mockImplementationOnce((url) => {
-      if (url.toString().includes('/hyvaksymiskirjeet')) {
+      if (url.toString().includes('/hakukohteessahylatyt')) {
         return Promise.resolve({
           headers: new Headers(),
           data: { id: 'process-id' },

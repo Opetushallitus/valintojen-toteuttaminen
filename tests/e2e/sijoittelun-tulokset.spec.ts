@@ -620,7 +620,7 @@ test.describe('hakukohteen muut toiminnot', () => {
 
   test('muodosta kirjeet ei-hyväksytyille', async ({ page }) => {
     await page.route(
-      '*/**/valintalaskentakoostepalvelu/resources/viestintapalvelu/hyvaksymiskirjeet/aktivoi*',
+      '*/**/valintalaskentakoostepalvelu/resources/viestintapalvelu/hakukohteessahylatyt/aktivoi*',
       async (route) => {
         await route.fulfill({
           status: 200,

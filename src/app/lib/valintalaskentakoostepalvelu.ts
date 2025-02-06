@@ -713,7 +713,7 @@ export const luoEiHyvaksymiskirjeetPDF = async ({
   letterBody: string;
 }): Promise<string> => {
   const opetuskieliCode = (getOpetuskieliCode(hakukohde) || 'fi').toUpperCase();
-  const urlWithQuery = new URL(configuration.hyvaksymiskirjeetUrl);
+  const urlWithQuery = new URL(configuration.eihyvaksymiskirjeetUrl);
   urlWithQuery.searchParams.append('hakuOid', hakukohde.hakuOid);
   urlWithQuery.searchParams.append('hakukohdeOid', hakukohde.oid);
   urlWithQuery.searchParams.append('sijoitteluajoId', sijoitteluajoId);
