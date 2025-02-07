@@ -21,9 +21,7 @@ import {
 import { LocalizedSelect } from '@/app/components/localized-select';
 import { useJarjestyskriteeriState } from '@/app/hooks/useJarjestyskriteeriState';
 import { JarjestyskriteeriParams } from '@/app/lib/types/jarjestyskriteeri-types';
-import { hakemuksenValintalaskennanTuloksetQueryOptions } from '@/app/lib/valintalaskenta-service';
 import useToaster from '@/app/hooks/useToaster';
-import { QueryClient, useQueryClient } from '@tanstack/react-query';
 import { useTuloksenTilaOptions } from '@/app/hooks/useTuloksenTilaOptions';
 
 const ModalActions = ({
@@ -119,148 +117,135 @@ const JarjestyskriteeriFields = ({
   );
 };
 
-const refetchValinnanvaiheet = ({
-  queryClient,
-  hakuOid,
-  hakemusOid,
-}: {
-  queryClient: QueryClient;
-  hakuOid: string;
-  hakemusOid: string;
-}) => {
-  const options = hakemuksenValintalaskennanTuloksetQueryOptions({
-    hakuOid,
-    hakemusOid,
-  });
-  queryClient.resetQueries(options);
-  queryClient.invalidateQueries(options);
-};
-
 export const ValintalaskentaEditModal = createModal<{
   hakijanNimi: string;
   hakukohde: Hakukohde;
   valintatapajono: LaskennanValintatapajonoTulos;
   hakutoiveNumero: number;
   jonosija: LaskennanJonosijaTulos;
-}>(({ hakutoiveNumero, hakijanNimi, hakukohde, valintatapajono, jonosija }) => {
-  const { open, TransitionProps, onClose } = useOphModalProps();
-  const { t } = useTranslations();
+  onSuccess: () => void;
+}>(
+  ({
+    hakutoiveNumero,
+    hakijanNimi,
+    hakukohde,
+    valintatapajono,
+    jonosija,
+    onSuccess,
+  }) => {
+    const { open, TransitionProps, onClose } = useOphModalProps();
+    const { t } = useTranslations();
 
-  const { addToast } = useToaster();
+    const { addToast } = useToaster();
 
-  const queryClient = useQueryClient();
+    const [jarjestyskriteeriPrioriteetti, setJarjestyskriteeriPrioriteetti] =
+      useState<number>(0);
 
-  const [jarjestyskriteeriPrioriteetti, setJarjestyskriteeriPrioriteetti] =
-    useState<number>(0);
+    const jarjestyskriteeri =
+      jonosija.jarjestyskriteerit?.[jarjestyskriteeriPrioriteetti];
 
-  const jarjestyskriteeri =
-    jonosija.jarjestyskriteerit?.[jarjestyskriteeriPrioriteetti];
+    const jarjestyskriteeriOptions =
+      jonosija.jarjestyskriteerit?.map(({ nimi, prioriteetti }) => ({
+        value: prioriteetti.toString(),
+        label: `${prioriteetti + 1}. ${nimi}`,
+      })) ?? [];
 
-  const jarjestyskriteeriOptions =
-    jonosija.jarjestyskriteerit?.map(({ nimi, prioriteetti }) => ({
-      value: prioriteetti.toString(),
-      label: `${prioriteetti + 1}. ${nimi}`,
-    })) ?? [];
+    const {
+      isPending,
+      muokkausParams,
+      setMuokkausParams,
+      saveJarjestyskriteeri,
+      deleteJarjestyskriteeri,
+    } = useJarjestyskriteeriState({
+      hakemusOid: jonosija.hakemusOid,
+      valintatapajonoOid: valintatapajono.valintatapajonooid,
+      jarjestyskriteeri,
+      onError: (e, mode) => {
+        addToast({
+          key: `valintalaskenta-${mode}-error`,
+          message: `henkilo.valintalaskenta-${mode}-error`,
+          type: 'error',
+        });
+        console.error(e);
+      },
+      onSuccess: (mode) => {
+        addToast({
+          key: `valintalaskenta-${mode}-success`,
+          message: `henkilo.valintalaskenta-${mode}-success`,
+          type: 'success',
+        });
+        onSuccess();
+        hideModal(ValintalaskentaEditModal);
+      },
+    });
 
-  const {
-    isPending,
-    muokkausParams,
-    setMuokkausParams,
-    saveJarjestyskriteeri,
-    deleteJarjestyskriteeri,
-  } = useJarjestyskriteeriState({
-    hakemusOid: jonosija.hakemusOid,
-    valintatapajonoOid: valintatapajono.valintatapajonooid,
-    jarjestyskriteeri,
-    onError: (e, mode) => {
-      addToast({
-        key: `valintalaskenta-${mode}-error`,
-        message: `henkilo.valintalaskenta-${mode}-error`,
-        type: 'error',
-      });
-      console.error(e);
-    },
-    onSuccess: (mode) => {
-      addToast({
-        key: `valintalaskenta-${mode}-success`,
-        message: `henkilo.valintalaskenta-${mode}-success`,
-        type: 'success',
-      });
-      refetchValinnanvaiheet({
-        hakuOid: hakukohde.hakuOid,
-        hakemusOid: jonosija.hakemusOid,
-        queryClient,
-      });
-      hideModal(ValintalaskentaEditModal);
-    },
-  });
-
-  return (
-    <EditModalDialog
-      open={open}
-      TransitionProps={TransitionProps}
-      title={t('henkilo.muokkaa-valintalaskentaa')}
-      pendingTitle={t('henkilo.tallennetaan-valintalaskentaa')}
-      isPending={isPending}
-      onClose={onClose}
-      actions={
-        <ModalActions
-          onClose={onClose}
-          onSave={() => saveJarjestyskriteeri()}
-          onDelete={() => deleteJarjestyskriteeri()}
-          // Jonosijan tuloksen muokkauksen voi poistaa vain jos sellainen on tallennettu
-          deleteDisabled={!jonosija.muokattu}
-        />
-      }
-    >
-      <InlineFormControl
-        label={t('henkilo.taulukko.hakija')}
-        renderInput={({ labelId }) => (
-          <span aria-labelledby={labelId}>{hakijanNimi}</span>
-        )}
-      />
-      <InlineFormControl
-        label={t('henkilo.taulukko.hakutoive')}
-        renderInput={({ labelId }) => (
-          <span aria-labelledby={labelId}>
-            <HakutoiveTitle
-              hakutoiveNumero={hakutoiveNumero}
-              hakukohde={hakukohde}
-            />
-          </span>
-        )}
-      />
-      <InlineFormControl
-        label={t('henkilo.taulukko.valintatapajono')}
-        renderInput={({ labelId }) => (
-          <span aria-labelledby={labelId}>{valintatapajono.nimi}</span>
-        )}
-      />
-      <InlineFormControl
-        label={
-          <PaddedLabel>{t('henkilo.taulukko.jarjestyskriteeri')}</PaddedLabel>
-        }
-        renderInput={({ labelId }) => (
-          <LocalizedSelect
-            sx={{ width: '100%' }}
-            labelId={labelId}
-            value={jarjestyskriteeriPrioriteetti.toString()}
-            options={jarjestyskriteeriOptions}
-            onChange={(e) =>
-              setJarjestyskriteeriPrioriteetti(Number(e.target.value))
-            }
+    return (
+      <EditModalDialog
+        open={open}
+        TransitionProps={TransitionProps}
+        title={t('henkilo.muokkaa-valintalaskentaa')}
+        pendingTitle={t('henkilo.tallennetaan-valintalaskentaa')}
+        isPending={isPending}
+        onClose={onClose}
+        actions={
+          <ModalActions
+            onClose={onClose}
+            onSave={() => saveJarjestyskriteeri()}
+            onDelete={() => deleteJarjestyskriteeri()}
+            // Jonosijan tuloksen muokkauksen voi poistaa vain jos sellainen on tallennettu
+            deleteDisabled={!jonosija.muokattu}
           />
-        )}
-      />
-      <JarjestyskriteeriFields
-        value={muokkausParams}
-        onChange={(changedParams) =>
-          setMuokkausParams((oldParams) => ({
-            ...oldParams,
-            ...changedParams,
-          }))
         }
-      />
-    </EditModalDialog>
-  );
-});
+      >
+        <InlineFormControl
+          label={t('henkilo.taulukko.hakija')}
+          renderInput={({ labelId }) => (
+            <span aria-labelledby={labelId}>{hakijanNimi}</span>
+          )}
+        />
+        <InlineFormControl
+          label={t('henkilo.taulukko.hakutoive')}
+          renderInput={({ labelId }) => (
+            <span aria-labelledby={labelId}>
+              <HakutoiveTitle
+                hakutoiveNumero={hakutoiveNumero}
+                hakukohde={hakukohde}
+              />
+            </span>
+          )}
+        />
+        <InlineFormControl
+          label={t('henkilo.taulukko.valintatapajono')}
+          renderInput={({ labelId }) => (
+            <span aria-labelledby={labelId}>{valintatapajono.nimi}</span>
+          )}
+        />
+        <InlineFormControl
+          label={
+            <PaddedLabel>{t('henkilo.taulukko.jarjestyskriteeri')}</PaddedLabel>
+          }
+          renderInput={({ labelId }) => (
+            <LocalizedSelect
+              sx={{ width: '100%' }}
+              labelId={labelId}
+              value={jarjestyskriteeriPrioriteetti.toString()}
+              options={jarjestyskriteeriOptions}
+              onChange={(e) =>
+                setJarjestyskriteeriPrioriteetti(Number(e.target.value))
+              }
+            />
+          )}
+        />
+        <JarjestyskriteeriFields
+          value={muokkausParams}
+          onChange={(changedParams) =>
+            setMuokkausParams((oldParams) => ({
+              ...oldParams,
+              ...changedParams,
+            }))
+          }
+        />
+      </EditModalDialog>
+    );
+  },
+);

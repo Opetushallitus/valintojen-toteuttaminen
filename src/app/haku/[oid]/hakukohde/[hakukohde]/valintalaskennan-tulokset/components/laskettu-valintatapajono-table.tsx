@@ -23,6 +23,8 @@ import { Hakukohde } from '@/app/lib/types/kouta-types';
 import { TuloksenTila } from '@/app/lib/types/laskenta-types';
 import { OphLink } from '@opetushallitus/oph-design-system';
 import { useMemo } from 'react';
+import { refetchLaskennanTulokset } from '../lib/refetchLaskennanTulokset';
+import { useQueryClient } from '@tanstack/react-query';
 
 const TRANSLATIONS_PREFIX = 'valintalaskennan-tulokset.taulukko';
 
@@ -56,6 +58,8 @@ export const LaskettuValintatapajonoTable = ({
   pagination: ListTablePaginationProps;
 }) => {
   const { t, translateEntity } = useTranslations();
+
+  const queryClient = useQueryClient();
 
   const columns: Array<ListTableColumn<LaskennanJonosijaTulosWithHakijaInfo>> =
     useMemo(
@@ -108,6 +112,12 @@ export const LaskettuValintatapajonoTable = ({
                       hakukohde: hakukohde,
                       valintatapajono: jono,
                       jonosija: props,
+                      onSuccess: () => {
+                        refetchLaskennanTulokset({
+                          hakukohdeOid: hakukohde.oid,
+                          queryClient,
+                        });
+                      },
                     });
                   }}
                 />
@@ -117,7 +127,7 @@ export const LaskettuValintatapajonoTable = ({
           sortable: false,
         },
       ],
-      [t, jono, translateEntity, hakukohde],
+      [t, jono, translateEntity, hakukohde, queryClient],
     );
 
   return (
