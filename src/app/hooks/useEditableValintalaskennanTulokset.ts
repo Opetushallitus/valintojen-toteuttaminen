@@ -21,7 +21,7 @@ import {
   prop,
   sortBy,
 } from 'remeda';
-import { HakemuksenTila } from '@/app/lib/types/ataru-types';
+import { Hakemus } from '@/app/lib/types/ataru-types';
 import { valinnanvaiheetIlmanLaskentaaQueryOptions } from '@/app/lib/valintaperusteet';
 import { Valinnanvaihe } from '@/app/lib/types/valintaperusteet-types';
 
@@ -41,8 +41,9 @@ export type LaskennanJonosijaTulos<
 } & A;
 
 type AdditionalHakemusFields = {
-  hakijanNimi: string;
-  hakemuksenTila: HakemuksenTila;
+  hakijanNimi: Hakemus['hakijanNimi'];
+  hakemuksenTila: Hakemus['tila'];
+  henkilotunnus: Hakemus['henkilotunnus'];
 };
 
 export type LaskennanJonosijaTulosWithHakijaInfo =
@@ -256,6 +257,7 @@ export const useEditableValintalaskennanTulokset = ({
       return {
         hakijanNimi: hakemus.hakijanNimi,
         hakemuksenTila: hakemus.tila,
+        henkilotunnus: hakemus.henkilotunnus,
       };
     },
   });

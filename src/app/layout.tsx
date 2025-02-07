@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import ReactQueryClientProvider from './components/react-query-client-provider';
 import LocalizationProvider from './components/localization-provider';
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter';
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import { checkAccessibility } from './lib/checkAccessibility';
 import { Toaster } from './components/toaster';
 import Script from 'next/script';

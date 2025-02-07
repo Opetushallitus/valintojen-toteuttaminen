@@ -1,4 +1,6 @@
 'use client';
+import { EditButton } from '@/app/components/edit-button';
+import { showModal } from '@/app/components/global-modal';
 import {
   ListTable,
   ListTablePaginationProps,
@@ -9,9 +11,16 @@ import {
   makeGenericColumn,
 } from '@/app/components/table/table-columns';
 import { ListTableColumn } from '@/app/components/table/table-types';
-import { LaskennanJonosijaTulosWithHakijaInfo } from '@/app/hooks/useEditableValintalaskennanTulokset';
+import { ValintalaskentaEditModal } from '@/app/components/valintalaskenta-edit-modal';
+import {
+  LaskennanJonosijaTulosWithHakijaInfo,
+  LaskennanValintatapajonoTulos,
+} from '@/app/hooks/useEditableValintalaskennanTulokset';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { configuration } from '@/app/lib/configuration';
+import { getHenkiloTitle } from '@/app/lib/henkilo-utils';
+import { Hakukohde } from '@/app/lib/types/kouta-types';
+import { TuloksenTila } from '@/app/lib/types/laskenta-types';
 import { OphLink } from '@opetushallitus/oph-design-system';
 import { useMemo } from 'react';
 
@@ -32,14 +41,16 @@ const hakutoiveColumn = makeGenericColumn<LaskennanJonosijaTulosWithHakijaInfo>(
 );
 
 export const LaskettuValintatapajonoTable = ({
-  jonosijat,
-  jonoId,
+  hakukohde,
+  jono,
+  rows,
   setSort,
   sort,
   pagination,
 }: {
-  jonosijat: Array<LaskennanJonosijaTulosWithHakijaInfo>;
-  jonoId: string;
+  hakukohde: Hakukohde;
+  rows: Array<LaskennanJonosijaTulosWithHakijaInfo>;
+  jono: LaskennanValintatapajonoTulos;
   sort: string;
   setSort: (sort: string) => void;
   pagination: ListTablePaginationProps;
@@ -61,7 +72,7 @@ export const LaskettuValintatapajonoTable = ({
                 iconVisible={false}
                 href={configuration.valintalaskentahistoriaUrl({
                   hakemusOid,
-                  valintatapajonoOid: jonoId,
+                  valintatapajonoOid: jono.oid,
                 })}
               >
                 {t('yleinen.lisatietoja')}
@@ -74,7 +85,7 @@ export const LaskettuValintatapajonoTable = ({
           title: `${TRANSLATIONS_PREFIX}.valintatieto`,
           key: 'tuloksenTila',
           render: (props) => (
-            <span>{t('tuloksenTila.' + props.tuloksenTila)}</span>
+            <div>{t('tuloksenTila.' + props.tuloksenTila)}</div>
           ),
         },
         {
@@ -82,15 +93,38 @@ export const LaskettuValintatapajonoTable = ({
           key: 'kuvaus',
           render: (props) => <span>{translateEntity(props.kuvaus)}</span>,
         },
+        {
+          title: '',
+          key: 'muokkaa',
+          render: (props) => {
+            return (
+              props.tuloksenTila !==
+                TuloksenTila.HYVAKSYTTY_HARKINNANVARAISESTI && (
+                <EditButton
+                  onClick={() => {
+                    showModal(ValintalaskentaEditModal, {
+                      hakutoiveNumero: props.hakutoiveNumero,
+                      hakijanNimi: getHenkiloTitle(props),
+                      hakukohde: hakukohde,
+                      valintatapajono: jono,
+                      jonosija: props,
+                    });
+                  }}
+                />
+              )
+            );
+          },
+          sortable: false,
+        },
       ],
-      [t, jonoId, translateEntity],
+      [t, jono, translateEntity, hakukohde],
     );
 
   return (
     <ListTable
       rowKeyProp="hakijaOid"
       columns={columns}
-      rows={jonosijat}
+      rows={rows}
       sort={sort}
       setSort={setSort}
       pagination={pagination}

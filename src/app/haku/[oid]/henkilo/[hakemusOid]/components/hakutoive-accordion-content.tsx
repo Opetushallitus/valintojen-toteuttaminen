@@ -7,7 +7,7 @@ import { isEmpty } from 'remeda';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
 import { getValintatapaJonoNimi } from '@/app/lib/valintalaskenta-utils';
 import { showModal } from '@/app/components/global-modal';
-import { ValintalaskentaEditModal } from './valintalaskenta-edit-modal';
+import { ValintalaskentaEditModal } from '@/app/components/valintalaskenta-edit-modal';
 import { HakijaInfo } from '@/app/lib/types/ataru-types';
 import { getHenkiloTitle } from '@/app/lib/henkilo-utils';
 import { ValinnanTulosCells } from './valinnan-tulos-cells';
@@ -77,6 +77,7 @@ export const HakutoiveAccordionContent = ({
                     hakijanNimi: getHenkiloTitle(hakija),
                     hakukohde,
                     valintatapajono: jono,
+                    jonosija: jono.jonosijat?.[0], // Yhdellä henkilöllä vain yksi jonosija
                   })
                 }
               />

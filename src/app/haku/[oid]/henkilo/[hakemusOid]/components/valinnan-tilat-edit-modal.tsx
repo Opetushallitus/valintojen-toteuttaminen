@@ -6,7 +6,6 @@ import {
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Stack } from '@mui/material';
 import { OphButton } from '@opetushallitus/oph-design-system';
-import { InlineFormControl, PaddedLabel } from './inline-form-control';
 import useToaster from '@/app/hooks/useToaster';
 import {
   QueryClient,
@@ -27,7 +26,11 @@ import {
 import { OphApiError } from '@/app/lib/common';
 import { ValinnanTulosUpdateErrorResult } from '@/app/lib/types/valinta-tulos-types';
 import { HttpClientResponse } from '@/app/lib/http-client';
-import { EditModalDialog } from './edit-modal-dialog';
+import {
+  EditModalDialog,
+  InlineFormControl,
+  PaddedLabel,
+} from '@/app/components/edit-modal-dialog';
 import { ValinnanTulosLisatiedoilla } from '../lib/henkilo-page-types';
 import { LocalizedSelect } from '@/app/components/localized-select';
 

@@ -47,10 +47,11 @@ export const LaskettuValintatapajonoContent = ({
     <>
       <LaskettuVaiheActions hakukohde={hakukohde} jono={jono} />
       <LaskettuValintatapajonoTable
+        hakukohde={hakukohde}
         setSort={setSort}
         sort={sort}
-        jonoId={valintatapajonooid}
-        jonosijat={results}
+        jono={jono}
+        rows={results}
         pagination={{
           page,
           setPage,

@@ -7,15 +7,21 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { OphButton, OphInput } from '@opetushallitus/oph-design-system';
 import { Stack } from '@mui/material';
 import { useState } from 'react';
-import { LaskennanValintatapajonoTulos } from '@/app/hooks/useEditableValintalaskennanTulokset';
+import {
+  LaskennanJonosijaTulos,
+  LaskennanValintatapajonoTulos,
+} from '@/app/hooks/useEditableValintalaskennanTulokset';
 import { Hakukohde } from '@/app/lib/types/kouta-types';
 import { HakutoiveTitle } from './hakutoive-title';
 import { isEmpty } from 'remeda';
-import { InlineFormControl, PaddedLabel } from './inline-form-control';
-import { EditModalDialog } from './edit-modal-dialog';
+import {
+  EditModalDialog,
+  InlineFormControl,
+  PaddedLabel,
+} from './edit-modal-dialog';
 import { LocalizedSelect } from '@/app/components/localized-select';
-import { useJarjestyskriteeriState } from './jarjestyskriteeri-state';
-import { JarjestyskriteeriParams } from './jarjestyskriteeri-types';
+import { useJarjestyskriteeriState } from '@/app/hooks/useJarjestyskriteeriState';
+import { JarjestyskriteeriParams } from '@/app/lib/types/jarjestyskriteeri-types';
 import { hakemuksenValintalaskennanTuloksetQueryOptions } from '@/app/lib/valintalaskenta-service';
 import useToaster from '@/app/hooks/useToaster';
 import { QueryClient, useQueryClient } from '@tanstack/react-query';
@@ -136,15 +142,14 @@ export const ValintalaskentaEditModal = createModal<{
   hakukohde: Hakukohde;
   valintatapajono: LaskennanValintatapajonoTulos;
   hakutoiveNumero: number;
-}>(({ hakutoiveNumero, hakijanNimi, hakukohde, valintatapajono }) => {
+  jonosija: LaskennanJonosijaTulos;
+}>(({ hakutoiveNumero, hakijanNimi, hakukohde, valintatapajono, jonosija }) => {
   const { open, TransitionProps, onClose } = useOphModalProps();
   const { t } = useTranslations();
 
   const { addToast } = useToaster();
 
   const queryClient = useQueryClient();
-
-  const jonosija = valintatapajono.jonosijat?.[0];
 
   const [jarjestyskriteeriPrioriteetti, setJarjestyskriteeriPrioriteetti] =
     useState<number>(0);
