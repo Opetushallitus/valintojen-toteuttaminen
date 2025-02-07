@@ -101,6 +101,7 @@ const selectJonosijaFields = (
     hakutoiveNumero: jonosijaData?.prioriteetti,
     pisteet: jarjestyskriteeri?.arvo?.toString() ?? '',
     tuloksenTila: jonosijaData?.tuloksenTila as TuloksenTila | undefined,
+    muokattu: Boolean(jonosijaData?.muokattu),
     kuvaus: mapKeys(jarjestyskriteeri?.kuvaus ?? {}, (key) =>
       key.toLowerCase(),
     ),

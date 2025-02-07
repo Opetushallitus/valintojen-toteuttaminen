@@ -13,7 +13,6 @@ import {
 } from '@/app/hooks/useEditableValintalaskennanTulokset';
 import { Hakukohde } from '@/app/lib/types/kouta-types';
 import { HakutoiveTitle } from './hakutoive-title';
-import { isEmpty } from 'remeda';
 import {
   EditModalDialog,
   InlineFormControl,
@@ -209,8 +208,8 @@ export const ValintalaskentaEditModal = createModal<{
           onClose={onClose}
           onSave={() => saveJarjestyskriteeri()}
           onDelete={() => deleteJarjestyskriteeri()}
-          // Jos kuvaus on olemassa, silloin järjestyskriteeri on tallennettu käsin
-          deleteDisabled={isEmpty(jarjestyskriteeri?.kuvaus ?? {})}
+          // Jonosijan tuloksen muokkauksen voi poistaa vain jos sellainen on tallennettu
+          deleteDisabled={!jonosija.muokattu}
         />
       }
     >
