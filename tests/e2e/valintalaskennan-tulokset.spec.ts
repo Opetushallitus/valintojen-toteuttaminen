@@ -39,12 +39,14 @@ test.beforeEach(async ({ page }) => {
   await expectAllSpinnersHidden(page);
 });
 
-test('valintalaskennan tulokset accessibility', async ({ page }) => {
+test('valintalaskennan tulokset välilehti on saavutettava', async ({
+  page,
+}) => {
   await page.locator('tbody tr').nth(1).hover();
   await expectPageAccessibilityOk(page);
 });
 
-test('displays valintalaskennan tulokset', async ({ page }) => {
+test('näytetään valintalaskennan tulokset', async ({ page }) => {
   await expect(
     page.getByRole('heading', {
       level: 1,
@@ -130,7 +132,7 @@ test('displays valintalaskennan tulokset', async ({ page }) => {
   ]);
 });
 
-test('shows error toast when removing jono from sijoittelu fails', async ({
+test('näytetään virheviesti, jos jonon poistaminen sijoittelusta epäonnistuu', async ({
   page,
 }) => {
   const jono1HeadingText = 'Varsinainen valinta: Lukiokoulutus';
@@ -162,12 +164,16 @@ const initSaveModal = async (page: Page) => {
   await muokkaaButton.click();
 };
 
-test('Valintalaskenta edit modal accessibility', async ({ page }) => {
+test('valintalaskennan tulosten muokkausmodaali on saavutettava', async ({
+  page,
+}) => {
   await initSaveModal(page);
   await expectPageAccessibilityOk(page);
 });
 
-test('Shows valintalaskenta edit modal with info', async ({ page }) => {
+test('näytetään valintalaskennan muokkausmodaali ja siinä valintalaskennana tuloksen tiedot', async ({
+  page,
+}) => {
   await initSaveModal(page);
 
   const valintalaskentaMuokkausModal = page.getByRole('dialog', {
@@ -204,7 +210,7 @@ test('Shows valintalaskenta edit modal with info', async ({ page }) => {
   ).toBeDisabled();
 });
 
-test('Sends valintalaskenta save request with right values and shows success notification', async ({
+test('lähetetään laskennan tulosten tallennuspyyntö oikeilla arvoilla ja näytetään ilmoitus', async ({
   page,
 }) => {
   const muokkausUrl = configuration.jarjestyskriteeriMuokkausUrl({
@@ -255,7 +261,9 @@ test('Sends valintalaskenta save request with right values and shows success not
   );
 });
 
-test('Show notification on valintalaskenta save error', async ({ page }) => {
+test('näytetään virheilmoitus kun valintalaskennan tuloksen tallentaminen epäonnistuu', async ({
+  page,
+}) => {
   await page.route(
     configuration.jarjestyskriteeriMuokkausUrl({
       hakemusOid: DACULA_HAKEMUS_OID,
