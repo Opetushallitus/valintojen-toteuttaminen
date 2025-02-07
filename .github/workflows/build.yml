@@ -6,6 +6,7 @@ on:
     branches: [main]
 env:
   HUSKY: 0
+  NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 concurrency:
   group: ${{ github.head_ref || github.run_id }}
