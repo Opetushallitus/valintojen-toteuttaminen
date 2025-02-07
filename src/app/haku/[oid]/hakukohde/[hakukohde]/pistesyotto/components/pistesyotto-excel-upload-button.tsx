@@ -5,7 +5,6 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { pisteTuloksetOptions } from '../hooks/usePisteTulokset';
-import { PistesyottoTuontiError } from './pistesyotto-excel-upload-error';
 import useToaster from '@/app/hooks/useToaster';
 import { savePistesyottoExcel } from '@/app/lib/valintalaskentakoostepalvelu';
 import { OphModalDialog } from '@/app/components/oph-modal-dialog';
@@ -19,6 +18,7 @@ import {
 } from '@/app/components/global-modal';
 import { GlobalSpinnerModal } from '@/app/components/global-spinner-modal';
 import { FileSelectButton } from '@/app/components/file-select-button';
+import { ErrorTable } from '@/app/components/error-table';
 
 const refetchPisteTulokset = ({
   queryClient,
@@ -52,7 +52,10 @@ const ErrorModalDialog = createModal(({ error }: { error: Error }) => {
         </OphButton>
       }
     >
-      <PistesyottoTuontiError error={error} />
+      <ErrorTable
+        error={error}
+        oidHeader="pistesyotto.tuonti-tulos-taulukko.hakemus-oid"
+      />
     </OphModalDialog>
   );
 });

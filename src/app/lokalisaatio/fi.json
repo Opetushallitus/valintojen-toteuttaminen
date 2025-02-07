@@ -14,6 +14,7 @@
     "syksy": "syksy",
     "eiosumia": "Ei hakutuloksia",
     "persivu": "Näytä per sivu:",
+    "lataa": "Lataa",
     "ladataan": "ladataan...",
     "lisatiedot": "Lisätiedot",
     "haku": "Haku",
@@ -36,7 +37,15 @@
     "valitse-kaikki": "Valitse kaikki",
     "tuo-taulukkolaskennasta": "Tuo taulukkolaskennasta",
     "sulje": "Sulje",
-    "muokkaa": "Muokkaa"
+    "muokkaa": "Muokkaa",
+    "suoritus-etenee": "Suoritus etenee virheettömästi ja varoituksetta",
+    "virhe": "Virhe"
+  },
+  "kalenteri": {
+    "aika": "Aika",
+    "syote-vihje": "pp.kk.vvvv hh.mm",
+    "edellinen-kuukausi": "Edellinen kuukausi",
+    "seuraava-kuukausi": "Seuraava kuukausi"
   },
   "haku-tabs": {
     "navigaatio": "Haun näkymävalitsin",
@@ -64,12 +73,15 @@
     }
   },
   "virhe": {
+    "varoitukset": "Varoitukset",
     "palvelin": "Palvelinpyyntö epäonnistui!",
     "virhekoodi": "Virhekoodi: ",
     "uudelleenyritys": "Yritä uudelleen",
     "tuntematon": "Jokin meni vikaan",
     "tallennus": "Tietojen tallentamisessa tapahtui virhe.",
-    "eimuutoksia": "Ei muutoksia mitä tallentaa."
+    "eimuutoksia": "Ei muutoksia mitä tallentaa.",
+    "tiedosto-lataus": "Tiedoston latauksessa tapahtui virhe.",
+    "dokumentin-luonti": "Dokumentin luonti epäonnistui. Yritä uudelleen tai ota yhteyttä ylläpitoon."
   },
   "haku": {
     "otsikko": "Haut",
@@ -285,6 +297,7 @@
     "hyvaksytty": "Valintaesitys hyväksytty",
     "ei-tuloksia": "Ei sijoittelun tuloksia hakukohteelle",
     "muuta-vastaanottotieto": "Muuta vastaanottotieto",
+    "virhe-vie-taulukkolaskentaan": "Sijoittelun tulosten vieminen taulukkolaskentaan epäonnistui!",
     "taulukko": {
       "alaotsikko": {
         "aloituspaikat": "Aloituspaikat",
@@ -304,15 +317,33 @@
     },
     "toiminnot": {
       "menu": "Muut toiminnot",
+      "menu-hakukohde": "Muut toiminnot hakukohteelle",
       "muutoshistoria": "Muutoshistoria",
       "hyvaksymiskirje": "Hyväksymiskirje",
+      "hyvaksymiskirje-hakukohde": "Muodosta hyväksymiskirjeet",
+      "hyvaksymiskirje-hakukohde-ei": "Muodosta kirjeet ei-hyväksytyille",
+      "hyvaksymiskirje-hakukohde-lataa": "Lataa hyväksymiskirjeet",
+      "jalkiohjauskirje": "Muodosta jälkiohjauskirjeet",
       "laheta-vastaanottoposti": "Lähetä vastaanottoposti",
+      "laheta-vastaanottoposti-jonolle": "Lähetä vastaanottoposti jonolle",
+      "laheta-vastaanottoposti-hakukohde": "Lähetä vastaanottoposti hakukohteelle",
+      "osoitetarrat": "Muodosta hyväksytyille osoitetarrat",
+      "osoitetarrat-lataa": "Lataa osoitetarrat",
+      "osoitetarrat-suoritetaan": "Osoitetarroja muodostetaan...",
+      "tulokset-lataa": "Lataa tulokset",
       "hyvaksymiskirje-hakemukselle-luotu": "Muodostettu hyväksymiskirje hakemukselle",
       "hyvaksymiskirje-hakemukselle-luotu-epaonnistui": "Hyväksymiskirjeen muodostaminen hakemukselle epäonnistui",
       "vastaanottoposti-hakemukselle-ei-lahetettavia": "Lähetys epäonnistui, tarkasta hakemuksen tiedot",
       "vastaanottoposti-hakemukselle-lahetetty": "Sähköpostin lähetys onnistui",
       "vastaanottoposti-hakemukselle-virhe": "Sähköpostin lähetys epäonnistui",
-      "muutoshistoria-virhe": "Muutoshistorian lataus epäonnistui"
+      "vastaanottoposti-hakukohteelle-ei-lahetettavia": "Lähetykset epäonnistui, tarkasta hakukohteen tiedot",
+      "vastaanottoposti-hakukohteelle-lahetetty": "Sähköpostien lähetys onnistui",
+      "vastaanottoposti-hakukohteelle-virhe": "Sähköpostien lähetys epäonnistui",
+      "vastaanottoposti-jonolle-ei-lahetettavia": "Lähetykset epäonnistui, tarkasta valintatapajonon tiedot",
+      "vastaanottoposti-jonolle-lahetetty": "Sähköpostien lähetys onnistui",
+      "vastaanottoposti-jonolle-virhe": "Sähköpostien lähetys epäonnistui",
+      "muutoshistoria-virhe": "Muutoshistorian lataus epäonnistui",
+      "palautuksen-erapaiva": "Palautuksen eräpäivä vastaanottajalle"
     },
     "muutoshistoria": {
       "otsikko": "Muutoshistoria",
@@ -482,5 +513,30 @@
     "tehtava-on-laskennassa-jonosijalla": "Tehtävä on laskennassa jonosijalla",
     "tehtava-on-laskennassa-parhaillaan": "Tehtävä on laskennassa parhaillaan",
     "laskenta-on-paattynyt": "Laskenta on päättynyt"
+  },
+  "kirje-modaali": {
+    "otsikko-hyvaksymiskirjeet": "Hyväksymiskirjeiden muodostaminen",
+    "otsikko-hyvaksymiskirje": "Hyväksymiskirjeen muodostaminen",
+    "otsikko-ei-hyvaksymiskirjeet": "Ei-hyväksymiskirjeiden muodostaminen",
+    "otsikko-jälkiohjauskirjeet": "Jälkiohjauskirjeiden muodostaminen hakukohteessa hylätyille",
+    "valmispohja": "Valmispohja",
+    "sisalto": "Kirjeen sisältö",
+    "muodosta": "Muodosta kirjeet",
+    "muodosta-kirje": "Muodosta kirje",
+    "kohdejoukko": "Kohdejoukko",
+    "kohdejoukko-hyvaksytyt": "Kaikki hyväksytyt",
+    "kohdejoukko-luvattomat": "Vain ne hyväksytyt, jotka eivät ole antaneet lupaa päätöksen toimittamiseen sähköisesti",
+    "kirjeet-muodostetaan": "Kirjeitä muodostetaan....",
+    "kirje-muodostetaan": "Kirjettä muodostetaan...."
+  },
+  "kirjepohja": {
+    "default": "OPH:n oletuspohja",
+    "organizationLatest": "Organisaation viimeisin",
+    "organizationLatestByTag": "Hakukohteen viimeisin"
+  },
+  "valintalaskenta": {
+    "hyvaksymiskirjeet": {
+      "eihakijoita": "Ei ole hakijoita, joille kirjeet voisi muodostaa"
+    }
   }
 }

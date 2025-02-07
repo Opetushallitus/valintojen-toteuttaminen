@@ -72,7 +72,9 @@ export const OphModalDialog = ({
           />
         )}
       </DialogTitle>
-      <DialogContent sx={{ textAlign: contentAlign }}>{children}</DialogContent>
+      <DialogContent sx={{ textAlign: contentAlign, position: 'relative' }}>
+        {children}
+      </DialogContent>
       {actions && <DialogActions>{actions}</DialogActions>}
     </Dialog>
   );

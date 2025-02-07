@@ -1,3 +1,5 @@
+import { DokumenttiTyyppi } from './types/valintalaskentakoostepalvelu-types';
+
 export const DOMAIN =
   process.env.APP_URL ?? process.env.VIRKAILIJA_URL ?? 'https://localhost:3404';
 
@@ -138,15 +140,40 @@ export const configuration = {
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintalaskentaexcel/valintalaskennantulos/aktivoi?hakukohdeOid=${hakukohdeOid}`,
   startExportValintatapajonoTulosExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintatapajonolaskenta/vienti`,
   startImportValintatapajonoTulosExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintatapajonolaskenta/tuonti`,
+  sijoittelunTulosExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintalaskentaexcel/sijoitteluntulos/aktivoi`,
   valintakoeOsallistumisetUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintakoe/hakutoive/${hakukohdeOid}`,
   startExportValintakoeExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintalaskentaexcel/valintakoekutsut/aktivoi`,
   startExportValintakoeOsoitetarratUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/osoitetarrat/aktivoi`,
   startExportOsoitetarratHakemuksilleUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/osoitetarrat/hakemuksille/aktivoi`,
+  startExportOsoitetarratSijoittelussaHyvaksytyilleUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/osoitetarrat/sijoittelussahyvaksytyille/aktivoi`,
   startExportPistesyottoExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/pistesyotto/vienti`,
+  kirjepohjat: ({
+    templateName,
+    language,
+    tarjoajaOid,
+    tag,
+    hakuOid,
+  }: {
+    templateName: string;
+    language: string;
+    tag: string;
+    tarjoajaOid: string;
+    hakuOid: string;
+  }) =>
+    `${DOMAIN}/valintalaskentakoostepalvelu/resources/proxy/viestintapalvelu/template/getHistory?templateName=${templateName}&languageCode=${language}&oid=${tarjoajaOid}&tag=${tag}&applicationPeriod=${hakuOid}`,
   hyvaksymiskirjeetUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/hyvaksymiskirjeet/aktivoi`,
   dokumenttiSeurantaUrl: ({ uuid }: { uuid: string }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/dokumentinseuranta/${uuid}`,
+  eihyvaksymiskirjeetUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/hakukohteessahylatyt/aktivoi`,
+  dokumentitUrl: ({
+    tyyppi,
+    hakukohdeOid,
+  }: {
+    tyyppi: DokumenttiTyyppi;
+    hakukohdeOid: string;
+  }) =>
+    `${DOMAIN}/valintalaskentakoostepalvelu/resources/dokumentit/${tyyppi}/${hakukohdeOid}`,
   dokumenttiProsessiUrl: ({ id }: { id: string }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/dokumenttiprosessi/${id}`,
   lataaDokumenttiUrl: ({ dokumenttiId }: { dokumenttiId: string }) =>
@@ -176,6 +203,20 @@ export const configuration = {
     `${DOMAIN}/valinta-tulos-service/auth/valinnan-tulos/hakemus/?hakemusOid=${hakemusOid}`,
   vastaanottopostiHakemukselleUrl: ({ hakemusOid }: { hakemusOid: string }) =>
     `${DOMAIN}/valinta-tulos-service/auth/emailer/run/hakemus/${hakemusOid}`,
+  vastaanottopostiHakukohteelleUrl: ({
+    hakukohdeOid,
+  }: {
+    hakukohdeOid: string;
+  }) =>
+    `${DOMAIN}/valinta-tulos-service/auth/emailer/run/hakukohde/${hakukohdeOid}`,
+  vastaanottopostiJonolleUrl: ({
+    hakukohdeOid,
+    valintatapajonoOid,
+  }: {
+    hakukohdeOid: string;
+    valintatapajonoOid: string;
+  }) =>
+    `${DOMAIN}/valinta-tulos-service/auth/emailer/run/hakukohde/${hakukohdeOid}/valintatapajono/${valintatapajonoOid}`,
   muutoshistoriaHakemukselleUrl: ({
     hakemusOid,
     valintatapajonoOid,

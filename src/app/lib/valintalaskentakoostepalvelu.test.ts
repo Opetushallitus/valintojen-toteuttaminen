@@ -1,9 +1,16 @@
-import { afterEach, describe, expect, test, vi } from 'vitest';
-import { client, HttpClientResponse, JSONData } from './http-client';
-import { getValintakoekutsutData } from './valintalaskentakoostepalvelu';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { client } from './http-client';
 import VALINTAKOKEET from '@tests/e2e/fixtures/valintakokeet.json';
 import VALINTAKOEOSALLISTUMISET from '@tests/e2e/fixtures/valintakoeosallistumiset.json';
 import HAKEMUKSET from '@tests/e2e/fixtures/hakeneet.json';
+import {
+  getValintakoekutsutData,
+  luoEiHyvaksymiskirjeetPDF,
+  luoHyvaksymiskirjeetPDF,
+  luoOsoitetarratHakukohteessaHyvaksytyille,
+} from './valintalaskentakoostepalvelu';
+import { Language } from './localization/localization-types';
+import { Hakukohde } from './types/kouta-types';
 
 const HAKEMUKSET_BY_OID = {
   '1.2.246.562.11.00000000000001796027': {
@@ -52,6 +59,18 @@ const HAKEMUKSET_BY_OID = {
   },
 };
 
+const HAKUKOHDE: Hakukohde = {
+  oid: '1.2.246.562.20.00000000000000045109',
+  hakuOid: '1.2.246.562.29.00000000000000045103',
+  tarjoajaOid: '1.2.246.562.10.00000000000000045100',
+  nimi: { fi: 'Palindromien vääntäjien erikoistuminen' },
+  opetuskielet: new Set<Language>(['fi']),
+  organisaatioNimi: { fi: 'Saippuakauppiaitten innostuneet sonnit' },
+  organisaatioOid: '1.2.3.4.5.6',
+  jarjestyspaikkaHierarkiaNimi: { fi: 'Saippuakauppa' },
+  voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita: false,
+};
+
 describe('getValintakoekutsutData', () => {
   afterEach(() => {
     vi.restoreAllMocks();
@@ -64,9 +83,9 @@ describe('getValintakoekutsutData', () => {
       if (urlString.endsWith('/valintakoe')) {
         //valintakokeet
         return Promise.resolve({
-          headers: {},
+          headers: new Headers(),
           data: [] as unknown,
-        } as HttpClientResponse<JSONData>);
+        });
       }
       return Promise.reject();
     });
@@ -87,9 +106,9 @@ describe('getValintakoekutsutData', () => {
       if (urlString.endsWith('/valintakoe')) {
         //valintakokeet
         return Promise.resolve({
-          headers: {},
+          headers: new Headers(),
           data: VALINTAKOKEET,
-        } as HttpClientResponse<JSONData>);
+        });
       } else if (
         urlString.includes(
           '/valintalaskentakoostepalvelu/resources/valintakoe/hakutoive/',
@@ -97,17 +116,17 @@ describe('getValintakoekutsutData', () => {
       ) {
         //valintakoeosallistumiset
         return Promise.resolve({
-          headers: {},
+          headers: new Headers(),
           data: VALINTAKOEOSALLISTUMISET,
-        } as HttpClientResponse<JSONData>);
+        });
       } else if (
         urlString.includes('/lomake-editori/api/external/valinta-ui')
       ) {
         // hakemukset
         return Promise.resolve({
-          headers: {},
+          headers: new Headers(),
           data: HAKEMUKSET,
-        } as HttpClientResponse<JSONData>);
+        });
       }
       return Promise.reject();
     });
@@ -132,9 +151,9 @@ describe('getValintakoekutsutData', () => {
       if (urlString.endsWith('/valintakoe')) {
         //valintakokeet
         return Promise.resolve({
-          headers: {},
+          headers: new Headers(),
           data: VALINTAKOKEET,
-        } as HttpClientResponse<JSONData>);
+        });
       } else if (
         urlString.includes(
           '/valintalaskentakoostepalvelu/resources/valintakoe/hakutoive/',
@@ -142,9 +161,9 @@ describe('getValintakoekutsutData', () => {
       ) {
         //valintakoeosallistumiset
         return Promise.resolve({
-          headers: {},
+          headers: new Headers(),
           data: VALINTAKOEOSALLISTUMISET,
-        } as HttpClientResponse<JSONData>);
+        });
       } else if (
         urlString.includes('/lomake-editori/api/external/valinta-ui')
       ) {
@@ -152,18 +171,18 @@ describe('getValintakoekutsutData', () => {
           urlString.includes('hakemusOids=1.2.246.562.11.00000000000001543832')
         ) {
           return Promise.resolve({
-            headers: {},
+            headers: new Headers(),
             data: HAKEMUKSET.filter(
               (h) => h.oid === '1.2.246.562.11.00000000000001543832',
             ),
-          } as HttpClientResponse<JSONData>);
+          });
         }
         return Promise.resolve({
-          headers: {},
+          headers: new Headers(),
           data: HAKEMUKSET.filter(
             (h) => h.oid !== '1.2.246.562.11.00000000000001543832',
           ),
-        } as HttpClientResponse<JSONData>);
+        });
       }
       return Promise.reject();
     });
@@ -178,5 +197,91 @@ describe('getValintakoekutsutData', () => {
         valintakoeOsallistumiset: VALINTAKOEOSALLISTUMISET,
       }),
     );
+  });
+});
+
+describe('letters and poststamps', () => {
+  beforeEach(() => {
+    const processDocumentSpy = vi.spyOn(client, 'get');
+
+    processDocumentSpy.mockImplementationOnce((url) => {
+      if (url.toString().includes('/dokumenttiprosessi')) {
+        return Promise.resolve({
+          headers: new Headers(),
+          data: {
+            dokumenttiId: 'document-id',
+            poikkeukset: [],
+            varoitukset: [],
+            kokonaistyo: {
+              valmis: true,
+            },
+          },
+        });
+      }
+      return Promise.reject();
+    });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  test('Creates acceptance letters process and returns document id to poll', async () => {
+    const clientSpy = vi.spyOn(client, 'post');
+    clientSpy.mockImplementationOnce((url) => {
+      if (url.toString().includes('/hyvaksymiskirjeet')) {
+        return Promise.resolve({
+          headers: new Headers(),
+          data: { id: 'process-id' },
+        });
+      }
+      return Promise.reject();
+    });
+    const result = await luoHyvaksymiskirjeetPDF({
+      hakemusOids: ['1.2.246.562.11.00000000000001796027'],
+      sijoitteluajoId: 'sijoitteluajo-id',
+      hakukohde: HAKUKOHDE,
+      letterBody: 'saippuakivikauppias',
+      deadline: new Date(),
+      onlyForbidden: false,
+    });
+    expect(result).toBe('document-id');
+  });
+
+  test('Creates non-acceptance letters process and returns document id to poll', async () => {
+    const clientSpy = vi.spyOn(client, 'post');
+    clientSpy.mockImplementationOnce((url) => {
+      if (url.toString().includes('/hakukohteessahylatyt')) {
+        return Promise.resolve({
+          headers: new Headers(),
+          data: { id: 'process-id' },
+        });
+      }
+      return Promise.reject();
+    });
+    const result = await luoEiHyvaksymiskirjeetPDF({
+      sijoitteluajoId: 'sijoitteluajo-id',
+      hakukohde: HAKUKOHDE,
+      letterBody: 'saippuakivikauppias',
+    });
+    expect(result).toBe('document-id');
+  });
+
+  test('Creates poststamps process and returns document id to poll', async () => {
+    const clientSpy = vi.spyOn(client, 'post');
+    clientSpy.mockImplementationOnce((url) => {
+      if (url.toString().includes('/osoitetarrat')) {
+        return Promise.resolve({
+          headers: new Headers(),
+          data: { id: 'process-id' },
+        });
+      }
+      return Promise.reject();
+    });
+    const result = await luoOsoitetarratHakukohteessaHyvaksytyille({
+      sijoitteluajoId: 'sijoitteluajo-id',
+      hakukohde: HAKUKOHDE,
+    });
+    expect(result).toBe('document-id');
   });
 });

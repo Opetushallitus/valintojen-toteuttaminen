@@ -7,11 +7,23 @@ import {
   OphCheckbox,
   OphFormFieldWrapper,
 } from '@opetushallitus/oph-design-system';
-import { Haku } from '@/app/lib/types/kouta-types';
+import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
 import { isKorkeakouluHaku } from '@/app/lib/kouta';
 import { SearchInput } from '@/app/components/search-input';
+import { OtherActionsHakukohdeButton } from './other-actions-hakukohde-button';
+import { useSuspenseQueries } from '@tanstack/react-query';
+import { getDocumentIdForHakukohde } from '@/app/lib/valintalaskentakoostepalvelu';
+import { SijoittelunTuloksetExcelDownloadButton } from './sijoittelun-tulokset-excel-download-button';
 
-export const SijoittelunTulosControls = ({ haku }: { haku: Haku }) => {
+export const SijoittelunTulosControls = ({
+  haku,
+  hakukohde,
+  sijoitteluajoId,
+}: {
+  haku: Haku;
+  hakukohde: Hakukohde;
+  sijoitteluajoId: string | undefined;
+}) => {
   const {
     searchPhrase,
     setSearchPhrase,
@@ -24,6 +36,37 @@ export const SijoittelunTulosControls = ({ haku }: { haku: Haku }) => {
   } = useSijoittelunTulosSearchParams();
 
   const { t } = useTranslations();
+
+  const [
+    hyvaksymiskirjeDocumentQuery,
+    osoitetarraDocumentQuery,
+    tuloksetDocumentQuery,
+  ] = useSuspenseQueries({
+    queries: [
+      {
+        queryKey: [
+          'getDocumentIdForHakukohde',
+          'hyvaksymiskirjeet',
+          hakukohde.oid,
+        ],
+        queryFn: () =>
+          getDocumentIdForHakukohde(hakukohde.oid, 'hyvaksymiskirjeet'),
+      },
+      {
+        queryKey: ['getDocumentIdForHakukohde', 'osoitetarrat', hakukohde.oid],
+        queryFn: () => getDocumentIdForHakukohde(hakukohde.oid, 'osoitetarrat'),
+      },
+      {
+        queryKey: [
+          'getDocumentIdForHakukohde',
+          'sijoitteluntulokset',
+          hakukohde.oid,
+        ],
+        queryFn: () =>
+          getDocumentIdForHakukohde(hakukohde.oid, 'sijoitteluntulokset'),
+      },
+    ],
+  });
 
   const changeSijoittelunTila = (e: SelectChangeEvent) => {
     setSijoittelunTila(e.target.value);
@@ -89,6 +132,29 @@ export const SijoittelunTulosControls = ({ haku }: { haku: Haku }) => {
             label={t('sijoittelun-tulokset.nayta-ehdolliset')}
           />
         )}
+      </Box>
+      <Box sx={{ display: 'flex', flexDirection: 'row', columnGap: 2 }}>
+        {sijoitteluajoId && (
+          <SijoittelunTuloksetExcelDownloadButton
+            hakuOid={haku.oid}
+            hakukohdeOid={hakukohde.oid}
+            sijoitteluajoId={sijoitteluajoId}
+          />
+        )}
+        {sijoitteluajoId &&
+          hyvaksymiskirjeDocumentQuery.isSuccess &&
+          osoitetarraDocumentQuery.isSuccess &&
+          tuloksetDocumentQuery.isSuccess && (
+            <OtherActionsHakukohdeButton
+              disabled={false}
+              haku={haku}
+              hakukohde={hakukohde}
+              hyvaksymiskirjeDocumentId={hyvaksymiskirjeDocumentQuery.data}
+              osoitetarraDocumentId={osoitetarraDocumentQuery.data}
+              tulosDocumentId={tuloksetDocumentQuery.data}
+              sijoitteluajoId={sijoitteluajoId}
+            />
+          )}
       </Box>
     </Box>
   );

@@ -17,7 +17,13 @@ import {
   pipe,
   prop,
 } from 'remeda';
-import { OphApiError, EMPTY_ARRAY, EMPTY_OBJECT } from './common';
+import {
+  OphApiError,
+  EMPTY_ARRAY,
+  EMPTY_OBJECT,
+  OphProcessError,
+  OphProcessErrorData,
+} from './common';
 import { getHakemukset, getHakijat } from './ataru';
 import {
   getValintakokeet,
@@ -25,11 +31,22 @@ import {
   getValintakoeAvaimetHakukohteille,
 } from './valintaperusteet';
 import { ValintakoekutsutData } from './types/valintakoekutsut-types';
-import { HakutoiveValintakoeOsallistumiset } from './types/valintalaskentakoostepalvelu-types';
+import {
+  DokumenttiTyyppi,
+  HakutoiveValintakoeOsallistumiset,
+  Kirjepohja,
+  KirjepohjaNimi,
+} from './types/valintalaskentakoostepalvelu-types';
 import { HarkinnanvaraisuudenSyy } from './types/harkinnanvaraiset-types';
 import { ValintakoeAvaimet } from './types/valintaperusteet-types';
 import { Hakukohde } from './types/kouta-types';
 import { getOpetuskieliCode } from './kouta';
+import {
+  INPUT_DATE_FORMAT,
+  INPUT_TIME_FORMAT,
+  toFormattedDateTimeString,
+  translateName,
+} from './localization/translation-utils';
 import { AssertionError } from 'assert';
 
 export const getHakukohteenValintatuloksetIlmanHakijanTilaa = async (
@@ -260,28 +277,63 @@ export type GetValintakoeExcelParams = {
   valintakoeTunniste: Array<string>;
 };
 
-const pollDocumentProcess = async (processId: string) => {
+type ProcessResponse = {
+  dokumenttiId: string;
+  kasittelyssa: boolean;
+  keskeytetty: boolean;
+  kokonaistyo: {
+    valmis: boolean;
+  };
+  poikkeukset: Array<{
+    tunnisteet: Array<{
+      oid: string;
+      tunniste: string;
+    }>;
+    palvelu: string;
+    viesti: string;
+    palvelukutsu: string;
+  }>;
+  varoitukset: Array<{
+    oid: string;
+    selite: string;
+  }>;
+};
+
+function mapProcessResponseToErrorData(
+  processRes: ProcessResponse,
+): Array<OphProcessErrorData> {
+  const warnings: Array<OphProcessErrorData> = processRes.varoitukset.map(
+    (v) => ({ id: v.oid, message: v.selite }),
+  );
+  return processRes.poikkeukset
+    .flatMap((p) => {
+      const serviceError: Array<OphProcessErrorData> = [
+        { id: p.palvelu, message: p.viesti, isService: true },
+      ];
+      return serviceError.concat(
+        p.tunnisteet.map((t) => ({ id: t.oid, message: t.tunniste })),
+      );
+    })
+    .concat(warnings);
+}
+
+//TODO: poista tämä OK-800 yhteydessä ja käytä toista pollausfunktiota
+const pollDocumentProcess = async (
+  processId: string,
+  infiniteWait: boolean,
+) => {
   let pollTimes = 10;
 
-  while (pollTimes) {
-    const processRes = await client.get<{
-      dokumenttiId: string;
-      kasittelyssa: boolean;
-      keskeytetty: boolean;
-      kokonaistyo: {
-        valmis: boolean;
-      };
-      poikkeukset: Array<{
-        viesti: string;
-      }>;
-    }>(configuration.dokumenttiProsessiUrl({ id: processId }));
+  while (pollTimes || infiniteWait) {
+    const processRes = await client.get<ProcessResponse>(
+      configuration.dokumenttiProsessiUrl({ id: processId }),
+    );
     pollTimes -= 1;
 
     const { data } = processRes;
-
     if (data.kokonaistyo?.valmis || data.keskeytetty) {
       return data;
-    } else if (pollTimes === 0) {
+    } else if (pollTimes === 0 && !infiniteWait) {
       throw new OphApiError(
         processRes,
         'Dokumentin prosessointi aikakatkaistiin',
@@ -294,16 +346,39 @@ const pollDocumentProcess = async (processId: string) => {
   });
 };
 
-const downloadProcessDocument = async (processId: string) => {
-  const data = await pollDocumentProcess(processId);
+const processDocumentAndReturnDocumentId = async (
+  processId: string,
+  infiniteWait: boolean = false,
+) => {
+  const data = await pollDocumentProcess(processId, infiniteWait);
 
-  const { dokumenttiId, poikkeukset } = data;
+  const { dokumenttiId, poikkeukset, varoitukset } = data;
 
-  if (!isEmpty(poikkeukset)) {
-    const errorMessages = poikkeukset.map(prop('viesti')).join('\n');
-    throw Error(errorMessages);
+  if (!isEmpty(poikkeukset) || !isEmpty(varoitukset)) {
+    console.error(
+      'Exception caught while processing document: ',
+      (poikkeukset ?? [])
+        .map(prop('viesti'))
+        .concat((varoitukset ?? []).map((v) => `${v.oid}: ${v.selite}`))
+        .join('\n'),
+    );
+    throw new OphProcessError(mapProcessResponseToErrorData(data));
   }
 
+  return dokumenttiId;
+};
+
+const downloadProcessDocument = async (processId: string) => {
+  const dokumenttiId = await processDocumentAndReturnDocumentId(processId);
+
+  const documentRes = await client.get<Blob>(
+    configuration.lataaDokumenttiUrl({ dokumenttiId }),
+  );
+
+  return createFileResult(documentRes);
+};
+
+export const downloadReadyProcessDocument = async (dokumenttiId: string) => {
   const documentRes = await client.get<Blob>(
     configuration.lataaDokumenttiUrl({ dokumenttiId }),
   );
@@ -493,6 +568,28 @@ export const getPistesyottoExcel = async ({
   return await downloadProcessDocument(excelProcessId);
 };
 
+export const getSijoittelunTulosExcel = async ({
+  hakuOid,
+  hakukohdeOid,
+  sijoitteluajoId,
+}: {
+  hakuOid: string;
+  hakukohdeOid: string;
+  sijoitteluajoId: string;
+}) => {
+  const urlWithQuery = new URL(configuration.sijoittelunTulosExcelUrl);
+  urlWithQuery.searchParams.append('hakuOid', hakuOid);
+  urlWithQuery.searchParams.append('hakukohdeOid', hakukohdeOid);
+  urlWithQuery.searchParams.append('sijoitteluajoId', sijoitteluajoId);
+  const createResponse = await client.post<{ id: string }>(
+    urlWithQuery.toString(),
+    '',
+  );
+  const excelProcessId = createResponse?.data?.id;
+
+  return await downloadProcessDocument(excelProcessId);
+};
+
 export const savePistesyottoExcel = async ({
   hakuOid,
   hakukohdeOid,
@@ -556,22 +653,147 @@ export const getUsesValintalaskenta = async ({
   return res.data.kayttaaValintalaskentaa;
 };
 
-export const luoHyvaksymiskirjeetPDF = async (
-  hakemusOids: string[],
-  sijoitteluajoId: string,
-  hakukohde: Hakukohde,
-) => {
+function clearLetterBodySyntax(letterBody: string): string {
+  return letterBody.replaceAll('&nbsp;', ' ');
+}
+
+export const luoHyvaksymiskirjeetPDF = async ({
+  hakemusOids,
+  sijoitteluajoId,
+  hakukohde,
+  letterBody,
+  deadline,
+  onlyForbidden,
+}: {
+  hakemusOids?: string[];
+  sijoitteluajoId: string;
+  hakukohde: Hakukohde;
+  letterBody: string;
+  deadline?: Date | null;
+  onlyForbidden: boolean;
+}): Promise<string> => {
+  const hakukohdeNimi = translateName(hakukohde.nimi);
   const opetuskieliCode = (getOpetuskieliCode(hakukohde) || 'fi').toUpperCase();
+  const pvm = deadline
+    ? toFormattedDateTimeString(deadline, INPUT_DATE_FORMAT)
+    : null;
+  const time = deadline
+    ? toFormattedDateTimeString(deadline, INPUT_TIME_FORMAT)
+    : null;
+  const urlWithQuery = new URL(configuration.hyvaksymiskirjeetUrl);
+  urlWithQuery.searchParams.append('hakuOid', hakukohde.hakuOid);
+  urlWithQuery.searchParams.append('hakukohdeOid', hakukohde.oid);
+  urlWithQuery.searchParams.append('sijoitteluajoId', sijoitteluajoId);
+  urlWithQuery.searchParams.append('tarjoajaOid', hakukohde.tarjoajaOid);
+  urlWithQuery.searchParams.append('hakukohdeNimi', hakukohdeNimi);
+  urlWithQuery.searchParams.append('lang', opetuskieliCode);
+  urlWithQuery.searchParams.append('templateName', 'hyvaksymiskirje');
+  urlWithQuery.searchParams.append('palautusPvm', '' + pvm);
+  urlWithQuery.searchParams.append('palautusAika', '' + time);
+  urlWithQuery.searchParams.append(
+    'vainTulosEmailinKieltaneet',
+    '' + onlyForbidden,
+  );
   const body = {
-    hakuOid: hakukohde.hakuOid,
-    hakukohdeOid: hakukohde.oid,
-    sijoitteluajoId,
-    hakemusOids,
-    tarjoajaOid: hakukohde.tarjoajaOid,
-    hakukohdeNimi: hakukohde.nimi.fi,
+    hakemusOids: hakemusOids,
+    letterBodyText: clearLetterBodySyntax(letterBody),
     tag: hakukohde.oid,
-    langCode: opetuskieliCode,
-    templateName: 'hyvaksymiskirje',
   };
-  await client.post(configuration.hyvaksymiskirjeetUrl, body);
+  const startProcessResponse = await client.post<{ id: string }>(
+    urlWithQuery.toString(),
+    body,
+  );
+  const kirjeetProcessId = startProcessResponse?.data?.id;
+  return await processDocumentAndReturnDocumentId(kirjeetProcessId, true);
+};
+
+export const luoEiHyvaksymiskirjeetPDF = async ({
+  sijoitteluajoId,
+  hakukohde,
+  letterBody,
+}: {
+  sijoitteluajoId: string;
+  hakukohde: Hakukohde;
+  letterBody: string;
+}): Promise<string> => {
+  const opetuskieliCode = (getOpetuskieliCode(hakukohde) || 'fi').toUpperCase();
+  const urlWithQuery = new URL(configuration.eihyvaksymiskirjeetUrl);
+  urlWithQuery.searchParams.append('hakuOid', hakukohde.hakuOid);
+  urlWithQuery.searchParams.append('hakukohdeOid', hakukohde.oid);
+  urlWithQuery.searchParams.append('sijoitteluajoId', sijoitteluajoId);
+  urlWithQuery.searchParams.append('tarjoajaOid', hakukohde.tarjoajaOid);
+  urlWithQuery.searchParams.append('lang', opetuskieliCode);
+  urlWithQuery.searchParams.append('templateName', 'jalkiohjauskirje');
+  const body = {
+    hakemusOids: null,
+    letterBodyText: clearLetterBodySyntax(letterBody),
+    tag: hakukohde.oid,
+  };
+  const startProcessResponse = await client.post<{ id: string }>(
+    urlWithQuery.toString(),
+    body,
+  );
+  const kirjeetProcessId = startProcessResponse?.data?.id;
+  return await processDocumentAndReturnDocumentId(kirjeetProcessId, true);
+};
+
+export const luoOsoitetarratHakukohteessaHyvaksytyille = async ({
+  sijoitteluajoId,
+  hakukohde,
+}: {
+  sijoitteluajoId: string;
+  hakukohde: Hakukohde;
+}): Promise<string> => {
+  const urlWithQuery = new URL(
+    configuration.startExportOsoitetarratSijoittelussaHyvaksytyilleUrl,
+  );
+  urlWithQuery.searchParams.append('sijoitteluajoId', sijoitteluajoId);
+  urlWithQuery.searchParams.append('hakuOid', hakukohde.hakuOid);
+  urlWithQuery.searchParams.append('hakukohdeOid', hakukohde.oid);
+  const startProcessResponse = await client.post<{ id: string }>(
+    urlWithQuery.toString(),
+    {
+      hakemusOids: [],
+      tag: hakukohde.oid,
+    },
+  );
+  const processId = startProcessResponse?.data?.id;
+  return await processDocumentAndReturnDocumentId(processId, true);
+};
+
+type TemplateResponse = {
+  name: string;
+  templateReplacements: Array<{ name: string; defaultValue: string }>;
+};
+
+export const getKirjepohjatHakukohteelle = async (
+  kirjepohjanNimi: KirjepohjaNimi,
+  hakukohde: Hakukohde,
+): Promise<Array<Kirjepohja>> => {
+  const opetuskieliCode = (getOpetuskieliCode(hakukohde) || 'fi').toUpperCase();
+  const res = await client.get<Array<TemplateResponse>>(
+    configuration.kirjepohjat({
+      templateName: kirjepohjanNimi,
+      language: opetuskieliCode,
+      tarjoajaOid: hakukohde.tarjoajaOid,
+      tag: hakukohde.oid,
+      hakuOid: hakukohde.hakuOid,
+    }),
+  );
+  return res.data.map((tr) => {
+    const content = tr.templateReplacements.find(
+      (r) => r.name === 'sisalto',
+    )?.defaultValue;
+    return { nimi: tr.name, sisalto: content || '' };
+  });
+};
+
+export const getDocumentIdForHakukohde = async (
+  hakukohdeOid: string,
+  documentType: DokumenttiTyyppi,
+): Promise<string | null> => {
+  const res = await client.get<[{ documentId: string }]>(
+    configuration.dokumentitUrl({ tyyppi: documentType, hakukohdeOid }),
+  );
+  return res.data?.length > 0 ? res.data[0]?.documentId : null;
 };

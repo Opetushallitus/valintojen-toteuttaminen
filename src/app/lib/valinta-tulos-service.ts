@@ -489,6 +489,30 @@ export const sendVastaanottopostiHakemukselle = async (
   return response.data as string[];
 };
 
+export const sendVastaanottopostiHakukohteelle = async (
+  hakukohdeOid: string,
+): Promise<string[]> => {
+  const response = await client.post(
+    `${configuration.vastaanottopostiHakukohteelleUrl({ hakukohdeOid })}`,
+    { hakukohdeOid },
+  );
+  return response.data as string[];
+};
+
+export const sendVastaanottopostiValintatapaJonolle = async (
+  hakukohdeOid: string,
+  valintatapajonoOid: string,
+): Promise<string[]> => {
+  const response = await client.post<string[]>(
+    configuration.vastaanottopostiJonolleUrl({
+      hakukohdeOid,
+      valintatapajonoOid,
+    }),
+    { hakukohdeOid, jonoOid: valintatapajonoOid },
+  );
+  return response.data;
+};
+
 type ChangeHistoryEventResponse = {
   timestamp: string;
   changes: [

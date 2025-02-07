@@ -31,3 +31,15 @@ export type HakutoiveValintakoeOsallistumiset = {
     }>;
   }>;
 };
+
+export type KirjepohjaNimi = 'hyvaksymiskirje' | 'jalkiohjauskirje' | 'jalkiohjauskirje_huoltajille' | 'hyvaksymiskirje_huoltajille';
+
+export type Kirjepohja = {
+  nimi: string;
+  sisalto: string;
+};
+
+export type DokumenttiTyyppi =
+  'hyvaksymiskirjeet'
+  | 'sijoitteluntulokset'
+  | 'osoitetarrat';
