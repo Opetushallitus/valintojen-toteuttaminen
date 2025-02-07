@@ -15,7 +15,7 @@ import {
   InsertDriveFileOutlined,
   ArrowDropDown,
 } from '@mui/icons-material';
-import { Hakukohde } from '@/app/lib/types/kouta-types';
+import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
 import { sendVastaanottopostiHakukohteelle } from '@/app/lib/valinta-tulos-service';
 import useToaster from '@/app/hooks/useToaster';
 import { configuration } from '@/app/lib/configuration';
@@ -26,6 +26,7 @@ import {
 import { showModal } from '@/app/components/global-modal';
 import { ProgressModal } from './progress-modal-dialog';
 import { luoOsoitetarratHakukohteessaHyvaksytyille } from '@/app/lib/valintalaskentakoostepalvelu';
+import { isKorkeakouluHaku } from '@/app/lib/kouta';
 
 const StyledListItemText = styled(ListItemText)(() => ({
   span: {
@@ -128,17 +129,27 @@ const FormHyvaksymisKirjeMenuItem = ({
 const FormEiHyvaksymisKirjeMenuItem = ({
   closeMenu,
   hakukohde,
+  korkeakouluHaku,
   sijoitteluajoId,
 }: {
   closeMenu: () => void;
   hakukohde: Hakukohde;
+  korkeakouluHaku: boolean;
   sijoitteluajoId: string;
 }) => {
   const { t } = useTranslations();
 
+  const templateTitle = korkeakouluHaku
+    ? 'kirje-modaali.otsikko-ei-hyvaksymiskirjeet'
+    : 'kirje-modaali.otsikko-jalkiohjauskirjeet';
+
+  const itemText = korkeakouluHaku
+    ? 'sijoittelun-tulokset.toiminnot.hyvaksymiskirje-hakukohde-ei'
+    : 'sijoittelun-tulokset.toiminnot.jalkiohjauskirje';
+
   const openNonAcceptedLetterTemplateModal = async () => {
     showModal(NonAcceptedLetterTemplateModal, {
-      title: 'kirje-modaali.otsikko-ei-hyvaksymiskirjeet',
+      title: templateTitle,
       hakukohde: hakukohde,
       template: 'jalkiohjauskirje',
       sijoitteluajoId,
@@ -151,9 +162,7 @@ const FormEiHyvaksymisKirjeMenuItem = ({
       <StyledListItemIcon>
         <InsertDriveFileOutlined />
       </StyledListItemIcon>
-      <StyledListItemText>
-        {t('sijoittelun-tulokset.toiminnot.hyvaksymiskirje-hakukohde-ei')}
-      </StyledListItemText>
+      <StyledListItemText>{t(itemText)}</StyledListItemText>
     </MenuItem>
   );
 };
@@ -201,6 +210,7 @@ const FormOsoiteTarratMenuItem = ({
 
 export const OtherActionsHakukohdeButton = ({
   disabled,
+  haku,
   hakukohde,
   hyvaksymiskirjeDocumentId,
   osoitetarraDocumentId,
@@ -208,6 +218,7 @@ export const OtherActionsHakukohdeButton = ({
   sijoitteluajoId,
 }: {
   disabled: boolean;
+  haku: Haku;
   hakukohde: Hakukohde;
   hyvaksymiskirjeDocumentId: string | null;
   osoitetarraDocumentId: string | null;
@@ -278,6 +289,7 @@ export const OtherActionsHakukohdeButton = ({
         <FormEiHyvaksymisKirjeMenuItem
           closeMenu={closeMenu}
           hakukohde={hakukohde}
+          korkeakouluHaku={isKorkeakouluHaku(haku)}
           sijoitteluajoId={sijoitteluajoId}
         />
         <MenuItem

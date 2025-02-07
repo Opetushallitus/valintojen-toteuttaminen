@@ -147,6 +147,7 @@ export const SijoittelunTulosControls = ({
           tuloksetDocumentQuery.isSuccess && (
             <OtherActionsHakukohdeButton
               disabled={false}
+              haku={haku}
               hakukohde={hakukohde}
               hyvaksymiskirjeDocumentId={hyvaksymiskirjeDocumentQuery.data}
               osoitetarraDocumentId={osoitetarraDocumentQuery.data}

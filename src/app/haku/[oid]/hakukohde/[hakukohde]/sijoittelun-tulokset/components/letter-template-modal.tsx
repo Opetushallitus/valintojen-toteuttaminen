@@ -32,6 +32,7 @@ export type LetterTemplateModalProps = {
   sijoitteluajoId: string;
   hakemusOids?: Array<string>;
   setDocument?: (docId: string) => void;
+  korkeaKoulu?: boolean;
 };
 
 const CustomRadio = styled(Radio)(({ theme }) => ({
@@ -217,6 +218,7 @@ export const NonAcceptedLetterTemplateModal = createModal(
     title,
     template,
     sijoitteluajoId,
+    korkeaKoulu = false,
   }: LetterTemplateModalProps) => {
     const modalProps = useOphModalProps();
 
@@ -250,7 +252,11 @@ export const NonAcceptedLetterTemplateModal = createModal(
     return mutationStarted ? (
       <ProgressModalDialog
         progressMessage="kirje-modaali.kirjeet-muodostetaan"
-        defaultFileName="ei-hyvaksyttyjen-kirjeet.pdf"
+        defaultFileName={
+          korkeaKoulu
+            ? 'ei-hyvaksyttyjen-kirjeet.pdf'
+            : 'jalkiohjauskirjeet.pdf'
+        }
         title={title}
         mutation={mutation}
       />
