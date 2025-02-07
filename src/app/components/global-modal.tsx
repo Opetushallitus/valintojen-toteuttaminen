@@ -14,12 +14,14 @@ export const useOphModalProps = () => {
   return {
     open: modal.visible,
     onClose: () => modal.hide(), // omit if you don't want yout modal to be closable
-    TransitionProps: {
-      onExited: () => {
-        modal.resolveHide();
-        if (!modal.keepMounted) {
-          modal.remove();
-        }
+    slotProps: {
+      transition: {
+        onExited: () => {
+          modal.resolveHide();
+          if (!modal.keepMounted) {
+            modal.remove();
+          }
+        },
       },
     },
   };

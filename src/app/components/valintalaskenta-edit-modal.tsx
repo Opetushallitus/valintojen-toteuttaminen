@@ -133,7 +133,7 @@ export const ValintalaskentaEditModal = createModal<{
     jonosija,
     onSuccess,
   }) => {
-    const { open, TransitionProps, onClose } = useOphModalProps();
+    const { open, slotProps, onClose } = useOphModalProps();
     const { t } = useTranslations();
 
     const { addToast } = useToaster();
@@ -182,7 +182,7 @@ export const ValintalaskentaEditModal = createModal<{
     return (
       <EditModalDialog
         open={open}
-        TransitionProps={TransitionProps}
+        slotProps={slotProps}
         title={t('henkilo.muokkaa-valintalaskentaa')}
         pendingTitle={t('henkilo.tallennetaan-valintalaskentaa')}
         isPending={isPending}

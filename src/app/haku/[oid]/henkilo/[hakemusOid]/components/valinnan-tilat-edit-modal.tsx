@@ -126,7 +126,7 @@ export const ValinnanTilatEditModal = createModal<{
   valinnanTulos: ValinnanTulosLisatiedoilla;
   hakutoiveTitle: React.ReactNode;
 }>(({ hakijanNimi, hakutoiveTitle, valinnanTulos }) => {
-  const { open, TransitionProps, onClose } = useOphModalProps();
+  const { open, slotProps, onClose } = useOphModalProps();
   const { t } = useTranslations();
 
   const [vastaanottoTila, setVastaanottoTila] = useState<string>(
@@ -168,7 +168,7 @@ export const ValinnanTilatEditModal = createModal<{
   return (
     <EditModalDialog
       open={open}
-      TransitionProps={TransitionProps}
+      slotProps={slotProps}
       title={t('henkilo.muokkaa-valintaa')}
       isPending={isPending}
       pendingTitle={t('henkilo.tallennetaan-valintaa')}

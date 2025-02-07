@@ -4,11 +4,11 @@ import { OphModalDialog } from '@/app/components/oph-modal-dialog';
 
 export const GlobalSpinnerModal = createModal<{ title: string }>(
   ({ title }) => {
-    const { open, TransitionProps } = useOphModalProps();
+    const { open, slotProps } = useOphModalProps();
     return (
       <OphModalDialog
+        slotProps={slotProps}
         open={open}
-        TransitionProps={TransitionProps}
         title={title}
         maxWidth="md"
         titleAlign="center"

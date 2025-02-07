@@ -46,7 +46,7 @@ export const InlineFormControl = ({
 export const EditModalDialog = ({
   pendingTitle,
   children,
-  TransitionProps,
+  slotProps,
   isPending,
   onClose,
   ...props
@@ -58,16 +58,12 @@ export const EditModalDialog = ({
     <ModalWithDefaultProps
       open={true}
       title={pendingTitle}
-      TransitionProps={TransitionProps}
+      slotProps={slotProps}
     >
       <FullClientSpinner />
     </ModalWithDefaultProps>
   ) : (
-    <ModalWithDefaultProps
-      TransitionProps={TransitionProps}
-      onClose={onClose}
-      {...props}
-    >
+    <ModalWithDefaultProps slotProps={slotProps} onClose={onClose} {...props}>
       <Box
         sx={{
           display: 'grid',
