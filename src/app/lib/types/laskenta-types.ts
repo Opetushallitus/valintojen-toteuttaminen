@@ -43,6 +43,7 @@ export type ValintalaskennanValintatapaJonosijaModel = {
   tuloksenTila: string;
   harkinnanvarainen: boolean;
   prioriteetti: number;
+  muokattu?: boolean;
   jarjestyskriteerit: Array<Jarjestyskriteeri>;
 };
 

@@ -1,6 +1,8 @@
 name: Valintojen toteuttaminen deploy
 env:
   HUSKY: 0
+  NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 permissions:
   id-token: write
   contents: read

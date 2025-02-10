@@ -1,10 +1,16 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 import {
   checkRow,
+  expectAlertTextVisible,
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
+  selectOption,
 } from './playwright-utils';
 import LASKETUT_VALINNANVAIHEET from './fixtures/lasketut-valinnanvaiheet.json';
+import { isShallowEqual } from 'remeda';
+import { TuloksenTila } from '@/app/lib/types/laskenta-types';
+import { configuration } from '@/app/lib/configuration';
+import { NDASH } from '@/app/lib/constants';
 
 const JONO_TABLE_HEADINGS = [
   'Jonosija',
@@ -14,6 +20,8 @@ const JONO_TABLE_HEADINGS = [
   'Valintatieto',
   'Kuvaus',
 ];
+
+const DACULA_HAKEMUS_OID = '1.2.246.562.11.00000000000001793706';
 
 test.beforeEach(async ({ page }) => {
   await page.route(
@@ -25,22 +33,20 @@ test.beforeEach(async ({ page }) => {
     /valintaperusteet-service\/resources\/hakukohde\/\S+\/ilmanlaskentaa/,
     async (route) => await route.fulfill({ json: [] }),
   );
-});
-
-test('valintalaskennan tulokset accessibility', async ({ page }) => {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/valintalaskennan-tulokset',
   );
   await expectAllSpinnersHidden(page);
+});
+
+test('valintalaskennan tulokset välilehti on saavutettava', async ({
+  page,
+}) => {
   await page.locator('tbody tr').nth(1).hover();
   await expectPageAccessibilityOk(page);
 });
 
-test('displays valintalaskennan tulokset', async ({ page }) => {
-  await page.goto(
-    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/valintalaskennan-tulokset',
-  );
-  await expectAllSpinnersHidden(page);
+test('näytetään valintalaskennan tulokset', async ({ page }) => {
   await expect(
     page.getByRole('heading', {
       level: 1,
@@ -61,8 +67,7 @@ test('displays valintalaskennan tulokset', async ({ page }) => {
     page.getByRole('button', { name: 'Vie kaikki taulukkolaskentaan' }),
   ).toBeVisible();
 
-  const jono1HeadingText =
-    'Harkinnanvaraisten käsittelyvaiheen valintatapajono';
+  const jono1HeadingText = 'Varsinainen valinta: Lukiokoulutus';
 
   await expect(
     page.getByRole('heading', {
@@ -72,38 +77,12 @@ test('displays valintalaskennan tulokset', async ({ page }) => {
   ).toBeVisible();
 
   const jono1Content = page.getByRole('region', { name: jono1HeadingText });
-
   const jono1HeadingRow = jono1Content.locator('thead tr');
   await checkRow(jono1HeadingRow, JONO_TABLE_HEADINGS, 'th');
 
   const jono1Rows = jono1Content.locator('tbody tr');
-
-  await expect(jono1Rows).toHaveCount(1);
-  await checkRow(jono1Rows.first(), [
-    '1',
-    'Nukettaja Ruhtinas',
-    'Lisätietoja',
-    '6',
-    'Hyväksyttävissä',
-    '',
-  ]);
-
-  const jono2HeadingText = 'Varsinainen valinta: Lukiokoulutus';
-
-  await expect(
-    page.getByRole('heading', {
-      level: 4,
-      name: jono2HeadingText,
-    }),
-  ).toBeVisible();
-
-  const jono2Content = page.getByRole('region', { name: jono2HeadingText });
-  const jono2HeadingRow = jono2Content.locator('thead tr');
-  await checkRow(jono2HeadingRow, JONO_TABLE_HEADINGS, 'th');
-
-  const jono2Rows = jono2Content.locator('tbody tr');
-  await expect(jono2Rows).toHaveCount(2);
-  await checkRow(jono2Rows.nth(0), [
+  await expect(jono1Rows).toHaveCount(2);
+  await checkRow(jono1Rows.nth(0), [
     '1',
     'Dacula Kreivi',
     '10 Lisätietoja',
@@ -112,7 +91,7 @@ test('displays valintalaskennan tulokset', async ({ page }) => {
     'muutoksen syy',
   ]);
 
-  await checkRow(jono2Rows.nth(1), [
+  await checkRow(jono1Rows.nth(1), [
     '2',
     'Purukumi Puru',
     '9.91 Lisätietoja',
@@ -122,20 +101,42 @@ test('displays valintalaskennan tulokset', async ({ page }) => {
   ]);
 
   await expect(
-    jono2Content.getByRole('button', { name: 'Poista jono sijoittelusta' }),
+    jono1Content.getByRole('button', { name: 'Poista jono sijoittelusta' }),
   ).toBeVisible();
+
+  const jono2HeadingText =
+    'Harkinnanvaraisten käsittelyvaiheen valintatapajono';
+
+  await expect(
+    page.getByRole('heading', {
+      level: 4,
+      name: jono2HeadingText,
+    }),
+  ).toBeVisible();
+
+  const jono2Content = page.getByRole('region', { name: jono2HeadingText });
+
+  const jono2HeadingRow = jono2Content.locator('thead tr');
+  await checkRow(jono2HeadingRow, JONO_TABLE_HEADINGS, 'th');
+
+  const jono2Rows = jono2Content.locator('tbody tr');
+
+  await expect(jono2Rows).toHaveCount(1);
+  await checkRow(jono2Rows.first(), [
+    '1',
+    'Nukettaja Ruhtinas',
+    'Lisätietoja',
+    '6',
+    'Hyväksyttävissä',
+    '',
+  ]);
 });
 
-test('shows error toast when removing jono from sijoittelu fails', async ({
+test('näytetään virheviesti, jos jonon poistaminen sijoittelusta epäonnistuu', async ({
   page,
 }) => {
-  await page.goto(
-    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/valintalaskennan-tulokset',
-  );
-  await expectAllSpinnersHidden(page);
-
-  const jono2HeadingText = 'Varsinainen valinta: Lukiokoulutus';
-  const jono2Content = page.getByRole('region', { name: jono2HeadingText });
+  const jono1HeadingText = 'Varsinainen valinta: Lukiokoulutus';
+  const jono1Content = page.getByRole('region', { name: jono1HeadingText });
 
   await page.route(
     '*/**/valintaperusteet-service/resources/V2valintaperusteet/1679913592869-3133925962577840128/automaattinenSiirto?status=false',
@@ -143,11 +144,155 @@ test('shows error toast when removing jono from sijoittelu fails', async ({
       await route.fulfill({ status: 500, body: 'Unknown error' });
     },
   );
-  await jono2Content
+  await jono1Content
     .getByRole('button', { name: 'Poista jono sijoittelusta' })
     .click();
 
   await expect(
     page.getByText('Jonon sijoittelun tilan muuttamisessa tapahtui virhe!'),
   ).toBeVisible();
+});
+
+test.describe('Valintalaskennan muokkausmodaali', () => {
+  const initSaveModal = async (page: Page) => {
+    const jono2HeadingText = 'Varsinainen valinta: Lukiokoulutus';
+    const jono2Content = page.getByRole('region', { name: jono2HeadingText });
+
+    const muokkaaButton = jono2Content
+      .getByRole('row', { name: 'Dacula Kreivi' })
+      .getByRole('button', { name: 'Muokkaa' });
+
+    await muokkaaButton.click();
+  };
+
+  test('valintalaskennan tulosten muokkausmodaali on saavutettava', async ({
+    page,
+  }) => {
+    await initSaveModal(page);
+    await expectPageAccessibilityOk(page);
+  });
+
+  test('näytetään valintalaskennan muokkausmodaali ja siinä valintalaskennana tuloksen tiedot', async ({
+    page,
+  }) => {
+    await initSaveModal(page);
+
+    const valintalaskentaMuokkausModal = page.getByRole('dialog', {
+      name: 'Muokkaa valintalaskentaa',
+    });
+
+    await expect(valintalaskentaMuokkausModal).toBeVisible();
+    await expect(
+      valintalaskentaMuokkausModal.getByLabel('Hakija', { exact: true }),
+    ).toHaveText('Dacula Kreivi (101172-979F)');
+    await expect(
+      valintalaskentaMuokkausModal.getByLabel('Hakutoive'),
+    ).toHaveText(
+      `2. Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs) ${NDASH} Tampereen yliopisto, Rakennetun ympäristön tiedekunta`,
+    );
+    await expect(
+      valintalaskentaMuokkausModal.getByLabel('Valintatapajono'),
+    ).toHaveText('Lukiokoulutus');
+    await expect(
+      valintalaskentaMuokkausModal.getByLabel('Järjestyskriteeri'),
+    ).toContainText('1. Lukion valintaperusteet, painotettu keskiarvo');
+    await expect(
+      valintalaskentaMuokkausModal.getByLabel('Pisteet'),
+    ).toHaveValue('10');
+    await expect(
+      valintalaskentaMuokkausModal.getByLabel('Tila', { exact: true }),
+    ).toContainText('Hyväksyttävissä');
+    await expect(
+      valintalaskentaMuokkausModal.getByLabel('Muokkauksen syy'),
+    ).toHaveValue('');
+
+    await expect(
+      valintalaskentaMuokkausModal.getByRole('button', {
+        name: 'Poista muokkaus',
+      }),
+    ).toBeDisabled();
+  });
+
+  test('lähetetään laskennan tulosten tallennuspyyntö oikeilla arvoilla ja näytetään ilmoitus', async ({
+    page,
+  }) => {
+    const muokkausUrl = configuration.jarjestyskriteeriMuokkausUrl({
+      hakemusOid: DACULA_HAKEMUS_OID,
+      valintatapajonoOid: '1679913592869-3133925962577840128',
+      jarjestyskriteeriPrioriteetti: 0,
+    });
+    await page.route(muokkausUrl, (route) => {
+      return route.fulfill({
+        status: 200,
+      });
+    });
+
+    await initSaveModal(page);
+    const valintalaskentaMuokkausModal = page.getByRole('dialog', {
+      name: 'Muokkaa valintalaskentaa',
+    });
+
+    await valintalaskentaMuokkausModal.getByLabel('Pisteet').fill('12');
+
+    await selectOption(page, 'Tila', 'Hylätty');
+
+    await valintalaskentaMuokkausModal
+      .getByLabel('Muokkauksen syy')
+      .fill('Syy muokkaukselle');
+
+    const saveButton = valintalaskentaMuokkausModal.getByRole('button', {
+      name: 'Tallenna',
+    });
+
+    await Promise.all([
+      saveButton.click(),
+      page.waitForRequest((request) => {
+        return (
+          request.url() === muokkausUrl &&
+          isShallowEqual(request.postDataJSON(), {
+            arvo: '12',
+            tila: TuloksenTila.HYLATTY,
+            selite: 'Syy muokkaukselle',
+          })
+        );
+      }),
+    ]);
+
+    await expectAlertTextVisible(
+      page,
+      'Valintalaskennan tietojen tallentaminen onnistui',
+    );
+  });
+
+  test('näytetään virheilmoitus kun valintalaskennan tuloksen tallentaminen epäonnistuu', async ({
+    page,
+  }) => {
+    await page.route(
+      configuration.jarjestyskriteeriMuokkausUrl({
+        hakemusOid: DACULA_HAKEMUS_OID,
+        valintatapajonoOid: '1679913592869-3133925962577840128',
+        jarjestyskriteeriPrioriteetti: 0,
+      }),
+      (route) => {
+        return route.fulfill({
+          status: 400,
+        });
+      },
+    );
+    await initSaveModal(page);
+    const valintaMuokkausModal = page.getByRole('dialog', {
+      name: 'Muokkaa valintalaskentaa',
+    });
+
+    const tallennaButton = valintaMuokkausModal.getByRole('button', {
+      name: 'Tallenna',
+    });
+
+    await tallennaButton.click();
+
+    await expectAlertTextVisible(
+      page,
+      'Valintalaskennan tietojen tallentaminen epäonnistui',
+    );
+  });
 });

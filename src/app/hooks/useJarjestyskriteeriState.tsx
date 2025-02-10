@@ -3,7 +3,7 @@ import {
   TuloksenTila,
 } from '@/app/lib/types/laskenta-types';
 import { useEffect, useState } from 'react';
-import { JarjestyskriteeriParams } from './jarjestyskriteeri-types';
+import { JarjestyskriteeriParams } from '../lib/types/jarjestyskriteeri-types';
 import { useHasChanged } from '@/app/hooks/useHasChanged';
 import { useMutation } from '@tanstack/react-query';
 import {

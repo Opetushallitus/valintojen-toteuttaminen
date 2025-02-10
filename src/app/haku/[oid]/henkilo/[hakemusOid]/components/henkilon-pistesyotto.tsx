@@ -12,7 +12,7 @@ import useToaster from '@/app/hooks/useToaster';
 import { useMemo } from 'react';
 import { useConfirmChangesBeforeNavigation } from '@/app/hooks/useConfirmChangesBeforeNavigation';
 import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
-import { HakutoiveTitle } from './hakutoive-title';
+import { HakutoiveTitle } from '@/app/components/hakutoive-title';
 import { Range } from '@/app/components/range';
 
 const KokeenPistesyotto = ({
