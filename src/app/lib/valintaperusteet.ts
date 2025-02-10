@@ -12,6 +12,7 @@ import {
   Valintaryhma,
   Valintatapajono,
 } from './types/valintaperusteet-types';
+import { isEmpty } from './common';
 
 export const isLaskentaUsedForValinnanvaihe = (
   valinnanvaihe: Valinnanvaihe,
@@ -198,4 +199,13 @@ export const getValintakokeet = async (hakukohdeOid: string) => {
     configuration.hakukohdeValintakokeetUrl({ hakukohdeOid }),
   );
   return response.data;
+};
+
+export const getValintaryhmat = async (hakuOid: string) => {
+  const response = await client.get<
+    Array<{ hakukohdeViitteet: Array<{ oid: string }>; nimi: string }>
+  >(
+    `${configuration.valintaryhmatHakukohteilla}?hakuOid=${hakuOid}&hakukohteet=true`,
+  );
+  return response.data.filter((r) => !isEmpty(r.hakukohdeViitteet));
 };
