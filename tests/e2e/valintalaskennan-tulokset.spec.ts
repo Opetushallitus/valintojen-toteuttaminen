@@ -153,142 +153,146 @@ test('näytetään virheviesti, jos jonon poistaminen sijoittelusta epäonnistuu
   ).toBeVisible();
 });
 
-const initSaveModal = async (page: Page) => {
-  const jono2HeadingText = 'Varsinainen valinta: Lukiokoulutus';
-  const jono2Content = page.getByRole('region', { name: jono2HeadingText });
+test.describe('Valintalaskennan muokkausmodaali', () => {
+  const initSaveModal = async (page: Page) => {
+    const jono2HeadingText = 'Varsinainen valinta: Lukiokoulutus';
+    const jono2Content = page.getByRole('region', { name: jono2HeadingText });
 
-  const muokkaaButton = jono2Content
-    .getByRole('row', { name: 'Dacula Kreivi' })
-    .getByRole('button', { name: 'Muokkaa' });
+    const muokkaaButton = jono2Content
+      .getByRole('row', { name: 'Dacula Kreivi' })
+      .getByRole('button', { name: 'Muokkaa' });
 
-  await muokkaaButton.click();
-};
+    await muokkaaButton.click();
+  };
 
-test('valintalaskennan tulosten muokkausmodaali on saavutettava', async ({
-  page,
-}) => {
-  await initSaveModal(page);
-  await expectPageAccessibilityOk(page);
-});
-
-test('näytetään valintalaskennan muokkausmodaali ja siinä valintalaskennana tuloksen tiedot', async ({
-  page,
-}) => {
-  await initSaveModal(page);
-
-  const valintalaskentaMuokkausModal = page.getByRole('dialog', {
-    name: 'Muokkaa valintalaskentaa',
-  });
-
-  await expect(valintalaskentaMuokkausModal).toBeVisible();
-  await expect(
-    valintalaskentaMuokkausModal.getByLabel('Hakija', { exact: true }),
-  ).toHaveText('Dacula Kreivi (101172-979F)');
-  await expect(valintalaskentaMuokkausModal.getByLabel('Hakutoive')).toHaveText(
-    `2. Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs) ${NDASH} Tampereen yliopisto, Rakennetun ympäristön tiedekunta`,
-  );
-  await expect(
-    valintalaskentaMuokkausModal.getByLabel('Valintatapajono'),
-  ).toHaveText('Lukiokoulutus');
-  await expect(
-    valintalaskentaMuokkausModal.getByLabel('Järjestyskriteeri'),
-  ).toContainText('1. Lukion valintaperusteet, painotettu keskiarvo');
-  await expect(valintalaskentaMuokkausModal.getByLabel('Pisteet')).toHaveValue(
-    '10',
-  );
-  await expect(
-    valintalaskentaMuokkausModal.getByLabel('Tila', { exact: true }),
-  ).toContainText('Hyväksyttävissä');
-  await expect(
-    valintalaskentaMuokkausModal.getByLabel('Muokkauksen syy'),
-  ).toHaveValue('');
-
-  await expect(
-    valintalaskentaMuokkausModal.getByRole('button', {
-      name: 'Poista muokkaus',
-    }),
-  ).toBeDisabled();
-});
-
-test('lähetetään laskennan tulosten tallennuspyyntö oikeilla arvoilla ja näytetään ilmoitus', async ({
-  page,
-}) => {
-  const muokkausUrl = configuration.jarjestyskriteeriMuokkausUrl({
-    hakemusOid: DACULA_HAKEMUS_OID,
-    valintatapajonoOid: '1679913592869-3133925962577840128',
-    jarjestyskriteeriPrioriteetti: 0,
-  });
-  await page.route(muokkausUrl, (route) => {
-    return route.fulfill({
-      status: 200,
-    });
-  });
-
-  await initSaveModal(page);
-  const valintalaskentaMuokkausModal = page.getByRole('dialog', {
-    name: 'Muokkaa valintalaskentaa',
-  });
-
-  await valintalaskentaMuokkausModal.getByLabel('Pisteet').fill('12');
-
-  await selectOption(page, 'Tila', 'Hylätty');
-
-  await valintalaskentaMuokkausModal
-    .getByLabel('Muokkauksen syy')
-    .fill('Syy muokkaukselle');
-
-  const saveButton = valintalaskentaMuokkausModal.getByRole('button', {
-    name: 'Tallenna',
-  });
-
-  await Promise.all([
-    saveButton.click(),
-    page.waitForRequest((request) => {
-      return (
-        request.url() === muokkausUrl &&
-        isShallowEqual(request.postDataJSON(), {
-          arvo: '12',
-          tila: TuloksenTila.HYLATTY,
-          selite: 'Syy muokkaukselle',
-        })
-      );
-    }),
-  ]);
-
-  await expectAlertTextVisible(
+  test('valintalaskennan tulosten muokkausmodaali on saavutettava', async ({
     page,
-    'Valintalaskennan tietojen tallentaminen onnistui',
-  );
-});
+  }) => {
+    await initSaveModal(page);
+    await expectPageAccessibilityOk(page);
+  });
 
-test('näytetään virheilmoitus kun valintalaskennan tuloksen tallentaminen epäonnistuu', async ({
-  page,
-}) => {
-  await page.route(
-    configuration.jarjestyskriteeriMuokkausUrl({
+  test('näytetään valintalaskennan muokkausmodaali ja siinä valintalaskennana tuloksen tiedot', async ({
+    page,
+  }) => {
+    await initSaveModal(page);
+
+    const valintalaskentaMuokkausModal = page.getByRole('dialog', {
+      name: 'Muokkaa valintalaskentaa',
+    });
+
+    await expect(valintalaskentaMuokkausModal).toBeVisible();
+    await expect(
+      valintalaskentaMuokkausModal.getByLabel('Hakija', { exact: true }),
+    ).toHaveText('Dacula Kreivi (101172-979F)');
+    await expect(
+      valintalaskentaMuokkausModal.getByLabel('Hakutoive'),
+    ).toHaveText(
+      `2. Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs) ${NDASH} Tampereen yliopisto, Rakennetun ympäristön tiedekunta`,
+    );
+    await expect(
+      valintalaskentaMuokkausModal.getByLabel('Valintatapajono'),
+    ).toHaveText('Lukiokoulutus');
+    await expect(
+      valintalaskentaMuokkausModal.getByLabel('Järjestyskriteeri'),
+    ).toContainText('1. Lukion valintaperusteet, painotettu keskiarvo');
+    await expect(
+      valintalaskentaMuokkausModal.getByLabel('Pisteet'),
+    ).toHaveValue('10');
+    await expect(
+      valintalaskentaMuokkausModal.getByLabel('Tila', { exact: true }),
+    ).toContainText('Hyväksyttävissä');
+    await expect(
+      valintalaskentaMuokkausModal.getByLabel('Muokkauksen syy'),
+    ).toHaveValue('');
+
+    await expect(
+      valintalaskentaMuokkausModal.getByRole('button', {
+        name: 'Poista muokkaus',
+      }),
+    ).toBeDisabled();
+  });
+
+  test('lähetetään laskennan tulosten tallennuspyyntö oikeilla arvoilla ja näytetään ilmoitus', async ({
+    page,
+  }) => {
+    const muokkausUrl = configuration.jarjestyskriteeriMuokkausUrl({
       hakemusOid: DACULA_HAKEMUS_OID,
       valintatapajonoOid: '1679913592869-3133925962577840128',
       jarjestyskriteeriPrioriteetti: 0,
-    }),
-    (route) => {
+    });
+    await page.route(muokkausUrl, (route) => {
       return route.fulfill({
-        status: 400,
+        status: 200,
       });
-    },
-  );
-  await initSaveModal(page);
-  const valintaMuokkausModal = page.getByRole('dialog', {
-    name: 'Muokkaa valintalaskentaa',
+    });
+
+    await initSaveModal(page);
+    const valintalaskentaMuokkausModal = page.getByRole('dialog', {
+      name: 'Muokkaa valintalaskentaa',
+    });
+
+    await valintalaskentaMuokkausModal.getByLabel('Pisteet').fill('12');
+
+    await selectOption(page, 'Tila', 'Hylätty');
+
+    await valintalaskentaMuokkausModal
+      .getByLabel('Muokkauksen syy')
+      .fill('Syy muokkaukselle');
+
+    const saveButton = valintalaskentaMuokkausModal.getByRole('button', {
+      name: 'Tallenna',
+    });
+
+    await Promise.all([
+      saveButton.click(),
+      page.waitForRequest((request) => {
+        return (
+          request.url() === muokkausUrl &&
+          isShallowEqual(request.postDataJSON(), {
+            arvo: '12',
+            tila: TuloksenTila.HYLATTY,
+            selite: 'Syy muokkaukselle',
+          })
+        );
+      }),
+    ]);
+
+    await expectAlertTextVisible(
+      page,
+      'Valintalaskennan tietojen tallentaminen onnistui',
+    );
   });
 
-  const tallennaButton = valintaMuokkausModal.getByRole('button', {
-    name: 'Tallenna',
-  });
-
-  await tallennaButton.click();
-
-  await expectAlertTextVisible(
+  test('näytetään virheilmoitus kun valintalaskennan tuloksen tallentaminen epäonnistuu', async ({
     page,
-    'Valintalaskennan tietojen tallentaminen epäonnistui',
-  );
+  }) => {
+    await page.route(
+      configuration.jarjestyskriteeriMuokkausUrl({
+        hakemusOid: DACULA_HAKEMUS_OID,
+        valintatapajonoOid: '1679913592869-3133925962577840128',
+        jarjestyskriteeriPrioriteetti: 0,
+      }),
+      (route) => {
+        return route.fulfill({
+          status: 400,
+        });
+      },
+    );
+    await initSaveModal(page);
+    const valintaMuokkausModal = page.getByRole('dialog', {
+      name: 'Muokkaa valintalaskentaa',
+    });
+
+    const tallennaButton = valintaMuokkausModal.getByRole('button', {
+      name: 'Tallenna',
+    });
+
+    await tallennaButton.click();
+
+    await expectAlertTextVisible(
+      page,
+      'Valintalaskennan tietojen tallentaminen epäonnistui',
+    );
+  });
 });
