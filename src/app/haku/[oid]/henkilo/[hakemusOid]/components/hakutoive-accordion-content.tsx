@@ -16,6 +16,7 @@ import { EditButton } from '@/app/components/edit-button';
 import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
 import { hakemuksenValintalaskennanTuloksetQueryOptions } from '@/app/lib/valintalaskenta-service';
 import { QueryClient, useQueryClient } from '@tanstack/react-query';
+import { TuloksenTila } from '@/app/lib/types/laskenta-types';
 
 const HakutoiveInfoRow = styled(TableRow)({
   '&:nth-of-type(even)': {
@@ -91,24 +92,27 @@ export const HakutoiveAccordionContent = ({
             <TableCell>{jonosija.pisteet}</TableCell>
             <TableCell>
               <div>{t(`tuloksenTila.${jonosija.tuloksenTila}`)}</div>
-              <EditButton
-                onClick={() =>
-                  showModal(ValintalaskentaEditModal, {
-                    hakutoiveNumero,
-                    hakijanNimi: getHenkiloTitle(hakija),
-                    hakukohde,
-                    valintatapajono: jono,
-                    jonosija: jono.jonosijat?.[0], // Yhdellä henkilöllä vain yksi jonosija
-                    onSuccess: () => {
-                      refetchValinnanvaiheet({
-                        hakuOid: hakukohde.hakuOid,
-                        hakemusOid: jonosija.hakemusOid,
-                        queryClient,
-                      });
-                    },
-                  })
-                }
-              />
+              {jonosija.tuloksenTila !==
+                TuloksenTila.HYVAKSYTTY_HARKINNANVARAISESTI && (
+                <EditButton
+                  onClick={() =>
+                    showModal(ValintalaskentaEditModal, {
+                      hakutoiveNumero,
+                      hakijanNimi: getHenkiloTitle(hakija),
+                      hakukohde,
+                      valintatapajono: jono,
+                      jonosija: jono.jonosijat?.[0], // Yhdellä henkilöllä vain yksi jonosija
+                      onSuccess: () => {
+                        refetchValinnanvaiheet({
+                          hakuOid: hakukohde.hakuOid,
+                          hakemusOid: jonosija.hakemusOid,
+                          queryClient,
+                        });
+                      },
+                    })
+                  }
+                />
+              )}
             </TableCell>
             {
               /* Näytetään valinnan tiedot vain taulukon ensimmäiselle jonolle, joka siis järjestyksessä viimeinen jono, jonka perusteella valinta tehdään */
