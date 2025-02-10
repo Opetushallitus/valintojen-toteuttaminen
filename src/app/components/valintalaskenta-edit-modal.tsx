@@ -47,7 +47,7 @@ const ModalActions = ({
         onClick={onDelete}
         disabled={deleteDisabled}
       >
-        {t('henkilo.poista-muokkaus')}
+        {t('valintalaskenta.muokkaus.poista-muokkaus')}
       </OphButton>
       <OphButton variant="contained" onClick={onSave}>
         {t('yleinen.tallenna')}
@@ -72,7 +72,9 @@ const JarjestyskriteeriFields = ({
   return (
     <>
       <InlineFormControl
-        label={<PaddedLabel>{t('henkilo.taulukko.pisteet')}</PaddedLabel>}
+        label={
+          <PaddedLabel>{t('valintalaskenta.muokkaus.pisteet')}</PaddedLabel>
+        }
         renderInput={({ labelId }) => (
           <OphInput
             value={value.arvo}
@@ -84,7 +86,7 @@ const JarjestyskriteeriFields = ({
       <InlineFormControl
         label={
           <PaddedLabel>
-            {t('henkilo.taulukko.laskennan-tuloksen-tila')}
+            {t('valintalaskenta.muokkaus.laskennan-tuloksen-tila')}
           </PaddedLabel>
         }
         renderInput={({ labelId }) => (
@@ -99,7 +101,9 @@ const JarjestyskriteeriFields = ({
       />
       <InlineFormControl
         label={
-          <PaddedLabel>{t('henkilo.taulukko.muokkauksen-syy')}</PaddedLabel>
+          <PaddedLabel>
+            {t('valintalaskenta.muokkaus.muokkauksen-syy')}
+          </PaddedLabel>
         }
         renderInput={({ labelId }) => (
           <OphInput
@@ -163,7 +167,7 @@ export const ValintalaskentaEditModal = createModal<{
       onError: (e, mode) => {
         addToast({
           key: `valintalaskenta-${mode}-error`,
-          message: `henkilo.valintalaskenta-${mode}-error`,
+          message: `valintalaskenta.muokkaus.${mode}-error`,
           type: 'error',
         });
         console.error(e);
@@ -171,7 +175,7 @@ export const ValintalaskentaEditModal = createModal<{
       onSuccess: (mode) => {
         addToast({
           key: `valintalaskenta-${mode}-success`,
-          message: `henkilo.valintalaskenta-${mode}-success`,
+          message: `valintalaskenta.muokkaus.${mode}-success`,
           type: 'success',
         });
         onSuccess();
@@ -183,8 +187,10 @@ export const ValintalaskentaEditModal = createModal<{
       <EditModalDialog
         open={open}
         slotProps={slotProps}
-        title={t('henkilo.muokkaa-valintalaskentaa')}
-        pendingTitle={t('henkilo.tallennetaan-valintalaskentaa')}
+        title={t('valintalaskenta.muokkaus.muokkaa-valintalaskentaa')}
+        pendingTitle={t(
+          'valintalaskenta.muokkaus.tallennetaan-valintalaskentaa',
+        )}
         isPending={isPending}
         onClose={onClose}
         actions={
@@ -198,13 +204,13 @@ export const ValintalaskentaEditModal = createModal<{
         }
       >
         <InlineFormControl
-          label={t('henkilo.taulukko.hakija')}
+          label={t('valintalaskenta.muokkaus.hakija')}
           renderInput={({ labelId }) => (
             <span aria-labelledby={labelId}>{hakijanNimi}</span>
           )}
         />
         <InlineFormControl
-          label={t('henkilo.taulukko.hakutoive')}
+          label={t('valintalaskenta.muokkaus.hakutoive')}
           renderInput={({ labelId }) => (
             <span aria-labelledby={labelId}>
               <HakutoiveTitle
@@ -215,14 +221,16 @@ export const ValintalaskentaEditModal = createModal<{
           )}
         />
         <InlineFormControl
-          label={t('henkilo.taulukko.valintatapajono')}
+          label={t('valintalaskenta.muokkaus.valintatapajono')}
           renderInput={({ labelId }) => (
             <span aria-labelledby={labelId}>{valintatapajono.nimi}</span>
           )}
         />
         <InlineFormControl
           label={
-            <PaddedLabel>{t('henkilo.taulukko.jarjestyskriteeri')}</PaddedLabel>
+            <PaddedLabel>
+              {t('valintalaskenta.muokkaus.jarjestyskriteeri')}
+            </PaddedLabel>
           }
           renderInput={({ labelId }) => (
             <LocalizedSelect

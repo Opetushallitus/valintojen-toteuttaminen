@@ -480,24 +480,15 @@
       "piilota-hakutoiveen-tiedot": "Piilota hakutoiveen tiedot",
       "ei-valintalaskennan-tuloksia": "Ei valintalaskennan tuloksia",
       "hakija": "Hakija",
-      "jarjestyskriteeri": "Järjestyskriteeri",
-      "muokkauksen-syy": "Muokkauksen syy (näkyy hakijalle)",
       "valinnan-tila": "Valinnan tila",
       "vastaanoton-tila": "Vastaanoton tila",
       "ilmoittautumisen-tila": "Ilmoittautumisen tila",
       "ei-valinnan-tulosta": "Ei valinnan tulosta"
     },
-    "tallennetaan-valintalaskentaa": "Tallennetaan valintalaskennan tietoja...",
     "tallennetaan-valintaa": "Tallennetaan valinnan tietoja...",
-    "muokkaa-valintalaskentaa": "Muokkaa valintalaskentaa",
     "muokkaa-valintaa": "Muokkaa valintaa",
-    "poista-muokkaus": "Poista muokkaus",
     "valinta-save-error": "Valinnan tietojen tallentaminen epäonnistui",
     "valinta-save-success": "Valinnan tietojen tallentaminen onnistui",
-    "valintalaskenta-save-error": "Valintalaskennan tietojen tallentaminen epäonnistui",
-    "valintalaskenta-save-success": "Valintalaskennan tietojen tallentaminen onnistui",
-    "valintalaskenta-delete-error": "Valintalaskennan muokkauksen poistaminen epäonnistui",
-    "valintalaskenta-delete-success": "Valintalaskennan muokkauksen poistaminen onnistui",
     "pistesyotto": "Pistesyöttö",
     "suorita-valintalaskenta": "Suorita valintalaskenta",
     "keskeyta-valintalaskenta": "Keskeytä valintalaskenta",
@@ -538,6 +529,22 @@
   "valintalaskenta": {
     "hyvaksymiskirjeet": {
       "eihakijoita": "Ei ole hakijoita, joille kirjeet voisi muodostaa"
+    },
+    "muokkaus": {
+      "muokkaa-valintalaskentaa": "Muokkaa valintalaskentaa",
+      "laskennan-tuloksen-tila": "Tila",
+      "pisteet": "Pisteet",
+      "muokkauksen-syy": "Muokkauksen syy (näkyy hakijalle)",
+      "hakija": "Hakija",
+      "hakutoive": "Hakutoive",
+      "valintatapajono": "Valintatapajono",
+      "jarjestyskriteeri": "Järjestyskriteeri",
+      "poista-muokkaus": "Poista muokkaus",
+      "tallennetaan-valintalaskentaa": "Tallennetaan valintalaskennan tietoja...",
+      "save-error": "Valintalaskennan tietojen tallentaminen epäonnistui",
+      "save-success": "Valintalaskennan tietojen tallentaminen onnistui",
+      "delete-error": "Valintalaskennan muokkauksen poistaminen epäonnistui",
+      "delete-success": "Valintalaskennan muokkauksen poistaminen onnistui"
     }
   }
 }
