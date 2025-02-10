@@ -98,7 +98,7 @@ export const LaskettuValintatapajonoTable = ({
           render: (props) => <span>{translateEntity(props.kuvaus)}</span>,
         },
         {
-          title: '',
+          title: `${TRANSLATIONS_PREFIX}.toiminnot`,
           key: 'muokkaa',
           render: (props) => {
             return (
