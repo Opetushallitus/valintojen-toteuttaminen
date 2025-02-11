@@ -26,7 +26,6 @@ type SijoittelunTuloksetFormParams = {
   hakukohde: Hakukohde;
   sijoitteluajoId: string;
   lastModified: string;
-  publishAllowed: boolean;
 };
 
 const StyledForm = styled('form')({
@@ -39,7 +38,6 @@ export const SijoittelunTulosForm = ({
   haku,
   sijoitteluajoId,
   lastModified,
-  publishAllowed,
 }: SijoittelunTuloksetFormParams) => {
   const { t } = useTranslations();
 
@@ -98,8 +96,8 @@ export const SijoittelunTulosForm = ({
       data-test-id={`sijoittelun-tulokset-form-${valintatapajono.oid}`}
     >
       <SijoittelunTuloksetActions
+        haku={haku}
         state={state}
-        publishAllowed={publishAllowed}
         publish={publish}
         valintatapajono={valintatapajono}
         hakukohde={hakukohde}
@@ -122,7 +120,6 @@ export const SijoittelunTulosForm = ({
           updateForm={updateForm}
           massStatusChangeForm={massStatusChangeForm}
           disabled={!state.matches(SijoittelunTuloksetStates.IDLE)}
-          publishAllowed={publishAllowed}
         />
       </TablePaginationWrapper>
     </StyledForm>

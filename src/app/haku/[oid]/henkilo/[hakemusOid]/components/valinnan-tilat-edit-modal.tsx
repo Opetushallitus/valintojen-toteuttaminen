@@ -5,7 +5,7 @@ import {
 } from '@/app/components/global-modal';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Stack } from '@mui/material';
-import { OphButton } from '@opetushallitus/oph-design-system';
+import { OphButton, OphCheckbox } from '@opetushallitus/oph-design-system';
 import useToaster from '@/app/hooks/useToaster';
 import {
   QueryClient,
@@ -22,6 +22,7 @@ import { valinnanTuloksetQueryOptions } from '../hooks/useHenkiloPageData';
 import {
   isImoittautuminenPossible,
   isVastaanottoPossible,
+  isVastaanottotilaJulkaistavissa,
 } from '@/app/lib/sijoittelun-tulokset-utils';
 import { OphApiError } from '@/app/lib/common';
 import { ValinnanTulosUpdateErrorResult } from '@/app/lib/types/valinta-tulos-types';
@@ -33,6 +34,8 @@ import {
 } from '@/app/components/edit-modal-dialog';
 import { ValinnanTulosLisatiedoilla } from '../lib/henkilo-page-types';
 import { LocalizedSelect } from '@/app/components/localized-select';
+import { Haku } from '@/app/lib/types/kouta-types';
+import { useIsHakuPublishAllowed } from '@/app/hooks/useIsHakuPublishAllowed';
 
 const ModalActions = ({
   onClose,
@@ -122,12 +125,17 @@ const useValinnanTilatMutation = ({
 };
 
 export const ValinnanTilatEditModal = createModal<{
+  haku: Haku;
   hakijanNimi: string;
   valinnanTulos: ValinnanTulosLisatiedoilla;
   hakutoiveTitle: React.ReactNode;
-}>(({ hakijanNimi, hakutoiveTitle, valinnanTulos }) => {
+}>(({ haku, hakijanNimi, hakutoiveTitle, valinnanTulos }) => {
   const { open, slotProps, onClose } = useOphModalProps();
   const { t } = useTranslations();
+
+  const [julkaistavissa, setJulkaistavissa] = useState<boolean>(
+    Boolean(valinnanTulos.julkaistavissa),
+  );
 
   const [vastaanottoTila, setVastaanottoTila] = useState<string>(
     () => valinnanTulos.vastaanottotila ?? '',
@@ -149,10 +157,12 @@ export const ValinnanTilatEditModal = createModal<{
     }),
   );
 
+  const isHakuPublishAllowed = useIsHakuPublishAllowed({ haku });
+
   const ilmoittautuminenPossible = isImoittautuminenPossible({
     tila: valinnanTulos.valinnantila,
     vastaanottotila: vastaanottoTila as VastaanottoTila,
-    julkaistavissa: valinnanTulos.julkaistavissa,
+    julkaistavissa,
   });
 
   useEffect(() => {
@@ -179,6 +189,7 @@ export const ValinnanTilatEditModal = createModal<{
           onSave={() =>
             saveValinnanTilat({
               ...valinnanTulos,
+              julkaistavissa,
               vastaanottotila: vastaanottoTila as VastaanottoTila,
               ilmoittautumistila: ilmoittautumisTila as IlmoittautumisTila,
             })
@@ -198,10 +209,27 @@ export const ValinnanTilatEditModal = createModal<{
           <span aria-labelledby={labelId}>{hakutoiveTitle}</span>
         )}
       />
+      <InlineFormControl
+        label={t('henkilo.taulukko.julkaistavissa')}
+        renderInput={({ labelId }) => (
+          <OphCheckbox
+            inputProps={{ 'aria-labelledby': labelId }}
+            checked={julkaistavissa}
+            disabled={
+              isPending ||
+              !isHakuPublishAllowed ||
+              !isVastaanottotilaJulkaistavissa({
+                vastaanottotila: vastaanottoTila as VastaanottoTila,
+              })
+            }
+            onChange={(e) => setJulkaistavissa(e.target.checked)}
+          />
+        )}
+      />
       {isVastaanottoPossible({
         tila: valinnanTulos.valinnantila,
         vastaanottotila: valinnanTulos.vastaanottotila,
-        julkaistavissa: valinnanTulos.julkaistavissa,
+        julkaistavissa,
       }) && (
         <InlineFormControl
           label={

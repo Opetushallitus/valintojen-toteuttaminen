@@ -61,7 +61,7 @@ export const HakutoiveAccordionContent = ({
   return isEmpty(valinnanvaiheet ?? []) ? (
     <HakutoiveInfoRow>
       <TableCell />
-      <TableCell colSpan={5}>
+      <TableCell colSpan={6}>
         {t('henkilo.taulukko.ei-valintalaskennan-tuloksia')}
       </TableCell>
     </HakutoiveInfoRow>
@@ -123,7 +123,7 @@ export const HakutoiveAccordionContent = ({
                   hakija={hakija}
                 />
               ) : (
-                <TableCell colSpan={3} />
+                <TableCell colSpan={4} />
               )
             }
           </HakutoiveInfoRow>

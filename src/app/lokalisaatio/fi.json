@@ -483,7 +483,8 @@
       "valinnan-tila": "Valinnan tila",
       "vastaanoton-tila": "Vastaanoton tila",
       "ilmoittautumisen-tila": "Ilmoittautumisen tila",
-      "ei-valinnan-tulosta": "Ei valinnan tulosta"
+      "ei-valinnan-tulosta": "Ei valinnan tulosta",
+      "julkaistavissa": "Julkaistavissa"
     },
     "tallennetaan-valintaa": "Tallennetaan valinnan tietoja...",
     "muokkaa-valintaa": "Muokkaa valintaa",

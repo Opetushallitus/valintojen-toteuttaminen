@@ -4,9 +4,10 @@ import { AnyMachineSnapshot } from 'xstate';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { SijoittelunTuloksetStates } from '../lib/sijoittelun-tulokset-state';
 import useToaster from '@/app/hooks/useToaster';
-import { Hakukohde } from '@/app/lib/types/kouta-types';
+import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
 import { SijoitteluajonValintatapajonoValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
 import { sendVastaanottopostiValintatapaJonolle } from '@/app/lib/valinta-tulos-service';
+import { useIsHakuPublishAllowed } from '@/app/hooks/useIsHakuPublishAllowed';
 
 const ActionsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -16,19 +17,21 @@ const ActionsContainer = styled(Box)(({ theme }) => ({
 }));
 
 export const SijoittelunTuloksetActions = ({
+  haku,
   state,
-  publishAllowed,
   publish,
   hakukohde,
   valintatapajono,
 }: {
+  haku: Haku;
   state: AnyMachineSnapshot;
-  publishAllowed: boolean;
   publish: () => void;
   hakukohde: Hakukohde;
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
 }) => {
   const { t } = useTranslations();
+
+  const isPublishAllowed = useIsHakuPublishAllowed({ haku });
 
   const { addToast } = useToaster();
 
@@ -79,7 +82,7 @@ export const SijoittelunTuloksetActions = ({
       <OphButton
         variant="contained"
         disabled={
-          !publishAllowed || !state.matches(SijoittelunTuloksetStates.IDLE)
+          !isPublishAllowed || !state.matches(SijoittelunTuloksetStates.IDLE)
         }
         onClick={publish}
       >

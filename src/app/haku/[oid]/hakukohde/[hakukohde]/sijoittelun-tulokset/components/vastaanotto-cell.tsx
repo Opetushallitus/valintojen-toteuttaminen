@@ -14,19 +14,23 @@ import {
   isVastaanottotilaJulkaistavissa,
   isVastaanottoPossible,
 } from '@/app/lib/sijoittelun-tulokset-utils';
+import { useIsHakuPublishAllowed } from '@/app/hooks/useIsHakuPublishAllowed';
+import { Haku } from '@/app/lib/types/kouta-types';
 
 export const VastaanOttoCell = ({
+  haku,
   hakemus,
   disabled,
   updateForm,
-  publishAllowed,
 }: {
+  haku: Haku;
   hakemus: SijoittelunHakemusValintatiedoilla;
   disabled: boolean;
   updateForm: (params: SijoittelunTuloksetChangeEvent) => void;
-  publishAllowed: boolean;
 }) => {
   const { t } = useTranslations();
+
+  const isPublishAllowed = useIsHakuPublishAllowed({ haku });
 
   const [julkaistavissa, setJulkaistavissa] = useState(hakemus.julkaistavissa);
   const [vastaanottoTila, setVastaanottoTila] = useState(
@@ -64,7 +68,7 @@ export const VastaanOttoCell = ({
         disabled={
           disabled ||
           !isVastaanottotilaJulkaistavissa(hakemus) ||
-          !publishAllowed
+          !isPublishAllowed
         }
       />
       {hakemus.vastaanottoDeadline && (
