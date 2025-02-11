@@ -21,7 +21,6 @@ import {
   TuloksenTila,
   ValintakoeOsallistuminenTulos,
 } from '@/app/lib/types/laskenta-types';
-import { isShallowEqual } from 'remeda';
 import { NDASH } from '@/app/lib/constants';
 
 const HAKUKOHDE_OID = '1.2.246.562.20.00000000000000045105';
@@ -100,7 +99,7 @@ test.beforeEach(async ({ page }) => {
   );
 });
 
-test('Henkiloittain page accessibility', async ({ page }) => {
+test('Henkilöittäin-näkymä on saavutettava', async ({ page }) => {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo/1.2.246.562.11.00000000000001796027',
   );
@@ -108,7 +107,7 @@ test('Henkiloittain page accessibility', async ({ page }) => {
   await expectPageAccessibilityOk(page);
 });
 
-test('Henkilö-search and navigation works', async ({ page }) => {
+test('Henkilö-haku ja navigaatio toimii', async ({ page }) => {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo',
   );
@@ -197,7 +196,7 @@ test('Henkilö-search and navigation works', async ({ page }) => {
   ).toBeVisible();
 });
 
-test('Displays selected henkilö info with hakutoive but without valintalaskenta or sijoittelu results', async ({
+test('Näytetään valitun henkilön tiedot ja hakutoiveet ilman valintalaskennan tai sijoittelun tuloksia', async ({
   page,
 }) => {
   await page.route(
@@ -276,7 +275,7 @@ test('Displays selected henkilö info with hakutoive but without valintalaskenta
   ).toBeVisible();
 });
 
-test('Displays selected henkilö hakutoiveet with laskenta and valinta results', async ({
+test('Näytetään henkilön hakutoiveet valintalaskennan ja sijoittelun tuloksilla', async ({
   page,
 }) => {
   await page.goto(
@@ -320,7 +319,7 @@ test('Displays selected henkilö hakutoiveet with laskenta and valinta results',
   ]);
 });
 
-test('Displays selected henkilö hakutoiveet with laskenta results only', async ({
+test('Näytetään hakutoiveet valintalaskennan tuloksilla, ilman sijoittelun tuloksia', async ({
   page,
 }) => {
   await page.route(
@@ -381,7 +380,7 @@ test('Displays selected henkilö hakutoiveet with laskenta results only', async 
   ]);
 });
 
-test.describe('Edit modals', () => {
+test.describe('Muokkausmodaalit', () => {
   const initSaveModal = async (
     page: Page,
     mode: 'valintalaskenta' | 'valinta',
@@ -410,7 +409,9 @@ test.describe('Edit modals', () => {
     await muokkaaButton.click();
   };
 
-  test('Shows valintalaskenta edit modal with info', async ({ page }) => {
+  test('Näytetään valintalaskennan tulosten muokkausmodaali', async ({
+    page,
+  }) => {
     await initSaveModal(page, 'valintalaskenta');
 
     const valintalaskentaMuokkausModal = page.getByRole('dialog', {
@@ -451,7 +452,7 @@ test.describe('Edit modals', () => {
     ).toBeDisabled();
   });
 
-  test('Sends valintalaskenta save request with right values and shows success notification', async ({
+  test('Valintalaskennan tallennuksessa lähetetään muokatut tiedot ja näytetään ilmoitus tallennuksen onnistumisesta', async ({
     page,
   }) => {
     const muokkausUrl = configuration.jarjestyskriteeriMuokkausUrl({
@@ -482,19 +483,16 @@ test.describe('Edit modals', () => {
       name: 'Tallenna',
     });
 
-    await Promise.all([
+    const [request] = await Promise.all([
+      page.waitForRequest((request) => request.url() === muokkausUrl),
       saveButton.click(),
-      page.waitForRequest((request) => {
-        return (
-          request.url() === muokkausUrl &&
-          isShallowEqual(request.postDataJSON(), {
-            arvo: '12',
-            tila: TuloksenTila.HYLATTY,
-            selite: 'Syy muokkaukselle',
-          })
-        );
-      }),
     ]);
+
+    expect(request.postDataJSON()).toEqual({
+      arvo: '12',
+      tila: TuloksenTila.HYLATTY,
+      selite: 'Syy muokkaukselle',
+    });
 
     await expectAlertTextVisible(
       page,
@@ -502,7 +500,9 @@ test.describe('Edit modals', () => {
     );
   });
 
-  test('Show notification on valintalaskenta save error', async ({ page }) => {
+  test('Näytetään ilmoitus valintalaskennan tallennusvirheestä', async ({
+    page,
+  }) => {
     await page.route(
       configuration.jarjestyskriteeriMuokkausUrl({
         hakemusOid: NUKETTAJA_HAKEMUS_OID,
@@ -532,7 +532,9 @@ test.describe('Edit modals', () => {
     );
   });
 
-  test('Shows valinta edit modal with info', async ({ page }) => {
+  test('Näytetään valinnan tietojen muokkausmodaali ja siinä valinnan tiedot', async ({
+    page,
+  }) => {
     await initSaveModal(page, 'valinta');
 
     const valintaMuokkausModal = page.getByRole('dialog', {
@@ -564,7 +566,7 @@ test.describe('Edit modals', () => {
     ).toContainText('Ei ilmoittautunut');
   });
 
-  test('Sends valinta save request with modified tilat and shows success notification', async ({
+  test('Valinnan tallennus lähettää muuttuneet arvot kun muokataan tiloja', async ({
     page,
   }) => {
     const muokkausUrl = configuration.valinnanTulosMuokkausUrl({
@@ -608,7 +610,7 @@ test.describe('Edit modals', () => {
     );
   });
 
-  test('Sends valinta save request with julkaistu=false and shows success notification', async ({
+  test('Valinnan tallennus lähettää muuttuneet arvot, kun julkaistu=false', async ({
     page,
   }) => {
     const muokkausUrl = configuration.valinnanTulosMuokkausUrl({
@@ -655,7 +657,9 @@ test.describe('Edit modals', () => {
     );
   });
 
-  test('Show notification on valinta save error', async ({ page }) => {
+  test('Valinnan tietojen tallennuksen epäonnistuessa näytetään virheilmoitus', async ({
+    page,
+  }) => {
     await page.route(
       configuration.valinnanTulosMuokkausUrl({
         valintatapajonoOid: '17093042998533736417074016063604',
@@ -689,7 +693,7 @@ test.describe('Edit modals', () => {
 });
 
 test.describe('Pistesyöttö', () => {
-  test('Displays pistesyöttö', async ({ page }) => {
+  test('Pistetyötössä näytetään oikeat arvot', async ({ page }) => {
     await page.goto(
       '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo/1.2.246.562.11.00000000000001796027',
     );
@@ -739,7 +743,7 @@ test.describe('Pistesyöttö', () => {
     await expect(koksaTallennaButton).toBeEnabled();
   });
 
-  test('Sends right data when saving pistesyotto and shows success toast', async ({
+  test('Pistesyötön tallennus lähettää muokatut arvot ja näyttää ilmoituksen tallennuksen onnistumisesta', async ({
     page,
   }) => {
     const pisteetSaveUrl = configuration.koostetutPistetiedotHakukohteelleUrl({
@@ -804,7 +808,9 @@ test.describe('Pistesyöttö', () => {
     await expectAlertTextVisible(page, 'Tiedot tallennettu');
   });
 
-  test('Saving pistesyöttö shows error toast', async ({ page }) => {
+  test('Näytetään virhe, kun pistesyötön tallennusn epäonnistuu', async ({
+    page,
+  }) => {
     const pisteetSaveUrl = configuration.koostetutPistetiedotHakukohteelleUrl({
       hakuOid: '1.2.246.562.29.00000000000000045102',
       hakukohdeOid: HAKUKOHDE_OID,
@@ -868,7 +874,9 @@ const startLaskenta = async (page: Page) => {
 };
 
 test.describe('Valintalaskenta', () => {
-  test('shows error when starting valintalaskenta fails', async ({ page }) => {
+  test('näytetään virhe, kun valintalaskennan käynnistäminen epäonnistuu', async ({
+    page,
+  }) => {
     await page.route(
       '*/**/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000045102/tyyppi/HAKUKOHDE/whitelist/true**',
       async (route) => {
@@ -883,7 +891,7 @@ test.describe('Valintalaskenta', () => {
     );
   });
 
-  test('succesfully starts laskenta and shows yhteenveto errors', async ({
+  test('käynnistetään laskenta ja näyttetään yhteenveto virheistä', async ({
     page,
   }) => {
     await page.route(
@@ -963,7 +971,9 @@ test.describe('Valintalaskenta', () => {
     ).toBeVisible();
   });
 
-  test('shows results with success toast', async ({ page }) => {
+  test('näytetään laskennan tulokset ja ilmoitus laskennan onnistumisesta', async ({
+    page,
+  }) => {
     await page.route(
       '*/**/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000045102/tyyppi/HAKUKOHDE/whitelist/true**',
       async (route) => {
