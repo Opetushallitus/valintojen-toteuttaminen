@@ -11,6 +11,7 @@ import {
   ValintakoeInputTyyppi,
   Valintaryhma,
   Valintatapajono,
+  ValintaryhmaHakukohteilla,
 } from './types/valintaperusteet-types';
 import { isEmpty } from './common';
 
@@ -201,11 +202,17 @@ export const getValintakokeet = async (hakukohdeOid: string) => {
   return response.data;
 };
 
-export const getValintaryhmat = async (hakuOid: string) => {
+export const getValintaryhmat = async (hakuOid: string): Promise<Array<ValintaryhmaHakukohteilla>> => {
   const response = await client.get<
-    Array<{ hakukohdeViitteet: Array<{ oid: string }>; nimi: string }>
+    Array<{ hakukohdeViitteet: Array<{ oid: string }>; nimi: string, oid: string }>
   >(
     `${configuration.valintaryhmatHakukohteilla}?hakuOid=${hakuOid}&hakukohteet=true`,
   );
-  return response.data.filter((r) => !isEmpty(r.hakukohdeViitteet));
+  return response.data
+    .filter(r => !isEmpty(r.hakukohdeViitteet))
+    .map(r => ({
+      oid: r.oid, 
+      nimi: r.nimi, 
+      hakukohteet: r.hakukohdeViitteet.map(h => h.oid)
+    }));
 };

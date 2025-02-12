@@ -457,6 +457,12 @@
     "ATARU_KOULUTODISTUSTEN_VERTAILUVAIKEUDET": "Koulututodistusten vertailuvaikeudet",
     "ATARU_RIITTAMATON_TUTKINTOKIELEN_TAITO": "Riittämätön tutkintokielen taito"
   },
+  "valintaryhmittain": {
+    "suorita": "Suorita laskenta valintaryhmälle",
+    "hakukohteet": "Valintaryhmään kuuluvat hakukohteet",
+    "tehty": "Valintalaskenta tehty",
+    "valintaryhma": "Valintaryhmä"
+  },
   "henkilo": {
     "henkilo-maara_one": "{{count}} henkilö",
     "henkilo-maara_zero": "Henkilöitä ei löytynyt",

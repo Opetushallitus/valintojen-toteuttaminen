@@ -51,3 +51,9 @@ export type Valintakoe = {
   kutsutaankoKaikki: boolean;
   selvitettyTunniste: string;
 };
+
+export type ValintaryhmaHakukohteilla = {
+  nimi: string;
+  oid: string;
+  hakukohteet: string[];
+};
