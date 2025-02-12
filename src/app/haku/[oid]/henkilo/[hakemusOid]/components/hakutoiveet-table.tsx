@@ -48,7 +48,7 @@ export const HakutoiveetTable = ({
             <TableCell colSpan={2}>
               {t('henkilo.taulukko.valintalaskenta')}
             </TableCell>
-            <TableCell colSpan={3}>
+            <TableCell colSpan={4}>
               {t('henkilo.taulukko.sijoittelu')}
             </TableCell>
           </TableRow>
@@ -58,6 +58,7 @@ export const HakutoiveetTable = ({
               {t('henkilo.taulukko.laskennan-tuloksen-tila')}
             </TableCell>
             <TableCell>{t('henkilo.taulukko.valinnan-tila')}</TableCell>
+            <TableCell>{t('henkilo.taulukko.julkaistavissa')}</TableCell>
             <TableCell>{t('henkilo.taulukko.vastaanoton-tila')}</TableCell>
             <TableCell>{t('henkilo.taulukko.ilmoittautumisen-tila')}</TableCell>
           </TableRow>

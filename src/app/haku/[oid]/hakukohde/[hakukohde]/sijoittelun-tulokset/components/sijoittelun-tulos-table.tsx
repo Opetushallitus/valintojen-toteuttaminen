@@ -52,7 +52,6 @@ export const SijoittelunTulosTable = ({
   disabled,
   updateForm,
   massStatusChangeForm,
-  publishAllowed,
 }: {
   haku: Haku;
   hakukohde: Hakukohde;
@@ -63,7 +62,6 @@ export const SijoittelunTulosTable = ({
   disabled: boolean;
   updateForm: (params: SijoittelunTuloksetChangeEvent) => void;
   massStatusChangeForm: (changeParams: HakemuksetStateChangeEvent) => void;
-  publishAllowed: boolean;
 }) => {
   const { t } = useTranslations();
 
@@ -103,10 +101,10 @@ export const SijoittelunTulosTable = ({
         key: 'vastaanottotila',
         renderFn: (props) => (
           <VastaanOttoCell
+            haku={haku}
             hakemus={props}
             updateForm={updateForm}
             disabled={disabled}
-            publishAllowed={publishAllowed}
           />
         ),
       }),
@@ -148,15 +146,7 @@ export const SijoittelunTulosTable = ({
         sortable: false,
       }),
     ].filter((a) => a !== null);
-  }, [
-    t,
-    haku,
-    updateForm,
-    disabled,
-    publishAllowed,
-    sijoitteluajoId,
-    hakukohde,
-  ]);
+  }, [t, haku, updateForm, disabled, sijoitteluajoId, hakukohde]);
 
   const [selection, setSelection] = useState<Set<string>>(() => new Set());
 

@@ -7,7 +7,6 @@ import {
   selectOption,
 } from './playwright-utils';
 import LASKETUT_VALINNANVAIHEET from './fixtures/lasketut-valinnanvaiheet.json';
-import { isShallowEqual } from 'remeda';
 import { TuloksenTila } from '@/app/lib/types/laskenta-types';
 import { configuration } from '@/app/lib/configuration';
 import { NDASH } from '@/app/lib/constants';
@@ -244,19 +243,16 @@ test.describe('Valintalaskennan muokkausmodaali', () => {
       name: 'Tallenna',
     });
 
-    await Promise.all([
+    const [request] = await Promise.all([
+      page.waitForRequest(muokkausUrl),
       saveButton.click(),
-      page.waitForRequest((request) => {
-        return (
-          request.url() === muokkausUrl &&
-          isShallowEqual(request.postDataJSON(), {
-            arvo: '12',
-            tila: TuloksenTila.HYLATTY,
-            selite: 'Syy muokkaukselle',
-          })
-        );
-      }),
     ]);
+
+    expect(request.postDataJSON()).toEqual({
+      arvo: '12',
+      tila: TuloksenTila.HYLATTY,
+      selite: 'Syy muokkaukselle',
+    });
 
     await expectAlertTextVisible(
       page,

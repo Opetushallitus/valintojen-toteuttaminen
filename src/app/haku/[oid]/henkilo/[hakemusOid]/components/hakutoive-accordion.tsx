@@ -48,7 +48,7 @@ export const HakutoiveAccordion = ({
             backgroundColor: noContent ? ophColors.grey50 : ophColors.white,
           }}
         >
-          <TableCell colSpan={7} component="th">
+          <TableCell colSpan={8} component="th">
             <AccordionHeader>
               <OphButton
                 variant="text"
