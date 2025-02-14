@@ -56,4 +56,5 @@ export type ValintaryhmaHakukohteilla = {
   nimi: string;
   oid: string;
   hakukohteet: string[];
+  alaValintaryhmat: ValintaryhmaHakukohteilla[];
 };

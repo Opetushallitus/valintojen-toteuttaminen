@@ -202,17 +202,32 @@ export const getValintakokeet = async (hakukohdeOid: string) => {
   return response.data;
 };
 
-export const getValintaryhmat = async (hakuOid: string): Promise<Array<ValintaryhmaHakukohteilla>> => {
-  const response = await client.get<
-    Array<{ hakukohdeViitteet: Array<{ oid: string }>; nimi: string, oid: string }>
-  >(
+type ValintaryhmaHakukohteillaResponse = {
+  oid: string;
+  nimi: string;
+  hakukohdeViitteet: Array<{ oid: string }>;
+  alavalintaryhmat: Array<ValintaryhmaHakukohteillaResponse>;
+};
+
+function mapValintaryhma(
+  ryhma: ValintaryhmaHakukohteillaResponse,
+): ValintaryhmaHakukohteilla {
+  return {
+    oid: ryhma.oid,
+    nimi: ryhma.nimi,
+    hakukohteet: ryhma.hakukohdeViitteet.map((h) => h.oid),
+    alaValintaryhmat: ryhma.alavalintaryhmat.map(mapValintaryhma),
+  };
+}
+
+export const getValintaryhmat = async (
+  hakuOid: string,
+): Promise<Array<ValintaryhmaHakukohteilla>> => {
+  const response = await client.get<Array<ValintaryhmaHakukohteillaResponse>>(
     `${configuration.valintaryhmatHakukohteilla}?hakuOid=${hakuOid}&hakukohteet=true`,
   );
   return response.data
-    .filter(r => !isEmpty(r.hakukohdeViitteet))
-    .map(r => ({
-      oid: r.oid, 
-      nimi: r.nimi, 
-      hakukohteet: r.hakukohdeViitteet.map(h => h.oid)
-    }));
+    .filter((r) => !isEmpty(r.hakukohdeViitteet))
+    .flatMap((r) => r.alavalintaryhmat)
+    .map(mapValintaryhma);
 };
