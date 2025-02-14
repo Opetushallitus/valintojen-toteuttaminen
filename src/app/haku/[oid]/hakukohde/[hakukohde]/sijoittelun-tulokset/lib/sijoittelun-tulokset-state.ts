@@ -85,6 +85,12 @@ export type SijoittelunTuloksetEvents =
   | SijottelunTulosMassChangeEvent
   | SijoittelunTulosPublishEvent;
 
+const hasChangedHakemukset = ({
+  context,
+}: {
+  context: SijoittelunTuloksetContext;
+}) => context.changedHakemukset.length > 0;
+
 export const createSijoittelunTuloksetMachine = (
   hakukohdeOid: string,
   valintatapajonoOid: string,
@@ -119,8 +125,7 @@ export const createSijoittelunTuloksetMachine = (
           [SijoittelunTuloksetEventTypes.ADD_CHANGED_HAKEMUS]: {
             actions: assign({
               changedHakemukset: ({ context, event }) => {
-                const e = event;
-                return updateChangedHakemus(context, e);
+                return updateChangedHakemus(context, event);
               },
             }),
           },
@@ -149,8 +154,7 @@ export const createSijoittelunTuloksetMachine = (
           [SijoittelunTuloksetEventTypes.CHANGE_HAKEMUKSET_STATES]: {
             actions: [
               assign(({ context, event }) => {
-                const e = event;
-                return massUpdateChangedHakemukset(context, e);
+                return massUpdateChangedHakemukset(context, event);
               }),
               'notifyMassStatusChange',
             ],
@@ -273,8 +277,7 @@ export const createSijoittelunTuloksetMachine = (
 
   return tuloksetMachine.provide({
     guards: {
-      hasChangedHakemukset: ({ context }) =>
-        context.changedHakemukset.length > 0,
+      hasChangedHakemukset,
     },
     actions: {
       updateSuccess: () => {
@@ -488,8 +491,5 @@ export type SijoittelunTulosActorRef = ActorRefFrom<
 export const useIsDirtySijoittelunTulos = (
   sijoittelunTulosActorRef: SijoittelunTulosActorRef,
 ) => {
-  return useSelector(
-    sijoittelunTulosActorRef,
-    (s) => s.context.changedHakemukset.length > 0,
-  );
+  return useSelector(sijoittelunTulosActorRef, hasChangedHakemukset);
 };
