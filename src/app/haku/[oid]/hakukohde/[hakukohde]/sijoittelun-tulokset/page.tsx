@@ -6,7 +6,7 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { Box } from '@mui/material';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys } from '@/app/lib/valinta-tulos-service';
+import { tryToGetLatestSijoitteluajonTuloksetWithValintaEsitysQueryOptions } from '@/app/lib/valinta-tulos-service';
 import { isEmpty } from '@/app/lib/common';
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
 import { NoResults } from '@/app/components/no-results';
@@ -33,18 +33,12 @@ const SijoitteluContent = ({
   const { data: haku } = useHaku({ hakuOid });
   const { data: hakukohde } = useHakukohde({ hakukohdeOid });
 
-  const { data: tulokset } = useSuspenseQuery({
-    queryKey: [
-      'tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys',
+  const { data: tulokset } = useSuspenseQuery(
+    tryToGetLatestSijoitteluajonTuloksetWithValintaEsitysQueryOptions({
       hakuOid,
       hakukohdeOid,
-    ],
-    queryFn: () =>
-      tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys(
-        hakuOid,
-        hakukohdeOid,
-      ),
-  });
+    }),
+  );
 
   return isEmpty(tulokset) ? (
     <NoResults text={t('sijoittelun-tulokset.ei-tuloksia')} />

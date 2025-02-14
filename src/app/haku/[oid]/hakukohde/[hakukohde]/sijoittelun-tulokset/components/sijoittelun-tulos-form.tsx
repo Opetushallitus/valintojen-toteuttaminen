@@ -1,7 +1,7 @@
 'use client';
 
 import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
-import { FormEvent, useMemo, useState } from 'react';
+import { FormEvent, useCallback, useMemo, useState } from 'react';
 import useToaster from '@/app/hooks/useToaster';
 import { useMachine } from '@xstate/react';
 import { styled } from '@mui/material';
@@ -19,6 +19,8 @@ import { useSijoittelunTulosSearch } from '../hooks/useSijoittelunTuloksetSearch
 import { SijoittelunTulosTable } from './sijoittelun-tulos-table';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { useConfirmChangesBeforeNavigation } from '@/app/hooks/useConfirmChangesBeforeNavigation';
+import { useQueryClient } from '@tanstack/react-query';
+import { tryToGetLatestSijoitteluajonTuloksetWithValintaEsitysQueryOptions } from '@/app/lib/valinta-tulos-service';
 
 type SijoittelunTuloksetFormParams = {
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
@@ -43,6 +45,18 @@ export const SijoittelunTulosForm = ({
 
   const { addToast } = useToaster();
 
+  const queryClient = useQueryClient();
+
+  const onUpdateSuccess = useCallback(() => {
+    const options =
+      tryToGetLatestSijoitteluajonTuloksetWithValintaEsitysQueryOptions({
+        hakuOid: haku.oid,
+        hakukohdeOid: hakukohde.oid,
+      });
+    queryClient.resetQueries(options);
+    queryClient.invalidateQueries(options);
+  }, [queryClient, haku.oid, hakukohde.oid]);
+
   const syottoMachine = useMemo(() => {
     return createSijoittelunTuloksetMachine(
       hakukohde.oid,
@@ -50,8 +64,9 @@ export const SijoittelunTulosForm = ({
       valintatapajono.hakemukset,
       lastModified,
       addToast,
+      onUpdateSuccess,
     );
-  }, [hakukohde, valintatapajono, addToast, lastModified]);
+  }, [hakukohde, valintatapajono, addToast, lastModified, onUpdateSuccess]);
 
   const [state, send] = useMachine(syottoMachine);
 
@@ -101,6 +116,14 @@ export const SijoittelunTulosForm = ({
         publish={publish}
         valintatapajono={valintatapajono}
         hakukohde={hakukohde}
+        massUpdateForm={(changeParams: HakemuksetStateChangeEvent) => {
+          send({
+            type: SijoittelunTuloksetEvents.CHANGE_HAKEMUKSET_STATES,
+            ...changeParams,
+          });
+          setDirty(true);
+          send({ type: SijoittelunTuloksetEvents.UPDATE });
+        }}
       />
       <TablePaginationWrapper
         label={`${t('yleinen.sivutus')} ${valintatapajono.nimi}`}
