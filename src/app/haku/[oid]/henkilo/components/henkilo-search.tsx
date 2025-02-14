@@ -1,47 +1,25 @@
 'use client';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { Search } from '@mui/icons-material';
-import { InputAdornment } from '@mui/material';
-import { ChangeEvent } from 'react';
 import { useHenkiloSearchParams } from '../hooks/useHenkiloSearch';
-import {
-  OphFormFieldWrapper,
-  OphInput,
-} from '@opetushallitus/oph-design-system';
+import { SearchInput } from '@/app/components/search-input';
 
 export const HenkiloSearch = () => {
   const { searchPhrase, setSearchPhrase } = useHenkiloSearchParams();
   const { t } = useTranslations();
-  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearchPhrase(e.target.value);
-  };
 
   return (
-    <OphFormFieldWrapper
+    <SearchInput
       sx={{
-        textAlign: 'left',
         paddingRight: 2,
+        flexBasis: 'auto',
       }}
+      name="henkilo-search"
       helperText={t('henkilo.hae-helpertext')}
-      renderInput={() => {
-        return (
-          <OphInput
-            key={searchPhrase}
-            id="henkilo-search"
-            name="henkilo-search"
-            defaultValue={searchPhrase}
-            onChange={handleSearchChange}
-            autoFocus={true}
-            type="text"
-            placeholder={t('henkilo.hae-henkilo')}
-            endAdornment={
-              <InputAdornment position="end">
-                <Search />
-              </InputAdornment>
-            }
-          />
-        );
-      }}
-    ></OphFormFieldWrapper>
+      searchPhrase={searchPhrase}
+      setSearchPhrase={setSearchPhrase}
+      placeholder={t('henkilo.hae-henkilo')}
+      label="henkilo.hae-henkilo"
+      hiddenLabel={true}
+    />
   );
 };

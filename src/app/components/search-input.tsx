@@ -1,14 +1,14 @@
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Search } from '@mui/icons-material';
 import { InputAdornment } from '@mui/material';
-import { ChangeEvent } from 'react';
+import { ChangeEvent, useEffect, useRef } from 'react';
 import { styled } from '@/app/lib/theme';
 import {
   OphFormFieldWrapper,
   OphInput,
 } from '@opetushallitus/oph-design-system';
 
-const StyledContol = styled(OphFormFieldWrapper)({
+const StyledFormFieldWrapper = styled(OphFormFieldWrapper)({
   flexGrow: 0,
   flexBasis: '380px',
   minWidth: '200px',
@@ -16,11 +16,14 @@ const StyledContol = styled(OphFormFieldWrapper)({
 });
 
 export type SearchInputProps = {
-  name: string;
+  name?: string;
   searchPhrase: string;
   setSearchPhrase: (s: string) => void;
   label?: string;
+  placeholder?: string;
+  helperText?: string;
   sx?: React.CSSProperties;
+  hiddenLabel?: boolean;
 };
 
 export const SearchInput = ({
@@ -28,6 +31,9 @@ export const SearchInput = ({
   searchPhrase,
   setSearchPhrase,
   label,
+  placeholder,
+  helperText,
+  hiddenLabel,
   sx,
 }: SearchInputProps) => {
   const { t } = useTranslations();
@@ -36,19 +42,35 @@ export const SearchInput = ({
     setSearchPhrase(e.target.value);
   };
 
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.value = searchPhrase;
+    }
+  }, [searchPhrase]);
+
+  const labelText = t(label ?? 'hakeneet.hae');
+
   return (
-    <StyledContol
-      key={searchPhrase}
+    <StyledFormFieldWrapper
       sx={sx ?? {}}
-      label={t(label ?? 'hakeneet.hae')}
+      label={hiddenLabel ? undefined : t(label ?? 'hakeneet.hae')}
+      helperText={helperText}
       renderInput={({ labelId }) => (
         <OphInput
           id={name}
           name={name}
-          inputProps={{ 'aria-labelledby': labelId }}
+          inputRef={inputRef}
+          inputProps={
+            hiddenLabel
+              ? { 'aria-label': labelText }
+              : { 'aria-labelledby': labelId }
+          }
           defaultValue={searchPhrase}
           onChange={handleSearchChange}
           type="text"
+          placeholder={placeholder}
           endAdornment={
             <InputAdornment position="end">
               <Search />
