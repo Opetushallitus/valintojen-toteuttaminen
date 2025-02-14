@@ -33,20 +33,20 @@ export const ConfirmationModalDialog = ({
       actions={
         <>
           <OphButton
-            variant="contained"
-            onClick={() => {
-              onConfirm();
-            }}
-          >
-            {confirmLabel ?? t('yleinen.kylla')}
-          </OphButton>
-          <OphButton
             variant="outlined"
             onClick={() => {
               onCancel();
             }}
           >
             {cancelLabel ?? t('yleinen.ei')}
+          </OphButton>
+          <OphButton
+            variant="contained"
+            onClick={() => {
+              onConfirm();
+            }}
+          >
+            {confirmLabel ?? t('yleinen.kylla')}
           </OphButton>
         </>
       }
