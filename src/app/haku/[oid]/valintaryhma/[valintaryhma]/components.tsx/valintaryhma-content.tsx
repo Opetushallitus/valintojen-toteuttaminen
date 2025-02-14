@@ -3,8 +3,7 @@ import { useUserPermissions } from '@/app/hooks/useUserPermissions';
 import { getHakukohteetQueryOptions } from '@/app/lib/kouta';
 import { getValintaryhmat } from '@/app/lib/valintaperusteet';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { ValintaryhmaSelector } from './ValintaryhmaSelector';
-import { HakukohdeWithLink, ValintaryhmaHakukohdeTable } from './ValintaryhmaHakukohdeTable';
+import { HakukohdeWithLink, ValintaryhmaHakukohdeTable } from './valintaryhma-hakukohde-table';
 import { Box } from '@mui/material';
 import { styled } from '@/app/lib/theme';
 import { useMemo, useState } from 'react';
@@ -57,23 +56,11 @@ export const ValintaryhmaContent = ({ hakuOid }: { hakuOid: string }) => {
       return mappedHakukohteet.find((mappedHakukohde) => mappedHakukohde.oid === oid)
     }).filter(hk => !isNullish(hk));
   }
-
-  function onValintaryhmaSelect(valintaryhma: ValintaryhmaHakukohteilla | null) {
-    console.log(valintaryhma);
-    if (valintaryhma) {
-      setSelectedValintaryhma(valintaryhma);
-      setRyhmaHakukohteet(mapHakukohteet(valintaryhma));
-    } else {
-      setSelectedValintaryhma(null);
-      setRyhmaHakukohteet([]);
-    }
-  }
   
   const [ryhmaHakukohteet, setRyhmaHakukohteet] = useState<HakukohdeWithLink[]>(mapHakukohteet(ryhmat[0]));
 
   return (
     <StyledContainer>
-      <ValintaryhmaSelector valintaryhmat={ryhmat} onValintaryhmaSelect={onValintaryhmaSelect} />
       <ValintaryhmaHakukohdeTable hakukohteet={ryhmaHakukohteet} />
     </StyledContainer>
   );

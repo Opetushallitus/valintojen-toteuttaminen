@@ -1,20 +1,9 @@
 'use client';
-import { FullClientSpinner } from '@/app/components/client-spinner';
-import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
-import { Box } from '@mui/material';
-import { use } from 'react';
-import { ValintaryhmaContent } from './components/ValintaryhmaContent';
+import { useTranslations } from '@/app/hooks/useTranslations';
+import { ListAlt } from '@mui/icons-material';
+import { NoResults } from '@/app/components/no-results';
 
-export default function ValintaryhmaPage(props: {
-  params: Promise<{ oid: string }>;
-}) {
-  const params = use(props.params);
-
-  return (
-    <Box sx={{ padding: 4 }}>
-      <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
-        <ValintaryhmaContent hakuOid={params.oid} />
-      </QuerySuspenseBoundary>
-    </Box>
-  );
+export default function ValitseValintaryhmaPage() {
+  const { t } = useTranslations();
+  return <NoResults text={t('valintaryhma.valitse')} icon={<ListAlt />} />;
 }

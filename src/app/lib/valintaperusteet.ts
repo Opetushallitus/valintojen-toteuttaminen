@@ -211,12 +211,14 @@ type ValintaryhmaHakukohteillaResponse = {
 
 function mapValintaryhma(
   ryhma: ValintaryhmaHakukohteillaResponse,
+  parentOid: string | null = null,
 ): ValintaryhmaHakukohteilla {
   return {
     oid: ryhma.oid,
     nimi: ryhma.nimi,
+    parentOid,
     hakukohteet: ryhma.hakukohdeViitteet.map((h) => h.oid),
-    alaValintaryhmat: ryhma.alavalintaryhmat.map(mapValintaryhma),
+    alaValintaryhmat: ryhma.alavalintaryhmat.map(avr => mapValintaryhma(avr, ryhma.oid)),
   };
 }
 
@@ -229,5 +231,5 @@ export const getValintaryhmat = async (
   return response.data
     .filter((r) => !isEmpty(r.hakukohdeViitteet))
     .flatMap((r) => r.alavalintaryhmat)
-    .map(mapValintaryhma);
+    .map(vr => mapValintaryhma(vr));
 };

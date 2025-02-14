@@ -57,4 +57,5 @@ export type ValintaryhmaHakukohteilla = {
   oid: string;
   hakukohteet: string[];
   alaValintaryhmat: ValintaryhmaHakukohteilla[];
+  parentOid: string | null;
 };
