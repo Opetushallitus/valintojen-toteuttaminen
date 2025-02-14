@@ -106,7 +106,7 @@ export const SijoittelunTuloksetActionBar = ({
   const { t } = useTranslation();
 
   return (
-    <ActionBar.Container sx={{ width: '100%', justifyContent: 'stretch' }}>
+    <ActionBar.Container sx={{ width: '100%' }}>
       <Box
         sx={{
           padding: 1,
