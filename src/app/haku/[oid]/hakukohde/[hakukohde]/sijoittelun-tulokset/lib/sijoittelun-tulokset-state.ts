@@ -5,7 +5,7 @@ import {
   SijoittelunHakemusValintatiedoilla,
   VastaanottoTila,
 } from '@/app/lib/types/sijoittelu-types';
-import { assign, createMachine, fromPromise } from 'xstate';
+import { ActorRefFrom, assign, createMachine, fromPromise } from 'xstate';
 import {
   hyvaksyValintaEsitys,
   saveMaksunTilanMuutokset,
@@ -19,6 +19,7 @@ import {
   isImoittautuminenPossible,
   isVastaanottoPossible,
 } from '@/app/lib/sijoittelun-tulokset-utils';
+import { useSelector } from '@xstate/react';
 
 export type SijoittelunTuloksetContext = {
   hakemukset: SijoittelunHakemusValintatiedoilla[];
@@ -32,7 +33,6 @@ export enum SijoittelunTuloksetStates {
   IDLE = 'IDLE',
   UPDATING = 'UPDATING',
   UPDATE_COMPLETED = 'UPDATE_COMPLETED',
-  NOTIFY_MASS_STATUS_CHANGE = 'NOTIFY_MASS_STATUS_CHANGE',
   PUBLISHING = 'PUBLISHING',
   UPDATING_AND_THEN_PUBLISH = 'UPDATING_AND_THEN_PUBLISH',
   PUBLISHED = 'PUBLISHED',
@@ -147,11 +147,13 @@ export const createSijoittelunTuloksetMachine = (
             },
           ],
           [SijoittelunTuloksetEventTypes.CHANGE_HAKEMUKSET_STATES]: {
-            actions: assign(({ context, event }) => {
-              const e = event;
-              return massUpdateChangedHakemukset(context, e);
-            }),
-            target: SijoittelunTuloksetStates.NOTIFY_MASS_STATUS_CHANGE,
+            actions: [
+              assign(({ context, event }) => {
+                const e = event;
+                return massUpdateChangedHakemukset(context, e);
+              }),
+              'notifyMassStatusChange',
+            ],
           },
         },
       },
@@ -213,14 +215,6 @@ export const createSijoittelunTuloksetMachine = (
             },
           },
         },
-      },
-      [SijoittelunTuloksetStates.NOTIFY_MASS_STATUS_CHANGE]: {
-        always: [
-          {
-            target: SijoittelunTuloksetStates.IDLE,
-            actions: 'notifyMassStatusChange',
-          },
-        ],
       },
       [SijoittelunTuloksetStates.PUBLISHED]: {
         always: [
@@ -484,5 +478,18 @@ const isUnchanged = (
     original.julkaistavissa === changed.julkaistavissa &&
     original.maksuntila === changed.maksuntila &&
     original.hyvaksyttyVarasijalta === changed.hyvaksyttyVarasijalta
+  );
+};
+
+export type SijoittelunTulosActorRef = ActorRefFrom<
+  ReturnType<typeof createSijoittelunTuloksetMachine>
+>;
+
+export const useIsDirtySijoittelunTulos = (
+  sijoittelunTulosActorRef: SijoittelunTulosActorRef,
+) => {
+  return useSelector(
+    sijoittelunTulosActorRef,
+    (s) => s.context.changedHakemukset.length > 0,
   );
 };
