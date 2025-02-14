@@ -2,21 +2,27 @@ import { OphModalDialog } from '@/app/components/oph-modal-dialog';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { OphButton } from '@opetushallitus/oph-design-system';
 
+export type ConfirmationModalDialogProps = {
+  title?: string;
+  open: boolean;
+  children?: React.ReactNode;
+  onConfirm: () => void;
+  onCancel: () => void;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  maxWidth?: 'sm' | 'md' | false;
+};
+
 export const ConfirmationModalDialog = ({
   title,
   open,
   children,
   onConfirm,
   onCancel,
+  confirmLabel,
+  cancelLabel,
   maxWidth = 'sm',
-}: {
-  title?: string;
-  open: boolean;
-  children?: React.ReactNode;
-  onConfirm: () => void;
-  onCancel: () => void;
-  maxWidth?: 'sm' | 'md' | false;
-}) => {
+}: ConfirmationModalDialogProps) => {
   const { t } = useTranslations();
   return (
     <OphModalDialog
@@ -32,7 +38,7 @@ export const ConfirmationModalDialog = ({
               onConfirm();
             }}
           >
-            {t('yleinen.kylla')}
+            {confirmLabel ?? t('yleinen.kylla')}
           </OphButton>
           <OphButton
             variant="outlined"
@@ -40,7 +46,7 @@ export const ConfirmationModalDialog = ({
               onCancel();
             }}
           >
-            {t('yleinen.ei')}
+            {cancelLabel ?? t('yleinen.ei')}
           </OphButton>
         </>
       }

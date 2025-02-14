@@ -221,7 +221,7 @@ const MerkitseMyohastyneeksiButton = ({
         showModal(GlobalConfirmationModal, {
           title: t('sijoittelun-tulokset.merkitse-myohastyneeksi-modal-title'),
           maxWidth: 'md',
-          text: (
+          content: (
             <Box>
               <OphTypography>
                 {t('sijoittelun-tulokset.merkitse-myohastyneeksi-modal-text')}
@@ -231,6 +231,8 @@ const MerkitseMyohastyneeksiButton = ({
               />
             </Box>
           ),
+          confirmLabel: t('sijoittelun-tulokset.merkitse-myohastyneeksi'),
+          cancelLabel: t('yleinen.peruuta'),
           onConfirm: () => {
             massUpdateForm({
               vastaanottoTila: VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA,
