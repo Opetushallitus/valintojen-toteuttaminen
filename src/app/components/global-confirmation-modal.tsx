@@ -4,9 +4,10 @@ import { ConfirmationModalDialog } from '@/app/haku/[oid]/henkilo/[hakemusOid]/c
 export const GlobalConfirmationModal = createModal<{
   onConfirm: () => void;
   onCancel?: () => void;
-  text?: string;
+  text?: React.ReactNode;
   title: string;
-}>(({ title, text, onConfirm, onCancel }) => {
+  maxWidth?: 'sm' | 'md' | false;
+}>(({ title, text, onConfirm, onCancel, maxWidth }) => {
   const { open, onClose } = useOphModalProps();
 
   return (
@@ -21,6 +22,7 @@ export const GlobalConfirmationModal = createModal<{
         onCancel?.();
         onClose();
       }}
+      maxWidth={maxWidth}
     >
       {text}
     </ConfirmationModalDialog>

@@ -8,12 +8,14 @@ export const ConfirmationModalDialog = ({
   children,
   onConfirm,
   onCancel,
+  maxWidth = 'sm',
 }: {
   title?: string;
   open: boolean;
   children?: React.ReactNode;
   onConfirm: () => void;
   onCancel: () => void;
+  maxWidth?: 'sm' | 'md' | false;
 }) => {
   const { t } = useTranslations();
   return (
@@ -21,7 +23,7 @@ export const ConfirmationModalDialog = ({
       open={open}
       onClose={() => onCancel()}
       title={title ?? t('valinnanhallinta.varmista')}
-      maxWidth="sm"
+      maxWidth={maxWidth}
       actions={
         <>
           <OphButton

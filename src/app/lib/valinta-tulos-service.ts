@@ -16,7 +16,7 @@ import {
   VastaanottoTila,
 } from './types/sijoittelu-types';
 import { MaksunTila, Maksuvelvollisuus } from './types/ataru-types';
-import { FetchError, OphApiError } from './common';
+import { nullWhen404, OphApiError } from './common';
 import {
   HakemusChangeEvent,
   ValinnanTulosModel,
@@ -240,18 +240,6 @@ const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
     valintatapajonot: sijoitteluajonTulokset,
     lastModified: data.lastModified,
   };
-};
-
-const nullWhen404 = async <T>(promise: Promise<T>): Promise<T | null> => {
-  try {
-    return await promise;
-  } catch (e) {
-    if (e instanceof FetchError && e?.response?.status === 404) {
-      console.error('FetchError with 404', e);
-      return null;
-    }
-    throw e;
-  }
 };
 
 export const tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys = async (
