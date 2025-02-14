@@ -8,9 +8,9 @@ import { styled } from '@mui/material';
 import { SijoittelunTuloksetActions } from './sijoittelun-tulos-actions';
 import {
   createSijoittelunTuloksetMachine,
-  HakemuksetStateChangeEvent,
-  SijoittelunTuloksetChangeEvent,
-  SijoittelunTuloksetEvents,
+  HakemuksetStateChangeParams,
+  SijoittelunTulosChangeParams,
+  SijoittelunTuloksetEventTypes,
   SijoittelunTuloksetStates,
 } from '../lib/sijoittelun-tulokset-state';
 import { SijoitteluajonValintatapajonoValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
@@ -78,27 +78,27 @@ export const SijoittelunTulosForm = ({
   useConfirmChangesBeforeNavigation(dirty);
 
   const submitChanges = (event: FormEvent) => {
-    send({ type: SijoittelunTuloksetEvents.UPDATE });
+    send({ type: SijoittelunTuloksetEventTypes.UPDATE });
     event.preventDefault();
     setDirty(false);
   };
 
   const publish = () => {
-    send({ type: SijoittelunTuloksetEvents.PUBLISH });
+    send({ type: SijoittelunTuloksetEventTypes.PUBLISH });
     setDirty(false);
   };
 
-  const updateForm = (changeParams: SijoittelunTuloksetChangeEvent) => {
+  const updateForm = (changeParams: SijoittelunTulosChangeParams) => {
     send({
-      type: SijoittelunTuloksetEvents.ADD_CHANGED_HAKEMUS,
+      type: SijoittelunTuloksetEventTypes.ADD_CHANGED_HAKEMUS,
       ...changeParams,
     });
     setDirty(true);
   };
 
-  const massStatusChangeForm = (changeParams: HakemuksetStateChangeEvent) => {
+  const massStatusChangeForm = (changeParams: HakemuksetStateChangeParams) => {
     send({
-      type: SijoittelunTuloksetEvents.CHANGE_HAKEMUKSET_STATES,
+      type: SijoittelunTuloksetEventTypes.CHANGE_HAKEMUKSET_STATES,
       ...changeParams,
     });
     setDirty(true);
@@ -116,13 +116,13 @@ export const SijoittelunTulosForm = ({
         publish={publish}
         valintatapajono={valintatapajono}
         hakukohde={hakukohde}
-        massUpdateForm={(changeParams: HakemuksetStateChangeEvent) => {
+        massUpdateForm={(changeParams: HakemuksetStateChangeParams) => {
           send({
-            type: SijoittelunTuloksetEvents.CHANGE_HAKEMUKSET_STATES,
+            type: SijoittelunTuloksetEventTypes.CHANGE_HAKEMUKSET_STATES,
             ...changeParams,
           });
           setDirty(true);
-          send({ type: SijoittelunTuloksetEvents.UPDATE });
+          send({ type: SijoittelunTuloksetEventTypes.UPDATE });
         }}
       />
       <TablePaginationWrapper

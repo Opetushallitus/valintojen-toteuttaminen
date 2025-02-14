@@ -13,7 +13,7 @@ import {
 import { AnyMachineSnapshot } from 'xstate';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import {
-  HakemuksetStateChangeEvent,
+  HakemuksetStateChangeParams,
   SijoittelunTuloksetStates,
 } from '../lib/sijoittelun-tulokset-state';
 import useToaster from '@/app/hooks/useToaster';
@@ -203,7 +203,7 @@ const MerkitseMyohastyneeksiButton = ({
   hakuOid: string;
   hakukohdeOid: string;
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
-  massUpdateForm: (params: HakemuksetStateChangeEvent) => void;
+  massUpdateForm: (params: HakemuksetStateChangeParams) => void;
 }) => {
   const { t } = useTranslations();
 
@@ -260,7 +260,7 @@ export const SijoittelunTuloksetActions = ({
   publish: () => void;
   hakukohde: Hakukohde;
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
-  massUpdateForm: (params: HakemuksetStateChangeEvent) => void;
+  massUpdateForm: (params: HakemuksetStateChangeParams) => void;
 }) => {
   const { t } = useTranslations();
 

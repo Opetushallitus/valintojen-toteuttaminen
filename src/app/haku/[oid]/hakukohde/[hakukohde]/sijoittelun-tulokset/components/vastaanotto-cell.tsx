@@ -8,7 +8,7 @@ import {
 import { SelectChangeEvent, Typography } from '@mui/material';
 import { OphCheckbox } from '@opetushallitus/oph-design-system';
 import { useEffect, useState } from 'react';
-import { SijoittelunTuloksetChangeEvent } from '../lib/sijoittelun-tulokset-state';
+import { SijoittelunTulosChangeParams } from '../lib/sijoittelun-tulokset-state';
 import { SijoittelunTulosStyledCell } from './sijoittelun-tulos-styled-cell';
 import {
   isVastaanottotilaJulkaistavissa,
@@ -26,7 +26,7 @@ export const VastaanOttoCell = ({
   haku: Haku;
   hakemus: SijoittelunHakemusValintatiedoilla;
   disabled: boolean;
-  updateForm: (params: SijoittelunTuloksetChangeEvent) => void;
+  updateForm: (params: SijoittelunTulosChangeParams) => void;
 }) => {
   const { t } = useTranslations();
 

@@ -4,7 +4,7 @@ import {
   IlmoittautumisTila,
   SijoittelunHakemusValintatiedoilla,
 } from '@/app/lib/types/sijoittelu-types';
-import { SijoittelunTuloksetChangeEvent } from '../lib/sijoittelun-tulokset-state';
+import { SijoittelunTulosChangeParams } from '../lib/sijoittelun-tulokset-state';
 import { SelectChangeEvent } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { isImoittautuminenPossible } from '@/app/lib/sijoittelun-tulokset-utils';
@@ -16,7 +16,7 @@ export const IlmoittautumisCell = ({
 }: {
   hakemus: SijoittelunHakemusValintatiedoilla;
   disabled: boolean;
-  updateForm: (params: SijoittelunTuloksetChangeEvent) => void;
+  updateForm: (params: SijoittelunTulosChangeParams) => void;
 }) => {
   const { t } = useTranslations();
   const [ilmoittautumisTila, setIlmoittautumisTila] = useState(

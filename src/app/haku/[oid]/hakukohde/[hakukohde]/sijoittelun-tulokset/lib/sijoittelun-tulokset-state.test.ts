@@ -3,7 +3,7 @@ import { client } from '@/app/lib/http-client';
 import { createActor, waitFor } from 'xstate';
 import {
   createSijoittelunTuloksetMachine,
-  SijoittelunTuloksetEvents,
+  SijoittelunTuloksetEventTypes,
   SijoittelunTuloksetStates,
 } from './sijoittelun-tulokset-state';
 import {
@@ -67,6 +67,7 @@ describe('Sijoittelun tulokset states', async () => {
       hakemukset,
       '',
       toastFn,
+      () => {},
     ),
   );
 
@@ -83,13 +84,14 @@ describe('Sijoittelun tulokset states', async () => {
         hakemukset,
         '',
         toastFn,
+        () => {},
       ),
     );
   });
 
   test('saving without changes creates error toast', async () => {
     expect(toastFn).not.toHaveBeenCalledOnce();
-    actor.send({ type: SijoittelunTuloksetEvents.UPDATE });
+    actor.send({ type: SijoittelunTuloksetEventTypes.UPDATE });
     expect(toastFn).toHaveBeenCalledWith({
       key: `sijoittelun-tulokset-update-failed-for-hakukohde-oid-jono-oid`,
       message: 'virhe.eimuutoksia',
@@ -105,15 +107,15 @@ describe('Sijoittelun tulokset states', async () => {
       Promise.resolve({ headers: new Headers(), data: [] }),
     );
     actor.send({
-      type: SijoittelunTuloksetEvents.ADD_CHANGED_HAKEMUS,
+      type: SijoittelunTuloksetEventTypes.ADD_CHANGED_HAKEMUS,
       hakemusOid: 'hakemus-2',
-      vastaanottoTila: VastaanottoTila.EHDOLLISESTI_VASTAANOTTANUT,
+      vastaanottotila: VastaanottoTila.EHDOLLISESTI_VASTAANOTTANUT,
     });
     let state = await waitFor(actor, (state) =>
       state.matches(SijoittelunTuloksetStates.IDLE),
     );
     expect(state.context.changedHakemukset.length).toEqual(1);
-    actor.send({ type: SijoittelunTuloksetEvents.UPDATE });
+    actor.send({ type: SijoittelunTuloksetEventTypes.UPDATE });
     state = await waitFor(actor, (state) =>
       state.matches(SijoittelunTuloksetStates.IDLE),
     );

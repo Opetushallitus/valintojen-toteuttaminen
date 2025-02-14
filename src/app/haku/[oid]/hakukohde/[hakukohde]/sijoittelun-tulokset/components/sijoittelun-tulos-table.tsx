@@ -20,8 +20,8 @@ import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
 import { isKorkeakouluHaku } from '@/app/lib/kouta';
 import { SijoittelunTuloksetActionBar } from './sijoittelun-tulos-action-bar';
 import {
-  HakemuksetStateChangeEvent,
-  SijoittelunTuloksetChangeEvent,
+  HakemuksetStateChangeParams,
+  SijoittelunTulosChangeParams,
 } from '../lib/sijoittelun-tulokset-state';
 import { OtherActionsCell } from './other-actions-cell';
 
@@ -60,8 +60,8 @@ export const SijoittelunTulosTable = ({
   sort: string;
   setSort: (sort: string) => void;
   disabled: boolean;
-  updateForm: (params: SijoittelunTuloksetChangeEvent) => void;
-  massStatusChangeForm: (changeParams: HakemuksetStateChangeEvent) => void;
+  updateForm: (params: SijoittelunTulosChangeParams) => void;
+  massStatusChangeForm: (changeParams: HakemuksetStateChangeParams) => void;
 }) => {
   const { t } = useTranslations();
 
