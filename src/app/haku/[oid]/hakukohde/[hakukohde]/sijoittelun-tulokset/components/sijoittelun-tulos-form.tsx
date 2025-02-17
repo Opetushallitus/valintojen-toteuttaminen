@@ -114,10 +114,9 @@ export const SijoittelunTulosForm = ({
         hakukohde={hakukohde}
         massUpdateForm={(changeParams: HakemuksetStateChangeParams) => {
           send({
-            type: SijoittelunTuloksetEventTypes.CHANGE_HAKEMUKSET_STATES,
+            type: SijoittelunTuloksetEventTypes.MASS_UPDATE,
             ...changeParams,
           });
-          send({ type: SijoittelunTuloksetEventTypes.UPDATE });
         }}
       />
       <TablePaginationWrapper

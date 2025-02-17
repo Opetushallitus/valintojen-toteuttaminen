@@ -24,7 +24,7 @@ import { useSelector } from '@xstate/react';
 export type SijoittelunTuloksetContext = {
   hakemukset: SijoittelunHakemusValintatiedoilla[];
   changedHakemukset: SijoittelunHakemusValintatiedoilla[];
-  toastMessage?: string;
+  hakemuksetForUpdate?: SijoittelunHakemusValintatiedoilla[];
   massChangeAmount?: number;
 };
 
@@ -39,6 +39,7 @@ export enum SijoittelunTuloksetStates {
 
 export enum SijoittelunTuloksetEventTypes {
   UPDATE = 'UPDATE',
+  MASS_UPDATE = 'MASS_UPDATE',
   CHANGE_HAKEMUKSET_STATES = 'CHANGE_HAKEMUKSET_STATES',
   ADD_CHANGED_HAKEMUS = 'ADD_CHANGED_HAKEMUS',
   PUBLISH = 'PUBLISH',
@@ -53,6 +54,13 @@ export type HakemuksetStateChangeParams = {
   vastaanottoTila?: VastaanottoTila;
   ilmoittautumisTila?: IlmoittautumisTila;
 };
+
+/**
+ * Massapäivitys parametrina annetuilla tiedoilla. Ei käytetä tallennuksessa changedHakemukset-arvoja.
+ * */
+export type SijoittelunTulosMassUpdateEvent = {
+  type: SijoittelunTuloksetEventTypes.MASS_UPDATE;
+} & HakemuksetStateChangeParams;
 
 export type SijottelunTulosMassChangeEvent = {
   type: SijoittelunTuloksetEventTypes.CHANGE_HAKEMUKSET_STATES;
@@ -82,7 +90,8 @@ export type SijoittelunTuloksetEvents =
   | SijoittelunTulosUpdateEvent
   | SijoittelunTulosChangeEvent
   | SijottelunTulosMassChangeEvent
-  | SijoittelunTulosPublishEvent;
+  | SijoittelunTulosPublishEvent
+  | SijoittelunTulosMassUpdateEvent;
 
 const hasChangedHakemukset = ({
   context,
@@ -96,7 +105,7 @@ export const createSijoittelunTuloksetMachine = (
   hakemukset: SijoittelunHakemusValintatiedoilla[],
   lastModified: string,
   addToast: (toast: Toast) => void,
-  onUpdateSuccess: () => void,
+  onUpdateSuccess?: () => void,
 ) => {
   const tuloksetMachine = createMachine({
     /** @xstate-layout N4IgpgJg5mDOIC5QAoC2BDAxgCwJYDswBKAOgEkARAGQFEBiAQQooH0BhACQYDkBxG1lwDSNALIBVAMoBtAAwBdRKAAOAe1i4ALrlX4lIAB6IALAEYSATivWb1gBwA2ADQgAnieN2Sxhxd8AmfztPC2MAZmMAX0iXNCw8QlJKWjpxAAUKBgAVGjlFJBA1DW1dfSMEMLCHElkfOwB2AFZmx18fF3cEC1qSf1MHUzsIoONAxujYjBwCYnJqenTMnOlTfJV1LR09AvLGsJIwxtNmhyCrev9ZOw7EQ-8SI4dm2VN-Bx8LUwmQOOnEuZSaXEACEqGRJBw8voiptSjtblUanUmi0HG1nG4TAMHn5DrJTvU7HY3g5vr8ErNkvQgaDwZDVtCNiVtqBypVqrUHA1mo1WqEMZ1Gp4HlVPGFZJ9-OLSTEflMKUl5nRODx+CxhGJxEJJDQsixJFlsjQZApGcUtmUERzkTy+e1MQhTLV6iQ0RYwqYmrJ6mZKmT5TNSItsmQ+HQILowCQCAA3VQAayj5MDJGDWVDvAQsdUmHQzLyUIKMOZlq6Dlkru5-nCRI99QFiGCFks+KCaPLxk+-viKbTGboYAAToPVIOSMoADZ5gBmo9QJGT-z7fCz+DjufzCkL63NcNZJkOlj6RNkHuGg3qNwQdlM5je4saL3FFxlkx7S4yIb4LB4rCyHBobgWBpMEIXDSNozXBMkwDD8lgzH9uD-ACgJAulV3XPMtgLU0iyZC14TLCsuSaaswlrT0GwQYxvV6RwfDOYwGPGWVF1mZdeEQ5DAOAkFQI4Adh1Hccp00WdB3nNig0-dNv1-Fh-x4tCIQwnMsN0HC1kKfC90MA9GiPQY7FPUxzwaK8qi8d4wj6epKheRx-G7P5ZmUjh+wjQhILjRMF1g1y+LpDNVI3bCt1wndYRZPTHVGCtugcZ8mnqUzGivfw7N6LkpUsiJfHqZyFRINz+yHEcx0nGc5z898AtpCFguzUKNPCrTiwI-dHVPF1-EfZ1jL8Rp-HSt5XXbR8uVMsJ6j8QqU24AB5dMADEAE0WFEBhJEkfVDSyKR2C4Ph6G3bTd2i8pwhdIUSLebo9lkYaHQsIUSBSgZgkuCx3osOb-jcgQ6FO9rdPKUw4pbRLvWS1Kr2CV1uiuGibJCC4-vYmSaHYBbRDSWgcgoIGIrOqLSydUb60aN0rhmzsrzdOj3iGTwL0JaJZXwVQIDgfQpLNUnCIAWg5WRRbF8XRfBq9hZqCW5dFgrWP8xVaH5ktCKdLxHoiMI-FqFG+ivIVm1GIIIiYypTBe9HpPgvg1Y6mKHHqHrPmd91EouCxrgdYkDJo047Efb7PSOG3UxkhD5MU1DAohB3QcQNFjAeL3xWMet3QiCziTe+jhgygYMvDkr7bw86ya+kgb3eIULgibownS4V62JWRH36AYrHDxaVvWzbtt27IDpVY6E4upPEtdXrRZe3x+R9zpvZTobyx9Ow-BeqmS7jgCKHHsneX2bl28+8VDd98w+peQv3RvX6ldq22jWx3H8YEA+Nat5s7KYq2mnIocJuDp2w1FxLrUIbwZosWiEAA */
@@ -114,6 +123,7 @@ export const createSijoittelunTuloksetMachine = (
     },
     context: {
       hakemukset: clone(hakemukset),
+      hakemuksetForUpdate: undefined,
       changedHakemukset: [],
     },
     states: {
@@ -126,6 +136,31 @@ export const createSijoittelunTuloksetMachine = (
               },
             }),
           },
+          [SijoittelunTuloksetEventTypes.MASS_UPDATE]: [
+            {
+              target: SijoittelunTuloksetStates.UPDATING,
+              actions: assign({
+                hakemuksetForUpdate: ({ context, event }) => {
+                  return context.hakemukset.reduce((acc, h) => {
+                    const shouldOverride = event.hakemusOids.has(h.hakemusOid);
+
+                    return shouldOverride
+                      ? [
+                          ...acc,
+                          {
+                            ...h,
+                            ilmoittautumisTila:
+                              event.ilmoittautumisTila ?? h.ilmoittautumisTila,
+                            vastaanottotila:
+                              event.vastaanottoTila ?? h.vastaanottotila,
+                          },
+                        ]
+                      : acc;
+                  }, [] as SijoittelunHakemusValintatiedoilla[])
+                },
+              }),
+            },
+          ],
           [SijoittelunTuloksetEventTypes.UPDATE]: [
             {
               guard: 'hasChangedHakemukset',
@@ -162,7 +197,7 @@ export const createSijoittelunTuloksetMachine = (
         invoke: {
           src: 'updateHakemukset',
           input: ({ context }) => ({
-            changed: context.changedHakemukset,
+            changed: context.hakemuksetForUpdate ?? context.changedHakemukset,
             original: context.hakemukset,
           }),
           onDone: {
@@ -257,15 +292,28 @@ export const createSijoittelunTuloksetMachine = (
           'updateSuccess',
           assign({
             hakemukset: ({ context }) =>
+              // FIXME: Hakemusten muokkaaminen voi onnistua osittain
+              // Pitää päivittää vain ne hakemukset, joita onnistuttiin muokkaamaan
+              // Tarvitaan uusi lastModified-tieto
               context.hakemukset.map((h) => {
+                const override = context.hakemuksetForUpdate?.find(
+                  (c) => c.hakemusOid === h.hakemusOid,
+                );
                 const changed = context.changedHakemukset.find(
                   (c) => c.hakemusOid === h.hakemusOid,
                 );
-                return changed ?? h;
+                return override ?? changed ?? h;
               }),
           }),
           assign({
-            changedHakemukset: [],
+            changedHakemukset: ({ context }) =>
+              context.changedHakemukset.filter((h) => {
+                const original = context.hakemukset.find(
+                  (h2) => h2.hakemusOid === h.hakemusOid,
+                )!;
+                return !isUnchanged(h, original);
+              }),
+            hakemuksetForUpdate: undefined,
           }),
         ],
       },
@@ -278,7 +326,7 @@ export const createSijoittelunTuloksetMachine = (
     },
     actions: {
       updateSuccess: () => {
-        onUpdateSuccess();
+        onUpdateSuccess?.();
       },
       alert: (_, params) =>
         addToast({
@@ -358,7 +406,7 @@ const updateChangedHakemus = (
   let hakenut = context.changedHakemukset.find(
     (h) => h.hakemusOid === e.hakemusOid,
   );
-  const existing: boolean = Boolean(hakenut);
+  const changedExists = Boolean(hakenut);
   hakenut = clone(
     hakenut || context.hakemukset.find((h) => h.hakemusOid === e.hakemusOid),
   );
@@ -391,7 +439,7 @@ const updateChangedHakemus = (
       hakenut.maksuntila = e.maksunTila;
     }
 
-    if (existing) {
+    if (changedExists) {
       if (
         isUnchanged(
           context.hakemukset.find((h) => h.hakemusOid === hakenut.hakemusOid)!,
@@ -416,11 +464,13 @@ const massUpdateChangedHakemukset = (
   context: SijoittelunTuloksetContext,
   e: HakemuksetStateChangeParams,
 ) => {
-  let changed: SijoittelunHakemusValintatiedoilla[] = context.changedHakemukset;
+  let changed: SijoittelunHakemusValintatiedoilla[] = clone(
+    context.changedHakemukset,
+  );
   let changedAmount = 0;
   e.hakemusOids.forEach((hakemusOid) => {
     let hakenut = changed.find((h) => h.hakemusOid === hakemusOid);
-    const changedExists: boolean = Boolean(hakenut);
+    const changedExists = Boolean(hakenut);
     const originalHakenut = context.hakemukset.find(
       (h) => h.hakemusOid === hakemusOid,
     );
