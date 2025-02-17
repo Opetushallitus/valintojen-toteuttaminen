@@ -7,7 +7,6 @@ import {
 } from '@/app/lib/types/sijoittelu-types';
 import { SelectChangeEvent, Typography } from '@mui/material';
 import { OphCheckbox } from '@opetushallitus/oph-design-system';
-import { useEffect, useState } from 'react';
 import { SijoittelunTulosChangeParams } from '../lib/sijoittelun-tulokset-state';
 import { SijoittelunTulosStyledCell } from './sijoittelun-tulos-styled-cell';
 import {
@@ -32,14 +31,7 @@ export const VastaanOttoCell = ({
 
   const isPublishAllowed = useIsHakuPublishAllowed({ haku });
 
-  const [julkaistavissa, setJulkaistavissa] = useState(hakemus.julkaistavissa);
-  const [vastaanottoTila, setVastaanottoTila] = useState(
-    hakemus.vastaanottotila,
-  );
-
-  useEffect(() => {
-    setVastaanottoTila(hakemus.vastaanottotila);
-  }, [hakemus.vastaanottotila]);
+  const { julkaistavissa, vastaanottotila } = hakemus;
 
   const vastaanottotilaOptions = Object.values(VastaanottoTila).map((tila) => {
     return { value: tila as string, label: t(`vastaanottotila.${tila}`) };
@@ -47,12 +39,10 @@ export const VastaanOttoCell = ({
 
   const updateVastaanottoTila = (event: SelectChangeEvent<string>) => {
     const tila = event.target.value as VastaanottoTila;
-    setVastaanottoTila(tila);
     updateForm({ hakemusOid: hakemus.hakemusOid, vastaanottotila: tila });
   };
 
   const updateJulkaistu = () => {
-    setJulkaistavissa(!julkaistavissa);
     updateForm({
       hakemusOid: hakemus.hakemusOid,
       julkaistavissa: !julkaistavissa,
@@ -79,7 +69,7 @@ export const VastaanOttoCell = ({
       )}
       {isVastaanottoPossible(hakemus) && (
         <LocalizedSelect
-          value={vastaanottoTila}
+          value={vastaanottotila}
           onChange={updateVastaanottoTila}
           options={vastaanottotilaOptions}
           disabled={disabled}

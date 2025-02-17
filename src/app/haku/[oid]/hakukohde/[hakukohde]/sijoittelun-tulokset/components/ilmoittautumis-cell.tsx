@@ -6,7 +6,6 @@ import {
 } from '@/app/lib/types/sijoittelu-types';
 import { SijoittelunTulosChangeParams } from '../lib/sijoittelun-tulokset-state';
 import { SelectChangeEvent } from '@mui/material';
-import { useEffect, useState } from 'react';
 import { isImoittautuminenPossible } from '@/app/lib/sijoittelun-tulokset-utils';
 
 export const IlmoittautumisCell = ({
@@ -19,13 +18,8 @@ export const IlmoittautumisCell = ({
   updateForm: (params: SijoittelunTulosChangeParams) => void;
 }) => {
   const { t } = useTranslations();
-  const [ilmoittautumisTila, setIlmoittautumisTila] = useState(
-    hakemus.ilmoittautumisTila,
-  );
 
-  useEffect(() => {
-    setIlmoittautumisTila(hakemus.ilmoittautumisTila);
-  }, [hakemus.ilmoittautumisTila]);
+  const { ilmoittautumisTila } = hakemus;
 
   const ilmoittautumistilaOptions = Object.values(IlmoittautumisTila).map(
     (tila) => {
@@ -36,11 +30,9 @@ export const IlmoittautumisCell = ({
   const showSelect = isImoittautuminenPossible(hakemus);
 
   const updateIlmoittautumisTila = (event: SelectChangeEvent<string>) => {
-    const tila = event.target.value as IlmoittautumisTila;
-    setIlmoittautumisTila(tila);
     updateForm({
       hakemusOid: hakemus.hakemusOid,
-      ilmoittautumisTila: tila,
+      ilmoittautumisTila: event.target.value as IlmoittautumisTila,
     });
   };
 

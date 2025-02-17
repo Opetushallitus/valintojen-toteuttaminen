@@ -3,13 +3,12 @@
 import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
 import { FormEvent, useCallback, useMemo } from 'react';
 import useToaster from '@/app/hooks/useToaster';
-import { useMachine } from '@xstate/react';
+import { useMachine, useSelector } from '@xstate/react';
 import { styled } from '@mui/material';
 import { SijoittelunTuloksetActions } from './sijoittelun-tulos-actions';
 import {
   createSijoittelunTuloksetMachine,
   HakemuksetStateChangeParams,
-  SijoittelunTulosChangeParams,
   SijoittelunTuloksetEventTypes,
   SijoittelunTuloksetStates,
   useIsDirtySijoittelunTulos,
@@ -73,8 +72,13 @@ export const SijoittelunTulosForm = ({
     sijoittelunTulosMachine,
   );
 
+  const hakemukset = useSelector(
+    sijoittelunTulosActorRef,
+    (state) => state.context.hakemukset,
+  );
+
   const { results, pageResults, sort, setSort, pageSize, setPage, page } =
-    useSijoittelunTulosSearch(valintatapajono.oid, valintatapajono.hakemukset);
+    useSijoittelunTulosSearch(valintatapajono.oid, hakemukset);
 
   const isDirty = useIsDirtySijoittelunTulos(sijoittelunTulosActorRef);
 
@@ -87,13 +91,6 @@ export const SijoittelunTulosForm = ({
 
   const publish = () => {
     send({ type: SijoittelunTuloksetEventTypes.PUBLISH });
-  };
-
-  const updateForm = (changeParams: SijoittelunTulosChangeParams) => {
-    send({
-      type: SijoittelunTuloksetEventTypes.ADD_CHANGED_HAKEMUS,
-      ...changeParams,
-    });
   };
 
   const massStatusChangeForm = (changeParams: HakemuksetStateChangeParams) => {
@@ -138,9 +135,9 @@ export const SijoittelunTulosForm = ({
           sijoitteluajoId={sijoitteluajoId}
           sort={sort}
           setSort={setSort}
-          updateForm={updateForm}
           massStatusChangeForm={massStatusChangeForm}
           disabled={!state.matches(SijoittelunTuloksetStates.IDLE)}
+          sijoittelunTulosActorRef={sijoittelunTulosActorRef}
         />
       </TablePaginationWrapper>
     </StyledForm>
