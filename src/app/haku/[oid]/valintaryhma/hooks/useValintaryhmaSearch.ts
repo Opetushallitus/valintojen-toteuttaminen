@@ -45,16 +45,14 @@ export const useValintaryhmaSearchResults = (hakuOid: string) => {
   });
 
   const flattenedRyhmat = useMemo(() => {
-    console.log('flattening', ryhmat);
     return ryhmat.flatMap(flattenValintaryhma)
   }, [ryhmat]);
 
   const { searchPhrase } = useValintaryhmaSearchParams();
 
   const results = useMemo(() => {
-    console.log(flattenedRyhmat);
     if (!isEmpty(searchPhrase)) {
-      const foundRyhmat = ryhmat.filter(r => {
+      const foundRyhmat = flattenedRyhmat.filter(r => {
         return r.nimi.includes(searchPhrase) || r.oid.includes(searchPhrase);
       });
       const parents = foundRyhmat.flatMap(r => findFlattenedParents(r, flattenedRyhmat));
@@ -69,5 +67,6 @@ export const useValintaryhmaSearchResults = (hakuOid: string) => {
 
   return {
     results,
+    ryhmat,
   };
 };
