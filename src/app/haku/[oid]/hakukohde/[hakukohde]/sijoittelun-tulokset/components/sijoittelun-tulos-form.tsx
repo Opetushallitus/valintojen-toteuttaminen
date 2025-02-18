@@ -1,6 +1,5 @@
 'use client';
 
-import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
 import { FormEvent, useCallback, useMemo } from 'react';
 import useToaster from '@/app/hooks/useToaster';
 import { useMachine, useSelector } from '@xstate/react';
@@ -75,7 +74,7 @@ export const SijoittelunTulosForm = ({
     (state) => state.context.hakemukset,
   );
 
-  const { results, pageResults, sort, setSort, pageSize, setPage, page } =
+  const { results, sort, setSort, pageSize, setPage, page } =
     useSijoittelunTulosSearch(valintatapajono.oid, hakemukset);
 
   const isDirty = useIsDirtySijoittelunTulos(sijoittelunTulosActorRef);
@@ -99,24 +98,21 @@ export const SijoittelunTulosForm = ({
         hakukohde={hakukohde}
         sijoittelunTuloksetActorRef={sijoittelunTulosActorRef}
       />
-      <TablePaginationWrapper
-        label={`${t('yleinen.sivutus')} ${valintatapajono.nimi}`}
-        totalCount={results?.length ?? 0}
-        pageSize={pageSize}
-        setPageNumber={setPage}
-        pageNumber={page}
-        countHidden={true}
-      >
-        <SijoittelunTulosTable
-          haku={haku}
-          hakukohde={hakukohde}
-          hakemukset={pageResults}
-          sijoitteluajoId={sijoitteluajoId}
-          sort={sort}
-          setSort={setSort}
-          sijoittelunTulosActorRef={sijoittelunTulosActorRef}
-        />
-      </TablePaginationWrapper>
+      <SijoittelunTulosTable
+        haku={haku}
+        hakukohde={hakukohde}
+        hakemukset={results}
+        sijoitteluajoId={sijoitteluajoId}
+        sort={sort}
+        setSort={setSort}
+        pagination={{
+          page,
+          setPage,
+          pageSize,
+          label: `${t('yleinen.sivutus')} ${valintatapajono.nimi}`,
+        }}
+        sijoittelunTulosActorRef={sijoittelunTulosActorRef}
+      />
     </StyledForm>
   );
 };
