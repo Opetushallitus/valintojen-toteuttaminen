@@ -164,13 +164,14 @@ const EraantyneetInfoTable = ({
 }: {
   eraantyneetHakemukset: EraantyneetHakemukset;
 }) => {
+  const { t } = useTranslations();
   return (
     <TableContainer>
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>Hakijan Nimi</TableCell>
-            <TableCell>Hakemus OID</TableCell>
+            <TableCell>{t('sijoittelun-tulokset.hakija')}</TableCell>
+            <TableCell>{t('sijoittelun-tulokset.hakemus-oid')}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
