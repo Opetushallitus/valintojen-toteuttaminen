@@ -8,9 +8,7 @@ import { styled } from '@mui/material';
 import { SijoittelunTuloksetActions } from './sijoittelun-tulos-actions';
 import {
   createSijoittelunTuloksetMachine,
-  HakemuksetStateChangeParams,
   SijoittelunTuloksetEventTypes,
-  SijoittelunTuloksetStates,
   useIsDirtySijoittelunTulos,
 } from '../lib/sijoittelun-tulokset-state';
 import { SijoitteluajonValintatapajonoValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
@@ -68,7 +66,7 @@ export const SijoittelunTulosForm = ({
     );
   }, [hakukohde, valintatapajono, addToast, lastModified, onUpdateSuccess]);
 
-  const [state, send, sijoittelunTulosActorRef] = useMachine(
+  const [, send, sijoittelunTulosActorRef] = useMachine(
     sijoittelunTulosMachine,
   );
 
@@ -89,17 +87,6 @@ export const SijoittelunTulosForm = ({
     event.preventDefault();
   };
 
-  const publish = () => {
-    send({ type: SijoittelunTuloksetEventTypes.PUBLISH });
-  };
-
-  const massStatusChangeForm = (changeParams: HakemuksetStateChangeParams) => {
-    send({
-      type: SijoittelunTuloksetEventTypes.CHANGE_HAKEMUKSET_STATES,
-      ...changeParams,
-    });
-  };
-
   return (
     <StyledForm
       autoComplete="off"
@@ -108,16 +95,9 @@ export const SijoittelunTulosForm = ({
     >
       <SijoittelunTuloksetActions
         haku={haku}
-        state={state}
-        publish={publish}
         valintatapajono={valintatapajono}
         hakukohde={hakukohde}
-        massUpdateForm={(changeParams: HakemuksetStateChangeParams) => {
-          send({
-            type: SijoittelunTuloksetEventTypes.MASS_UPDATE,
-            ...changeParams,
-          });
-        }}
+        sijoittelunTuloksetActorRef={sijoittelunTulosActorRef}
       />
       <TablePaginationWrapper
         label={`${t('yleinen.sivutus')} ${valintatapajono.nimi}`}
@@ -134,8 +114,6 @@ export const SijoittelunTulosForm = ({
           sijoitteluajoId={sijoitteluajoId}
           sort={sort}
           setSort={setSort}
-          massStatusChangeForm={massStatusChangeForm}
-          disabled={!state.matches(SijoittelunTuloksetStates.IDLE)}
           sijoittelunTulosActorRef={sijoittelunTulosActorRef}
         />
       </TablePaginationWrapper>
