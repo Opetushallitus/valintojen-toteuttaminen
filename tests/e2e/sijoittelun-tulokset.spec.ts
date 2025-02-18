@@ -294,7 +294,7 @@ test.describe('tallennus', () => {
       .getByRole('button', { name: 'Tallenna', exact: true })
       .click();
     await expect(
-      page.getByText('Valintaesityksen muutokset tallennuttu'),
+      page.getByText('Valintaesityksen muutokset tallennettu'),
     ).toBeVisible();
   });
 
