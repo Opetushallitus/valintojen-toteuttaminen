@@ -19,7 +19,6 @@ import {
 import useToaster from '@/app/hooks/useToaster';
 import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
 import {
-  SijoitteluajonValintatapajonoValintatiedoilla,
   SijoittelunHakemusValintatiedoilla,
   SijoittelunTila,
   VastaanottoTila,
@@ -100,14 +99,14 @@ const SendVastaanottopostiButton = ({
 const useEraantyneetHakemukset = ({
   hakuOid,
   hakukohdeOid,
-  valintatapajono,
+  hakemukset,
 }: {
   hakuOid: string;
   hakukohdeOid: string;
-  valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
+  hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
 }) => {
   const hakemuksetJotkaTarvitsetvatAikarajaMennytTiedon = pipe(
-    valintatapajono.hakemukset,
+    hakemukset,
     filter(
       (hakemus) =>
         hakemus.vastaanottotila === VastaanottoTila.KESKEN &&
@@ -120,15 +119,17 @@ const useEraantyneetHakemukset = ({
     ),
   );
 
+  const hakemusOids = hakemuksetJotkaTarvitsetvatAikarajaMennytTiedon.map(
+    prop('hakemusOid'),
+  );
+
   const { data: eraantyneetHakemukset = [] } = useSuspenseQuery({
-    queryKey: ['getMyohastyneetHakemukset', hakuOid, hakukohdeOid],
+    queryKey: ['getMyohastyneetHakemukset', hakuOid, hakukohdeOid, hakemusOids],
     queryFn: () =>
       getMyohastyneetHakemukset({
         hakuOid,
         hakukohdeOid,
-        hakemusOids: hakemuksetJotkaTarvitsetvatAikarajaMennytTiedon.map(
-          prop('hakemusOid'),
-        ),
+        hakemusOids,
       }),
   });
 
@@ -197,22 +198,22 @@ const EraantyneetInfoTable = ({
 const MerkitseMyohastyneeksiButton = ({
   hakuOid,
   hakukohdeOid,
-  valintatapajono,
   disabled,
   massUpdateForm,
+  hakemukset,
 }: {
   disabled: boolean;
   hakuOid: string;
   hakukohdeOid: string;
-  valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
   massUpdateForm: (params: HakemuksetStateChangeParams) => void;
+  hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
 }) => {
   const { t } = useTranslations();
 
   const eraantyneetHakemukset = useEraantyneetHakemukset({
     hakuOid,
     hakukohdeOid,
-    valintatapajono,
+    hakemukset,
   });
 
   return (
@@ -254,19 +255,24 @@ const MerkitseMyohastyneeksiButton = ({
 export const SijoittelunTuloksetActions = ({
   haku,
   hakukohde,
-  valintatapajono,
-  sijoittelunTuloksetActorRef,
+  valintatapajonoOid,
+  sijoittelunTulosActorRef,
 }: {
   haku: Haku;
   hakukohde: Hakukohde;
-  valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
-  sijoittelunTuloksetActorRef: SijoittelunTulosActorRef;
+  valintatapajonoOid: string;
+  sijoittelunTulosActorRef: SijoittelunTulosActorRef;
 }) => {
   const { t } = useTranslations();
 
-  const { send } = sijoittelunTuloksetActorRef;
+  const { send } = sijoittelunTulosActorRef;
 
-  const state = useSelector(sijoittelunTuloksetActorRef, (s) => s);
+  const state = useSelector(sijoittelunTulosActorRef, (s) => s);
+
+  const hakemukset = useSelector(
+    sijoittelunTulosActorRef,
+    (s) => s.context.hakemukset,
+  );
 
   const isPublishAllowed = useIsHakuPublishAllowed({ haku });
 
@@ -283,7 +289,7 @@ export const SijoittelunTuloksetActions = ({
       <MerkitseMyohastyneeksiButton
         hakuOid={haku.oid}
         hakukohdeOid={hakukohde.oid}
-        valintatapajono={valintatapajono}
+        hakemukset={hakemukset}
         disabled={
           !isPublishAllowed || !state.matches(SijoittelunTuloksetStates.IDLE)
         }
@@ -309,7 +315,7 @@ export const SijoittelunTuloksetActions = ({
       <SendVastaanottopostiButton
         disabled={!state.matches(SijoittelunTuloksetStates.IDLE)}
         hakukohdeOid={hakukohde.oid}
-        valintatapajonoOid={valintatapajono.oid}
+        valintatapajonoOid={valintatapajonoOid}
       />
     </ActionsContainer>
   );
