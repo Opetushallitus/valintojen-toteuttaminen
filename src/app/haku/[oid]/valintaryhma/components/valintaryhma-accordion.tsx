@@ -1,19 +1,37 @@
 import { TRANSITION_DURATION } from '@/app/lib/constants';
-import { ArrowRight } from '@mui/icons-material';
+import { styled } from '@/app/lib/theme';
+import { ExpandMore } from '@mui/icons-material';
 import { Box } from '@mui/material';
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
-import { useId, useState } from 'react';
+import React, { useId, useState } from 'react';
+
+const HeaderBox = styled(Box)(() => ({
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'flex-start',
+  width: '100%',
+}));
+
+const ContextBox = styled(Box)(({ theme }) => ({
+  display: 'grid',
+  width: '100%',
+  paddingLeft: theme.spacing(3),
+  gridTemplateRows: '1fr',
+  transition: `${TRANSITION_DURATION} grid-template-rows ease`,
+  '&.accordion-content--closed': {
+    gridTemplateRows: '0fr',
+  },
+}));
 
 export const ValintaryhmaAccordion = ({
-  titleOpen,
-  titleClosed,
+  title,
   children,
 }: {
-  titleOpen: React.ReactNode;
-  titleClosed: React.ReactNode;
+  title: React.ReactNode;
   children: React.ReactNode;
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
 
   const accordionId = useId();
   const contentId = `ValintaryhmaAccordionContent_${accordionId}`;
@@ -29,34 +47,33 @@ export const ValintaryhmaAccordion = ({
         },
       }}
     >
-      <OphButton
-        variant="text"
-        sx={{ fontWeight: 'normal', paddingX: 0 }}
-        startIcon={
-          <ArrowRight
-            sx={{
-              transform: isOpen ? 'rotate(90deg)' : 'none',
-              transition: `${TRANSITION_DURATION} transform ease`,
-              color: ophColors.black,
-            }}
-          />
-        }
-        onClick={() => setIsOpen((open) => !open)}
-        aria-controls={contentId}
-        aria-expanded={isOpen ? 'true' : 'false'}
-      >
-        {isOpen ? titleOpen : titleClosed}
-      </OphButton>
-      <Box
+      <HeaderBox>
+        {title}
+        <OphButton
+          variant="text"
+          sx={{ fontWeight: 'normal', paddingX: 0 }}
+          startIcon={
+            <ExpandMore
+              sx={{
+                transform: isOpen ? 'rotate(180deg)' : 'none',
+                transition: `${TRANSITION_DURATION} transform ease`,
+                color: ophColors.black,
+              }}
+            />
+          }
+          onClick={() => setIsOpen((open) => !open)}
+          aria-controls={contentId}
+          aria-expanded={isOpen ? 'true' : 'false'}
+        />
+      </HeaderBox>
+      <ContextBox
         id={contentId}
-        sx={{
-          display: 'grid',
-          gridTemplateRows: isOpen ? '1fr' : '0fr',
-          transition: `${TRANSITION_DURATION} grid-template-rows ease`,
-        }}
+        className={
+          isOpen ? 'accordion-content--open' : 'accordion-content--closed'
+        }
       >
         <Box sx={{ overflow: 'hidden' }}>{children}</Box>
-      </Box>
+      </ContextBox>
     </Box>
   );
 };
