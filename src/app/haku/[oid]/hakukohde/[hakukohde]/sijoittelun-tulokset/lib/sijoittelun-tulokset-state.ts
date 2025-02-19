@@ -156,7 +156,7 @@ export const createSijoittelunTuloksetMachine = (
                           },
                         ]
                       : acc;
-                  }, [] as SijoittelunHakemusValintatiedoilla[])
+                  }, [] as SijoittelunHakemusValintatiedoilla[]);
                 },
               }),
             },
@@ -478,9 +478,11 @@ const massUpdateChangedHakemukset = (
 
     if (
       hakenut &&
-      ((e.ilmoittautumisTila !== hakenut.ilmoittautumisTila &&
+      ((e.ilmoittautumisTila &&
+        e.ilmoittautumisTila !== hakenut.ilmoittautumisTila &&
         isImoittautuminenPossible(hakenut)) ||
-        (e.vastaanottoTila !== hakenut.vastaanottotila &&
+        (e.vastaanottoTila &&
+          e.vastaanottoTila !== hakenut.vastaanottotila &&
           isVastaanottoPossible(hakenut)))
     ) {
       hakenut.vastaanottotila = e.vastaanottoTila ?? hakenut.vastaanottotila;
