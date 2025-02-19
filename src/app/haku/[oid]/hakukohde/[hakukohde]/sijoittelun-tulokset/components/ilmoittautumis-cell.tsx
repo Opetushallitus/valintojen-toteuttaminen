@@ -40,6 +40,7 @@ export const IlmoittautumisCell = ({
     <>
       {showSelect && (
         <LocalizedSelect
+          ariaLabel={t('sijoittelun-tulokset.taulukko.ilmoittautumistieto')}
           value={ilmoittautumisTila}
           onChange={updateIlmoittautumisTila}
           options={ilmoittautumistilaOptions}

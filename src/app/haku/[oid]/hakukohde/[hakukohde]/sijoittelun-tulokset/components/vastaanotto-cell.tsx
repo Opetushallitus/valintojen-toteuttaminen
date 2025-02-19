@@ -69,6 +69,7 @@ export const VastaanOttoCell = ({
       )}
       {isVastaanottoPossible(hakemus) && (
         <LocalizedSelect
+          ariaLabel={t('sijoittelun-tulokset.taulukko.vastaanottotieto')}
           value={vastaanottotila}
           onChange={updateVastaanottoTila}
           options={vastaanottotilaOptions}
