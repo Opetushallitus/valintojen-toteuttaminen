@@ -16,7 +16,7 @@ import { FetchError } from '@/app/lib/common';
 import { SijoittelunTulosErrorModalDialog } from '../components/sijoittelun-tulos-error-modal';
 import { showModal } from '@/app/components/global-modal';
 import {
-  isImoittautuminenPossible,
+  isIlmoittautuminenPossible,
   isVastaanottoPossible,
 } from '@/app/lib/sijoittelun-tulokset-utils';
 import { useSelector } from '@xstate/react';
@@ -480,7 +480,7 @@ const massUpdateChangedHakemukset = (
       hakenut &&
       ((e.ilmoittautumisTila &&
         e.ilmoittautumisTila !== hakenut.ilmoittautumisTila &&
-        isImoittautuminenPossible(hakenut)) ||
+        isIlmoittautuminenPossible(hakenut)) ||
         (e.vastaanottoTila &&
           e.vastaanottoTila !== hakenut.vastaanottotila &&
           isVastaanottoPossible(hakenut)))

@@ -30,7 +30,7 @@ const isSijoittelunTilaVastaanotettavissa = (hakemuksenTila: SijoittelunTila) =>
 export const isVastaanottoPossible = (h: SijoittelunTilaKentat): boolean =>
   isSijoittelunTilaVastaanotettavissa(h.tila) && h.julkaistavissa;
 
-export const isImoittautuminenPossible = (h: SijoittelunTilaKentat): boolean =>
+export const isIlmoittautuminenPossible = (h: SijoittelunTilaKentat): boolean =>
   isSijoittelunTilaVastaanotettavissa(h.tila) &&
   VASTAANOTTOTILAT_JOILLE_NAYTETAAN_ILMOITTAUTUMISTILA.includes(
     h.vastaanottotila,
