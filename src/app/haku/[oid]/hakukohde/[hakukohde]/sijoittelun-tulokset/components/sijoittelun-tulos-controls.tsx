@@ -2,7 +2,7 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { Box, SelectChangeEvent } from '@mui/material';
 import { SijoittelunTila } from '@/app/lib/types/sijoittelu-types';
 import { LocalizedSelect } from '@/app/components/localized-select';
-import { useSijoittelunTulosSearchParams } from '../hooks/useSijoittelunTuloksetSearch';
+import { useSijoittelunTulosSearchParams } from '../hooks/useSijoittelunTulosSearch';
 import {
   OphCheckbox,
   OphFormFieldWrapper,

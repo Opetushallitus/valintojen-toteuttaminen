@@ -5,11 +5,11 @@ import {
   makeColumnWithCustomRender,
   makeCountColumn,
 } from '@/app/components/table/table-columns';
+import { ListTable } from '@/app/components/table/list-table';
 import {
-  ListTable,
-  ListTablePaginationProps,
-} from '@/app/components/table/list-table';
-import { SijoittelunHakemusValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
+  SijoitteluajonValintatapajonoValintatiedoilla,
+  SijoittelunHakemusValintatiedoilla,
+} from '@/app/lib/types/sijoittelu-types';
 import { useCallback, useMemo, useState } from 'react';
 import {
   KeysMatching,
@@ -32,6 +32,7 @@ import {
   SijoittelunTulosActorRef,
   SijoittelunTulosChangeParams,
 } from '../lib/sijoittelun-tulokset-state-types';
+import { useSijoittelunTulosSearch } from '../hooks/useSijoittelunTulosSearch';
 
 export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
   title,
@@ -50,30 +51,22 @@ export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
 
 const TRANSLATIONS_PREFIX = 'sijoittelun-tulokset.taulukko';
 
-export const SijoittelunTulosTable = ({
+const useColumns = ({
   haku,
   hakukohde,
-  hakemukset,
   sijoitteluajoId,
-  setSort,
-  sort,
-  pagination,
-  sijoittelunTulosActorRef,
+  actorRef,
 }: {
   haku: Haku;
   hakukohde: Hakukohde;
-  hakemukset: SijoittelunHakemusValintatiedoilla[];
   sijoitteluajoId: string;
-  sort: string;
-  setSort: (sort: string) => void;
-  sijoittelunTulosActorRef: SijoittelunTulosActorRef;
-  pagination: ListTablePaginationProps;
+  actorRef: SijoittelunTulosActorRef;
 }) => {
+  const state = useSelector(actorRef, (s) => s);
+  const { send } = actorRef;
+
   const { t } = useTranslations();
 
-  const { send } = sijoittelunTulosActorRef;
-
-  const state = useSelector(sijoittelunTulosActorRef, (s) => s);
   const disabled = !state.matches(SijoittelunTuloksetState.IDLE);
 
   const updateForm = useCallback(
@@ -86,14 +79,7 @@ export const SijoittelunTulosTable = ({
     [send],
   );
 
-  const massStatusChangeForm = (changeParams: HakemuksetStateChangeParams) => {
-    send({
-      type: SijoittelunTuloksetEventType.CHANGE_HAKEMUKSET_STATES,
-      ...changeParams,
-    });
-  };
-
-  const columns = useMemo(() => {
+  return useMemo(() => {
     const stickyHakijaColumn = createStickyHakijaColumn('sijoittelun-tulos', t);
     return [
       makeEmptyCountColumn<SijoittelunHakemusValintatiedoilla>({
@@ -175,8 +161,43 @@ export const SijoittelunTulosTable = ({
       }),
     ].filter(isNonNull);
   }, [t, haku, updateForm, disabled, sijoitteluajoId, hakukohde]);
+};
 
-  const [selection, setSelection] = useState<Set<string>>(() => new Set());
+export const SijoittelunTulosTable = ({
+  haku,
+  hakukohde,
+  sijoitteluajoId,
+  valintatapajono,
+  sijoittelunTulosActorRef,
+}: {
+  haku: Haku;
+  hakukohde: Hakukohde;
+  sijoitteluajoId: string;
+  sijoittelunTulosActorRef: SijoittelunTulosActorRef;
+  valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
+}) => {
+  const { t } = useTranslations();
+
+  const contextHakemukset = useSelector(
+    sijoittelunTulosActorRef,
+    (state) => state.context.hakemukset,
+  );
+
+  const {
+    results: hakemukset,
+    sort,
+    setSort,
+    pageSize,
+    setPage,
+    page,
+  } = useSijoittelunTulosSearch(valintatapajono.oid, contextHakemukset);
+
+  const columns = useColumns({
+    haku,
+    hakukohde,
+    sijoitteluajoId,
+    actorRef: sijoittelunTulosActorRef,
+  });
 
   const changedHakemukset = useSelector(
     sijoittelunTulosActorRef,
@@ -199,13 +220,20 @@ export const SijoittelunTulosTable = ({
     [hakemukset, changedHakemukset],
   );
 
+  const [selection, setSelection] = useState<Set<string>>(() => new Set());
+
   return (
     <>
       <SijoittelunTuloksetActionBar
-        hakemukset={hakemukset}
+        hakemukset={contextHakemukset}
         selection={selection}
         resetSelection={() => setSelection(new Set())}
-        massStatusChangeForm={massStatusChangeForm}
+        massStatusChangeForm={(changeParams: HakemuksetStateChangeParams) => {
+          sijoittelunTulosActorRef.send({
+            type: SijoittelunTuloksetEventType.CHANGE_HAKEMUKSET_STATES,
+            ...changeParams,
+          });
+        }}
       />
       <ListTable
         rowKeyProp="hakemusOid"
@@ -215,7 +243,12 @@ export const SijoittelunTulosTable = ({
         setSort={setSort}
         checkboxSelection={true}
         selection={selection}
-        pagination={pagination}
+        pagination={{
+          page,
+          setPage,
+          pageSize,
+          label: `${t('yleinen.sivutus')} ${valintatapajono.nimi}`,
+        }}
         onSelectionChange={setSelection}
         translateHeader={false}
         getRowCheckboxLabel={({ hakijanNimi }) =>
