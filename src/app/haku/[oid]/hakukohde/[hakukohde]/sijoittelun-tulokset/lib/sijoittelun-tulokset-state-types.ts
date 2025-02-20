@@ -12,6 +12,7 @@ export type SijoittelunTuloksetContext = {
   changedHakemukset: Array<SijoittelunHakemusValintatiedoilla>;
   hakemuksetForUpdate?: Array<SijoittelunHakemusValintatiedoilla>;
   massChangeAmount?: number;
+  publishAfterUpdate?: boolean;
 };
 
 export enum SijoittelunTuloksetState {
@@ -19,7 +20,6 @@ export enum SijoittelunTuloksetState {
   UPDATING = 'UPDATING',
   UPDATE_COMPLETED = 'UPDATE_COMPLETED',
   PUBLISHING = 'PUBLISHING',
-  UPDATING_AND_THEN_PUBLISH = 'UPDATING_AND_THEN_PUBLISH',
   PUBLISHED = 'PUBLISHED',
 }
 
