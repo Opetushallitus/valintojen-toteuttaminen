@@ -36,6 +36,8 @@ import { ValinnanTulosLisatiedoilla } from '../lib/henkilo-page-types';
 import { LocalizedSelect } from '@/app/components/localized-select';
 import { Haku } from '@/app/lib/types/kouta-types';
 import { useIsHakuPublishAllowed } from '@/app/hooks/useIsHakuPublishAllowed';
+import { useVastaanottoTilaOptions } from '@/app/hooks/useVastaanottoTilaOptions';
+import { useIlmoittautumisTilaOptions } from '@/app/hooks/useIlmoittautumisTilaOptions';
 
 const ModalActions = ({
   onClose,
@@ -145,17 +147,9 @@ export const ValinnanTilatEditModal = createModal<{
     () => valinnanTulos.ilmoittautumistila ?? '',
   );
 
-  const vastaanottoTilaOptions = Object.values(VastaanottoTila).map((tila) => ({
-    value: tila as string,
-    label: t(`vastaanottotila.${tila}`),
-  }));
+  const vastaanottoTilaOptions = useVastaanottoTilaOptions();
 
-  const ilmoittautumisTilaOptions = Object.values(IlmoittautumisTila).map(
-    (tila) => ({
-      value: tila as string,
-      label: t(`ilmoittautumistila.${tila}`),
-    }),
-  );
+  const ilmoittautumisTilaOptions = useIlmoittautumisTilaOptions();
 
   const isHakuPublishAllowed = useIsHakuPublishAllowed({ haku });
 
