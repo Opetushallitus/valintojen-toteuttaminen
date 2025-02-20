@@ -12,14 +12,17 @@ export const NavigationList = styled('nav')(({ theme }) => ({
   height: 'auto',
   paddingRight: theme.spacing(0.5),
   gap: theme.spacing(0.5),
-  '& > a': {
+  a: {
     display: 'block',
     padding: theme.spacing(1),
     cursor: 'pointer',
     color: ophColors.blue2,
     textDecoration: 'none',
     borderRadius: '0',
-    '&:nth-of-type(even)': {
+    '&:nth-of-type(even):not(&.odd-emphasize)': {
+      backgroundColor: ophColors.grey50,
+    },
+    '&.odd-emphasize:nth-of-type(odd)': {
       backgroundColor: ophColors.grey50,
     },
     [`&:hover, &.${NAV_LIST_SELECTED_ITEM_CLASS}`]: {

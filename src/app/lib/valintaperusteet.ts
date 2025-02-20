@@ -13,7 +13,7 @@ import {
   Valintatapajono,
   ValintaryhmaHakukohteilla,
 } from './types/valintaperusteet-types';
-import { isEmpty } from './common';
+import { sort } from 'remeda';
 
 export const isLaskentaUsedForValinnanvaihe = (
   valinnanvaihe: Valinnanvaihe,
@@ -203,33 +203,49 @@ export const getValintakokeet = async (hakukohdeOid: string) => {
 };
 
 type ValintaryhmaHakukohteillaResponse = {
+  hakuOid: string | null;
   oid: string;
   nimi: string;
   hakukohdeViitteet: Array<{ oid: string }>;
   alavalintaryhmat: Array<ValintaryhmaHakukohteillaResponse>;
 };
 
+function sortRyhmatByName(
+  ryhmat: Array<ValintaryhmaHakukohteilla>,
+): Array<ValintaryhmaHakukohteilla> {
+  return sort(ryhmat, (a, b) => a.nimi.localeCompare(b.nimi, 'fi'));
+}
+
 function mapValintaryhma(
   ryhma: ValintaryhmaHakukohteillaResponse,
   parentOid: string | null = null,
 ): ValintaryhmaHakukohteilla {
+  const sortedAlaryhmat = sortRyhmatByName(
+    ryhma.alavalintaryhmat.map((avr) => mapValintaryhma(avr, ryhma.oid)),
+  );
   return {
     oid: ryhma.oid,
     nimi: ryhma.nimi,
     parentOid,
     hakukohteet: ryhma.hakukohdeViitteet.map((h) => h.oid),
-    alaValintaryhmat: ryhma.alavalintaryhmat.map(avr => mapValintaryhma(avr, ryhma.oid)),
+    alaValintaryhmat: sortedAlaryhmat,
   };
 }
 
 export const getValintaryhmat = async (
   hakuOid: string,
-): Promise<Array<ValintaryhmaHakukohteilla>> => {
+): Promise<{
+  muutRyhmat: Array<ValintaryhmaHakukohteilla>;
+  hakuRyhma: ValintaryhmaHakukohteilla | null;
+}> => {
   const response = await client.get<Array<ValintaryhmaHakukohteillaResponse>>(
     `${configuration.valintaryhmatHakukohteilla}?hakuOid=${hakuOid}&hakukohteet=true`,
   );
-  return response.data
-    .filter((r) => !isEmpty(r.hakukohdeViitteet))
-    .flatMap((r) => r.alavalintaryhmat)
-    .map(vr => mapValintaryhma(vr));
+  const hakuRyhma = response.data.find((r) => r.hakuOid === hakuOid);
+  const muutRyhmat =
+    hakuRyhma?.alavalintaryhmat.map((vr) => mapValintaryhma(vr)) ?? [];
+  return {
+    hakuRyhma: hakuRyhma ? mapValintaryhma(hakuRyhma) : null,
+    muutRyhmat: sortRyhmatByName(muutRyhmat),
+  };
 };

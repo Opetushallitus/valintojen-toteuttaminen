@@ -544,5 +544,12 @@
     "hyvaksymiskirjeet": {
       "eihakijoita": "Ei ole hakijoita, joille kirjeet voisi muodostaa"
     }
+  },
+  "valintaryhma": {
+    "maara": "valintaryhmää",
+    "maara-1": "valintaryhmä",
+    "navigaatio": "Valintaryhmävalitsin",
+    "haun-ryhma": "Koko haun valintaryhmä",
+    "hae": "Hae valintaryhmiä"
   }
 }

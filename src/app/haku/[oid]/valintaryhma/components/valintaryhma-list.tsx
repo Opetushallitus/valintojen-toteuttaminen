@@ -19,11 +19,13 @@ const Content = ({
   hakuOid,
   visibleValintaryhmat,
   onItemClick,
+  useOddEmphasize = false,
 }: {
   valintaryhma: ValintaryhmaHakukohteilla;
   hakuOid: string;
   visibleValintaryhmat: string[];
   onItemClick?: () => void;
+  useOddEmphasize?: boolean;
 }) => {
   const { t } = useTranslations();
   const selectedValintaryhmaOid = useSelectedValintaryhmaOid();
@@ -32,6 +34,12 @@ const Content = ({
       ? `${valintaryhma.oid}-valintaryhma-accordion`
       : valintaryhma.oid;
 
+  const className = (
+    selectedValintaryhmaOid === valintaryhma.oid
+      ? NAV_LIST_SELECTED_ITEM_CLASS
+      : ''
+  ).concat(useOddEmphasize ? ' odd-emphasize' : '');
+
   return valintaryhma.alaValintaryhmat.length > 0 ? (
     <ValintaryhmaAccordion
       title={
@@ -39,11 +47,7 @@ const Content = ({
           key={key}
           hakuOid={hakuOid}
           valintaryhmaOid={valintaryhma.oid}
-          className={
-            selectedValintaryhmaOid === valintaryhma.oid
-              ? NAV_LIST_SELECTED_ITEM_CLASS
-              : ''
-          }
+          className={className}
           onClick={onItemClick}
           tabIndex={0}
         >
@@ -63,6 +67,7 @@ const Content = ({
               hakuOid={hakuOid}
               visibleValintaryhmat={visibleValintaryhmat}
               onItemClick={onItemClick}
+              useOddEmphasize={!useOddEmphasize}
             />
           ))}
       </NavigationList>
@@ -72,11 +77,7 @@ const Content = ({
       key={key}
       hakuOid={hakuOid}
       valintaryhmaOid={valintaryhma.oid}
-      className={
-        selectedValintaryhmaOid === valintaryhma.oid
-          ? NAV_LIST_SELECTED_ITEM_CLASS
-          : ''
-      }
+      className={className}
       onClick={onItemClick}
       tabIndex={0}
     >
@@ -95,15 +96,30 @@ export const ValintaryhmaList = ({
   onItemClick?: () => void;
 }) => {
   const { t } = useTranslations();
-  const { results } = useValintaryhmaSearchResults(hakuOid);
+  const { results, ryhmat } = useValintaryhmaSearchResults(hakuOid);
+
   const topResults = results.filter((r) => r.parentOid === null);
 
   return (
     <>
       <OphTypography>
-        {results.length} {t('valintaryhma.maara')}
+        {results.length}{' '}
+        {results.length === 1
+          ? t('valintaryhma.maara-1')
+          : t('valintaryhma.maara')}
       </OphTypography>
       <NavigationList tabIndex={0} aria-label={t('valintaryhma.navigaatio')}>
+        {ryhmat?.hakuRyhma && (
+          <ValintaryhmaLink
+            hakuOid={hakuOid}
+            valintaryhmaOid={ryhmat.hakuRyhma.oid}
+            tabIndex={0}
+          >
+            <OphTypography title={ryhmat.hakuRyhma.nimi} color="inherit">
+              {t('valintaryhma.haun-ryhma')}
+            </OphTypography>
+          </ValintaryhmaLink>
+        )}
         {topResults?.map((vr: ValintaryhmaHakukohteilla) => (
           <Content
             key={vr.oid}

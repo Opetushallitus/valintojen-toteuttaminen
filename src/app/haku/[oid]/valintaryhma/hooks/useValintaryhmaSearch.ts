@@ -28,42 +28,60 @@ export const useValintaryhmaSearchParams = () => {
   };
 };
 
-function flattenValintaryhma(ryhma: ValintaryhmaHakukohteilla): ValintaryhmaHakukohteilla[] {
-  return [ryhma].concat(ryhma.alaValintaryhmat.flatMap(flattenValintaryhma)).filter(isDefined);
+function flattenValintaryhma(
+  ryhma: ValintaryhmaHakukohteilla,
+): ValintaryhmaHakukohteilla[] {
+  return [ryhma]
+    .concat(ryhma.alaValintaryhmat.flatMap(flattenValintaryhma))
+    .filter(isDefined);
 }
 
-function findFlattenedParents(ryhma: ValintaryhmaHakukohteilla, flattenedRyhmat: ValintaryhmaHakukohteilla[]): ValintaryhmaHakukohteilla[] {
-  const parents = flattenedRyhmat.filter(r => ryhma.parentOid === r.oid);
-  return parents.concat(parents.flatMap(r => findFlattenedParents(r, flattenedRyhmat)));
+function findFlattenedParents(
+  ryhma: ValintaryhmaHakukohteilla,
+  flattenedRyhmat: ValintaryhmaHakukohteilla[],
+): ValintaryhmaHakukohteilla[] {
+  const parents = flattenedRyhmat.filter((r) => ryhma.parentOid === r.oid);
+  return parents.concat(
+    parents.flatMap((r) => findFlattenedParents(r, flattenedRyhmat)),
+  );
+}
+
+function filterRyhmatWithHakukohteet(
+  ryhmat: ValintaryhmaHakukohteilla[],
+): ValintaryhmaHakukohteilla[] {
+  return ryhmat.filter(
+    (r) =>
+      r.hakukohteet.length > 0 ||
+      filterRyhmatWithHakukohteet(r.alaValintaryhmat).length > 0,
+  );
 }
 
 export const useValintaryhmaSearchResults = (hakuOid: string) => {
-
   const { data: ryhmat } = useSuspenseQuery({
     queryKey: ['getValintaryhmat', hakuOid],
     queryFn: () => getValintaryhmat(hakuOid),
   });
 
   const flattenedRyhmat = useMemo(() => {
-    return ryhmat.flatMap(flattenValintaryhma)
+    const flattened = ryhmat.muutRyhmat.flatMap(flattenValintaryhma);
+    return filterRyhmatWithHakukohteet(flattened);
   }, [ryhmat]);
 
   const { searchPhrase } = useValintaryhmaSearchParams();
 
   const results = useMemo(() => {
     if (!isEmpty(searchPhrase)) {
-      const foundRyhmat = flattenedRyhmat.filter(r => {
+      const foundRyhmat = flattenedRyhmat.filter((r) => {
         return r.nimi.includes(searchPhrase) || r.oid.includes(searchPhrase);
       });
-      const parents = foundRyhmat.flatMap(r => findFlattenedParents(r, flattenedRyhmat));
-      return uniqueBy(foundRyhmat.concat(parents), r => r.oid);
+      const parents = foundRyhmat.flatMap((r) =>
+        findFlattenedParents(r, flattenedRyhmat),
+      );
+      return uniqueBy(foundRyhmat.concat(parents), (r) => r.oid);
     } else {
       return flattenedRyhmat;
     }
-  }, [
-    searchPhrase,
-    flattenedRyhmat,
-  ]);
+  }, [searchPhrase, flattenedRyhmat]);
 
   return {
     results,

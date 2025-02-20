@@ -1,4 +1,3 @@
-
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Search } from '@mui/icons-material';
 import { FormControl, InputAdornment } from '@mui/material';
@@ -28,7 +27,7 @@ export const ValintaryhmaSearch = () => {
         onChange={handleSearchChange}
         autoFocus={true}
         type="text"
-        placeholder={t('valintaryhma.haevalintaryhma')}
+        placeholder={t('valintaryhma.hae')}
         endAdornment={
           <InputAdornment position="end">
             <Search />
