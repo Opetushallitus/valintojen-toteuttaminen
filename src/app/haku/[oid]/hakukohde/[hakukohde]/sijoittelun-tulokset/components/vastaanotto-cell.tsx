@@ -7,7 +7,6 @@ import {
 } from '@/app/lib/types/sijoittelu-types';
 import { SelectChangeEvent, Typography } from '@mui/material';
 import { OphCheckbox } from '@opetushallitus/oph-design-system';
-import { SijoittelunTulosChangeParams } from '../lib/sijoittelun-tulokset-state';
 import { SijoittelunTulosStyledCell } from './sijoittelun-tulos-styled-cell';
 import {
   isVastaanottotilaJulkaistavissa,
@@ -15,6 +14,7 @@ import {
 } from '@/app/lib/sijoittelun-tulokset-utils';
 import { useIsHakuPublishAllowed } from '@/app/hooks/useIsHakuPublishAllowed';
 import { Haku } from '@/app/lib/types/kouta-types';
+import { SijoittelunTulosChangeParams } from '../lib/sijoittelun-tulokset-state-types';
 
 export const VastaanOttoCell = ({
   haku,

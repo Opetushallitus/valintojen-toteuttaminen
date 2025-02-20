@@ -10,12 +10,6 @@ import {
   TableRow,
 } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
-import {
-  HakemuksetStateChangeParams,
-  SijoittelunTuloksetEventTypes,
-  SijoittelunTuloksetStates,
-  SijoittelunTulosActorRef,
-} from '../lib/sijoittelun-tulokset-state';
 import useToaster from '@/app/hooks/useToaster';
 import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
 import {
@@ -33,6 +27,12 @@ import { GlobalConfirmationModal } from '@/app/components/global-confirmation-mo
 import { buildLinkToApplication } from '@/app/lib/ataru';
 import { ExternalLink } from '@/app/components/external-link';
 import { useSelector } from '@xstate/react';
+import {
+  HakemuksetStateChangeParams,
+  SijoittelunTuloksetEventType,
+  SijoittelunTuloksetState,
+  SijoittelunTulosActorRef,
+} from '../lib/sijoittelun-tulokset-state-types';
 
 const ActionsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -281,8 +281,8 @@ export const SijoittelunTuloksetActions = ({
       <OphButton
         type="submit"
         variant="contained"
-        loading={state.matches(SijoittelunTuloksetStates.UPDATING)}
-        disabled={!state.matches(SijoittelunTuloksetStates.IDLE)}
+        loading={state.matches(SijoittelunTuloksetState.UPDATING)}
+        disabled={!state.matches(SijoittelunTuloksetState.IDLE)}
       >
         {t('yleinen.tallenna')}
       </OphButton>
@@ -291,11 +291,11 @@ export const SijoittelunTuloksetActions = ({
         hakukohdeOid={hakukohde.oid}
         hakemukset={hakemukset}
         disabled={
-          !isPublishAllowed || !state.matches(SijoittelunTuloksetStates.IDLE)
+          !isPublishAllowed || !state.matches(SijoittelunTuloksetState.IDLE)
         }
         massUpdateForm={(changeParams: HakemuksetStateChangeParams) => {
           send({
-            type: SijoittelunTuloksetEventTypes.MASS_UPDATE,
+            type: SijoittelunTuloksetEventType.MASS_UPDATE,
             ...changeParams,
           });
         }}
@@ -303,17 +303,17 @@ export const SijoittelunTuloksetActions = ({
       <OphButton
         variant="contained"
         disabled={
-          !isPublishAllowed || !state.matches(SijoittelunTuloksetStates.IDLE)
+          !isPublishAllowed || !state.matches(SijoittelunTuloksetState.IDLE)
         }
         onClick={() => {
-          send({ type: SijoittelunTuloksetEventTypes.PUBLISH });
+          send({ type: SijoittelunTuloksetEventType.PUBLISH });
         }}
-        loading={state.matches(SijoittelunTuloksetStates.PUBLISHING)}
+        loading={state.matches(SijoittelunTuloksetState.PUBLISHING)}
       >
         {t('sijoittelun-tulokset.hyvaksy')}
       </OphButton>
       <SendVastaanottopostiButton
-        disabled={!state.matches(SijoittelunTuloksetStates.IDLE)}
+        disabled={!state.matches(SijoittelunTuloksetState.IDLE)}
         hakukohdeOid={hakukohde.oid}
         valintatapajonoOid={valintatapajonoOid}
       />

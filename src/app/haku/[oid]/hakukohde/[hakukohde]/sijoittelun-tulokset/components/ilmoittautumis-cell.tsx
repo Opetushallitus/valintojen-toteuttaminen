@@ -4,9 +4,9 @@ import {
   IlmoittautumisTila,
   SijoittelunHakemusValintatiedoilla,
 } from '@/app/lib/types/sijoittelu-types';
-import { SijoittelunTulosChangeParams } from '../lib/sijoittelun-tulokset-state';
 import { SelectChangeEvent } from '@mui/material';
 import { isIlmoittautuminenPossible } from '@/app/lib/sijoittelun-tulokset-utils';
+import { SijoittelunTulosChangeParams } from '../lib/sijoittelun-tulokset-state-types';
 
 export const IlmoittautumisCell = ({
   hakemus,

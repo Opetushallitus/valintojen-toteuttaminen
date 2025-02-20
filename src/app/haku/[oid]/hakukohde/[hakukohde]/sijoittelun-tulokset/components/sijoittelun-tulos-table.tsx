@@ -22,16 +22,16 @@ import { SijoittelunTilaCell } from './sijoittelun-tila-cell';
 import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
 import { isKorkeakouluHaku } from '@/app/lib/kouta';
 import { SijoittelunTuloksetActionBar } from './sijoittelun-tulos-action-bar';
-import {
-  HakemuksetStateChangeParams,
-  SijoittelunTuloksetEventTypes,
-  SijoittelunTuloksetStates,
-  SijoittelunTulosActorRef,
-  SijoittelunTulosChangeParams,
-} from '../lib/sijoittelun-tulokset-state';
 import { OtherActionsCell } from './other-actions-cell';
 import { useSelector } from '@xstate/react';
 import { isNonNull } from 'remeda';
+import {
+  HakemuksetStateChangeParams,
+  SijoittelunTuloksetEventType,
+  SijoittelunTuloksetState,
+  SijoittelunTulosActorRef,
+  SijoittelunTulosChangeParams,
+} from '../lib/sijoittelun-tulokset-state-types';
 
 export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
   title,
@@ -74,12 +74,12 @@ export const SijoittelunTulosTable = ({
   const { send } = sijoittelunTulosActorRef;
 
   const state = useSelector(sijoittelunTulosActorRef, (s) => s);
-  const disabled = !state.matches(SijoittelunTuloksetStates.IDLE);
+  const disabled = !state.matches(SijoittelunTuloksetState.IDLE);
 
   const updateForm = useCallback(
     (changeParams: SijoittelunTulosChangeParams) => {
       send({
-        type: SijoittelunTuloksetEventTypes.ADD_CHANGED_HAKEMUS,
+        type: SijoittelunTuloksetEventType.ADD_CHANGED_HAKEMUS,
         ...changeParams,
       });
     },
@@ -88,7 +88,7 @@ export const SijoittelunTulosTable = ({
 
   const massStatusChangeForm = (changeParams: HakemuksetStateChangeParams) => {
     send({
-      type: SijoittelunTuloksetEventTypes.CHANGE_HAKEMUKSET_STATES,
+      type: SijoittelunTuloksetEventType.CHANGE_HAKEMUKSET_STATES,
       ...changeParams,
     });
   };
