@@ -1,5 +1,5 @@
 'use client';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { parseAsInteger, useQueryState } from 'nuqs';
 import {
   byProp,
@@ -43,6 +43,8 @@ export const useHakukohdeSortAndPaging = (hakukohteet: HakukohdeWithLink[]) => {
   const { page, setPage, pageSize, setPageSize, sort, setSort } =
     useHakukohdeSortAndPagingParams();
 
+  const [pageResults, setPageResults] = useState<HakukohdeWithLink[]>([]);
+
   const results = useMemo(() => {
     const { orderBy, direction } = getSortParts(sort);
 
@@ -50,15 +52,12 @@ export const useHakukohdeSortAndPaging = (hakukohteet: HakukohdeWithLink[]) => {
       return hakukohteet.sort(byProp(orderBy, direction, translateEntity));
     };
 
-    return orderBy && direction
-      ? sortHakukohteet(orderBy, direction)
-      : hakukohteet;
-  }, [sort, translateEntity, hakukohteet]);
-
-  const pageResults = useMemo(() => {
+    const sorted =
+      orderBy && direction ? sortHakukohteet(orderBy, direction) : hakukohteet;
     const start = pageSize * (page - 1);
-    return results.slice(start, start + pageSize);
-  }, [results, page, pageSize]);
+    setPageResults(sorted.slice(start, start + pageSize));
+    return sorted;
+  }, [sort, translateEntity, hakukohteet, pageSize, page]);
 
   return {
     page,
