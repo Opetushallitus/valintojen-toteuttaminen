@@ -18,7 +18,7 @@ import {
 import { Language } from '@/app/lib/localization/localization-types';
 import { getReadableHakemuksenTila } from '@/app/lib/sijoittelun-tulokset-utils';
 import { entries, map, pipe } from 'remeda';
-import { SijoittelunTulosChangeParams } from '../lib/sijoittelun-tulokset-state-types';
+import { SijoittelunTulosChangeParams } from '../lib/sijoittelun-tulokset-state';
 
 const LanguageAdornment = styled(InputAdornment)(() => ({
   backgroundColor: ophColors.grey200,

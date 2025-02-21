@@ -14,7 +14,7 @@ import {
   isIlmoittautuminenPossible,
   isVastaanottoPossible,
 } from '@/app/lib/sijoittelun-tulokset-utils';
-import { HakemuksetStateChangeParams } from '../lib/sijoittelun-tulokset-state-types';
+import { MassChangeParams } from '../lib/sijoittelun-tulokset-state';
 import { useVastaanottoTilaOptions } from '@/app/hooks/useVastaanottoTilaOptions';
 import { useIlmoittautumisTilaOptions } from '@/app/hooks/useIlmoittautumisTilaOptions';
 
@@ -25,7 +25,7 @@ const IlmoittautumisSelect = ({
 }: {
   hakemukset: SijoittelunHakemusValintatiedoilla[];
   selection: Set<string>;
-  massStatusChangeForm: (changeParams: HakemuksetStateChangeParams) => void;
+  massStatusChangeForm: (changeParams: MassChangeParams) => void;
 }) => {
   const ilmoittautumistilaOptions = useIlmoittautumisTilaOptions();
 
@@ -58,7 +58,7 @@ const VastaanOttoSelect = ({
 }: {
   hakemukset: SijoittelunHakemusValintatiedoilla[];
   selection: Set<string>;
-  massStatusChangeForm: (changeParams: HakemuksetStateChangeParams) => void;
+  massStatusChangeForm: (changeParams: MassChangeParams) => void;
 }) => {
   const { t } = useTranslations();
 
@@ -95,7 +95,7 @@ export const SijoittelunTuloksetActionBar = ({
   hakemukset: SijoittelunHakemusValintatiedoilla[];
   selection: Set<string>;
   resetSelection: () => void;
-  massStatusChangeForm: (changeParams: HakemuksetStateChangeParams) => void;
+  massStatusChangeForm: (changeParams: MassChangeParams) => void;
 }) => {
   const { t } = useTranslation();
 

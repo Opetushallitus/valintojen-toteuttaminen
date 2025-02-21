@@ -14,7 +14,7 @@ import {
 } from '@/app/lib/sijoittelun-tulokset-utils';
 import { useIsHakuPublishAllowed } from '@/app/hooks/useIsHakuPublishAllowed';
 import { Haku } from '@/app/lib/types/kouta-types';
-import { SijoittelunTulosChangeParams } from '../lib/sijoittelun-tulokset-state-types';
+import { SijoittelunTulosChangeParams } from '../lib/sijoittelun-tulokset-state';
 import { useVastaanottoTilaOptions } from '@/app/hooks/useVastaanottoTilaOptions';
 
 export const VastaanOttoCell = ({
