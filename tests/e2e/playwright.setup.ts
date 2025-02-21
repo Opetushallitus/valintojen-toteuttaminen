@@ -201,6 +201,12 @@ export default async function playwrightSetup() {
         },
       ];
       return modifyResponse(response, pohjat);
+    } else if (
+      request.url?.includes(
+        '/resources/proxy/valintatulosservice/myohastyneet/haku/',
+      )
+    ) {
+      return modifyResponse(response, []);
     } else {
       console.log('(Backend) mock not implementeded', request.url);
       return;

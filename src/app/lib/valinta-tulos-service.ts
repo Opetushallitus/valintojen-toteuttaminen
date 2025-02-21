@@ -16,13 +16,14 @@ import {
   VastaanottoTila,
 } from './types/sijoittelu-types';
 import { MaksunTila, Maksuvelvollisuus } from './types/ataru-types';
-import { FetchError, OphApiError } from './common';
+import { nullWhen404, OphApiError } from './common';
 import {
   HakemusChangeEvent,
   ValinnanTulosModel,
   ValinnanTulosUpdateErrorResult,
 } from './types/valinta-tulos-types';
 import { toFormattedDateTimeString } from './localization/translation-utils';
+import { queryOptions } from '@tanstack/react-query';
 
 type SijoittelunTulosResponseData = {
   valintatapajonoNimi: string;
@@ -221,6 +222,7 @@ const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
           );
         })
         .forEach((hakemus, i) => (hakemus.sija = i + 1));
+
       return {
         oid: jono.oid,
         nimi: jono.nimi,
@@ -242,17 +244,20 @@ const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
   };
 };
 
-const nullWhen404 = async <T>(promise: Promise<T>): Promise<T | null> => {
-  try {
-    return await promise;
-  } catch (e) {
-    if (e instanceof FetchError && e?.response?.status === 404) {
-      console.error('FetchError with 404', e);
-      return null;
-    }
-    throw e;
-  }
-};
+export const tryToGetLatestSijoitteluajonTuloksetWithValintaEsitysQueryOptions =
+  ({ hakuOid, hakukohdeOid }: { hakuOid: string; hakukohdeOid: string }) =>
+    queryOptions({
+      queryKey: [
+        'tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys',
+        hakuOid,
+        hakukohdeOid,
+      ],
+      queryFn: () =>
+        tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys(
+          hakuOid,
+          hakukohdeOid,
+        ),
+    });
 
 export const tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys = async (
   hakuOid: string,

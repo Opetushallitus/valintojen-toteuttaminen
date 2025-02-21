@@ -10,11 +10,13 @@ import {
   SijoittelunHakemusValintatiedoilla,
   VastaanottoTila,
 } from '@/app/lib/types/sijoittelu-types';
-import { HakemuksetStateChangeEvent } from '../lib/sijoittelun-tulokset-state';
 import {
-  isImoittautuminenPossible,
+  isIlmoittautuminenPossible,
   isVastaanottoPossible,
 } from '@/app/lib/sijoittelun-tulokset-utils';
+import { MassChangeParams } from '../lib/sijoittelun-tulokset-state';
+import { useVastaanottoTilaOptions } from '@/app/hooks/useVastaanottoTilaOptions';
+import { useIlmoittautumisTilaOptions } from '@/app/hooks/useIlmoittautumisTilaOptions';
 
 const IlmoittautumisSelect = ({
   hakemukset,
@@ -23,15 +25,9 @@ const IlmoittautumisSelect = ({
 }: {
   hakemukset: SijoittelunHakemusValintatiedoilla[];
   selection: Set<string>;
-  massStatusChangeForm: (changeParams: HakemuksetStateChangeEvent) => void;
+  massStatusChangeForm: (changeParams: MassChangeParams) => void;
 }) => {
-  const { t } = useTranslations();
-
-  const ilmoittautumistilaOptions = Object.values(IlmoittautumisTila).map(
-    (tila) => {
-      return { value: tila as string, label: t(`ilmoittautumistila.${tila}`) };
-    },
-  );
+  const ilmoittautumistilaOptions = useIlmoittautumisTilaOptions();
 
   const massUpdateIlmoittautuminen = (event: SelectChangeEvent<string>) => {
     massStatusChangeForm({
@@ -42,7 +38,7 @@ const IlmoittautumisSelect = ({
 
   const disabled =
     hakemukset.filter(
-      (h) => selection.has(h.hakemusOid) && isImoittautuminenPossible(h),
+      (h) => selection.has(h.hakemusOid) && isIlmoittautuminenPossible(h),
     ).length < 1;
 
   return (
@@ -62,18 +58,16 @@ const VastaanOttoSelect = ({
 }: {
   hakemukset: SijoittelunHakemusValintatiedoilla[];
   selection: Set<string>;
-  massStatusChangeForm: (changeParams: HakemuksetStateChangeEvent) => void;
+  massStatusChangeForm: (changeParams: MassChangeParams) => void;
 }) => {
   const { t } = useTranslations();
 
-  const vastaanottotilaOptions = Object.values(VastaanottoTila).map((tila) => {
-    return { value: tila as string, label: t(`vastaanottotila.${tila}`) };
-  });
+  const vastaanottotilaOptions = useVastaanottoTilaOptions();
 
   const massUpdateVastaanOtto = (event: SelectChangeEvent<string>) => {
     massStatusChangeForm({
       hakemusOids: selection,
-      vastaanottoTila: event.target.value as VastaanottoTila,
+      vastaanottotila: event.target.value as VastaanottoTila,
     });
   };
 
@@ -101,12 +95,12 @@ export const SijoittelunTuloksetActionBar = ({
   hakemukset: SijoittelunHakemusValintatiedoilla[];
   selection: Set<string>;
   resetSelection: () => void;
-  massStatusChangeForm: (changeParams: HakemuksetStateChangeEvent) => void;
+  massStatusChangeForm: (changeParams: MassChangeParams) => void;
 }) => {
   const { t } = useTranslation();
 
   return (
-    <ActionBar.Container sx={{ width: '100%', justifyContent: 'stretch' }}>
+    <ActionBar.Container sx={{ width: '100%' }}>
       <Box
         sx={{
           padding: 1,

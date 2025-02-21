@@ -7,8 +7,6 @@ import {
 } from '@/app/lib/types/sijoittelu-types';
 import { SelectChangeEvent, Typography } from '@mui/material';
 import { OphCheckbox } from '@opetushallitus/oph-design-system';
-import { useEffect, useState } from 'react';
-import { SijoittelunTuloksetChangeEvent } from '../lib/sijoittelun-tulokset-state';
 import { SijoittelunTulosStyledCell } from './sijoittelun-tulos-styled-cell';
 import {
   isVastaanottotilaJulkaistavissa,
@@ -16,6 +14,8 @@ import {
 } from '@/app/lib/sijoittelun-tulokset-utils';
 import { useIsHakuPublishAllowed } from '@/app/hooks/useIsHakuPublishAllowed';
 import { Haku } from '@/app/lib/types/kouta-types';
+import { SijoittelunTulosChangeParams } from '../lib/sijoittelun-tulokset-state';
+import { useVastaanottoTilaOptions } from '@/app/hooks/useVastaanottoTilaOptions';
 
 export const VastaanOttoCell = ({
   haku,
@@ -26,33 +26,22 @@ export const VastaanOttoCell = ({
   haku: Haku;
   hakemus: SijoittelunHakemusValintatiedoilla;
   disabled: boolean;
-  updateForm: (params: SijoittelunTuloksetChangeEvent) => void;
+  updateForm: (params: SijoittelunTulosChangeParams) => void;
 }) => {
   const { t } = useTranslations();
 
   const isPublishAllowed = useIsHakuPublishAllowed({ haku });
 
-  const [julkaistavissa, setJulkaistavissa] = useState(hakemus.julkaistavissa);
-  const [vastaanottoTila, setVastaanottoTila] = useState(
-    hakemus.vastaanottotila,
-  );
+  const { julkaistavissa, vastaanottotila } = hakemus;
 
-  useEffect(() => {
-    setVastaanottoTila(hakemus.vastaanottotila);
-  }, [hakemus.vastaanottotila]);
-
-  const vastaanottotilaOptions = Object.values(VastaanottoTila).map((tila) => {
-    return { value: tila as string, label: t(`vastaanottotila.${tila}`) };
-  });
+  const vastaanottotilaOptions = useVastaanottoTilaOptions();
 
   const updateVastaanottoTila = (event: SelectChangeEvent<string>) => {
     const tila = event.target.value as VastaanottoTila;
-    setVastaanottoTila(tila);
     updateForm({ hakemusOid: hakemus.hakemusOid, vastaanottotila: tila });
   };
 
   const updateJulkaistu = () => {
-    setJulkaistavissa(!julkaistavissa);
     updateForm({
       hakemusOid: hakemus.hakemusOid,
       julkaistavissa: !julkaistavissa,
@@ -79,7 +68,8 @@ export const VastaanOttoCell = ({
       )}
       {isVastaanottoPossible(hakemus) && (
         <LocalizedSelect
-          value={vastaanottoTila}
+          ariaLabel={t('sijoittelun-tulokset.taulukko.vastaanottotieto')}
+          value={vastaanottotila}
           onChange={updateVastaanottoTila}
           options={vastaanottotilaOptions}
           disabled={disabled}
