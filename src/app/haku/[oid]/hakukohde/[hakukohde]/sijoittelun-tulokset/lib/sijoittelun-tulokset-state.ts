@@ -24,12 +24,56 @@ import {
   SijoittelunTulosChangeEvent,
   SijoittelunTulosEditableFields,
 } from './sijoittelun-tulokset-state-types';
+import { OphApiError } from '@/app/lib/common';
 
 const hasChangedHakemukset = ({
   context,
 }: {
   context: SijoittelunTuloksetContext;
 }) => context.changedHakemukset.length > 0;
+
+/**
+ * Palauttaa päivitetyn hakemukset-taulukon. Korvataan alkuperäisessä datassa päivitetyt hakemukset muuttuneilla.
+ * Ei päivitetä, jos tallennuksessa tapahtui virhe (hakemuksen oid löytyy erroredHakemusOids-taulukosta).
+ */
+const updateHakemuksetWithChanges = (
+  context: SijoittelunTuloksetContext,
+  erroredHakemusOids: Array<string> = [],
+) => {
+  return context.hakemukset.map((hakemus) => {
+    if (erroredHakemusOids.includes(hakemus.hakemusOid)) {
+      return hakemus;
+    }
+
+    const isOverride = context.hakemuksetForMassUpdate !== undefined;
+
+    if (isOverride) {
+      return (
+        context.hakemuksetForMassUpdate?.find(
+          (c) => c.hakemusOid === hakemus.hakemusOid,
+        ) ?? hakemus
+      );
+    } else {
+      return (
+        context.changedHakemukset.find(
+          (c) => c.hakemusOid === hakemus.hakemusOid,
+        ) ?? hakemus
+      );
+    }
+  });
+};
+
+/**
+ * Palauttaa päivitetyn changedHakemukset-taulukon. Jos muuttunut hakemus on arvoiltaan sama kuin alkuperäinen, poistetaan changedHakemukset-taulukosta.
+ */
+const updateChangedHakemukset = (context: SijoittelunTuloksetContext) => {
+  return context.changedHakemukset.filter((changedHakemus) => {
+    const original = context.hakemukset.find(
+      (hakemus) => hakemus.hakemusOid === changedHakemus.hakemusOid,
+    );
+    return original && !isUnchanged(changedHakemus, original);
+  });
+};
 
 export const createSijoittelunTuloksetMachine = (
   hakukohdeOid: string,
@@ -133,12 +177,37 @@ export const createSijoittelunTuloksetMachine = (
           },
           onError: {
             target: SijoittelunTuloksetState.IDLE,
-            actions: {
-              type: 'errorModal',
-              params: ({ event }) => ({
-                error: event.error as Error,
+            actions: [
+              {
+                type: 'errorModal',
+                params: ({ event }) => ({
+                  error: event.error as Error,
+                }),
+              },
+              assign({
+                hakemukset: ({ context, event }) => {
+                  if (
+                    event.error instanceof OphApiError &&
+                    Array.isArray(event.error?.response?.data)
+                  ) {
+                    const erroredHakemusOids = event.error?.response.data?.map(
+                      (error) => error.hakemusOid as string,
+                    );
+                    return updateHakemuksetWithChanges(
+                      context,
+                      erroredHakemusOids,
+                    );
+                  } else {
+                    return context.hakemukset;
+                  }
+                },
               }),
-            },
+              assign({
+                changedHakemukset: ({ context }) =>
+                  updateChangedHakemukset(context),
+                hakemuksetForMassUpdate: undefined,
+              }),
+            ],
           },
         },
       },
@@ -159,28 +228,11 @@ export const createSijoittelunTuloksetMachine = (
         ],
         entry: [
           assign({
-            hakemukset: ({ context }) =>
-              // FIXME: Hakemusten muokkaaminen voi onnistua osittain
-              // Pitää päivittää vain ne hakemukset, joita onnistuttiin muokkaamaan
-              // Tarvitaan uusi lastModified-tieto
-              context.hakemukset.map((h) => {
-                const override = context.hakemuksetForMassUpdate?.find(
-                  (c) => c.hakemusOid === h.hakemusOid,
-                );
-                const changed = context.changedHakemukset.find(
-                  (c) => c.hakemusOid === h.hakemusOid,
-                );
-                return override ?? changed ?? h;
-              }),
+            hakemukset: ({ context }) => updateHakemuksetWithChanges(context),
           }),
           assign({
             changedHakemukset: ({ context }) =>
-              context.changedHakemukset.filter((changedHakemus) => {
-                const original = context.hakemukset.find(
-                  (h2) => h2.hakemusOid === changedHakemus.hakemusOid,
-                )!;
-                return !isUnchanged(changedHakemus, original);
-              }),
+              updateChangedHakemukset(context),
             hakemuksetForMassUpdate: undefined,
           }),
         ],
