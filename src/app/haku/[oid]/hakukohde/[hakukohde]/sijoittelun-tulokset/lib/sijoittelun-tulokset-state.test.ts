@@ -104,7 +104,7 @@ describe('Sijoittelun tulokset states', async () => {
       Promise.resolve({ headers: new Headers(), data: [] }),
     );
     actor.send({
-      type: SijoittelunTuloksetEventType.ADD_CHANGED_HAKEMUS,
+      type: SijoittelunTuloksetEventType.CHANGE,
       hakemusOid: 'hakemus-2',
       vastaanottotila: VastaanottoTila.EHDOLLISESTI_VASTAANOTTANUT,
     });
@@ -123,7 +123,7 @@ describe('Sijoittelun tulokset states', async () => {
   test('removes item from changedhakemukset when changing values back to original', async () => {
     const actor = createActorLogic();
     actor.send({
-      type: SijoittelunTuloksetEventType.ADD_CHANGED_HAKEMUS,
+      type: SijoittelunTuloksetEventType.CHANGE,
       hakemusOid: 'hakemus-2',
       vastaanottotila: VastaanottoTila.EHDOLLISESTI_VASTAANOTTANUT,
     });
@@ -132,7 +132,7 @@ describe('Sijoittelun tulokset states', async () => {
     expect(state.context.changedHakemukset.length).toEqual(1);
 
     actor.send({
-      type: SijoittelunTuloksetEventType.ADD_CHANGED_HAKEMUS,
+      type: SijoittelunTuloksetEventType.CHANGE,
       hakemusOid: 'hakemus-2',
       vastaanottotila: VastaanottoTila.KESKEN,
     });
@@ -150,7 +150,7 @@ describe('Sijoittelun tulokset states', async () => {
       Promise.resolve({ headers: new Headers(), data: [] }),
     );
     actor.send({
-      type: SijoittelunTuloksetEventType.ADD_CHANGED_HAKEMUS,
+      type: SijoittelunTuloksetEventType.CHANGE,
       hakemusOid: 'hakemus-2',
       ehdollisestiHyvaksyttavissa: true,
     });
@@ -161,7 +161,7 @@ describe('Sijoittelun tulokset states', async () => {
     actor.send({
       type: SijoittelunTuloksetEventType.MASS_UPDATE,
       hakemusOids: new Set(['hakemus-1', 'hakemus-2']),
-      vastaanottoTila: VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA,
+      vastaanottotila: VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA,
     });
 
     state = await waitIdle(actor);

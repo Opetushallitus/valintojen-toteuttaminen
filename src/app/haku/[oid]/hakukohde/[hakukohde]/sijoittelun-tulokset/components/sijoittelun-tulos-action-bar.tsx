@@ -67,7 +67,7 @@ const VastaanOttoSelect = ({
   const massUpdateVastaanOtto = (event: SelectChangeEvent<string>) => {
     massStatusChangeForm({
       hakemusOids: selection,
-      vastaanottoTila: event.target.value as VastaanottoTila,
+      vastaanottotila: event.target.value as VastaanottoTila,
     });
   };
 
