@@ -461,7 +461,10 @@
     "suorita": "Suorita laskenta valintaryhmälle",
     "hakukohteet": "Valintaryhmään kuuluvat hakukohteet",
     "tehty": "Valintalaskenta tehty",
-    "valintaryhma": "Valintaryhmä"
+    "valintaryhma": "Valintaryhmä",
+    "ei-hakukohteita": "Valintaryhmässä ei ole hakukohteita",
+    "valitse": "Valitse valintaryhmä",
+    "hakukohde-maara": "Hakukohteita: "
   },
   "henkilo": {
     "henkilo-maara_one": "{{count}} henkilö",

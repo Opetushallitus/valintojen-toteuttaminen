@@ -10,7 +10,7 @@ import { useMemo } from 'react';
 import { ValintaryhmaHakukohteilla } from '@/app/lib/types/valintaperusteet-types';
 import { Hakukohde } from '@/app/lib/types/kouta-types';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { isDefined, isNullish } from 'remeda';
+import { isDefined, isNullish, prop, sortBy } from 'remeda';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { findParent } from './lib/valintaryhma-util';
 
@@ -119,11 +119,14 @@ export const ValintaryhmaContent = ({
     if (!valittuRyhma) {
       return [];
     }
-    return mapHakukohteet(valittuRyhma).map((hakukohde) => ({
-      oid: hakukohde.oid,
-      name: getHakukohdeFullName(hakukohde),
-      link: `kouta/hakukohde/${hakukohde.oid}`,
-    }));
+    return sortBy(
+      mapHakukohteet(valittuRyhma).map((hakukohde) => ({
+        oid: hakukohde.oid,
+        name: getHakukohdeFullName(hakukohde),
+        link: `kouta/hakukohde/${hakukohde.oid}`,
+      })),
+      prop('name'),
+    );
   }, [hakukohteet, valittuRyhma, translateEntity]);
 
   return !valittuRyhma ? (
