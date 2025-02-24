@@ -109,8 +109,8 @@ export const ValintaryhmaList = ({
   return (
     <>
       <OphTypography>
-        {results.length}{' '}
-        {results.length === 1
+        {results.length + 1}{' '}
+        {results.length + 1 === 1
           ? t('valintaryhma.maara-1')
           : t('valintaryhma.maara')}
       </OphTypography>
