@@ -27,7 +27,7 @@ export const ValintaryhmaSearch = () => {
         onChange={handleSearchChange}
         autoFocus={true}
         type="text"
-        placeholder={t('valintaryhma.hae')}
+        placeholder={t('valintaryhmittain.hae')}
         endAdornment={
           <InputAdornment position="end">
             <Search />

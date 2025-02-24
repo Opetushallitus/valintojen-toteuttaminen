@@ -458,13 +458,20 @@
     "ATARU_RIITTAMATON_TUTKINTOKIELEN_TAITO": "Riittämätön tutkintokielen taito"
   },
   "valintaryhmittain": {
+    "maara": "valintaryhmää",
+    "maara-1": "valintaryhmä",
+    "navigaatio": "Valintaryhmävalitsin",
+    "haun-ryhma": "Koko haun valintaryhmä",
+    "hae": "Hae valintaryhmiä",
     "suorita": "Suorita laskenta valintaryhmälle",
     "hakukohteet": "Valintaryhmään kuuluvat hakukohteet",
     "tehty": "Valintalaskenta tehty",
     "valintaryhma": "Valintaryhmä",
     "ei-hakukohteita": "Valintaryhmässä ei ole hakukohteita",
     "valitse": "Valitse valintaryhmä",
-    "hakukohde-maara": "Hakukohteita: "
+    "hakukohde-maara": "Hakukohteita: ",
+    "nayta-alaryhmat": "Näytä alavalintaryhmät",
+    "piilota-alaryhmat": "Piilota alavalintaryhmät"
   },
   "henkilo": {
     "henkilo-maara_one": "{{count}} henkilö",
@@ -547,12 +554,5 @@
     "hyvaksymiskirjeet": {
       "eihakijoita": "Ei ole hakijoita, joille kirjeet voisi muodostaa"
     }
-  },
-  "valintaryhma": {
-    "maara": "valintaryhmää",
-    "maara-1": "valintaryhmä",
-    "navigaatio": "Valintaryhmävalitsin",
-    "haun-ryhma": "Koko haun valintaryhmä",
-    "hae": "Hae valintaryhmiä"
   }
 }

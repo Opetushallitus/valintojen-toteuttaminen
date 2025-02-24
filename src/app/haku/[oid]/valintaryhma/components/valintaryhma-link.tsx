@@ -1,14 +1,7 @@
 'use client';
 
-import { styled } from '@/app/lib/theme';
 import Link, { LinkProps } from 'next/link';
 import { useSearchParams } from 'next/navigation';
-
-const StyledLink = styled(Link)(({ theme }) => ({
-  textDecoration: 'none',
-  paddingLeft: theme.spacing(1),
-  width: '100%',
-}));
 
 export const ValintaryhmaLink = ({
   hakuOid,
@@ -26,14 +19,15 @@ export const ValintaryhmaLink = ({
   const vrSearchParam = searchParams.get('vrsearch');
 
   return (
-    <StyledLink
+    <Link
       {...props}
+      style={{ textDecoration: 'none', paddingLeft: '7px', width: '100%' }}
       href={{
         pathname: `/haku/${hakuOid}/valintaryhma/${valintaryhmaOid}`,
         query: vrSearchParam && { vrsearch: vrSearchParam },
       }}
     >
       {children}
-    </StyledLink>
+    </Link>
   );
 };

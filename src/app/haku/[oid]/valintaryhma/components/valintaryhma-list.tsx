@@ -111,10 +111,13 @@ export const ValintaryhmaList = ({
       <OphTypography>
         {results.length + 1}{' '}
         {results.length + 1 === 1
-          ? t('valintaryhma.maara-1')
-          : t('valintaryhma.maara')}
+          ? t('valintaryhmittain.maara-1')
+          : t('valintaryhmittain.maara')}
       </OphTypography>
-      <NavigationList tabIndex={0} aria-label={t('valintaryhma.navigaatio')}>
+      <NavigationList
+        tabIndex={0}
+        aria-label={t('valintaryhmittain.navigaatio')}
+      >
         {ryhmat?.hakuRyhma && (
           <ValintaryhmaLink
             hakuOid={hakuOid}
@@ -122,7 +125,7 @@ export const ValintaryhmaList = ({
             tabIndex={0}
           >
             <OphTypography title={ryhmat.hakuRyhma.nimi} color="inherit">
-              {t('valintaryhma.haun-ryhma')}
+              {t('valintaryhmittain.haun-ryhma')}
             </OphTypography>
           </ValintaryhmaLink>
         )}

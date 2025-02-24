@@ -1,3 +1,4 @@
+import { useTranslations } from '@/app/hooks/useTranslations';
 import { TRANSITION_DURATION } from '@/app/lib/constants';
 import { styled } from '@/app/lib/theme';
 import { ExpandMore } from '@mui/icons-material';
@@ -15,13 +16,16 @@ const HeaderBox = styled(Box)(() => ({
   '.MuiButtonBase-root': {
     borderLeft: `1px solid ${ophColors.grey200}`,
     height: '100%',
+    '&.emphasize': {
+      backgroundColor: ophColors.grey50,
+    },
   },
 }));
 
 const ContextBox = styled(Box)(({ theme }) => ({
   display: 'grid',
   width: '100%',
-  paddingLeft: theme.spacing(3),
+  paddingLeft: theme.spacing(1.5),
   gridTemplateRows: '1fr',
   transition: `${TRANSITION_DURATION} grid-template-rows ease`,
   '&.accordion-content--closed': {
@@ -36,6 +40,7 @@ export const ValintaryhmaAccordion = ({
   title: React.ReactNode;
   children: React.ReactNode;
 }) => {
+  const { t } = useTranslations();
   const [isOpen, setIsOpen] = useState(true);
 
   const accordionId = useId();
@@ -65,6 +70,11 @@ export const ValintaryhmaAccordion = ({
             />
           }
           onClick={() => setIsOpen((open) => !open)}
+          aria-label={t(
+            isOpen
+              ? 'valintaryhmittain.piilota-alaryhmat'
+              : 'valintaryhmittain.nayta-alaryhmat',
+          )}
           aria-controls={contentId}
           aria-expanded={isOpen ? 'true' : 'false'}
         />

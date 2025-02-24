@@ -14,6 +14,7 @@ import { SERVICE_KEY } from '@/app/lib/permissions';
 import PISTETIEDOT from './fixtures/pistetiedot.json';
 import KOKEET from './fixtures/valintakoe-avaimet.json';
 import EHDOT from './fixtures/hyvaksynnan_ehdot.json';
+import VALINTARYHMA_PUU from './fixtures/valintaryhma-puu.json';
 
 const port = 3104;
 
@@ -129,6 +130,10 @@ export default async function playwrightSetup() {
       request.url?.includes('valinnanvaihe?withValisijoitteluTieto=true')
     ) {
       return modifyResponse(response, VALINNANVAIHE);
+    } else if (
+      request.url?.includes('valintaperusteet-service/resources/puu')
+    ) {
+      return modifyResponse(response, VALINTARYHMA_PUU);
     } else if (
       /valintaperusteet-service\/resources\/hakukohde\/\S+\/valintaryhma/.test(
         request.url ?? '',
