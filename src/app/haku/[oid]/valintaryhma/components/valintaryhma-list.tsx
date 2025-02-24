@@ -12,14 +12,14 @@ import { ValintaryhmaHakukohteilla } from '@/app/lib/types/valintaperusteet-type
 import { ValintaryhmaAccordion } from './valintaryhma-accordion';
 import { ValintaryhmaLink } from './valintaryhma-link';
 
-const useSelectedValintaryhmaOid = () => useParams().valintaryhmaOid;
+const useSelectedValintaryhmaOid = () => useParams().valintaryhma;
 
 const Content = ({
   valintaryhma,
   hakuOid,
   visibleValintaryhmat,
   onItemClick,
-  useOddEmphasize = false,
+  useOddEmphasize = true,
 }: {
   valintaryhma: ValintaryhmaHakukohteilla;
   hakuOid: string;
@@ -28,7 +28,9 @@ const Content = ({
   useOddEmphasize?: boolean;
 }) => {
   const { t } = useTranslations();
+
   const selectedValintaryhmaOid = useSelectedValintaryhmaOid();
+
   const key =
     valintaryhma.alaValintaryhmat.length > 0
       ? `${valintaryhma.oid}-valintaryhma-accordion`
@@ -57,7 +59,11 @@ const Content = ({
         </ValintaryhmaLink>
       }
     >
-      <NavigationList tabIndex={0} aria-label={t('valintaryhma.navigaatio')}>
+      <NavigationList
+        tabIndex={0}
+        aria-label={t('valintaryhma.navigaatio')}
+        sx={{ paddingRight: 0 }}
+      >
         {valintaryhma.alaValintaryhmat
           .filter((vr) => visibleValintaryhmat.includes(vr.oid))
           .map((vr: ValintaryhmaHakukohteilla) => (

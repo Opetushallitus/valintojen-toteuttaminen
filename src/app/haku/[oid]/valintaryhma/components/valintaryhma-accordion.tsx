@@ -10,7 +10,12 @@ const HeaderBox = styled(Box)(() => ({
   flexDirection: 'row',
   justifyContent: 'space-between',
   alignItems: 'flex-start',
+  height: '100%',
   width: '100%',
+  '.MuiButtonBase-root': {
+    borderLeft: `1px solid ${ophColors.grey200}`,
+    height: '100%',
+  },
 }));
 
 const ContextBox = styled(Box)(({ theme }) => ({
@@ -40,11 +45,9 @@ export const ValintaryhmaAccordion = ({
     <Box
       sx={{
         display: 'flex',
+        paddingRight: 0,
         flexDirection: 'column',
         alignItems: 'flex-start',
-        '&.MuiButton-icon': {
-          marginRight: 0.5,
-        },
       }}
     >
       <HeaderBox>

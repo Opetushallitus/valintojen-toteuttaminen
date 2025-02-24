@@ -22,9 +22,10 @@ export const NavigationList = styled('nav')(({ theme }) => ({
     '&:nth-of-type(even):not(&.odd-emphasize)': {
       backgroundColor: ophColors.grey50,
     },
-    '&.odd-emphasize:nth-of-type(odd)': {
-      backgroundColor: ophColors.grey50,
-    },
+    [`&.odd-emphasize:nth-of-type(odd):not(&.${NAV_LIST_SELECTED_ITEM_CLASS}):not(:hover)`]:
+      {
+        backgroundColor: ophColors.grey50,
+      },
     [`&:hover, &.${NAV_LIST_SELECTED_ITEM_CLASS}`]: {
       backgroundColor: ophColors.lightBlue2,
     },
