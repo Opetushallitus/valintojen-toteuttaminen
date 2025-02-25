@@ -85,7 +85,7 @@ export const ValintaryhmaAccordion = ({
           isOpen ? 'accordion-content--open' : 'accordion-content--closed'
         }
       >
-        <Box sx={{ overflow: 'hidden' }}>{children}</Box>
+        <Box sx={{ overflow: 'hidden' }}>{isOpen && children}</Box>
       </ContextBox>
     </Box>
   );
