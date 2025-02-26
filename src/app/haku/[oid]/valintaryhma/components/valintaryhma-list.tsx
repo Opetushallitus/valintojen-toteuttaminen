@@ -1,18 +1,48 @@
 'use client';
 
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { OphTypography } from '@opetushallitus/oph-design-system';
+import { ophColors, OphTypography } from '@opetushallitus/oph-design-system';
 import { useParams } from 'next/navigation';
-import {
-  NAV_LIST_SELECTED_ITEM_CLASS,
-  NavigationList,
-} from '@/app/components/navigation-list';
+import { NAV_LIST_SELECTED_ITEM_CLASS } from '@/app/components/navigation-list';
 import { useValintaryhmaSearchResults } from '../hooks/useValintaryhmaSearch';
 import { ValintaryhmaHakukohteilla } from '@/app/lib/types/valintaperusteet-types';
 import { ValintaryhmaAccordion } from './valintaryhma-accordion';
 import { ValintaryhmaLink } from './valintaryhma-link';
+import { styled } from '@/app/lib/theme';
 
 const useSelectedValintaryhmaOid = () => useParams().valintaryhma;
+
+const ValintaryhmaNavigationList = styled('nav')(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'stretch',
+  width: '100%',
+  textAlign: 'left',
+  overflowY: 'auto',
+  height: 'auto',
+  paddingRight: theme.spacing(0.5),
+  gap: theme.spacing(0.5),
+  [`.zepra:nth-child(even)`]: {
+    backgroundColor: ophColors.grey50,
+  },
+  a: {
+    display: 'block',
+    padding: theme.spacing(1),
+    cursor: 'pointer',
+    color: ophColors.blue2,
+    textDecoration: 'none',
+    borderRadius: '0',
+    [`&.${NAV_LIST_SELECTED_ITEM_CLASS}`]: {
+      backgroundColor: ophColors.lightBlue2,
+    },
+    '&:hover': {
+      backgroundColor: ophColors.lightBlue2,
+    },
+    '&:focus-visible': {
+      outlineOffset: '-2px',
+    },
+  },
+}));
 
 const Content = ({
   valintaryhma,
@@ -36,11 +66,10 @@ const Content = ({
       ? `${valintaryhma.oid}-valintaryhma-accordion`
       : valintaryhma.oid;
 
-  const className = (
+  const selectedClassName =
     selectedValintaryhmaOid === valintaryhma.oid
       ? NAV_LIST_SELECTED_ITEM_CLASS
-      : ''
-  ).concat(useOddEmphasize ? ' odd-emphasize' : '');
+      : '';
 
   return valintaryhma.alaValintaryhmat.length > 0 ? (
     <ValintaryhmaAccordion
@@ -49,17 +78,18 @@ const Content = ({
           key={key}
           hakuOid={hakuOid}
           valintaryhmaOid={valintaryhma.oid}
-          className={className}
           onClick={onItemClick}
           tabIndex={0}
+          className={selectedClassName}
         >
           <OphTypography title={valintaryhma.nimi} color="inherit">
             {valintaryhma.nimi}
           </OphTypography>
         </ValintaryhmaLink>
       }
+      className="zepra"
     >
-      <NavigationList
+      <ValintaryhmaNavigationList
         tabIndex={0}
         aria-label={t('valintaryhma.navigaatio')}
         sx={{ paddingRight: 0 }}
@@ -76,14 +106,14 @@ const Content = ({
               useOddEmphasize={!useOddEmphasize}
             />
           ))}
-      </NavigationList>
+      </ValintaryhmaNavigationList>
     </ValintaryhmaAccordion>
   ) : (
     <ValintaryhmaLink
       key={key}
       hakuOid={hakuOid}
       valintaryhmaOid={valintaryhma.oid}
-      className={className}
+      className={`${selectedClassName} zepra`}
       onClick={onItemClick}
       tabIndex={0}
     >
@@ -106,6 +136,8 @@ export const ValintaryhmaList = ({
 
   const topResults = results.filter((r) => r.parentOid === null);
 
+  const selectedValintaryhmaOid = useSelectedValintaryhmaOid();
+
   return (
     <>
       <OphTypography>
@@ -114,7 +146,7 @@ export const ValintaryhmaList = ({
           ? t('valintaryhmittain.maara-1')
           : t('valintaryhmittain.maara')}
       </OphTypography>
-      <NavigationList
+      <ValintaryhmaNavigationList
         tabIndex={0}
         aria-label={t('valintaryhmittain.navigaatio')}
       >
@@ -123,6 +155,11 @@ export const ValintaryhmaList = ({
             hakuOid={hakuOid}
             valintaryhmaOid={ryhmat.hakuRyhma.oid}
             tabIndex={0}
+            className={`${
+              selectedValintaryhmaOid === ryhmat.hakuRyhma.oid
+                ? NAV_LIST_SELECTED_ITEM_CLASS
+                : ''
+            } zepra`}
           >
             <OphTypography title={ryhmat.hakuRyhma.nimi} color="inherit">
               {t('valintaryhmittain.haun-ryhma')}
@@ -138,7 +175,7 @@ export const ValintaryhmaList = ({
             onItemClick={onItemClick}
           />
         ))}
-      </NavigationList>
+      </ValintaryhmaNavigationList>
     </>
   );
 };

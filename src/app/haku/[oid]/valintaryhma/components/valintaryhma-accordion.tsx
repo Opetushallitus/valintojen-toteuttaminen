@@ -25,6 +25,7 @@ const HeaderBox = styled(Box)(() => ({
 const ContextBox = styled(Box)(({ theme }) => ({
   display: 'grid',
   width: '100%',
+  backgroundColor: 'white',
   paddingLeft: theme.spacing(1.5),
   gridTemplateRows: '1fr',
   transition: `${TRANSITION_DURATION} grid-template-rows ease`,
@@ -36,9 +37,11 @@ const ContextBox = styled(Box)(({ theme }) => ({
 export const ValintaryhmaAccordion = ({
   title,
   children,
+  className,
 }: {
   title: React.ReactNode;
   children: React.ReactNode;
+  className: string;
 }) => {
   const { t } = useTranslations();
   const [isOpen, setIsOpen] = useState(true);
@@ -54,6 +57,7 @@ export const ValintaryhmaAccordion = ({
         flexDirection: 'column',
         alignItems: 'flex-start',
       }}
+      className={className}
     >
       <HeaderBox>
         {title}
