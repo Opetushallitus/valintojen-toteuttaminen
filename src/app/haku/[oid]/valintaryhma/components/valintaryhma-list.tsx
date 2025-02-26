@@ -49,13 +49,11 @@ const Content = ({
   hakuOid,
   visibleValintaryhmat,
   onItemClick,
-  useOddEmphasize = true,
 }: {
   valintaryhma: ValintaryhmaHakukohteilla;
   hakuOid: string;
   visibleValintaryhmat: string[];
   onItemClick?: () => void;
-  useOddEmphasize?: boolean;
 }) => {
   const { t } = useTranslations();
 
@@ -103,7 +101,6 @@ const Content = ({
               hakuOid={hakuOid}
               visibleValintaryhmat={visibleValintaryhmat}
               onItemClick={onItemClick}
-              useOddEmphasize={!useOddEmphasize}
             />
           ))}
       </ValintaryhmaNavigationList>
