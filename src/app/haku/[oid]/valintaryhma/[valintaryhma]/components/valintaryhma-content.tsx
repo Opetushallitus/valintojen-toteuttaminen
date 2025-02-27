@@ -97,10 +97,7 @@ export const ValintaryhmaContent = ({
   }, [valittuRyhma, ryhmat]);
 
   const mappedHakukohteet = useMemo(() => {
-    function getHakukohdeFullName(hakukohde?: Hakukohde) {
-      if (!hakukohde) {
-        return '';
-      }
+    function getHakukohdeFullName(hakukohde: Hakukohde) {
       const jarjestysPaikka = hakukohde.jarjestyspaikkaHierarkiaNimi
         ? `${translateEntity(hakukohde.jarjestyspaikkaHierarkiaNimi)}, `
         : '';

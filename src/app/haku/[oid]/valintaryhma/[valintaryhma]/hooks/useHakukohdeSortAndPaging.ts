@@ -8,7 +8,7 @@ import {
 } from '@/components/table/table-utils';
 import { DEFAULT_NUQS_OPTIONS } from '@/lib/constants';
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { HakukohdeWithLink } from '../components.tsx/valintaryhma-hakukohde-table';
+import { HakukohdeWithLink } from '../components/valintaryhma-hakukohde-table';
 
 const DEFAULT_PAGE_SIZE = 10;
 
