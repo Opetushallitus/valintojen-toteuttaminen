@@ -12,7 +12,7 @@ import { Hakukohde } from '@/lib/kouta/kouta-types';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { isDefined, isNullish, prop, sortBy } from 'remeda';
 import { OphTypography } from '@opetushallitus/oph-design-system';
-import { findParent } from './lib/valintaryhma-util';
+import { findParent } from '../lib/valintaryhma-util';
 
 const StyledContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
