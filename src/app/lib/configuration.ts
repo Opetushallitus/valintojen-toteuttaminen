@@ -62,6 +62,7 @@ export const configuration = {
     hakukohdeOid: string;
   }) =>
     `${DOMAIN}/valintaperusteet-service/resources/hakukohde/${hakukohdeOid}/ilmanlaskentaa`,
+  valintaryhmatHakukohteilla: `${DOMAIN}/valintaperusteet-service/resources/puu`,
   // -------------------------------------------------------------------------------------------------
   // ataru
   ataruEditoriLogin: `${DOMAIN}/lomake-editori/auth/cas`,

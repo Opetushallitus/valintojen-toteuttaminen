@@ -2,6 +2,7 @@ import { expect, test, vi, describe, afterEach } from 'vitest';
 import {
   getValinnanvaiheet,
   getValintakoeAvaimetHakukohteelle,
+  getValintaryhmat,
   isLaskentaUsedForValinnanvaihe,
 } from './valintaperusteet';
 import { client } from './http-client';
@@ -10,6 +11,7 @@ import {
   ValinnanvaiheTyyppi,
   ValintakoeAvaimet,
   ValintakoeInputTyyppi,
+  ValintaryhmaHakukohteilla,
 } from './types/valintaperusteet-types';
 
 test('laskenta is used for active valinnanvaihe', () => {
@@ -323,6 +325,61 @@ describe('Valintaperusteet: getValintakokeet', () => {
     );
     expect(kokeet[3].inputTyyppi).toEqual(ValintakoeInputTyyppi.SELECT);
   });
+});
+
+test('Valintaperusteet: getValintaryhmat', async () => {
+  const clientSpy = vi.spyOn(client, 'get');
+  clientSpy.mockImplementationOnce(() =>
+    Promise.resolve({
+      headers: new Headers(),
+      data: [
+        {
+          hakuOid: 'haku-1',
+          oid: '12334-123',
+          nimi: 'Haun valintaryhmä',
+          hakukohdeViitteet: [],
+          alavalintaryhmat: [
+            {
+              hakuOid: null,
+              oid: '22334-123',
+              nimi: 'Valintaryhmä 1',
+              hakukohdeViitteet: [],
+              alavalintaryhmat: [
+                {
+                  hakuOid: null,
+                  oid: '22334-223',
+                  nimi: 'Kokeet',
+                  hakukohdeViitteet: [{ oid: 'hk-1' }, { oid: 'hk-2' }],
+                  alavalintaryhmat: [],
+                },
+              ],
+            },
+            {
+              hakuOid: null,
+              oid: '32334-123',
+              nimi: 'Valintaryhmä 2',
+              hakukohdeViitteet: [{ oid: 'hk-3' }],
+              alavalintaryhmat: [],
+            },
+          ],
+        },
+      ],
+    }),
+  );
+  const ryhmat: {
+    hakuRyhma: ValintaryhmaHakukohteilla | null;
+    muutRyhmat: ValintaryhmaHakukohteilla[];
+  } = await getValintaryhmat('haku-1');
+  expect(ryhmat.hakuRyhma?.nimi).toEqual('Haun valintaryhmä');
+  expect(ryhmat.muutRyhmat.map((r) => r.nimi)).toEqual([
+    'Valintaryhmä 1',
+    'Valintaryhmä 2',
+  ]);
+  expect(
+    ryhmat.muutRyhmat
+      .find((r) => r.nimi === 'Valintaryhmä 1')
+      ?.alaValintaryhmat.map((r) => r.nimi),
+  ).toEqual(['Kokeet']);
 });
 
 function buildDummyValinkoeResponse(

@@ -1,8 +1,9 @@
 'use client';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { Box } from '@mui/material';
+import { ListAlt } from '@mui/icons-material';
+import { NoResults } from '@/app/components/no-results';
 
-export default function ValintaryhmaPage() {
+export default function ValitseValintaryhmaPage() {
   const { t } = useTranslations();
-  return <Box sx={{ padding: 4 }}>TODO: {t('haku-tabs.valintaryhma')}</Box>;
+  return <NoResults text={t('valintaryhmittain.valitse')} icon={<ListAlt />} />;
 }
