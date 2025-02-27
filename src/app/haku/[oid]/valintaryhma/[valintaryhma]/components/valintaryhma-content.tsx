@@ -10,9 +10,12 @@ import { useMemo } from 'react';
 import { ValintaryhmaHakukohteilla } from '@/lib/valintaperusteet/valintaperusteet-types';
 import { Hakukohde } from '@/lib/kouta/kouta-types';
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { isDefined, isNullish, prop, sortBy } from 'remeda';
+import { isDefined, prop, sortBy } from 'remeda';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { findParent } from '../lib/valintaryhma-util';
+import { ValintaryhmanValintalaskenta } from './valintaryhma-valintalaskenta';
+import { useHaku } from '@/lib/kouta/useHaku';
+import { useHaunAsetukset } from '@/lib/ohjausparametrit/useHaunAsetukset';
 
 const StyledContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -57,10 +60,14 @@ export const ValintaryhmaContent = ({
   valintaryhmaOid: string;
 }) => {
   const { data: userPermissions } = useUserPermissions();
+
   const { data: ryhmat } = useSuspenseQuery({
     queryKey: ['getValintaryhmat', hakuOid],
     queryFn: () => getValintaryhmat(hakuOid),
   });
+
+  const { data: haku } = useHaku({ hakuOid });
+  const { data: haunAsetukset } = useHaunAsetukset({ hakuOid });
 
   const { data: hakukohteet } = useSuspenseQuery(
     getHakukohteetQueryOptions(hakuOid, userPermissions),
@@ -107,11 +114,9 @@ export const ValintaryhmaContent = ({
     function mapHakukohteet(valintaryhma: ValintaryhmaHakukohteilla) {
       return valintaryhma.hakukohteet
         .map((oid) => {
-          return hakukohteet.find(
-            (mappedHakukohde) => mappedHakukohde.oid === oid,
-          );
+          return hakukohteet.find((hk) => hk.oid === oid);
         })
-        .filter((hk) => !isNullish(hk));
+        .filter(isDefined);
     }
     if (!valittuRyhma) {
       return [];
@@ -126,11 +131,23 @@ export const ValintaryhmaContent = ({
     );
   }, [hakukohteet, valittuRyhma, translateEntity]);
 
+  function getHakukohteetForLaskenta() {
+    return mappedHakukohteet
+      .map((mh) => hakukohteet.find((hk) => hk.oid === mh.oid))
+      .filter(isDefined);
+  }
+
   return !valittuRyhma ? (
     <></>
   ) : (
     <StyledContainer>
       <ValintaryhmaHeader valintaryhma={valittuRyhma} parentName={parentName} />
+      <ValintaryhmanValintalaskenta
+        haunAsetukset={haunAsetukset}
+        hakukohteet={getHakukohteetForLaskenta()}
+        valintaryhma={valittuRyhma}
+        haku={haku}
+      />
       <ValintaryhmaHakukohdeTable hakukohteet={mappedHakukohteet} />
     </StyledContainer>
   );
