@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useCallback, useMemo } from 'react';
+import { FormEvent, useMemo } from 'react';
 import useToaster from '@/app/hooks/useToaster';
 import { useMachine, useSelector } from '@xstate/react';
 import { styled } from '@mui/material';
@@ -16,8 +16,6 @@ import { useSijoittelunTulosSearch } from '../hooks/useSijoittelunTuloksetSearch
 import { SijoittelunTulosTable } from './sijoittelun-tulos-table';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { useConfirmChangesBeforeNavigation } from '@/app/hooks/useConfirmChangesBeforeNavigation';
-import { useQueryClient } from '@tanstack/react-query';
-import { tryToGetLatestSijoitteluajonTuloksetWithValintaEsitysQueryOptions } from '@/app/lib/valinta-tulos-service';
 
 type SijoittelunTuloksetFormParams = {
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
@@ -42,18 +40,6 @@ export const SijoittelunTulosForm = ({
 
   const { addToast } = useToaster();
 
-  const queryClient = useQueryClient();
-
-  const onUpdateSuccess = useCallback(() => {
-    const options =
-      tryToGetLatestSijoitteluajonTuloksetWithValintaEsitysQueryOptions({
-        hakuOid: haku.oid,
-        hakukohdeOid: hakukohde.oid,
-      });
-    queryClient.resetQueries(options);
-    queryClient.invalidateQueries(options);
-  }, [queryClient, haku.oid, hakukohde.oid]);
-
   const sijoittelunTulosMachine = useMemo(() => {
     return createSijoittelunTuloksetMachine(
       hakukohde.oid,
@@ -61,9 +47,8 @@ export const SijoittelunTulosForm = ({
       valintatapajono.hakemukset,
       lastModified,
       addToast,
-      onUpdateSuccess,
     );
-  }, [hakukohde, valintatapajono, addToast, lastModified, onUpdateSuccess]);
+  }, [hakukohde, valintatapajono, addToast, lastModified]);
 
   const [, send, sijoittelunTulosActorRef] = useMachine(
     sijoittelunTulosMachine,
@@ -94,9 +79,9 @@ export const SijoittelunTulosForm = ({
     >
       <SijoittelunTuloksetActions
         haku={haku}
-        valintatapajono={valintatapajono}
         hakukohde={hakukohde}
-        sijoittelunTuloksetActorRef={sijoittelunTulosActorRef}
+        valintatapajonoOid={valintatapajono.oid}
+        sijoittelunTulosActorRef={sijoittelunTulosActorRef}
       />
       <SijoittelunTulosTable
         haku={haku}
