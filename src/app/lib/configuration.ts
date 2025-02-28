@@ -181,7 +181,14 @@ export const configuration = {
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/dokumentit/lataa/${dokumenttiId}`,
   startImportPistesyottoUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/pistesyotto/tuonti`,
   harkinnanvaraisuudetHakemuksilleUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/harkinnanvaraisuus/hakemuksille`,
-
+  myohastyneetHakemuksetUrl: ({
+    hakuOid,
+    hakukohdeOid,
+  }: {
+    hakuOid: string;
+    hakukohdeOid: string;
+  }) =>
+    `${DOMAIN}/valintalaskentakoostepalvelu/resources/proxy/valintatulosservice/myohastyneet/haku/${hakuOid}/hakukohde/${hakukohdeOid}`,
   // -------------------------------------------------------------------------------------------------
   // valinta-tulos-service
   valintaTulosServiceLogin: `${DOMAIN}/valinta-tulos-service/auth/login`,

@@ -88,5 +88,17 @@ export const THEME_OVERRIDES: ThemeOptions = {
         loadingPosition: 'start',
       },
     },
+    MuiTableCell: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          '&.MuiTableCell-head': {
+            ...theme.typography.label,
+          },
+          '&.MuiTableCell-body': {
+            ...theme.typography.body1,
+          },
+        }),
+      },
+    },
   },
 };
