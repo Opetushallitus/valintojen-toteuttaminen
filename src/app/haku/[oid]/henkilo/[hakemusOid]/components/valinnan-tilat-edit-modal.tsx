@@ -20,7 +20,7 @@ import {
 } from '@/app/lib/types/sijoittelu-types';
 import { valinnanTuloksetQueryOptions } from '../hooks/useHenkiloPageData';
 import {
-  isImoittautuminenPossible,
+  isIlmoittautuminenPossible,
   isVastaanottoPossible,
   isVastaanottotilaJulkaistavissa,
 } from '@/app/lib/sijoittelun-tulokset-utils';
@@ -159,7 +159,7 @@ export const ValinnanTilatEditModal = createModal<{
 
   const isHakuPublishAllowed = useIsHakuPublishAllowed({ haku });
 
-  const ilmoittautuminenPossible = isImoittautuminenPossible({
+  const ilmoittautuminenPossible = isIlmoittautuminenPossible({
     tila: valinnanTulos.valinnantila,
     vastaanottotila: vastaanottoTila as VastaanottoTila,
     julkaistavissa,

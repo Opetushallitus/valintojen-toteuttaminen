@@ -12,7 +12,7 @@ import {
 } from '@/app/lib/types/sijoittelu-types';
 import { HakemuksetStateChangeParams } from '../lib/sijoittelun-tulokset-state';
 import {
-  isImoittautuminenPossible,
+  isIlmoittautuminenPossible,
   isVastaanottoPossible,
 } from '@/app/lib/sijoittelun-tulokset-utils';
 
@@ -42,7 +42,7 @@ const IlmoittautumisSelect = ({
 
   const disabled =
     hakemukset.filter(
-      (h) => selection.has(h.hakemusOid) && isImoittautuminenPossible(h),
+      (h) => selection.has(h.hakemusOid) && isIlmoittautuminenPossible(h),
     ).length < 1;
 
   return (
