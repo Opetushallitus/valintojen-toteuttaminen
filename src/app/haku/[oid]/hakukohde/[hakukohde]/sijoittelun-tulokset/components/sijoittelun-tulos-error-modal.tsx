@@ -16,7 +16,7 @@ import {
   TableCell,
   TableBody,
 } from '@mui/material';
-import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
+import { OphButton } from '@opetushallitus/oph-design-system';
 
 export const SijoittelunTulosErrorModalDialog = createModal(
   ({
@@ -110,10 +110,6 @@ const SijoittelunTulosTallennusError = ({
       </TableContainer>
     );
   } else {
-    return (
-      <OphTypography>
-        <ErrorWithIcon>{error.message ?? error}</ErrorWithIcon>
-      </OphTypography>
-    );
+    return <ErrorWithIcon>{error.message ?? error}</ErrorWithIcon>;
   }
 };
