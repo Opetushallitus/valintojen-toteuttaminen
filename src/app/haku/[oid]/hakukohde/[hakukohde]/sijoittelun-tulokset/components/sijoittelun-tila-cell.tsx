@@ -10,7 +10,6 @@ import { Box, InputAdornment, SelectChangeEvent, styled } from '@mui/material';
 import { LocalizedSelect } from '@/app/components/localized-select';
 import { isKorkeakouluHaku } from '@/app/lib/kouta';
 import { Haku } from '@/app/lib/types/kouta-types';
-import { SijoittelunTulosChangeParams } from '../lib/sijoittelun-tulokset-state';
 import {
   ophColors,
   OphCheckbox,
@@ -18,6 +17,8 @@ import {
 } from '@opetushallitus/oph-design-system';
 import { Language } from '@/app/lib/localization/localization-types';
 import { getReadableHakemuksenTila } from '@/app/lib/sijoittelun-tulokset-utils';
+import { entries, map, pipe } from 'remeda';
+import { SijoittelunTulosChangeParams } from '../lib/sijoittelun-tulokset-state-types';
 
 const LanguageAdornment = styled(InputAdornment)(() => ({
   backgroundColor: ophColors.grey200,
@@ -74,6 +75,12 @@ export const SijoittelunTilaCell = ({
     ehdollisenHyvaksymisenEhtoEN,
   } = hakemus;
 
+  const ehdollisenHyvaksymisenSyyt = {
+    fi: ehdollisenHyvaksymisenEhtoFI,
+    sv: ehdollisenHyvaksymisenEhtoSV,
+    en: ehdollisenHyvaksymisenEhtoEN,
+  };
+
   const hakemuksenTila = getReadableHakemuksenTila(hakemus, t);
 
   const updateEhdollinen = () => {
@@ -104,9 +111,7 @@ export const SijoittelunTilaCell = ({
     updateForm({
       hakemusOid: hakemusOid,
       ehdollisuudenSyyKieli: {
-        fi: ehdollisenHyvaksymisenEhtoFI,
-        sv: ehdollisenHyvaksymisenEhtoSV,
-        en: ehdollisenHyvaksymisenEhtoEN,
+        ...ehdollisenHyvaksymisenSyyt,
         [kieli]: event.target.value,
       },
     });
@@ -145,48 +150,30 @@ export const SijoittelunTilaCell = ({
         isKorkeakouluHaku(haku) &&
         ehdollisenHyvaksymisenEhtoKoodi === 'muu' && (
           <Box sx={{ display: 'flex', flexDirection: 'column', rowGap: 1 }}>
-            <StyledInput
-              value={ehdollisenHyvaksymisenEhtoFI ?? ''}
-              onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                updateEhdollisuudenMuuSyy(event, 'fi')
-              }
-              startAdornment={
-                <LanguageAdornment position="start">FI</LanguageAdornment>
-              }
-              inputProps={{
-                'aria-label': t('sijoittelun-tulokset.muu-syy-aria-fi'),
-              }}
-              disabled={disabled}
-              required={true}
-            />
-            <StyledInput
-              value={ehdollisenHyvaksymisenEhtoSV ?? ''}
-              onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                updateEhdollisuudenMuuSyy(event, 'sv')
-              }
-              startAdornment={
-                <LanguageAdornment position="start">SV</LanguageAdornment>
-              }
-              inputProps={{
-                'aria-label': t('sijoittelun-tulokset.muu-syy-aria-sv'),
-              }}
-              disabled={disabled}
-              required={true}
-            />
-            <StyledInput
-              value={ehdollisenHyvaksymisenEhtoEN ?? ''}
-              onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                updateEhdollisuudenMuuSyy(event, 'en')
-              }
-              startAdornment={
-                <LanguageAdornment position="start">EN</LanguageAdornment>
-              }
-              inputProps={{
-                'aria-label': t('sijoittelun-tulokset.muu-syy-aria-en'),
-              }}
-              disabled={disabled}
-              required={true}
-            />
+            {pipe(
+              entries(ehdollisenHyvaksymisenSyyt),
+              map(([kieli, syy]) => (
+                <StyledInput
+                  key={kieli}
+                  value={syy ?? ''}
+                  onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                    updateEhdollisuudenMuuSyy(event, kieli)
+                  }
+                  startAdornment={
+                    <LanguageAdornment position="start">
+                      {kieli.toUpperCase()}
+                    </LanguageAdornment>
+                  }
+                  inputProps={{
+                    'aria-label': t(
+                      `sijoittelun-tulokset.muu-syy-aria-${kieli}`,
+                    ),
+                  }}
+                  disabled={disabled}
+                  required={true}
+                />
+              )),
+            )}
           </Box>
         )}
     </SijoittelunTulosStyledCell>

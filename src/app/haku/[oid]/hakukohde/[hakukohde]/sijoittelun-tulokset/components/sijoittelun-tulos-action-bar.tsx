@@ -10,11 +10,11 @@ import {
   SijoittelunHakemusValintatiedoilla,
   VastaanottoTila,
 } from '@/app/lib/types/sijoittelu-types';
-import { HakemuksetStateChangeParams } from '../lib/sijoittelun-tulokset-state';
 import {
   isIlmoittautuminenPossible,
   isVastaanottoPossible,
 } from '@/app/lib/sijoittelun-tulokset-utils';
+import { HakemuksetStateChangeParams } from '../lib/sijoittelun-tulokset-state-types';
 
 const IlmoittautumisSelect = ({
   hakemukset,

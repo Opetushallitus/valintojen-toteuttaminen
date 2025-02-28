@@ -1,21 +1,21 @@
 import { expect, test, vi, describe, afterEach } from 'vitest';
 import { client } from '@/app/lib/http-client';
 import { createActor, waitFor } from 'xstate';
-import {
-  createSijoittelunTuloksetMachine,
-  SijoittelunTuloksetEventTypes,
-  SijoittelunTuloksetStates,
-  SijoittelunTulosActorRef,
-} from './sijoittelun-tulokset-state';
+import { createSijoittelunTuloksetMachine } from './sijoittelun-tulokset-state';
 import {
   IlmoittautumisTila,
   SijoittelunHakemusValintatiedoilla,
   SijoittelunTila,
   VastaanottoTila,
 } from '@/app/lib/types/sijoittelu-types';
+import {
+  SijoittelunTuloksetEventType,
+  SijoittelunTuloksetState,
+  SijoittelunTulosActorRef,
+} from './sijoittelun-tulokset-state-types';
 
 const waitIdle = (actor: SijoittelunTulosActorRef) =>
-  waitFor(actor, (state) => state.matches(SijoittelunTuloksetStates.IDLE));
+  waitFor(actor, (state) => state.matches(SijoittelunTuloksetState.IDLE));
 
 describe('Sijoittelun tulokset states', async () => {
   const hakemukset: SijoittelunHakemusValintatiedoilla[] = [
@@ -87,7 +87,7 @@ describe('Sijoittelun tulokset states', async () => {
   test('saving without changes creates error toast', async () => {
     const actor = createActorLogic();
     expect(toastFn).not.toHaveBeenCalledOnce();
-    actor.send({ type: SijoittelunTuloksetEventTypes.UPDATE });
+    actor.send({ type: SijoittelunTuloksetEventType.UPDATE });
     expect(toastFn).toHaveBeenCalledWith({
       key: `sijoittelun-tulokset-update-failed-for-hakukohde-oid-jono-oid`,
       message: 'virhe.eimuutoksia',
@@ -104,13 +104,13 @@ describe('Sijoittelun tulokset states', async () => {
       Promise.resolve({ headers: new Headers(), data: [] }),
     );
     actor.send({
-      type: SijoittelunTuloksetEventTypes.ADD_CHANGED_HAKEMUS,
+      type: SijoittelunTuloksetEventType.ADD_CHANGED_HAKEMUS,
       hakemusOid: 'hakemus-2',
       vastaanottotila: VastaanottoTila.EHDOLLISESTI_VASTAANOTTANUT,
     });
     let state = await waitIdle(actor);
     expect(state.context.changedHakemukset.length).toEqual(1);
-    actor.send({ type: SijoittelunTuloksetEventTypes.UPDATE });
+    actor.send({ type: SijoittelunTuloksetEventType.UPDATE });
     state = await waitIdle(actor);
     expect(toastFn).toHaveBeenCalledWith({
       key: `sijoittelun-tulokset-updated-for-hakukohde-oid-jono-oid`,
@@ -120,10 +120,10 @@ describe('Sijoittelun tulokset states', async () => {
     expect(state.context.changedHakemukset.length).toEqual(0);
   });
 
-  test('removes from changedhakemukset when changing values back to original', async () => {
+  test('removes item from changedhakemukset when changing values back to original', async () => {
     const actor = createActorLogic();
     actor.send({
-      type: SijoittelunTuloksetEventTypes.ADD_CHANGED_HAKEMUS,
+      type: SijoittelunTuloksetEventType.ADD_CHANGED_HAKEMUS,
       hakemusOid: 'hakemus-2',
       vastaanottotila: VastaanottoTila.EHDOLLISESTI_VASTAANOTTANUT,
     });
@@ -132,7 +132,7 @@ describe('Sijoittelun tulokset states', async () => {
     expect(state.context.changedHakemukset.length).toEqual(1);
 
     actor.send({
-      type: SijoittelunTuloksetEventTypes.ADD_CHANGED_HAKEMUS,
+      type: SijoittelunTuloksetEventType.ADD_CHANGED_HAKEMUS,
       hakemusOid: 'hakemus-2',
       vastaanottotila: VastaanottoTila.KESKEN,
     });
@@ -150,7 +150,7 @@ describe('Sijoittelun tulokset states', async () => {
       Promise.resolve({ headers: new Headers(), data: [] }),
     );
     actor.send({
-      type: SijoittelunTuloksetEventTypes.ADD_CHANGED_HAKEMUS,
+      type: SijoittelunTuloksetEventType.ADD_CHANGED_HAKEMUS,
       hakemusOid: 'hakemus-2',
       ehdollisestiHyvaksyttavissa: true,
     });
@@ -159,7 +159,7 @@ describe('Sijoittelun tulokset states', async () => {
     expect(state.context.changedHakemukset.length).toEqual(1);
 
     actor.send({
-      type: SijoittelunTuloksetEventTypes.MASS_UPDATE,
+      type: SijoittelunTuloksetEventType.MASS_UPDATE,
       hakemusOids: new Set(['hakemus-1', 'hakemus-2']),
       vastaanottoTila: VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA,
     });

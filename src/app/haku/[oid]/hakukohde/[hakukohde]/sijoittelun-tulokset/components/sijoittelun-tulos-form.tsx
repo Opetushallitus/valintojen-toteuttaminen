@@ -7,7 +7,6 @@ import { styled } from '@mui/material';
 import { SijoittelunTuloksetActions } from './sijoittelun-tulos-actions';
 import {
   createSijoittelunTuloksetMachine,
-  SijoittelunTuloksetEventTypes,
   useIsDirtySijoittelunTulos,
 } from '../lib/sijoittelun-tulokset-state';
 import { SijoitteluajonValintatapajonoValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
@@ -16,6 +15,7 @@ import { useSijoittelunTulosSearch } from '../hooks/useSijoittelunTuloksetSearch
 import { SijoittelunTulosTable } from './sijoittelun-tulos-table';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { useConfirmChangesBeforeNavigation } from '@/app/hooks/useConfirmChangesBeforeNavigation';
+import { SijoittelunTuloksetEventType } from '../lib/sijoittelun-tulokset-state-types';
 
 type SijoittelunTuloksetFormParams = {
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
@@ -67,7 +67,7 @@ export const SijoittelunTulosForm = ({
   useConfirmChangesBeforeNavigation(isDirty);
 
   const submitChanges = (event: FormEvent) => {
-    send({ type: SijoittelunTuloksetEventTypes.UPDATE });
+    send({ type: SijoittelunTuloksetEventType.UPDATE });
     event.preventDefault();
   };
 

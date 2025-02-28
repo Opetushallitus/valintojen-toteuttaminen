@@ -2,8 +2,8 @@ import { LocalizedSelect } from '@/app/components/localized-select';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { MaksunTila } from '@/app/lib/types/ataru-types';
 import { SijoittelunHakemusValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
-import { SijoittelunTulosChangeParams } from '../lib/sijoittelun-tulokset-state';
 import { SelectChangeEvent } from '@mui/material';
+import { SijoittelunTulosChangeParams } from '../lib/sijoittelun-tulokset-state-types';
 
 export const MaksuCell = ({
   hakemus,
