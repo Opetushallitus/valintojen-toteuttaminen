@@ -38,14 +38,28 @@ export enum SijoittelunTuloksetStates {
   PUBLISHED = 'PUBLISHED',
 }
 
-export enum SijoittelunTuloksetEvents {
+export enum SijoittelunTuloksetEventTypes {
   UPDATE = 'UPDATE',
   CHANGE_HAKEMUKSET_STATES = 'CHANGE_HAKEMUKSET_STATES',
   ADD_CHANGED_HAKEMUS = 'ADD_CHANGED_HAKEMUS',
   PUBLISH = 'PUBLISH',
 }
 
-export type SijoittelunTuloksetChangeEvent = {
+export type SijoittelunTulosUpdateEvent = {
+  type: SijoittelunTuloksetEventTypes.UPDATE;
+};
+
+export type HakemuksetStateChangeParams = {
+  hakemusOids: Set<string>;
+  vastaanottoTila?: VastaanottoTila;
+  ilmoittautumisTila?: IlmoittautumisTila;
+};
+
+export type SijottelunTulosMassChangeEvent = {
+  type: SijoittelunTuloksetEventTypes.CHANGE_HAKEMUKSET_STATES;
+} & HakemuksetStateChangeParams;
+
+export type SijoittelunTulosChangeParams = {
   hakemusOid: string;
   julkaistavissa?: boolean;
   ehdollisestiHyvaksyttavissa?: boolean;
@@ -57,11 +71,19 @@ export type SijoittelunTuloksetChangeEvent = {
   hyvaksyttyVarasijalta?: boolean;
 };
 
-export type HakemuksetStateChangeEvent = {
-  hakemusOids: Set<string>;
-  vastaanottoTila?: VastaanottoTila;
-  ilmoittautumisTila?: IlmoittautumisTila;
+export type SijoittelunTulosChangeEvent = {
+  type: SijoittelunTuloksetEventTypes.ADD_CHANGED_HAKEMUS;
+} & SijoittelunTulosChangeParams;
+
+export type SijoittelunTulosPublishEvent = {
+  type: SijoittelunTuloksetEventTypes.PUBLISH;
 };
+
+export type SijoittelunTuloksetEvents =
+  | SijoittelunTulosUpdateEvent
+  | SijoittelunTulosChangeEvent
+  | SijottelunTulosMassChangeEvent
+  | SijoittelunTulosPublishEvent;
 
 export const createSijoittelunTuloksetMachine = (
   hakukohdeOid: string,
@@ -73,25 +95,36 @@ export const createSijoittelunTuloksetMachine = (
 ) => {
   const original = clone(hakemukset);
   const tuloksetMachine = createMachine({
+    /** @xstate-layout N4IgpgJg5mDOIC5QAoC2BDAxgCwJYDswBKAOgEkARAGQFEBiAQQooH0BhACQYDkBxG1lwDSNALIBVAMoBtAAwBdRKAAOAe1i4ALrlX4lIAB6IALAEYSATivWb1gBwA2ADQgAnieN2Sxhxd8AmfztPC2MAZmMAX0iXNCw8QlJKWjpxAAUKBgAVGjlFJBA1DW1dfSMEMLCHElkfOwB2AFZmx18fF3cEC1qSf1MHUzsIoONAxujYjBwCYnJqenTMnOlTfJV1LR09AvLGsJIwxtNmhyCrev9ZOw7EQ-8SI4dm2VN-Bx8LUwmQOOnEuZSaXEACEqGRJBw8voiptSjtblUanUmi0HG1nG4TAMHn5DrJTvU7HY3g5vr8ErNkvQgaDwZDVtCNiVtqBypVqrUHA1mo1WqEMZ1Gp4HlVPGFZJ9-OLSTEflMKUl5nRODx+CxhGJxEJJDQsixJFlsjQZApGcUtmUERzkTy+e1MQhTLV6iQ0RYwqYmrJ6mZKmT5TNSItsmQ+HQILowCQCAA3VQAayj5MDJGDWVDvAQsdUmHQzLyUIKMOZlq6Dlkru5-nCRI99QFiGCFks+KCaPLxk+-viKbTGboYAAToPVIOSMoADZ5gBmo9QJGT-z7fCz+DjufzCkL63NcNZJkOlj6RNkHuGg3qNwQdlM5je4saL3FFxlkx7S4yIb4LB4rCyHBobgWBpMEIXDSNozXBMkwDD8lgzH9uD-ACgJAulV3XPMtgLU0iyZC14TLCsuSaaswlrT0GwQYxvV6RwfDOYwGPGWVF1mZdeEQ5DAOAkFQI4Adh1Hccp00WdB3nNig0-dNv1-Fh-x4tCIQwnMsN0HC1kKfC90MA9GiPQY7FPUxzwaK8qi8d4wj6epKheRx-G7P5ZmUjh+wjQhILjRMF1g1y+LpDNVI3bCt1wndYRZPTHVGCtugcZ8mnqUzGivfw7N6LkpUsiJfHqZyFRINz+yHEcx0nGc5z898AtpCFguzUKNPCrTiwI-dHVPF1-EfZ1jL8Rp-HSt5XXbR8uVMsJ6j8QqU24AB5dMADEAE0WFEBhJEkfVDSyKR2C4Ph6G3bTd2i8pwhdIUSLebo9lkYaHQsIUSBSgZgkuCx3osOb-jcgQ6FO9rdPKUw4pbRLvWS1Kr2CV1uiuGibJCC4-vYmSaHYBbRDSWgcgoIGIrOqLSydUb60aN0rhmzsrzdOj3iGTwL0JaJZXwVQIDgfQpLNUnCIAWg5WRRbF8XRfBq9hZqCW5dFgrWP8xVaH5ktCKdLxHoiMI-FqFG+ivIVm1GIIIiYypTBe9HpPgvg1Y6mKHHqHrPmd91EouCxrgdYkDJo047Efb7PSOG3UxkhD5MU1DAohB3QcQNFjAeL3xWMet3QiCziTe+jhgygYMvDkr7bw86ya+kgb3eIULgibownS4V62JWRH36AYrHDxaVvWzbtt27IDpVY6E4upPEtdXrRZe3x+R9zpvZTobyx9Ow-BeqmS7jgCKHHsneX2bl28+8VDd98w+peQv3RvX6ldq22jWx3H8YEA+Nat5s7KYq2mnIocJuDp2w1FxLrUIbwZosWiEAA */
     id: `SijoittelunTuloksetMachine-${hakukohdeOid}-${valintatapajonoOid}`,
     initial: SijoittelunTuloksetStates.IDLE,
+    types: {} as {
+      context: SijoittelunTuloksetContext;
+      events: SijoittelunTuloksetEvents;
+      actions:
+        | { type: 'alert'; params: { message: string } }
+        | { type: 'successNotify'; params: { message: string } }
+        | { type: 'errorModal'; params: { error: Error } }
+        | { type: 'notifyMassStatusChange' }
+        | { type: 'updateSuccess' };
+    },
     context: {
       hakemukset,
       changedHakemukset: [],
       originalHakemukset: original,
-    } as SijoittelunTuloksetContext,
+    },
     states: {
       [SijoittelunTuloksetStates.IDLE]: {
         on: {
-          [SijoittelunTuloksetEvents.ADD_CHANGED_HAKEMUS]: {
+          [SijoittelunTuloksetEventTypes.ADD_CHANGED_HAKEMUS]: {
             actions: assign({
               changedHakemukset: ({ context, event }) => {
-                const e = event as unknown as SijoittelunTuloksetChangeEvent;
+                const e = event;
                 return updateChangedHakemus(context, e);
               },
             }),
           },
-          [SijoittelunTuloksetEvents.UPDATE]: [
+          [SijoittelunTuloksetEventTypes.UPDATE]: [
             {
               guard: 'hasChangedHakemukset',
               target: SijoittelunTuloksetStates.UPDATING,
@@ -104,7 +137,7 @@ export const createSijoittelunTuloksetMachine = (
               },
             },
           ],
-          [SijoittelunTuloksetEvents.PUBLISH]: [
+          [SijoittelunTuloksetEventTypes.PUBLISH]: [
             {
               guard: 'hasChangedHakemukset',
               target: SijoittelunTuloksetStates.UPDATING_AND_THEN_PUBLISH,
@@ -113,9 +146,9 @@ export const createSijoittelunTuloksetMachine = (
               target: SijoittelunTuloksetStates.PUBLISHING,
             },
           ],
-          [SijoittelunTuloksetEvents.CHANGE_HAKEMUKSET_STATES]: {
+          [SijoittelunTuloksetEventTypes.CHANGE_HAKEMUKSET_STATES]: {
             actions: assign(({ context, event }) => {
-              const e = event as unknown as HakemuksetStateChangeEvent;
+              const e = event;
               return massUpdateChangedHakemukset(context, e);
             }),
             target: SijoittelunTuloksetStates.NOTIFY_MASS_STATUS_CHANGE,
@@ -136,7 +169,9 @@ export const createSijoittelunTuloksetMachine = (
             target: SijoittelunTuloksetStates.IDLE,
             actions: {
               type: 'errorModal',
-              params: ({ event }) => event,
+              params: ({ event }) => ({
+                error: event.error as Error,
+              }),
             },
           },
         },
@@ -155,7 +190,11 @@ export const createSijoittelunTuloksetMachine = (
             target: SijoittelunTuloksetStates.IDLE,
             actions: {
               type: 'errorModal',
-              params: ({ event }) => event,
+              params: ({ event }) => {
+                return {
+                  error: event.error as Error,
+                };
+              },
             },
           },
         },
@@ -170,7 +209,7 @@ export const createSijoittelunTuloksetMachine = (
             target: SijoittelunTuloksetStates.IDLE,
             actions: {
               type: 'errorModal',
-              params: ({ event }) => event,
+              params: ({ event }) => ({ error: event.error as Error }),
             },
           },
         },
@@ -250,13 +289,13 @@ export const createSijoittelunTuloksetMachine = (
       alert: (_, params) =>
         addToast({
           key: `sijoittelun-tulokset-update-failed-for-${hakukohdeOid}-${valintatapajonoOid}`,
-          message: (params as { message: string }).message,
+          message: params.message,
           type: 'error',
         }),
       successNotify: (_, params) =>
         addToast({
           key: `sijoittelun-tulokset-updated-for-${hakukohdeOid}-${valintatapajonoOid}`,
-          message: (params as { message: string }).message,
+          message: params.message,
           type: 'success',
         }),
       notifyMassStatusChange: ({ context }) =>
@@ -268,7 +307,7 @@ export const createSijoittelunTuloksetMachine = (
         }),
       errorModal: (_, params) =>
         showModal(SijoittelunTulosErrorModalDialog, {
-          error: (params as { error: Error }).error as Error,
+          error: params.error,
           hakemukset,
         }),
     },
@@ -320,7 +359,7 @@ const tryAndParseError = async (wrappedFn: () => Promise<void>) => {
 
 const updateChangedHakemus = (
   context: SijoittelunTuloksetContext,
-  e: SijoittelunTuloksetChangeEvent,
+  e: SijoittelunTulosChangeEvent,
 ): SijoittelunHakemusValintatiedoilla[] => {
   let hakenut = context.changedHakemukset.find(
     (h) => h.hakemusOid === e.hakemusOid,
@@ -381,7 +420,7 @@ const updateChangedHakemus = (
 
 const massUpdateChangedHakemukset = (
   context: SijoittelunTuloksetContext,
-  e: HakemuksetStateChangeEvent,
+  e: HakemuksetStateChangeParams,
 ) => {
   let changed: SijoittelunHakemusValintatiedoilla[] = context.changedHakemukset;
   let changedAmount = 0;

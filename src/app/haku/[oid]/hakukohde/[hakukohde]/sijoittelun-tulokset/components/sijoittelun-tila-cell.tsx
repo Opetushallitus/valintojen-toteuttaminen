@@ -10,7 +10,7 @@ import { Box, InputAdornment, SelectChangeEvent, styled } from '@mui/material';
 import { LocalizedSelect } from '@/app/components/localized-select';
 import { isKorkeakouluHaku } from '@/app/lib/kouta';
 import { Haku } from '@/app/lib/types/kouta-types';
-import { SijoittelunTuloksetChangeEvent } from '../lib/sijoittelun-tulokset-state';
+import { SijoittelunTulosChangeParams } from '../lib/sijoittelun-tulokset-state';
 import {
   ophColors,
   OphCheckbox,
@@ -55,7 +55,7 @@ export const SijoittelunTilaCell = ({
   hakemus: SijoittelunHakemusValintatiedoilla;
   haku: Haku;
   disabled: boolean;
-  updateForm: (params: SijoittelunTuloksetChangeEvent) => void;
+  updateForm: (params: SijoittelunTulosChangeParams) => void;
 }) => {
   const { t, translateEntity } = useTranslations();
   const { data: hyvaksynnanEhdot } = useHyvaksynnanEhdot();
