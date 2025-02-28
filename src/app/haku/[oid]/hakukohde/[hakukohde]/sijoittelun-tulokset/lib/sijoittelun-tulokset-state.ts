@@ -69,6 +69,7 @@ export const createSijoittelunTuloksetMachine = (
   hakemukset: SijoittelunHakemusValintatiedoilla[],
   lastModified: string,
   addToast: (toast: Toast) => void,
+  onUpdateSuccess: () => void,
 ) => {
   const original = clone(hakemukset);
   const tuloksetMachine = createMachine({
@@ -193,6 +194,7 @@ export const createSijoittelunTuloksetMachine = (
           },
         ],
         entry: [
+          'updateSuccess',
           assign({
             hakemukset: ({ context }) =>
               context.hakemukset.map((h) => {
@@ -218,6 +220,7 @@ export const createSijoittelunTuloksetMachine = (
           },
         ],
         entry: [
+          'updateSuccess',
           assign({
             hakemukset: ({ context }) =>
               context.hakemukset.map((h) => {
@@ -241,6 +244,9 @@ export const createSijoittelunTuloksetMachine = (
         context.changedHakemukset.length > 0,
     },
     actions: {
+      updateSuccess: () => {
+        onUpdateSuccess();
+      },
       alert: (_, params) =>
         addToast({
           key: `sijoittelun-tulokset-update-failed-for-${hakukohdeOid}-${valintatapajonoOid}`,

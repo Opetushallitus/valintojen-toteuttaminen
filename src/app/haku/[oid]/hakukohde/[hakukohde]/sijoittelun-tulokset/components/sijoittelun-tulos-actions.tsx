@@ -12,7 +12,10 @@ import {
 } from '@mui/material';
 import { AnyMachineSnapshot } from 'xstate';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
-import { SijoittelunTuloksetStates } from '../lib/sijoittelun-tulokset-state';
+import {
+  HakemuksetStateChangeEvent,
+  SijoittelunTuloksetStates,
+} from '../lib/sijoittelun-tulokset-state';
 import useToaster from '@/app/hooks/useToaster';
 import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
 import {
@@ -102,7 +105,6 @@ const useEraantyneetHakemukset = ({
   hakukohdeOid: string;
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
 }) => {
-  // TODO: Vain tämän jonon hakemukset
   const hakemuksetJotkaTarvitsetvatAikarajaMennytTiedon = pipe(
     valintatapajono.hakemukset,
     filter(
@@ -195,11 +197,13 @@ const MerkitseMyohastyneeksiButton = ({
   hakukohdeOid,
   valintatapajono,
   disabled,
+  massUpdateForm,
 }: {
   disabled: boolean;
   hakuOid: string;
   hakukohdeOid: string;
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
+  massUpdateForm: (params: HakemuksetStateChangeEvent) => void;
 }) => {
   const { t } = useTranslations();
 
@@ -227,6 +231,14 @@ const MerkitseMyohastyneeksiButton = ({
               />
             </Box>
           ),
+          onConfirm: () => {
+            massUpdateForm({
+              vastaanottoTila: VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA,
+              hakemusOids: new Set(
+                eraantyneetHakemukset.map(prop('hakemusOid')),
+              ),
+            });
+          },
         })
       }
     >
@@ -241,12 +253,14 @@ export const SijoittelunTuloksetActions = ({
   publish,
   hakukohde,
   valintatapajono,
+  massUpdateForm,
 }: {
   haku: Haku;
   state: AnyMachineSnapshot;
   publish: () => void;
   hakukohde: Hakukohde;
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
+  massUpdateForm: (params: HakemuksetStateChangeEvent) => void;
 }) => {
   const { t } = useTranslations();
 
@@ -268,7 +282,10 @@ export const SijoittelunTuloksetActions = ({
         hakuOid={haku.oid}
         hakukohdeOid={hakukohde.oid}
         valintatapajono={valintatapajono}
-        disabled={!isPublishAllowed}
+        disabled={
+          !isPublishAllowed || !state.matches(SijoittelunTuloksetStates.IDLE)
+        }
+        massUpdateForm={massUpdateForm}
       />
       <OphButton
         variant="contained"

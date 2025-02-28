@@ -23,6 +23,7 @@ import {
   ValinnanTulosUpdateErrorResult,
 } from './types/valinta-tulos-types';
 import { toFormattedDateTimeString } from './localization/translation-utils';
+import { queryOptions } from '@tanstack/react-query';
 
 type SijoittelunTulosResponseData = {
   valintatapajonoNimi: string;
@@ -221,6 +222,7 @@ const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
           );
         })
         .forEach((hakemus, i) => (hakemus.sija = i + 1));
+
       return {
         oid: jono.oid,
         nimi: jono.nimi,
@@ -241,6 +243,21 @@ const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
     lastModified: data.lastModified,
   };
 };
+
+export const tryToGetLatestSijoitteluajonTuloksetWithValintaEsitysQueryOptions =
+  ({ hakuOid, hakukohdeOid }: { hakuOid: string; hakukohdeOid: string }) =>
+    queryOptions({
+      queryKey: [
+        'tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys',
+        hakuOid,
+        hakukohdeOid,
+      ],
+      queryFn: () =>
+        tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys(
+          hakuOid,
+          hakukohdeOid,
+        ),
+    });
 
 export const tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys = async (
   hakuOid: string,
