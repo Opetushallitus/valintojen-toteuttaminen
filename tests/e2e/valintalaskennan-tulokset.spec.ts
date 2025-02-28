@@ -171,7 +171,7 @@ test.describe('Valintalaskennan muokkausmodaali', () => {
     await expectPageAccessibilityOk(page);
   });
 
-  test('näytetään valintalaskennan muokkausmodaali ja siinä valintalaskennana tuloksen tiedot', async ({
+  test('näytetään valintalaskennan muokkausmodaali ja siinä valintalaskennan tuloksen tiedot', async ({
     page,
   }) => {
     await initSaveModal(page);
