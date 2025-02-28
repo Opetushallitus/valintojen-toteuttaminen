@@ -22,6 +22,7 @@ import { SijoittelunTuloksetActionBar } from './sijoittelun-tulos-action-bar';
 import {
   HakemuksetStateChangeParams,
   SijoittelunTuloksetEventTypes,
+  SijoittelunTuloksetStates,
   SijoittelunTulosActorRef,
   SijoittelunTulosChangeParams,
 } from '../lib/sijoittelun-tulokset-state';
@@ -53,8 +54,6 @@ export const SijoittelunTulosTable = ({
   sijoitteluajoId,
   setSort,
   sort,
-  disabled,
-  massStatusChangeForm,
   sijoittelunTulosActorRef,
 }: {
   haku: Haku;
@@ -63,13 +62,14 @@ export const SijoittelunTulosTable = ({
   sijoitteluajoId: string;
   sort: string;
   setSort: (sort: string) => void;
-  disabled: boolean;
-  massStatusChangeForm: (changeParams: HakemuksetStateChangeParams) => void;
   sijoittelunTulosActorRef: SijoittelunTulosActorRef;
 }) => {
   const { t } = useTranslations();
 
   const { send } = sijoittelunTulosActorRef;
+
+  const state = useSelector(sijoittelunTulosActorRef, (s) => s);
+  const disabled = !state.matches(SijoittelunTuloksetStates.IDLE);
 
   const updateForm = useCallback(
     (changeParams: SijoittelunTulosChangeParams) => {
@@ -80,6 +80,13 @@ export const SijoittelunTulosTable = ({
     },
     [send],
   );
+
+  const massStatusChangeForm = (changeParams: HakemuksetStateChangeParams) => {
+    send({
+      type: SijoittelunTuloksetEventTypes.CHANGE_HAKEMUKSET_STATES,
+      ...changeParams,
+    });
+  };
 
   const columns = useMemo(() => {
     const stickyHakijaColumn = createStickyHakijaColumn('sijoittelun-tulos', t);

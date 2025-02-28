@@ -10,11 +10,12 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { AnyMachineSnapshot } from 'xstate';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import {
   HakemuksetStateChangeParams,
+  SijoittelunTuloksetEventTypes,
   SijoittelunTuloksetStates,
+  SijoittelunTulosActorRef,
 } from '../lib/sijoittelun-tulokset-state';
 import useToaster from '@/app/hooks/useToaster';
 import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
@@ -33,6 +34,7 @@ import { showModal } from '@/app/components/global-modal';
 import { GlobalConfirmationModal } from '@/app/components/global-confirmation-modal';
 import { buildLinkToApplication } from '@/app/lib/ataru';
 import { ExternalLink } from '@/app/components/external-link';
+import { useSelector } from '@xstate/react';
 
 const ActionsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -251,20 +253,20 @@ const MerkitseMyohastyneeksiButton = ({
 
 export const SijoittelunTuloksetActions = ({
   haku,
-  state,
-  publish,
   hakukohde,
   valintatapajono,
-  massUpdateForm,
+  sijoittelunTuloksetActorRef,
 }: {
   haku: Haku;
-  state: AnyMachineSnapshot;
-  publish: () => void;
   hakukohde: Hakukohde;
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
-  massUpdateForm: (params: HakemuksetStateChangeParams) => void;
+  sijoittelunTuloksetActorRef: SijoittelunTulosActorRef;
 }) => {
   const { t } = useTranslations();
+
+  const { send } = sijoittelunTuloksetActorRef;
+
+  const state = useSelector(sijoittelunTuloksetActorRef, (s) => s);
 
   const isPublishAllowed = useIsHakuPublishAllowed({ haku });
 
@@ -287,14 +289,21 @@ export const SijoittelunTuloksetActions = ({
         disabled={
           !isPublishAllowed || !state.matches(SijoittelunTuloksetStates.IDLE)
         }
-        massUpdateForm={massUpdateForm}
+        massUpdateForm={(changeParams: HakemuksetStateChangeParams) => {
+          send({
+            type: SijoittelunTuloksetEventTypes.MASS_UPDATE,
+            ...changeParams,
+          });
+        }}
       />
       <OphButton
         variant="contained"
         disabled={
           !isPublishAllowed || !state.matches(SijoittelunTuloksetStates.IDLE)
         }
-        onClick={publish}
+        onClick={() => {
+          send({ type: SijoittelunTuloksetEventTypes.PUBLISH });
+        }}
       >
         {t('sijoittelun-tulokset.hyvaksy')}
       </OphButton>
