@@ -14,6 +14,11 @@ import {
   SijoittelunTulosActorRef,
 } from './sijoittelun-tulokset-state-types';
 
+vi.mock('@/app/components/global-modal', () => ({
+  showModal: vi.fn(),
+  createModal: vi.fn(),
+}));
+
 const waitIdle = (actor: SijoittelunTulosActorRef) =>
   waitFor(actor, (state) => state.matches(SijoittelunTuloksetState.IDLE));
 
@@ -177,6 +182,48 @@ describe('Sijoittelun tulokset states', async () => {
     expect(state.context.changedHakemukset[0]).toEqual({
       ...hakemukset[1],
       ehdollisestiHyvaksyttavissa: true,
+    });
+  });
+
+  test('Should only reset changes for successfully saved hakemukset', async () => {
+    const actor = createActorLogic();
+    vi.spyOn(client, 'post').mockImplementationOnce(() =>
+      Promise.resolve({ headers: new Headers(), data: {} }),
+    );
+    vi.spyOn(client, 'patch').mockImplementationOnce(() =>
+      Promise.resolve({
+        headers: new Headers(),
+        data: [
+          {
+            // saving hakemus-1 fails
+            hakemusOid: 'hakemus-1',
+          },
+        ],
+      }),
+    );
+
+    actor.send({
+      type: SijoittelunTuloksetEventType.CHANGE,
+      hakemusOid: 'hakemus-1',
+      vastaanottotila: VastaanottoTila.EHDOLLISESTI_VASTAANOTTANUT,
+    });
+
+    actor.send({
+      type: SijoittelunTuloksetEventType.CHANGE,
+      hakemusOid: 'hakemus-2',
+      vastaanottotila: VastaanottoTila.VASTAANOTTANUT_SITOVASTI,
+    });
+
+    let state = await waitIdle(actor);
+    expect(state.context.changedHakemukset.length).toEqual(2);
+
+    actor.send({ type: SijoittelunTuloksetEventType.UPDATE });
+    state = await waitIdle(actor);
+
+    expect(state.context.changedHakemukset.length).toEqual(1);
+    expect(state.context.changedHakemukset[0]).toMatchObject({
+      hakemusOid: 'hakemus-1',
+      vastaanottotila: VastaanottoTila.EHDOLLISESTI_VASTAANOTTANUT,
     });
   });
 });
