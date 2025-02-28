@@ -1,7 +1,7 @@
 'use client';
 
 import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
-import { FormEvent, useCallback, useMemo, useState } from 'react';
+import { FormEvent, useCallback, useMemo } from 'react';
 import useToaster from '@/app/hooks/useToaster';
 import { useMachine } from '@xstate/react';
 import { styled } from '@mui/material';
@@ -12,6 +12,7 @@ import {
   SijoittelunTulosChangeParams,
   SijoittelunTuloksetEventTypes,
   SijoittelunTuloksetStates,
+  useIsDirtySijoittelunTulos,
 } from '../lib/sijoittelun-tulokset-state';
 import { SijoitteluajonValintatapajonoValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
 import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
@@ -57,7 +58,7 @@ export const SijoittelunTulosForm = ({
     queryClient.invalidateQueries(options);
   }, [queryClient, haku.oid, hakukohde.oid]);
 
-  const syottoMachine = useMemo(() => {
+  const sijoittelunTulosMachine = useMemo(() => {
     return createSijoittelunTuloksetMachine(
       hakukohde.oid,
       valintatapajono.oid,
@@ -68,24 +69,24 @@ export const SijoittelunTulosForm = ({
     );
   }, [hakukohde, valintatapajono, addToast, lastModified, onUpdateSuccess]);
 
-  const [state, send] = useMachine(syottoMachine);
+  const [state, send, sijoittelunTulosActorRef] = useMachine(
+    sijoittelunTulosMachine,
+  );
 
   const { results, pageResults, sort, setSort, pageSize, setPage, page } =
     useSijoittelunTulosSearch(valintatapajono.oid, valintatapajono.hakemukset);
 
-  const [dirty, setDirty] = useState(false);
+  const isDirty = useIsDirtySijoittelunTulos(sijoittelunTulosActorRef);
 
-  useConfirmChangesBeforeNavigation(dirty);
+  useConfirmChangesBeforeNavigation(isDirty);
 
   const submitChanges = (event: FormEvent) => {
     send({ type: SijoittelunTuloksetEventTypes.UPDATE });
     event.preventDefault();
-    setDirty(false);
   };
 
   const publish = () => {
     send({ type: SijoittelunTuloksetEventTypes.PUBLISH });
-    setDirty(false);
   };
 
   const updateForm = (changeParams: SijoittelunTulosChangeParams) => {
@@ -93,7 +94,6 @@ export const SijoittelunTulosForm = ({
       type: SijoittelunTuloksetEventTypes.ADD_CHANGED_HAKEMUS,
       ...changeParams,
     });
-    setDirty(true);
   };
 
   const massStatusChangeForm = (changeParams: HakemuksetStateChangeParams) => {
@@ -101,7 +101,6 @@ export const SijoittelunTulosForm = ({
       type: SijoittelunTuloksetEventTypes.CHANGE_HAKEMUKSET_STATES,
       ...changeParams,
     });
-    setDirty(true);
   };
 
   return (
@@ -121,7 +120,6 @@ export const SijoittelunTulosForm = ({
             type: SijoittelunTuloksetEventTypes.CHANGE_HAKEMUKSET_STATES,
             ...changeParams,
           });
-          setDirty(true);
           send({ type: SijoittelunTuloksetEventTypes.UPDATE });
         }}
       />
