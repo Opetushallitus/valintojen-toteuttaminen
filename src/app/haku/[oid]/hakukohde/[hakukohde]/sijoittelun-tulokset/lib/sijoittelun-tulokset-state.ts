@@ -26,7 +26,6 @@ export type SijoittelunTuloksetContext = {
   changedHakemukset: SijoittelunHakemusValintatiedoilla[];
   toastMessage?: string;
   massChangeAmount?: number;
-  originalHakemukset: SijoittelunHakemusValintatiedoilla[];
 };
 
 export enum SijoittelunTuloksetStates {
@@ -99,7 +98,6 @@ export const createSijoittelunTuloksetMachine = (
   addToast: (toast: Toast) => void,
   onUpdateSuccess: () => void,
 ) => {
-  const original = clone(hakemukset);
   const tuloksetMachine = createMachine({
     /** @xstate-layout N4IgpgJg5mDOIC5QAoC2BDAxgCwJYDswBKAOgEkARAGQFEBiAQQooH0BhACQYDkBxG1lwDSNALIBVAMoBtAAwBdRKAAOAe1i4ALrlX4lIAB6IALAEYSATivWb1gBwA2ADQgAnieN2Sxhxd8AmfztPC2MAZmMAX0iXNCw8QlJKWjpxAAUKBgAVGjlFJBA1DW1dfSMEMLCHElkfOwB2AFZmx18fF3cEC1qSf1MHUzsIoONAxujYjBwCYnJqenTMnOlTfJV1LR09AvLGsJIwxtNmhyCrev9ZOw7EQ-8SI4dm2VN-Bx8LUwmQOOnEuZSaXEACEqGRJBw8voiptSjtblUanUmi0HG1nG4TAMHn5DrJTvU7HY3g5vr8ErNkvQgaDwZDVtCNiVtqBypVqrUHA1mo1WqEMZ1Gp4HlVPGFZJ9-OLSTEflMKUl5nRODx+CxhGJxEJJDQsixJFlsjQZApGcUtmUERzkTy+e1MQhTLV6iQ0RYwqYmrJ6mZKmT5TNSItsmQ+HQILowCQCAA3VQAayj5MDJGDWVDvAQsdUmHQzLyUIKMOZlq6Dlkru5-nCRI99QFiGCFks+KCaPLxk+-viKbTGboYAAToPVIOSMoADZ5gBmo9QJGT-z7fCz+DjufzCkL63NcNZJkOlj6RNkHuGg3qNwQdlM5je4saL3FFxlkx7S4yIb4LB4rCyHBobgWBpMEIXDSNozXBMkwDD8lgzH9uD-ACgJAulV3XPMtgLU0iyZC14TLCsuSaaswlrT0GwQYxvV6RwfDOYwGPGWVF1mZdeEQ5DAOAkFQI4Adh1Hccp00WdB3nNig0-dNv1-Fh-x4tCIQwnMsN0HC1kKfC90MA9GiPQY7FPUxzwaK8qi8d4wj6epKheRx-G7P5ZmUjh+wjQhILjRMF1g1y+LpDNVI3bCt1wndYRZPTHVGCtugcZ8mnqUzGivfw7N6LkpUsiJfHqZyFRINz+yHEcx0nGc5z898AtpCFguzUKNPCrTiwI-dHVPF1-EfZ1jL8Rp-HSt5XXbR8uVMsJ6j8QqU24AB5dMADEAE0WFEBhJEkfVDSyKR2C4Ph6G3bTd2i8pwhdIUSLebo9lkYaHQsIUSBSgZgkuCx3osOb-jcgQ6FO9rdPKUw4pbRLvWS1Kr2CV1uiuGibJCC4-vYmSaHYBbRDSWgcgoIGIrOqLSydUb60aN0rhmzsrzdOj3iGTwL0JaJZXwVQIDgfQpLNUnCIAWg5WRRbF8XRfBq9hZqCW5dFgrWP8xVaH5ktCKdLxHoiMI-FqFG+ivIVm1GIIIiYypTBe9HpPgvg1Y6mKHHqHrPmd91EouCxrgdYkDJo047Efb7PSOG3UxkhD5MU1DAohB3QcQNFjAeL3xWMet3QiCziTe+jhgygYMvDkr7bw86ya+kgb3eIULgibownS4V62JWRH36AYrHDxaVvWzbtt27IDpVY6E4upPEtdXrRZe3x+R9zpvZTobyx9Ow-BeqmS7jgCKHHsneX2bl28+8VDd98w+peQv3RvX6ldq22jWx3H8YEA+Nat5s7KYq2mnIocJuDp2w1FxLrUIbwZosWiEAA */
     id: `SijoittelunTuloksetMachine-${hakukohdeOid}-${valintatapajonoOid}`,
@@ -115,9 +113,8 @@ export const createSijoittelunTuloksetMachine = (
         | { type: 'updateSuccess' };
     },
     context: {
-      hakemukset,
+      hakemukset: clone(hakemukset),
       changedHakemukset: [],
-      originalHakemukset: original,
     },
     states: {
       [SijoittelunTuloksetStates.IDLE]: {
@@ -166,7 +163,7 @@ export const createSijoittelunTuloksetMachine = (
           src: 'updateHakemukset',
           input: ({ context }) => ({
             changed: context.changedHakemukset,
-            original: context.originalHakemukset,
+            original: context.hakemukset,
           }),
           onDone: {
             target: SijoittelunTuloksetStates.UPDATE_COMPLETED,
@@ -187,7 +184,7 @@ export const createSijoittelunTuloksetMachine = (
           src: 'updateHakemukset',
           input: ({ context }) => ({
             changed: context.changedHakemukset,
-            original: context.originalHakemukset,
+            original: context.hakemukset,
           }),
           onDone: {
             target: SijoittelunTuloksetStates.PUBLISHING,
@@ -362,8 +359,10 @@ const updateChangedHakemus = (
     (h) => h.hakemusOid === e.hakemusOid,
   );
   const existing: boolean = Boolean(hakenut);
-  hakenut =
-    hakenut || context.hakemukset.find((h) => h.hakemusOid === e.hakemusOid);
+  hakenut = clone(
+    hakenut || context.hakemukset.find((h) => h.hakemusOid === e.hakemusOid),
+  );
+
   if (hakenut) {
     if (e.julkaistavissa !== undefined) {
       hakenut.julkaistavissa = e.julkaistavissa;
@@ -395,9 +394,7 @@ const updateChangedHakemus = (
     if (existing) {
       if (
         isUnchanged(
-          context.originalHakemukset.find(
-            (h) => h.hakemusOid === hakenut.hakemusOid,
-          )!,
+          context.hakemukset.find((h) => h.hakemusOid === hakenut.hakemusOid)!,
           hakenut,
         )
       ) {
@@ -409,7 +406,7 @@ const updateChangedHakemus = (
         h.hakemusOid === e.hakemusOid ? hakenut : h,
       );
     } else {
-      return [...context.changedHakemukset, ...[hakenut]];
+      return [...context.changedHakemukset, hakenut];
     }
   }
   return context.changedHakemukset;
@@ -423,9 +420,12 @@ const massUpdateChangedHakemukset = (
   let changedAmount = 0;
   e.hakemusOids.forEach((hakemusOid) => {
     let hakenut = changed.find((h) => h.hakemusOid === hakemusOid);
-    const existing: boolean = Boolean(hakenut);
-    hakenut =
-      hakenut || context.hakemukset.find((h) => h.hakemusOid === hakemusOid);
+    const changedExists: boolean = Boolean(hakenut);
+    const originalHakenut = context.hakemukset.find(
+      (h) => h.hakemusOid === hakemusOid,
+    );
+    hakenut = hakenut || originalHakenut;
+
     if (
       hakenut &&
       ((e.ilmoittautumisTila !== hakenut.ilmoittautumisTila &&
@@ -437,16 +437,9 @@ const massUpdateChangedHakemukset = (
       hakenut.ilmoittautumisTila =
         e.ilmoittautumisTila ?? hakenut.ilmoittautumisTila;
       changedAmount++;
-      if (existing) {
-        if (
-          isUnchanged(
-            context.originalHakemukset.find(
-              (h) => h.hakemusOid === hakenut.hakemusOid,
-            )!,
-            hakenut,
-          )
-        ) {
-          changed = changed.filter((h) => h.hakemusOid !== hakenut.hakemusOid);
+      if (changedExists) {
+        if (isUnchanged(originalHakenut!, hakenut)) {
+          changed = changed.filter((h) => h.hakemusOid !== hakemusOid);
         } else {
           changed = changed.map((h) =>
             h.hakemusOid === hakemusOid ? hakenut : h,

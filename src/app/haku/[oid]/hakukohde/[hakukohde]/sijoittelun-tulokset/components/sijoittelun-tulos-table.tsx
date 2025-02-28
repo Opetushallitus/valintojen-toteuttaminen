@@ -7,7 +7,7 @@ import {
 } from '@/app/components/table/table-columns';
 import { ListTable } from '@/app/components/table/list-table';
 import { SijoittelunHakemusValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   KeysMatching,
   ListTableColumn,
@@ -21,9 +21,13 @@ import { isKorkeakouluHaku } from '@/app/lib/kouta';
 import { SijoittelunTuloksetActionBar } from './sijoittelun-tulos-action-bar';
 import {
   HakemuksetStateChangeParams,
+  SijoittelunTuloksetEventTypes,
+  SijoittelunTulosActorRef,
   SijoittelunTulosChangeParams,
 } from '../lib/sijoittelun-tulokset-state';
 import { OtherActionsCell } from './other-actions-cell';
+import { useSelector } from '@xstate/react';
+import { isNonNull } from 'remeda';
 
 export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
   title,
@@ -50,8 +54,8 @@ export const SijoittelunTulosTable = ({
   setSort,
   sort,
   disabled,
-  updateForm,
   massStatusChangeForm,
+  sijoittelunTulosActorRef,
 }: {
   haku: Haku;
   hakukohde: Hakukohde;
@@ -60,10 +64,22 @@ export const SijoittelunTulosTable = ({
   sort: string;
   setSort: (sort: string) => void;
   disabled: boolean;
-  updateForm: (params: SijoittelunTulosChangeParams) => void;
   massStatusChangeForm: (changeParams: HakemuksetStateChangeParams) => void;
+  sijoittelunTulosActorRef: SijoittelunTulosActorRef;
 }) => {
   const { t } = useTranslations();
+
+  const { send } = sijoittelunTulosActorRef;
+
+  const updateForm = useCallback(
+    (changeParams: SijoittelunTulosChangeParams) => {
+      send({
+        type: SijoittelunTuloksetEventTypes.ADD_CHANGED_HAKEMUS,
+        ...changeParams,
+      });
+    },
+    [send],
+  );
 
   const columns = useMemo(() => {
     const stickyHakijaColumn = createStickyHakijaColumn('sijoittelun-tulos', t);
@@ -145,10 +161,31 @@ export const SijoittelunTulosTable = ({
         ),
         sortable: false,
       }),
-    ].filter((a) => a !== null);
+    ].filter(isNonNull);
   }, [t, haku, updateForm, disabled, sijoitteluajoId, hakukohde]);
 
   const [selection, setSelection] = useState<Set<string>>(() => new Set());
+
+  const changedHakemukset = useSelector(
+    sijoittelunTulosActorRef,
+    (state) => state.context.changedHakemukset,
+  );
+
+  const rows = useMemo(
+    () =>
+      hakemukset.map((hakemus) => {
+        const changedHakemus =
+          changedHakemukset.find(
+            (changedHakemus) =>
+              changedHakemus.hakemusOid === hakemus.hakemusOid,
+          ) ?? {};
+        return {
+          ...hakemus,
+          ...changedHakemus,
+        };
+      }),
+    [hakemukset, changedHakemukset],
+  );
 
   return (
     <>
@@ -161,7 +198,7 @@ export const SijoittelunTulosTable = ({
       <ListTable
         rowKeyProp="hakemusOid"
         columns={columns}
-        rows={hakemukset}
+        rows={rows}
         sort={sort}
         setSort={setSort}
         checkboxSelection={true}

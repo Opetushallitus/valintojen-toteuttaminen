@@ -3,7 +3,6 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { MaksunTila } from '@/app/lib/types/ataru-types';
 import { SijoittelunHakemusValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
 import { SijoittelunTulosChangeParams } from '../lib/sijoittelun-tulokset-state';
-import { useState } from 'react';
 import { SelectChangeEvent } from '@mui/material';
 
 export const MaksuCell = ({
@@ -16,24 +15,22 @@ export const MaksuCell = ({
   updateForm: (params: SijoittelunTulosChangeParams) => void;
 }) => {
   const { t } = useTranslations();
-  const [maksunTila, setMaksunTila] = useState(hakemus.maksuntila);
+  const { maksuntila } = hakemus;
 
   const maksuntilaOptions = Object.values(MaksunTila).map((tila) => {
     return { value: tila as string, label: t(`maksuntila.${tila}`) };
   });
 
   const updateMaksunTila = (event: SelectChangeEvent<string>) => {
-    const tila = event.target.value as MaksunTila;
-    setMaksunTila(tila);
     updateForm({
       hakemusOid: hakemus.hakemusOid,
-      maksunTila: tila,
+      maksunTila: event.target.value as MaksunTila,
     });
   };
 
   return hakemus.maksuntila ? (
     <LocalizedSelect
-      value={maksunTila}
+      value={maksuntila}
       onChange={updateMaksunTila}
       options={maksuntilaOptions}
       disabled={disabled}
