@@ -34,7 +34,6 @@ export const THEME_OVERRIDES: ThemeOptions = {
       styleOverrides: {
         paper: ({ theme }) => ({
           minHeight: '200px',
-          borderTop: `4px solid ${ophColors.cyan1}`,
           borderRadius: '2px',
           boxShadow: '2px 2px 8px 0px rgba(0,0,0,0.17)',
           padding: theme.spacing(3),
