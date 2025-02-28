@@ -296,6 +296,8 @@
     "hyvaksy": "Hyväksy ja tallenna valintaesitys",
     "valmis": "Valintaesityksen muutokset tallennettu",
     "hyvaksytty": "Valintaesitys hyväksytty",
+    "hakija": "Hakija",
+    "hakemus-oid": "Hakemuksen tekninen tunniste (OID)",
     "ei-tuloksia": "Ei sijoittelun tuloksia hakukohteelle",
     "muuta-vastaanottotieto": "Muuta vastaanottotieto",
     "virhe-vie-taulukkolaskentaan": "Sijoittelun tulosten vieminen taulukkolaskentaan epäonnistui!",
