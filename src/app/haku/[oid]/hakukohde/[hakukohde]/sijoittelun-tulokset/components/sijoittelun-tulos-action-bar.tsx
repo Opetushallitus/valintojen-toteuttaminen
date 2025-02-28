@@ -15,6 +15,8 @@ import {
   isVastaanottoPossible,
 } from '@/app/lib/sijoittelun-tulokset-utils';
 import { HakemuksetStateChangeParams } from '../lib/sijoittelun-tulokset-state-types';
+import { useVastaanottoTilaOptions } from '@/app/hooks/useVastaanottoTilaOptions';
+import { useIlmoittautumisTilaOptions } from '@/app/hooks/useIlmoittautumisTilaOptions';
 
 const IlmoittautumisSelect = ({
   hakemukset,
@@ -25,13 +27,7 @@ const IlmoittautumisSelect = ({
   selection: Set<string>;
   massStatusChangeForm: (changeParams: HakemuksetStateChangeParams) => void;
 }) => {
-  const { t } = useTranslations();
-
-  const ilmoittautumistilaOptions = Object.values(IlmoittautumisTila).map(
-    (tila) => {
-      return { value: tila as string, label: t(`ilmoittautumistila.${tila}`) };
-    },
-  );
+  const ilmoittautumistilaOptions = useIlmoittautumisTilaOptions();
 
   const massUpdateIlmoittautuminen = (event: SelectChangeEvent<string>) => {
     massStatusChangeForm({
@@ -66,9 +62,7 @@ const VastaanOttoSelect = ({
 }) => {
   const { t } = useTranslations();
 
-  const vastaanottotilaOptions = Object.values(VastaanottoTila).map((tila) => {
-    return { value: tila as string, label: t(`vastaanottotila.${tila}`) };
-  });
+  const vastaanottotilaOptions = useVastaanottoTilaOptions();
 
   const massUpdateVastaanOtto = (event: SelectChangeEvent<string>) => {
     massStatusChangeForm({

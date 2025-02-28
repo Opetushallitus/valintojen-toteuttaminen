@@ -15,6 +15,7 @@ import {
 import { useIsHakuPublishAllowed } from '@/app/hooks/useIsHakuPublishAllowed';
 import { Haku } from '@/app/lib/types/kouta-types';
 import { SijoittelunTulosChangeParams } from '../lib/sijoittelun-tulokset-state-types';
+import { useVastaanottoTilaOptions } from '@/app/hooks/useVastaanottoTilaOptions';
 
 export const VastaanOttoCell = ({
   haku,
@@ -33,9 +34,7 @@ export const VastaanOttoCell = ({
 
   const { julkaistavissa, vastaanottotila } = hakemus;
 
-  const vastaanottotilaOptions = Object.values(VastaanottoTila).map((tila) => {
-    return { value: tila as string, label: t(`vastaanottotila.${tila}`) };
-  });
+  const vastaanottotilaOptions = useVastaanottoTilaOptions();
 
   const updateVastaanottoTila = (event: SelectChangeEvent<string>) => {
     const tila = event.target.value as VastaanottoTila;

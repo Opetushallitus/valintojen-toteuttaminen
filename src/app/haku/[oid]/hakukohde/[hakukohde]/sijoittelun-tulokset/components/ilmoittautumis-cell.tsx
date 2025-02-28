@@ -7,6 +7,7 @@ import {
 import { SelectChangeEvent } from '@mui/material';
 import { isIlmoittautuminenPossible } from '@/app/lib/sijoittelun-tulokset-utils';
 import { SijoittelunTulosChangeParams } from '../lib/sijoittelun-tulokset-state-types';
+import { useIlmoittautumisTilaOptions } from '@/app/hooks/useIlmoittautumisTilaOptions';
 
 export const IlmoittautumisCell = ({
   hakemus,
@@ -21,11 +22,7 @@ export const IlmoittautumisCell = ({
 
   const { ilmoittautumisTila } = hakemus;
 
-  const ilmoittautumistilaOptions = Object.values(IlmoittautumisTila).map(
-    (tila) => {
-      return { value: tila as string, label: t(`ilmoittautumistila.${tila}`) };
-    },
-  );
+  const ilmoittautumistilaOptions = useIlmoittautumisTilaOptions();
 
   const showSelect = isIlmoittautuminenPossible(hakemus);
 
