@@ -24,7 +24,7 @@ export const MaksuCell = ({
   const updateMaksunTila = (event: SelectChangeEvent<string>) => {
     updateForm({
       hakemusOid: hakemus.hakemusOid,
-      maksunTila: event.target.value as MaksunTila,
+      maksuntila: event.target.value as MaksunTila,
     });
   };
 

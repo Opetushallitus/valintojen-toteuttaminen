@@ -72,7 +72,7 @@ const useColumns = ({
   const updateForm = useCallback(
     (changeParams: SijoittelunTulosChangeParams) => {
       send({
-        type: SijoittelunTuloksetEventType.ADD_CHANGED_HAKEMUS,
+        type: SijoittelunTuloksetEventType.CHANGE,
         ...changeParams,
       });
     },
@@ -230,7 +230,7 @@ export const SijoittelunTulosTable = ({
         resetSelection={() => setSelection(new Set())}
         massStatusChangeForm={(changeParams: HakemuksetStateChangeParams) => {
           sijoittelunTulosActorRef.send({
-            type: SijoittelunTuloksetEventType.CHANGE_HAKEMUKSET_STATES,
+            type: SijoittelunTuloksetEventType.MASS_CHANGE,
             ...changeParams,
           });
         }}

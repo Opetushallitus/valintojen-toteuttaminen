@@ -220,7 +220,7 @@ const MerkitseMyohastyneeksiButton = ({
           cancelLabel: t('yleinen.peruuta'),
           onConfirm: () => {
             massUpdateForm({
-              vastaanottoTila: VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA,
+              vastaanottotila: VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA,
               hakemusOids: new Set(
                 eraantyneetHakemukset.map(prop('hakemusOid')),
               ),

@@ -1,16 +1,11 @@
-import { MaksunTila } from '@/app/lib/types/ataru-types';
-import {
-  IlmoittautumisTila,
-  SijoittelunHakemusValintatiedoilla,
-  VastaanottoTila,
-} from '@/app/lib/types/sijoittelu-types';
+import { SijoittelunHakemusValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
 import { ActorRefFrom } from 'xstate';
 import { createSijoittelunTuloksetMachine } from './sijoittelun-tulokset-state';
 
 export type SijoittelunTuloksetContext = {
   hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
   changedHakemukset: Array<SijoittelunHakemusValintatiedoilla>;
-  hakemuksetForUpdate?: Array<SijoittelunHakemusValintatiedoilla>;
+  hakemuksetForMassUpdate?: Array<SijoittelunHakemusValintatiedoilla>;
   massChangeAmount?: number;
   publishAfterUpdate?: boolean;
 };
@@ -20,25 +15,18 @@ export enum SijoittelunTuloksetState {
   UPDATING = 'UPDATING',
   UPDATE_COMPLETED = 'UPDATE_COMPLETED',
   PUBLISHING = 'PUBLISHING',
-  PUBLISHED = 'PUBLISHED',
 }
 
 export enum SijoittelunTuloksetEventType {
   UPDATE = 'UPDATE',
   MASS_UPDATE = 'MASS_UPDATE',
-  CHANGE_HAKEMUKSET_STATES = 'CHANGE_HAKEMUKSET_STATES',
-  ADD_CHANGED_HAKEMUS = 'ADD_CHANGED_HAKEMUS',
+  MASS_CHANGE = 'MASS_CHANGE',
+  CHANGE = 'CHANGE',
   PUBLISH = 'PUBLISH',
 }
 
 export type SijoittelunTulosUpdateEvent = {
   type: SijoittelunTuloksetEventType.UPDATE;
-};
-
-export type HakemuksetStateChangeParams = {
-  hakemusOids: Set<string>;
-  vastaanottoTila?: VastaanottoTila;
-  ilmoittautumisTila?: IlmoittautumisTila;
 };
 
 /**
@@ -48,24 +36,39 @@ export type SijoittelunTulosMassUpdateEvent = {
   type: SijoittelunTuloksetEventType.MASS_UPDATE;
 } & HakemuksetStateChangeParams;
 
-export type SijottelunTulosMassChangeEvent = {
-  type: SijoittelunTuloksetEventType.CHANGE_HAKEMUKSET_STATES;
+export type SijoittelunTulosMassChangeEvent = {
+  type: SijoittelunTuloksetEventType.MASS_CHANGE;
 } & HakemuksetStateChangeParams;
 
-export type SijoittelunTulosChangeParams = {
+export type SijoittelunTulosEditableFields = Partial<
+  Pick<
+    SijoittelunHakemusValintatiedoilla,
+    | 'julkaistavissa'
+    | 'ehdollisestiHyvaksyttavissa'
+    | 'ehdollisenHyvaksymisenEhtoKoodi'
+    | 'ehdollisenHyvaksymisenEhtoFI'
+    | 'ehdollisenHyvaksymisenEhtoSV'
+    | 'ehdollisenHyvaksymisenEhtoEN'
+    | 'hyvaksyttyVarasijalta'
+    | 'vastaanottotila'
+    | 'ilmoittautumisTila'
+    | 'maksuntila'
+  >
+>;
+
+export type HakemuksetStateChangeParams = Pick<
+  SijoittelunTulosEditableFields,
+  'vastaanottotila' | 'ilmoittautumisTila'
+> & {
+  hakemusOids: Set<string>;
+};
+
+export type SijoittelunTulosChangeParams = SijoittelunTulosEditableFields & {
   hakemusOid: string;
-  julkaistavissa?: boolean;
-  ehdollisestiHyvaksyttavissa?: boolean;
-  ehdollisuudenSyy?: string;
-  ehdollisuudenSyyKieli?: { fi?: string; en?: string; sv?: string };
-  vastaanottotila?: VastaanottoTila;
-  ilmoittautumisTila?: IlmoittautumisTila;
-  maksunTila?: MaksunTila;
-  hyvaksyttyVarasijalta?: boolean;
 };
 
 export type SijoittelunTulosChangeEvent = {
-  type: SijoittelunTuloksetEventType.ADD_CHANGED_HAKEMUS;
+  type: SijoittelunTuloksetEventType.CHANGE;
 } & SijoittelunTulosChangeParams;
 
 export type SijoittelunTulosPublishEvent = {
@@ -75,7 +78,7 @@ export type SijoittelunTulosPublishEvent = {
 export type SijoittelunTuloksetEvents =
   | SijoittelunTulosUpdateEvent
   | SijoittelunTulosChangeEvent
-  | SijottelunTulosMassChangeEvent
+  | SijoittelunTulosMassChangeEvent
   | SijoittelunTulosPublishEvent
   | SijoittelunTulosMassUpdateEvent;
 

@@ -100,7 +100,7 @@ export const SijoittelunTilaCell = ({
   const updateEhdollisuudenSyy = (event: SelectChangeEvent<string>) => {
     updateForm({
       hakemusOid,
-      ehdollisuudenSyy: event.target.value,
+      ehdollisenHyvaksymisenEhtoKoodi: event.target.value,
     });
   };
 
@@ -110,10 +110,7 @@ export const SijoittelunTilaCell = ({
   ) => {
     updateForm({
       hakemusOid: hakemusOid,
-      ehdollisuudenSyyKieli: {
-        ...ehdollisenHyvaksymisenSyyt,
-        [kieli]: event.target.value,
-      },
+      [`ehdollisenHyvaksymisenEhto${kieli.toUpperCase()}`]: event.target.value,
     });
   };
 
