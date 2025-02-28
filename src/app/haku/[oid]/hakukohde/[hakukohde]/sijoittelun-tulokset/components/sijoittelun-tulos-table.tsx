@@ -26,12 +26,12 @@ import { OtherActionsCell } from './other-actions-cell';
 import { useSelector } from '@xstate/react';
 import { isNonNull } from 'remeda';
 import {
-  HakemuksetStateChangeParams,
+  MassChangeParams,
   SijoittelunTuloksetEventType,
   SijoittelunTuloksetState,
   SijoittelunTulosActorRef,
   SijoittelunTulosChangeParams,
-} from '../lib/sijoittelun-tulokset-state-types';
+} from '../lib/sijoittelun-tulokset-state';
 import { useSijoittelunTulosSearch } from '../hooks/useSijoittelunTulosSearch';
 
 export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
@@ -228,7 +228,7 @@ export const SijoittelunTulosTable = ({
         hakemukset={contextHakemukset}
         selection={selection}
         resetSelection={() => setSelection(new Set())}
-        massStatusChangeForm={(changeParams: HakemuksetStateChangeParams) => {
+        massStatusChangeForm={(changeParams: MassChangeParams) => {
           sijoittelunTulosActorRef.send({
             type: SijoittelunTuloksetEventType.MASS_CHANGE,
             ...changeParams,

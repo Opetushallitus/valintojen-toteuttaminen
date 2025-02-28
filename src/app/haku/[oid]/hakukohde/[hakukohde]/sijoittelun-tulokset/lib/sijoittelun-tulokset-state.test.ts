@@ -12,7 +12,7 @@ import {
   SijoittelunTuloksetEventType,
   SijoittelunTuloksetState,
   SijoittelunTulosActorRef,
-} from './sijoittelun-tulokset-state-types';
+} from './sijoittelun-tulokset-state';
 
 vi.mock('@/app/components/global-modal', () => ({
   showModal: vi.fn(),

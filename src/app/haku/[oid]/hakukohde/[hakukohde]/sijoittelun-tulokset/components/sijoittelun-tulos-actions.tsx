@@ -28,11 +28,11 @@ import { buildLinkToApplication } from '@/app/lib/ataru';
 import { ExternalLink } from '@/app/components/external-link';
 import { useSelector } from '@xstate/react';
 import {
-  HakemuksetStateChangeParams,
+  MassChangeParams,
   SijoittelunTuloksetEventType,
   SijoittelunTuloksetState,
   SijoittelunTulosActorRef,
-} from '../lib/sijoittelun-tulokset-state-types';
+} from '../lib/sijoittelun-tulokset-state';
 
 const ActionsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -187,7 +187,7 @@ const MerkitseMyohastyneeksiButton = ({
   disabled: boolean;
   hakuOid: string;
   hakukohdeOid: string;
-  massUpdateForm: (params: HakemuksetStateChangeParams) => void;
+  massUpdateForm: (params: MassChangeParams) => void;
   hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
 }) => {
   const { t } = useTranslations();
@@ -277,7 +277,7 @@ export const SijoittelunTuloksetActions = ({
         disabled={
           !isPublishAllowed || !state.matches(SijoittelunTuloksetState.IDLE)
         }
-        massUpdateForm={(changeParams: HakemuksetStateChangeParams) => {
+        massUpdateForm={(changeParams: MassChangeParams) => {
           send({
             type: SijoittelunTuloksetEventType.MASS_UPDATE,
             ...changeParams,
