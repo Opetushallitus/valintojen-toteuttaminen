@@ -123,7 +123,7 @@ const useEraantyneetHakemukset = ({
     prop('hakemusOid'),
   );
 
-  const { data: eraantyneetHakemukset = [] } = useSuspenseQuery({
+  const { data: myohastyneetHakemukset = [] } = useSuspenseQuery({
     queryKey: ['getMyohastyneetHakemukset', hakuOid, hakukohdeOid, hakemusOids],
     queryFn: () =>
       getMyohastyneetHakemukset({
@@ -133,37 +133,19 @@ const useEraantyneetHakemukset = ({
       }),
   });
 
-  return eraantyneetHakemukset?.reduce((acc, eraantynytHakemus) => {
+  return myohastyneetHakemukset?.reduce((result, eraantynytHakemus) => {
     const hakemus = hakemuksetJotkaTarvitsetvatAikarajaMennytTiedon?.find(
       (h) => h.hakemusOid === eraantynytHakemus.hakemusOid,
     );
 
-    if (hakemus && eraantynytHakemus?.mennyt) {
-      return [
-        ...acc,
-        {
-          ...hakemus,
-          myohastynyt: Boolean(eraantynytHakemus?.mennyt),
-          vastaanottoDeadline: eraantynytHakemus?.vastaanottoDeadline,
-        },
-      ];
-    } else {
-      return acc;
-    }
-  }, [] as EraantyneetHakemukset);
+    return hakemus && eraantynytHakemus?.mennyt ? [...result, hakemus] : result;
+  }, [] as Array<SijoittelunHakemusValintatiedoilla>);
 };
-
-type EraantyneetHakemukset = Array<
-  SijoittelunHakemusValintatiedoilla & {
-    myohastynyt: boolean;
-    vastaanottoDeadline: string;
-  }
->;
 
 const EraantyneetInfoTable = ({
   eraantyneetHakemukset,
 }: {
-  eraantyneetHakemukset: EraantyneetHakemukset;
+  eraantyneetHakemukset: Array<SijoittelunHakemusValintatiedoilla>;
 }) => {
   const { t } = useTranslations();
   return (
@@ -279,7 +261,9 @@ export const SijoittelunTuloksetActions = ({
   return (
     <ActionsContainer>
       <OphButton
-        type="submit"
+        onClick={() => {
+          send({ type: SijoittelunTuloksetEventType.UPDATE });
+        }}
         variant="contained"
         loading={state.matches(SijoittelunTuloksetState.UPDATING)}
         disabled={!state.matches(SijoittelunTuloksetState.IDLE)}

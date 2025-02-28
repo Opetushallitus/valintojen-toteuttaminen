@@ -1,9 +1,9 @@
 'use client';
 
-import { FormEvent, useMemo } from 'react';
+import { useMemo } from 'react';
 import useToaster from '@/app/hooks/useToaster';
-import { useMachine, useSelector } from '@xstate/react';
-import { styled } from '@mui/material';
+import { useActorRef } from '@xstate/react';
+import { Box } from '@mui/material';
 import { SijoittelunTuloksetActions } from './sijoittelun-tulos-actions';
 import {
   createSijoittelunTuloksetMachine,
@@ -11,11 +11,8 @@ import {
 } from '../lib/sijoittelun-tulokset-state';
 import { SijoitteluajonValintatapajonoValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
 import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
-import { useSijoittelunTulosSearch } from '../hooks/useSijoittelunTuloksetSearch';
 import { SijoittelunTulosTable } from './sijoittelun-tulos-table';
-import { useTranslations } from '@/app/hooks/useTranslations';
 import { useConfirmChangesBeforeNavigation } from '@/app/hooks/useConfirmChangesBeforeNavigation';
-import { SijoittelunTuloksetEventType } from '../lib/sijoittelun-tulokset-state-types';
 
 type SijoittelunTuloksetFormParams = {
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
@@ -25,10 +22,6 @@ type SijoittelunTuloksetFormParams = {
   lastModified: string;
 };
 
-const StyledForm = styled('form')({
-  width: '100%',
-});
-
 export const SijoittelunTulosForm = ({
   valintatapajono,
   hakukohde,
@@ -36,8 +29,6 @@ export const SijoittelunTulosForm = ({
   sijoitteluajoId,
   lastModified,
 }: SijoittelunTuloksetFormParams) => {
-  const { t } = useTranslations();
-
   const { addToast } = useToaster();
 
   const sijoittelunTulosMachine = useMemo(() => {
@@ -50,31 +41,15 @@ export const SijoittelunTulosForm = ({
     );
   }, [hakukohde, valintatapajono, addToast, lastModified]);
 
-  const [, send, sijoittelunTulosActorRef] = useMachine(
-    sijoittelunTulosMachine,
-  );
-
-  const hakemukset = useSelector(
-    sijoittelunTulosActorRef,
-    (state) => state.context.hakemukset,
-  );
-
-  const { results, sort, setSort, pageSize, setPage, page } =
-    useSijoittelunTulosSearch(valintatapajono.oid, hakemukset);
+  const sijoittelunTulosActorRef = useActorRef(sijoittelunTulosMachine);
 
   const isDirty = useIsDirtySijoittelunTulos(sijoittelunTulosActorRef);
 
   useConfirmChangesBeforeNavigation(isDirty);
 
-  const submitChanges = (event: FormEvent) => {
-    send({ type: SijoittelunTuloksetEventType.UPDATE });
-    event.preventDefault();
-  };
-
   return (
-    <StyledForm
-      autoComplete="off"
-      onSubmit={submitChanges}
+    <Box
+      sx={{ width: '100%' }}
       data-test-id={`sijoittelun-tulokset-form-${valintatapajono.oid}`}
     >
       <SijoittelunTuloksetActions
@@ -86,18 +61,10 @@ export const SijoittelunTulosForm = ({
       <SijoittelunTulosTable
         haku={haku}
         hakukohde={hakukohde}
-        hakemukset={results}
+        valintatapajono={valintatapajono}
         sijoitteluajoId={sijoitteluajoId}
-        sort={sort}
-        setSort={setSort}
-        pagination={{
-          page,
-          setPage,
-          pageSize,
-          label: `${t('yleinen.sivutus')} ${valintatapajono.nimi}`,
-        }}
         sijoittelunTulosActorRef={sijoittelunTulosActorRef}
       />
-    </StyledForm>
+    </Box>
   );
 };

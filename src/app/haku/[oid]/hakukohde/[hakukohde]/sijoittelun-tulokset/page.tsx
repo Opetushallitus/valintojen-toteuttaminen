@@ -10,7 +10,7 @@ import { tryToGetLatestSijoitteluajonTuloksetWithValintaEsitysQueryOptions } fro
 import { isEmpty } from '@/app/lib/common';
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
 import { NoResults } from '@/app/components/no-results';
-import { useSijoittelunTulosSearchParams } from './hooks/useSijoittelunTuloksetSearch';
+import { useSijoittelunTulosSearchParams } from './hooks/useSijoittelunTulosSearch';
 import { SijoittelunTulosContent } from './components/sijoittelun-tulos-content';
 import { SijoittelunTulosControls } from './components/sijoittelun-tulos-controls';
 import { useHaku } from '@/app/hooks/useHaku';
