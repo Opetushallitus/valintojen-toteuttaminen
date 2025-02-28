@@ -138,7 +138,7 @@ const useEraantyneetHakemukset = ({
       (h) => h.hakemusOid === eraantynytHakemus.hakemusOid,
     );
 
-    if (hakemus) {
+    if (hakemus && eraantynytHakemus?.mennyt) {
       return [
         ...acc,
         {
