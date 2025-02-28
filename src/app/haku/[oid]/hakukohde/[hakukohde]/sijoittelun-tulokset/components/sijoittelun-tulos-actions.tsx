@@ -1,7 +1,6 @@
 import { useTranslations } from '@/app/hooks/useTranslations';
 import {
   Box,
-  CircularProgress,
   styled,
   Table,
   TableBody,
@@ -275,13 +274,11 @@ export const SijoittelunTuloksetActions = ({
       <OphButton
         type="submit"
         variant="contained"
+        loading={state.matches(SijoittelunTuloksetStates.UPDATING)}
         disabled={!state.matches(SijoittelunTuloksetStates.IDLE)}
       >
         {t('yleinen.tallenna')}
       </OphButton>
-      {state.matches(SijoittelunTuloksetStates.UPDATING) && (
-        <CircularProgress aria-label={t('yleinen.paivitetaan')} />
-      )}
       <MerkitseMyohastyneeksiButton
         hakuOid={haku.oid}
         hakukohdeOid={hakukohde.oid}
@@ -304,12 +301,10 @@ export const SijoittelunTuloksetActions = ({
         onClick={() => {
           send({ type: SijoittelunTuloksetEventTypes.PUBLISH });
         }}
+        loading={state.matches(SijoittelunTuloksetStates.PUBLISHING)}
       >
         {t('sijoittelun-tulokset.hyvaksy')}
       </OphButton>
-      {state.matches(SijoittelunTuloksetStates.PUBLISHING) && (
-        <CircularProgress aria-label={t('yleinen.paivitetaan')} />
-      )}
       <SendVastaanottopostiButton
         disabled={!state.matches(SijoittelunTuloksetStates.IDLE)}
         hakukohdeOid={hakukohde.oid}

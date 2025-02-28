@@ -67,17 +67,16 @@ const SijoitteluContent = ({
         />
         <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
       </Box>
-      {tulokset &&
-        tulokset.valintatapajonot.map((jono) => (
-          <SijoittelunTulosContent
-            valintatapajono={jono}
-            key={jono.oid}
-            haku={haku}
-            hakukohde={hakukohde}
-            sijoitteluajoId={tulokset.sijoitteluajoId}
-            lastModified={tulokset.lastModified}
-          />
-        ))}
+      {tulokset?.valintatapajonot.map((jono) => (
+        <SijoittelunTulosContent
+          valintatapajono={jono}
+          key={jono.oid}
+          haku={haku}
+          hakukohde={hakukohde}
+          sijoitteluajoId={tulokset.sijoitteluajoId}
+          lastModified={tulokset.lastModified}
+        />
+      ))}
     </Box>
   );
 };
