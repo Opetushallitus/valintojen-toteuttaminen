@@ -97,6 +97,7 @@ const TablePagination = ({
   setPage: (page: number) => void;
 }) => {
   const { t } = useTranslations();
+
   return (
     <OphPagination
       aria-label={label ?? t('yleinen.sivutus')}

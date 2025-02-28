@@ -5,7 +5,10 @@ import {
   makeColumnWithCustomRender,
   makeCountColumn,
 } from '@/app/components/table/table-columns';
-import { ListTable } from '@/app/components/table/list-table';
+import {
+  ListTable,
+  ListTablePaginationProps,
+} from '@/app/components/table/list-table';
 import { SijoittelunHakemusValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
 import { useCallback, useMemo, useState } from 'react';
 import {
@@ -54,6 +57,7 @@ export const SijoittelunTulosTable = ({
   sijoitteluajoId,
   setSort,
   sort,
+  pagination,
   sijoittelunTulosActorRef,
 }: {
   haku: Haku;
@@ -63,6 +67,7 @@ export const SijoittelunTulosTable = ({
   sort: string;
   setSort: (sort: string) => void;
   sijoittelunTulosActorRef: SijoittelunTulosActorRef;
+  pagination: ListTablePaginationProps;
 }) => {
   const { t } = useTranslations();
 
@@ -210,6 +215,7 @@ export const SijoittelunTulosTable = ({
         setSort={setSort}
         checkboxSelection={true}
         selection={selection}
+        pagination={pagination}
         onSelectionChange={setSelection}
         translateHeader={false}
         getRowCheckboxLabel={({ hakijanNimi }) =>
