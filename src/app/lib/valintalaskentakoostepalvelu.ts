@@ -23,7 +23,6 @@ import {
   EMPTY_OBJECT,
   OphProcessError,
   OphProcessErrorData,
-  nullWhen404,
 } from './common';
 import { getHakemukset, getHakijat } from './ataru';
 import {
@@ -813,16 +812,14 @@ export const getMyohastyneetHakemukset = async ({
     return [];
   }
 
-  const response = await nullWhen404(
-    client.post<
-      Array<{ hakemusOid: string; mennyt: true; vastaanottoDeadline: string }>
-    >(
-      configuration.myohastyneetHakemuksetUrl({
-        hakuOid,
-        hakukohdeOid,
-      }),
-      hakemusOids,
-    ),
+  const response = await client.post<
+    Array<{ hakemusOid: string; mennyt: true; vastaanottoDeadline: string }>
+  >(
+    configuration.myohastyneetHakemuksetUrl({
+      hakuOid,
+      hakukohdeOid,
+    }),
+    hakemusOids,
   );
 
   return response?.data;
