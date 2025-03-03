@@ -167,7 +167,7 @@ const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
         jono.hakemukset.map((h) => {
           const hakemus = hakemuksetIndexed[h.hakemusOid];
           const valintatulos = valintatuloksetIndexed[h.hakemusOid];
-          const maksuntila =
+          const maksunTila =
             hakemus.maksuvelvollisuus === Maksuvelvollisuus.MAKSUVELVOLLINEN &&
             (lukuvuosimaksutIndexed[h.hakijaOid]?.maksuntila ??
               MaksunTila.MAKSAMATTA);
@@ -186,7 +186,7 @@ const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
             ilmoittautumisTila: valintatulos.ilmoittautumistila,
             julkaistavissa: valintatulos.julkaistavissa,
             vastaanottotila: valintatulos.vastaanottotila,
-            maksuntila: maksuntila || undefined,
+            maksunTila: maksunTila || undefined,
             ehdollisestiHyvaksyttavissa:
               valintatulos.ehdollisestiHyvaksyttavissa,
             hyvaksyttyVarasijalta: valintatulos.hyvaksyttyVarasijalta,
@@ -354,9 +354,9 @@ export const saveMaksunTilanMuutokset = async (
       const original = originalHakemukset.find(
         (o) => o.hakemusOid === h.hakemusOid,
       );
-      return original?.maksuntila !== h.maksuntila;
+      return original?.maksunTila !== h.maksunTila;
     })
-    .map((h) => ({ personOid: h.hakijaOid, maksuntila: h.maksuntila }));
+    .map((h) => ({ personOid: h.hakijaOid, maksuntila: h.maksunTila }));
 
   if (hakemuksetWithChangedMaksunTila.length > 0) {
     await client.post(

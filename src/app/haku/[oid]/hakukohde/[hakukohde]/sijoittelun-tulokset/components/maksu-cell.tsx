@@ -15,24 +15,24 @@ export const MaksuCell = ({
   updateForm: (params: SijoittelunTulosChangeParams) => void;
 }) => {
   const { t } = useTranslations();
-  const { maksuntila } = hakemus;
+  const { hakemusOid, maksunTila } = hakemus;
 
-  const maksuntilaOptions = Object.values(MaksunTila).map((tila) => {
+  const maksunTilaOptions = Object.values(MaksunTila).map((tila) => {
     return { value: tila as string, label: t(`maksuntila.${tila}`) };
   });
 
   const updateMaksunTila = (event: SelectChangeEvent<string>) => {
     updateForm({
-      hakemusOid: hakemus.hakemusOid,
-      maksuntila: event.target.value as MaksunTila,
+      hakemusOid,
+      maksunTila: event.target.value as MaksunTila,
     });
   };
 
-  return hakemus.maksuntila ? (
+  return maksunTila ? (
     <LocalizedSelect
-      value={maksuntila}
+      value={maksunTila}
       onChange={updateMaksunTila}
-      options={maksuntilaOptions}
+      options={maksunTilaOptions}
       disabled={disabled}
     />
   ) : (

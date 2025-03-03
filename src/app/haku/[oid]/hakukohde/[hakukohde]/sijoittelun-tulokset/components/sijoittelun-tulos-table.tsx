@@ -136,7 +136,7 @@ const useColumns = ({
       isKorkeakouluHaku(haku)
         ? makeColumnWithCustomRender<SijoittelunHakemusValintatiedoilla>({
             title: t(`${TRANSLATIONS_PREFIX}.maksuntila`),
-            key: 'maksuntila',
+            key: 'maksunTila',
             renderFn: (props) => (
               <MaksuCell
                 hakemus={props}

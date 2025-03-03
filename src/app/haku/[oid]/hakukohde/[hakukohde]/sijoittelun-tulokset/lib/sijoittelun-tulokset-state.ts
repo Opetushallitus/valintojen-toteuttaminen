@@ -68,7 +68,7 @@ export type SijoittelunTulosEditableFields = Partial<
     | 'hyvaksyttyVarasijalta'
     | 'vastaanottotila'
     | 'ilmoittautumisTila'
-    | 'maksuntila'
+    | 'maksunTila'
   >
 >;
 

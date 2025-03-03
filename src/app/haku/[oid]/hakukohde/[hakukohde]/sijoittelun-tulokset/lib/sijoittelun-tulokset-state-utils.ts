@@ -23,7 +23,7 @@ const SIJOITTELUN_TULOS_EDITABLE_FIELDS = [
   'hyvaksyttyVarasijalta',
   'vastaanottotila',
   'ilmoittautumisTila',
-  'maksuntila',
+  'maksunTila',
 ] as const;
 
 export const isUnchanged = (
