@@ -808,6 +808,11 @@ export const getMyohastyneetHakemukset = async ({
   hakukohdeOid: string;
   hakemusOids: Array<string>;
 }) => {
+  // Ei kannata tehdä kyselyä ilman hakemusOideja, koska palauttaa silloin kuitenkin aina tyhjän.
+  if (hakemusOids.length === 0) {
+    return [];
+  }
+
   const response = await nullWhen404(
     client.post<
       Array<{ hakemusOid: string; mennyt: true; vastaanottoDeadline: string }>
