@@ -12,7 +12,10 @@ import { Hakukohde } from '@/lib/kouta/kouta-types';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { isDefined, prop, sortBy } from 'remeda';
 import { OphTypography } from '@opetushallitus/oph-design-system';
-import { findParent } from '../lib/valintaryhma-util';
+import {
+  findHakukohteetRecursively,
+  findParent,
+} from '../lib/valintaryhma-util';
 import { ValintaryhmanValintalaskenta } from './valintaryhma-valintalaskenta';
 import { useHaku } from '@/lib/kouta/useHaku';
 import { useHaunAsetukset } from '@/lib/ohjausparametrit/useHaunAsetukset';
@@ -132,8 +135,9 @@ export const ValintaryhmaContent = ({
   }, [hakukohteet, valittuRyhma, translateEntity]);
 
   function getHakukohteetForLaskenta() {
-    return mappedHakukohteet
-      .map((mh) => hakukohteet.find((hk) => hk.oid === mh.oid))
+    const hkOids = valittuRyhma ? findHakukohteetRecursively(valittuRyhma) : [];
+    return hkOids
+      .map((oid) => hakukohteet.find((hk) => hk.oid === oid))
       .filter(isDefined);
   }
 
