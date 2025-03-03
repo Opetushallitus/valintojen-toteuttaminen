@@ -105,7 +105,7 @@ const useEraantyneetHakemukset = ({
   hakukohdeOid: string;
   hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
 }) => {
-  const hakemuksetJotkaTarvitsetvatAikarajaMennytTiedon = pipe(
+  const hakemuksetJotkaTarvitsevatAikarajaMennytTiedon = pipe(
     hakemukset,
     filter(
       (hakemus) =>
@@ -119,7 +119,7 @@ const useEraantyneetHakemukset = ({
     ),
   );
 
-  const hakemusOids = hakemuksetJotkaTarvitsetvatAikarajaMennytTiedon.map(
+  const hakemusOids = hakemuksetJotkaTarvitsevatAikarajaMennytTiedon.map(
     prop('hakemusOid'),
   );
 
@@ -134,7 +134,7 @@ const useEraantyneetHakemukset = ({
   });
 
   return myohastyneetHakemukset?.reduce((result, eraantynytHakemus) => {
-    const hakemus = hakemuksetJotkaTarvitsetvatAikarajaMennytTiedon?.find(
+    const hakemus = hakemuksetJotkaTarvitsevatAikarajaMennytTiedon?.find(
       (h) => h.hakemusOid === eraantynytHakemus.hakemusOid,
     );
 
