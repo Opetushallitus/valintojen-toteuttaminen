@@ -6,8 +6,11 @@ import {
   makeCountColumn,
 } from '@/app/components/table/table-columns';
 import { ListTable } from '@/app/components/table/list-table';
-import { SijoittelunHakemusValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
-import { useMemo, useState } from 'react';
+import {
+  SijoitteluajonValintatapajonoValintatiedoilla,
+  SijoittelunHakemusValintatiedoilla,
+} from '@/app/lib/types/sijoittelu-types';
+import { useCallback, useMemo, useState } from 'react';
 import {
   KeysMatching,
   ListTableColumn,
@@ -19,11 +22,17 @@ import { SijoittelunTilaCell } from './sijoittelun-tila-cell';
 import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
 import { isKorkeakouluHaku } from '@/app/lib/kouta';
 import { SijoittelunTuloksetActionBar } from './sijoittelun-tulos-action-bar';
-import {
-  HakemuksetStateChangeEvent,
-  SijoittelunTuloksetChangeEvent,
-} from '../lib/sijoittelun-tulokset-state';
 import { OtherActionsCell } from './other-actions-cell';
+import { useSelector } from '@xstate/react';
+import { isNonNull } from 'remeda';
+import {
+  MassChangeParams,
+  SijoittelunTuloksetEventType,
+  SijoittelunTuloksetState,
+  SijoittelunTulosActorRef,
+  SijoittelunTulosChangeParams,
+} from '../lib/sijoittelun-tulokset-state';
+import { useSijoittelunTulosSearch } from '../hooks/useSijoittelunTulosSearch';
 
 export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
   title,
@@ -42,30 +51,35 @@ export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
 
 const TRANSLATIONS_PREFIX = 'sijoittelun-tulokset.taulukko';
 
-export const SijoittelunTulosTable = ({
+const useColumns = ({
   haku,
   hakukohde,
-  hakemukset,
   sijoitteluajoId,
-  setSort,
-  sort,
-  disabled,
-  updateForm,
-  massStatusChangeForm,
+  actorRef,
 }: {
   haku: Haku;
   hakukohde: Hakukohde;
-  hakemukset: SijoittelunHakemusValintatiedoilla[];
   sijoitteluajoId: string;
-  sort: string;
-  setSort: (sort: string) => void;
-  disabled: boolean;
-  updateForm: (params: SijoittelunTuloksetChangeEvent) => void;
-  massStatusChangeForm: (changeParams: HakemuksetStateChangeEvent) => void;
+  actorRef: SijoittelunTulosActorRef;
 }) => {
+  const state = useSelector(actorRef, (s) => s);
+  const { send } = actorRef;
+
   const { t } = useTranslations();
 
-  const columns = useMemo(() => {
+  const disabled = !state.matches(SijoittelunTuloksetState.IDLE);
+
+  const updateForm = useCallback(
+    (changeParams: SijoittelunTulosChangeParams) => {
+      send({
+        type: SijoittelunTuloksetEventType.CHANGE,
+        ...changeParams,
+      });
+    },
+    [send],
+  );
+
+  return useMemo(() => {
     const stickyHakijaColumn = createStickyHakijaColumn('sijoittelun-tulos', t);
     return [
       makeEmptyCountColumn<SijoittelunHakemusValintatiedoilla>({
@@ -122,7 +136,7 @@ export const SijoittelunTulosTable = ({
       isKorkeakouluHaku(haku)
         ? makeColumnWithCustomRender<SijoittelunHakemusValintatiedoilla>({
             title: t(`${TRANSLATIONS_PREFIX}.maksuntila`),
-            key: 'maksuntila',
+            key: 'maksunTila',
             renderFn: (props) => (
               <MaksuCell
                 hakemus={props}
@@ -145,27 +159,96 @@ export const SijoittelunTulosTable = ({
         ),
         sortable: false,
       }),
-    ].filter((a) => a !== null);
+    ].filter(isNonNull);
   }, [t, haku, updateForm, disabled, sijoitteluajoId, hakukohde]);
+};
+
+export const SijoittelunTulosTable = ({
+  haku,
+  hakukohde,
+  sijoitteluajoId,
+  valintatapajono,
+  sijoittelunTulosActorRef,
+}: {
+  haku: Haku;
+  hakukohde: Hakukohde;
+  sijoitteluajoId: string;
+  sijoittelunTulosActorRef: SijoittelunTulosActorRef;
+  valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
+}) => {
+  const { t } = useTranslations();
+
+  const contextHakemukset = useSelector(
+    sijoittelunTulosActorRef,
+    (state) => state.context.hakemukset,
+  );
+
+  const {
+    results: hakemukset,
+    sort,
+    setSort,
+    pageSize,
+    setPage,
+    page,
+  } = useSijoittelunTulosSearch(valintatapajono.oid, contextHakemukset);
+
+  const columns = useColumns({
+    haku,
+    hakukohde,
+    sijoitteluajoId,
+    actorRef: sijoittelunTulosActorRef,
+  });
+
+  const changedHakemukset = useSelector(
+    sijoittelunTulosActorRef,
+    (state) => state.context.changedHakemukset,
+  );
+
+  const rows = useMemo(
+    () =>
+      hakemukset.map((hakemus) => {
+        const changedHakemus =
+          changedHakemukset.find(
+            (changedHakemus) =>
+              changedHakemus.hakemusOid === hakemus.hakemusOid,
+          ) ?? {};
+        return {
+          ...hakemus,
+          ...changedHakemus,
+        };
+      }),
+    [hakemukset, changedHakemukset],
+  );
 
   const [selection, setSelection] = useState<Set<string>>(() => new Set());
 
   return (
     <>
       <SijoittelunTuloksetActionBar
-        hakemukset={hakemukset}
+        hakemukset={contextHakemukset}
         selection={selection}
         resetSelection={() => setSelection(new Set())}
-        massStatusChangeForm={massStatusChangeForm}
+        massStatusChangeForm={(changeParams: MassChangeParams) => {
+          sijoittelunTulosActorRef.send({
+            type: SijoittelunTuloksetEventType.MASS_CHANGE,
+            ...changeParams,
+          });
+        }}
       />
       <ListTable
         rowKeyProp="hakemusOid"
         columns={columns}
-        rows={hakemukset}
+        rows={rows}
         sort={sort}
         setSort={setSort}
         checkboxSelection={true}
         selection={selection}
+        pagination={{
+          page,
+          setPage,
+          pageSize,
+          label: `${t('yleinen.sivutus')} ${valintatapajono.nimi}`,
+        }}
         onSelectionChange={setSelection}
         translateHeader={false}
         getRowCheckboxLabel={({ hakijanNimi }) =>

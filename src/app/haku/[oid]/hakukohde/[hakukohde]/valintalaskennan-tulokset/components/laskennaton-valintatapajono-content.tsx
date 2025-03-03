@@ -58,7 +58,7 @@ const LaskennatonVaiheActions = ({
     if (newJarjestysPeruste) {
       showModal(GlobalConfirmationModal, {
         title: t('valintalaskennan-tulokset.vaihdetaanko-jarjestysperustetta'),
-        text:
+        content:
           newJarjestysPeruste === 'jonosija'
             ? t('valintalaskennan-tulokset.jonosija-valinta-varoitus')
             : t('valintalaskennan-tulokset.kokonaispisteet-valinta-varoitus'),

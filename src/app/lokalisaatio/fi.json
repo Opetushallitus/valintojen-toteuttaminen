@@ -294,11 +294,16 @@
     "muu-syy-aria-en": "Ehdollisuuden syy englanniksi",
     "mass-status-change-done": "Muutettiin tila {{amount}} hakemukselle",
     "hyvaksy": "Hyväksy ja tallenna valintaesitys",
-    "valmis": "Valintaesityksen muutokset tallennuttu",
+    "valmis": "Valintaesityksen muutokset tallennettu",
     "hyvaksytty": "Valintaesitys hyväksytty",
+    "hakija": "Hakija",
+    "hakemus-oid": "Hakemuksen tekninen tunniste (OID)",
     "ei-tuloksia": "Ei sijoittelun tuloksia hakukohteelle",
     "muuta-vastaanottotieto": "Muuta vastaanottotieto",
     "virhe-vie-taulukkolaskentaan": "Sijoittelun tulosten vieminen taulukkolaskentaan epäonnistui!",
+    "merkitse-myohastyneeksi": "Merkitse myöhästyneeksi",
+    "merkitse-myohastyneeksi-modal-title": "Vahvista myöhästyneeksi merkitseminen",
+    "merkitse-myohastyneeksi-modal-text": "Merkitäänkö hakemukset myöhästyneiksi?",
     "taulukko": {
       "alaotsikko": {
         "aloituspaikat": "Aloituspaikat",
@@ -482,7 +487,7 @@
     "hakemus-oid": "Hakemuksen tekninen tunniste (OID)",
     "lahiosoite": "Lähiosoite",
     "hae-henkilo": "Hae henkilöitä",
-    "hae-helpertext": "Hae: Etunimi, sukunimi, hakemus-oid tai henkilö-oid",
+    "hae-helpertext": "Hae: Etunimi, sukunimi, hakemus-oid, henkilö-oid tai henkilötunnus",
     "navigaatio": "Henkilövalitsin",
     "taulukko": {
       "valintalaskenta-tehty": "Valintalaskenta tehty",

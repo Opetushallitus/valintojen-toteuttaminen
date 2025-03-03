@@ -3,7 +3,7 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { getHenkiloTitle } from '@/app/lib/henkilo-utils';
 import {
   getReadableHakemuksenTila,
-  isImoittautuminenPossible,
+  isIlmoittautuminenPossible,
 } from '@/app/lib/sijoittelun-tulokset-utils';
 import { HakijaInfo } from '@/app/lib/types/ataru-types';
 import { HakutoiveTitle } from '@/app/components/hakutoive-title';
@@ -69,7 +69,7 @@ export const ValinnanTulosCells = ({
         <div>{t(`vastaanottotila.${valinnanTulos?.vastaanottotila}`)}</div>
       </ValintaTableCell>
       <ValintaTableCell>
-        {isImoittautuminenPossible({
+        {isIlmoittautuminenPossible({
           tila: valinnanTulos.valinnantila,
           vastaanottotila: valinnanTulos.vastaanottotila,
           julkaistavissa: Boolean(valinnanTulos.julkaistavissa),

@@ -4,8 +4,21 @@ import {
   expectAllSpinnersHidden,
   selectOption,
 } from './playwright-utils';
+import { configuration } from '@/app/lib/configuration';
+import {
+  IlmoittautumisTila,
+  VastaanottoTila,
+} from '@/app/lib/types/sijoittelu-types';
 
 test.beforeEach(async ({ page }) => await goToSijoittelunTulokset(page));
+
+const getYoValintatapajonoContent = (page: Page) => {
+  return page.getByRole('region', { name: 'Todistusvalinta (YO)' });
+};
+
+const getAmmValintatapajonoContent = (page: Page) => {
+  return page.getByRole('region', { name: 'Todistusvalinta (AMM)' });
+};
 
 test('näytä "Sijoittelun tulokset" -välilehti ja sisältö', async ({ page }) => {
   await expect(
@@ -22,8 +35,7 @@ test('näytä "Sijoittelun tulokset" -välilehti ja sisältö', async ({ page })
         '(Aloituspaikat: 1 | Sijoittelun aloituspaikat: 1 | Tasasijasääntö: Ylitäyttö | Varasijatäyttö | Prioriteetti: 1)',
       ),
   ).toBeVisible();
-  const firstTable = page
-    .getByLabel('Todistusvalinta (YO)(')
+  const firstTable = getYoValintatapajonoContent(page)
     .locator('div')
     .filter({ hasText: 'JonosijaHakijaHakutoivePisteetSijoittelun' })
     .first();
@@ -55,8 +67,8 @@ test('näytä "Sijoittelun tulokset" -välilehti ja sisältö', async ({ page })
       '0',
       '100',
       'HYVÄKSYTTY',
-      'Vastaanottanut sitovasti',
-      'Läsnä (koko lukuvuosi)',
+      'JulkaistavissaKesken',
+      '',
     ],
     'td',
     false,
@@ -84,8 +96,7 @@ test('näytä "Sijoittelun tulokset" -välilehti ja sisältö', async ({ page })
     false,
   );
 
-  const secondTable = page
-    .getByLabel('Todistusvalinta (AMM)(')
+  const secondTable = getAmmValintatapajonoContent(page)
     .locator('div')
     .filter({ hasText: 'JonosijaHakijaHakutoivePisteetSijoittelun' })
     .first();
@@ -99,7 +110,7 @@ test('näytä "Sijoittelun tulokset" -välilehti ja sisältö', async ({ page })
   );
 });
 
-test('ehdollista hyväksyntää ja maksukolumnia ei näytetä toisen asteen yhteishaulla', async ({
+test('ehdollista hyväksyntää ja maksusaraketta ei näytetä toisen asteen yhteishaulla', async ({
   page,
 }) => {
   await page.route(
@@ -165,11 +176,10 @@ test.describe('suodattimet', () => {
       name: 'Hae hakijan nimellä tai tunnisteilla',
     });
     await hakuInput.fill('Ruht');
-    let rows = page.locator('tbody tr');
+    const rows = page.locator('tbody tr');
     await expect(rows).toHaveCount(1);
     await checkRow(rows.nth(0), ['', '1', 'Nukettaja Ruhtinas']);
     await hakuInput.fill('Dac');
-    rows = page.locator('tbody tr');
     await expect(rows).toHaveCount(1);
     await checkRow(rows.nth(0), ['', '2', 'Dacula Kreivi']);
   });
@@ -226,8 +236,7 @@ test.describe('suodattimet', () => {
 test.describe('monivalinta ja massamuutos', () => {
   test('valitsee kaikki hakemukset', async ({ page }) => {
     await expect(page.getByText('Ei hakijoita valittu')).toHaveCount(2);
-    await page
-      .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
+    await getYoValintatapajonoContent(page)
       .getByLabel('Valitse kaikki')
       .click();
     await expect(page.getByText('Ei hakijoita valittu')).toHaveCount(1);
@@ -242,12 +251,10 @@ test.describe('monivalinta ja massamuutos', () => {
   });
 
   test('massamuutos vastaanottotiedolla', async ({ page }) => {
-    await page
-      .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
+    await getYoValintatapajonoContent(page)
       .getByLabel('Valitse kaikki')
       .click();
-    await page
-      .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
+    await getYoValintatapajonoContent(page)
       .getByText('Muuta vastaanottotieto')
       .click();
     await page.getByRole('option', { name: 'Perunut' }).click();
@@ -258,28 +265,25 @@ test.describe('monivalinta ja massamuutos', () => {
   });
 
   test('massamuutos ilmoittautumistiedolla', async ({ page }) => {
-    await page
-      .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
+    await getYoValintatapajonoContent(page)
       .getByLabel('Valitse kaikki')
       .click();
-    await page
-      .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
+    await getYoValintatapajonoContent(page)
       .getByText('Muuta ilmoittautumistieto')
       .click();
     await page.getByRole('option', { name: 'Ei ilmoittautunut' }).click();
     await expect(
-      page.getByText('Muutettiin tila 2 hakemukselle'),
+      page.getByText('Muutettiin tila 1 hakemukselle'),
     ).toBeVisible();
     await expect(
       page.getByRole('row').getByText('Ei ilmoittautunut'),
-    ).toHaveCount(2);
+    ).toHaveCount(1);
   });
 });
 
 test.describe('tallennus', () => {
   test('ilmoittaa ettei ole mitään tallennettavaa', async ({ page }) => {
-    await page
-      .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
+    await getYoValintatapajonoContent(page)
       .getByRole('button', { name: 'Tallenna', exact: true })
       .click();
     await expectAllSpinnersHidden(page);
@@ -289,12 +293,11 @@ test.describe('tallennus', () => {
   test('tallentaa muutokset', async ({ page }) => {
     await page.getByText('Maksamatta').click();
     await page.getByRole('option', { name: 'Maksettu' }).click();
-    await page
-      .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
+    await getYoValintatapajonoContent(page)
       .getByRole('button', { name: 'Tallenna', exact: true })
       .click();
     await expect(
-      page.getByText('Valintaesityksen muutokset tallennuttu'),
+      page.getByText('Valintaesityksen muutokset tallennettu'),
     ).toBeVisible();
   });
 
@@ -307,8 +310,7 @@ test.describe('tallennus', () => {
     );
     await page.getByText('Maksamatta').click();
     await page.getByRole('option', { name: 'Maksettu' }).click();
-    await page
-      .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
+    await getYoValintatapajonoContent(page)
       .getByRole('button', { name: 'Tallenna', exact: true })
       .click();
     await expect(
@@ -332,17 +334,14 @@ test.describe('tallennus', () => {
         });
       },
     );
-    await page
-      .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
+    await getYoValintatapajonoContent(page)
       .getByLabel('Valitse kaikki')
       .click();
-    await page
-      .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
+    await getYoValintatapajonoContent(page)
       .getByText('Muuta vastaanottotieto')
       .click();
     await page.getByRole('option', { name: 'Perunut' }).click();
-    await page
-      .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
+    await getYoValintatapajonoContent(page)
       .getByRole('button', { name: 'Tallenna', exact: true })
       .click();
     await expect(
@@ -356,18 +355,15 @@ test.describe('tallennus', () => {
 
 test.describe('valintaesityksen hyväksyminen', () => {
   test('hyväksy', async ({ page }) => {
-    await page
-      .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
+    await getYoValintatapajonoContent(page)
       .getByRole('button', { name: 'Hyväksy ja tallenna' })
       .click();
     await expect(page.getByText('Valintaesitys hyväksytty')).toBeVisible();
   });
 
   test('tee muutos ja hyväksy', async ({ page }) => {
-    await page.getByText('Läsnä (koko lukuvuosi)').click();
-    await page.getByRole('option', { name: 'Ei ilmoittautunut' }).click();
-    await page
-      .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
+    await selectOption(page, 'Ilmoittautumistieto', 'Ei ilmoittautunut');
+    await getYoValintatapajonoContent(page)
       .getByRole('button', { name: 'Hyväksy ja tallenna' })
       .click();
     await expect(page.getByText('Valintaesitys hyväksytty')).toBeVisible();
@@ -385,8 +381,7 @@ test.describe('valintaesityksen hyväksyminen', () => {
     );
     await page.getByText('Maksamatta').click();
     await page.getByRole('option', { name: 'Maksettu' }).click();
-    await page
-      .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
+    await getYoValintatapajonoContent(page)
       .getByRole('button', { name: 'Hyväksy ja tallenna' })
       .click();
     await expect(
@@ -404,8 +399,7 @@ test.describe('valintaesityksen hyväksyminen', () => {
         await route.fulfill({ status: 500, body: 'Räjähti' });
       },
     );
-    await page
-      .locator('[data-test-id="sijoittelun-tulokset-form-valintatapajono-yo"]')
+    await getYoValintatapajonoContent(page)
       .getByRole('button', { name: 'Hyväksy ja tallenna' })
       .click();
     await expect(
@@ -547,6 +541,76 @@ test.describe('hakemuksen muut toiminnot', () => {
     ).toBeVisible();
     await page.getByText('Lähetä vastaanottoposti', { exact: true }).click();
     await expect(page.getByText('Sähköpostin lähetys onnistui')).toBeVisible();
+  });
+
+  test('merkitse myöhästyneeksi', async ({ page }) => {
+    const yoAccordionContent = getYoValintatapajonoContent(page);
+    const ammAccordionContent = getAmmValintatapajonoContent(page);
+    const ammMerkitseMyohastyneeksiButton = ammAccordionContent.getByRole(
+      'button',
+      {
+        name: 'Merkitse myöhästyneeksi',
+      },
+    );
+    await expect(ammMerkitseMyohastyneeksiButton).toBeDisabled();
+    const yoMerkitseMyohastyneeksiButton = yoAccordionContent.getByRole(
+      'button',
+      {
+        name: 'Merkitse myöhästyneeksi',
+      },
+    );
+    const nukettajaRow = yoAccordionContent.getByRole('row', {
+      name: 'Nukettaja Ruhtinas',
+    });
+    await nukettajaRow
+      .getByRole('checkbox', { name: 'Ehdollinen valinta' })
+      .click();
+    const daculaRow = yoAccordionContent.getByRole('row', {
+      name: 'Dacula Kreivi',
+    });
+    await selectOption(page, 'Ilmoittautumistieto', 'Ei tehty', daculaRow);
+    await expect(yoMerkitseMyohastyneeksiButton).toBeEnabled();
+    await yoMerkitseMyohastyneeksiButton.click();
+    const confirmModal = page.getByRole('dialog', {
+      name: 'Vahvista myöhästyneeksi merkitseminen',
+    });
+    const confirmationDataRows = confirmModal
+      .getByRole('row')
+      .filter({ has: page.locator('td') });
+
+    await expect(confirmationDataRows).toHaveCount(1);
+    await expect(confirmationDataRows.nth(0)).toContainText(
+      'Nukettaja Ruhtinas',
+    );
+
+    const [request] = await Promise.all([
+      page.waitForRequest(
+        (request) =>
+          request
+            .url()
+            .includes('/valinta-tulos-service/auth/valinnan-tulos') &&
+          request.method() === 'PATCH',
+      ),
+      confirmModal
+        .getByRole('button', { name: 'Merkitse myöhästyneeksi' })
+        .click(),
+    ]);
+
+    const postData = request.postDataJSON();
+    expect(postData).toHaveLength(1);
+    expect(postData[0]).toMatchObject({
+      hakukohdeOid: '1.2.246.562.20.00000000000000045105',
+      valintatapajonoOid: 'valintatapajono-yo',
+      hakemusOid: '1.2.246.562.11.00000000000001796027',
+      henkiloOid: '1.2.246.562.24.69259807406',
+      vastaanottotila: VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA,
+      valinnantila: 'HYVAKSYTTY',
+      ilmoittautumistila: IlmoittautumisTila.EI_TEHTY,
+      julkaistavissa: true,
+      ehdollisestiHyvaksyttavissa: false,
+      hyvaksyttyVarasijalta: false,
+      hyvaksyPeruuntunut: false,
+    });
   });
 });
 
@@ -693,6 +757,23 @@ test.describe('hakukohteen muut toiminnot', () => {
 
 async function goToSijoittelunTulokset(page: Page) {
   await page.clock.setFixedTime(new Date('2025-02-05T12:00:00'));
+  await page.route(
+    configuration.myohastyneetHakemuksetUrl({
+      hakuOid: '1.2.246.562.29.00000000000000045102',
+      hakukohdeOid: '1.2.246.562.20.00000000000000045105',
+    }),
+    async (route) => {
+      await route.fulfill({
+        json: [
+          {
+            hakemusOid: '1.2.246.562.11.00000000000001796027',
+            mennyt: true,
+            vastaanottoDeadline: '2022-03-18T13:00:00.000Z',
+          },
+        ],
+      });
+    },
+  );
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/sijoittelun-tulokset',
   );

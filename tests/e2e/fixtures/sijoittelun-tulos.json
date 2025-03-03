@@ -25,8 +25,8 @@
       "jonosija": 1,
       "tasasijaJonosija": 1,
       "prioriteetti": 0,
-      "vastaanottotila": "VASTAANOTTANUT_SITOVASTI",
-      "ilmoittautumistila": "LASNA_KOKO_LUKUVUOSI",
+      "vastaanottotila": "KESKEN",
+      "ilmoittautumistila": "EI_TEHTY",
       "hyvaksyttyHarkinnanvaraisesti": false
     },
     {

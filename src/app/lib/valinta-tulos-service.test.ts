@@ -88,7 +88,7 @@ function assertHakemus(
   expect(hakemus.tila).toEqual(tila);
   expect(hakemus.vastaanottotila).toEqual(vastaanottoTila);
   expect(hakemus.ilmoittautumisTila).toEqual(ilmoTila);
-  expect(hakemus.maksuntila).not.toBeDefined();
+  expect(hakemus.maksunTila).not.toBeDefined();
 }
 
 async function getTulokset() {

@@ -1,13 +1,38 @@
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { Box, CircularProgress, styled } from '@mui/material';
-import { AnyMachineSnapshot } from 'xstate';
-import { OphButton } from '@opetushallitus/oph-design-system';
-import { SijoittelunTuloksetStates } from '../lib/sijoittelun-tulokset-state';
+import {
+  Box,
+  styled,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from '@mui/material';
+import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import useToaster from '@/app/hooks/useToaster';
 import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
-import { SijoitteluajonValintatapajonoValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
+import {
+  SijoittelunHakemusValintatiedoilla,
+  SijoittelunTila,
+  VastaanottoTila,
+} from '@/app/lib/types/sijoittelu-types';
 import { sendVastaanottopostiValintatapaJonolle } from '@/app/lib/valinta-tulos-service';
 import { useIsHakuPublishAllowed } from '@/app/hooks/useIsHakuPublishAllowed';
+import { filter, isEmpty, pipe, prop } from 'remeda';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { getMyohastyneetHakemukset } from '@/app/lib/valintalaskentakoostepalvelu';
+import { showModal } from '@/app/components/global-modal';
+import { GlobalConfirmationModal } from '@/app/components/global-confirmation-modal';
+import { buildLinkToApplication } from '@/app/lib/ataru';
+import { ExternalLink } from '@/app/components/external-link';
+import { useSelector } from '@xstate/react';
+import {
+  MassChangeParams,
+  SijoittelunTuloksetEventType,
+  SijoittelunTuloksetState,
+  SijoittelunTulosActorRef,
+} from '../lib/sijoittelun-tulokset-state';
 
 const ActionsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -16,30 +41,23 @@ const ActionsContainer = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(2),
 }));
 
-export const SijoittelunTuloksetActions = ({
-  haku,
-  state,
-  publish,
-  hakukohde,
-  valintatapajono,
+const SendVastaanottopostiButton = ({
+  disabled,
+  hakukohdeOid,
+  valintatapajonoOid,
 }: {
-  haku: Haku;
-  state: AnyMachineSnapshot;
-  publish: () => void;
-  hakukohde: Hakukohde;
-  valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
+  disabled: boolean;
+  hakukohdeOid: string;
+  valintatapajonoOid: string;
 }) => {
-  const { t } = useTranslations();
-
-  const isPublishAllowed = useIsHakuPublishAllowed({ haku });
-
   const { addToast } = useToaster();
+  const { t } = useTranslations();
 
   const sendVastaanottoposti = async () => {
     try {
       const data = await sendVastaanottopostiValintatapaJonolle(
-        hakukohde.oid,
-        valintatapajono.oid,
+        hakukohdeOid,
+        valintatapajonoOid,
       );
       if (!data || data.length < 1) {
         addToast({
@@ -68,36 +86,221 @@ export const SijoittelunTuloksetActions = ({
   };
 
   return (
+    <OphButton
+      variant="contained"
+      disabled={disabled}
+      onClick={sendVastaanottoposti}
+    >
+      {t('sijoittelun-tulokset.toiminnot.laheta-vastaanottoposti-jonolle')}
+    </OphButton>
+  );
+};
+
+const useEraantyneetHakemukset = ({
+  hakuOid,
+  hakukohdeOid,
+  hakemukset,
+}: {
+  hakuOid: string;
+  hakukohdeOid: string;
+  hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
+}) => {
+  const hakemuksetJotkaTarvitsevatAikarajaMennytTiedon = pipe(
+    hakemukset,
+    filter(
+      (hakemus) =>
+        hakemus.vastaanottotila === VastaanottoTila.KESKEN &&
+        hakemus.julkaistavissa &&
+        [
+          SijoittelunTila.HYVAKSYTTY,
+          SijoittelunTila.VARASIJALTA_HYVAKSYTTY,
+          SijoittelunTila.PERUNUT,
+        ].includes(hakemus.tila),
+    ),
+  );
+
+  const hakemusOids = hakemuksetJotkaTarvitsevatAikarajaMennytTiedon.map(
+    prop('hakemusOid'),
+  );
+
+  const { data: myohastyneetHakemukset = [] } = useSuspenseQuery({
+    queryKey: ['getMyohastyneetHakemukset', hakuOid, hakukohdeOid, hakemusOids],
+    queryFn: () =>
+      getMyohastyneetHakemukset({
+        hakuOid,
+        hakukohdeOid,
+        hakemusOids,
+      }),
+  });
+
+  return myohastyneetHakemukset?.reduce((result, eraantynytHakemus) => {
+    const hakemus = hakemuksetJotkaTarvitsevatAikarajaMennytTiedon?.find(
+      (h) => h.hakemusOid === eraantynytHakemus.hakemusOid,
+    );
+
+    return hakemus && eraantynytHakemus?.mennyt ? [...result, hakemus] : result;
+  }, [] as Array<SijoittelunHakemusValintatiedoilla>);
+};
+
+const EraantyneetInfoTable = ({
+  eraantyneetHakemukset,
+}: {
+  eraantyneetHakemukset: Array<SijoittelunHakemusValintatiedoilla>;
+}) => {
+  const { t } = useTranslations();
+  return (
+    <TableContainer>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>{t('sijoittelun-tulokset.hakija')}</TableCell>
+            <TableCell>{t('sijoittelun-tulokset.hakemus-oid')}</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {eraantyneetHakemukset.map((h) => (
+            <TableRow key={h.hakemusOid}>
+              <TableCell>{h.hakijanNimi}</TableCell>
+              <TableCell>
+                <ExternalLink
+                  name={h.hakemusOid}
+                  href={
+                    h.hakemusOid ? buildLinkToApplication(h?.hakemusOid) : ''
+                  }
+                />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+};
+
+const MerkitseMyohastyneeksiButton = ({
+  hakuOid,
+  hakukohdeOid,
+  disabled,
+  massUpdateForm,
+  hakemukset,
+}: {
+  disabled: boolean;
+  hakuOid: string;
+  hakukohdeOid: string;
+  massUpdateForm: (params: MassChangeParams) => void;
+  hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
+}) => {
+  const { t } = useTranslations();
+
+  const eraantyneetHakemukset = useEraantyneetHakemukset({
+    hakuOid,
+    hakukohdeOid,
+    hakemukset,
+  });
+
+  return (
+    <OphButton
+      variant="contained"
+      disabled={disabled || isEmpty(eraantyneetHakemukset ?? [])}
+      onClick={() =>
+        showModal(GlobalConfirmationModal, {
+          title: t('sijoittelun-tulokset.merkitse-myohastyneeksi-modal-title'),
+          maxWidth: 'md',
+          content: (
+            <Box>
+              <OphTypography>
+                {t('sijoittelun-tulokset.merkitse-myohastyneeksi-modal-text')}
+              </OphTypography>
+              <EraantyneetInfoTable
+                eraantyneetHakemukset={eraantyneetHakemukset}
+              />
+            </Box>
+          ),
+          confirmLabel: t('sijoittelun-tulokset.merkitse-myohastyneeksi'),
+          cancelLabel: t('yleinen.peruuta'),
+          onConfirm: () => {
+            massUpdateForm({
+              vastaanottotila: VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA,
+              hakemusOids: new Set(
+                eraantyneetHakemukset.map(prop('hakemusOid')),
+              ),
+            });
+          },
+        })
+      }
+    >
+      {t('sijoittelun-tulokset.merkitse-myohastyneeksi')}
+    </OphButton>
+  );
+};
+
+export const SijoittelunTuloksetActions = ({
+  haku,
+  hakukohde,
+  valintatapajonoOid,
+  sijoittelunTulosActorRef,
+}: {
+  haku: Haku;
+  hakukohde: Hakukohde;
+  valintatapajonoOid: string;
+  sijoittelunTulosActorRef: SijoittelunTulosActorRef;
+}) => {
+  const { t } = useTranslations();
+
+  const { send } = sijoittelunTulosActorRef;
+
+  const state = useSelector(sijoittelunTulosActorRef, (s) => s);
+
+  const hakemukset = useSelector(
+    sijoittelunTulosActorRef,
+    (s) => s.context.hakemukset,
+  );
+
+  const isPublishAllowed = useIsHakuPublishAllowed({ haku });
+
+  return (
     <ActionsContainer>
       <OphButton
-        type="submit"
+        onClick={() => {
+          send({ type: SijoittelunTuloksetEventType.UPDATE });
+        }}
         variant="contained"
-        disabled={!state.matches(SijoittelunTuloksetStates.IDLE)}
+        loading={state.matches(SijoittelunTuloksetState.UPDATING)}
+        disabled={!state.matches(SijoittelunTuloksetState.IDLE)}
       >
         {t('yleinen.tallenna')}
       </OphButton>
-      {state.matches(SijoittelunTuloksetStates.UPDATING) && (
-        <CircularProgress aria-label={t('yleinen.paivitetaan')} />
-      )}
+      <MerkitseMyohastyneeksiButton
+        hakuOid={haku.oid}
+        hakukohdeOid={hakukohde.oid}
+        hakemukset={hakemukset}
+        disabled={
+          !isPublishAllowed || !state.matches(SijoittelunTuloksetState.IDLE)
+        }
+        massUpdateForm={(changeParams: MassChangeParams) => {
+          send({
+            type: SijoittelunTuloksetEventType.MASS_UPDATE,
+            ...changeParams,
+          });
+        }}
+      />
       <OphButton
         variant="contained"
         disabled={
-          !isPublishAllowed || !state.matches(SijoittelunTuloksetStates.IDLE)
+          !isPublishAllowed || !state.matches(SijoittelunTuloksetState.IDLE)
         }
-        onClick={publish}
+        onClick={() => {
+          send({ type: SijoittelunTuloksetEventType.PUBLISH });
+        }}
+        loading={state.matches(SijoittelunTuloksetState.PUBLISHING)}
       >
         {t('sijoittelun-tulokset.hyvaksy')}
       </OphButton>
-      {state.matches(SijoittelunTuloksetStates.PUBLISHING) && (
-        <CircularProgress aria-label={t('yleinen.paivitetaan')} />
-      )}
-      <OphButton
-        variant="contained"
-        disabled={!state.matches(SijoittelunTuloksetStates.IDLE)}
-        onClick={sendVastaanottoposti}
-      >
-        {t('sijoittelun-tulokset.toiminnot.laheta-vastaanottoposti-jonolle')}
-      </OphButton>
+      <SendVastaanottopostiButton
+        disabled={!state.matches(SijoittelunTuloksetState.IDLE)}
+        hakukohdeOid={hakukohde.oid}
+        valintatapajonoOid={valintatapajonoOid}
+      />
     </ActionsContainer>
   );
 };

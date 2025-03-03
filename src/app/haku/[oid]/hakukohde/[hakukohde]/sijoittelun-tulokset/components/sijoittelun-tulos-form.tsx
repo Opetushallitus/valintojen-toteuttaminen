@@ -1,24 +1,16 @@
 'use client';
 
-import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
-import { FormEvent, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import useToaster from '@/app/hooks/useToaster';
-import { useMachine } from '@xstate/react';
-import { styled } from '@mui/material';
+import { useActorRef } from '@xstate/react';
+import { Box } from '@mui/material';
 import { SijoittelunTuloksetActions } from './sijoittelun-tulos-actions';
-import {
-  createSijoittelunTuloksetMachine,
-  HakemuksetStateChangeEvent,
-  SijoittelunTuloksetChangeEvent,
-  SijoittelunTuloksetEvents,
-  SijoittelunTuloksetStates,
-} from '../lib/sijoittelun-tulokset-state';
+import { createSijoittelunTuloksetMachine } from '../lib/sijoittelun-tulokset-state';
 import { SijoitteluajonValintatapajonoValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
 import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
-import { useSijoittelunTulosSearch } from '../hooks/useSijoittelunTuloksetSearch';
 import { SijoittelunTulosTable } from './sijoittelun-tulos-table';
-import { useTranslations } from '@/app/hooks/useTranslations';
 import { useConfirmChangesBeforeNavigation } from '@/app/hooks/useConfirmChangesBeforeNavigation';
+import { useIsDirtySijoittelunTulos } from '../lib/sijoittelun-tulokset-state-utils';
 
 type SijoittelunTuloksetFormParams = {
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
@@ -28,10 +20,6 @@ type SijoittelunTuloksetFormParams = {
   lastModified: string;
 };
 
-const StyledForm = styled('form')({
-  width: '100%',
-});
-
 export const SijoittelunTulosForm = ({
   valintatapajono,
   hakukohde,
@@ -39,11 +27,9 @@ export const SijoittelunTulosForm = ({
   sijoitteluajoId,
   lastModified,
 }: SijoittelunTuloksetFormParams) => {
-  const { t } = useTranslations();
-
   const { addToast } = useToaster();
 
-  const syottoMachine = useMemo(() => {
+  const sijoittelunTulosMachine = useMemo(() => {
     return createSijoittelunTuloksetMachine(
       hakukohde.oid,
       valintatapajono.oid,
@@ -53,75 +39,30 @@ export const SijoittelunTulosForm = ({
     );
   }, [hakukohde, valintatapajono, addToast, lastModified]);
 
-  const [state, send] = useMachine(syottoMachine);
+  const sijoittelunTulosActorRef = useActorRef(sijoittelunTulosMachine);
 
-  const { results, pageResults, sort, setSort, pageSize, setPage, page } =
-    useSijoittelunTulosSearch(valintatapajono.oid, valintatapajono.hakemukset);
+  const isDirty = useIsDirtySijoittelunTulos(sijoittelunTulosActorRef);
 
-  const [dirty, setDirty] = useState(false);
-
-  useConfirmChangesBeforeNavigation(dirty);
-
-  const submitChanges = (event: FormEvent) => {
-    send({ type: SijoittelunTuloksetEvents.UPDATE });
-    event.preventDefault();
-    setDirty(false);
-  };
-
-  const publish = () => {
-    send({ type: SijoittelunTuloksetEvents.PUBLISH });
-    setDirty(false);
-  };
-
-  const updateForm = (changeParams: SijoittelunTuloksetChangeEvent) => {
-    send({
-      type: SijoittelunTuloksetEvents.ADD_CHANGED_HAKEMUS,
-      ...changeParams,
-    });
-    setDirty(true);
-  };
-
-  const massStatusChangeForm = (changeParams: HakemuksetStateChangeEvent) => {
-    send({
-      type: SijoittelunTuloksetEvents.CHANGE_HAKEMUKSET_STATES,
-      ...changeParams,
-    });
-    setDirty(true);
-  };
+  useConfirmChangesBeforeNavigation(isDirty);
 
   return (
-    <StyledForm
-      autoComplete="off"
-      onSubmit={submitChanges}
+    <Box
+      sx={{ width: '100%' }}
       data-test-id={`sijoittelun-tulokset-form-${valintatapajono.oid}`}
     >
       <SijoittelunTuloksetActions
         haku={haku}
-        state={state}
-        publish={publish}
-        valintatapajono={valintatapajono}
         hakukohde={hakukohde}
+        valintatapajonoOid={valintatapajono.oid}
+        sijoittelunTulosActorRef={sijoittelunTulosActorRef}
       />
-      <TablePaginationWrapper
-        label={`${t('yleinen.sivutus')} ${valintatapajono.nimi}`}
-        totalCount={results?.length ?? 0}
-        pageSize={pageSize}
-        setPageNumber={setPage}
-        pageNumber={page}
-        countHidden={true}
-      >
-        <SijoittelunTulosTable
-          haku={haku}
-          hakukohde={hakukohde}
-          hakemukset={pageResults}
-          sijoitteluajoId={sijoitteluajoId}
-          sort={sort}
-          setSort={setSort}
-          updateForm={updateForm}
-          massStatusChangeForm={massStatusChangeForm}
-          disabled={!state.matches(SijoittelunTuloksetStates.IDLE)}
-        />
-      </TablePaginationWrapper>
-    </StyledForm>
+      <SijoittelunTulosTable
+        haku={haku}
+        hakukohde={hakukohde}
+        valintatapajono={valintatapajono}
+        sijoitteluajoId={sijoitteluajoId}
+        sijoittelunTulosActorRef={sijoittelunTulosActorRef}
+      />
+    </Box>
   );
 };

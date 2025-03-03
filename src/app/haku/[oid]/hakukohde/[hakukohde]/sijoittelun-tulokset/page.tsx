@@ -6,11 +6,11 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { Box } from '@mui/material';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys } from '@/app/lib/valinta-tulos-service';
+import { tryToGetLatestSijoitteluajonTuloksetWithValintaEsitysQueryOptions } from '@/app/lib/valinta-tulos-service';
 import { isEmpty } from '@/app/lib/common';
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
 import { NoResults } from '@/app/components/no-results';
-import { useSijoittelunTulosSearchParams } from './hooks/useSijoittelunTuloksetSearch';
+import { useSijoittelunTulosSearchParams } from './hooks/useSijoittelunTulosSearch';
 import { SijoittelunTulosContent } from './components/sijoittelun-tulos-content';
 import { SijoittelunTulosControls } from './components/sijoittelun-tulos-controls';
 import { useHaku } from '@/app/hooks/useHaku';
@@ -33,18 +33,12 @@ const SijoitteluContent = ({
   const { data: haku } = useHaku({ hakuOid });
   const { data: hakukohde } = useHakukohde({ hakukohdeOid });
 
-  const { data: tulokset } = useSuspenseQuery({
-    queryKey: [
-      'tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys',
+  const { data: tulokset } = useSuspenseQuery(
+    tryToGetLatestSijoitteluajonTuloksetWithValintaEsitysQueryOptions({
       hakuOid,
       hakukohdeOid,
-    ],
-    queryFn: () =>
-      tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys(
-        hakuOid,
-        hakukohdeOid,
-      ),
-  });
+    }),
+  );
 
   return isEmpty(tulokset) ? (
     <NoResults text={t('sijoittelun-tulokset.ei-tuloksia')} />
@@ -73,17 +67,16 @@ const SijoitteluContent = ({
         />
         <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
       </Box>
-      {tulokset &&
-        tulokset.valintatapajonot.map((jono) => (
-          <SijoittelunTulosContent
-            valintatapajono={jono}
-            key={jono.oid}
-            haku={haku}
-            hakukohde={hakukohde}
-            sijoitteluajoId={tulokset.sijoitteluajoId}
-            lastModified={tulokset.lastModified}
-          />
-        ))}
+      {tulokset?.valintatapajonot.map((jono) => (
+        <SijoittelunTulosContent
+          valintatapajono={jono}
+          key={jono.oid}
+          haku={haku}
+          hakukohde={hakukohde}
+          sijoitteluajoId={tulokset.sijoitteluajoId}
+          lastModified={tulokset.lastModified}
+        />
+      ))}
     </Box>
   );
 };

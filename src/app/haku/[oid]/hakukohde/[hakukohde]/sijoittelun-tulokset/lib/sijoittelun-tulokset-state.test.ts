@@ -1,17 +1,26 @@
-import { expect, test, vi, describe, afterEach, beforeEach } from 'vitest';
+import { expect, test, vi, describe, afterEach } from 'vitest';
 import { client } from '@/app/lib/http-client';
 import { createActor, waitFor } from 'xstate';
-import {
-  createSijoittelunTuloksetMachine,
-  SijoittelunTuloksetEvents,
-  SijoittelunTuloksetStates,
-} from './sijoittelun-tulokset-state';
+import { createSijoittelunTuloksetMachine } from './sijoittelun-tulokset-state';
 import {
   IlmoittautumisTila,
   SijoittelunHakemusValintatiedoilla,
   SijoittelunTila,
   VastaanottoTila,
 } from '@/app/lib/types/sijoittelu-types';
+import {
+  SijoittelunTuloksetEventType,
+  SijoittelunTuloksetState,
+  SijoittelunTulosActorRef,
+} from './sijoittelun-tulokset-state';
+
+vi.mock('@/app/components/global-modal', () => ({
+  showModal: vi.fn(),
+  createModal: vi.fn(),
+}));
+
+const waitIdle = (actor: SijoittelunTulosActorRef) =>
+  waitFor(actor, (state) => state.matches(SijoittelunTuloksetState.IDLE));
 
 describe('Sijoittelun tulokset states', async () => {
   const hakemukset: SijoittelunHakemusValintatiedoilla[] = [
@@ -60,22 +69,9 @@ describe('Sijoittelun tulokset states', async () => {
   ];
 
   const toastFn = vi.fn();
-  let actor = createActor(
-    createSijoittelunTuloksetMachine(
-      'hakukohde-oid',
-      'jono-oid',
-      hakemukset,
-      '',
-      toastFn,
-    ),
-  );
+  let actor: SijoittelunTulosActorRef | null = null;
 
-  beforeEach(() => {
-    actor.start();
-  });
-
-  afterEach(() => {
-    vi.restoreAllMocks();
+  const createActorLogic = () => {
     actor = createActor(
       createSijoittelunTuloksetMachine(
         'hakukohde-oid',
@@ -85,11 +81,18 @@ describe('Sijoittelun tulokset states', async () => {
         toastFn,
       ),
     );
+    actor.start();
+    return actor;
+  };
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   test('saving without changes creates error toast', async () => {
+    const actor = createActorLogic();
     expect(toastFn).not.toHaveBeenCalledOnce();
-    actor.send({ type: SijoittelunTuloksetEvents.UPDATE });
+    actor.send({ type: SijoittelunTuloksetEventType.UPDATE });
     expect(toastFn).toHaveBeenCalledWith({
       key: `sijoittelun-tulokset-update-failed-for-hakukohde-oid-jono-oid`,
       message: 'virhe.eimuutoksia',
@@ -98,6 +101,7 @@ describe('Sijoittelun tulokset states', async () => {
   });
 
   test('saving changes successfully shows success toast', async () => {
+    const actor = createActorLogic();
     vi.spyOn(client, 'post').mockImplementationOnce(() =>
       Promise.resolve({ headers: new Headers(), data: {} }),
     );
@@ -105,23 +109,121 @@ describe('Sijoittelun tulokset states', async () => {
       Promise.resolve({ headers: new Headers(), data: [] }),
     );
     actor.send({
-      type: SijoittelunTuloksetEvents.ADD_CHANGED_HAKEMUS,
+      type: SijoittelunTuloksetEventType.CHANGE,
       hakemusOid: 'hakemus-2',
-      vastaanottoTila: VastaanottoTila.EHDOLLISESTI_VASTAANOTTANUT,
+      vastaanottotila: VastaanottoTila.EHDOLLISESTI_VASTAANOTTANUT,
     });
-    let state = await waitFor(actor, (state) =>
-      state.matches(SijoittelunTuloksetStates.IDLE),
-    );
+    let state = await waitIdle(actor);
     expect(state.context.changedHakemukset.length).toEqual(1);
-    actor.send({ type: SijoittelunTuloksetEvents.UPDATE });
-    state = await waitFor(actor, (state) =>
-      state.matches(SijoittelunTuloksetStates.IDLE),
-    );
+    actor.send({ type: SijoittelunTuloksetEventType.UPDATE });
+    state = await waitIdle(actor);
     expect(toastFn).toHaveBeenCalledWith({
       key: `sijoittelun-tulokset-updated-for-hakukohde-oid-jono-oid`,
       message: 'sijoittelun-tulokset.valmis',
       type: 'success',
     });
     expect(state.context.changedHakemukset.length).toEqual(0);
+  });
+
+  test('removes item from changedhakemukset when changing values back to original', async () => {
+    const actor = createActorLogic();
+    actor.send({
+      type: SijoittelunTuloksetEventType.CHANGE,
+      hakemusOid: 'hakemus-2',
+      vastaanottotila: VastaanottoTila.EHDOLLISESTI_VASTAANOTTANUT,
+    });
+
+    let state = await waitIdle(actor);
+    expect(state.context.changedHakemukset.length).toEqual(1);
+
+    actor.send({
+      type: SijoittelunTuloksetEventType.CHANGE,
+      hakemusOid: 'hakemus-2',
+      vastaanottotila: VastaanottoTila.KESKEN,
+    });
+
+    state = await waitIdle(actor);
+    expect(state.context.changedHakemukset.length).toEqual(0);
+  });
+
+  test('mass update preserves other changes and modifies original hakemukset on success', async () => {
+    const actor = createActorLogic();
+    vi.spyOn(client, 'post').mockImplementationOnce(() =>
+      Promise.resolve({ headers: new Headers(), data: {} }),
+    );
+    vi.spyOn(client, 'patch').mockImplementationOnce(() =>
+      Promise.resolve({ headers: new Headers(), data: [] }),
+    );
+    actor.send({
+      type: SijoittelunTuloksetEventType.CHANGE,
+      hakemusOid: 'hakemus-2',
+      ehdollisestiHyvaksyttavissa: true,
+    });
+
+    let state = await waitIdle(actor);
+    expect(state.context.changedHakemukset.length).toEqual(1);
+
+    actor.send({
+      type: SijoittelunTuloksetEventType.MASS_UPDATE,
+      hakemusOids: new Set(['hakemus-1', 'hakemus-2']),
+      vastaanottotila: VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA,
+    });
+
+    state = await waitIdle(actor);
+
+    expect(state.context.hakemukset[0].vastaanottotila).toEqual(
+      VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA,
+    );
+    expect(state.context.hakemukset[1].vastaanottotila).toEqual(
+      VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA,
+    );
+
+    expect(state.context.changedHakemukset.length).toEqual(1);
+    expect(state.context.changedHakemukset[0]).toEqual({
+      ...hakemukset[1],
+      ehdollisestiHyvaksyttavissa: true,
+    });
+  });
+
+  test('Should only reset changes for successfully saved hakemukset', async () => {
+    const actor = createActorLogic();
+    vi.spyOn(client, 'post').mockImplementationOnce(() =>
+      Promise.resolve({ headers: new Headers(), data: {} }),
+    );
+    vi.spyOn(client, 'patch').mockImplementationOnce(() =>
+      Promise.resolve({
+        headers: new Headers(),
+        data: [
+          {
+            // saving hakemus-1 fails
+            hakemusOid: 'hakemus-1',
+          },
+        ],
+      }),
+    );
+
+    actor.send({
+      type: SijoittelunTuloksetEventType.CHANGE,
+      hakemusOid: 'hakemus-1',
+      vastaanottotila: VastaanottoTila.EHDOLLISESTI_VASTAANOTTANUT,
+    });
+
+    actor.send({
+      type: SijoittelunTuloksetEventType.CHANGE,
+      hakemusOid: 'hakemus-2',
+      vastaanottotila: VastaanottoTila.VASTAANOTTANUT_SITOVASTI,
+    });
+
+    let state = await waitIdle(actor);
+    expect(state.context.changedHakemukset.length).toEqual(2);
+
+    actor.send({ type: SijoittelunTuloksetEventType.UPDATE });
+    state = await waitIdle(actor);
+
+    expect(state.context.changedHakemukset.length).toEqual(1);
+    expect(state.context.changedHakemukset[0]).toMatchObject({
+      hakemusOid: 'hakemus-1',
+      vastaanottotila: VastaanottoTila.EHDOLLISESTI_VASTAANOTTANUT,
+    });
   });
 });

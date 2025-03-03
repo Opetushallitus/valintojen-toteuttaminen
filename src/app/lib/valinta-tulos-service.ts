@@ -16,13 +16,14 @@ import {
   VastaanottoTila,
 } from './types/sijoittelu-types';
 import { MaksunTila, Maksuvelvollisuus } from './types/ataru-types';
-import { FetchError, OphApiError } from './common';
+import { nullWhen404, OphApiError } from './common';
 import {
   HakemusChangeEvent,
   ValinnanTulosModel,
   ValinnanTulosUpdateErrorResult,
 } from './types/valinta-tulos-types';
 import { toFormattedDateTimeString } from './localization/translation-utils';
+import { queryOptions } from '@tanstack/react-query';
 
 type SijoittelunTulosResponseData = {
   valintatapajonoNimi: string;
@@ -166,7 +167,7 @@ const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
         jono.hakemukset.map((h) => {
           const hakemus = hakemuksetIndexed[h.hakemusOid];
           const valintatulos = valintatuloksetIndexed[h.hakemusOid];
-          const maksuntila =
+          const maksunTila =
             hakemus.maksuvelvollisuus === Maksuvelvollisuus.MAKSUVELVOLLINEN &&
             (lukuvuosimaksutIndexed[h.hakijaOid]?.maksuntila ??
               MaksunTila.MAKSAMATTA);
@@ -185,7 +186,7 @@ const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
             ilmoittautumisTila: valintatulos.ilmoittautumistila,
             julkaistavissa: valintatulos.julkaistavissa,
             vastaanottotila: valintatulos.vastaanottotila,
-            maksuntila: maksuntila || undefined,
+            maksunTila: maksunTila || undefined,
             ehdollisestiHyvaksyttavissa:
               valintatulos.ehdollisestiHyvaksyttavissa,
             hyvaksyttyVarasijalta: valintatulos.hyvaksyttyVarasijalta,
@@ -221,6 +222,7 @@ const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
           );
         })
         .forEach((hakemus, i) => (hakemus.sija = i + 1));
+
       return {
         oid: jono.oid,
         nimi: jono.nimi,
@@ -242,17 +244,20 @@ const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
   };
 };
 
-const nullWhen404 = async <T>(promise: Promise<T>): Promise<T | null> => {
-  try {
-    return await promise;
-  } catch (e) {
-    if (e instanceof FetchError && e?.response?.status === 404) {
-      console.error('FetchError with 404', e);
-      return null;
-    }
-    throw e;
-  }
-};
+export const tryToGetLatestSijoitteluajonTuloksetWithValintaEsitysQueryOptions =
+  ({ hakuOid, hakukohdeOid }: { hakuOid: string; hakukohdeOid: string }) =>
+    queryOptions({
+      queryKey: [
+        'tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys',
+        hakuOid,
+        hakukohdeOid,
+      ],
+      queryFn: () =>
+        tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys(
+          hakuOid,
+          hakukohdeOid,
+        ),
+    });
 
 export const tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys = async (
   hakuOid: string,
@@ -349,9 +354,9 @@ export const saveMaksunTilanMuutokset = async (
       const original = originalHakemukset.find(
         (o) => o.hakemusOid === h.hakemusOid,
       );
-      return original?.maksuntila !== h.maksuntila;
+      return original?.maksunTila !== h.maksunTila;
     })
-    .map((h) => ({ personOid: h.hakijaOid, maksuntila: h.maksuntila }));
+    .map((h) => ({ personOid: h.hakijaOid, maksuntila: h.maksunTila }));
 
   if (hakemuksetWithChangedMaksunTila.length > 0) {
     await client.post(

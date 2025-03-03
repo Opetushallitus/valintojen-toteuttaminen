@@ -95,3 +95,17 @@ export type GenericEvent = {
   message: string;
   type: 'error' | 'success';
 };
+
+export const nullWhen404 = async <T>(
+  promise: Promise<T>,
+): Promise<T | null> => {
+  try {
+    return await promise;
+  } catch (e) {
+    if (e instanceof FetchError && e?.response?.status === 404) {
+      console.error('FetchError with 404', e);
+      return null;
+    }
+    throw e;
+  }
+};

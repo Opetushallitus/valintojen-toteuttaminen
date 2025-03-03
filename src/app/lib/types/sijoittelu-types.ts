@@ -78,7 +78,7 @@ export type SijoittelunHakemusValintatiedoilla = {
   julkaistavissa: boolean;
   ilmoittautumisTila: IlmoittautumisTila;
   vastaanottotila: VastaanottoTila;
-  maksuntila?: MaksunTila;
+  maksunTila?: MaksunTila;
   ehdollisestiHyvaksyttavissa: boolean;
   hyvaksyttyVarasijalta: boolean;
   onkoMuuttunutViimeSijoittelussa: boolean;

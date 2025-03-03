@@ -797,3 +797,30 @@ export const getDocumentIdForHakukohde = async (
   );
   return res.data?.length > 0 ? res.data[0]?.documentId : null;
 };
+
+export const getMyohastyneetHakemukset = async ({
+  hakuOid,
+  hakukohdeOid,
+  hakemusOids,
+}: {
+  hakuOid: string;
+  hakukohdeOid: string;
+  hakemusOids: Array<string>;
+}) => {
+  // Ei kannata tehdä kyselyä ilman hakemusOideja, koska palauttaa silloin kuitenkin aina tyhjän.
+  if (hakemusOids.length === 0) {
+    return [];
+  }
+
+  const response = await client.post<
+    Array<{ hakemusOid: string; mennyt: true; vastaanottoDeadline: string }>
+  >(
+    configuration.myohastyneetHakemuksetUrl({
+      hakuOid,
+      hakukohdeOid,
+    }),
+    hakemusOids,
+  );
+
+  return response?.data;
+};
