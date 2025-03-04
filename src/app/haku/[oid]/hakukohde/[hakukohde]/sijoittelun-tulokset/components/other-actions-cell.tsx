@@ -25,7 +25,10 @@ import { showModal } from '@/components/modals/global-modal';
 import { ChangeHistoryModal } from './change-history-modal';
 import { AcceptedLetterTemplateModal } from './letter-template-modal';
 import { useUserPermissions } from '@/app/hooks/useUserPermissions';
-import { isKirjeidenMuodostaminenAllowed } from '../lib/sijoittelun-tulokset-permission-utils';
+import {
+  isKirjeidenMuodostaminenAllowed,
+  isSendVastaanottoPostiVisible,
+} from '../lib/sijoittelun-tulokset-permission-utils';
 
 const StyledListItemText = styled(ListItemText)(() => ({
   span: {
@@ -169,14 +172,16 @@ export const OtherActionsCell = ({
             {t('sijoittelun-tulokset.toiminnot.hyvaksymiskirje')}
           </StyledListItemText>
         </MenuItem>
-        <MenuItem onClick={sendVastaanottoposti}>
-          <StyledListItemIcon>
-            <MailOutline />
-          </StyledListItemIcon>
-          <StyledListItemText>
-            {t('sijoittelun-tulokset.toiminnot.laheta-vastaanottoposti')}
-          </StyledListItemText>
-        </MenuItem>
+        {isSendVastaanottoPostiVisible(haku, userPermissions) && (
+          <MenuItem onClick={sendVastaanottoposti}>
+            <StyledListItemIcon>
+              <MailOutline />
+            </StyledListItemIcon>
+            <StyledListItemText>
+              {t('sijoittelun-tulokset.toiminnot.laheta-vastaanottoposti')}
+            </StyledListItemText>
+          </MenuItem>
+        )}
       </Menu>
     </>
   );

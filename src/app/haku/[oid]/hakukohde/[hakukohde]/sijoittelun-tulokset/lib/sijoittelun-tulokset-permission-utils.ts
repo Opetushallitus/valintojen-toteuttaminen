@@ -13,3 +13,10 @@ export const isKirjeidenMuodostaminenAllowed = (
     kaikkiJonotHyvaksytty
   );
 };
+
+export const isSendVastaanottoPostiVisible = (
+  haku: Haku,
+  permissions: UserPermissions,
+) => {
+  return !isToinenAsteKohdejoukko(haku) || permissions.hasOphCRUD;
+};

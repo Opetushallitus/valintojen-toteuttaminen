@@ -1,29 +1,32 @@
 import { describe, expect, test } from 'vitest';
-import { isKirjeidenMuodostaminenAllowed } from './sijoittelun-tulokset-permission-utils';
+import {
+  isKirjeidenMuodostaminenAllowed,
+  isSendVastaanottoPostiVisible,
+} from './sijoittelun-tulokset-permission-utils';
 import { Haku, Tila } from '@/app/lib/types/kouta-types';
 import { UserPermissions } from '@/app/lib/permissions';
 
+const mockHaku: Haku = {
+  oid: 'mock-oid',
+  nimi: {
+    fi: 'mock-nimi',
+  },
+  tila: Tila.JULKAISTU,
+  alkamisVuosi: 2023,
+  alkamisKausiKoodiUri: 'mock-alkamisKausiKoodiUri',
+  hakutapaKoodiUri: 'mock-hakutapaKoodiUri',
+  kohdejoukkoKoodiUri: 'haunkohdejoukko_20',
+  hakukohteita: 123,
+};
+
+const mockPermissions: UserPermissions = {
+  hasOphCRUD: false,
+  readOrganizations: [],
+  writeOrganizations: [],
+  crudOrganizations: [],
+};
+
 describe('isKirjeidenMuodostaminenAllowed', () => {
-  const mockHaku: Haku = {
-    oid: 'mock-oid',
-    nimi: {
-      fi: 'mock-nimi',
-    },
-    tila: Tila.JULKAISTU,
-    alkamisVuosi: 2023,
-    alkamisKausiKoodiUri: 'mock-alkamisKausiKoodiUri',
-    hakutapaKoodiUri: 'mock-hakutapaKoodiUri',
-    kohdejoukkoKoodiUri: 'haunkohdejoukko_20',
-    hakukohteita: 123,
-  };
-
-  const mockPermissions: UserPermissions = {
-    hasOphCRUD: false,
-    readOrganizations: [],
-    writeOrganizations: [],
-    crudOrganizations: [],
-  };
-
   test.each([
     {
       hasOphCrud: false,
@@ -51,7 +54,7 @@ describe('isKirjeidenMuodostaminenAllowed', () => {
     },
     {
       hasOphCrud: false,
-      kohdejoukko: 'haunkohdejoukko_11',
+      kohdejoukko: 'haunkohdejoukko_1',
       kaikkiJonotHyvaksytty: true,
       result: true,
     },
@@ -76,6 +79,51 @@ describe('isKirjeidenMuodostaminenAllowed', () => {
           kaikkiJonotHyvaksytty,
         ),
       ).toBe(result);
+    },
+  );
+});
+
+describe('isSendVastaanottoPostiVisible', () => {
+  test.each([
+    {
+      hasOphCrud: false,
+      kohdejoukko: 'haunkohdejoukko_11',
+      result: false,
+    },
+    {
+      hasOphCrud: false,
+      kohdejoukko: 'haunkohdejoukko_20',
+      result: false,
+    },
+    {
+      hasOphCrud: false,
+      kohdejoukko: 'haunkohdejoukko_17',
+      result: false,
+    },
+    {
+      hasOphCrud: false,
+      kohdejoukko: 'haunkohdejoukko_11',
+      result: false,
+    },
+    {
+      hasOphCrud: false,
+      kohdejoukko: 'haunkohdejoukko_1',
+      result: true,
+    },
+  ] as Array<{
+    hasOphCrud: boolean;
+    kohdejoukko: string;
+    result: boolean;
+  }>)(
+    'hasOphCrud = $hasOphCrud, kohdejoukko = $kohdejoukko, result = $result',
+    async ({ hasOphCrud, kohdejoukko, result }) => {
+      const permissions = { ...mockPermissions, hasOphCRUD: hasOphCrud };
+
+      const haku = {
+        ...mockHaku,
+        kohdejoukkoKoodiUri: kohdejoukko,
+      };
+      expect(isSendVastaanottoPostiVisible(haku, permissions)).toBe(result);
     },
   );
 });
