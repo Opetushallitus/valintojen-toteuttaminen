@@ -17,7 +17,6 @@ import {
   VastaanottoTila,
 } from '@/lib/types/sijoittelu-types';
 import { sendVastaanottopostiValintatapaJonolle } from '@/lib/valinta-tulos-service/valinta-tulos-service';
-import { useIsHakuPublishAllowed } from '@/hooks/useIsHakuPublishAllowed';
 import { filter, isEmpty, pipe, prop } from 'remeda';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getMyohastyneetHakemukset } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
@@ -33,6 +32,7 @@ import {
   SijoittelunTulosActorRef,
 } from '../lib/sijoittelun-tulokset-state';
 import { styled } from '@/lib/theme';
+import { useIsValintaesitysJulkaistavissa } from '@/hooks/useIsValintaesitysJulkaistavissa';
 
 const ActionsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -256,7 +256,9 @@ export const SijoittelunTuloksetActions = ({
     (s) => s.context.hakemukset,
   );
 
-  const isPublishAllowed = useIsHakuPublishAllowed({ haku });
+  const isValintaesitysJulkaistavissa = useIsValintaesitysJulkaistavissa({
+    haku,
+  });
 
   return (
     <ActionsContainer>
@@ -275,7 +277,8 @@ export const SijoittelunTuloksetActions = ({
         hakukohdeOid={hakukohde.oid}
         hakemukset={hakemukset}
         disabled={
-          !isPublishAllowed || !state.matches(SijoittelunTuloksetState.IDLE)
+          !isValintaesitysJulkaistavissa ||
+          !state.matches(SijoittelunTuloksetState.IDLE)
         }
         massUpdateForm={(changeParams: MassChangeParams) => {
           send({
@@ -287,7 +290,8 @@ export const SijoittelunTuloksetActions = ({
       <OphButton
         variant="contained"
         disabled={
-          !isPublishAllowed || !state.matches(SijoittelunTuloksetState.IDLE)
+          !isValintaesitysJulkaistavissa ||
+          !state.matches(SijoittelunTuloksetState.IDLE)
         }
         onClick={() => {
           send({ type: SijoittelunTuloksetEventType.PUBLISH });
