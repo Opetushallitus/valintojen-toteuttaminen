@@ -1,4 +1,4 @@
-import { hakukohteenValintalaskennanTuloksetQueryOptions } from '@/app/lib/valintalaskenta-service';
+import { hakukohteenValintalaskennanTuloksetQueryOptions } from '@/lib/valintalaskenta/valintalaskenta-service';
 import { QueryClient } from '@tanstack/react-query';
 
 export const refetchLaskennanTulokset = ({

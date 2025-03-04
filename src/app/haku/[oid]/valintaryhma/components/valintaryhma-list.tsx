@@ -1,14 +1,14 @@
 'use client';
 
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import { ophColors, OphTypography } from '@opetushallitus/oph-design-system';
 import { useParams } from 'next/navigation';
-import { NAV_LIST_SELECTED_ITEM_CLASS } from '@/app/components/navigation-list';
+import { NAV_LIST_SELECTED_ITEM_CLASS } from '@/components/navigation-list';
 import { useValintaryhmaSearchResults } from '../hooks/useValintaryhmaSearch';
-import { ValintaryhmaHakukohteilla } from '@/app/lib/types/valintaperusteet-types';
+import { ValintaryhmaHakukohteilla } from '@/lib/valintaperusteet/valintaperusteet-types';
 import { ValintaryhmaAccordion } from './valintaryhma-accordion';
 import { ValintaryhmaLink } from './valintaryhma-link';
-import { styled } from '@/app/lib/theme';
+import { styled } from '@/lib/theme';
 
 const useSelectedValintaryhmaOid = () => useParams().valintaryhma;
 
@@ -52,7 +52,7 @@ const Content = ({
 }: {
   valintaryhma: ValintaryhmaHakukohteilla;
   hakuOid: string;
-  visibleValintaryhmat: string[];
+  visibleValintaryhmat: Array<string>;
   onItemClick?: () => void;
 }) => {
   const { t } = useTranslations();

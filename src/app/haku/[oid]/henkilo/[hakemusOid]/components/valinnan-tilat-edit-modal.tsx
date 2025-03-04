@@ -2,42 +2,42 @@ import {
   createModal,
   hideModal,
   useOphModalProps,
-} from '@/app/components/global-modal';
-import { useTranslations } from '@/app/hooks/useTranslations';
+} from '@/components/modals/global-modal';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import { Stack } from '@mui/material';
 import { OphButton, OphCheckbox } from '@opetushallitus/oph-design-system';
-import useToaster from '@/app/hooks/useToaster';
+import useToaster from '@/hooks/useToaster';
 import {
   QueryClient,
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { saveValinnanTulokset } from '@/app/lib/valinta-tulos-service';
+import { saveValinnanTulokset } from '@/lib/valinta-tulos-service/valinta-tulos-service';
 import {
   IlmoittautumisTila,
   VastaanottoTila,
-} from '@/app/lib/types/sijoittelu-types';
+} from '@/lib/types/sijoittelu-types';
 import { valinnanTuloksetQueryOptions } from '../hooks/useHenkiloPageData';
 import {
   isIlmoittautuminenPossible,
   isVastaanottoPossible,
   isVastaanottotilaJulkaistavissa,
-} from '@/app/lib/sijoittelun-tulokset-utils';
-import { OphApiError } from '@/app/lib/common';
-import { ValinnanTulosUpdateErrorResult } from '@/app/lib/types/valinta-tulos-types';
-import { HttpClientResponse } from '@/app/lib/http-client';
+} from '@/lib/sijoittelun-tulokset-utils';
+import { OphApiError } from '@/lib/common';
+import { ValinnanTulosUpdateErrorResult } from '@/lib/valinta-tulos-service/valinta-tulos-types';
+import { HttpClientResponse } from '@/lib/http-client';
 import {
-  EditModalDialog,
+  EditModal,
   InlineFormControl,
   PaddedLabel,
-} from '@/app/components/edit-modal-dialog';
+} from '@/components/modals/edit-modal';
 import { ValinnanTulosLisatiedoilla } from '../lib/henkilo-page-types';
-import { LocalizedSelect } from '@/app/components/localized-select';
-import { Haku } from '@/app/lib/types/kouta-types';
-import { useIsHakuPublishAllowed } from '@/app/hooks/useIsHakuPublishAllowed';
-import { useVastaanottoTilaOptions } from '@/app/hooks/useVastaanottoTilaOptions';
-import { useIlmoittautumisTilaOptions } from '@/app/hooks/useIlmoittautumisTilaOptions';
+import { LocalizedSelect } from '@/components/localized-select';
+import { Haku } from '@/lib/kouta/kouta-types';
+import { useIsHakuPublishAllowed } from '@/hooks/useIsHakuPublishAllowed';
+import { useVastaanottoTilaOptions } from '@/hooks/useVastaanottoTilaOptions';
+import { useIlmoittautumisTilaOptions } from '@/hooks/useIlmoittautumisTilaOptions';
 
 const ModalActions = ({
   onClose,
@@ -170,7 +170,7 @@ export const ValinnanTilatEditModal = createModal<{
   });
 
   return (
-    <EditModalDialog
+    <EditModal
       open={open}
       slotProps={slotProps}
       title={t('henkilo.muokkaa-valintaa')}
@@ -258,6 +258,6 @@ export const ValinnanTilatEditModal = createModal<{
           )}
         />
       )}
-    </EditModalDialog>
+    </EditModal>
   );
 });

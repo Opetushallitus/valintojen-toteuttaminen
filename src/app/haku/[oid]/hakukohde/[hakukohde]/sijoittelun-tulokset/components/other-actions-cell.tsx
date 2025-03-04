@@ -1,5 +1,5 @@
-import { useTranslations } from '@/app/hooks/useTranslations';
-import { SijoittelunHakemusValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { SijoittelunHakemusValintatiedoilla } from '@/lib/types/sijoittelu-types';
 import {
   ListItemIcon,
   ListItemText,
@@ -15,13 +15,13 @@ import {
   InsertDriveFileOutlined,
   MoreHoriz,
 } from '@mui/icons-material';
-import { Hakukohde } from '@/app/lib/types/kouta-types';
-import useToaster from '@/app/hooks/useToaster';
+import { Hakukohde } from '@/lib/kouta/kouta-types';
+import useToaster from '@/hooks/useToaster';
 import {
   changeHistoryForHakemus,
   sendVastaanottopostiHakemukselle,
-} from '@/app/lib/valinta-tulos-service';
-import { showModal } from '@/app/components/global-modal';
+} from '@/lib/valinta-tulos-service/valinta-tulos-service';
+import { showModal } from '@/components/modals/global-modal';
 import { ChangeHistoryModal } from './change-history-modal';
 import { AcceptedLetterTemplateModal } from './letter-template-modal';
 

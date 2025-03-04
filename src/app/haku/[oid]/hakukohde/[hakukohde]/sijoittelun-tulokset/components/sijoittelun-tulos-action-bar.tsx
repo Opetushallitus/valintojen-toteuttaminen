@@ -2,28 +2,28 @@ import { useTranslation } from 'react-i18next';
 
 import { Box, SelectChangeEvent } from '@mui/material';
 import { DeselectOutlined } from '@mui/icons-material';
-import { ActionBar } from '@/app/components/action-bar';
-import { LocalizedSelect } from '@/app/components/localized-select';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { ActionBar } from '@/components/action-bar';
+import { LocalizedSelect } from '@/components/localized-select';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import {
   IlmoittautumisTila,
   SijoittelunHakemusValintatiedoilla,
   VastaanottoTila,
-} from '@/app/lib/types/sijoittelu-types';
+} from '@/lib/types/sijoittelu-types';
 import {
   isIlmoittautuminenPossible,
   isVastaanottoPossible,
-} from '@/app/lib/sijoittelun-tulokset-utils';
+} from '@/lib/sijoittelun-tulokset-utils';
 import { MassChangeParams } from '../lib/sijoittelun-tulokset-state';
-import { useVastaanottoTilaOptions } from '@/app/hooks/useVastaanottoTilaOptions';
-import { useIlmoittautumisTilaOptions } from '@/app/hooks/useIlmoittautumisTilaOptions';
+import { useVastaanottoTilaOptions } from '@/hooks/useVastaanottoTilaOptions';
+import { useIlmoittautumisTilaOptions } from '@/hooks/useIlmoittautumisTilaOptions';
 
 const IlmoittautumisSelect = ({
   hakemukset,
   selection,
   massStatusChangeForm,
 }: {
-  hakemukset: SijoittelunHakemusValintatiedoilla[];
+  hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
   selection: Set<string>;
   massStatusChangeForm: (changeParams: MassChangeParams) => void;
 }) => {
@@ -56,7 +56,7 @@ const VastaanOttoSelect = ({
   selection,
   massStatusChangeForm,
 }: {
-  hakemukset: SijoittelunHakemusValintatiedoilla[];
+  hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
   selection: Set<string>;
   massStatusChangeForm: (changeParams: MassChangeParams) => void;
 }) => {
@@ -92,7 +92,7 @@ export const SijoittelunTuloksetActionBar = ({
   resetSelection,
   massStatusChangeForm,
 }: {
-  hakemukset: SijoittelunHakemusValintatiedoilla[];
+  hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
   selection: Set<string>;
   resetSelection: () => void;
   massStatusChangeForm: (changeParams: MassChangeParams) => void;

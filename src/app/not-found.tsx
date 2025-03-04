@@ -1,7 +1,7 @@
 'use client';
 import { Button, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/lib/localization/useTranslations';
 
 export default function Custom404() {
   const { t } = useTranslations();

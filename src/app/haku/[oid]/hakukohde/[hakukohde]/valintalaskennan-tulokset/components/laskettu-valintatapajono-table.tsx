@@ -1,26 +1,26 @@
 'use client';
-import { EditButton } from '@/app/components/edit-button';
-import { showModal } from '@/app/components/global-modal';
+import { EditButton } from '@/components/edit-button';
+import { showModal } from '@/components/modals/global-modal';
 import {
   ListTable,
   ListTablePaginationProps,
-} from '@/app/components/table/list-table';
+} from '@/components/table/list-table';
 import {
   createHakijaColumn,
   makeCountColumn,
   makeGenericColumn,
-} from '@/app/components/table/table-columns';
-import { ListTableColumn } from '@/app/components/table/table-types';
-import { ValintalaskentaEditModal } from '@/app/components/valintalaskenta-edit-modal';
+} from '@/components/table/table-columns';
+import { ListTableColumn } from '@/components/table/table-types';
+import { ValintalaskentaEditGlobalModal } from '@/components/modals/valintalaskenta-edit-global-modal';
 import {
   LaskennanJonosijaTulosWithHakijaInfo,
   LaskennanValintatapajonoTulos,
-} from '@/app/hooks/useEditableValintalaskennanTulokset';
-import { useTranslations } from '@/app/hooks/useTranslations';
-import { configuration } from '@/app/lib/configuration';
-import { getHenkiloTitle } from '@/app/lib/henkilo-utils';
-import { Hakukohde } from '@/app/lib/types/kouta-types';
-import { TuloksenTila } from '@/app/lib/types/laskenta-types';
+} from '@/hooks/useEditableValintalaskennanTulokset';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { configuration } from '@/lib/configuration';
+import { getHenkiloTitle } from '@/lib/henkilo-utils';
+import { Hakukohde } from '@/lib/kouta/kouta-types';
+import { TuloksenTila } from '@/lib/types/laskenta-types';
 import { OphLink } from '@opetushallitus/oph-design-system';
 import { useMemo } from 'react';
 import { refetchLaskennanTulokset } from '../lib/refetchLaskennanTulokset';
@@ -106,7 +106,7 @@ export const LaskettuValintatapajonoTable = ({
                 TuloksenTila.HYVAKSYTTY_HARKINNANVARAISESTI && (
                 <EditButton
                   onClick={() => {
-                    showModal(ValintalaskentaEditModal, {
+                    showModal(ValintalaskentaEditGlobalModal, {
                       hakutoiveNumero: props.hakutoiveNumero,
                       hakijanNimi: getHenkiloTitle(props),
                       hakukohde: hakukohde,

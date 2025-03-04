@@ -7,9 +7,9 @@ import {
   selectOption,
 } from './playwright-utils';
 import LASKETUT_VALINNANVAIHEET from './fixtures/lasketut-valinnanvaiheet.json';
-import { TuloksenTila } from '@/app/lib/types/laskenta-types';
-import { configuration } from '@/app/lib/configuration';
-import { NDASH } from '@/app/lib/constants';
+import { TuloksenTila } from '@/lib/types/laskenta-types';
+import { configuration } from '@/lib/configuration';
+import { NDASH } from '@/lib/constants';
 
 const JONO_TABLE_HEADINGS = [
   'Jonosija',

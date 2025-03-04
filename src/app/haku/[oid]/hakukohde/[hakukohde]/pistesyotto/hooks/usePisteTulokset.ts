@@ -1,4 +1,4 @@
-import { getPisteetForHakukohde } from '@/app/lib/valintalaskentakoostepalvelu';
+import { getPisteetForHakukohde } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
 
 type UsePisteTuloksetProps = {

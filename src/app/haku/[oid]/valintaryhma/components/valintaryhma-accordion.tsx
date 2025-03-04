@@ -1,6 +1,6 @@
-import { useTranslations } from '@/app/hooks/useTranslations';
-import { TRANSITION_DURATION } from '@/app/lib/constants';
-import { styled } from '@/app/lib/theme';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { TRANSITION_DURATION } from '@/lib/constants';
+import { styled } from '@/lib/theme';
 import { ExpandMore } from '@mui/icons-material';
 import { Box } from '@mui/material';
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';

@@ -1,15 +1,15 @@
 'use client';
 import { useMemo } from 'react';
-import { useDebounce } from '@/app/hooks/useDebounce';
+import { useDebounce } from '@/hooks/useDebounce';
 import { useQueryState } from 'nuqs';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import {
   DEFAULT_NUQS_OPTIONS,
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
-} from '@/app/lib/constants';
+} from '@/lib/constants';
 import { isDefined, isEmpty, uniqueBy } from 'remeda';
-import { getValintaryhmat } from '@/app/lib/valintaperusteet';
-import { ValintaryhmaHakukohteilla } from '@/app/lib/types/valintaperusteet-types';
+import { getValintaryhmat } from '@/lib/valintaperusteet/valintaperusteet-service';
+import { ValintaryhmaHakukohteilla } from '@/lib/valintaperusteet/valintaperusteet-types';
 
 export const useValintaryhmaSearchParams = () => {
   const [searchPhrase, setSearchPhrase] = useQueryState(
@@ -30,7 +30,7 @@ export const useValintaryhmaSearchParams = () => {
 
 function flattenValintaryhma(
   ryhma: ValintaryhmaHakukohteilla,
-): ValintaryhmaHakukohteilla[] {
+): Array<ValintaryhmaHakukohteilla> {
   return [ryhma]
     .concat(ryhma.alaValintaryhmat.flatMap(flattenValintaryhma))
     .filter(isDefined);
@@ -38,8 +38,8 @@ function flattenValintaryhma(
 
 function findFlattenedParents(
   ryhma: ValintaryhmaHakukohteilla,
-  flattenedRyhmat: ValintaryhmaHakukohteilla[],
-): ValintaryhmaHakukohteilla[] {
+  flattenedRyhmat: Array<ValintaryhmaHakukohteilla>,
+): Array<ValintaryhmaHakukohteilla> {
   const parents = flattenedRyhmat.filter((r) => ryhma.parentOid === r.oid);
   return parents.concat(
     parents.flatMap((r) => findFlattenedParents(r, flattenedRyhmat)),
@@ -47,8 +47,8 @@ function findFlattenedParents(
 }
 
 function filterRyhmatWithHakukohteet(
-  ryhmat: ValintaryhmaHakukohteilla[],
-): ValintaryhmaHakukohteilla[] {
+  ryhmat: Array<ValintaryhmaHakukohteilla>,
+): Array<ValintaryhmaHakukohteilla> {
   return ryhmat.filter(
     (r) =>
       r.hakukohteet.length > 0 ||

@@ -1,18 +1,18 @@
 'use client';
 import { use } from 'react';
 
-import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
+import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { TabContainer } from '../components/tab-container';
-import { FullClientSpinner } from '@/app/components/client-spinner';
+import { FullClientSpinner } from '@/components/client-spinner';
 import { Stack } from '@mui/material';
 import { useHarkinnanvaraisetHakemukset } from './hooks/useHarkinnanvaraisetHakemukset';
-import { PageSizeSelector } from '@/app/components/table/page-size-selector';
+import { PageSizeSelector } from '@/components/table/page-size-selector';
 import { useHarkinnanvaraisetPaginationQueryParams } from './hooks/useHarkinnanvaraisetPaginated';
 import { HarkinnanvaraisetForm } from './components/harkinnanvaraiset-form';
 import { HarkinnanvaraisetSearchInput } from './components/harkinnanvaraiset-search-input';
-import { NoResults } from '@/app/components/no-results';
+import { NoResults } from '@/components/no-results';
 import { isEmpty } from 'remeda';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/lib/localization/useTranslations';
 
 const HarkinnanvaraisetContent = ({
   hakuOid,

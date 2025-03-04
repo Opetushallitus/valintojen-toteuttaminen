@@ -1,6 +1,6 @@
 'use client';
-import { useHakuSearchResults } from '@/app/hooks/useHakuSearch';
-import { TablePaginationWrapper } from '../components/table/table-pagination-wrapper';
+import { useHakuSearchResults } from '@/hooks/useHakuSearch';
+import { TablePaginationWrapper } from '@/components/table/table-pagination-wrapper';
 import { HakuTable } from './components/haku-table';
 
 export const dynamic = 'force-dynamic';

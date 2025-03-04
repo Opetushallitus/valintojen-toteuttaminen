@@ -1,4 +1,4 @@
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import {
   Box,
   styled,
@@ -10,22 +10,22 @@ import {
   TableRow,
 } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
-import useToaster from '@/app/hooks/useToaster';
-import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
+import useToaster from '@/hooks/useToaster';
+import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import {
   SijoittelunHakemusValintatiedoilla,
   SijoittelunTila,
   VastaanottoTila,
-} from '@/app/lib/types/sijoittelu-types';
-import { sendVastaanottopostiValintatapaJonolle } from '@/app/lib/valinta-tulos-service';
-import { useIsHakuPublishAllowed } from '@/app/hooks/useIsHakuPublishAllowed';
+} from '@/lib/types/sijoittelu-types';
+import { sendVastaanottopostiValintatapaJonolle } from '@/lib/valinta-tulos-service/valinta-tulos-service';
+import { useIsHakuPublishAllowed } from '@/hooks/useIsHakuPublishAllowed';
 import { filter, isEmpty, pipe, prop } from 'remeda';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { getMyohastyneetHakemukset } from '@/app/lib/valintalaskentakoostepalvelu';
-import { showModal } from '@/app/components/global-modal';
-import { GlobalConfirmationModal } from '@/app/components/global-confirmation-modal';
-import { buildLinkToApplication } from '@/app/lib/ataru';
-import { ExternalLink } from '@/app/components/external-link';
+import { getMyohastyneetHakemukset } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
+import { showModal } from '@/components/modals/global-modal';
+import { GlobalConfirmationModal } from '@/components/modals/confirmation-global-modal';
+import { buildLinkToApplication } from '@/lib/ataru/ataru-service';
+import { ExternalLink } from '@/components/external-link';
 import { useSelector } from '@xstate/react';
 import {
   MassChangeParams,

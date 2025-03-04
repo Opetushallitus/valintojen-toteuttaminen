@@ -6,10 +6,10 @@ import {
   DeselectOutlined,
   NoteOutlined,
 } from '@mui/icons-material';
-import { ActionBar } from '@/app/components/action-bar';
-import { getOsoitetarratHakemuksille } from '@/app/lib/valintalaskentakoostepalvelu';
-import { HarkinnanvaraisetTilatByHakemusOids } from '@/app/lib/types/harkinnanvaraiset-types';
-import { FileDownloadButton } from '@/app/components/file-download-button';
+import { ActionBar } from '@/components/action-bar';
+import { getOsoitetarratHakemuksille } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
+import { HarkinnanvaraisetTilatByHakemusOids } from '@/lib/types/harkinnanvaraiset-types';
+import { FileDownloadButton } from '@/components/file-download-button';
 import { useCallback } from 'react';
 
 const HyvaksyValitutButton = ({

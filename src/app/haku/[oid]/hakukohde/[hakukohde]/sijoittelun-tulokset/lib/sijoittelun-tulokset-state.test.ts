@@ -1,5 +1,5 @@
 import { expect, test, vi, describe, afterEach } from 'vitest';
-import { client } from '@/app/lib/http-client';
+import { client } from '@/lib/http-client';
 import { createActor, waitFor } from 'xstate';
 import { createSijoittelunTuloksetMachine } from './sijoittelun-tulokset-state';
 import {
@@ -7,14 +7,14 @@ import {
   SijoittelunHakemusValintatiedoilla,
   SijoittelunTila,
   VastaanottoTila,
-} from '@/app/lib/types/sijoittelu-types';
+} from '@/lib/types/sijoittelu-types';
 import {
   SijoittelunTuloksetEventType,
   SijoittelunTuloksetState,
   SijoittelunTulosActorRef,
 } from './sijoittelun-tulokset-state';
 
-vi.mock('@/app/components/global-modal', () => ({
+vi.mock('@/components/modals/global-modal', () => ({
   showModal: vi.fn(),
   createModal: vi.fn(),
 }));
@@ -23,7 +23,7 @@ const waitIdle = (actor: SijoittelunTulosActorRef) =>
   waitFor(actor, (state) => state.matches(SijoittelunTuloksetState.IDLE));
 
 describe('Sijoittelun tulokset states', async () => {
-  const hakemukset: SijoittelunHakemusValintatiedoilla[] = [
+  const hakemukset: Array<SijoittelunHakemusValintatiedoilla> = [
     {
       hakijaOid: 'hakija-1',
       ehdollisestiHyvaksyttavissa: false,

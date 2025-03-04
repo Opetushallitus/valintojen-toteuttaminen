@@ -1,26 +1,23 @@
 'use client';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import {
   createStickyHakijaColumn,
   makeColumnWithCustomRender,
   makeCountColumn,
-} from '@/app/components/table/table-columns';
-import { ListTable } from '@/app/components/table/list-table';
+} from '@/components/table/table-columns';
+import { ListTable } from '@/components/table/list-table';
 import {
   SijoitteluajonValintatapajonoValintatiedoilla,
   SijoittelunHakemusValintatiedoilla,
-} from '@/app/lib/types/sijoittelu-types';
+} from '@/lib/types/sijoittelu-types';
 import { useCallback, useMemo, useState } from 'react';
-import {
-  KeysMatching,
-  ListTableColumn,
-} from '@/app/components/table/table-types';
+import { KeysMatching, ListTableColumn } from '@/components/table/table-types';
 import { MaksuCell } from './maksu-cell';
 import { IlmoittautumisCell } from './ilmoittautumis-cell';
 import { VastaanOttoCell } from './vastaanotto-cell';
 import { SijoittelunTilaCell } from './sijoittelun-tila-cell';
-import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
-import { isKorkeakouluHaku } from '@/app/lib/kouta';
+import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
+import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
 import { SijoittelunTuloksetActionBar } from './sijoittelun-tulos-action-bar';
 import { OtherActionsCell } from './other-actions-cell';
 import { useSelector } from '@xstate/react';

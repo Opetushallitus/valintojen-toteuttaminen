@@ -1,17 +1,17 @@
 'use client';
-import { HakemuksenPistetiedot } from '@/app/lib/types/laskenta-types';
-import { ValintakoeAvaimet } from '@/app/lib/types/valintaperusteet-types';
+import { HakemuksenPistetiedot } from '@/lib/types/laskenta-types';
+import { ValintakoeAvaimet } from '@/lib/valintaperusteet/valintaperusteet-types';
 import { ReadOnlyKoeCell } from './koe-readonly-cell';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import { useMemo } from 'react';
 import {
   createStickyHakijaColumn,
   makeColumnWithCustomRender,
-} from '@/app/components/table/table-columns';
-import { ListTable } from '@/app/components/table/list-table';
+} from '@/components/table/table-columns';
+import { ListTable } from '@/components/table/list-table';
 import { isNotPartOfThisHakukohde } from '../lib/pistesyotto-utils';
-import { KoeInputs } from '@/app/components/koe-inputs';
-import { PistesyottoActorRef } from '@/app/lib/state/pistesyotto-state';
+import { KoeInputs } from '@/components/koe-inputs';
+import { PistesyottoActorRef } from '@/lib/state/pistesyotto-state';
 
 export const PisteSyottoTable = ({
   pistetiedot,
@@ -20,10 +20,10 @@ export const PisteSyottoTable = ({
   kokeet,
   pistesyottoActorRef,
 }: {
-  pistetiedot: HakemuksenPistetiedot[];
+  pistetiedot: Array<HakemuksenPistetiedot>;
   sort: string;
   setSort: (sort: string) => void;
-  kokeet: ValintakoeAvaimet[];
+  kokeet: Array<ValintakoeAvaimet>;
   pistesyottoActorRef: PistesyottoActorRef;
 }) => {
   const { t } = useTranslations();

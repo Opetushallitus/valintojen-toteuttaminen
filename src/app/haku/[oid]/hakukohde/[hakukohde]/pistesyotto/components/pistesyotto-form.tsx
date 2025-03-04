@@ -1,15 +1,15 @@
 'use client';
 
-import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
+import { TablePaginationWrapper } from '@/components/table/table-pagination-wrapper';
 import { PisteSyottoTable } from './pistesyotto-table';
 import { usePisteSyottoSearchResults } from '../hooks/usePisteSyottoSearch';
 import { FormEvent } from 'react';
-import useToaster from '@/app/hooks/useToaster';
-import { usePistesyottoState } from '@/app/lib/state/pistesyotto-state';
+import useToaster from '@/hooks/useToaster';
+import { usePistesyottoState } from '@/lib/state/pistesyotto-state';
 import { PisteSyottoActions } from './pistesyotto-actions';
-import { HakukohteenPistetiedot } from '@/app/lib/types/laskenta-types';
-import { FormBox } from '@/app/components/form-box';
-import { useConfirmChangesBeforeNavigation } from '@/app/hooks/useConfirmChangesBeforeNavigation';
+import { HakukohteenPistetiedot } from '@/lib/types/laskenta-types';
+import { FormBox } from '@/components/form-box';
+import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBeforeNavigation';
 
 type PisteSyottoFormParams = {
   hakuOid: string;

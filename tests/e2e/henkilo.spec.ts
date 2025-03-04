@@ -10,18 +10,18 @@ import POSTI_00100 from './fixtures/posti_00100.json';
 import HAKEMUKSEN_VALINTALASKENTA_TULOKSET from './fixtures/hakemuksen-valintalaskenta-tulokset.json';
 import HAKEMUKSEN_SIJOITTELU_TULOKSET from './fixtures/hakemuksen-sijoittelu-tulokset.json';
 import PISTETIEDOT_HAKEMUKSELLE from './fixtures/pistetiedot_hakemukselle.json';
-import { configuration } from '@/app/lib/configuration';
+import { configuration } from '@/lib/configuration';
 import { hakemusValinnanTulosFixture } from './fixtures/hakemus-valinnan-tulos';
 import {
   IlmoittautumisTila,
   SijoittelunTila,
   VastaanottoTila,
-} from '@/app/lib/types/sijoittelu-types';
+} from '@/lib/types/sijoittelu-types';
 import {
   TuloksenTila,
   ValintakoeOsallistuminenTulos,
-} from '@/app/lib/types/laskenta-types';
-import { NDASH } from '@/app/lib/constants';
+} from '@/lib/types/laskenta-types';
+import { NDASH } from '@/lib/constants';
 
 const HAKUKOHDE_OID = '1.2.246.562.20.00000000000000045105';
 const NUKETTAJA_HAKEMUS_OID = '1.2.246.562.11.00000000000001796027';

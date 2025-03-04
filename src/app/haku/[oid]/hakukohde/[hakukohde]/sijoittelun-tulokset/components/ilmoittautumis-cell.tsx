@@ -1,13 +1,13 @@
-import { LocalizedSelect } from '@/app/components/localized-select';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { LocalizedSelect } from '@/components/localized-select';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import {
   IlmoittautumisTila,
   SijoittelunHakemusValintatiedoilla,
-} from '@/app/lib/types/sijoittelu-types';
+} from '@/lib/types/sijoittelu-types';
 import { SelectChangeEvent } from '@mui/material';
-import { isIlmoittautuminenPossible } from '@/app/lib/sijoittelun-tulokset-utils';
+import { isIlmoittautuminenPossible } from '@/lib/sijoittelun-tulokset-utils';
 import { SijoittelunTulosChangeParams } from '../lib/sijoittelun-tulokset-state';
-import { useIlmoittautumisTilaOptions } from '@/app/hooks/useIlmoittautumisTilaOptions';
+import { useIlmoittautumisTilaOptions } from '@/hooks/useIlmoittautumisTilaOptions';
 
 export const IlmoittautumisCell = ({
   hakemus,

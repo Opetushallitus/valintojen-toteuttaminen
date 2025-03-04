@@ -1,20 +1,20 @@
 'use client';
 
-import { isLaskentaUsedForValinnanvaihe } from '@/app/lib/valintaperusteet';
+import { isLaskentaUsedForValinnanvaihe } from '@/lib/valintaperusteet/valintaperusteet-service';
 import { Box, CircularProgress, TableCell, TableRow } from '@mui/material';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import Confirm from './confirm';
-import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
+import { toFormattedDateTimeString } from '@/lib/localization/translation-utils';
 import {
   LaskentaEventType,
   LaskentaState,
   useLaskentaState,
-} from '@/app/lib/state/laskenta-state';
-import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
-import { useToaster } from '@/app/hooks/useToaster';
-import { Valinnanvaihe } from '@/app/lib/types/valintaperusteet-types';
-import { HaunAsetukset } from '@/app/lib/types/haun-asetukset';
+} from '@/lib/state/laskenta-state';
+import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
+import { useToaster } from '@/hooks/useToaster';
+import { Valinnanvaihe } from '@/lib/valintaperusteet/valintaperusteet-types';
+import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { ErrorRow } from './error-row';
 
 type HallintaTableRowParams = {

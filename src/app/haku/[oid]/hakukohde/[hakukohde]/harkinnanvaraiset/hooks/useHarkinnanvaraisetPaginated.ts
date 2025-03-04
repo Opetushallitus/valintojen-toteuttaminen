@@ -1,12 +1,12 @@
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import { useMemo } from 'react';
-import { byProp, getSortParts } from '@/app/components/table/table-utils';
+import { byProp, getSortParts } from '@/components/table/table-utils';
 import { parseAsInteger, useQueryState } from 'nuqs';
-import { DEFAULT_NUQS_OPTIONS } from '@/app/lib/constants';
-import { DEFAULT_PAGE_SIZE } from '@/app/lib/constants';
+import { DEFAULT_NUQS_OPTIONS } from '@/lib/constants';
+import { DEFAULT_PAGE_SIZE } from '@/lib/constants';
 import { useHarkinnanvaraisetSearchParams } from './useHarkinnanvaraisetSearchParams';
-import { hakemusFilter } from '@/app/hooks/filters';
-import { HakemuksenHarkinnanvaraisuus } from '@/app/lib/types/harkinnanvaraiset-types';
+import { hakemusFilter } from '@/lib/filters';
+import { HakemuksenHarkinnanvaraisuus } from '@/lib/types/harkinnanvaraiset-types';
 
 const usePaginationQueryParams = (paginationId: string) => {
   const [page, setPage] = useQueryState<number>(

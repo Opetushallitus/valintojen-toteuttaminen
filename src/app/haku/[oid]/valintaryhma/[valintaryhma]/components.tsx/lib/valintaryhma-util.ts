@@ -1,8 +1,8 @@
-import { ValintaryhmaHakukohteilla } from '@/app/lib/types/valintaperusteet-types';
+import { ValintaryhmaHakukohteilla } from '@/lib/valintaperusteet/valintaperusteet-types';
 
 export function findParent(
   ryhma: ValintaryhmaHakukohteilla,
-  ryhmat: ValintaryhmaHakukohteilla[],
+  ryhmat: Array<ValintaryhmaHakukohteilla>,
 ): ValintaryhmaHakukohteilla | null {
   const parent =
     ryhmat.find((r) => ryhma.parentOid === r.oid) ||

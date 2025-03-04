@@ -1,4 +1,4 @@
-import { PageLayout } from '@/app/components/page-layout';
+import { PageLayout } from '@/components/page-layout';
 import { HakuTabs } from './components/haku-tabs';
 import { Stack } from '@mui/material';
 

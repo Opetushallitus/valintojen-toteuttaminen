@@ -1,12 +1,12 @@
-import { HakijaInfo } from '@/app/lib/types/ataru-types';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { HakijaInfo } from '@/lib/ataru/ataru-types';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import { isEmpty } from 'remeda';
 import { useState } from 'react';
 import { Box, TableBody, TableCell, TableRow } from '@mui/material';
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
-import { DEFAULT_BOX_BORDER, styled } from '@/app/lib/theme';
+import { DEFAULT_BOX_BORDER, styled } from '@/lib/theme';
 import { ChevronRight } from '@mui/icons-material';
-import { HakutoiveTitle } from '@/app/components/hakutoive-title';
+import { HakutoiveTitle } from '@/components/hakutoive-title';
 import { HakutoiveAccordionContent } from './hakutoive-accordion-content';
 import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
 

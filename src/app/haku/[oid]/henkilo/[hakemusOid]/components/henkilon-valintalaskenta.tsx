@@ -1,9 +1,9 @@
 'use client';
 
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import { Divider, Stack, styled, Typography } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
-import { withDefaultProps } from '@/app/lib/mui-utils';
+import { withDefaultProps } from '@/lib/mui-utils';
 import {
   LaskentaActorRef,
   LaskentaEvent,
@@ -12,18 +12,18 @@ import {
   LaskentaState,
   useLaskentaError,
   useLaskentaState,
-} from '@/app/lib/state/laskenta-state';
+} from '@/lib/state/laskenta-state';
 import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
-import useToaster from '@/app/hooks/useToaster';
-import { HaunAsetukset } from '@/app/lib/types/haun-asetukset';
-import { Haku } from '@/app/lib/types/kouta-types';
-import { ErrorAlert } from '@/app/components/error-alert';
+import useToaster from '@/hooks/useToaster';
+import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
+import { Haku } from '@/lib/kouta/kouta-types';
+import { ErrorAlert } from '@/components/error-alert';
 import { useSelector } from '@xstate/react';
-import { SeurantaTiedot } from '@/app/lib/types/laskenta-types';
+import { SeurantaTiedot } from '@/lib/types/laskenta-types';
 import { TFunction } from 'i18next';
-import { ProgressBar } from '@/app/components/progress-bar';
+import { ProgressBar } from '@/components/progress-bar';
 import { SuorittamattomatHakukohteet } from './suorittamattomat-hakukohteet';
-import { ConfirmationModalDialog } from './confirmation-modal-dialog';
+import { ConfirmationModal } from '@/components/modals/confirmation-modal';
 
 const LaskentaButton = withDefaultProps(
   styled(OphButton)({
@@ -174,7 +174,7 @@ export const HenkilonValintalaskenta = ({
 
   return (
     <Stack spacing={2}>
-      <ConfirmationModalDialog
+      <ConfirmationModal
         open={state.matches(LaskentaState.WAITING_CONFIRMATION)}
         onConfirm={() => send({ type: LaskentaEventType.CONFIRM })}
         onCancel={() => send({ type: LaskentaEventType.CANCEL })}

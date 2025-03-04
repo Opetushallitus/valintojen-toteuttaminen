@@ -1,7 +1,7 @@
 'use client';
-import { ValintakokeenPisteet } from '@/app/lib/types/laskenta-types';
+import { ValintakokeenPisteet } from '@/lib/types/laskenta-types';
 import { Box, styled, Typography } from '@mui/material';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import { NOT_READABLE_REASON_MAP } from '../lib/pistesyotto-utils';
 
 const StyledCell = styled(Box)({

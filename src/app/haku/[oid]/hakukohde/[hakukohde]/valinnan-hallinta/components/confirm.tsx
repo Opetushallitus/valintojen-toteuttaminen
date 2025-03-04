@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import { OphButton } from '@opetushallitus/oph-design-system';
 
 type ConfirmParams = {

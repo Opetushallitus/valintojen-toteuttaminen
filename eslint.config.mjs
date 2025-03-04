@@ -17,7 +17,15 @@ const compat = new FlatCompat({
 });
 
 const config = ts.config(
-  { ignores: ['.next/*', '.open-next/*', 'cdk/*', './.lintstagedrc.mjs'] },
+  {
+    ignores: [
+      '.next/*',
+      '.open-next/*',
+      'cdk/*',
+      './.lintstagedrc.mjs',
+      'coverage',
+    ],
+  },
   ...compat.extends('next/core-web-vitals', 'next/typescript'),
   eslintConfigPrettier,
   {
@@ -32,6 +40,12 @@ const config = ts.config(
         'error',
         {
           patterns: ['@mui/*/*/*', '../../*'],
+        },
+      ],
+      '@typescript-eslint/array-type': [
+        'error',
+        {
+          default: 'generic',
         },
       ],
     },

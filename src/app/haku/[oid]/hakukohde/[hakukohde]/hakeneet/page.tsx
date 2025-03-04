@@ -2,18 +2,18 @@
 import { use } from 'react';
 
 import { TabContainer } from '../components/tab-container';
-import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
+import { TablePaginationWrapper } from '@/components/table/table-pagination-wrapper';
 import {
   useHakeneetSearchParams,
   useHakeneetSearchResults,
-} from '@/app/hooks/useHakeneetSearch';
+} from '@/hooks/useHakeneetSearch';
 import { HakeneetTable } from './components/hakeneet-table';
-import { isKorkeakouluHaku } from '@/app/lib/kouta';
-import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
-import { Haku } from '@/app/lib/types/kouta-types';
-import { FullClientSpinner } from '@/app/components/client-spinner';
-import { useHaku } from '@/app/hooks/useHaku';
-import { SearchInput } from '@/app/components/search-input';
+import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
+import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
+import { Haku } from '@/lib/kouta/kouta-types';
+import { FullClientSpinner } from '@/components/client-spinner';
+import { useHaku } from '@/lib/kouta/useHaku';
+import { SearchInput } from '@/components/search-input';
 
 type HakeneetParams = {
   haku: Haku;

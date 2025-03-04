@@ -1,15 +1,15 @@
 'use client';
 
 import { useMemo } from 'react';
-import useToaster from '@/app/hooks/useToaster';
+import useToaster from '@/hooks/useToaster';
 import { useActorRef } from '@xstate/react';
 import { Box } from '@mui/material';
 import { SijoittelunTuloksetActions } from './sijoittelun-tulos-actions';
 import { createSijoittelunTuloksetMachine } from '../lib/sijoittelun-tulokset-state';
-import { SijoitteluajonValintatapajonoValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
-import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
+import { SijoitteluajonValintatapajonoValintatiedoilla } from '@/lib/types/sijoittelu-types';
+import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import { SijoittelunTulosTable } from './sijoittelun-tulos-table';
-import { useConfirmChangesBeforeNavigation } from '@/app/hooks/useConfirmChangesBeforeNavigation';
+import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBeforeNavigation';
 import { useIsDirtySijoittelunTulos } from '../lib/sijoittelun-tulokset-state-utils';
 
 type SijoittelunTuloksetFormParams = {

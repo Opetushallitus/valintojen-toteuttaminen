@@ -1,6 +1,6 @@
 'use client';
-import { ErrorView } from './components/error-view';
-import { LocalizedThemeProvider } from './components/localized-theme-provider';
+import { ErrorView } from '../components/error-view';
+import { LocalizedThemeProvider } from '../components/providers/localized-theme-provider';
 
 export default function GlobalError({
   error,

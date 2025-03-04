@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 import { isNotPartOfThisHakukohde } from './pistesyotto-utils';
-import { ValintakoeOsallistuminenTulos } from '@/app/lib/types/laskenta-types';
+import { ValintakoeOsallistuminenTulos } from '@/lib/types/laskenta-types';
 
 test('is not part of the current hakukohde', () => {
   expect(

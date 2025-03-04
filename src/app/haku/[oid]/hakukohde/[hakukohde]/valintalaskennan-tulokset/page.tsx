@@ -1,30 +1,30 @@
 'use client';
 
 import { TabContainer } from '../components/tab-container';
-import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
+import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { Box, Stack } from '@mui/material';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import {
   LaskennanValinnanvaiheetWithHakijaInfo,
   useEditableValintalaskennanTulokset,
-} from '@/app/hooks/useEditableValintalaskennanTulokset';
-import { PageSizeSelector } from '@/app/components/table/page-size-selector';
+} from '@/hooks/useEditableValintalaskennanTulokset';
+import { PageSizeSelector } from '@/components/table/page-size-selector';
 import React, { use } from 'react';
 import { LaskennatonValintatapajonoContent } from './components/laskennaton-valintatapajono-content';
-import { useJonoTuloksetSearchParams } from '@/app/hooks/useJonoTuloksetSearch';
-import { FullClientSpinner } from '@/app/components/client-spinner';
-import { isEmpty } from '@/app/lib/common';
-import { getValintalaskennanTulosExcel } from '@/app/lib/valintalaskentakoostepalvelu';
-import { NoResults } from '@/app/components/no-results';
-import { SearchInput } from '@/app/components/search-input';
-import { FileDownloadButton } from '@/app/components/file-download-button';
+import { useJonoTuloksetSearchParams } from '@/hooks/useJonoTuloksetSearch';
+import { FullClientSpinner } from '@/components/client-spinner';
+import { isEmpty } from '@/lib/common';
+import { getValintalaskennanTulosExcel } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
+import { NoResults } from '@/components/no-results';
+import { SearchInput } from '@/components/search-input';
+import { FileDownloadButton } from '@/components/file-download-button';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { groupBy } from 'remeda';
-import { Haku } from '@/app/lib/types/kouta-types';
-import { useHaku } from '@/app/hooks/useHaku';
+import { Haku } from '@/lib/kouta/kouta-types';
+import { useHaku } from '@/lib/kouta/useHaku';
 import { LaskettuValintatapajonoContent } from './components/laskettu-valintatapajono-content';
 import { ValintatapajonoContentProps } from './types/valintatapajono-types';
-import { AccordionBox } from '@/app/components/accordion-box';
+import { AccordionBox } from '@/components/accordion-box';
 import { ValintatapajonoAccordionTitle } from './components/valintatapajono-accordion-title';
 
 type LasketutValinnanvaiheetParams = {

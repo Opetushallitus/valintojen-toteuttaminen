@@ -2,10 +2,10 @@
 
 import { useMediaQuery, useTheme } from '@mui/material';
 import { useState } from 'react';
-import { notLarge } from '@/app/lib/theme';
-import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
-import { FullClientSpinner } from '@/app/components/client-spinner';
-import { LeftPanel } from '@/app/components/left-panel';
+import { notLarge } from '@/lib/theme';
+import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
+import { FullClientSpinner } from '@/components/client-spinner';
+import { LeftPanel } from '@/components/left-panel';
 import { ValintaryhmaSearch } from './valintaryhma-search';
 import { ValintaryhmaList } from './valintaryhma-list';
 import { useParams } from 'next/navigation';

@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import {
   Box,
   styled,
@@ -9,7 +9,7 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { HakijaInfo } from '@/app/lib/types/ataru-types';
+import { HakijaInfo } from '@/lib/ataru/ataru-types';
 import { HakutoiveAccordion } from './hakutoive-accordion';
 import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
 

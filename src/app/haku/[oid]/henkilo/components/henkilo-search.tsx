@@ -1,7 +1,7 @@
 'use client';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import { useHenkiloSearchParams } from '../hooks/useHenkiloSearch';
-import { SearchInput } from '@/app/components/search-input';
+import { SearchInput } from '@/components/search-input';
 
 export const HenkiloSearch = () => {
   const { searchPhrase, setSearchPhrase } = useHenkiloSearchParams();

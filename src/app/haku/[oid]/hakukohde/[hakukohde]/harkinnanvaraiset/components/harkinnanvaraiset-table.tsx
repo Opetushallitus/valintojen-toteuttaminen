@@ -1,14 +1,14 @@
 'use client';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import { Box } from '@mui/material';
 import { useMemo } from 'react';
-import { ListTableColumn } from '@/app/components/table/table-types';
+import { ListTableColumn } from '@/components/table/table-types';
 import {
   createHakijaColumn,
   makeColumnWithCustomRender,
   makeColumnWithValueToTranslate,
-} from '@/app/components/table/table-columns';
-import { ListTable } from '@/app/components/table/list-table';
+} from '@/components/table/table-columns';
+import { ListTable } from '@/components/table/list-table';
 import { useHarkinanvaraisetPaginated } from '../hooks/useHarkinnanvaraisetPaginated';
 import {
   HarkinnanvarainenTilaSelect,
@@ -18,7 +18,7 @@ import {
   HakemuksenHarkinnanvaraisuus,
   HarkinnanvarainenTilaValue,
   HarkinnanvaraisetTilatByHakemusOids,
-} from '@/app/lib/types/harkinnanvaraiset-types';
+} from '@/lib/types/harkinnanvaraiset-types';
 
 export const HarkinnanvaraisetTable = ({
   data,

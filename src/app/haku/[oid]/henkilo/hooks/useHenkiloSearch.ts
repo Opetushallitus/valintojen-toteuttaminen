@@ -1,11 +1,11 @@
 'use client';
-import { useDebounce } from '@/app/hooks/useDebounce';
+import { useDebounce } from '@/hooks/useDebounce';
 import { useQueryState } from 'nuqs';
 import { useQuery } from '@tanstack/react-query';
-import { HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY } from '@/app/lib/constants';
-import { getHakijat } from '@/app/lib/ataru';
-import { DEFAULT_NUQS_OPTIONS } from '@/app/lib/constants';
-import { EMPTY_ARRAY } from '@/app/lib/common';
+import { HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY } from '@/lib/constants';
+import { getHakijat } from '@/lib/ataru/ataru-service';
+import { DEFAULT_NUQS_OPTIONS } from '@/lib/constants';
+import { EMPTY_ARRAY } from '@/lib/common';
 
 export const useHenkiloSearchParams = () => {
   const [searchPhrase, setSearchPhrase] = useQueryState(

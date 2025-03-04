@@ -1,16 +1,16 @@
 'use client';
 
-import { ListTable } from '@/app/components/table/list-table';
+import { ListTable } from '@/components/table/list-table';
 import {
   buildLinkToPerson,
   createHakijaColumn,
   makeColumnWithValueToTranslate,
   makeExternalLinkColumn,
   makeGenericColumn,
-} from '@/app/components/table/table-columns';
-import { useTranslations } from '@/app/hooks/useTranslations';
-import { buildLinkToApplication } from '@/app/lib/ataru';
-import { Hakemus } from '@/app/lib/types/ataru-types';
+} from '@/components/table/table-columns';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { buildLinkToApplication } from '@/lib/ataru/ataru-service';
+import { Hakemus } from '@/lib/ataru/ataru-types';
 
 export const HakeneetTable = ({
   hakeneet,
@@ -18,7 +18,7 @@ export const HakeneetTable = ({
   sort,
   isKorkeakouluHaku,
 }: {
-  hakeneet: Hakemus[];
+  hakeneet: Array<Hakemus>;
   sort: string;
   setSort: (sort: string) => void;
   isKorkeakouluHaku: boolean;

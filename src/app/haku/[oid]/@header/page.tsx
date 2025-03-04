@@ -1,8 +1,8 @@
 'use client';
 import { use } from 'react';
-import { Header } from '@/app/components/header';
-import { useHaku } from '@/app/hooks/useHaku';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { Header } from '@/components/header';
+import { useHaku } from '@/lib/kouta/useHaku';
+import { useTranslations } from '@/lib/localization/useTranslations';
 
 export default function HeaderPage(props: {
   params: Promise<{ oid: string }>;

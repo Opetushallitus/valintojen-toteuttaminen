@@ -1,12 +1,12 @@
 'use client';
-import { useTranslations } from '@/app/hooks/useTranslations';
-import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { toFormattedDateTimeString } from '@/lib/localization/translation-utils';
 import {
   LaskennanValintatapajonoTulosWithHakijaInfo,
   LaskennanValinnanvaiheTulos,
-} from '@/app/hooks/useEditableValintalaskennanTulokset';
-import { getValintatapaJonoNimi } from '@/app/lib/valintalaskenta-utils';
-import { AccordionBoxTitle } from '@/app/components/accordion-box-title';
+} from '@/hooks/useEditableValintalaskennanTulokset';
+import { getValintatapaJonoNimi } from '@/lib/valintalaskenta/valintalaskenta-utils';
+import { AccordionBoxTitle } from '@/components/accordion-box-title';
 import { TFunction } from 'i18next';
 
 const makeSubtitle = ({

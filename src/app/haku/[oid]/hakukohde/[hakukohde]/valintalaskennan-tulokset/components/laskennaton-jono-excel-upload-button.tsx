@@ -1,9 +1,9 @@
-import { FileSelectButton } from '@/app/components/file-select-button';
-import { hideModal, showModal } from '@/app/components/global-modal';
-import { GlobalSpinnerModal } from '@/app/components/global-spinner-modal';
-import useToaster from '@/app/hooks/useToaster';
-import { useTranslations } from '@/app/hooks/useTranslations';
-import { saveValintatapajonoTulosExcel } from '@/app/lib/valintalaskentakoostepalvelu';
+import { FileSelectButton } from '@/components/file-select-button';
+import { hideModal, showModal } from '@/components/modals/global-modal';
+import { SpinnerGlobalModal } from '@/components/modals/spinner-global-modal';
+import useToaster from '@/hooks/useToaster';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { saveValintatapajonoTulosExcel } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { isEmpty } from 'remeda';
 import { refetchLaskennanTulokset } from '../lib/refetchLaskennanTulokset';
@@ -24,7 +24,7 @@ const useJonoExcelUploadMutation = ({
 
   return useMutation({
     mutationFn: async ({ file }: { file: File }) => {
-      showModal(GlobalSpinnerModal, {
+      showModal(SpinnerGlobalModal, {
         title: t(
           'valintalaskennan-tulokset.tuodaan-tuloksia-taulukkolaskennasta',
         ),
@@ -37,7 +37,7 @@ const useJonoExcelUploadMutation = ({
       });
     },
     onError: (error) => {
-      hideModal(GlobalSpinnerModal);
+      hideModal(SpinnerGlobalModal);
       addToast({
         key: 'upload-valintatapajono-excel-error',
         message:
@@ -47,7 +47,7 @@ const useJonoExcelUploadMutation = ({
       });
     },
     onSuccess: () => {
-      hideModal(GlobalSpinnerModal);
+      hideModal(SpinnerGlobalModal);
       // Ladataan muuttuneet laskennan tulokset
       refetchLaskennanTulokset({ queryClient, hakukohdeOid });
       addToast({

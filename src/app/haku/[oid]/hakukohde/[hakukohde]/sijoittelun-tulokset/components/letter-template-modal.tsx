@@ -1,14 +1,17 @@
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import {
   OphButton,
   OphFormFieldWrapper,
 } from '@opetushallitus/oph-design-system';
-import { createModal, useOphModalProps } from '@/app/components/global-modal';
-import { OphModalDialog } from '@/app/components/oph-modal-dialog';
+import {
+  createModal,
+  useOphModalProps,
+} from '@/components/modals/global-modal';
+import { OphModal } from '@/components/modals/oph-modal';
 import { useState } from 'react';
-import { CalendarComponent } from '@/app/components/calendar-component';
-import { KirjepohjaNimi } from '@/app/lib/types/valintalaskentakoostepalvelu-types';
-import { Hakukohde } from '@/app/lib/types/kouta-types';
+import { CalendarComponent } from '@/components/calendar-component';
+import { KirjepohjaNimi } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-types';
+import { Hakukohde } from '@/lib/kouta/kouta-types';
 import {
   useMutation,
   UseMutationResult,
@@ -18,11 +21,11 @@ import {
   getKirjepohjatHakukohteelle,
   luoEiHyvaksymiskirjeetPDF,
   luoHyvaksymiskirjeetPDF,
-} from '@/app/lib/valintalaskentakoostepalvelu';
-import { SpinnerIcon } from '@/app/components/spinner-icon';
+} from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
+import { SpinnerIcon } from '@/components/spinner-icon';
 import { Box, FormControlLabel, Radio, RadioGroup } from '@mui/material';
 import { ProgressModalDialog } from './progress-modal-dialog';
-import { styled } from '@/app/lib/theme';
+import { styled } from '@/lib/theme';
 import { TemplateSection } from './letter-template-section';
 
 export type LetterTemplateModalProps = {
@@ -170,7 +173,7 @@ export const AcceptedLetterTemplateModal = createModal(
         mutation={mutation}
       />
     ) : (
-      <OphModalDialog
+      <OphModal
         {...modalProps}
         title={t(title)}
         maxWidth="md"
@@ -207,7 +210,7 @@ export const AcceptedLetterTemplateModal = createModal(
             />
           </CustomContainer>
         )}
-      </OphModalDialog>
+      </OphModal>
     );
   },
 );
@@ -261,7 +264,7 @@ export const NonAcceptedLetterTemplateModal = createModal(
         mutation={mutation}
       />
     ) : (
-      <OphModalDialog
+      <OphModal
         {...modalProps}
         title={t(title)}
         maxWidth="md"
@@ -285,7 +288,7 @@ export const NonAcceptedLetterTemplateModal = createModal(
             />
           </CustomContainer>
         )}
-      </OphModalDialog>
+      </OphModal>
     );
   },
 );

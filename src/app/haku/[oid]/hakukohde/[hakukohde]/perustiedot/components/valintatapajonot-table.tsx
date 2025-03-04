@@ -1,19 +1,19 @@
 'use client';
 
-import { ListTable } from '@/app/components/table/list-table';
+import { ListTable } from '@/components/table/list-table';
 import {
   makeCountColumn,
   makeGenericColumn,
-} from '@/app/components/table/table-columns';
-import { isToisenAsteenYhteisHaku } from '@/app/lib/kouta';
-import { Haku } from '@/app/lib/types/kouta-types';
-import { SijoittelunValintatapajonoTulos } from '@/app/lib/types/sijoittelu-types';
+} from '@/components/table/table-columns';
+import { isToisenAsteenYhteisHaku } from '@/lib/kouta/kouta-service';
+import { Haku } from '@/lib/kouta/kouta-types';
+import { SijoittelunValintatapajonoTulos } from '@/lib/types/sijoittelu-types';
 
 export const ValintatapajonotTable = ({
   valintatapajonoTulokset,
   haku,
 }: {
-  valintatapajonoTulokset: SijoittelunValintatapajonoTulos[];
+  valintatapajonoTulokset: Array<SijoittelunValintatapajonoTulos>;
   haku: Haku;
 }) => {
   const columns = [

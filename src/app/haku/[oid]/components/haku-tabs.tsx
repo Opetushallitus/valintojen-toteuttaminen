@@ -1,8 +1,8 @@
 'use client';
-import { useTranslations } from '@/app/hooks/useTranslations';
-import { useUserPermissions } from '@/app/hooks/useUserPermissions';
-import { getHakukohteetQueryOptions } from '@/app/lib/kouta';
-import { DEFAULT_BOX_BORDER, styled } from '@/app/lib/theme';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { useUserPermissions } from '@/hooks/useUserPermissions';
+import { getHakukohteetQueryOptions } from '@/lib/kouta/kouta-service';
+import { DEFAULT_BOX_BORDER, styled } from '@/lib/theme';
 import { Box, Stack } from '@mui/material';
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
 import { useQueryClient } from '@tanstack/react-query';

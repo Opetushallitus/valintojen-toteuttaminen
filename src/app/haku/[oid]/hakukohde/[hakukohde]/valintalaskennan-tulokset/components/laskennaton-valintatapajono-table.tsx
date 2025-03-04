@@ -2,29 +2,29 @@
 import {
   ListTable,
   ListTablePaginationProps,
-} from '@/app/components/table/list-table';
-import { createHakijaColumn } from '@/app/components/table/table-columns';
-import { ListTableColumn } from '@/app/components/table/table-types';
-import { LaskennanJonosijaTulosWithHakijaInfo } from '@/app/hooks/useEditableValintalaskennanTulokset';
+} from '@/components/table/list-table';
+import { createHakijaColumn } from '@/components/table/table-columns';
+import { ListTableColumn } from '@/components/table/table-types';
+import { LaskennanJonosijaTulosWithHakijaInfo } from '@/hooks/useEditableValintalaskennanTulokset';
 import { OphInput } from '@opetushallitus/oph-design-system';
 import { useMemo } from 'react';
-import { PisteetInput } from '@/app/components/pisteet-input';
-import { useTuloksenTilaOptions } from '@/app/hooks/useTuloksenTilaOptions';
+import { PisteetInput } from '@/components/pisteet-input';
+import { useTuloksenTilaOptions } from '@/hooks/useTuloksenTilaOptions';
 import {
   isAmmatillinenErityisopetus,
   isKorkeakouluHaku,
-} from '@/app/lib/kouta';
-import { Haku } from '@/app/lib/types/kouta-types';
-import { LocalizedSelect } from '@/app/components/localized-select';
+} from '@/lib/kouta/kouta-service';
+import { Haku } from '@/lib/kouta/kouta-types';
+import { LocalizedSelect } from '@/components/localized-select';
 import {
   JonoTulosActorRef,
   useHakemusJonoTulos,
   useJonoTulosActorRef,
   useSelectedJarjestysperuste,
-} from '@/app/lib/state/jono-tulos-state';
-import { TuloksenTila } from '@/app/lib/types/laskenta-types';
-import { Language } from '@/app/lib/localization/localization-types';
-import { useTranslations } from '@/app/hooks/useTranslations';
+} from '@/lib/state/jono-tulos-state';
+import { TuloksenTila } from '@/lib/types/laskenta-types';
+import { Language } from '@/lib/localization/localization-types';
+import { useTranslations } from '@/lib/localization/useTranslations';
 
 const TRANSLATIONS_PREFIX = 'valintalaskennan-tulokset.taulukko';
 

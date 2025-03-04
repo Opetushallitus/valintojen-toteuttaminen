@@ -1,15 +1,15 @@
 'use client';
-import { useUserPermissions } from '@/app/hooks/useUserPermissions';
-import { getHakukohteetQueryOptions } from '@/app/lib/kouta';
-import { getValintaryhmat } from '@/app/lib/valintaperusteet';
+import { useUserPermissions } from '@/hooks/useUserPermissions';
+import { getHakukohteetQueryOptions } from '@/lib/kouta/kouta-service';
+import { getValintaryhmat } from '@/lib/valintaperusteet/valintaperusteet-service';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { ValintaryhmaHakukohdeTable } from './valintaryhma-hakukohde-table';
 import { Box } from '@mui/material';
-import { styled } from '@/app/lib/theme';
+import { styled } from '@/lib/theme';
 import { useMemo } from 'react';
-import { ValintaryhmaHakukohteilla } from '@/app/lib/types/valintaperusteet-types';
-import { Hakukohde } from '@/app/lib/types/kouta-types';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { ValintaryhmaHakukohteilla } from '@/lib/valintaperusteet/valintaperusteet-types';
+import { Hakukohde } from '@/lib/kouta/kouta-types';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import { isDefined, isNullish, prop, sortBy } from 'remeda';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { findParent } from './lib/valintaryhma-util';
@@ -70,7 +70,7 @@ export const ValintaryhmaContent = ({
 
   const valittuRyhma = useMemo(() => {
     function findRecursively(
-      ryhmat: ValintaryhmaHakukohteilla[],
+      ryhmat: Array<ValintaryhmaHakukohteilla>,
     ): ValintaryhmaHakukohteilla | undefined {
       const foundRyhma = ryhmat.find((r) => r.oid === valintaryhmaOid);
       return (

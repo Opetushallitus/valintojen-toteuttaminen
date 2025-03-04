@@ -1,15 +1,15 @@
 'use client';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import { Box } from '@mui/material';
 import { useMemo } from 'react';
-import { ListTableColumn } from '@/app/components/table/table-types';
+import { ListTableColumn } from '@/components/table/table-types';
 import {
   createHakijaColumn,
   makeColumnWithCustomRender,
-} from '@/app/components/table/table-columns';
-import { ListTable } from '@/app/components/table/list-table';
-import { ValintakoekutsuHakijoittain } from '@/app/lib/select-valintakoekutsut';
-import { Valintakoe } from '@/app/lib/types/valintaperusteet-types';
+} from '@/components/table/table-columns';
+import { ListTable } from '@/components/table/list-table';
+import { ValintakoekutsuHakijoittain } from '@/lib/select-valintakoekutsut';
+import { Valintakoe } from '@/lib/valintaperusteet/valintaperusteet-types';
 import { makePaginationId } from '../hooks/useValintakoekutsutPaginated';
 
 export const ValintakoekutsutHakijoittainTable = ({

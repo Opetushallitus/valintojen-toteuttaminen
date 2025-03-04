@@ -1,9 +1,9 @@
 'use client';
-import { useTranslations } from '@/app/hooks/useTranslations';
-import { AccordionBoxTitle } from '@/app/components/accordion-box-title';
-import { SijoitteluajonValintatapajonoValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
-import { Haku } from '@/app/lib/types/kouta-types';
-import { isKorkeakouluHaku } from '@/app/lib/kouta';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { AccordionBoxTitle } from '@/components/accordion-box-title';
+import { SijoitteluajonValintatapajonoValintatiedoilla } from '@/lib/types/sijoittelu-types';
+import { Haku } from '@/lib/kouta/kouta-types';
+import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
 import { styled, Typography } from '@mui/material';
 
 const Bolded = styled('span')(() => ({

@@ -3,7 +3,7 @@
 import {
   getValinnanvaiheet,
   isLaskentaUsedForValinnanvaihe,
-} from '@/app/lib/valintaperusteet';
+} from '@/lib/valintaperusteet/valintaperusteet-service';
 import { useSuspenseQueries } from '@tanstack/react-query';
 import {
   Table,
@@ -14,21 +14,21 @@ import {
   Box,
   CircularProgress,
 } from '@mui/material';
-import { useTranslations } from '@/app/hooks/useTranslations';
-import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import HallintaTableRow from './hallinta-table-row';
 import Confirm from './confirm';
-import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
+import { toFormattedDateTimeString } from '@/lib/localization/translation-utils';
 import {
   LaskentaEventType,
   LaskentaState,
   useLaskentaState,
-} from '@/app/lib/state/laskenta-state';
-import { useToaster } from '@/app/hooks/useToaster';
+} from '@/lib/state/laskenta-state';
+import { useToaster } from '@/hooks/useToaster';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
-import { HaunAsetukset } from '@/app/lib/types/haun-asetukset';
+import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { ErrorRow } from './error-row';
-import { hakukohteenValintalaskennanTuloksetQueryOptions } from '@/app/lib/valintalaskenta-service';
+import { hakukohteenValintalaskennanTuloksetQueryOptions } from '@/lib/valintalaskenta/valintalaskenta-service';
 
 type HallintaTableParams = {
   haku: Haku;

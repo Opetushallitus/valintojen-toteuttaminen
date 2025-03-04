@@ -3,7 +3,7 @@ import {
   isDev,
   isLocalhost,
   isTesting,
-} from '../lib/configuration';
+} from '@/lib/configuration';
 import finnishTranslations from './fi.json';
 import swedishTranslations from './sv.json';
 import englishTranslations from './en.json';

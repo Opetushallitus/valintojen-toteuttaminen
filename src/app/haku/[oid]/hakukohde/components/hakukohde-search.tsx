@@ -1,6 +1,6 @@
-import { SearchInput } from '@/app/components/search-input';
-import { useHakukohdeSearchParams } from '@/app/hooks/useHakukohdeSearch';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { SearchInput } from '@/components/search-input';
+import { useHakukohdeSearchParams } from '@/hooks/useHakukohdeSearch';
+import { useTranslations } from '@/lib/localization/useTranslations';
 
 export const HakukohdeSearch = () => {
   const { searchPhrase, setSearchPhrase } = useHakukohdeSearchParams();

@@ -1,25 +1,25 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
-import { useDebounce } from '@/app/hooks/useDebounce';
+import { useDebounce } from '@/hooks/useDebounce';
 import { parseAsBoolean, parseAsInteger, useQueryState } from 'nuqs';
-import { useHasChanged } from '@/app/hooks/useHasChanged';
+import { useHasChanged } from '@/hooks/useHasChanged';
 import {
   byProp,
   getSortParts,
   SortDirection,
-} from '@/app/components/table/table-utils';
+} from '@/components/table/table-utils';
 import {
   DEFAULT_NUQS_OPTIONS,
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
-} from '@/app/lib/constants';
-import { useTranslations } from '@/app/hooks/useTranslations';
+} from '@/lib/constants';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import {
   SijoittelunHakemusValintatiedoilla,
   SijoittelunTila,
-} from '@/app/lib/types/sijoittelu-types';
-import { hakemusFilter } from '@/app/hooks/filters';
-import { sortBySijoittelunTila } from '@/app/hooks/common';
-import { isHyvaksyttyHarkinnanvaraisesti } from '@/app/lib/sijoittelun-tulokset-utils';
+} from '@/lib/types/sijoittelu-types';
+import { hakemusFilter } from '@/lib/filters';
+import { sortBySijoittelunTila } from '@/lib/sortBySijoittelunTila';
+import { isHyvaksyttyHarkinnanvaraisesti } from '@/lib/sijoittelun-tulokset-utils';
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -127,7 +127,7 @@ const filterBySijoittelunTila = (
 
 export const useSijoittelunTulosSearch = (
   valintatapajonoOid: string,
-  hakemukset: SijoittelunHakemusValintatiedoilla[],
+  hakemukset: Array<SijoittelunHakemusValintatiedoilla>,
 ) => {
   const { translateEntity } = useTranslations();
 

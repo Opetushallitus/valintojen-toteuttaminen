@@ -1,11 +1,11 @@
 'use client';
 
 import { TableCell, TableRow } from '@mui/material';
-import { useTranslations } from '@/app/hooks/useTranslations';
-import { ErrorAlert } from '@/app/components/error-alert';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { ErrorAlert } from '@/components/error-alert';
 
 type ErrorRowParams = {
-  errorMessage: string | string[];
+  errorMessage: string | Array<string>;
 };
 
 export const ErrorRow = ({ errorMessage }: ErrorRowParams) => {

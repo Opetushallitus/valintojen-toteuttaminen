@@ -1,18 +1,18 @@
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import { Box, SelectChangeEvent } from '@mui/material';
-import { SijoittelunTila } from '@/app/lib/types/sijoittelu-types';
-import { LocalizedSelect } from '@/app/components/localized-select';
+import { SijoittelunTila } from '@/lib/types/sijoittelu-types';
+import { LocalizedSelect } from '@/components/localized-select';
 import { useSijoittelunTulosSearchParams } from '../hooks/useSijoittelunTulosSearch';
 import {
   OphCheckbox,
   OphFormFieldWrapper,
 } from '@opetushallitus/oph-design-system';
-import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
-import { isKorkeakouluHaku } from '@/app/lib/kouta';
-import { SearchInput } from '@/app/components/search-input';
+import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
+import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
+import { SearchInput } from '@/components/search-input';
 import { OtherActionsHakukohdeButton } from './other-actions-hakukohde-button';
 import { useSuspenseQueries } from '@tanstack/react-query';
-import { getDocumentIdForHakukohde } from '@/app/lib/valintalaskentakoostepalvelu';
+import { getDocumentIdForHakukohde } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { SijoittelunTuloksetExcelDownloadButton } from './sijoittelun-tulokset-excel-download-button';
 
 export const SijoittelunTulosControls = ({

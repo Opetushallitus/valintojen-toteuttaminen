@@ -1,26 +1,29 @@
 'use client';
 
-import { getAtaruHakemukset, parseHakijaTiedot } from '@/app/lib/ataru';
+import {
+  getAtaruHakemukset,
+  parseHakijaTiedot,
+} from '@/lib/ataru/ataru-service';
 import {
   queryOptions,
   useSuspenseQueries,
   useSuspenseQuery,
 } from '@tanstack/react-query';
-import { getPostitoimipaikka } from '@/app/lib/koodisto';
-import { getHakukohteetQueryOptions } from '@/app/lib/kouta';
-import { useUserPermissions } from '@/app/hooks/useUserPermissions';
+import { getPostitoimipaikka } from '@/lib/koodisto/koodisto-service';
+import { getHakukohteetQueryOptions } from '@/lib/kouta/kouta-service';
+import { useUserPermissions } from '@/hooks/useUserPermissions';
 import { filter, map, pipe, prop, sortBy } from 'remeda';
-import { hakemuksenValintalaskennanTuloksetQueryOptions } from '@/app/lib/valintalaskenta-service';
-import { selectEditableValintalaskennanTulokset } from '@/app/hooks/useEditableValintalaskennanTulokset';
+import { hakemuksenValintalaskennanTuloksetQueryOptions } from '@/lib/valintalaskenta/valintalaskenta-service';
+import { selectEditableValintalaskennanTulokset } from '@/hooks/useEditableValintalaskennanTulokset';
 import {
   getLatestSijoitteluajonTuloksetForHakemus,
   getValinnanTulokset,
-} from '@/app/lib/valinta-tulos-service';
+} from '@/lib/valinta-tulos-service/valinta-tulos-service';
 import { notFound } from 'next/navigation';
 import { useMemo } from 'react';
 import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
-import { getKoePisteetForHakemus } from '@/app/lib/valintalaskentakoostepalvelu';
-import { getValintakoeAvaimetHakukohteille } from '@/app/lib/valintaperusteet';
+import { getKoePisteetForHakemus } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
+import { getValintakoeAvaimetHakukohteille } from '@/lib/valintaperusteet/valintaperusteet-service';
 
 const useAtaruHakemus = ({
   hakuOid,

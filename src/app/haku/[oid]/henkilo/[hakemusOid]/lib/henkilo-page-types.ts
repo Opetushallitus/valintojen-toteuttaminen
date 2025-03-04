@@ -1,8 +1,8 @@
-import { LaskennanValinnanvaiheet } from '@/app/hooks/useEditableValintalaskennanTulokset';
-import { Hakukohde } from '@/app/lib/types/kouta-types';
-import { ValintakokeenPisteet } from '@/app/lib/types/laskenta-types';
-import { ValinnanTulosModel } from '@/app/lib/types/valinta-tulos-types';
-import { ValintakoeAvaimet } from '@/app/lib/types/valintaperusteet-types';
+import { LaskennanValinnanvaiheet } from '@/hooks/useEditableValintalaskennanTulokset';
+import { Hakukohde } from '@/lib/kouta/kouta-types';
+import { ValintakokeenPisteet } from '@/lib/types/laskenta-types';
+import { ValinnanTulosModel } from '@/lib/valinta-tulos-service/valinta-tulos-types';
+import { ValintakoeAvaimet } from '@/lib/valintaperusteet/valintaperusteet-types';
 
 export type ValinnanTulosLisatiedoilla = ValinnanTulosModel & {
   lastModified: string | null;
