@@ -14,7 +14,7 @@ import {
   SijoittelunTulosActorRef,
 } from './sijoittelun-tulokset-state';
 
-vi.mock('@/app/components/global-modal', () => ({
+vi.mock('@/components/modals/global-modal', () => ({
   showModal: vi.fn(),
   createModal: vi.fn(),
 }));

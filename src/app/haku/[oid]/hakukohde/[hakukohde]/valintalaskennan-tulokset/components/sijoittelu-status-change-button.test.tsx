@@ -6,7 +6,7 @@ import { UserPermissions } from '@/lib/permissions';
 import { OPH_ORGANIZATION_OID } from '@/lib/constants';
 import { LaskennanValintatapajonoTulosWithHakijaInfo } from '@/hooks/useEditableValintalaskennanTulokset';
 
-vi.mock('@/app/hooks/useTranslations', () => ({
+vi.mock('@/lib/localization/useTranslations', () => ({
   useTranslations: () => {
     return { t: (x: string) => x };
   },
