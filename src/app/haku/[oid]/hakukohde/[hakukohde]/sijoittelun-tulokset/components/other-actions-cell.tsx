@@ -16,14 +16,15 @@ import { showModal } from '@/components/modals/global-modal';
 import { ChangeHistoryModal } from './change-history-modal';
 import { AcceptedLetterTemplateModal } from './letter-template-modal';
 import { useUserPermissions } from '@/hooks/useUserPermissions';
-import {
-  isKirjeidenMuodostaminenAllowed,
-  isSendVastaanottoPostiVisible,
-} from '../lib/sijoittelun-tulokset-permission-utils';
+
 import { styled } from '@/lib/theme';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { SijoittelunHakemusValintatiedoilla } from '@/lib/types/sijoittelu-types';
 import { ListItemIcon, ListItemText, Menu, MenuItem } from '@mui/material';
+import {
+  isKirjeidenMuodostaminenAllowed,
+  isSendVastaanottoPostiVisible,
+} from '@/lib/sijoittelun-tulokset-utils';
 
 const StyledListItemText = styled(ListItemText)(() => ({
   span: {

@@ -1,4 +1,4 @@
-import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
+import { isKorkeakouluHaku, isToinenAsteKohdejoukko } from '@/lib/kouta/kouta-service';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { Haku } from '@/lib/kouta/kouta-types';
 import {
@@ -88,4 +88,23 @@ export const getReadableHakemuksenTila = (
     default:
       return t(`sijoitteluntila.${hakemus.tila}`);
   }
+};
+
+export const isKirjeidenMuodostaminenAllowed = (
+  haku: Haku,
+  permissions: UserPermissions,
+  kaikkiJonotHyvaksytty: boolean,
+) => {
+  return (
+    !isToinenAsteKohdejoukko(haku) ||
+    permissions.hasOphCRUD ||
+    kaikkiJonotHyvaksytty
+  );
+};
+
+export const isSendVastaanottoPostiVisible = (
+  haku: Haku,
+  permissions: UserPermissions,
+) => {
+  return !isToinenAsteKohdejoukko(haku) || permissions.hasOphCRUD;
 };

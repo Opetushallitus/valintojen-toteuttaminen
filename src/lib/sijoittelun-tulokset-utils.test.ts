@@ -2,7 +2,7 @@ import { describe, expect, test } from 'vitest';
 import {
   isKirjeidenMuodostaminenAllowed,
   isSendVastaanottoPostiVisible,
-} from './sijoittelun-tulokset-permission-utils';
+} from './sijoittelun-tulokset-utils';
 import { Haku, Tila } from '@/lib/kouta/kouta-types';
 import { UserPermissions } from '@/lib/permissions';
 
