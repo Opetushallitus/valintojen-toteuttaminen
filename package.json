@@ -15,7 +15,7 @@
     "lint:fix": "npm run lint -- --fix",
     "prettier": "prettier -u -c *",
     "prettier:fix": "prettier --write -u *",
-    "test": "vitest run",
+    "test": "vitest",
     "test:debug": "DEBUG=vite-node:* vitest run",
     "test:coverage": "vitest run --coverage",
     "create-dev-certs": "mkdir -p certificates && cd certificates && mkcert localhost && mkcert -install",
