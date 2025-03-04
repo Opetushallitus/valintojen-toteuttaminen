@@ -6,7 +6,7 @@ import { getHakemukset } from './ataru-service';
 test('returns hakemukset', async () => {
   const clientSpy = vi.spyOn(client, 'get');
   clientSpy.mockImplementationOnce(() => buildDummyHakemukset());
-  const hakemukset: Hakemus[] = await getHakemukset({
+  const hakemukset: Array<Hakemus> = await getHakemukset({
     hakuOid: 'haku1',
     hakukohdeOid: 'hakukohde1',
   });

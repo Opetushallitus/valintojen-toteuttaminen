@@ -23,7 +23,7 @@ const IlmoittautumisSelect = ({
   selection,
   massStatusChangeForm,
 }: {
-  hakemukset: SijoittelunHakemusValintatiedoilla[];
+  hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
   selection: Set<string>;
   massStatusChangeForm: (changeParams: MassChangeParams) => void;
 }) => {
@@ -56,7 +56,7 @@ const VastaanOttoSelect = ({
   selection,
   massStatusChangeForm,
 }: {
-  hakemukset: SijoittelunHakemusValintatiedoilla[];
+  hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
   selection: Set<string>;
   massStatusChangeForm: (changeParams: MassChangeParams) => void;
 }) => {
@@ -92,7 +92,7 @@ export const SijoittelunTuloksetActionBar = ({
   resetSelection,
   massStatusChangeForm,
 }: {
-  hakemukset: SijoittelunHakemusValintatiedoilla[];
+  hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
   selection: Set<string>;
   resetSelection: () => void;
   massStatusChangeForm: (changeParams: MassChangeParams) => void;

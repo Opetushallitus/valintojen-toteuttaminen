@@ -20,10 +20,10 @@ export const PisteSyottoTable = ({
   kokeet,
   pistesyottoActorRef,
 }: {
-  pistetiedot: HakemuksenPistetiedot[];
+  pistetiedot: Array<HakemuksenPistetiedot>;
   sort: string;
   setSort: (sort: string) => void;
-  kokeet: ValintakoeAvaimet[];
+  kokeet: Array<ValintakoeAvaimet>;
   pistesyottoActorRef: PistesyottoActorRef;
 }) => {
   const { t } = useTranslations();

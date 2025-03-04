@@ -13,7 +13,7 @@ import { OsallistumisenTilaSelect } from '@/components/osallistumisen-tila-selec
 export const PisteSyottoControls = ({
   kokeet,
 }: {
-  kokeet: ValintakoeAvaimet[];
+  kokeet: Array<ValintakoeAvaimet>;
 }) => {
   const {
     searchPhrase,

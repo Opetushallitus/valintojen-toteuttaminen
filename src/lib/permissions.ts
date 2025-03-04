@@ -5,14 +5,14 @@ export type Permission = 'CRUD' | 'READ' | 'READ_UPDATE';
 
 export type OrganizationPermissions = {
   organizationOid: string;
-  permissions: Permission[];
+  permissions: Array<Permission>;
 };
 
 export type UserPermissions = {
   admin: boolean;
-  readOrganizations: string[];
-  writeOrganizations: string[];
-  crudOrganizations: string[];
+  readOrganizations: Array<string>;
+  writeOrganizations: Array<string>;
+  crudOrganizations: Array<string>;
 };
 
 const allowedToWrite = (right: Permission) =>
@@ -22,12 +22,12 @@ const allowedToRead = (right: Permission) =>
   ['CRUD', 'READ', 'READ_UPDATE'].includes(right);
 
 export function getOrgsForPermission(
-  permissions: OrganizationPermissions[],
+  permissions: Array<OrganizationPermissions>,
   permission: Permission,
-): string[] {
+): Array<string> {
   const filterByPermission = (
     rightFn: (right: Permission) => boolean,
-  ): string[] =>
+  ): Array<string> =>
     permissions
       .filter((o) => o.permissions.some(rightFn))
       .map((o) => o.organizationOid);

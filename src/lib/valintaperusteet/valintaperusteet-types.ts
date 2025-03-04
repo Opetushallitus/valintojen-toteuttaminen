@@ -23,7 +23,7 @@ export type Valinnanvaihe = {
   valisijoittelu: boolean;
   tyyppi: ValinnanvaiheTyyppi;
   oid: string;
-  jonot: Valintatapajono[];
+  jonot: Array<Valintatapajono>;
 };
 
 export enum ValintakoeInputTyyppi {
@@ -37,7 +37,7 @@ export type ValintakoeAvaimet = {
   tunniste: string;
   osallistuminenTunniste: string;
   kuvaus: string;
-  arvot?: string[];
+  arvot?: Array<string>;
   max?: string;
   min?: string;
   vaatiiOsallistumisen: boolean;
@@ -55,7 +55,7 @@ export type Valintakoe = {
 export type ValintaryhmaHakukohteilla = {
   nimi: string;
   oid: string;
-  hakukohteet: string[];
-  alaValintaryhmat: ValintaryhmaHakukohteilla[];
+  hakukohteet: Array<string>;
+  alaValintaryhmat: Array<ValintaryhmaHakukohteilla>;
   parentOid: string | null;
 };

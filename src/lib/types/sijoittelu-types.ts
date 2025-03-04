@@ -57,7 +57,7 @@ export type SijoittelunHakemus = {
   pisteet: number;
   tila: SijoittelunTila;
   valintatapajonoOid: string;
-  hyvaksyttyHakijaryhmista: string[];
+  hyvaksyttyHakijaryhmista: Array<string>;
   varasijanNumero: number;
   hakijanNimi?: string;
 };
@@ -68,7 +68,7 @@ export type SijoittelunHakemusValintatiedoilla = {
   pisteet: number;
   tila: SijoittelunTila;
   valintatapajonoOid: string;
-  hyvaksyttyHakijaryhmista: string[];
+  hyvaksyttyHakijaryhmista: Array<string>;
   varasijanNumero: number;
   hakijanNimi: string;
   jonosija: number;
@@ -107,7 +107,7 @@ export const isHyvaksyttyHarkinnanvaraisesti = (
 export type SijoitteluajonValintatapajono = {
   oid: string;
   nimi: string;
-  hakemukset: SijoittelunHakemus[];
+  hakemukset: Array<SijoittelunHakemus>;
   prioriteetti: number;
   accepted?: string | null;
 };
@@ -115,7 +115,7 @@ export type SijoitteluajonValintatapajono = {
 export type SijoitteluajonValintatapajonoValintatiedoilla = {
   oid: string;
   nimi: string;
-  hakemukset: SijoittelunHakemusValintatiedoilla[];
+  hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
   prioriteetti: number;
   accepted?: string;
   aloituspaikat: number;
@@ -130,13 +130,13 @@ export type SijoittelunHakijaryhmat = {
 };
 
 export type SijoitteluajonTulokset = {
-  valintatapajonot: SijoitteluajonValintatapajono[];
-  hakijaryhmat: SijoittelunHakijaryhmat[];
+  valintatapajonot: Array<SijoitteluajonValintatapajono>;
+  hakijaryhmat: Array<SijoittelunHakijaryhmat>;
 };
 
 export type SijoitteluajonTuloksetValintatiedoilla = {
   sijoitteluajoId: string;
-  valintatapajonot: SijoitteluajonValintatapajonoValintatiedoilla[];
+  valintatapajonot: Array<SijoitteluajonValintatapajonoValintatiedoilla>;
   lastModified: string;
 };
 

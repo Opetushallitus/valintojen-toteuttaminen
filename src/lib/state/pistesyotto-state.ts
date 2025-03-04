@@ -10,8 +10,8 @@ import { clone, isEmpty } from 'remeda';
 import { ActorRefFrom, assign, createMachine, fromPromise } from 'xstate';
 
 export type PisteSyottoContext = {
-  pistetiedot: HakemuksenPistetiedot[];
-  changedPistetiedot: HakemuksenPistetiedot[];
+  pistetiedot: Array<HakemuksenPistetiedot>;
+  changedPistetiedot: Array<HakemuksenPistetiedot>;
   toastMessage?: string;
 };
 
@@ -250,7 +250,7 @@ export const createPisteSyottoMachine = (
     },
     actors: {
       updatePistetiedot: fromPromise(
-        ({ input }: { input: HakemuksenPistetiedot[] }) => {
+        ({ input }: { input: Array<HakemuksenPistetiedot> }) => {
           return updatePisteetForHakukohde(hakuOid, hakukohdeOid, input);
         },
       ),
@@ -261,7 +261,7 @@ export const createPisteSyottoMachine = (
 type PistesyottoMachineParams = {
   hakuOid: string;
   hakukohdeOid: string;
-  pistetiedot: HakemuksenPistetiedot[];
+  pistetiedot: Array<HakemuksenPistetiedot>;
   addToast: (toast: Toast) => void;
 };
 

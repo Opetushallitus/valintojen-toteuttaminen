@@ -66,7 +66,7 @@ const convertValinnanvaihe = (vaihe: ValinnanvaiheModel): Valinnanvaihe => {
     vaihe.valinnanVaiheTyyppi == 'VALINTAKOE'
       ? ValinnanvaiheTyyppi.VALINTAKOE
       : ValinnanvaiheTyyppi.TAVALLINEN;
-  const jonot: Valintatapajono[] = vaihe.jonot
+  const jonot: Array<Valintatapajono> = vaihe.jonot
     .filter((jono) => jono.aktiivinen)
     .map((jono) => {
       const eiLasketaPaivamaaranJalkeen = jono.eiLasketaPaivamaaranJalkeen
@@ -94,7 +94,7 @@ const convertValinnanvaihe = (vaihe: ValinnanvaiheModel): Valinnanvaihe => {
 
 export const getValinnanvaiheet = async (
   hakukohdeOid: string,
-): Promise<Valinnanvaihe[]> => {
+): Promise<Array<Valinnanvaihe>> => {
   const response = await client.get<Array<ValinnanvaiheModel>>(
     `${configuration.valintaperusteetUrl}hakukohde/${hakukohdeOid}/valinnanvaihe?withValisijoitteluTieto=true`,
   );
@@ -123,7 +123,7 @@ export const getValinnanvaiheetIlmanLaskentaa = async (
 const determineValintaKoeInputTyyppi = (
   tunniste: string,
   funktioTyyppi: string,
-  arvot: string[] | null,
+  arvot: Array<string> | null,
 ): ValintakoeInputTyyppi => {
   if (
     funktioTyyppi === 'TOTUUSARVOFUNKTIO' ||
@@ -145,11 +145,11 @@ const determineValintaKoeInputTyyppi = (
 
 export const getValintakoeAvaimetHakukohteelle = async (
   hakukohdeOid: string,
-): Promise<ValintakoeAvaimet[]> => {
+): Promise<Array<ValintakoeAvaimet>> => {
   const { data } = await client.get<
     Array<{
       tunniste: string;
-      arvot: string[] | null;
+      arvot: Array<string> | null;
       kuvaus: string;
       max?: string | null;
       min?: string | null;

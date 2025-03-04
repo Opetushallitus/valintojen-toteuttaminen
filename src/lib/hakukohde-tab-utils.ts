@@ -57,7 +57,7 @@ const isAllowedToUseValinnat = (
   );
 };
 
-export const TABS: BasicTab[] = [
+export const TABS: Array<BasicTab> = [
   { title: 'perustiedot.otsikko', route: 'perustiedot' },
   {
     title: 'hakeneet.otsikko',

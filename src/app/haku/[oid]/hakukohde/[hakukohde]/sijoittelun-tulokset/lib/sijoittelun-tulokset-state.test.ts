@@ -23,7 +23,7 @@ const waitIdle = (actor: SijoittelunTulosActorRef) =>
   waitFor(actor, (state) => state.matches(SijoittelunTuloksetState.IDLE));
 
 describe('Sijoittelun tulokset states', async () => {
-  const hakemukset: SijoittelunHakemusValintatiedoilla[] = [
+  const hakemukset: Array<SijoittelunHakemusValintatiedoilla> = [
     {
       hakijaOid: 'hakija-1',
       ehdollisestiHyvaksyttavissa: false,

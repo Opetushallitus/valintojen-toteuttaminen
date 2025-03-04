@@ -39,7 +39,7 @@ export type Toast = {
 const toasterMachine = setup({
   types: {
     context: {
-      toasts: [] as Toast[],
+      toasts: [] as Array<Toast>,
     },
   },
   actions: {

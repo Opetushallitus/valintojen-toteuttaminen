@@ -22,7 +22,7 @@ const getUserPermissions = async (): Promise<UserPermissions> => {
   const organizations: Array<OrganizationPermissions> =
     response.data.organisaatiot
       .map((o) => {
-        const permissions: Permission[] = o.kayttooikeudet
+        const permissions: Array<Permission> = o.kayttooikeudet
           .filter((o) => o.palvelu === SERVICE_KEY)
           .map((o) => o.oikeus);
         return permissions.length > 0

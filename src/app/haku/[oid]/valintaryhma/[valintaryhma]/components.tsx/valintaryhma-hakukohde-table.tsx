@@ -18,7 +18,7 @@ export type HakukohdeWithLink = {
 };
 
 type ValintaryhmaHakukohdeTableProps = {
-  hakukohteet: HakukohdeWithLink[];
+  hakukohteet: Array<HakukohdeWithLink>;
 };
 
 export const ValintaryhmaHakukohdeTable = ({

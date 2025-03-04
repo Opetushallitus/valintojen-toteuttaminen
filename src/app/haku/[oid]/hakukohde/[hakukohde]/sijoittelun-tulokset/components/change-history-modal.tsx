@@ -22,7 +22,7 @@ const HistoryModalContent = ({
   sort,
   setSort,
 }: {
-  changeHistory: HakemusChangeEvent[];
+  changeHistory: Array<HakemusChangeEvent>;
   sort: string;
   setSort: (s: string) => void;
 }) => {
@@ -76,7 +76,7 @@ export const ChangeHistoryModal = createModal(
     changeHistory,
     hakemus,
   }: {
-    changeHistory: HakemusChangeEvent[];
+    changeHistory: Array<HakemusChangeEvent>;
     hakemus: SijoittelunHakemusValintatiedoilla;
   }) => {
     const modalProps = useOphModalProps();

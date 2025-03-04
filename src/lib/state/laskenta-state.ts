@@ -28,7 +28,7 @@ import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 const POLLING_INTERVAL = 5000;
 
 export type Laskenta = {
-  errorMessage?: string | string[] | null;
+  errorMessage?: string | Array<string> | null;
   calculatedTime?: Date | number | null;
   runningLaskenta?: LaskentaStart;
 };

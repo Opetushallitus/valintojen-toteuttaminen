@@ -10,7 +10,7 @@ type Tab = {
   route: string;
 };
 
-const TABS_TO_TEST: Tab[] = [
+const TABS_TO_TEST: Array<Tab> = [
   {
     title: 'Hakukohteittain',
     route: 'hakukohde',

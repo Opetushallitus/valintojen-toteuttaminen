@@ -27,7 +27,7 @@ export const SijoittelunTulosErrorModalDialog = createModal(
     hakemukset,
   }: {
     error: Error;
-    hakemukset: SijoittelunHakemusValintatiedoilla[];
+    hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
   }) => {
     const modalProps = useOphModalProps();
     const { t, i18n } = useTranslations();
@@ -57,7 +57,7 @@ const SijoittelunTulosTallennusError = ({
   hakemukset,
 }: {
   error: Error;
-  hakemukset: SijoittelunHakemusValintatiedoilla[];
+  hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
 }) => {
   const { t } = useTranslations();
 

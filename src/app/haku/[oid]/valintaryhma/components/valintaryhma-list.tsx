@@ -52,7 +52,7 @@ const Content = ({
 }: {
   valintaryhma: ValintaryhmaHakukohteilla;
   hakuOid: string;
-  visibleValintaryhmat: string[];
+  visibleValintaryhmat: Array<string>;
   onItemClick?: () => void;
 }) => {
   const { t } = useTranslations();

@@ -18,7 +18,7 @@ export const HakeneetTable = ({
   sort,
   isKorkeakouluHaku,
 }: {
-  hakeneet: Hakemus[];
+  hakeneet: Array<Hakemus>;
   sort: string;
   setSort: (sort: string) => void;
   isKorkeakouluHaku: boolean;

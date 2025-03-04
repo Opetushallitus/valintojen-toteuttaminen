@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest';
 import { OrganizationPermissions, getOrgsForPermission } from './permissions';
 
-const permissions: OrganizationPermissions[] = [
+const permissions: Array<OrganizationPermissions> = [
   { organizationOid: 'readonly', permissions: ['READ'] },
   { organizationOid: 'writeonly', permissions: ['READ_UPDATE'] },
   { organizationOid: 'crudonly', permissions: ['CRUD'] },

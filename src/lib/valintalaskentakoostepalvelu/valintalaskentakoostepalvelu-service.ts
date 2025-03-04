@@ -52,7 +52,7 @@ import { AssertionError } from 'assert';
 export const getHakukohteenValintatuloksetIlmanHakijanTilaa = async (
   hakuOid: string,
   hakukohdeOid: string,
-): Promise<HenkilonValintaTulos[]> => {
+): Promise<Array<HenkilonValintaTulos>> => {
   const { data } = await client.get<Array<{ tila: string; hakijaOid: string }>>(
     `${configuration.valintalaskentaKoostePalveluUrl}proxy/valintatulosservice/ilmanhakijantilaa/haku/${hakuOid}/hakukohde/${hakukohdeOid}`,
   );
@@ -152,7 +152,7 @@ export const getPisteetForHakukohde = async (
   ]);
   const hakemuksetIndexed = indexBy(hakemukset, prop('hakemusOid'));
 
-  const hakemuksetKokeilla: HakemuksenPistetiedot[] =
+  const hakemuksetKokeilla: Array<HakemuksenPistetiedot> =
     pistetiedot.valintapisteet.map((p: PistetietoItem) => {
       const hakemus = hakemuksetIndexed[p.applicationAdditionalDataDTO.oid];
       const kokeenPisteet: Array<ValintakokeenPisteet> = selectKokeenPisteet(
@@ -182,7 +182,7 @@ export const getPisteetForHakukohde = async (
 export const updatePisteetForHakukohde = async (
   hakuOid: string,
   hakukohdeOid: string,
-  pistetiedot: HakemuksenPistetiedot[],
+  pistetiedot: Array<HakemuksenPistetiedot>,
 ) => {
   const mappedPistetiedot = pistetiedot.map((p) => {
     const additionalData = pipe(
@@ -665,7 +665,7 @@ export const luoHyvaksymiskirjeetPDF = async ({
   deadline,
   onlyForbidden,
 }: {
-  hakemusOids?: string[];
+  hakemusOids?: Array<string>;
   sijoitteluajoId: string;
   hakukohde: Hakukohde;
   letterBody: string;

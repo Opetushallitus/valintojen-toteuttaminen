@@ -12,7 +12,7 @@ export const TemplateSection = ({
   setTemplateBody,
   setLetterBody,
 }: {
-  pohjat: Kirjepohja[];
+  pohjat: Array<Kirjepohja>;
   templateBody: string;
   setTemplateBody: (val: string) => void;
   setLetterBody: (val: string) => void;

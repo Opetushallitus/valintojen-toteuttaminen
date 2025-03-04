@@ -30,7 +30,7 @@ export const useValintaryhmaSearchParams = () => {
 
 function flattenValintaryhma(
   ryhma: ValintaryhmaHakukohteilla,
-): ValintaryhmaHakukohteilla[] {
+): Array<ValintaryhmaHakukohteilla> {
   return [ryhma]
     .concat(ryhma.alaValintaryhmat.flatMap(flattenValintaryhma))
     .filter(isDefined);
@@ -38,8 +38,8 @@ function flattenValintaryhma(
 
 function findFlattenedParents(
   ryhma: ValintaryhmaHakukohteilla,
-  flattenedRyhmat: ValintaryhmaHakukohteilla[],
-): ValintaryhmaHakukohteilla[] {
+  flattenedRyhmat: Array<ValintaryhmaHakukohteilla>,
+): Array<ValintaryhmaHakukohteilla> {
   const parents = flattenedRyhmat.filter((r) => ryhma.parentOid === r.oid);
   return parents.concat(
     parents.flatMap((r) => findFlattenedParents(r, flattenedRyhmat)),
@@ -47,8 +47,8 @@ function findFlattenedParents(
 }
 
 function filterRyhmatWithHakukohteet(
-  ryhmat: ValintaryhmaHakukohteilla[],
-): ValintaryhmaHakukohteilla[] {
+  ryhmat: Array<ValintaryhmaHakukohteilla>,
+): Array<ValintaryhmaHakukohteilla> {
   return ryhmat.filter(
     (r) =>
       r.hakukohteet.length > 0 ||

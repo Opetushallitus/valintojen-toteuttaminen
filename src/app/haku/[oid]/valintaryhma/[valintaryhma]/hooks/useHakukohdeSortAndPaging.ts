@@ -37,13 +37,15 @@ export const useHakukohdeSortAndPagingParams = () => {
   };
 };
 
-export const useHakukohdeSortAndPaging = (hakukohteet: HakukohdeWithLink[]) => {
+export const useHakukohdeSortAndPaging = (
+  hakukohteet: Array<HakukohdeWithLink>,
+) => {
   const { translateEntity } = useTranslations();
 
   const { page, setPage, pageSize, setPageSize, sort, setSort } =
     useHakukohdeSortAndPagingParams();
 
-  const [pageResults, setPageResults] = useState<HakukohdeWithLink[]>([]);
+  const [pageResults, setPageResults] = useState<Array<HakukohdeWithLink>>([]);
 
   const results = useMemo(() => {
     const { orderBy, direction } = getSortParts(sort);

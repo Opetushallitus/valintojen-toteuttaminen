@@ -13,7 +13,7 @@ export const ValintatapajonotTable = ({
   valintatapajonoTulokset,
   haku,
 }: {
-  valintatapajonoTulokset: SijoittelunValintatapajonoTulos[];
+  valintatapajonoTulokset: Array<SijoittelunValintatapajonoTulos>;
   haku: Haku;
 }) => {
   const columns = [

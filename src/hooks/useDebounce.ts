@@ -2,7 +2,7 @@
 
 import { useLayoutEffect, useMemo, useRef } from 'react';
 
-export const debounce = <T extends (...args: any[]) => any>(
+export const debounce = <T extends (...args: Array<any>) => any>(
   callback: T,
   waitFor: number,
 ) => {

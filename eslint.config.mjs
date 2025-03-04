@@ -34,6 +34,12 @@ const config = ts.config(
           patterns: ['@mui/*/*/*', '../../*'],
         },
       ],
+      '@typescript-eslint/array-type': [
+        'error',
+        {
+          default: 'generic',
+        },
+      ],
     },
   },
   {

@@ -11,8 +11,8 @@ type SijoittelunTilaSortable = {
 
 export function sortBySijoittelunTila<T extends SijoittelunTilaSortable>(
   direction: string,
-  filtered: T[],
-): T[] {
+  filtered: Array<T>,
+): Array<T> {
   const asc = direction === 'asc';
   return filtered.sort((a, b) => {
     const aSijoittelunTila = a.sijoittelunTila ?? a.tila;

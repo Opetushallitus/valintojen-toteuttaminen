@@ -21,7 +21,7 @@ export type HakukohteenHakijaryhma = {
   oid: string;
   prioriteetti: number;
   kiintio: number;
-  hakijat: HakijaryhmanHakija[];
+  hakijat: Array<HakijaryhmanHakija>;
 };
 
 export type Jarjestyskriteeri = {
@@ -118,14 +118,14 @@ export type HakemuksenPistetiedot = {
   hakijanNimi: string;
   hakemusOid: string;
   hakijaOid: string;
-  valintakokeenPisteet: ValintakokeenPisteet[];
+  valintakokeenPisteet: Array<ValintakokeenPisteet>;
   etunimet: string;
   sukunimi: string;
 };
 
 export type HakukohteenPistetiedot = {
-  valintakokeet: ValintakoeAvaimet[];
-  hakemukset: HakemuksenPistetiedot[];
+  valintakokeet: Array<ValintakoeAvaimet>;
+  hakemukset: Array<HakemuksenPistetiedot>;
   lastModified?: Date;
 };
 

@@ -43,12 +43,12 @@ type SijoittelunTulosResponseData = {
 export const getSijoittelunTulokset = async (
   hakuOid: string,
   hakukohdeOid: string,
-): Promise<SijoittelunValintatapajonoTulos[]> => {
+): Promise<Array<SijoittelunValintatapajonoTulos>> => {
   const response = await client.get<Array<SijoittelunTulosResponseData>>(
     `${configuration.valintaTulosServiceUrl}sijoitteluntulos/yhteenveto/${hakuOid}/hakukohde/${hakukohdeOid}`,
   );
-  const jsonTulokset: SijoittelunValintatapajonoTulos[] = response.data?.map(
-    (tulos) => {
+  const jsonTulokset: Array<SijoittelunValintatapajonoTulos> =
+    response.data?.map((tulos) => {
       return {
         nimi: tulos.valintatapajonoNimi,
         oid: tulos.valintatapajonoOid,
@@ -61,8 +61,7 @@ export const getSijoittelunTulokset = async (
         paikanPeruneet: tulos.peruneet,
         pisteraja: tulos.alinHyvaksyttyPistemaara,
       };
-    },
-  );
+    });
   return jsonTulokset;
 };
 
@@ -82,7 +81,7 @@ type SijoitteluajonTuloksetResponseData = {
         pisteet: number;
         tila: SijoittelunTila;
         valintatapajonoOid: string;
-        hyvaksyttyHakijaryhmista: string[];
+        hyvaksyttyHakijaryhmista: Array<string>;
         varasijanNumero: number;
         jonosija: number;
         tasasijaJonosija: number;
@@ -106,7 +105,7 @@ type SijoitteluajonTuloksetWithValintaEsitysResponseData = {
     julkaistavissa: boolean;
     hyvaksyttyVarasijalta: boolean;
     hyvaksyPeruuntunut: boolean;
-    hyvaksyttyHakijaryhmista: string[];
+    hyvaksyttyHakijaryhmista: Array<string>;
     varasijanNumero: number;
     jonosija: number;
     tasasijaJonosija: number;
@@ -346,8 +345,8 @@ export const getLatestSijoitteluajonTuloksetForHakemus = async ({
 
 export const saveMaksunTilanMuutokset = async (
   hakukohdeOid: string,
-  hakemukset: SijoittelunHakemusValintatiedoilla[],
-  originalHakemukset: SijoittelunHakemusValintatiedoilla[],
+  hakemukset: Array<SijoittelunHakemusValintatiedoilla>,
+  originalHakemukset: Array<SijoittelunHakemusValintatiedoilla>,
 ) => {
   const hakemuksetWithChangedMaksunTila = hakemukset
     .filter((h) => {
@@ -422,7 +421,7 @@ export const saveSijoitteluAjonTulokset = async (
   valintatapajonoOid: string,
   hakukohdeOid: string,
   lastModified: string,
-  hakemukset: SijoittelunHakemusValintatiedoilla[],
+  hakemukset: Array<SijoittelunHakemusValintatiedoilla>,
 ) => {
   const valintaTulokset = hakemukset.map((h) => {
     return {
@@ -486,29 +485,29 @@ export const getValinnanTulokset = async ({
 
 export const sendVastaanottopostiHakemukselle = async (
   hakemusOid: string,
-): Promise<string[]> => {
+): Promise<Array<string>> => {
   const response = await client.post(
     `${configuration.vastaanottopostiHakemukselleUrl({ hakemusOid })}`,
     { hakemusOid },
   );
-  return response.data as string[];
+  return response.data as Array<string>;
 };
 
 export const sendVastaanottopostiHakukohteelle = async (
   hakukohdeOid: string,
-): Promise<string[]> => {
+): Promise<Array<string>> => {
   const response = await client.post(
     `${configuration.vastaanottopostiHakukohteelleUrl({ hakukohdeOid })}`,
     { hakukohdeOid },
   );
-  return response.data as string[];
+  return response.data as Array<string>;
 };
 
 export const sendVastaanottopostiValintatapaJonolle = async (
   hakukohdeOid: string,
   valintatapajonoOid: string,
-): Promise<string[]> => {
-  const response = await client.post<string[]>(
+): Promise<Array<string>> => {
+  const response = await client.post<Array<string>>(
     configuration.vastaanottopostiJonolleUrl({
       hakukohdeOid,
       valintatapajonoOid,
@@ -532,7 +531,7 @@ type ChangeHistoryEventResponse = {
 export const changeHistoryForHakemus = async (
   hakemusOid: string,
   valintatapajonoOid: string,
-): Promise<HakemusChangeEvent[]> => {
+): Promise<Array<HakemusChangeEvent>> => {
   const response = await client.get<Array<ChangeHistoryEventResponse>>(
     configuration.muutoshistoriaHakemukselleUrl({
       hakemusOid,

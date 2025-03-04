@@ -275,7 +275,7 @@ export const muutaSijoittelunStatus = async ({
 export const getHakijaryhmat = async (
   hakuOid: string,
   hakukohdeOid: string,
-): Promise<HakukohteenHakijaryhma[]> => {
+): Promise<Array<HakukohteenHakijaryhma>> => {
   const [hakemukset, tulokset, valintaTulokset] = await Promise.all([
     getHakemukset({ hakuOid, hakukohdeOid }),
     getLatestSijoitteluAjonTuloksetForHakukohde(hakuOid, hakukohdeOid),
@@ -307,7 +307,7 @@ export const getHakijaryhmat = async (
     }>
   >(configuration.hakukohdeHakijaryhmatUrl({ hakukohdeOid }));
   return data.map((ryhma) => {
-    const ryhmanHakijat: HakijaryhmanHakija[] = hakemukset.map((h) => {
+    const ryhmanHakijat: Array<HakijaryhmanHakija> = hakemukset.map((h) => {
       const hakemusSijoittelussa = findHakemusSijoittelussa(
         sijoittelunHakemukset[h.hakemusOid],
         tulokset.valintatapajonot,
@@ -359,7 +359,7 @@ export const getHakijaryhmat = async (
 };
 
 const findVastaanottotila = (
-  valintatulokset: HenkilonValintaTulos[],
+  valintatulokset: Array<HenkilonValintaTulos>,
   hakemusSijoittelussa: SijoittelunHakemus,
 ) => {
   if (hakemusSijoittelussa) {
@@ -379,8 +379,8 @@ const sijoittelunTilaOrdinalForHakemus = (tila: SijoittelunTila): number => {
 };
 
 const findHakemusSijoittelussa = (
-  hakijanHakemukset: SijoittelunHakemus[],
-  valintatapajonot: SijoitteluajonValintatapajono[],
+  hakijanHakemukset: Array<SijoittelunHakemus>,
+  valintatapajonot: Array<SijoitteluajonValintatapajono>,
 ): SijoittelunHakemus => {
   return hakijanHakemukset?.reduce((h, hakemus) => {
     if (

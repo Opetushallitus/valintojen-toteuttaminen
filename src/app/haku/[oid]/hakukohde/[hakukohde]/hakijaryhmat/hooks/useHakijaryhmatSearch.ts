@@ -104,7 +104,7 @@ export const useHakijaryhmatSearchParams = (hakijaryhmaOid?: string) => {
 
 export const useHakijaryhmatSearch = (
   hakijaryhmaOid: string,
-  hakijaryhmanHakijat: HakijaryhmanHakija[],
+  hakijaryhmanHakijat: Array<HakijaryhmanHakija>,
 ) => {
   const { translateEntity } = useTranslations();
 

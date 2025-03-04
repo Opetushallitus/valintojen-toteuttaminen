@@ -76,7 +76,10 @@ const getAmmAccordionContent = (page: Page) => {
   });
 };
 
-const assertRows = async (rows: Locator, contentToExpect: string[][]) => {
+const assertRows = async (
+  rows: Locator,
+  contentToExpect: Array<Array<string>>,
+) => {
   await expect(rows).toHaveCount(contentToExpect.length);
   for (const [index, content] of contentToExpect.entries()) {
     await checkRow(rows.nth(index), content);

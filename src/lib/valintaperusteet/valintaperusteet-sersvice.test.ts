@@ -150,7 +150,8 @@ describe('Valintaperusteet: getValinnanvaiheet', () => {
   test('returns valinnanvaiheet', async () => {
     const clientSpy = vi.spyOn(client, 'get');
     clientSpy.mockImplementationOnce(() => buildDummyValinnanvaiheResponse());
-    const vaiheet: Valinnanvaihe[] = await getValinnanvaiheet('hakukohdeOid');
+    const vaiheet: Array<Valinnanvaihe> =
+      await getValinnanvaiheet('hakukohdeOid');
     expect(vaiheet.length).toEqual(1);
     const vaihe = vaiheet[0];
     assertValinnanvaihe(vaihe);
@@ -174,7 +175,8 @@ describe('Valintaperusteet: getValinnanvaiheet', () => {
         },
       ]),
     );
-    const vaiheet: Valinnanvaihe[] = await getValinnanvaiheet('hakukohdeOid');
+    const vaiheet: Array<Valinnanvaihe> =
+      await getValinnanvaiheet('hakukohdeOid');
     expect(vaiheet.length).toEqual(1);
     const vaihe = vaiheet[0];
     assertValinnanvaihe(vaihe);
@@ -211,7 +213,8 @@ describe('Valintaperusteet: getValinnanvaiheet', () => {
         },
       ]),
     );
-    const vaiheet: Valinnanvaihe[] = await getValinnanvaiheet('hakukohdeOid');
+    const vaiheet: Array<Valinnanvaihe> =
+      await getValinnanvaiheet('hakukohdeOid');
     expect(vaiheet.length).toEqual(1);
     const vaihe = vaiheet[0];
     assertValinnanvaihe(vaihe);
@@ -229,14 +232,14 @@ function assertValinnanvaihe(vaihe: Valinnanvaihe) {
 }
 
 function buildDummyValinnanvaiheResponse(
-  valintatapajonot?: {
+  valintatapajonot?: Array<{
     nimi: string;
     oid: string;
     aktiivinen: boolean;
     prioriteetti: number;
     valisijoittelu: boolean;
     eilasketapaivamaaranJalkeen: string | null;
-  }[],
+  }>,
 ) {
   const dummyJonot = valintatapajonot ?? [
     {
@@ -272,7 +275,7 @@ describe('Valintaperusteet: getValintakokeet', () => {
   test('returns valintakokeet', async () => {
     const clientSpy = vi.spyOn(client, 'get');
     clientSpy.mockImplementationOnce(() => buildDummyValinkoeResponse());
-    const kokeet: ValintakoeAvaimet[] =
+    const kokeet: Array<ValintakoeAvaimet> =
       await getValintakoeAvaimetHakukohteelle('hakukohdeOid');
     expect(kokeet.length).toEqual(1);
   });
@@ -315,7 +318,7 @@ describe('Valintaperusteet: getValintakokeet', () => {
         },
       ]),
     );
-    const kokeet: ValintakoeAvaimet[] =
+    const kokeet: Array<ValintakoeAvaimet> =
       await getValintakoeAvaimetHakukohteelle('hakukohdeOid');
     expect(kokeet.length).toEqual(4);
     expect(kokeet[0].inputTyyppi).toEqual(ValintakoeInputTyyppi.INPUT);
@@ -368,7 +371,7 @@ test('Valintaperusteet: getValintaryhmat', async () => {
   );
   const ryhmat: {
     hakuRyhma: ValintaryhmaHakukohteilla | null;
-    muutRyhmat: ValintaryhmaHakukohteilla[];
+    muutRyhmat: Array<ValintaryhmaHakukohteilla>;
   } = await getValintaryhmat('haku-1');
   expect(ryhmat.hakuRyhma?.nimi).toEqual('Haun valintaryhmä');
   expect(ryhmat.muutRyhmat.map((r) => r.nimi)).toEqual([
@@ -383,16 +386,16 @@ test('Valintaperusteet: getValintaryhmat', async () => {
 });
 
 function buildDummyValinkoeResponse(
-  valintakokeet?: {
+  valintakokeet?: Array<{
     tunniste: string;
-    arvot: string[] | null;
+    arvot: Array<string> | null;
     kuvaus: string;
     max?: string | null;
     min?: string | null;
     osallistuminenTunniste: string;
     vaatiiOsallistumisen: boolean;
     funktiotyyppi: string;
-  }[],
+  }>,
 ) {
   const dummyKokeet = valintakokeet ?? [
     {

@@ -9,9 +9,9 @@ export type HaunAlkaminen = {
   value: string;
 };
 
-export const getHakuAlkamisKaudet = (): HaunAlkaminen[] => {
+export const getHakuAlkamisKaudet = (): Array<HaunAlkaminen> => {
   const nowYear = new Date().getFullYear();
-  const alkamiset: HaunAlkaminen[] = [];
+  const alkamiset: Array<HaunAlkaminen> = [];
   for (let i = nowYear; i >= STARTING_YEAR; i--) {
     alkamiset.push({
       alkamisVuosi: i,

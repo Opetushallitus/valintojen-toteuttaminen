@@ -5,7 +5,7 @@ import { useTranslations } from '@/lib/localization/useTranslations';
 import { ErrorAlert } from '@/components/error-alert';
 
 type ErrorRowParams = {
-  errorMessage: string | string[];
+  errorMessage: string | Array<string>;
 };
 
 export const ErrorRow = ({ errorMessage }: ErrorRowParams) => {

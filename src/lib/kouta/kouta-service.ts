@@ -108,12 +108,12 @@ type HakukohdeResponseData = {
   organisaatioNimi: TranslatedName;
   jarjestyspaikkaHierarkiaNimi: TranslatedName;
   voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita: boolean;
-  opetuskieliKoodiUrit: string[];
+  opetuskieliKoodiUrit: Array<string>;
   tarjoaja: string;
 };
 
 const mapToHakukohde = (hakukohdeData: HakukohdeResponseData): Hakukohde => {
-  const opetuskielet: Language[] = hakukohdeData.opetuskieliKoodiUrit
+  const opetuskielet: Array<Language> = hakukohdeData.opetuskieliKoodiUrit
     .flatMap((koodiUri) => {
       // huom: tässä ei ole käsitelty kaikkia mahdollisia opetuskieliä
       switch (koodiUri.split('#')[0]) {
@@ -146,7 +146,7 @@ const mapToHakukohde = (hakukohdeData: HakukohdeResponseData): Hakukohde => {
 export async function getHakukohteet(
   hakuOid: string,
   userPermissions: UserPermissions,
-): Promise<Hakukohde[]> {
+): Promise<Array<Hakukohde>> {
   const tarjoajaOids = permissionsToTarjoajat(userPermissions);
   const response = await client.get<Array<HakukohdeResponseData>>(
     `${configuration.hakukohteetUrl}&haku=${hakuOid}${tarjoajaOids}`,

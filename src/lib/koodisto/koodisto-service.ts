@@ -28,18 +28,18 @@ const mapToKoodi = (k: CodeElement): Koodi => {
   return { koodiUri: k.koodiUri, nimi: translated, koodiArvo: k.koodiArvo };
 };
 
-async function getKoodit(koodisto: string): Promise<Koodi[]> {
+async function getKoodit(koodisto: string): Promise<Array<Koodi>> {
   const response = await client.get<Array<CodeElement>>(
     configuration.kooditUrl + koodisto,
   );
   return response.data.map(mapToKoodi);
 }
 
-export async function getHakutavat(): Promise<Koodi[]> {
+export async function getHakutavat(): Promise<Array<Koodi>> {
   return getKoodit('hakutapa');
 }
 
-export async function getHyvaksynnanEhdot(): Promise<Koodi[]> {
+export async function getHyvaksynnanEhdot(): Promise<Array<Koodi>> {
   return getKoodit('hyvaksynnanehdot');
 }
 

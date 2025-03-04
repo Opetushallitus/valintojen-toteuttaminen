@@ -168,7 +168,7 @@ export async function getHakemukset({
   henkiloOid,
   name,
   henkilotunnus,
-}: GetHakemuksetParams): Promise<Hakemus[]> {
+}: GetHakemuksetParams): Promise<Array<Hakemus>> {
   const data = await getAtaruHakemukset({
     hakuOid,
     hakukohdeOid,

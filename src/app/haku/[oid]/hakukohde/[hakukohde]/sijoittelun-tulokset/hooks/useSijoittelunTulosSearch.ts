@@ -127,7 +127,7 @@ const filterBySijoittelunTila = (
 
 export const useSijoittelunTulosSearch = (
   valintatapajonoOid: string,
-  hakemukset: SijoittelunHakemusValintatiedoilla[],
+  hakemukset: Array<SijoittelunHakemusValintatiedoilla>,
 ) => {
   const { translateEntity } = useTranslations();
 

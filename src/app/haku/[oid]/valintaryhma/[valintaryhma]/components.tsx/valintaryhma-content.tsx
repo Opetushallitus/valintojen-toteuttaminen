@@ -70,7 +70,7 @@ export const ValintaryhmaContent = ({
 
   const valittuRyhma = useMemo(() => {
     function findRecursively(
-      ryhmat: ValintaryhmaHakukohteilla[],
+      ryhmat: Array<ValintaryhmaHakukohteilla>,
     ): ValintaryhmaHakukohteilla | undefined {
       const foundRyhma = ryhmat.find((r) => r.oid === valintaryhmaOid);
       return (
