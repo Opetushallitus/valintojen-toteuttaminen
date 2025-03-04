@@ -2,9 +2,12 @@ import { describe, expect, test } from 'vitest';
 import {
   isKirjeidenMuodostaminenAllowed,
   isSendVastaanottoPostiVisible,
+  isValintaesitysJulkaistavissa,
 } from './sijoittelun-tulokset-utils';
 import { Haku, Tila } from '@/lib/kouta/kouta-types';
 import { UserPermissions } from '@/lib/permissions';
+import { add, sub } from 'date-fns';
+import { HaunAsetukset } from './ohjausparametrit/ohjausparametrit-types';
 
 const mockHaku: Haku = {
   oid: 'mock-oid',
@@ -15,9 +18,11 @@ const mockHaku: Haku = {
   alkamisVuosi: 2023,
   alkamisKausiKoodiUri: 'mock-alkamisKausiKoodiUri',
   hakutapaKoodiUri: 'mock-hakutapaKoodiUri',
-  kohdejoukkoKoodiUri: 'haunkohdejoukko_20',
+  kohdejoukkoKoodiUri: 'haunkohdejoukko_mock',
   hakukohteita: 123,
 };
+
+const KORKEAKOULU_KOHDEJOUKKO = 'haunkohdejoukko_12';
 
 const mockPermissions: UserPermissions = {
   hasOphCRUD: false,
@@ -124,6 +129,61 @@ describe('isSendVastaanottoPostiVisible', () => {
         kohdejoukkoKoodiUri: kohdejoukko,
       };
       expect(isSendVastaanottoPostiVisible(haku, permissions)).toBe(result);
+    },
+  );
+});
+
+describe('isValintaesitysJulkaistavissa', () => {
+  test.each([
+    {
+      hasOphCrud: true,
+      valintaesitysHyvaksytty: undefined,
+      result: true,
+    },
+    {
+      hasOphCrud: false,
+      kohdejoukko: KORKEAKOULU_KOHDEJOUKKO,
+      valintaesitysHyvaksytty: undefined,
+      result: true,
+    },
+    {
+      hasOphCrud: false,
+      valintaesitysHyvaksytty: sub(new Date(), { days: 1 }),
+      result: true,
+    },
+    {
+      hasOphCrud: false,
+      valintaesitysHyvaksytty: undefined,
+      result: false,
+    },
+    {
+      hasOphCrud: false,
+      valintaesitysHyvaksytty: add(new Date(), { days: 1 }),
+      result: false,
+    },
+  ] as Array<{
+    hasOphCrud: boolean;
+    kohdejoukko?: string;
+    valintaesitysHyvaksytty?: Date;
+    result: boolean;
+  }>)(
+    'hasOphCrud = $hasOphCrud, kohdejoukko = $kohdejoukko, valintaesitysHyvaksytty = $valintaesitysHyvaksytty, result = $result',
+    async ({ hasOphCrud, kohdejoukko, valintaesitysHyvaksytty, result }) => {
+      const permissions = { ...mockPermissions, hasOphCRUD: hasOphCrud };
+
+      const haku = {
+        ...mockHaku,
+        kohdejoukkoKoodiUri: kohdejoukko ?? mockHaku.kohdejoukkoKoodiUri,
+      };
+
+      const haunAsetukset: HaunAsetukset = {
+        sijoittelu: true,
+        valintaEsityksenHyvaksyminen: valintaesitysHyvaksytty,
+      };
+
+      expect(
+        isValintaesitysJulkaistavissa(haku, permissions, haunAsetukset),
+      ).toBe(result);
     },
   );
 });
