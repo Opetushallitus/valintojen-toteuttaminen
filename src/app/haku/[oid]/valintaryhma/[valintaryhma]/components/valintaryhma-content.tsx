@@ -115,7 +115,7 @@ export const ValintaryhmaContent = ({
     }
 
     function mapHakukohteet(valintaryhma: ValintaryhmaHakukohteilla) {
-      return valintaryhma.hakukohteet
+      return findHakukohteetRecursively(valintaryhma)
         .map((oid) => {
           return hakukohteet.find((hk) => hk.oid === oid);
         })
@@ -135,9 +135,8 @@ export const ValintaryhmaContent = ({
   }, [hakukohteet, valittuRyhma, translateEntity]);
 
   function getHakukohteetForLaskenta() {
-    const hkOids = valittuRyhma ? findHakukohteetRecursively(valittuRyhma) : [];
-    return hkOids
-      .map((oid) => hakukohteet.find((hk) => hk.oid === oid))
+    return mappedHakukohteet
+      .map((mhk) => hakukohteet.find((hk) => hk.oid === mhk.oid))
       .filter(isDefined);
   }
 
