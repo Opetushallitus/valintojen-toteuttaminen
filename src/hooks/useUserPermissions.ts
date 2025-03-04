@@ -1,15 +1,17 @@
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
-import { client } from '../lib/http-client';
-import { configuration } from '../lib/configuration';
+import { client } from '@/lib/http-client';
+import { configuration } from '@/lib/configuration';
 import {
   OrganizationPermissions,
   UserPermissions,
   SERVICE_KEY,
   Permission,
   getOrgsForPermission,
-} from '../lib/permissions';
-import { PermissionError } from '../lib/common';
-import { isNonNull } from 'remeda';
+} from '@/lib/permissions';
+import { PermissionError } from '@/lib/common';
+import { intersection, isNonNull } from 'remeda';
+import { OPH_ORGANIZATION_OID } from '@/lib/constants';
+import { useOrganizationParentOids } from '@/lib/organisaatio-service';
 
 const getUserPermissions = async (): Promise<UserPermissions> => {
   const response = await client.get<{
@@ -17,7 +19,6 @@ const getUserPermissions = async (): Promise<UserPermissions> => {
       organisaatioOid: string;
       kayttooikeudet: [{ palvelu: string; oikeus: Permission }];
     }>;
-    isAdmin: boolean;
   }>(configuration.kayttoikeusUrl);
   const organizations: Array<OrganizationPermissions> =
     response.data.organisaatiot
@@ -30,19 +31,43 @@ const getUserPermissions = async (): Promise<UserPermissions> => {
           : null;
       })
       .filter(isNonNull);
+
+  const crudOrganizations = getOrgsForPermission(organizations, 'CRUD');
+
   const userPermissions: UserPermissions = {
-    admin: response.data.isAdmin,
+    hasOphCRUD: crudOrganizations.includes(OPH_ORGANIZATION_OID),
     readOrganizations: getOrgsForPermission(organizations, 'READ'),
     writeOrganizations: getOrgsForPermission(organizations, 'READ_UPDATE'),
-    crudOrganizations: getOrgsForPermission(organizations, 'CRUD'),
+    crudOrganizations,
   };
-  if (
-    userPermissions.readOrganizations.length === 0 &&
-    !userPermissions.admin
-  ) {
+  if (userPermissions.readOrganizations.length === 0) {
     throw new PermissionError();
   }
   return userPermissions;
+};
+
+export const useHasOrganizationPermissions = (
+  oid: string,
+  permission: Permission,
+) => {
+  const { data: userPermissions } = useUserPermissions();
+  const { readOrganizations, writeOrganizations, crudOrganizations } =
+    userPermissions;
+
+  let permissionOrganizationOids = readOrganizations;
+  if (permission === 'CRUD') {
+    permissionOrganizationOids = crudOrganizations;
+  } else if (permission === 'READ_UPDATE') {
+    permissionOrganizationOids = writeOrganizations;
+  }
+
+  const { data: organizationOidWithParentOids } =
+    useOrganizationParentOids(oid);
+
+  return (
+    intersection(organizationOidWithParentOids, permissionOrganizationOids)
+      .length > 0
+  );
 };
 
 export const userPermissionsQueryOptions = {

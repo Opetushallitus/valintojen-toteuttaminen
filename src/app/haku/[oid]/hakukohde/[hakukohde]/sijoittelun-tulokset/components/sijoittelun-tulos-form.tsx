@@ -18,6 +18,7 @@ type SijoittelunTuloksetFormParams = {
   hakukohde: Hakukohde;
   sijoitteluajoId: string;
   lastModified: string;
+  kaikkiJonotHyvaksytty: boolean;
 };
 
 export const SijoittelunTulosForm = ({
@@ -26,6 +27,7 @@ export const SijoittelunTulosForm = ({
   haku,
   sijoitteluajoId,
   lastModified,
+  kaikkiJonotHyvaksytty,
 }: SijoittelunTuloksetFormParams) => {
   const { addToast } = useToaster();
 
@@ -62,6 +64,7 @@ export const SijoittelunTulosForm = ({
         valintatapajono={valintatapajono}
         sijoitteluajoId={sijoitteluajoId}
         sijoittelunTulosActorRef={sijoittelunTulosActorRef}
+        kaikkiJonotHyvaksytty={kaikkiJonotHyvaksytty}
       />
     </Box>
   );

@@ -7,7 +7,6 @@ test('shows only organizations user has permissions to', async ({ page }) => {
     '*/**/kayttooikeus-service/henkilo/current/omattiedot',
     async (route) => {
       const user = {
-        isAdmin: false,
         organisaatiot: [
           {
             organisaatioOid: '1.2.246.562.10.79559059674',
@@ -36,7 +35,6 @@ test('shows unauthorized message if user has no proper access rights', async ({
     '*/**/kayttooikeus-service/henkilo/current/omattiedot',
     async (route) => {
       const user = {
-        isAdmin: false,
         organisaatiot: [
           {
             organisaatioOid: '1.2.246.562.10.79559059674',

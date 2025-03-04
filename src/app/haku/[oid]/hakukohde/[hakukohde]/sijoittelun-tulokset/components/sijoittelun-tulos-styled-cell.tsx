@@ -1,4 +1,5 @@
-import { Box, styled } from '@mui/material';
+import { styled } from '@/lib/theme';
+import { Box } from '@mui/material';
 
 export const SijoittelunTulosStyledCell = styled(Box)(({ theme }) => ({
   display: 'flex',

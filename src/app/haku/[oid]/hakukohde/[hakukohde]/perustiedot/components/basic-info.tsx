@@ -3,8 +3,8 @@
 import { ExternalLink } from '@/components/external-link';
 import { getValintaryhma } from '@/lib/valintaperusteet/valintaperusteet-service';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { styled } from '@mui/material';
 import { useTranslations } from '@/lib/localization/useTranslations';
+import { styled } from '@/lib/theme';
 
 const BasicContainer = styled('div')(({ theme }) => ({
   display: 'flex',

@@ -53,11 +53,13 @@ const useColumns = ({
   hakukohde,
   sijoitteluajoId,
   actorRef,
+  kaikkiJonotHyvaksytty,
 }: {
   haku: Haku;
   hakukohde: Hakukohde;
   sijoitteluajoId: string;
   actorRef: SijoittelunTulosActorRef;
+  kaikkiJonotHyvaksytty: boolean;
 }) => {
   const state = useSelector(actorRef, (s) => s);
   const { send } = actorRef;
@@ -148,16 +150,26 @@ const useColumns = ({
         key: 'toiminnot',
         renderFn: (props) => (
           <OtherActionsCell
+            haku={haku}
             hakemus={props}
             hakukohde={hakukohde}
             disabled={disabled}
             sijoitteluajoId={sijoitteluajoId}
+            kaikkiJonotHyvaksytty={kaikkiJonotHyvaksytty}
           />
         ),
         sortable: false,
       }),
     ].filter(isNonNull);
-  }, [t, haku, updateForm, disabled, sijoitteluajoId, hakukohde]);
+  }, [
+    t,
+    haku,
+    updateForm,
+    disabled,
+    sijoitteluajoId,
+    hakukohde,
+    kaikkiJonotHyvaksytty,
+  ]);
 };
 
 export const SijoittelunTulosTable = ({
@@ -166,12 +178,14 @@ export const SijoittelunTulosTable = ({
   sijoitteluajoId,
   valintatapajono,
   sijoittelunTulosActorRef,
+  kaikkiJonotHyvaksytty,
 }: {
   haku: Haku;
   hakukohde: Hakukohde;
   sijoitteluajoId: string;
   sijoittelunTulosActorRef: SijoittelunTulosActorRef;
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
+  kaikkiJonotHyvaksytty: boolean;
 }) => {
   const { t } = useTranslations();
 
@@ -194,6 +208,7 @@ export const SijoittelunTulosTable = ({
     hakukohde,
     sijoitteluajoId,
     actorRef: sijoittelunTulosActorRef,
+    kaikkiJonotHyvaksytty,
   });
 
   const changedHakemukset = useSelector(

@@ -1,12 +1,3 @@
-import { useTranslations } from '@/lib/localization/useTranslations';
-import { SijoittelunHakemusValintatiedoilla } from '@/lib/types/sijoittelu-types';
-import {
-  ListItemIcon,
-  ListItemText,
-  Menu,
-  MenuItem,
-  styled,
-} from '@mui/material';
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
 import { useState } from 'react';
 import {
@@ -15,7 +6,7 @@ import {
   InsertDriveFileOutlined,
   MoreHoriz,
 } from '@mui/icons-material';
-import { Hakukohde } from '@/lib/kouta/kouta-types';
+import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import useToaster from '@/hooks/useToaster';
 import {
   changeHistoryForHakemus,
@@ -24,6 +15,16 @@ import {
 import { showModal } from '@/components/modals/global-modal';
 import { ChangeHistoryModal } from './change-history-modal';
 import { AcceptedLetterTemplateModal } from './letter-template-modal';
+import { useUserPermissions } from '@/hooks/useUserPermissions';
+
+import { styled } from '@/lib/theme';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { SijoittelunHakemusValintatiedoilla } from '@/lib/types/sijoittelu-types';
+import { ListItemIcon, ListItemText, Menu, MenuItem } from '@mui/material';
+import {
+  isKirjeidenMuodostaminenAllowed,
+  isSendVastaanottoPostiVisible,
+} from '@/lib/sijoittelun-tulokset-utils';
 
 const StyledListItemText = styled(ListItemText)(() => ({
   span: {
@@ -37,14 +38,18 @@ const StyledListItemIcon = styled(ListItemIcon)(() => ({
 
 export const OtherActionsCell = ({
   hakemus,
+  haku,
   hakukohde,
   disabled,
   sijoitteluajoId,
+  kaikkiJonotHyvaksytty,
 }: {
   hakemus: SijoittelunHakemusValintatiedoilla;
+  haku: Haku;
   hakukohde: Hakukohde;
   disabled: boolean;
   sijoitteluajoId: string;
+  kaikkiJonotHyvaksytty: boolean;
 }) => {
   const { t } = useTranslations();
 
@@ -117,6 +122,7 @@ export const OtherActionsCell = ({
     }
     closeMenu();
   };
+  const { data: userPermissions } = useUserPermissions();
 
   return (
     <>
@@ -145,7 +151,16 @@ export const OtherActionsCell = ({
             {t('sijoittelun-tulokset.toiminnot.muutoshistoria')}
           </StyledListItemText>
         </MenuItem>
-        <MenuItem onClick={createHyvaksymiskirjePDFs}>
+        <MenuItem
+          onClick={createHyvaksymiskirjePDFs}
+          disabled={
+            !isKirjeidenMuodostaminenAllowed(
+              haku,
+              userPermissions,
+              kaikkiJonotHyvaksytty,
+            )
+          }
+        >
           <StyledListItemIcon>
             <InsertDriveFileOutlined />
           </StyledListItemIcon>
@@ -153,14 +168,16 @@ export const OtherActionsCell = ({
             {t('sijoittelun-tulokset.toiminnot.hyvaksymiskirje')}
           </StyledListItemText>
         </MenuItem>
-        <MenuItem onClick={sendVastaanottoposti}>
-          <StyledListItemIcon>
-            <MailOutline />
-          </StyledListItemIcon>
-          <StyledListItemText>
-            {t('sijoittelun-tulokset.toiminnot.laheta-vastaanottoposti')}
-          </StyledListItemText>
-        </MenuItem>
+        {isSendVastaanottoPostiVisible(haku, userPermissions) && (
+          <MenuItem onClick={sendVastaanottoposti}>
+            <StyledListItemIcon>
+              <MailOutline />
+            </StyledListItemIcon>
+            <StyledListItemText>
+              {t('sijoittelun-tulokset.toiminnot.laheta-vastaanottoposti')}
+            </StyledListItemText>
+          </MenuItem>
+        )}
       </Menu>
     </>
   );

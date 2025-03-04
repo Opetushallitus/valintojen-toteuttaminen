@@ -9,10 +9,11 @@ import { OphModal } from '@/components/modals/oph-modal';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { isEmpty, OphProcessError, OphProcessErrorData } from '@/lib/common';
 import { downloadReadyProcessDocument } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
-import { Box, keyframes, styled, Typography } from '@mui/material';
+import { Box, keyframes, Typography } from '@mui/material';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { useMutation, UseMutationResult } from '@tanstack/react-query';
 import { useEffect } from 'react';
+import { styled } from '@/lib/theme';
 
 const translate = keyframes`
   0%,

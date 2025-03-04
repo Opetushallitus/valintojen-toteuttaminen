@@ -3,6 +3,9 @@ import { useEffect } from 'react';
 import useToaster from './useToaster';
 import { useRouter } from 'next/navigation';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
+import { showModal } from '@/components/modals/global-modal';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { ConfirmationGlobalModal } from '@/components/modals/confirmation-global-modal';
 
 const onBeforeUnload = (event: BeforeUnloadEvent) => {
   event.preventDefault();
@@ -19,6 +22,8 @@ export function useConfirmChangesBeforeNavigation(isDirty: boolean) {
   const { addToast } = useToaster();
   const router = useRouter();
 
+  const { t } = useTranslations();
+
   useEffect(() => {
     if (router.push.name !== 'patched') {
       // @ts-expect-error storing original function to the router
@@ -27,11 +32,12 @@ export function useConfirmChangesBeforeNavigation(isDirty: boolean) {
 
     if (isDirty && router.push.name !== 'patched') {
       router.push = function patched(...args) {
-        addToast({
-          key: 'unsaved-changes',
-          message: 'lomake.tallentamaton',
-          type: 'confirm',
-          confirmFn: () => {
+        showModal(ConfirmationGlobalModal, {
+          title: t('lomake.tallentamattomia-muutoksia'),
+          content: t('lomake.tallentamaton'),
+          confirmLabel: t('lomake.jatka'),
+          cancelLabel: t('yleinen.peruuta'),
+          onConfirm: () => {
             restoreOriginalPush(router);
             router.push(...args);
           },
@@ -41,5 +47,5 @@ export function useConfirmChangesBeforeNavigation(isDirty: boolean) {
     } else if (router.push.name === 'patched' && !isDirty) {
       restoreOriginalPush(router);
     }
-  }, [addToast, isDirty, router]);
+  }, [addToast, isDirty, router, t]);
 }

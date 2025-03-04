@@ -1,4 +1,4 @@
-import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
+import { isKorkeakouluHaku, isToinenAsteKohdejoukko } from '@/lib/kouta/kouta-service';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { Haku } from '@/lib/kouta/kouta-types';
 import {
@@ -6,8 +6,11 @@ import {
   SijoittelunTila,
   VastaanottoTila,
 } from '@/lib/types/sijoittelu-types';
+import { isAfter } from 'date-fns';
 import { TFunction } from 'i18next';
 import { isNonNullish } from 'remeda';
+import { toFinnishDate } from './time-utils';
+import { UserPermissions } from './permissions';
 
 const VASTAANOTTOTILAT_JOILLE_NAYTETAAN_ILMOITTAUTUMISTILA = [
   VastaanottoTila.VASTAANOTTANUT_SITOVASTI,
@@ -36,14 +39,19 @@ export const isIlmoittautuminenPossible = (h: SijoittelunTilaKentat): boolean =>
     h.vastaanottotila,
   );
 
-export const canHakuBePublished = (
+export const isValintaesitysJulkaistavissa = (
   haku: Haku,
+  permissions: UserPermissions,
   haunAsetukset: HaunAsetukset,
 ): boolean =>
   Boolean(
-    isKorkeakouluHaku(haku) ||
+    permissions.hasOphCRUD ||
+      isKorkeakouluHaku(haku) ||
       (haunAsetukset.valintaEsityksenHyvaksyminen &&
-        new Date() >= haunAsetukset.valintaEsityksenHyvaksyminen),
+        isAfter(
+          toFinnishDate(new Date()),
+          haunAsetukset.valintaEsityksenHyvaksyminen,
+        )),
   );
 
 export const isVastaanottotilaJulkaistavissa = (h: {
@@ -80,4 +88,23 @@ export const getReadableHakemuksenTila = (
     default:
       return t(`sijoitteluntila.${hakemus.tila}`);
   }
+};
+
+export const isKirjeidenMuodostaminenAllowed = (
+  haku: Haku,
+  permissions: UserPermissions,
+  kaikkiJonotHyvaksytty: boolean,
+) => {
+  return (
+    !isToinenAsteKohdejoukko(haku) ||
+    permissions.hasOphCRUD ||
+    kaikkiJonotHyvaksytty
+  );
+};
+
+export const isSendVastaanottoPostiVisible = (
+  haku: Haku,
+  permissions: UserPermissions,
+) => {
+  return !isToinenAsteKohdejoukko(haku) || permissions.hasOphCRUD;
 };

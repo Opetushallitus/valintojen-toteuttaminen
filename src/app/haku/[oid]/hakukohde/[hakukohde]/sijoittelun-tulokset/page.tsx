@@ -40,6 +40,10 @@ const SijoitteluContent = ({
     }),
   );
 
+  const kaikkiJonotHyvaksytty = Boolean(
+    tulokset?.valintatapajonot.every((jono) => jono.accepted),
+  );
+
   return isEmpty(tulokset) ? (
     <NoResults text={t('sijoittelun-tulokset.ei-tuloksia')} />
   ) : (
@@ -75,6 +79,7 @@ const SijoitteluContent = ({
           hakukohde={hakukohde}
           sijoitteluajoId={tulokset.sijoitteluajoId}
           lastModified={tulokset.lastModified}
+          kaikkiJonotHyvaksytty={kaikkiJonotHyvaksytty}
         />
       ))}
     </Box>

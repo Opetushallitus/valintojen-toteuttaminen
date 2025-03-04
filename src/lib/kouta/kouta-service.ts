@@ -17,6 +17,7 @@ type HakuResponseData = {
   hakukausi: string;
   totalHakukohteet: number;
   kohdejoukkoKoodiUri: string;
+  organisaatioOid: string;
 };
 
 const mapToHaku = (h: HakuResponseData) => {
@@ -31,11 +32,12 @@ const mapToHaku = (h: HakuResponseData) => {
     alkamisKausiKoodiUri: h.hakukausi,
     hakukohteita: h?.totalHakukohteet ?? 0,
     kohdejoukkoKoodiUri: h.kohdejoukkoKoodiUri,
+    organisaatioOid: h.organisaatioOid,
   };
 };
 
 const permissionsToTarjoajat = (userPermissions: UserPermissions): string =>
-  userPermissions.admin
+  userPermissions.hasOphCRUD
     ? ''
     : userPermissions.readOrganizations.reduce(
         (prev, current) => `${prev}&tarjoaja=${current}`,
@@ -69,7 +71,6 @@ export function isToisenAsteenYhteisHaku(haku: Haku): boolean {
 export const isAmmatillinenErityisopetus = (haku: Haku) =>
   haku.kohdejoukkoKoodiUri.startsWith('haunkohdejoukko_20');
 
-// TODO: Tätä ei nyt käytetä missään? Eikä tässä taida olla kaikkia toisen asteen kohdejoukkojakaan?
 export function isToinenAsteKohdejoukko(haku: Haku): boolean {
   return [
     'haunkohdejoukko_11', // perusopetuksen jälkeisen koulutuksen yhteishaku

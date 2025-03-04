@@ -1,5 +1,6 @@
-import { Box, styled } from '@mui/material';
+import { Box } from '@mui/material';
 import React, { useId } from 'react';
+import { styled } from '@/lib/theme';
 
 const InfoLabel = styled('label')(({ theme }) => ({
   ...theme.typography.label,

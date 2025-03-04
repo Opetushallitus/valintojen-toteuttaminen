@@ -5,7 +5,6 @@ import {
   ListItemText,
   Menu,
   MenuItem,
-  styled,
 } from '@mui/material';
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
 import { useState } from 'react';
@@ -27,6 +26,7 @@ import { showModal } from '@/components/modals/global-modal';
 import { ProgressModal } from './progress-modal-dialog';
 import { luoOsoitetarratHakukohteessaHyvaksytyille } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
+import { styled } from '@/lib/theme';
 
 const StyledListItemText = styled(ListItemText)(() => ({
   span: {

@@ -38,6 +38,7 @@ export type Haku = {
   hakutapaKoodiUri: string;
   hakukohteita: number;
   kohdejoukkoKoodiUri: string;
+  organisaatioOid: string;
 };
 
 export type Hakukohde = {

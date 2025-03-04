@@ -153,7 +153,7 @@ test('ehdollista hyväksyntää ja maksusaraketta ei näytetä toisen asteen yht
 });
 
 test('näyttää muut valinnat ehdollisuuden syylle', async ({ page }) => {
-  const ammSection = page.getByLabel('Todistusvalinta (AMM)(');
+  const ammSection = getAmmValintatapajonoContent(page);
   await ammSection.getByLabel('Ehdollinen valinta').click();
   await expect(ammSection.getByText('Valitse...')).toBeVisible();
   await ammSection.getByText('Valitse...').click();

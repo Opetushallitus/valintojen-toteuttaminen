@@ -35,9 +35,9 @@ import {
 import { ValinnanTulosLisatiedoilla } from '../lib/henkilo-page-types';
 import { LocalizedSelect } from '@/components/localized-select';
 import { Haku } from '@/lib/kouta/kouta-types';
-import { useIsHakuPublishAllowed } from '@/hooks/useIsHakuPublishAllowed';
-import { useVastaanottoTilaOptions } from '@/hooks/useVastaanottoTilaOptions';
 import { useIlmoittautumisTilaOptions } from '@/hooks/useIlmoittautumisTilaOptions';
+import { useVastaanottoTilaOptions } from '@/hooks/useVastaanottoTilaOptions';
+import { useIsValintaesitysJulkaistavissa } from '@/hooks/useIsValintaesitysJulkaistavissa';
 
 const ModalActions = ({
   onClose,
@@ -151,7 +151,9 @@ export const ValinnanTilatEditModal = createModal<{
 
   const ilmoittautumisTilaOptions = useIlmoittautumisTilaOptions();
 
-  const isHakuPublishAllowed = useIsHakuPublishAllowed({ haku });
+  const isValintaesitysJulkaistavissa = useIsValintaesitysJulkaistavissa({
+    haku,
+  });
 
   const ilmoittautuminenPossible = isIlmoittautuminenPossible({
     tila: valinnanTulos.valinnantila,
@@ -211,7 +213,7 @@ export const ValinnanTilatEditModal = createModal<{
             checked={julkaistavissa}
             disabled={
               isPending ||
-              !isHakuPublishAllowed ||
+              !isValintaesitysJulkaistavissa ||
               !isVastaanottotilaJulkaistavissa({
                 vastaanottotila: vastaanottoTila as VastaanottoTila,
               })

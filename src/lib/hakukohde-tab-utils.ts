@@ -48,7 +48,7 @@ const isAllowedToUseValinnat = (
   permissions: UserPermissions,
 ) => {
   return (
-    permissions.admin ||
+    permissions.hasOphCRUD ||
     isInRange(
       toFinnishDate(new Date()),
       haunAsetukset?.PH_OLVVPKE?.dateStart,
