@@ -3,7 +3,7 @@ import { useDebounce } from '@/app/hooks/useDebounce';
 import { useQueryState } from 'nuqs';
 import { useQuery } from '@tanstack/react-query';
 import { HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY } from '@/app/lib/constants';
-import { getHakijat } from '@/app/lib/ataru';
+import { getHakijat } from '@/app/lib/ataru/ataru-service';
 import { DEFAULT_NUQS_OPTIONS } from '@/app/lib/constants';
 import { EMPTY_ARRAY } from '@/app/lib/common';
 

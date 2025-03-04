@@ -1,12 +1,12 @@
-import { configuration } from './configuration';
-import { abortableClient, client, createFileResult } from './http-client';
-import { HenkilonValintaTulos } from './types/sijoittelu-types';
+import { configuration } from '../configuration';
+import { abortableClient, client, createFileResult } from '../http-client';
+import { HenkilonValintaTulos } from '../types/sijoittelu-types';
 import {
   HakemuksenPistetiedot,
   HakukohteenPistetiedot,
   ValintakoeOsallistuminenTulos,
   ValintakokeenPisteet,
-} from './types/laskenta-types';
+} from '../types/laskenta-types';
 import {
   difference,
   flatMap,
@@ -23,30 +23,30 @@ import {
   EMPTY_OBJECT,
   OphProcessError,
   OphProcessErrorData,
-} from './common';
-import { getHakemukset, getHakijat } from './ataru';
+} from '../common';
+import { getHakemukset, getHakijat } from '../ataru/ataru-service';
 import {
   getValintakokeet,
   getValintakoeAvaimetHakukohteelle,
   getValintakoeAvaimetHakukohteille,
-} from './valintaperusteet';
-import { ValintakoekutsutData } from './types/valintakoekutsut-types';
+} from '../valintaperusteet/valintaperusteet-service';
+import { ValintakoekutsutData } from '../types/valintakoekutsut-types';
 import {
   DokumenttiTyyppi,
   HakutoiveValintakoeOsallistumiset,
   Kirjepohja,
   KirjepohjaNimi,
-} from './types/valintalaskentakoostepalvelu-types';
-import { HarkinnanvaraisuudenSyy } from './types/harkinnanvaraiset-types';
-import { ValintakoeAvaimet } from './types/valintaperusteet-types';
-import { Hakukohde } from './types/kouta-types';
-import { getOpetuskieliCode } from './kouta';
+} from './valintalaskentakoostepalvelu-types';
+import { HarkinnanvaraisuudenSyy } from '../types/harkinnanvaraiset-types';
+import { ValintakoeAvaimet } from '../valintaperusteet/valintaperusteet-types';
+import { Hakukohde } from '../kouta/kouta-types';
+import { getOpetuskieliCode } from '../kouta/kouta-service';
 import {
   INPUT_DATE_FORMAT,
   INPUT_TIME_FORMAT,
   toFormattedDateTimeString,
   translateName,
-} from './localization/translation-utils';
+} from '../localization/translation-utils';
 import { AssertionError } from 'assert';
 
 export const getHakukohteenValintatuloksetIlmanHakijanTilaa = async (

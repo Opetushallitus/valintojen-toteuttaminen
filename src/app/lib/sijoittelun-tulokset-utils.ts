@@ -1,6 +1,6 @@
-import { isKorkeakouluHaku } from '@/app/lib/kouta';
-import { HaunAsetukset } from '@/app/lib/types/haun-asetukset';
-import { Haku } from '@/app/lib/types/kouta-types';
+import { isKorkeakouluHaku } from '@/app/lib/kouta/kouta-service';
+import { HaunAsetukset } from '@/app/lib/ohjausparametrit/ohjausparametrit-types';
+import { Haku } from '@/app/lib/kouta/kouta-types';
 import {
   SijoittelunHakemusValintatiedoilla,
   SijoittelunTila,

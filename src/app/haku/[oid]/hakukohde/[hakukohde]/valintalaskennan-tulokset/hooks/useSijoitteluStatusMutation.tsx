@@ -3,7 +3,7 @@ import {
   hakukohteenValintalaskennanTuloksetQueryOptions,
   muutaSijoittelunStatus,
   MuutaSijoittelunStatusProps,
-} from '@/app/lib/valintalaskenta-service';
+} from '@/app/lib/valintalaskenta/valintalaskenta-service';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export const useSijoitteluStatusMutation = (hakukohdeOid: string) => {

@@ -13,8 +13,8 @@ import { useTuloksenTilaOptions } from '@/app/hooks/useTuloksenTilaOptions';
 import {
   isAmmatillinenErityisopetus,
   isKorkeakouluHaku,
-} from '@/app/lib/kouta';
-import { Haku } from '@/app/lib/types/kouta-types';
+} from '@/app/lib/kouta/kouta-service';
+import { Haku } from '@/app/lib/kouta/kouta-types';
 import { LocalizedSelect } from '@/app/components/localized-select';
 import {
   JonoTulosActorRef,

@@ -15,12 +15,12 @@ import {
   InsertDriveFileOutlined,
   MoreHoriz,
 } from '@mui/icons-material';
-import { Hakukohde } from '@/app/lib/types/kouta-types';
+import { Hakukohde } from '@/app/lib/kouta/kouta-types';
 import useToaster from '@/app/hooks/useToaster';
 import {
   changeHistoryForHakemus,
   sendVastaanottopostiHakemukselle,
-} from '@/app/lib/valinta-tulos-service';
+} from '@/app/lib/valinta-tulos-service/valinta-tulos-service';
 import { showModal } from '@/app/components/global-modal';
 import { ChangeHistoryModal } from './change-history-modal';
 import { AcceptedLetterTemplateModal } from './letter-template-modal';

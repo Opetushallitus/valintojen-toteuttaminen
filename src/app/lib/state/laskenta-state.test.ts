@@ -6,7 +6,7 @@ import {
   StartLaskentaParams,
 } from './laskenta-state';
 import { client } from '@/app/lib/http-client';
-import { Tila } from '@/app/lib/types/kouta-types';
+import { Tila } from '@/app/lib/kouta/kouta-types';
 import { createActor, waitFor } from 'xstate';
 import { range } from 'remeda';
 

@@ -2,7 +2,7 @@
 
 import { useHakukohdeSearchResults } from '@/app/hooks/useHakukohdeSearch';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { Hakukohde } from '@/app/lib/types/kouta-types';
+import { Hakukohde } from '@/app/lib/kouta/kouta-types';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { useParams } from 'next/navigation';
 import { HakukohdeTabLink } from './hakukohde-tab-link';

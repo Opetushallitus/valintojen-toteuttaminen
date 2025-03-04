@@ -1,12 +1,7 @@
-import { configuration } from './configuration';
-import { client } from './http-client';
-import { Language, TranslatedName } from './localization/localization-types';
-
-export type Koodi = {
-  koodiUri: string;
-  nimi: TranslatedName;
-  koodiArvo: string;
-};
+import { configuration } from '../configuration';
+import { client } from '../http-client';
+import { Language, TranslatedName } from '../localization/localization-types';
+import { Koodi } from './koodisto-types';
 
 type CodeElement = {
   koodiUri: string;

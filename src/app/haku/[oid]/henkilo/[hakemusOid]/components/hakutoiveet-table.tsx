@@ -9,7 +9,7 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { HakijaInfo } from '@/app/lib/types/ataru-types';
+import { HakijaInfo } from '@/app/lib/ataru/ataru-types';
 import { HakutoiveAccordion } from './hakutoive-accordion';
 import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
 

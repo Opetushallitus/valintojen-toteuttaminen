@@ -1,4 +1,4 @@
-import { DokumenttiTyyppi } from './types/valintalaskentakoostepalvelu-types';
+import { DokumenttiTyyppi } from './valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-types';
 
 export const DOMAIN =
   process.env.APP_URL ?? process.env.VIRKAILIJA_URL ?? 'https://localhost:3404';

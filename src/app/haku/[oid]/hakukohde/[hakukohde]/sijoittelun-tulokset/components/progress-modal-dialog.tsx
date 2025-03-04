@@ -9,7 +9,7 @@ import {
   OphProcessError,
   OphProcessErrorData,
 } from '@/app/lib/common';
-import { downloadReadyProcessDocument } from '@/app/lib/valintalaskentakoostepalvelu';
+import { downloadReadyProcessDocument } from '@/app/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { Box, keyframes, styled, Typography } from '@mui/material';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { useMutation, UseMutationResult } from '@tanstack/react-query';

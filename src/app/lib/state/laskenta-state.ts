@@ -4,14 +4,14 @@ import { ActorRefFrom, assign, fromPromise, setup, SnapshotFrom } from 'xstate';
 import {
   Valinnanvaihe,
   ValinnanvaiheTyyppi,
-} from '@/app/lib/types/valintaperusteet-types';
-import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
+} from '@/app/lib/valintaperusteet/valintaperusteet-types';
+import { Haku, Hakukohde } from '@/app/lib/kouta/kouta-types';
 import {
   getLaskennanSeurantaTiedot,
   getLaskennanYhteenveto,
   kaynnistaLaskenta,
   keskeytaLaskenta,
-} from '@/app/lib/valintalaskenta-service';
+} from '@/app/lib/valintalaskenta/valintalaskenta-service';
 import useToaster, { Toast } from '@/app/hooks/useToaster';
 import {
   LaskentaSummary,
@@ -21,9 +21,9 @@ import {
 } from '@/app/lib/types/laskenta-types';
 import { prop } from 'remeda';
 import { useMemo } from 'react';
-import { sijoitellaankoHaunHakukohteetLaskennanYhteydessa } from '@/app/lib/kouta';
+import { sijoitellaankoHaunHakukohteetLaskennanYhteydessa } from '@/app/lib/kouta/kouta-service';
 import { useMachine, useSelector } from '@xstate/react';
-import { HaunAsetukset } from '@/app/lib/types/haun-asetukset';
+import { HaunAsetukset } from '@/app/lib/ohjausparametrit/ohjausparametrit-types';
 
 const POLLING_INTERVAL = 5000;
 

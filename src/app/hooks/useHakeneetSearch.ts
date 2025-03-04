@@ -11,7 +11,7 @@ import {
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
 } from '@/app/lib/constants';
 import { useTranslations } from './useTranslations';
-import { getHakemukset } from '../lib/ataru';
+import { getHakemukset } from '../lib/ataru/ataru-service';
 import { hakemusFilter } from './filters';
 
 export const useHakeneetSearchParams = () => {

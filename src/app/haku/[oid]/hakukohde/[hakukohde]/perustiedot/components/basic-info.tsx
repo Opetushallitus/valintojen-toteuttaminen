@@ -1,7 +1,7 @@
 'use client';
 
 import { ExternalLink } from '@/app/components/external-link';
-import { getValintaryhma } from '@/app/lib/valintaperusteet';
+import { getValintaryhma } from '@/app/lib/valintaperusteet/valintaperusteet-service';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { styled } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';

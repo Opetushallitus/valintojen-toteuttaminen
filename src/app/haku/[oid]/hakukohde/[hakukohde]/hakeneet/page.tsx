@@ -8,9 +8,9 @@ import {
   useHakeneetSearchResults,
 } from '@/app/hooks/useHakeneetSearch';
 import { HakeneetTable } from './components/hakeneet-table';
-import { isKorkeakouluHaku } from '@/app/lib/kouta';
+import { isKorkeakouluHaku } from '@/app/lib/kouta/kouta-service';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
-import { Haku } from '@/app/lib/types/kouta-types';
+import { Haku } from '@/app/lib/kouta/kouta-types';
 import { FullClientSpinner } from '@/app/components/client-spinner';
 import { useHaku } from '@/app/hooks/useHaku';
 import { SearchInput } from '@/app/components/search-input';

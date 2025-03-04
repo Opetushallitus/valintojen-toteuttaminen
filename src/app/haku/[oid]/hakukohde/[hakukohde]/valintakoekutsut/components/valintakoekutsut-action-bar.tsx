@@ -6,7 +6,7 @@ import { ActionBar } from '@/app/components/action-bar';
 import {
   GetValintakoeExcelParams,
   getValintakoeOsoitetarrat,
-} from '@/app/lib/valintalaskentakoostepalvelu';
+} from '@/app/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { ValintakoekutsutExcelDownloadButton } from './valintakoekutsut-excel-download-button';
 import { FileDownloadButton } from '@/app/components/file-download-button';
 

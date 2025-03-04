@@ -6,7 +6,7 @@ import { TabContainer } from '../components/tab-container';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { Box } from '@mui/material';
 import { useSuspenseQueries } from '@tanstack/react-query';
-import { getHakijaryhmat } from '@/app/lib/valintalaskenta-service';
+import { getHakijaryhmat } from '@/app/lib/valintalaskenta/valintalaskenta-service';
 import { isEmpty } from '@/app/lib/common';
 import { HakijaryhmaContent } from './components/hakijaryhma-content';
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';

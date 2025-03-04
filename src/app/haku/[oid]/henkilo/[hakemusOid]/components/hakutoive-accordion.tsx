@@ -1,4 +1,4 @@
-import { HakijaInfo } from '@/app/lib/types/ataru-types';
+import { HakijaInfo } from '@/app/lib/ataru/ataru-types';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { isEmpty } from 'remeda';
 import { useState } from 'react';

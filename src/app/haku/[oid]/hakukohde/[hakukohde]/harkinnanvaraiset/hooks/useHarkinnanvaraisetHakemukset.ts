@@ -1,9 +1,9 @@
 'use client';
 
-import { getHakemukset } from '@/app/lib/ataru';
+import { getHakemukset } from '@/app/lib/ataru/ataru-service';
 import { HakemuksenHarkinnanvaraisuus } from '@/app/lib/types/harkinnanvaraiset-types';
-import { getHarkinnanvaraisetTilat } from '@/app/lib/valintalaskenta-service';
-import { getHarkinnanvaraisuudetHakemuksille } from '@/app/lib/valintalaskentakoostepalvelu';
+import { getHarkinnanvaraisetTilat } from '@/app/lib/valintalaskenta/valintalaskenta-service';
+import { getHarkinnanvaraisuudetHakemuksille } from '@/app/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import {
   queryOptions,
   useSuspenseQueries,

@@ -1,4 +1,4 @@
-import { ValinnanTulosModel } from "@/app/lib/types/valinta-tulos-types";
+import { ValinnanTulosModel } from "@/app/lib/valinta-tulos-service/valinta-tulos-types";
 
 export const hakemusValinnanTulosFixture = ({ hakukohdeOid, valintatapajonoOid, hakemusOid, henkiloOid, julkaistavissa, vastaanottotila, ilmoittautumistila, valinnantila }: ValinnanTulosModel) => [
     {

@@ -1,13 +1,13 @@
 import { useUserPermissions } from '@/app/hooks/useUserPermissions';
 import { SijoitteluStatusChangeButton } from './sijoittelu-status-change-button';
 import { useSijoitteluStatusMutation } from '../hooks/useSijoitteluStatusMutation';
-import { Hakukohde } from '@/app/lib/types/kouta-types';
+import { Hakukohde } from '@/app/lib/kouta/kouta-types';
 import { LaskennanValintatapajonoTulosWithHakijaInfo } from '@/app/hooks/useEditableValintalaskennanTulokset';
 import { useHakukohde } from '@/app/hooks/useHakukohde';
 import { useJonoTuloksetSearch } from '@/app/hooks/useJonoTuloksetSearch';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { LaskettuValintatapajonoTable } from './laskettu-valintatapajono-table';
-import { getValintatapaJonoNimi } from '@/app/lib/valintalaskenta-utils';
+import { getValintatapaJonoNimi } from '@/app/lib/valintalaskenta/valintalaskenta-utils';
 import { ValintatapajonoContentProps } from '../types/valintatapajono-types';
 
 const LaskettuVaiheActions = ({

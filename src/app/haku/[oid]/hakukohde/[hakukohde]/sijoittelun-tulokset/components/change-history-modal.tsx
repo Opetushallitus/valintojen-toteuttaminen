@@ -4,7 +4,7 @@ import { Box, Typography } from '@mui/material';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { useMemo, useState } from 'react';
 import { createModal, useOphModalProps } from '@/app/components/global-modal';
-import { HakemusChangeEvent } from '@/app/lib/types/valinta-tulos-types';
+import { HakemusChangeEvent } from '@/app/lib/valinta-tulos-service/valinta-tulos-types';
 import { OphModalDialog } from '@/app/components/oph-modal-dialog';
 import {
   makeColumnWithCustomRender,

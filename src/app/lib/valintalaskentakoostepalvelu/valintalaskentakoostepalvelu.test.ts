@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-import { client } from './http-client';
+import { client } from '../http-client';
 import VALINTAKOKEET from '@tests/e2e/fixtures/valintakokeet.json';
 import VALINTAKOEOSALLISTUMISET from '@tests/e2e/fixtures/valintakoeosallistumiset.json';
 import HAKEMUKSET from '@tests/e2e/fixtures/hakeneet.json';
@@ -8,9 +8,9 @@ import {
   luoEiHyvaksymiskirjeetPDF,
   luoHyvaksymiskirjeetPDF,
   luoOsoitetarratHakukohteessaHyvaksytyille,
-} from './valintalaskentakoostepalvelu';
-import { Language } from './localization/localization-types';
-import { Hakukohde } from './types/kouta-types';
+} from './valintalaskentakoostepalvelu-service';
+import { Language } from '../localization/localization-types';
+import { Hakukohde } from '../kouta/kouta-types';
 
 const HAKEMUKSET_BY_OID = {
   '1.2.246.562.11.00000000000001796027': {

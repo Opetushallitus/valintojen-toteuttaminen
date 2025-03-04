@@ -6,7 +6,7 @@ import {
 } from '@tanstack/react-query';
 import { pisteTuloksetOptions } from '../hooks/usePisteTulokset';
 import useToaster from '@/app/hooks/useToaster';
-import { savePistesyottoExcel } from '@/app/lib/valintalaskentakoostepalvelu';
+import { savePistesyottoExcel } from '@/app/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { OphModalDialog } from '@/app/components/oph-modal-dialog';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { OphApiError } from '@/app/lib/common';

@@ -1,5 +1,5 @@
 import { canHakuBePublished } from '../lib/sijoittelun-tulokset-utils';
-import { Haku } from '../lib/types/kouta-types';
+import { Haku } from '../lib/kouta/kouta-types';
 import { useHaunAsetukset } from './useHaunAsetukset';
 import { useUserPermissions } from './useUserPermissions';
 

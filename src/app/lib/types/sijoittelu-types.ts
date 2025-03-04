@@ -1,4 +1,4 @@
-import { MaksunTila } from './ataru-types';
+import { MaksunTila } from '../ataru/ataru-types';
 
 export type SijoittelunValintatapajonoTulos = {
   nimi: string;

@@ -1,4 +1,4 @@
-import { ValintakoeOsallistuminen } from './valintakoekutsut-types';
+import { ValintakoeOsallistuminen } from '../types/valintakoekutsut-types';
 
 export type HakutoiveValintakoe = {
   valintakoeOid: string;
@@ -32,7 +32,11 @@ export type HakutoiveValintakoeOsallistumiset = {
   }>;
 };
 
-export type KirjepohjaNimi = 'hyvaksymiskirje' | 'jalkiohjauskirje' | 'jalkiohjauskirje_huoltajille' | 'hyvaksymiskirje_huoltajille';
+export type KirjepohjaNimi =
+  | 'hyvaksymiskirje'
+  | 'jalkiohjauskirje'
+  | 'jalkiohjauskirje_huoltajille'
+  | 'hyvaksymiskirje_huoltajille';
 
 export type Kirjepohja = {
   nimi: string;
@@ -40,6 +44,6 @@ export type Kirjepohja = {
 };
 
 export type DokumenttiTyyppi =
-  'hyvaksymiskirjeet'
+  | 'hyvaksymiskirjeet'
   | 'sijoitteluntulokset'
   | 'osoitetarrat';

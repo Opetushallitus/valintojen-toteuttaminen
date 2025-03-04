@@ -4,10 +4,10 @@ import { createModal, useOphModalProps } from '@/app/components/global-modal';
 import { OphModalDialog } from '@/app/components/oph-modal-dialog';
 import { buildLinkToPerson } from '@/app/components/table/table-columns';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { buildLinkToApplication } from '@/app/lib/ataru';
+import { buildLinkToApplication } from '@/app/lib/ataru/ataru-service';
 import { OphApiError } from '@/app/lib/common';
 import { SijoittelunHakemusValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
-import { ValinnanTulosUpdateErrorResult } from '@/app/lib/types/valinta-tulos-types';
+import { ValinnanTulosUpdateErrorResult } from '@/app/lib/valinta-tulos-service/valinta-tulos-types';
 import {
   TableContainer,
   Table,

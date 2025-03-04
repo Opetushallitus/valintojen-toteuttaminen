@@ -3,10 +3,10 @@ import {
   Hakemus,
   Hakukelpoisuus,
   Maksuvelvollisuus,
-} from './types/ataru-types';
-import { configuration } from './configuration';
-import { client } from './http-client';
-import { Language } from './localization/localization-types';
+} from './ataru-types';
+import { configuration } from '../configuration';
+import { client } from '../http-client';
+import { Language } from '../localization/localization-types';
 
 const getMaksuvelvollisuus = (toive?: {
   hakukohdeOid: string;

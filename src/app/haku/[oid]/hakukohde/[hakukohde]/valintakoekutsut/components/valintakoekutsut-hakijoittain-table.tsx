@@ -9,7 +9,7 @@ import {
 } from '@/app/components/table/table-columns';
 import { ListTable } from '@/app/components/table/list-table';
 import { ValintakoekutsuHakijoittain } from '@/app/lib/select-valintakoekutsut';
-import { Valintakoe } from '@/app/lib/types/valintaperusteet-types';
+import { Valintakoe } from '@/app/lib/valintaperusteet/valintaperusteet-types';
 import { makePaginationId } from '../hooks/useValintakoekutsutPaginated';
 
 export const ValintakoekutsutHakijoittainTable = ({

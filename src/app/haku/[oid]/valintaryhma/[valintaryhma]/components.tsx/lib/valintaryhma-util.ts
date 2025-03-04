@@ -1,4 +1,4 @@
-import { ValintaryhmaHakukohteilla } from '@/app/lib/types/valintaperusteet-types';
+import { ValintaryhmaHakukohteilla } from '@/app/lib/valintaperusteet/valintaperusteet-types';
 
 export function findParent(
   ryhma: ValintaryhmaHakukohteilla,

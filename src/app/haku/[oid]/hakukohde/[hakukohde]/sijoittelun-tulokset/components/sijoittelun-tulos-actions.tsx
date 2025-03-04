@@ -11,20 +11,20 @@ import {
 } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import useToaster from '@/app/hooks/useToaster';
-import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
+import { Haku, Hakukohde } from '@/app/lib/kouta/kouta-types';
 import {
   SijoittelunHakemusValintatiedoilla,
   SijoittelunTila,
   VastaanottoTila,
 } from '@/app/lib/types/sijoittelu-types';
-import { sendVastaanottopostiValintatapaJonolle } from '@/app/lib/valinta-tulos-service';
+import { sendVastaanottopostiValintatapaJonolle } from '@/app/lib/valinta-tulos-service/valinta-tulos-service';
 import { useIsHakuPublishAllowed } from '@/app/hooks/useIsHakuPublishAllowed';
 import { filter, isEmpty, pipe, prop } from 'remeda';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { getMyohastyneetHakemukset } from '@/app/lib/valintalaskentakoostepalvelu';
+import { getMyohastyneetHakemukset } from '@/app/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { showModal } from '@/app/components/global-modal';
 import { GlobalConfirmationModal } from '@/app/components/global-confirmation-modal';
-import { buildLinkToApplication } from '@/app/lib/ataru';
+import { buildLinkToApplication } from '@/app/lib/ataru/ataru-service';
 import { ExternalLink } from '@/app/components/external-link';
 import { useSelector } from '@xstate/react';
 import {

@@ -1,5 +1,5 @@
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
-import { getHakukohde } from '../lib/kouta';
+import { getHakukohde } from '../lib/kouta/kouta-service';
 
 export const hakukohdeQueryOptions = ({
   hakukohdeOid,

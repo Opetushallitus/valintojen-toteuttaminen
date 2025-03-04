@@ -1,7 +1,7 @@
 import { expect, test, vi } from 'vitest';
-import { client } from './http-client';
-import { Hakemus } from './types/ataru-types';
-import { getHakemukset } from './ataru';
+import { client } from '../http-client';
+import { Hakemus } from './ataru-types';
+import { getHakemukset } from './ataru-service';
 
 test('returns hakemukset', async () => {
   const clientSpy = vi.spyOn(client, 'get');

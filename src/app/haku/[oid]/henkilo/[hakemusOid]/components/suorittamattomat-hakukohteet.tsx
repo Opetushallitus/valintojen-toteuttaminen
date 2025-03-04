@@ -4,7 +4,7 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { isEmpty } from '@/app/lib/common';
 import { NDASH } from '@/app/lib/constants';
 import { LaskentaActorRef } from '@/app/lib/state/laskenta-state';
-import { Hakukohde } from '@/app/lib/types/kouta-types';
+import { Hakukohde } from '@/app/lib/kouta/kouta-types';
 import { Box, Stack, Typography } from '@mui/material';
 import { useSelector } from '@xstate/react';
 

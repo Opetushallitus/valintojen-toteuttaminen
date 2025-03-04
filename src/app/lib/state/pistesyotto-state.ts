@@ -3,7 +3,7 @@ import {
   HakemuksenPistetiedot,
   ValintakoeOsallistuminenTulos,
 } from '@/app/lib/types/laskenta-types';
-import { updatePisteetForHakukohde } from '@/app/lib/valintalaskentakoostepalvelu';
+import { updatePisteetForHakukohde } from '@/app/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { useActorRef, useSelector } from '@xstate/react';
 import { useMemo } from 'react';
 import { clone, isEmpty } from 'remeda';

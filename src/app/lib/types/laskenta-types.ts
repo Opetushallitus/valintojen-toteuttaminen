@@ -1,5 +1,5 @@
 import { SijoittelunTila } from './sijoittelu-types';
-import { ValintakoeAvaimet } from './valintaperusteet-types';
+import { ValintakoeAvaimet } from '../valintaperusteet/valintaperusteet-types';
 
 export type JarjestyskriteeriTila = 'HYLATTY' | 'HYVAKSYTTAVISSA';
 

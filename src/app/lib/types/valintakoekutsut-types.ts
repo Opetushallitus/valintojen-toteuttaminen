@@ -1,7 +1,7 @@
 import { Language, TranslatedName } from '../localization/localization-types';
-import { HakijaInfo } from './ataru-types';
-import { HakutoiveValintakoeOsallistumiset } from './valintalaskentakoostepalvelu-types';
-import { Valintakoe } from './valintaperusteet-types';
+import { HakijaInfo } from '../ataru/ataru-types';
+import { HakutoiveValintakoeOsallistumiset } from '../valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-types';
+import { Valintakoe } from '../valintaperusteet/valintaperusteet-types';
 
 export type Ryhmittely = 'kokeittain' | 'hakijoittain';
 

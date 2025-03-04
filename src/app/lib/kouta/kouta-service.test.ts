@@ -1,6 +1,6 @@
 import { expect, test, describe } from 'vitest';
-import { getOpetuskieliCode } from './kouta';
-import { Hakukohde } from './types/kouta-types';
+import { getOpetuskieliCode } from './kouta-service';
+import { Hakukohde } from './kouta-types';
 
 describe('Kouta: getOpetuskieliCode hakukohteelle', () => {
   test('returns null as code if hakukohde has none', async () => {

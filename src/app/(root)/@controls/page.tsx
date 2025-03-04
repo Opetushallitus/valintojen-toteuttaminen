@@ -3,7 +3,7 @@ import { Suspense, useMemo } from 'react';
 
 import { Select, SelectChangeEvent, Box, InputAdornment } from '@mui/material';
 
-import { Tila, getHakuAlkamisKaudet } from '@/app/lib/types/kouta-types';
+import { Tila, getHakuAlkamisKaudet } from '@/app/lib/kouta/kouta-types';
 import { useHakuSearchParams } from '@/app/hooks/useHakuSearch';
 import { useHakutavat } from '@/app/hooks/useHakutavat';
 import { useTranslations } from '@/app/hooks/useTranslations';

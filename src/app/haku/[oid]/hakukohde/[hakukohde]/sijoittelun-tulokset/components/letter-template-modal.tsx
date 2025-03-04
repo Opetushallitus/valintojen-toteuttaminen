@@ -7,8 +7,8 @@ import { createModal, useOphModalProps } from '@/app/components/global-modal';
 import { OphModalDialog } from '@/app/components/oph-modal-dialog';
 import { useState } from 'react';
 import { CalendarComponent } from '@/app/components/calendar-component';
-import { KirjepohjaNimi } from '@/app/lib/types/valintalaskentakoostepalvelu-types';
-import { Hakukohde } from '@/app/lib/types/kouta-types';
+import { KirjepohjaNimi } from '@/app/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-types';
+import { Hakukohde } from '@/app/lib/kouta/kouta-types';
 import {
   useMutation,
   UseMutationResult,
@@ -18,7 +18,7 @@ import {
   getKirjepohjatHakukohteelle,
   luoEiHyvaksymiskirjeetPDF,
   luoHyvaksymiskirjeetPDF,
-} from '@/app/lib/valintalaskentakoostepalvelu';
+} from '@/app/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { SpinnerIcon } from '@/app/components/spinner-icon';
 import { Box, FormControlLabel, Radio, RadioGroup } from '@mui/material';
 import { ProgressModalDialog } from './progress-modal-dialog';

@@ -5,8 +5,8 @@ import {
   makeCountColumn,
   makeGenericColumn,
 } from '@/app/components/table/table-columns';
-import { isToisenAsteenYhteisHaku } from '@/app/lib/kouta';
-import { Haku } from '@/app/lib/types/kouta-types';
+import { isToisenAsteenYhteisHaku } from '@/app/lib/kouta/kouta-service';
+import { Haku } from '@/app/lib/kouta/kouta-types';
 import { SijoittelunValintatapajonoTulos } from '@/app/lib/types/sijoittelu-types';
 
 export const ValintatapajonotTable = ({

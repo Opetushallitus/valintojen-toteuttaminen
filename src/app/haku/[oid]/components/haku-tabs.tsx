@@ -1,7 +1,7 @@
 'use client';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { useUserPermissions } from '@/app/hooks/useUserPermissions';
-import { getHakukohteetQueryOptions } from '@/app/lib/kouta';
+import { getHakukohteetQueryOptions } from '@/app/lib/kouta/kouta-service';
 import { DEFAULT_BOX_BORDER, styled } from '@/app/lib/theme';
 import { Box, Stack } from '@mui/material';
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';

@@ -1,9 +1,9 @@
 'use client';
 
 import { indexBy, pick, prop } from 'remeda';
-import { getHakemukset } from './ataru';
-import { configuration } from './configuration';
-import { client } from './http-client';
+import { getHakemukset } from '../ataru/ataru-service';
+import { configuration } from '../configuration';
+import { client } from '../http-client';
 import {
   IlmoittautumisTila,
   SijoitteluajonTulokset,
@@ -14,15 +14,15 @@ import {
   SijoittelunTila,
   SijoittelunValintatapajonoTulos,
   VastaanottoTila,
-} from './types/sijoittelu-types';
-import { MaksunTila, Maksuvelvollisuus } from './types/ataru-types';
-import { nullWhen404, OphApiError } from './common';
+} from '../types/sijoittelu-types';
+import { MaksunTila, Maksuvelvollisuus } from '../ataru/ataru-types';
+import { nullWhen404, OphApiError } from '../common';
 import {
   HakemusChangeEvent,
   ValinnanTulosModel,
   ValinnanTulosUpdateErrorResult,
-} from './types/valinta-tulos-types';
-import { toFormattedDateTimeString } from './localization/translation-utils';
+} from './valinta-tulos-types';
+import { toFormattedDateTimeString } from '../localization/translation-utils';
 import { queryOptions } from '@tanstack/react-query';
 
 type SijoittelunTulosResponseData = {

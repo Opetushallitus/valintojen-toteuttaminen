@@ -1,7 +1,7 @@
 import { describe, expect, test, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { KoeInputsStateless } from './koe-inputs';
-import { ValintakoeInputTyyppi } from '@/app/lib/types/valintaperusteet-types';
+import { ValintakoeInputTyyppi } from '@/app/lib/valintaperusteet/valintaperusteet-types';
 import {
   ValintakoeOsallistuminenTulos,
   ValintakokeenPisteet,

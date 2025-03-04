@@ -11,7 +11,7 @@ import {
   LaskennanJonosijaTulos,
   LaskennanValintatapajonoTulos,
 } from '@/app/hooks/useEditableValintalaskennanTulokset';
-import { Hakukohde } from '@/app/lib/types/kouta-types';
+import { Hakukohde } from '@/app/lib/kouta/kouta-types';
 import { HakutoiveTitle } from './hakutoive-title';
 import {
   EditModalDialog,

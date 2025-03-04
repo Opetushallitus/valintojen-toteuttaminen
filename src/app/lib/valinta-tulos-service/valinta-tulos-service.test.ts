@@ -1,14 +1,14 @@
 import { expect, test, vi, describe, afterEach } from 'vitest';
-import { client } from './http-client';
+import { client } from '../http-client';
 import {
   IlmoittautumisTila,
   SijoitteluajonTuloksetValintatiedoilla,
   SijoittelunHakemusValintatiedoilla,
   SijoittelunTila,
   VastaanottoTila,
-} from './types/sijoittelu-types';
+} from '../types/sijoittelu-types';
 import { tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys } from './valinta-tulos-service';
-import { buildDummyHakemukset } from './ataru.test';
+import { buildDummyHakemukset } from '../ataru/ataru-service.test';
 
 describe('Valinta-tulos-service: tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys', () => {
   afterEach(() => {

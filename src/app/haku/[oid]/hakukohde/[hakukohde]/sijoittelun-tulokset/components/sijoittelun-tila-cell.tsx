@@ -8,8 +8,8 @@ import { ChangeEvent } from 'react';
 import { SijoittelunTulosStyledCell } from './sijoittelun-tulos-styled-cell';
 import { Box, InputAdornment, SelectChangeEvent, styled } from '@mui/material';
 import { LocalizedSelect } from '@/app/components/localized-select';
-import { isKorkeakouluHaku } from '@/app/lib/kouta';
-import { Haku } from '@/app/lib/types/kouta-types';
+import { isKorkeakouluHaku } from '@/app/lib/kouta/kouta-service';
+import { Haku } from '@/app/lib/kouta/kouta-types';
 import {
   ophColors,
   OphCheckbox,

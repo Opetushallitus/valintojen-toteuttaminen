@@ -1,8 +1,8 @@
 'use client';
 
-import { configuration } from './configuration';
-import { client } from './http-client';
-import { HaunAsetukset } from './types/haun-asetukset';
+import { configuration } from '../configuration';
+import { client } from '../http-client';
+import { HaunAsetukset } from './ohjausparametrit-types';
 
 type HaunAsetuksetResponse = {
   sijoittelu: boolean;

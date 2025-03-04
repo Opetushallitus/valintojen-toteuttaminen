@@ -5,7 +5,7 @@ import {
   selectValintakoekutsutHakijoittain,
   selectValintakoekutsutKokeittain,
 } from './select-valintakoekutsut';
-import { HakutoiveValintakoeOsallistumiset } from './types/valintalaskentakoostepalvelu-types';
+import { HakutoiveValintakoeOsallistumiset } from './valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-types';
 
 const HAKEMUKSET_BY_OID = {
   '1.2.246.562.11.00000000000001796027': {

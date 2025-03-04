@@ -15,8 +15,8 @@ import {
 } from '@/app/lib/state/laskenta-state';
 import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
 import useToaster from '@/app/hooks/useToaster';
-import { HaunAsetukset } from '@/app/lib/types/haun-asetukset';
-import { Haku } from '@/app/lib/types/kouta-types';
+import { HaunAsetukset } from '@/app/lib/ohjausparametrit/ohjausparametrit-types';
+import { Haku } from '@/app/lib/kouta/kouta-types';
 import { ErrorAlert } from '@/app/components/error-alert';
 import { useSelector } from '@xstate/react';
 import { SeurantaTiedot } from '@/app/lib/types/laskenta-types';

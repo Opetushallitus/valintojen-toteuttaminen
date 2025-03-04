@@ -9,8 +9,8 @@ import {
   makeGenericColumn,
 } from '@/app/components/table/table-columns';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { buildLinkToApplication } from '@/app/lib/ataru';
-import { Hakemus } from '@/app/lib/types/ataru-types';
+import { buildLinkToApplication } from '@/app/lib/ataru/ataru-service';
+import { Hakemus } from '@/app/lib/ataru/ataru-types';
 
 export const HakeneetTable = ({
   hakeneet,

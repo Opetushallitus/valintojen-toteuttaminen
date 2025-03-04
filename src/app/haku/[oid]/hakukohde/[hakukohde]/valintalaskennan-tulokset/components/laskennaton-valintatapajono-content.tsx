@@ -7,13 +7,13 @@ import { useHakukohde } from '@/app/hooks/useHakukohde';
 import { useUserPermissions } from '@/app/hooks/useUserPermissions';
 import { LaskennanValintatapajonoTulosWithHakijaInfo } from '@/app/hooks/useEditableValintalaskennanTulokset';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { getValintatapaJonoNimi } from '@/app/lib/valintalaskenta-utils';
+import { getValintatapaJonoNimi } from '@/app/lib/valintalaskenta/valintalaskenta-utils';
 import { LaskennatonValintatapajonoTable } from './laskennaton-valintatapajono-table';
 import { useCallback } from 'react';
 import { GlobalConfirmationModal } from '@/app/components/global-confirmation-modal';
 import { showModal } from '@/app/components/global-modal';
 import { OphButton } from '@opetushallitus/oph-design-system';
-import { Hakukohde } from '@/app/lib/types/kouta-types';
+import { Hakukohde } from '@/app/lib/kouta/kouta-types';
 import {
   JarjestysPeruste,
   JonoTulosActorRef,
@@ -26,7 +26,7 @@ import useToaster from '@/app/hooks/useToaster';
 import { GenericEvent } from '@/app/lib/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { FileDownloadButton } from '@/app/components/file-download-button';
-import { getValintatapajonoTulosExcel } from '@/app/lib/valintalaskentakoostepalvelu';
+import { getValintatapajonoTulosExcel } from '@/app/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { useConfirmChangesBeforeNavigation } from '@/app/hooks/useConfirmChangesBeforeNavigation';
 import { ValintatapajonoContentProps } from '../types/valintatapajono-types';
 import { LaskennatonJonoExcelUploadButton } from './laskennaton-jono-excel-upload-button';

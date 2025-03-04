@@ -5,11 +5,11 @@ import {
   ValintakoekutsutData,
   ValintakoeOsallistuminen,
 } from './types/valintakoekutsut-types';
-import { Valintakoe } from './types/valintaperusteet-types';
+import { Valintakoe } from './valintaperusteet/valintaperusteet-types';
 import {
   HakutoiveValintakoe,
   HakutoiveValintakoeOsallistumiset,
-} from './types/valintalaskentakoostepalvelu-types';
+} from './valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-types';
 
 export type ValintakoekutsutKokeittain = Record<
   string,

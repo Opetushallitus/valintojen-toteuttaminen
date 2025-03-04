@@ -1,5 +1,5 @@
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { Hakukohde } from '@/app/lib/types/kouta-types';
+import { Hakukohde } from '@/app/lib/kouta/kouta-types';
 import { HakukohdeTabLink } from '@/app/haku/[oid]/hakukohde/components/hakukohde-tab-link';
 import { Link } from '@mui/material';
 import { NDASH } from '@/app/lib/constants';

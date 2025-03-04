@@ -5,7 +5,7 @@ import {
   getReadableHakemuksenTila,
   isIlmoittautuminenPossible,
 } from '@/app/lib/sijoittelun-tulokset-utils';
-import { HakijaInfo } from '@/app/lib/types/ataru-types';
+import { HakijaInfo } from '@/app/lib/ataru/ataru-types';
 import { HakutoiveTitle } from '@/app/components/hakutoive-title';
 import { ValinnanTilatEditModal } from './valinnan-tilat-edit-modal';
 import { showModal } from '@/app/components/global-modal';

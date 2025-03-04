@@ -7,12 +7,12 @@ import {
   OphCheckbox,
   OphFormFieldWrapper,
 } from '@opetushallitus/oph-design-system';
-import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
-import { isKorkeakouluHaku } from '@/app/lib/kouta';
+import { Haku, Hakukohde } from '@/app/lib/kouta/kouta-types';
+import { isKorkeakouluHaku } from '@/app/lib/kouta/kouta-service';
 import { SearchInput } from '@/app/components/search-input';
 import { OtherActionsHakukohdeButton } from './other-actions-hakukohde-button';
 import { useSuspenseQueries } from '@tanstack/react-query';
-import { getDocumentIdForHakukohde } from '@/app/lib/valintalaskentakoostepalvelu';
+import { getDocumentIdForHakukohde } from '@/app/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { SijoittelunTuloksetExcelDownloadButton } from './sijoittelun-tulokset-excel-download-button';
 
 export const SijoittelunTulosControls = ({

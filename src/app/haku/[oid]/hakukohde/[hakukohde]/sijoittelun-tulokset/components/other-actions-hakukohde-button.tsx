@@ -15,8 +15,8 @@ import {
   InsertDriveFileOutlined,
   ArrowDropDown,
 } from '@mui/icons-material';
-import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
-import { sendVastaanottopostiHakukohteelle } from '@/app/lib/valinta-tulos-service';
+import { Haku, Hakukohde } from '@/app/lib/kouta/kouta-types';
+import { sendVastaanottopostiHakukohteelle } from '@/app/lib/valinta-tulos-service/valinta-tulos-service';
 import useToaster from '@/app/hooks/useToaster';
 import { configuration } from '@/app/lib/configuration';
 import {
@@ -25,8 +25,8 @@ import {
 } from './letter-template-modal';
 import { showModal } from '@/app/components/global-modal';
 import { ProgressModal } from './progress-modal-dialog';
-import { luoOsoitetarratHakukohteessaHyvaksytyille } from '@/app/lib/valintalaskentakoostepalvelu';
-import { isKorkeakouluHaku } from '@/app/lib/kouta';
+import { luoOsoitetarratHakukohteessaHyvaksytyille } from '@/app/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
+import { isKorkeakouluHaku } from '@/app/lib/kouta/kouta-service';
 
 const StyledListItemText = styled(ListItemText)(() => ({
   span: {

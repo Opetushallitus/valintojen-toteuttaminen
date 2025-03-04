@@ -2,7 +2,7 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { OphFormFieldWrapper } from '@opetushallitus/oph-design-system';
 import { useState } from 'react';
 import { EditorComponent } from '@/app/components/editor-component';
-import { Kirjepohja } from '@/app/lib/types/valintalaskentakoostepalvelu-types';
+import { Kirjepohja } from '@/app/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-types';
 import { LocalizedSelect } from '@/app/components/localized-select';
 import { SelectChangeEvent } from '@mui/material/Select';
 

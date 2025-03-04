@@ -3,7 +3,7 @@
 import {
   getValinnanvaiheet,
   isLaskentaUsedForValinnanvaihe,
-} from '@/app/lib/valintaperusteet';
+} from '@/app/lib/valintaperusteet/valintaperusteet-service';
 import { useSuspenseQueries } from '@tanstack/react-query';
 import {
   Table,
@@ -15,7 +15,7 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
+import { Haku, Hakukohde } from '@/app/lib/kouta/kouta-types';
 import HallintaTableRow from './hallinta-table-row';
 import Confirm from './confirm';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
@@ -26,9 +26,9 @@ import {
 } from '@/app/lib/state/laskenta-state';
 import { useToaster } from '@/app/hooks/useToaster';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
-import { HaunAsetukset } from '@/app/lib/types/haun-asetukset';
+import { HaunAsetukset } from '@/app/lib/ohjausparametrit/ohjausparametrit-types';
 import { ErrorRow } from './error-row';
-import { hakukohteenValintalaskennanTuloksetQueryOptions } from '@/app/lib/valintalaskenta-service';
+import { hakukohteenValintalaskennanTuloksetQueryOptions } from '@/app/lib/valintalaskenta/valintalaskenta-service';
 
 type HallintaTableParams = {
   haku: Haku;

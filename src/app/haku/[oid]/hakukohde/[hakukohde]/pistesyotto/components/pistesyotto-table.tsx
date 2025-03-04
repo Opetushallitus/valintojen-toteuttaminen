@@ -1,6 +1,6 @@
 'use client';
 import { HakemuksenPistetiedot } from '@/app/lib/types/laskenta-types';
-import { ValintakoeAvaimet } from '@/app/lib/types/valintaperusteet-types';
+import { ValintakoeAvaimet } from '@/app/lib/valintaperusteet/valintaperusteet-types';
 import { ReadOnlyKoeCell } from './koe-readonly-cell';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { useMemo } from 'react';

@@ -27,8 +27,8 @@ import {
   values,
   when,
 } from 'remeda';
-import { Hakukohde } from '@/app/lib/types/kouta-types';
-import { saveValinnanvaiheTulokset } from '../valintalaskenta-service';
+import { Hakukohde } from '@/app/lib/kouta/kouta-types';
+import { saveValinnanvaiheTulokset } from '../valintalaskenta/valintalaskenta-service';
 
 type JonoTulosByHakemusOid = Record<string, LaskennanJonosijaTulos>;
 

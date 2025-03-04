@@ -7,7 +7,7 @@ import {
   NoteOutlined,
 } from '@mui/icons-material';
 import { ActionBar } from '@/app/components/action-bar';
-import { getOsoitetarratHakemuksille } from '@/app/lib/valintalaskentakoostepalvelu';
+import { getOsoitetarratHakemuksille } from '@/app/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { HarkinnanvaraisetTilatByHakemusOids } from '@/app/lib/types/harkinnanvaraiset-types';
 import { FileDownloadButton } from '@/app/components/file-download-button';
 import { useCallback } from 'react';

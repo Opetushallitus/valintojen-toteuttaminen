@@ -1,6 +1,6 @@
 'use client';
 import { useMemo } from 'react';
-import { Hakukohde } from '../lib/types/kouta-types';
+import { Hakukohde } from '../lib/kouta/kouta-types';
 import { useDebounce } from '@/app/hooks/useDebounce';
 import { useQueryState } from 'nuqs';
 import { useSuspenseQuery } from '@tanstack/react-query';
@@ -9,7 +9,7 @@ import {
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
 } from '@/app/lib/constants';
 import { useTranslations } from './useTranslations';
-import { getHakukohteetQueryOptions } from '../lib/kouta';
+import { getHakukohteetQueryOptions } from '../lib/kouta/kouta-service';
 import { useUserPermissions } from './useUserPermissions';
 import { isEmpty, sortBy, toLowerCase } from 'remeda';
 import { isHakukohdeOid } from '@/app/lib/common';

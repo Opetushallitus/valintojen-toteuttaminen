@@ -5,7 +5,7 @@ import {
   LaskennanValintatapajonoTulosWithHakijaInfo,
   LaskennanValinnanvaiheTulos,
 } from '@/app/hooks/useEditableValintalaskennanTulokset';
-import { getValintatapaJonoNimi } from '@/app/lib/valintalaskenta-utils';
+import { getValintatapaJonoNimi } from '@/app/lib/valintalaskenta/valintalaskenta-utils';
 import { AccordionBoxTitle } from '@/app/components/accordion-box-title';
 import { TFunction } from 'i18next';
 

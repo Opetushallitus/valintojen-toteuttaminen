@@ -1,7 +1,7 @@
 'use client';
 import { useSuspenseQueries } from '@tanstack/react-query';
-import { hakukohteenValintalaskennanTuloksetQueryOptions } from '../lib/valintalaskenta-service';
-import { getHakemukset } from '../lib/ataru';
+import { hakukohteenValintalaskennanTuloksetQueryOptions } from '../lib/valintalaskenta/valintalaskenta-service';
+import { getHakemukset } from '../lib/ataru/ataru-service';
 import { TranslatedName } from '../lib/localization/localization-types';
 import {
   ValintalaskennanValintatapaJonosijaModel,
@@ -21,9 +21,9 @@ import {
   prop,
   sortBy,
 } from 'remeda';
-import { Hakemus } from '@/app/lib/types/ataru-types';
-import { valinnanvaiheetIlmanLaskentaaQueryOptions } from '@/app/lib/valintaperusteet';
-import { Valinnanvaihe } from '@/app/lib/types/valintaperusteet-types';
+import { Hakemus } from '@/app/lib/ataru/ataru-types';
+import { valinnanvaiheetIlmanLaskentaaQueryOptions } from '@/app/lib/valintaperusteet/valintaperusteet-service';
+import { Valinnanvaihe } from '@/app/lib/valintaperusteet/valintaperusteet-types';
 
 export type LaskennanJonosijaTulos<
   A extends Record<string, unknown> = Record<string, unknown>,

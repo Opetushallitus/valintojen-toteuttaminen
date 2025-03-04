@@ -1,12 +1,12 @@
 'use client';
 
-import { configuration } from './configuration';
-import { Haku, Hakukohde, Tila } from './types/kouta-types';
-import { client } from './http-client';
-import { Language, TranslatedName } from './localization/localization-types';
-import { UserPermissions } from './permissions';
+import { configuration } from '../configuration';
+import { Haku, Hakukohde, Tila } from './kouta-types';
+import { client } from '../http-client';
+import { Language, TranslatedName } from '../localization/localization-types';
+import { UserPermissions } from '../permissions';
 import { addProp, pick, pipe } from 'remeda';
-import { HaunAsetukset } from './types/haun-asetukset';
+import { HaunAsetukset } from '../ohjausparametrit/ohjausparametrit-types';
 
 type HakuResponseData = {
   oid: string;

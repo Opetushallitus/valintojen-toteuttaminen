@@ -5,12 +5,12 @@ import {
   HaunAlkaminen,
   Tila,
   getHakuAlkamisKaudet,
-} from '../lib/types/kouta-types';
+} from '../lib/kouta/kouta-types';
 import { useDebounce } from '@/app/hooks/useDebounce';
 import { parseAsInteger, useQueryState } from 'nuqs';
 import { useHasChanged } from '@/app/hooks/useHasChanged';
 import { byProp, getSortParts } from '../components/table/table-utils';
-import { getHaut } from '../lib/kouta';
+import { getHaut } from '../lib/kouta/kouta-service';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { useHakutavat } from './useHakutavat';
 import {

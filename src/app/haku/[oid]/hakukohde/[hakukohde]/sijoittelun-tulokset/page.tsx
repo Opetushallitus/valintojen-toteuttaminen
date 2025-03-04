@@ -6,7 +6,7 @@ import { useTranslations } from '@/app/hooks/useTranslations';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { Box } from '@mui/material';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { tryToGetLatestSijoitteluajonTuloksetWithValintaEsitysQueryOptions } from '@/app/lib/valinta-tulos-service';
+import { tryToGetLatestSijoitteluajonTuloksetWithValintaEsitysQueryOptions } from '@/app/lib/valinta-tulos-service/valinta-tulos-service';
 import { isEmpty } from '@/app/lib/common';
 import { PageSizeSelector } from '@/app/components/table/page-size-selector';
 import { NoResults } from '@/app/components/no-results';

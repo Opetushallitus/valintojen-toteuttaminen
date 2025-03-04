@@ -8,8 +8,8 @@ import {
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
 } from '@/app/lib/constants';
 import { isDefined, isEmpty, uniqueBy } from 'remeda';
-import { getValintaryhmat } from '@/app/lib/valintaperusteet';
-import { ValintaryhmaHakukohteilla } from '@/app/lib/types/valintaperusteet-types';
+import { getValintaryhmat } from '@/app/lib/valintaperusteet/valintaperusteet-service';
+import { ValintaryhmaHakukohteilla } from '@/app/lib/valintaperusteet/valintaperusteet-types';
 
 export const useValintaryhmaSearchParams = () => {
   const [searchPhrase, setSearchPhrase] = useQueryState(

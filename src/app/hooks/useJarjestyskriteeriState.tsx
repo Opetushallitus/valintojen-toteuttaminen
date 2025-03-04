@@ -9,7 +9,7 @@ import { useMutation } from '@tanstack/react-query';
 import {
   deleteJonosijanJarjestyskriteeri,
   saveJonosijanJarjestyskriteeri,
-} from '@/app/lib/valintalaskenta-service';
+} from '@/app/lib/valintalaskenta/valintalaskenta-service';
 
 type MutationMode = 'save' | 'delete';
 

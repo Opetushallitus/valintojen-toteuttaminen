@@ -3,7 +3,7 @@ import { hideModal, showModal } from '@/app/components/global-modal';
 import { GlobalSpinnerModal } from '@/app/components/global-spinner-modal';
 import useToaster from '@/app/hooks/useToaster';
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { saveValintatapajonoTulosExcel } from '@/app/lib/valintalaskentakoostepalvelu';
+import { saveValintatapajonoTulosExcel } from '@/app/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { isEmpty } from 'remeda';
 import { refetchLaskennanTulokset } from '../lib/refetchLaskennanTulokset';

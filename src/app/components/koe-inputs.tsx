@@ -4,7 +4,7 @@ import { ValintakoeOsallistuminenTulos } from '@/app/lib/types/laskenta-types';
 import {
   ValintakoeAvaimet,
   ValintakoeInputTyyppi,
-} from '@/app/lib/types/valintaperusteet-types';
+} from '@/app/lib/valintaperusteet/valintaperusteet-types';
 import { Box, SelectChangeEvent } from '@mui/material';
 import { LocalizedSelect } from '@/app/components/localized-select';
 import { TFunction } from 'i18next';

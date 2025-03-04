@@ -13,7 +13,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { saveValinnanTulokset } from '@/app/lib/valinta-tulos-service';
+import { saveValinnanTulokset } from '@/app/lib/valinta-tulos-service/valinta-tulos-service';
 import {
   IlmoittautumisTila,
   VastaanottoTila,
@@ -25,7 +25,7 @@ import {
   isVastaanottotilaJulkaistavissa,
 } from '@/app/lib/sijoittelun-tulokset-utils';
 import { OphApiError } from '@/app/lib/common';
-import { ValinnanTulosUpdateErrorResult } from '@/app/lib/types/valinta-tulos-types';
+import { ValinnanTulosUpdateErrorResult } from '@/app/lib/valinta-tulos-service/valinta-tulos-types';
 import { HttpClientResponse } from '@/app/lib/http-client';
 import {
   EditModalDialog,
@@ -34,7 +34,7 @@ import {
 } from '@/app/components/edit-modal-dialog';
 import { ValinnanTulosLisatiedoilla } from '../lib/henkilo-page-types';
 import { LocalizedSelect } from '@/app/components/localized-select';
-import { Haku } from '@/app/lib/types/kouta-types';
+import { Haku } from '@/app/lib/kouta/kouta-types';
 import { useIsHakuPublishAllowed } from '@/app/hooks/useIsHakuPublishAllowed';
 import { useVastaanottoTilaOptions } from '@/app/hooks/useVastaanottoTilaOptions';
 import { useIlmoittautumisTilaOptions } from '@/app/hooks/useIlmoittautumisTilaOptions';

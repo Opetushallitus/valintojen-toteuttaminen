@@ -1,7 +1,7 @@
 'use client';
 import { use } from 'react';
 
-import { getSijoittelunTulokset } from '@/app/lib/valinta-tulos-service';
+import { getSijoittelunTulokset } from '@/app/lib/valinta-tulos-service/valinta-tulos-service';
 import { TabContainer } from '../components/tab-container';
 import BasicInfo from './components/basic-info';
 import { useSuspenseQueries } from '@tanstack/react-query';

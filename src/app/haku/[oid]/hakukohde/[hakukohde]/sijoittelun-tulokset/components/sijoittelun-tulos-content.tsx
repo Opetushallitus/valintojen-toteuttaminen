@@ -3,7 +3,7 @@ import { Box } from '@mui/material';
 import { AccordionBox } from '@/app/components/accordion-box';
 import { SijoitteluajonValintatapajonoValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
 import { SijoittelunTulosAccordionTitle } from './sijoittelun-tulos-accordion-title';
-import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
+import { Haku, Hakukohde } from '@/app/lib/kouta/kouta-types';
 import { SijoittelunTulosForm } from './sijoittelun-tulos-form';
 
 export const SijoittelunTulosContent = ({

@@ -14,13 +14,13 @@ import { LaskennatonValintatapajonoContent } from './components/laskennaton-vali
 import { useJonoTuloksetSearchParams } from '@/app/hooks/useJonoTuloksetSearch';
 import { FullClientSpinner } from '@/app/components/client-spinner';
 import { isEmpty } from '@/app/lib/common';
-import { getValintalaskennanTulosExcel } from '@/app/lib/valintalaskentakoostepalvelu';
+import { getValintalaskennanTulosExcel } from '@/app/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { NoResults } from '@/app/components/no-results';
 import { SearchInput } from '@/app/components/search-input';
 import { FileDownloadButton } from '@/app/components/file-download-button';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { groupBy } from 'remeda';
-import { Haku } from '@/app/lib/types/kouta-types';
+import { Haku } from '@/app/lib/kouta/kouta-types';
 import { useHaku } from '@/app/hooks/useHaku';
 import { LaskettuValintatapajonoContent } from './components/laskettu-valintatapajono-content';
 import { ValintatapajonoContentProps } from './types/valintatapajono-types';

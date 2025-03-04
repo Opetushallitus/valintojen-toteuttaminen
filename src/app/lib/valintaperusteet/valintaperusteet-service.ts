@@ -1,8 +1,8 @@
 'use client';
 
 import { queryOptions } from '@tanstack/react-query';
-import { configuration } from './configuration';
-import { client } from './http-client';
+import { configuration } from '../configuration';
+import { client } from '../http-client';
 import {
   Valinnanvaihe,
   ValinnanvaiheTyyppi,
@@ -12,7 +12,7 @@ import {
   Valintaryhma,
   Valintatapajono,
   ValintaryhmaHakukohteilla,
-} from './types/valintaperusteet-types';
+} from './valintaperusteet-types';
 import { sort } from 'remeda';
 
 export const isLaskentaUsedForValinnanvaihe = (

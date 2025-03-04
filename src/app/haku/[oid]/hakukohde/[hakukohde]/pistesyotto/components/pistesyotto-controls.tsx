@@ -1,7 +1,7 @@
 import { usePisteSyottoSearchParams } from '../hooks/usePisteSyottoSearch';
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { Box, SelectChangeEvent, Stack } from '@mui/material';
-import { ValintakoeAvaimet } from '@/app/lib/types/valintaperusteet-types';
+import { ValintakoeAvaimet } from '@/app/lib/valintaperusteet/valintaperusteet-types';
 import { LocalizedSelect } from '@/app/components/localized-select';
 import {
   OphCheckbox,

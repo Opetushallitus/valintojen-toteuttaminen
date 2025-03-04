@@ -2,8 +2,8 @@
 import { useTranslations } from '@/app/hooks/useTranslations';
 import { AccordionBoxTitle } from '@/app/components/accordion-box-title';
 import { SijoitteluajonValintatapajonoValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
-import { Haku } from '@/app/lib/types/kouta-types';
-import { isKorkeakouluHaku } from '@/app/lib/kouta';
+import { Haku } from '@/app/lib/kouta/kouta-types';
+import { isKorkeakouluHaku } from '@/app/lib/kouta/kouta-service';
 import { styled, Typography } from '@mui/material';
 
 const Bolded = styled('span')(() => ({

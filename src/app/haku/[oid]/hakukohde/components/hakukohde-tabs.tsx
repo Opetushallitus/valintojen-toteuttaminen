@@ -7,7 +7,7 @@ import { hakuQueryOptions } from '@/app/hooks/useHaku';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { useSuspenseQueries } from '@tanstack/react-query';
 import { haunAsetuksetQueryOptions } from '@/app/hooks/useHaunAsetukset';
-import { getUsesValintalaskenta } from '@/app/lib/valintalaskentakoostepalvelu';
+import { getUsesValintalaskenta } from '@/app/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { userPermissionsQueryOptions } from '@/app/hooks/useUserPermissions';
 import { notFound } from 'next/navigation';
 import { HakukohdeTabLink } from './hakukohde-tab-link';

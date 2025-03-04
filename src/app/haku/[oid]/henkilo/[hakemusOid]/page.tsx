@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from '@/app/hooks/useTranslations';
-import { buildLinkToApplication } from '@/app/lib/ataru';
+import { buildLinkToApplication } from '@/app/lib/ataru/ataru-service';
 import { Stack, Typography } from '@mui/material';
 import { getHenkiloTitle } from '@/app/lib/henkilo-utils';
 import { LabeledInfoItem } from '@/app/components/labeled-info-item';

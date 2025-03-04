@@ -1,12 +1,12 @@
 'use client';
 
 import { LaskennanValintatapajonoTulosWithHakijaInfo } from '@/app/hooks/useEditableValintalaskennanTulokset';
-import { booleanToString } from './common';
-import { configuration } from './configuration';
-import { client } from './http-client';
-import { getHakemukset } from './ataru';
-import { getLatestSijoitteluAjonTuloksetForHakukohde } from './valinta-tulos-service';
-import { getHakukohteenValintatuloksetIlmanHakijanTilaa } from './valintalaskentakoostepalvelu';
+import { booleanToString } from '../common';
+import { configuration } from '../configuration';
+import { client } from '../http-client';
+import { getHakemukset } from '../ataru/ataru-service';
+import { getLatestSijoitteluAjonTuloksetForHakukohde } from '../valinta-tulos-service/valinta-tulos-service';
+import { getHakukohteenValintatuloksetIlmanHakijanTilaa } from '../valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import {
   HakijaryhmanHakija,
   HakukohteenHakijaryhma,
@@ -15,14 +15,14 @@ import {
   LaskentaStart,
   ValintalaskennanTulosValinnanvaiheModel,
   SeurantaTiedot,
-} from './types/laskenta-types';
+} from '../types/laskenta-types';
 import {
   HenkilonValintaTulos,
   SijoitteluajonTulokset,
   SijoitteluajonValintatapajono,
   SijoittelunHakemus,
   SijoittelunTila,
-} from './types/sijoittelu-types';
+} from '../types/sijoittelu-types';
 import {
   filter,
   flatMap,
@@ -36,11 +36,11 @@ import {
 import {
   HarkinnanvarainenTila,
   HarkinnanvaraisestiHyvaksytty,
-} from './types/harkinnanvaraiset-types';
+} from '../types/harkinnanvaraiset-types';
 import { queryOptions } from '@tanstack/react-query';
-import { getFullnameOfHakukohde, Haku, Hakukohde } from './types/kouta-types';
-import { ValinnanvaiheTyyppi } from './types/valintaperusteet-types';
-import { translateName } from './localization/translation-utils';
+import { getFullnameOfHakukohde, Haku, Hakukohde } from '../kouta/kouta-types';
+import { ValinnanvaiheTyyppi } from '../valintaperusteet/valintaperusteet-types';
+import { translateName } from '../localization/translation-utils';
 
 const formSearchParamsForStartLaskenta = ({
   laskentaUrl,

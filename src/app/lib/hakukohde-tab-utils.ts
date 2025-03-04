@@ -1,11 +1,11 @@
 import {
   isHarkinnanvarainenHakukohde,
   isKorkeakouluHaku,
-} from '@/app/lib/kouta';
-import { HaunAsetukset } from '@/app/lib/types/haun-asetukset';
+} from '@/app/lib/kouta/kouta-service';
+import { HaunAsetukset } from '@/app/lib/ohjausparametrit/ohjausparametrit-types';
 import { UserPermissions } from '@/app/lib/permissions';
 import { isInRange, toFinnishDate } from '@/app/lib/time-utils';
-import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
+import { Haku, Hakukohde } from '@/app/lib/kouta/kouta-types';
 
 type VisibleFnProps = {
   haku: Haku;

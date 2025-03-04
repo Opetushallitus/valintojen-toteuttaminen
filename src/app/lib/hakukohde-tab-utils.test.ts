@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { getVisibleTabs } from './hakukohde-tab-utils';
-import { Haku, Hakukohde, Tila } from '@/app/lib/types/kouta-types';
+import { Haku, Hakukohde, Tila } from '@/app/lib/kouta/kouta-types';
 import { toFinnishDate } from '@/app/lib/time-utils';
 import { UserPermissions } from '@/app/lib/permissions';
 

@@ -9,7 +9,7 @@ import {
   HarkinnanvaraisestiHyvaksytty,
   HarkinnanvaraisetTilatByHakemusOids,
 } from '@/app/lib/types/harkinnanvaraiset-types';
-import { setHarkinnanvaraisetTilat } from '@/app/lib/valintalaskenta-service';
+import { setHarkinnanvaraisetTilat } from '@/app/lib/valintalaskenta/valintalaskenta-service';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useState } from 'react';

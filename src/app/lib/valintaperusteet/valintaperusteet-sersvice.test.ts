@@ -4,15 +4,15 @@ import {
   getValintakoeAvaimetHakukohteelle,
   getValintaryhmat,
   isLaskentaUsedForValinnanvaihe,
-} from './valintaperusteet';
-import { client } from './http-client';
+} from './valintaperusteet-service';
+import { client } from '../http-client';
 import {
   Valinnanvaihe,
   ValinnanvaiheTyyppi,
   ValintakoeAvaimet,
   ValintakoeInputTyyppi,
   ValintaryhmaHakukohteilla,
-} from './types/valintaperusteet-types';
+} from './valintaperusteet-types';
 
 test('laskenta is used for active valinnanvaihe', () => {
   const vaihe: Valinnanvaihe = {

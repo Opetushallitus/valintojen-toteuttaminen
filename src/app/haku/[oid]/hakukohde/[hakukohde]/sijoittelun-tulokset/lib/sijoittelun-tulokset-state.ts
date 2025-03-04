@@ -5,7 +5,7 @@ import {
   hyvaksyValintaEsitys,
   saveMaksunTilanMuutokset,
   saveSijoitteluAjonTulokset,
-} from '@/app/lib/valinta-tulos-service';
+} from '@/app/lib/valinta-tulos-service/valinta-tulos-service';
 import { clone } from 'remeda';
 import { SijoittelunTulosErrorModalDialog } from '../components/sijoittelun-tulos-error-modal';
 import { showModal } from '@/app/components/global-modal';

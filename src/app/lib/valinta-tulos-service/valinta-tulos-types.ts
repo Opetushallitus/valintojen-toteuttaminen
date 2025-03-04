@@ -2,7 +2,7 @@ import {
   IlmoittautumisTila,
   SijoittelunTila,
   VastaanottoTila,
-} from './sijoittelu-types';
+} from '../types/sijoittelu-types';
 
 export type ValinnanTulosUpdateErrorResult = {
   message: string;

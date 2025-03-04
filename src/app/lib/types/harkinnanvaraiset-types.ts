@@ -1,4 +1,4 @@
-import { Hakemus } from './ataru-types';
+import { Hakemus } from '../ataru/ataru-types';
 
 export type HarkinnanvarainenTila = 'HYVAKSYTTY' | 'EI_HYVAKSYTTY' | null;
 
