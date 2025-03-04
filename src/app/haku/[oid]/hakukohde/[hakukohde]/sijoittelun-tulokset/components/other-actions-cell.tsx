@@ -15,7 +15,7 @@ import {
   InsertDriveFileOutlined,
   MoreHoriz,
 } from '@mui/icons-material';
-import { Hakukohde } from '@/lib/kouta/kouta-types';
+import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import useToaster from '@/hooks/useToaster';
 import {
   changeHistoryForHakemus,
@@ -24,6 +24,8 @@ import {
 import { showModal } from '@/components/modals/global-modal';
 import { ChangeHistoryModal } from './change-history-modal';
 import { AcceptedLetterTemplateModal } from './letter-template-modal';
+import { useUserPermissions } from '@/app/hooks/useUserPermissions';
+import { isKirjeidenMuodostaminenAllowed } from '../lib/sijoittelun-tulokset-permission-utils';
 
 const StyledListItemText = styled(ListItemText)(() => ({
   span: {
@@ -37,14 +39,18 @@ const StyledListItemIcon = styled(ListItemIcon)(() => ({
 
 export const OtherActionsCell = ({
   hakemus,
+  haku,
   hakukohde,
   disabled,
   sijoitteluajoId,
+  kaikkiJonotHyvaksytty,
 }: {
   hakemus: SijoittelunHakemusValintatiedoilla;
+  haku: Haku;
   hakukohde: Hakukohde;
   disabled: boolean;
   sijoitteluajoId: string;
+  kaikkiJonotHyvaksytty: boolean;
 }) => {
   const { t } = useTranslations();
 
@@ -117,6 +123,7 @@ export const OtherActionsCell = ({
     }
     closeMenu();
   };
+  const { data: userPermissions } = useUserPermissions();
 
   return (
     <>
@@ -145,7 +152,16 @@ export const OtherActionsCell = ({
             {t('sijoittelun-tulokset.toiminnot.muutoshistoria')}
           </StyledListItemText>
         </MenuItem>
-        <MenuItem onClick={createHyvaksymiskirjePDFs}>
+        <MenuItem
+          onClick={createHyvaksymiskirjePDFs}
+          disabled={
+            !isKirjeidenMuodostaminenAllowed(
+              haku,
+              userPermissions,
+              kaikkiJonotHyvaksytty,
+            )
+          }
+        >
           <StyledListItemIcon>
             <InsertDriveFileOutlined />
           </StyledListItemIcon>
