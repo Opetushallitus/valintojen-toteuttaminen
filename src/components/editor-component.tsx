@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useRef } from 'react';
+import React, { forwardRef, useEffect, useId, useRef } from 'react';
 import Quill from 'quill';
 import 'quill/dist/quill.snow.css';
 
@@ -22,13 +22,13 @@ const Editor = forwardRef<Quill, EditorProps>(
     const contentChangedRef = useRef(onContentChanged);
 
     useEffect(() => {
-      if (containerRef.current && ref) {
-        const container = containerRef.current;
-
+      const container = containerRef.current;
+      if (container && ref) {
         const editorContainer = container.appendChild(
           container.ownerDocument.createElement('div'),
         );
         const quill = new Quill(editorContainer, {
+          bounds: container,
           theme: 'snow',
         });
 
@@ -59,7 +59,10 @@ const Editor = forwardRef<Quill, EditorProps>(
       }
     }, [ref]);
 
-    return <div id="oph-editor" ref={containerRef}></div>;
+    const id = useId();
+    const editorId = `oph-editor-${id}`;
+
+    return <div id={editorId} ref={containerRef}></div>;
   },
 );
 
