@@ -182,7 +182,7 @@ test('asks for confirmation before navigating to another view without saving cha
   page,
 }) => {
   await selectOption(page, HARKINNANVARAINEN_INPUT_NAME, 'Hyväksytty');
-  const confirmationDialog = page.getByRole('alert').filter({
+  const confirmationDialog = page.getByRole('dialog').filter({
     hasText:
       'Olet poistumassa lomakkeelta jolla on tallentamattomia muutoksia. Jatketaanko silti?',
   });

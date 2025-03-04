@@ -30,7 +30,7 @@ const setToastTimer = (
 export type Toast = {
   key: string;
   message: string;
-  type: 'error' | 'success' | 'confirm';
+  type: 'error' | 'success';
   messageParams?: Record<string, string | number>;
   ref?: CallbackActorLogic<AnyEventObject>;
   confirmFn?: () => void;
@@ -52,9 +52,6 @@ const toasterMachine = setup({
             ...event.toast,
             ref: spawn(
               fromCallback(({ sendBack, receive }) => {
-                if (event.toast.type === 'confirm') {
-                  return;
-                }
                 let id = setToastTimer(key, DEFAULT_TOAST_DURATION, sendBack);
 
                 receive(({ type }) => {
