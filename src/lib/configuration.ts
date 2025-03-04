@@ -30,6 +30,8 @@ export const configuration = {
   asiointiKieliUrl: `${DOMAIN}/oppijanumerorekisteri-service/henkilo/current/asiointiKieli`,
   lokalisaatioUrl: `${DOMAIN}/lokalisointi/cxf/rest/v1/localisation?category=valintojen-toteuttaminen&locale=`,
   ohjausparametritUrl: `${DOMAIN}/ohjausparametrit-service/api/v1/rest/parametri`,
+  organisaatioParentOidsUrl: (organisaatioOid: string) =>
+    `${DOMAIN}/organisaatio-service/api/${organisaatioOid}/parentoids`,
 
   // -------------------------------------------------------------------------------------------------
   // koodisto

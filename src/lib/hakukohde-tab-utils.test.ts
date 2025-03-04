@@ -16,6 +16,7 @@ const HAKU_BASE: Haku = {
   hakutapaKoodiUri: '',
   hakukohteita: 123,
   kohdejoukkoKoodiUri: '',
+  organisaatioOid: '',
 };
 
 const HAKUKOHDE_BASE: Hakukohde = {

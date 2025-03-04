@@ -17,6 +17,7 @@ type HakuResponseData = {
   hakukausi: string;
   totalHakukohteet: number;
   kohdejoukkoKoodiUri: string;
+  organisaatioOid: string;
 };
 
 const mapToHaku = (h: HakuResponseData) => {
@@ -31,6 +32,7 @@ const mapToHaku = (h: HakuResponseData) => {
     alkamisKausiKoodiUri: h.hakukausi,
     hakukohteita: h?.totalHakukohteet ?? 0,
     kohdejoukkoKoodiUri: h.kohdejoukkoKoodiUri,
+    organisaatioOid: h.organisaatioOid,
   };
 };
 

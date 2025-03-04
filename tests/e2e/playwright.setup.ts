@@ -48,6 +48,8 @@ export default async function playwrightSetup() {
           },
         ],
       });
+    } else if (request.url?.endsWith('/parentoids')) {
+      return modifyResponse(response, [OPH_ORGANIZATION_OID]);
     } else if (request.url?.includes(`henkilo/current/asiointiKieli`)) {
       response.setHeader('content-type', 'text/plain');
       response.write('fi');

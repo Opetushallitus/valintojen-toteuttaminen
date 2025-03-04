@@ -20,6 +20,7 @@ const mockHaku: Haku = {
   hakutapaKoodiUri: 'mock-hakutapaKoodiUri',
   kohdejoukkoKoodiUri: 'haunkohdejoukko_mock',
   hakukohteita: 123,
+  organisaatioOid: 'mock-organisaatioOid',
 };
 
 const KORKEAKOULU_KOHDEJOUKKO = 'haunkohdejoukko_12';

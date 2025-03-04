@@ -23,6 +23,7 @@ describe('Laskenta state', async () => {
       kohdejoukkoKoodiUri: '',
       nimi: { fi: 'Haku' },
       tila: Tila.JULKAISTU,
+      organisaatioOid: 'organisaatio-oid',
     },
     hakukohteet: [
       {

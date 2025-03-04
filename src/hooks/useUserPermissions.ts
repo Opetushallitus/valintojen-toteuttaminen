@@ -9,8 +9,9 @@ import {
   getOrgsForPermission,
 } from '@/lib/permissions';
 import { PermissionError } from '@/lib/common';
-import { isNonNull } from 'remeda';
+import { intersection, isNonNull } from 'remeda';
 import { OPH_ORGANIZATION_OID } from '@/lib/constants';
+import { useOrgParentOids } from '@/lib/organisaatio-service';
 
 const getUserPermissions = async (): Promise<UserPermissions> => {
   const response = await client.get<{
@@ -44,6 +45,21 @@ const getUserPermissions = async (): Promise<UserPermissions> => {
     throw new PermissionError();
   }
   return userPermissions;
+};
+
+export const useHasOrgPermissions = (
+  oid: string,
+  permission: 'read' | 'update',
+) => {
+  const { data: userPermissions } = useUserPermissions();
+  const permissionOrgOids =
+    permission === 'update'
+      ? userPermissions?.writeOrganizations
+      : userPermissions?.readOrganizations;
+
+  const { data: orgParentOids } = useOrgParentOids(oid);
+
+  return intersection(orgParentOids, permissionOrgOids).length > 0;
 };
 
 export const userPermissionsQueryOptions = {
