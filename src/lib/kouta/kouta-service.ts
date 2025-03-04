@@ -35,7 +35,7 @@ const mapToHaku = (h: HakuResponseData) => {
 };
 
 const permissionsToTarjoajat = (userPermissions: UserPermissions): string =>
-  userPermissions.admin
+  userPermissions.hasOphCRUD
     ? ''
     : userPermissions.readOrganizations.reduce(
         (prev, current) => `${prev}&tarjoaja=${current}`,

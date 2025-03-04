@@ -1,15 +1,16 @@
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
-import { client } from '../lib/http-client';
-import { configuration } from '../lib/configuration';
+import { client } from '@/app/lib/http-client';
+import { configuration } from '@/app/lib/configuration';
 import {
   OrganizationPermissions,
   UserPermissions,
   SERVICE_KEY,
   Permission,
   getOrgsForPermission,
-} from '../lib/permissions';
-import { PermissionError } from '../lib/common';
+} from '@/app/lib/permissions';
+import { PermissionError } from '@/app/lib/common';
 import { isNonNull } from 'remeda';
+import { OPH_ORGANIZATION_OID } from '@/app/lib/constants';
 
 const getUserPermissions = async (): Promise<UserPermissions> => {
   const response = await client.get<{
@@ -17,7 +18,6 @@ const getUserPermissions = async (): Promise<UserPermissions> => {
       organisaatioOid: string;
       kayttooikeudet: [{ palvelu: string; oikeus: Permission }];
     }>;
-    isAdmin: boolean;
   }>(configuration.kayttoikeusUrl);
   const organizations: Array<OrganizationPermissions> =
     response.data.organisaatiot
@@ -30,16 +30,17 @@ const getUserPermissions = async (): Promise<UserPermissions> => {
           : null;
       })
       .filter(isNonNull);
+
+  const crudOrganizations = getOrgsForPermission(organizations, 'CRUD');
+
+  const hasOphCRUD = crudOrganizations.includes(OPH_ORGANIZATION_OID);
   const userPermissions: UserPermissions = {
-    admin: response.data.isAdmin,
+    hasOphCRUD,
     readOrganizations: getOrgsForPermission(organizations, 'READ'),
     writeOrganizations: getOrgsForPermission(organizations, 'READ_UPDATE'),
-    crudOrganizations: getOrgsForPermission(organizations, 'CRUD'),
+    crudOrganizations,
   };
-  if (
-    userPermissions.readOrganizations.length === 0 &&
-    !userPermissions.admin
-  ) {
+  if (userPermissions.readOrganizations.length === 0) {
     throw new PermissionError();
   }
   return userPermissions;

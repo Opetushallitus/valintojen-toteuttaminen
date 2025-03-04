@@ -9,10 +9,10 @@ export type OrganizationPermissions = {
 };
 
 export type UserPermissions = {
-  admin: boolean;
   readOrganizations: Array<string>;
   writeOrganizations: Array<string>;
   crudOrganizations: Array<string>;
+  hasOphCRUD: boolean;
 };
 
 const allowedToWrite = (right: Permission) =>

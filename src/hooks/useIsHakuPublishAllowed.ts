@@ -7,5 +7,5 @@ export const useIsHakuPublishAllowed = ({ haku }: { haku: Haku }) => {
   const { data: permissions } = useUserPermissions();
   const { data: haunAsetukset } = useHaunAsetukset({ hakuOid: haku.oid });
 
-  return permissions.admin || canHakuBePublished(haku, haunAsetukset);
+  return permissions.hasOphCRUD || canHakuBePublished(haku, haunAsetukset);
 };

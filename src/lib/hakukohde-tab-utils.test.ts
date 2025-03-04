@@ -3,6 +3,7 @@ import { getVisibleTabs } from './hakukohde-tab-utils';
 import { Haku, Hakukohde, Tila } from '@/lib/kouta/kouta-types';
 import { toFinnishDate } from '@/lib/time-utils';
 import { UserPermissions } from '@/lib/permissions';
+import { OPH_ORGANIZATION_OID } from './constants';
 
 const HAKU_BASE: Haku = {
   oid: '5.4.3.2.1',
@@ -35,11 +36,18 @@ const HAKUKOHDE_BASE: Hakukohde = {
   opetuskielet: new Set(['fi']),
 };
 
-const PERMISSIONS_BASE: UserPermissions = {
-  admin: true,
+const OPH_PERMISSIONS: UserPermissions = {
+  hasOphCRUD: true,
   readOrganizations: [],
   writeOrganizations: [],
-  crudOrganizations: [],
+  crudOrganizations: [OPH_ORGANIZATION_OID],
+};
+
+const NORMAL_PERMISSIONS: UserPermissions = {
+  hasOphCRUD: false,
+  readOrganizations: [],
+  writeOrganizations: [],
+  crudOrganizations: [HAKUKOHDE_BASE.organisaatioOid],
 };
 
 describe('getVisibleTabs', () => {
@@ -58,7 +66,7 @@ describe('getVisibleTabs', () => {
       hakukohde: HAKUKOHDE_BASE,
       haunAsetukset: { sijoittelu: true },
       usesValintalaskenta: true,
-      permissions: PERMISSIONS_BASE,
+      permissions: OPH_PERMISSIONS,
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -85,7 +93,7 @@ describe('getVisibleTabs', () => {
       },
       haunAsetukset: { sijoittelu: true },
       usesValintalaskenta: true,
-      permissions: PERMISSIONS_BASE,
+      permissions: OPH_PERMISSIONS,
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -112,7 +120,7 @@ describe('getVisibleTabs', () => {
       },
       haunAsetukset: { sijoittelu: true },
       usesValintalaskenta: true,
-      permissions: PERMISSIONS_BASE,
+      permissions: OPH_PERMISSIONS,
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -143,7 +151,7 @@ describe('getVisibleTabs', () => {
         hakukohde: HAKUKOHDE_BASE,
         haunAsetukset: { sijoittelu: false },
         usesValintalaskenta: false,
-        permissions: PERMISSIONS_BASE,
+        permissions: OPH_PERMISSIONS,
       });
       expect(tabs.map((t) => t.route)).toEqual([
         'perustiedot',
@@ -174,7 +182,7 @@ describe('getVisibleTabs', () => {
         hakukohde: HAKUKOHDE_BASE,
         haunAsetukset: { sijoittelu: false },
         usesValintalaskenta: true,
-        permissions: PERMISSIONS_BASE,
+        permissions: OPH_PERMISSIONS,
       });
       expect(tabs.map((t) => t.route)).toEqual([
         'perustiedot',
@@ -189,7 +197,7 @@ describe('getVisibleTabs', () => {
     },
   );
 
-  test('only show perustiedot-tab, if not admin and use of valinnat disallowed via ohjausparametrit', async () => {
+  test('only show perustiedot-tab, if no OPH permissions and use of valinnat disallowed via ohjausparametrit', async () => {
     const tabs = getVisibleTabs({
       haku: HAKU_BASE,
       hakukohde: HAKUKOHDE_BASE,
@@ -201,7 +209,7 @@ describe('getVisibleTabs', () => {
         },
       },
       usesValintalaskenta: true,
-      permissions: { ...PERMISSIONS_BASE, admin: false },
+      permissions: NORMAL_PERMISSIONS,
     });
     expect(tabs.map((t) => t.route)).toEqual(['perustiedot']);
   });

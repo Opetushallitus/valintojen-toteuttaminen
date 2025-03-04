@@ -15,6 +15,7 @@ import PISTETIEDOT from './fixtures/pistetiedot.json';
 import KOKEET from './fixtures/valintakoe-avaimet.json';
 import EHDOT from './fixtures/hyvaksynnan_ehdot.json';
 import VALINTARYHMA_PUU from './fixtures/valintaryhma-puu.json';
+import { OPH_ORGANIZATION_OID } from '@/app/lib/constants';
 
 const port = 3104;
 
@@ -39,13 +40,13 @@ export default async function playwrightSetup() {
     } else if (
       request.url?.includes(`kayttooikeus-service/henkilo/current/omattiedot`)
     ) {
-      const ophOrg = {
-        organisaatioOid: '1.2.246.562.10.00000000001',
-        kayttooikeudet: [{ palvelu: SERVICE_KEY, oikeus: 'CRUD' }],
-      };
       return modifyResponse(response, {
-        isAdmin: true,
-        organisaatiot: [ophOrg],
+        organisaatiot: [
+          {
+            organisaatioOid: OPH_ORGANIZATION_OID,
+            kayttooikeudet: [{ palvelu: SERVICE_KEY, oikeus: 'CRUD' }],
+          },
+        ],
       });
     } else if (request.url?.includes(`henkilo/current/asiointiKieli`)) {
       response.setHeader('content-type', 'text/plain');
