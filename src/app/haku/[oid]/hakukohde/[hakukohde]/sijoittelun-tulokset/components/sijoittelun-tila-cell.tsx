@@ -49,6 +49,47 @@ const isHyvaksyttyVarasijaltaVisible = (
       SijoittelunTila.VARASIJALTA_HYVAKSYTTY,
     ].includes(hakemus.tila));
 
+export const EhdollisestiHyvaksyttavissaCheckbox = ({
+  haku,
+  hakemus,
+  disabled,
+  updateForm,
+}: {
+  haku: Haku;
+  hakemus: Pick<
+    SijoittelunHakemusValintatiedoilla,
+    'hakemusOid' | 'ehdollisestiHyvaksyttavissa'
+  >;
+  disabled: boolean;
+  updateForm: (params: SijoittelunTulosChangeParams) => void;
+}) => {
+  const { t } = useTranslations();
+  const { hakemusOid, ehdollisestiHyvaksyttavissa } = hakemus;
+
+  const updateEhdollinen = () => {
+    updateForm({
+      hakemusOid,
+      ehdollisestiHyvaksyttavissa: !ehdollisestiHyvaksyttavissa,
+    });
+  };
+
+  const canUpdate = useHasOrganizationPermissions(
+    haku.organisaatioOid,
+    'READ_UPDATE',
+  );
+
+  return (
+    !isToinenAsteKohdejoukko(haku) && (
+      <OphCheckbox
+        checked={ehdollisestiHyvaksyttavissa}
+        onChange={updateEhdollinen}
+        label={t('sijoittelun-tulokset.ehdollinen')}
+        disabled={disabled || !canUpdate}
+      />
+    )
+  );
+};
+
 const EhdollinenFields = ({
   haku,
   hakemus,
@@ -67,13 +108,6 @@ const EhdollinenFields = ({
   const ehtoOptions = hyvaksynnanEhdot.map((ehto) => {
     return { value: ehto.koodiArvo, label: translateEntity(ehto.nimi) };
   });
-
-  const updateEhdollinen = () => {
-    updateForm({
-      hakemusOid,
-      ehdollisestiHyvaksyttavissa: !ehdollisestiHyvaksyttavissa,
-    });
-  };
 
   const updateEhdollisuudenSyy = (event: SelectChangeEvent<string>) => {
     updateForm({
@@ -96,32 +130,22 @@ const EhdollinenFields = ({
     hakemusOid,
     ehdollisestiHyvaksyttavissa,
     ehdollisenHyvaksymisenEhtoKoodi,
-    ehdollisenHyvaksymisenEhtoFI,
-    ehdollisenHyvaksymisenEhtoSV,
-    ehdollisenHyvaksymisenEhtoEN,
   } = hakemus;
 
   const ehdollisenHyvaksymisenSyyt = {
-    fi: ehdollisenHyvaksymisenEhtoFI,
-    sv: ehdollisenHyvaksymisenEhtoSV,
-    en: ehdollisenHyvaksymisenEhtoEN,
+    fi: hakemus.ehdollisenHyvaksymisenEhtoFI,
+    sv: hakemus.ehdollisenHyvaksymisenEhtoSV,
+    en: hakemus.ehdollisenHyvaksymisenEhtoEN,
   };
-
-  const canUpdate = useHasOrganizationPermissions(
-    haku.organisaatioOid,
-    'READ_UPDATE',
-  );
 
   return (
     <>
-      {!isToinenAsteKohdejoukko(haku) && (
-        <OphCheckbox
-          checked={ehdollisestiHyvaksyttavissa}
-          onChange={updateEhdollinen}
-          label={t('sijoittelun-tulokset.ehdollinen')}
-          disabled={disabled || !canUpdate}
-        />
-      )}
+      <EhdollisestiHyvaksyttavissaCheckbox
+        haku={haku}
+        hakemus={hakemus}
+        updateForm={updateForm}
+        disabled={disabled}
+      />
       {isKorkeakouluHaku(haku) && ehdollisestiHyvaksyttavissa && (
         <>
           <LocalizedSelect
