@@ -1,5 +1,5 @@
 import { ErrorWithIcon } from '@/app/components/error-with-icon';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { isEmpty, OphApiError, OphProcessError } from '@/app/lib/common';
 import {
   Table,

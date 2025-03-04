@@ -1,5 +1,5 @@
 'use client';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { getHenkiloTitle } from '@/app/lib/henkilo-utils';
 import {
   getReadableHakemuksenTila,
@@ -12,7 +12,7 @@ import { showModal } from '@/app/components/global-modal';
 import { styled, TableCell as MuiTableCell } from '@mui/material';
 import { EditButton } from '@/app/components/edit-button';
 import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
-import { useHaku } from '@/app/hooks/useHaku';
+import { useHaku } from '@/app/lib/kouta/useHaku';
 
 const ValintaTableCell = styled(MuiTableCell)({
   verticalAlign: 'top',

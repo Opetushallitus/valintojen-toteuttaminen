@@ -1,4 +1,4 @@
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { Box, SelectChangeEvent } from '@mui/material';
 import { SijoittelunTila } from '@/app/lib/types/sijoittelu-types';
 import { LocalizedSelect } from '@/app/components/localized-select';

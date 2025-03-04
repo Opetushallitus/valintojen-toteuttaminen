@@ -1,5 +1,5 @@
 import { LocalizedSelect } from '@/app/components/localized-select';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { MaksunTila } from '@/app/lib/ataru/ataru-types';
 import { SijoittelunHakemusValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
 import { SelectChangeEvent } from '@mui/material';

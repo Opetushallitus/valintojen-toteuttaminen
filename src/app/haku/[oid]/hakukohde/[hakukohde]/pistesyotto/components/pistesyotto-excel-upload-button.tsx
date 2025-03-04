@@ -8,7 +8,7 @@ import { pisteTuloksetOptions } from '../hooks/usePisteTulokset';
 import useToaster from '@/app/hooks/useToaster';
 import { savePistesyottoExcel } from '@/app/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { OphModalDialog } from '@/app/components/oph-modal-dialog';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { OphApiError } from '@/app/lib/common';
 import {
   createModal,

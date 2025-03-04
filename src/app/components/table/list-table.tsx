@@ -9,7 +9,7 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import React, { useMemo } from 'react';
 import { OphPagination } from './oph-pagination';
 import { ophColors } from '@opetushallitus/oph-design-system';

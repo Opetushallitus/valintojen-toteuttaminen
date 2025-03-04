@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { Divider, Stack, styled, Typography } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { withDefaultProps } from '@/app/lib/mui-utils';

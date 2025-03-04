@@ -1,5 +1,5 @@
 import { LocalizedSelect } from '@/app/components/localized-select';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { isDefined } from 'remeda';
 import { ophColors } from '@opetushallitus/oph-design-system';
 import {

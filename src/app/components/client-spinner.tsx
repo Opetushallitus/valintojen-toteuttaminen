@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from '@/app//hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { CircularProgress, CircularProgressProps } from '@mui/material';
 import { FullSpinner } from './full-spinner';
 

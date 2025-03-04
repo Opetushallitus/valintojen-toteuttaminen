@@ -7,7 +7,7 @@ import {
   useQueryState,
 } from 'nuqs';
 import { byProp, getSortParts } from '@/app/components/table/table-utils';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { ValintakoeKutsuItem } from '@/app/lib/types/valintakoekutsut-types';
 import { uncapitalize } from 'remeda';
 

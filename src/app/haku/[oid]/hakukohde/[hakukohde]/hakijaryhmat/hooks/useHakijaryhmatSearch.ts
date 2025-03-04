@@ -12,10 +12,10 @@ import {
   DEFAULT_NUQS_OPTIONS,
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
 } from '@/app/lib/constants';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { HakijaryhmanHakija } from '@/app/lib/types/laskenta-types';
-import { hakemusFilter } from '@/app/hooks/filters';
-import { sortBySijoittelunTila } from '@/app/hooks/common';
+import { hakemusFilter } from '@/app/lib/filters';
+import { sortBySijoittelunTila } from '@/app/lib/sortBySijoittelunTila';
 
 const DEFAULT_PAGE_SIZE = 10;
 

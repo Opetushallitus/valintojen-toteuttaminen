@@ -16,7 +16,7 @@ import {
   LaskennanJonosijaTulosWithHakijaInfo,
   LaskennanValintatapajonoTulos,
 } from '@/app/hooks/useEditableValintalaskennanTulokset';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { configuration } from '@/app/lib/configuration';
 import { getHenkiloTitle } from '@/app/lib/henkilo-utils';
 import { Hakukohde } from '@/app/lib/kouta/kouta-types';

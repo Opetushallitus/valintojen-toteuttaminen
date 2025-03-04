@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { OphNextJsThemeProvider } from '@opetushallitus/oph-design-system/next/theme';
 import { THEME_OVERRIDES } from '../lib/theme';
 

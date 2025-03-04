@@ -1,7 +1,7 @@
 import { FormBox } from '@/app/components/form-box';
 import { useHasChanged } from '@/app/hooks/useHasChanged';
 import useToaster from '@/app/hooks/useToaster';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { EMPTY_OBJECT, EMPTY_STRING_SET } from '@/app/lib/common';
 import {
   HakemuksenHarkinnanvaraisuus,

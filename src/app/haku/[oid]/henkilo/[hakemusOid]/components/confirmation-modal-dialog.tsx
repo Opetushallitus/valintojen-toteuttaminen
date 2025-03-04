@@ -1,5 +1,5 @@
 import { OphModalDialog } from '@/app/components/oph-modal-dialog';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { OphButton } from '@opetushallitus/oph-design-system';
 
 export type ConfirmationModalDialogProps = {

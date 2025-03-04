@@ -1,6 +1,6 @@
 import { ErrorWithIcon } from '@/app/components/error-with-icon';
 import { SimpleAccordion } from '@/app/components/simple-accordion';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { isEmpty } from '@/app/lib/common';
 import { NDASH } from '@/app/lib/constants';
 import { LaskentaActorRef } from '@/app/lib/state/laskenta-state';

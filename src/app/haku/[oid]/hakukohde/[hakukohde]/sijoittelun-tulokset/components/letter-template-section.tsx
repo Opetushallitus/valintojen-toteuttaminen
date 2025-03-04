@@ -1,4 +1,4 @@
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { OphFormFieldWrapper } from '@opetushallitus/oph-design-system';
 import { useState } from 'react';
 import { EditorComponent } from '@/app/components/editor-component';

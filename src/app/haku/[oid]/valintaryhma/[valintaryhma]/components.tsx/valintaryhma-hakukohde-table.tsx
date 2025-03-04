@@ -6,7 +6,7 @@ import {
   makeExternalLinkColumn,
   makeGenericColumn,
 } from '@/app/components/table/table-columns';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { useHakukohdeSortAndPaging } from '../hooks/useHakukohdeSortAndPaging';
 import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
 

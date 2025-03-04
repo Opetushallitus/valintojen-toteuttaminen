@@ -1,5 +1,5 @@
 'use client';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { Box } from '@mui/material';
 import { useMemo } from 'react';
 import { ListTableColumn } from '@/app/components/table/table-types';

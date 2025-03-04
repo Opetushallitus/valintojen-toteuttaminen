@@ -3,7 +3,7 @@ import {
   hideModal,
   useOphModalProps,
 } from '@/app/components/global-modal';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { OphButton, OphInput } from '@opetushallitus/oph-design-system';
 import { Stack } from '@mui/material';
 import { useState } from 'react';

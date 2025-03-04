@@ -7,7 +7,7 @@ import {
 } from '@mui/icons-material';
 import React from 'react';
 import { DEFAULT_BOX_BORDER, ophColors, styled } from '@/app/lib/theme';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { OphButton } from '@opetushallitus/oph-design-system';
 
 const MINIMIZED_PANEL_WIDTH = '60px';

@@ -1,6 +1,6 @@
 'use client';
 import { Typography, Box } from '@mui/material';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { PageSizeSelector } from './page-size-selector';
 import { OphPagination } from './oph-pagination';
 

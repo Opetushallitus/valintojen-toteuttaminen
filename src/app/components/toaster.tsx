@@ -2,7 +2,7 @@
 
 import { Alert, styled, Box, Typography, Slide } from '@mui/material';
 import { Toast, useToaster } from '@/app/hooks/useToaster';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
 
 const ToasterContainer = styled(Box)(({ theme }) => ({

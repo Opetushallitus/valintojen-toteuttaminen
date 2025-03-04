@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { useHenkiloSearchResults } from '../hooks/useHenkiloSearch';
 import { FullClientSpinner } from '@/app/components/client-spinner';

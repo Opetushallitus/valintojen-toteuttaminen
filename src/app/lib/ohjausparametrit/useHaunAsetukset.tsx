@@ -1,5 +1,5 @@
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
-import { getHaunAsetukset } from '../lib/ohjausparametrit/ohjausparametrit-service';
+import { getHaunAsetukset } from './ohjausparametrit-service';
 
 export const haunAsetuksetQueryOptions = ({ hakuOid }: { hakuOid: string }) =>
   queryOptions({

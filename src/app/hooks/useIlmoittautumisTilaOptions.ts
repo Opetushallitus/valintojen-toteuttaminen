@@ -1,5 +1,5 @@
 import { IlmoittautumisTila } from '../lib/types/sijoittelu-types';
-import { useTranslations } from './useTranslations';
+import { useTranslations } from '../lib/localization/useTranslations';
 
 export const useIlmoittautumisTilaOptions = () => {
   const { t } = useTranslations();

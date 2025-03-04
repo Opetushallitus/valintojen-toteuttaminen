@@ -2,7 +2,7 @@ import { FileSelectButton } from '@/app/components/file-select-button';
 import { hideModal, showModal } from '@/app/components/global-modal';
 import { GlobalSpinnerModal } from '@/app/components/global-spinner-modal';
 import useToaster from '@/app/hooks/useToaster';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { saveValintatapajonoTulosExcel } from '@/app/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { isEmpty } from 'remeda';

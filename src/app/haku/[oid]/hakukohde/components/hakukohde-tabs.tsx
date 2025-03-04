@@ -1,12 +1,12 @@
 'use client';
 
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { DEFAULT_BOX_BORDER, ophColors, styled } from '@/app/lib/theme';
-import { hakukohdeQueryOptions } from '@/app/hooks/useHakukohde';
-import { hakuQueryOptions } from '@/app/hooks/useHaku';
+import { hakukohdeQueryOptions } from '@/app/lib/kouta/useHakukohde';
+import { hakuQueryOptions } from '@/app/lib/kouta/useHaku';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { useSuspenseQueries } from '@tanstack/react-query';
-import { haunAsetuksetQueryOptions } from '@/app/hooks/useHaunAsetukset';
+import { haunAsetuksetQueryOptions } from '@/app/lib/ohjausparametrit/useHaunAsetukset';
 import { getUsesValintalaskenta } from '@/app/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { userPermissionsQueryOptions } from '@/app/hooks/useUserPermissions';
 import { notFound } from 'next/navigation';

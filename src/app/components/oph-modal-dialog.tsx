@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
 import { useId } from 'react';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 
 export type OphModalDialogProps = Pick<
   DialogProps,

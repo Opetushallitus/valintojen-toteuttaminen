@@ -3,7 +3,7 @@ import { UserPermissions } from '@/app/lib/permissions';
 import { ButtonProps } from '@mui/material';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { useSijoitteluStatusMutation } from '../hooks/useSijoitteluStatusMutation';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { LaskennanValintatapajonoTulosWithHakijaInfo } from '@/app/hooks/useEditableValintalaskennanTulokset';
 
 const SijoitteluButton = ({ ...props }: ButtonProps) => {

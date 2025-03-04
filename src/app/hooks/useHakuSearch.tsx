@@ -12,13 +12,13 @@ import { useHasChanged } from '@/app/hooks/useHasChanged';
 import { byProp, getSortParts } from '../components/table/table-utils';
 import { getHaut } from '../lib/kouta/kouta-service';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { useHakutavat } from './useHakutavat';
+import { useHakutavat } from '../lib/koodisto/useHakutavat';
 import {
   DEFAULT_NUQS_OPTIONS,
   DEFAULT_PAGE_SIZE,
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
 } from '@/app/lib/constants';
-import { useTranslations } from './useTranslations';
+import { useTranslations } from '../lib/localization/useTranslations';
 import { useUserPermissions } from './useUserPermissions';
 import { TranslatedName } from '../lib/localization/localization-types';
 

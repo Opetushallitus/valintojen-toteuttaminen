@@ -4,7 +4,7 @@ import { ExternalLink } from '@/app/components/external-link';
 import { getValintaryhma } from '@/app/lib/valintaperusteet/valintaperusteet-service';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { styled } from '@mui/material';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 
 const BasicContainer = styled('div')(({ theme }) => ({
   display: 'flex',

@@ -3,7 +3,7 @@ import {
   hideModal,
   useOphModalProps,
 } from '@/app/components/global-modal';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { Stack } from '@mui/material';
 import { OphButton, OphCheckbox } from '@opetushallitus/oph-design-system';
 import useToaster from '@/app/hooks/useToaster';

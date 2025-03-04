@@ -1,4 +1,4 @@
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { EMPTY_STRING_SET } from '@/app/lib/common';
 import { styled } from '@/app/lib/theme';
 import { Checkbox } from '@mui/material';

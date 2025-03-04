@@ -5,9 +5,9 @@ import HallintaTable from './components/hallinta-table';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { useSuspenseQueries } from '@tanstack/react-query';
 import { TabContainer } from '../components/tab-container';
-import { hakuQueryOptions } from '@/app/hooks/useHaku';
-import { hakukohdeQueryOptions } from '@/app/hooks/useHakukohde';
-import { haunAsetuksetQueryOptions } from '@/app/hooks/useHaunAsetukset';
+import { hakuQueryOptions } from '@/app/lib/kouta/useHaku';
+import { hakukohdeQueryOptions } from '@/app/lib/kouta/useHakukohde';
+import { haunAsetuksetQueryOptions } from '@/app/lib/ohjausparametrit/useHaunAsetukset';
 import { FullClientSpinner } from '@/app/components/client-spinner';
 
 type ValinnanHallintaContentParams = {

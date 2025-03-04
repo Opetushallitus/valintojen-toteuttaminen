@@ -1,5 +1,5 @@
 import { usePisteSyottoSearchParams } from '../hooks/usePisteSyottoSearch';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { Box, SelectChangeEvent, Stack } from '@mui/material';
 import { ValintakoeAvaimet } from '@/app/lib/valintaperusteet/valintaperusteet-types';
 import { LocalizedSelect } from '@/app/components/localized-select';

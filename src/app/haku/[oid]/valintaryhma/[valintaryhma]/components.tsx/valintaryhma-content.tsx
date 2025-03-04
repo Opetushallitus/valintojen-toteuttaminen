@@ -9,7 +9,7 @@ import { styled } from '@/app/lib/theme';
 import { useMemo } from 'react';
 import { ValintaryhmaHakukohteilla } from '@/app/lib/valintaperusteet/valintaperusteet-types';
 import { Hakukohde } from '@/app/lib/kouta/kouta-types';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { isDefined, isNullish, prop, sortBy } from 'remeda';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { findParent } from './lib/valintaryhma-util';

@@ -1,5 +1,5 @@
 import { VastaanottoTila } from '../lib/types/sijoittelu-types';
-import { useTranslations } from './useTranslations';
+import { useTranslations } from '../lib/localization/useTranslations';
 
 export const useVastaanottoTilaOptions = () => {
   const { t } = useTranslations();

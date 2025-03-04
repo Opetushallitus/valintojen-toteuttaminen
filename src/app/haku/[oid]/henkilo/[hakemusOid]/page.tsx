@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { buildLinkToApplication } from '@/app/lib/ataru/ataru-service';
 import { Stack, Typography } from '@mui/material';
 import { getHenkiloTitle } from '@/app/lib/henkilo-utils';
@@ -12,8 +12,8 @@ import { HakutoiveetTable } from './components/hakutoiveet-table';
 import { useHenkiloPageData } from './hooks/useHenkiloPageData';
 import { use } from 'react';
 import { HenkilonPistesyotto } from './components/henkilon-pistesyotto';
-import { useHaunAsetukset } from '@/app/hooks/useHaunAsetukset';
-import { useHaku } from '@/app/hooks/useHaku';
+import { useHaunAsetukset } from '@/app/lib/ohjausparametrit/useHaunAsetukset';
+import { useHaku } from '@/app/lib/kouta/useHaku';
 import { HenkilonValintalaskenta } from './components/henkilon-valintalaskenta';
 
 const HenkiloContent = ({

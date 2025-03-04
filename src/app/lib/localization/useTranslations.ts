@@ -1,11 +1,8 @@
 'use client';
-import {
-  Language,
-  TranslatedName,
-} from '../lib/localization/localization-types';
+import { Language, TranslatedName } from './localization-types';
 import { useTranslation } from 'react-i18next';
 import { useCallback } from 'react';
-import { translateName } from '../lib/localization/translation-utils';
+import { translateName } from './translation-utils';
 
 export const useTranslations = () => {
   const { t, i18n } = useTranslation();

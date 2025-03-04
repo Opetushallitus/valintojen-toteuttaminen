@@ -8,7 +8,7 @@ import {
   makeExternalLinkColumn,
   makeGenericColumn,
 } from '@/app/components/table/table-columns';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { buildLinkToApplication } from '@/app/lib/ataru/ataru-service';
 import { Hakemus } from '@/app/lib/ataru/ataru-types';
 

@@ -12,7 +12,7 @@ import { isKorkeakouluHaku } from '@/app/lib/kouta/kouta-service';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { Haku } from '@/app/lib/kouta/kouta-types';
 import { FullClientSpinner } from '@/app/components/client-spinner';
-import { useHaku } from '@/app/hooks/useHaku';
+import { useHaku } from '@/app/lib/kouta/useHaku';
 import { SearchInput } from '@/app/components/search-input';
 
 type HakeneetParams = {

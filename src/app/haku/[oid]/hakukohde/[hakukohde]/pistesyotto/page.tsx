@@ -7,7 +7,7 @@ import { FullClientSpinner } from '@/app/components/client-spinner';
 import { PisteSyottoControls } from './components/pistesyotto-controls';
 import { Box } from '@mui/material';
 import { PisteSyottoForm } from './components/pistesyotto-form';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { isEmpty } from '@/app/lib/common';
 import { NoResults } from '@/app/components/no-results';
 import {

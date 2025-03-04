@@ -1,7 +1,7 @@
 import {
   SijoittelunTila,
   SijoittelunTilaOrdinals,
-} from '../lib/types/sijoittelu-types';
+} from './types/sijoittelu-types';
 
 type SijoittelunTilaSortable = {
   sijoittelunTila?: SijoittelunTila;

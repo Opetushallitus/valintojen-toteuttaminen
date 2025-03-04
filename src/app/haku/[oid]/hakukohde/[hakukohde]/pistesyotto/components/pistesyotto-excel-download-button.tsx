@@ -1,5 +1,5 @@
 import { FileDownloadButton } from '@/app/components/file-download-button';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { getPistesyottoExcel } from '@/app/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 
 export const PistesyottoExcelDownloadButton = ({

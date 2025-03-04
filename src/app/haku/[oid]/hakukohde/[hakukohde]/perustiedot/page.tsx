@@ -6,10 +6,10 @@ import { TabContainer } from '../components/tab-container';
 import BasicInfo from './components/basic-info';
 import { useSuspenseQueries } from '@tanstack/react-query';
 import { ValintatapajonotTable } from './components/valintatapajonot-table';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { FullClientSpinner } from '@/app/components/client-spinner';
-import { hakuQueryOptions } from '@/app/hooks/useHaku';
+import { hakuQueryOptions } from '@/app/lib/kouta/useHaku';
 
 type PerustiedotParams = {
   oid: string;

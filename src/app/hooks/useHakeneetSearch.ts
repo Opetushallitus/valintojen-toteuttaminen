@@ -10,9 +10,9 @@ import {
   DEFAULT_PAGE_SIZE,
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
 } from '@/app/lib/constants';
-import { useTranslations } from './useTranslations';
+import { useTranslations } from '../lib/localization/useTranslations';
 import { getHakemukset } from '../lib/ataru/ataru-service';
-import { hakemusFilter } from './filters';
+import { hakemusFilter } from '../lib/filters';
 
 export const useHakeneetSearchParams = () => {
   const [searchPhrase, setSearchPhrase] = useQueryState(

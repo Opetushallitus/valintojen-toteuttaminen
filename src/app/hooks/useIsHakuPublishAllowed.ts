@@ -1,6 +1,6 @@
 import { canHakuBePublished } from '../lib/sijoittelun-tulokset-utils';
 import { Haku } from '../lib/kouta/kouta-types';
-import { useHaunAsetukset } from './useHaunAsetukset';
+import { useHaunAsetukset } from '../lib/ohjausparametrit/useHaunAsetukset';
 import { useUserPermissions } from './useUserPermissions';
 
 export const useIsHakuPublishAllowed = ({ haku }: { haku: Haku }) => {

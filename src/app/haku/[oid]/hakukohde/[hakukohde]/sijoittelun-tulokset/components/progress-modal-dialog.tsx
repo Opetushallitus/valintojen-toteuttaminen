@@ -3,7 +3,7 @@ import { ErrorTable } from '@/app/components/error-table';
 import { FileDownloadButton } from '@/app/components/file-download-button';
 import { createModal, useOphModalProps } from '@/app/components/global-modal';
 import { OphModalDialog } from '@/app/components/oph-modal-dialog';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import {
   isEmpty,
   OphProcessError,

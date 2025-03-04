@@ -1,4 +1,4 @@
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { Search } from '@mui/icons-material';
 import { FormControl, InputAdornment } from '@mui/material';
 import { OphInput } from '@opetushallitus/oph-design-system';

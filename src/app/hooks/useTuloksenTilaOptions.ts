@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { TuloksenTila } from '../lib/types/laskenta-types';
-import { useTranslations } from './useTranslations';
+import { useTranslations } from '../lib/localization/useTranslations';
 
 export const useTuloksenTilaOptions = ({
   harkinnanvarainen,

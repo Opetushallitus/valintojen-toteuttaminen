@@ -1,6 +1,6 @@
 'use client';
 import { DEFAULT_PAGE_SIZE, PAGE_SIZES } from '@/app/lib/constants';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { LocalizedSelect } from '@/app/components/localized-select';
 import { OphFormFieldWrapper } from '@opetushallitus/oph-design-system';
 

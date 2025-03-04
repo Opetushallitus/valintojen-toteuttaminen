@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { Box, Divider, Typography } from '@mui/material';
 import { isEmpty } from 'remeda';
 import { KoeInputs } from '@/app/components/koe-inputs';

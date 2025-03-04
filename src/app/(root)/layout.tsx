@@ -1,7 +1,7 @@
 'use client';
 
 import { AccessTime as AccessTimeIcon } from '@mui/icons-material';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { Box, Typography } from '@mui/material';
 import { PageLayout } from '@/app/components/page-layout';
 import { Header } from '@/app/components/header';

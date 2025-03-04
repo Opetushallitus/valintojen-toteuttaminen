@@ -1,5 +1,5 @@
 'use client';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { TabContainer } from '../components/tab-container';
 
 export default function ValinnanTuloksetTab() {

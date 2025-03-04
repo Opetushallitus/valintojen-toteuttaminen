@@ -1,4 +1,4 @@
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { CircularProgress, Stack } from '@mui/material';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { PistesyottoExcelUploadButton } from './pistesyotto-excel-upload-button';
@@ -29,8 +29,14 @@ export const PisteSyottoActions = ({
       {isUpdating && (
         <CircularProgress aria-label={t('valinnanhallinta.lasketaan')} />
       )}
-      <PistesyottoExcelDownloadButton hakuOid={hakuOid} hakukohdeOid={hakukohdeOid} />
-      <PistesyottoExcelUploadButton hakuOid={hakuOid} hakukohdeOid={hakukohdeOid} />
+      <PistesyottoExcelDownloadButton
+        hakuOid={hakuOid}
+        hakukohdeOid={hakukohdeOid}
+      />
+      <PistesyottoExcelUploadButton
+        hakuOid={hakuOid}
+        hakukohdeOid={hakukohdeOid}
+      />
     </Stack>
   );
 };

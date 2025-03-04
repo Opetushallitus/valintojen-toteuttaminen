@@ -7,7 +7,7 @@ import {
   makeGenericColumn,
 } from '@/app/components/table/table-columns';
 import { ListTableColumn } from '@/app/components/table/table-types';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { getReadableHakemuksenTila } from '@/app/lib/sijoittelun-tulokset-utils';
 import { HakijaryhmanHakija } from '@/app/lib/types/laskenta-types';
 import { Box } from '@mui/material';

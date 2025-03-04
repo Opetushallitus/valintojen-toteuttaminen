@@ -1,6 +1,6 @@
 'use client';
 import { ValintakoekutsutActionBar } from './valintakoekutsut-action-bar';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { Stack } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';

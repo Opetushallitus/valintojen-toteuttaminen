@@ -1,7 +1,7 @@
 'use client';
 import { useEffect } from 'react';
 import { FetchError, PermissionError } from '../lib/common';
-import { useTranslations } from '../hooks/useTranslations';
+import { useTranslations } from '../lib/localization/useTranslations';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { Stack } from '@mui/material';
 import { notFound } from 'next/navigation';

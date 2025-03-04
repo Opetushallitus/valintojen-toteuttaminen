@@ -8,9 +8,9 @@ import {
   DEFAULT_NUQS_OPTIONS,
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
 } from '@/app/lib/constants';
-import { useTranslations } from './useTranslations';
+import { useTranslations } from '../lib/localization/useTranslations';
 import { LaskennanJonosijaTulosWithHakijaInfo } from './useEditableValintalaskennanTulokset';
-import { hakemusFilter } from './filters';
+import { hakemusFilter } from '../lib/filters';
 
 const DEFAULT_PAGE_SIZE = 10;
 

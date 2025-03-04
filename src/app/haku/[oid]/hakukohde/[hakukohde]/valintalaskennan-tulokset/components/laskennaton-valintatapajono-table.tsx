@@ -24,7 +24,7 @@ import {
 } from '@/app/lib/state/jono-tulos-state';
 import { TuloksenTila } from '@/app/lib/types/laskenta-types';
 import { Language } from '@/app/lib/localization/localization-types';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 
 const TRANSLATIONS_PREFIX = 'valintalaskennan-tulokset.taulukko';
 

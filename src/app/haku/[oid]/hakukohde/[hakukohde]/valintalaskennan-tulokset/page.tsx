@@ -3,7 +3,7 @@
 import { TabContainer } from '../components/tab-container';
 import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
 import { Box, Stack } from '@mui/material';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import {
   LaskennanValinnanvaiheetWithHakijaInfo,
   useEditableValintalaskennanTulokset,
@@ -21,7 +21,7 @@ import { FileDownloadButton } from '@/app/components/file-download-button';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { groupBy } from 'remeda';
 import { Haku } from '@/app/lib/kouta/kouta-types';
-import { useHaku } from '@/app/hooks/useHaku';
+import { useHaku } from '@/app/lib/kouta/useHaku';
 import { LaskettuValintatapajonoContent } from './components/laskettu-valintatapajono-content';
 import { ValintatapajonoContentProps } from './types/valintatapajono-types';
 import { AccordionBox } from '@/app/components/accordion-box';

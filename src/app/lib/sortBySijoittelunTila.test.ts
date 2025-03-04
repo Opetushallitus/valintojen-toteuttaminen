@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
-import { SijoittelunTila } from '../lib/types/sijoittelu-types';
-import { sortBySijoittelunTila } from './common';
+import { SijoittelunTila } from './types/sijoittelu-types';
+import { sortBySijoittelunTila } from './sortBySijoittelunTila';
 
 const hakemukset = [
   {

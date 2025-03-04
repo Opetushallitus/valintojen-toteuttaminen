@@ -1,5 +1,5 @@
 'use client';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { AccordionBoxTitle } from '@/app/components/accordion-box-title';
 import { SijoitteluajonValintatapajonoValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
 import { Haku } from '@/app/lib/kouta/kouta-types';

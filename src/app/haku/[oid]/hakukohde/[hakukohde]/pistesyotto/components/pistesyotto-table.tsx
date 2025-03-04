@@ -2,7 +2,7 @@
 import { HakemuksenPistetiedot } from '@/app/lib/types/laskenta-types';
 import { ValintakoeAvaimet } from '@/app/lib/valintaperusteet/valintaperusteet-types';
 import { ReadOnlyKoeCell } from './koe-readonly-cell';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { useMemo } from 'react';
 import {
   createStickyHakijaColumn,

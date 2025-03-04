@@ -8,7 +8,7 @@ import {
   Box,
   Typography,
 } from '@mui/material';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { useState } from 'react';
 import { styled } from '@/app/lib/theme';
 import { ArrowRight } from '@mui/icons-material';

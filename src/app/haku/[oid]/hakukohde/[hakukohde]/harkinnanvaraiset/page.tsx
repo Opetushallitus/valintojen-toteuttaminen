@@ -12,7 +12,7 @@ import { HarkinnanvaraisetForm } from './components/harkinnanvaraiset-form';
 import { HarkinnanvaraisetSearchInput } from './components/harkinnanvaraiset-search-input';
 import { NoResults } from '@/app/components/no-results';
 import { isEmpty } from 'remeda';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 
 const HarkinnanvaraisetContent = ({
   hakuOid,

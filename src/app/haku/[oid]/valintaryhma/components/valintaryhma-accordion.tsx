@@ -1,4 +1,4 @@
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { TRANSITION_DURATION } from '@/app/lib/constants';
 import { styled } from '@/app/lib/theme';
 import { ExpandMore } from '@mui/icons-material';

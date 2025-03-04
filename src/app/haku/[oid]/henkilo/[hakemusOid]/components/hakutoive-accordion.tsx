@@ -1,5 +1,5 @@
 import { HakijaInfo } from '@/app/lib/ataru/ataru-types';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { isEmpty } from 'remeda';
 import { useState } from 'react';
 import { Box, TableBody, TableCell, TableRow } from '@mui/material';

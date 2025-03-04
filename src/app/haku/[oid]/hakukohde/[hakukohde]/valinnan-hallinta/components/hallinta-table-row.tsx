@@ -2,7 +2,7 @@
 
 import { isLaskentaUsedForValinnanvaihe } from '@/app/lib/valintaperusteet/valintaperusteet-service';
 import { Box, CircularProgress, TableCell, TableRow } from '@mui/material';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import Confirm from './confirm';
 import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';

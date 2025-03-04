@@ -1,5 +1,5 @@
 'use client';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { useUserPermissions } from '@/app/hooks/useUserPermissions';
 import { getHakukohteetQueryOptions } from '@/app/lib/kouta/kouta-service';
 import { DEFAULT_BOX_BORDER, styled } from '@/app/lib/theme';

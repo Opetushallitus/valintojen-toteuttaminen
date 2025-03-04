@@ -14,7 +14,7 @@ import {
   Box,
   CircularProgress,
 } from '@mui/material';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { Haku, Hakukohde } from '@/app/lib/kouta/kouta-types';
 import HallintaTableRow from './hallinta-table-row';
 import Confirm from './confirm';

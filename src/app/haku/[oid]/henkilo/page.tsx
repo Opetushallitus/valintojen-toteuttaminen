@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { ListAlt } from '@mui/icons-material';
 import { NoResults } from '@/app/components/no-results';
 

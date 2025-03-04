@@ -3,9 +3,9 @@ import { SijoitteluStatusChangeButton } from './sijoittelu-status-change-button'
 import { useSijoitteluStatusMutation } from '../hooks/useSijoitteluStatusMutation';
 import { Hakukohde } from '@/app/lib/kouta/kouta-types';
 import { LaskennanValintatapajonoTulosWithHakijaInfo } from '@/app/hooks/useEditableValintalaskennanTulokset';
-import { useHakukohde } from '@/app/hooks/useHakukohde';
+import { useHakukohde } from '@/app/lib/kouta/useHakukohde';
 import { useJonoTuloksetSearch } from '@/app/hooks/useJonoTuloksetSearch';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { LaskettuValintatapajonoTable } from './laskettu-valintatapajono-table';
 import { getValintatapaJonoNimi } from '@/app/lib/valintalaskenta/valintalaskenta-utils';
 import { ValintatapajonoContentProps } from '../types/valintatapajono-types';

@@ -5,7 +5,7 @@ import { HakijaryhmaAccordionTitle } from './hakijaryhma-accordion-title';
 import { HakijaryhmaTable } from './hakijaryhma-table';
 import { useHakijaryhmatSearch } from '../hooks/useHakijaryhmatSearch';
 import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import { AccordionBox } from '@/app/components/accordion-box';
 
 export const HakijaryhmaContent = ({

@@ -4,7 +4,7 @@ import { Box, SelectChangeEvent } from '@mui/material';
 import { DeselectOutlined } from '@mui/icons-material';
 import { ActionBar } from '@/app/components/action-bar';
 import { LocalizedSelect } from '@/app/components/localized-select';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 import {
   IlmoittautumisTila,
   SijoittelunHakemusValintatiedoilla,

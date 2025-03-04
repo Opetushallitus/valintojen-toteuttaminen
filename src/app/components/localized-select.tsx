@@ -1,6 +1,6 @@
 'use client';
 import { OphSelect } from '@opetushallitus/oph-design-system';
-import { useTranslations } from '@/app/hooks/useTranslations';
+import { useTranslations } from '@/app/lib/localization/useTranslations';
 
 export const LocalizedSelect = ({
   ariaLabel,
