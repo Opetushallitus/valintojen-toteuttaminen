@@ -1,5 +1,5 @@
-import { OphModalDialog } from '@/app/components/oph-modal-dialog';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
+import { OphModal } from '@/components/modals/oph-modal';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import { OphButton } from '@opetushallitus/oph-design-system';
 
 export type ConfirmationModalDialogProps = {
@@ -25,7 +25,7 @@ export const ConfirmationModalDialog = ({
 }: ConfirmationModalDialogProps) => {
   const { t } = useTranslations();
   return (
-    <OphModalDialog
+    <OphModal
       open={open}
       onClose={() => onCancel()}
       title={title ?? t('valinnanhallinta.varmista')}
@@ -52,6 +52,6 @@ export const ConfirmationModalDialog = ({
       }
     >
       {children}
-    </OphModalDialog>
+    </OphModal>
   );
 };

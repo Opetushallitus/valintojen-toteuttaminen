@@ -6,9 +6,9 @@ import {
   parseAsStringLiteral,
   useQueryState,
 } from 'nuqs';
-import { byProp, getSortParts } from '@/app/components/table/table-utils';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
-import { ValintakoeKutsuItem } from '@/app/lib/types/valintakoekutsut-types';
+import { byProp, getSortParts } from '@/components/table/table-utils';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { ValintakoeKutsuItem } from '@/lib/types/valintakoekutsut-types';
 import { uncapitalize } from 'remeda';
 
 const DEFAULT_PAGE_SIZE = 10;

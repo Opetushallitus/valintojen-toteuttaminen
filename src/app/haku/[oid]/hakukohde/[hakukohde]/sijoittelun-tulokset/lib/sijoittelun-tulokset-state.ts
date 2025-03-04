@@ -1,15 +1,15 @@
-import { Toast } from '@/app/hooks/useToaster';
-import { SijoittelunHakemusValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
+import { Toast } from '@/hooks/useToaster';
+import { SijoittelunHakemusValintatiedoilla } from '@/lib/types/sijoittelu-types';
 import { ActorRefFrom, assign, createMachine, fromPromise } from 'xstate';
 import {
   hyvaksyValintaEsitys,
   saveMaksunTilanMuutokset,
   saveSijoitteluAjonTulokset,
-} from '@/app/lib/valinta-tulos-service/valinta-tulos-service';
+} from '@/lib/valinta-tulos-service/valinta-tulos-service';
 import { clone } from 'remeda';
 import { SijoittelunTulosErrorModalDialog } from '../components/sijoittelun-tulos-error-modal';
-import { showModal } from '@/app/components/global-modal';
-import { OphApiError } from '@/app/lib/common';
+import { showModal } from '@/components/modals/global-modal';
+import { OphApiError } from '@/lib/common';
 import {
   hasChangedHakemukset,
   applyMassHakemusChanges,

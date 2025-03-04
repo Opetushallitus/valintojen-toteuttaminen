@@ -11,7 +11,7 @@ import {
 } from './playwright-utils';
 import VALINNANVAIHE_TULOKSET_ILMAN_LASKENTAA from './fixtures/valinnanvaihe-tulokset-ilman-laskentaa.json';
 import VALINNANVAIHEET_ILMAN_LASKENTAA from './fixtures/valinnanvaiheet-ilman-laskentaa.json';
-import { configuration } from '@/app/lib/configuration';
+import { configuration } from '@/lib/configuration';
 
 const JONOSIJA_TABLE_HEADINGS = [
   'Jonosija',

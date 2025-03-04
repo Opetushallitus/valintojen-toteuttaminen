@@ -1,16 +1,16 @@
 'use client';
 
-import { useHakukohdeSearchResults } from '@/app/hooks/useHakukohdeSearch';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
-import { Hakukohde } from '@/app/lib/kouta/kouta-types';
+import { useHakukohdeSearchResults } from '@/hooks/useHakukohdeSearch';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { Hakukohde } from '@/lib/kouta/kouta-types';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { useParams } from 'next/navigation';
 import { HakukohdeTabLink } from './hakukohde-tab-link';
-import { useHakukohdeTab } from '@/app/hooks/useHakukohdeTab';
+import { useHakukohdeTab } from '@/hooks/useHakukohdeTab';
 import {
   NavigationList,
   NAV_LIST_SELECTED_ITEM_CLASS,
-} from '@/app/components/navigation-list';
+} from '@/components/navigation-list';
 
 const useSelectedHakukohdeOid = () => useParams().hakukohde;
 

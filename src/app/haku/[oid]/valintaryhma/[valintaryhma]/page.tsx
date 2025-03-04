@@ -1,6 +1,6 @@
 'use client';
-import { FullClientSpinner } from '@/app/components/client-spinner';
-import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
+import { FullClientSpinner } from '@/components/client-spinner';
+import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { Box } from '@mui/material';
 import { use } from 'react';
 import { ValintaryhmaContent } from './components.tsx/valintaryhma-content';

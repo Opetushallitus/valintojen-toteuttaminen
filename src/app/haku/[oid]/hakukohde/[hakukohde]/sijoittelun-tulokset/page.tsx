@@ -2,20 +2,20 @@
 import { use } from 'react';
 
 import { TabContainer } from '../components/tab-container';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
-import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { Box } from '@mui/material';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { tryToGetLatestSijoitteluajonTuloksetWithValintaEsitysQueryOptions } from '@/app/lib/valinta-tulos-service/valinta-tulos-service';
-import { isEmpty } from '@/app/lib/common';
-import { PageSizeSelector } from '@/app/components/table/page-size-selector';
-import { NoResults } from '@/app/components/no-results';
+import { tryToGetLatestSijoitteluajonTuloksetWithValintaEsitysQueryOptions } from '@/lib/valinta-tulos-service/valinta-tulos-service';
+import { isEmpty } from '@/lib/common';
+import { PageSizeSelector } from '@/components/table/page-size-selector';
+import { NoResults } from '@/components/no-results';
 import { useSijoittelunTulosSearchParams } from './hooks/useSijoittelunTulosSearch';
 import { SijoittelunTulosContent } from './components/sijoittelun-tulos-content';
 import { SijoittelunTulosControls } from './components/sijoittelun-tulos-controls';
-import { useHaku } from '@/app/lib/kouta/useHaku';
-import { FullClientSpinner } from '@/app/components/client-spinner';
-import { useHakukohde } from '@/app/lib/kouta/useHakukohde';
+import { useHaku } from '@/lib/kouta/useHaku';
+import { FullClientSpinner } from '@/components/client-spinner';
+import { useHakukohde } from '@/lib/kouta/useHakukohde';
 
 type SijoitteluContentParams = {
   hakuOid: string;

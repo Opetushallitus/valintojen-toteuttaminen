@@ -1,9 +1,9 @@
 import { useHakijaryhmatSearchParams } from '../hooks/useHakijaryhmatSearch';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import { Box, SelectChangeEvent } from '@mui/material';
-import { SijoittelunTila } from '@/app/lib/types/sijoittelu-types';
-import { LocalizedSelect } from '@/app/components/localized-select';
-import { SearchInput } from '@/app/components/search-input';
+import { SijoittelunTila } from '@/lib/types/sijoittelu-types';
+import { LocalizedSelect } from '@/components/localized-select';
+import { SearchInput } from '@/components/search-input';
 import { OphFormFieldWrapper } from '@opetushallitus/oph-design-system';
 
 export const HakijaryhmatControls = () => {

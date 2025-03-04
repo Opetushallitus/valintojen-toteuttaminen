@@ -5,9 +5,9 @@ import {
   byProp,
   getSortParts,
   SortDirection,
-} from '@/app/components/table/table-utils';
-import { DEFAULT_NUQS_OPTIONS } from '@/app/lib/constants';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
+} from '@/components/table/table-utils';
+import { DEFAULT_NUQS_OPTIONS } from '@/lib/constants';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import { HakukohdeWithLink } from '../components.tsx/valintaryhma-hakukohde-table';
 
 const DEFAULT_PAGE_SIZE = 10;

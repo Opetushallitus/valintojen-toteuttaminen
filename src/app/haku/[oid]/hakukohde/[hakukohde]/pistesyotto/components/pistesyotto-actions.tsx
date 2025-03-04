@@ -1,4 +1,4 @@
-import { useTranslations } from '@/app/lib/localization/useTranslations';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import { CircularProgress, Stack } from '@mui/material';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { PistesyottoExcelUploadButton } from './pistesyotto-excel-upload-button';

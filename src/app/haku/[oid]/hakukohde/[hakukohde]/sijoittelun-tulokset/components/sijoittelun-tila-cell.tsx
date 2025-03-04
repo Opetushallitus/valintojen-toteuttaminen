@@ -1,22 +1,22 @@
-import { useTranslations } from '@/app/lib/localization/useTranslations';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import {
   SijoittelunHakemusValintatiedoilla,
   SijoittelunTila,
-} from '@/app/lib/types/sijoittelu-types';
+} from '@/lib/types/sijoittelu-types';
 import { useHyvaksynnanEhdot } from '../hooks/useHyvaksynnanEhdot';
 import { ChangeEvent } from 'react';
 import { SijoittelunTulosStyledCell } from './sijoittelun-tulos-styled-cell';
 import { Box, InputAdornment, SelectChangeEvent, styled } from '@mui/material';
-import { LocalizedSelect } from '@/app/components/localized-select';
-import { isKorkeakouluHaku } from '@/app/lib/kouta/kouta-service';
-import { Haku } from '@/app/lib/kouta/kouta-types';
+import { LocalizedSelect } from '@/components/localized-select';
+import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
+import { Haku } from '@/lib/kouta/kouta-types';
 import {
   ophColors,
   OphCheckbox,
   OphInput,
 } from '@opetushallitus/oph-design-system';
-import { Language } from '@/app/lib/localization/localization-types';
-import { getReadableHakemuksenTila } from '@/app/lib/sijoittelun-tulokset-utils';
+import { Language } from '@/lib/localization/localization-types';
+import { getReadableHakemuksenTila } from '@/lib/sijoittelun-tulokset-utils';
 import { entries, map, pipe } from 'remeda';
 import { SijoittelunTulosChangeParams } from '../lib/sijoittelun-tulokset-state';
 

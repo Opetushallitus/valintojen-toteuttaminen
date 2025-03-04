@@ -1,6 +1,6 @@
-import { FileDownloadButton } from '@/app/components/file-download-button';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
-import { getSijoittelunTulosExcel } from '@/app/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
+import { FileDownloadButton } from '@/components/file-download-button';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { getSijoittelunTulosExcel } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 
 export const SijoittelunTuloksetExcelDownloadButton = ({
   hakuOid,

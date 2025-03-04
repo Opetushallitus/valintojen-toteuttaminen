@@ -1,8 +1,8 @@
 'use client';
 
 import { TableCell, TableRow } from '@mui/material';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
-import { ErrorAlert } from '@/app/components/error-alert';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { ErrorAlert } from '@/components/error-alert';
 
 type ErrorRowParams = {
   errorMessage: string | string[];

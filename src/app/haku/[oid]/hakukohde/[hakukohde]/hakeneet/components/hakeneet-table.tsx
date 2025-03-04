@@ -1,16 +1,16 @@
 'use client';
 
-import { ListTable } from '@/app/components/table/list-table';
+import { ListTable } from '@/components/table/list-table';
 import {
   buildLinkToPerson,
   createHakijaColumn,
   makeColumnWithValueToTranslate,
   makeExternalLinkColumn,
   makeGenericColumn,
-} from '@/app/components/table/table-columns';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
-import { buildLinkToApplication } from '@/app/lib/ataru/ataru-service';
-import { Hakemus } from '@/app/lib/ataru/ataru-types';
+} from '@/components/table/table-columns';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { buildLinkToApplication } from '@/lib/ataru/ataru-service';
+import { Hakemus } from '@/lib/ataru/ataru-types';
 
 export const HakeneetTable = ({
   hakeneet,

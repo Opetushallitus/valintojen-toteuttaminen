@@ -2,13 +2,13 @@ import { useTranslation } from 'react-i18next';
 
 import { Box } from '@mui/material';
 import { DeselectOutlined, NoteOutlined } from '@mui/icons-material';
-import { ActionBar } from '@/app/components/action-bar';
+import { ActionBar } from '@/components/action-bar';
 import {
   GetValintakoeExcelParams,
   getValintakoeOsoitetarrat,
-} from '@/app/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
+} from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { ValintakoekutsutExcelDownloadButton } from './valintakoekutsut-excel-download-button';
-import { FileDownloadButton } from '@/app/components/file-download-button';
+import { FileDownloadButton } from '@/components/file-download-button';
 
 const OsoitetarratDownloadButton = ({
   hakuOid,

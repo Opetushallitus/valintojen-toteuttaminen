@@ -1,6 +1,6 @@
-import { FileDownloadButton } from '@/app/components/file-download-button';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
-import { getValintakoeExcel } from '@/app/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
+import { FileDownloadButton } from '@/components/file-download-button';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { getValintakoeExcel } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { OphButton } from '@opetushallitus/oph-design-system';
 
 export const ValintakoekutsutExcelDownloadButton = ({

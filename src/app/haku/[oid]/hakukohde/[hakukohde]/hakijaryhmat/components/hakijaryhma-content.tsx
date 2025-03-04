@@ -1,12 +1,12 @@
 'use client';
 import { Box } from '@mui/material';
-import { HakukohteenHakijaryhma } from '@/app/lib/types/laskenta-types';
+import { HakukohteenHakijaryhma } from '@/lib/types/laskenta-types';
 import { HakijaryhmaAccordionTitle } from './hakijaryhma-accordion-title';
 import { HakijaryhmaTable } from './hakijaryhma-table';
 import { useHakijaryhmatSearch } from '../hooks/useHakijaryhmatSearch';
-import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
-import { AccordionBox } from '@/app/components/accordion-box';
+import { TablePaginationWrapper } from '@/components/table/table-pagination-wrapper';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { AccordionBox } from '@/components/accordion-box';
 
 export const HakijaryhmaContent = ({
   hakijaryhma,

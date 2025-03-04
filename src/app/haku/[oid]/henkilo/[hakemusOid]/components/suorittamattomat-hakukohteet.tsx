@@ -1,10 +1,10 @@
-import { ErrorWithIcon } from '@/app/components/error-with-icon';
-import { SimpleAccordion } from '@/app/components/simple-accordion';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
-import { isEmpty } from '@/app/lib/common';
-import { NDASH } from '@/app/lib/constants';
-import { LaskentaActorRef } from '@/app/lib/state/laskenta-state';
-import { Hakukohde } from '@/app/lib/kouta/kouta-types';
+import { ErrorWithIcon } from '@/components/error-with-icon';
+import { SimpleAccordion } from '@/components/simple-accordion';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { isEmpty } from '@/lib/common';
+import { NDASH } from '@/lib/constants';
+import { LaskentaActorRef } from '@/lib/state/laskenta-state';
+import { Hakukohde } from '@/lib/kouta/kouta-types';
 import { Box, Stack, Typography } from '@mui/material';
 import { useSelector } from '@xstate/react';
 

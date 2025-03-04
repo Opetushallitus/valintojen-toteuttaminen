@@ -1,15 +1,15 @@
 'use client';
 import { use } from 'react';
 
-import { getSijoittelunTulokset } from '@/app/lib/valinta-tulos-service/valinta-tulos-service';
+import { getSijoittelunTulokset } from '@/lib/valinta-tulos-service/valinta-tulos-service';
 import { TabContainer } from '../components/tab-container';
 import BasicInfo from './components/basic-info';
 import { useSuspenseQueries } from '@tanstack/react-query';
 import { ValintatapajonotTable } from './components/valintatapajonot-table';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
-import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
-import { FullClientSpinner } from '@/app/components/client-spinner';
-import { hakuQueryOptions } from '@/app/lib/kouta/useHaku';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
+import { FullClientSpinner } from '@/components/client-spinner';
+import { hakuQueryOptions } from '@/lib/kouta/useHaku';
 
 type PerustiedotParams = {
   oid: string;

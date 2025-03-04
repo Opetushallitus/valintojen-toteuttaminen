@@ -1,8 +1,8 @@
 'use client';
 
-import { useTranslations } from '@/app/lib/localization/useTranslations';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import { ListAlt } from '@mui/icons-material';
-import { NoResults } from '@/app/components/no-results';
+import { NoResults } from '@/components/no-results';
 
 export default function HakukohdePage() {
   const { t } = useTranslations();

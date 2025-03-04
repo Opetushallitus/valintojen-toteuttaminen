@@ -2,13 +2,13 @@
 import { use } from 'react';
 
 import HallintaTable from './components/hallinta-table';
-import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
+import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { useSuspenseQueries } from '@tanstack/react-query';
 import { TabContainer } from '../components/tab-container';
-import { hakuQueryOptions } from '@/app/lib/kouta/useHaku';
-import { hakukohdeQueryOptions } from '@/app/lib/kouta/useHakukohde';
-import { haunAsetuksetQueryOptions } from '@/app/lib/ohjausparametrit/useHaunAsetukset';
-import { FullClientSpinner } from '@/app/components/client-spinner';
+import { hakuQueryOptions } from '@/lib/kouta/useHaku';
+import { hakukohdeQueryOptions } from '@/lib/kouta/useHakukohde';
+import { haunAsetuksetQueryOptions } from '@/lib/ohjausparametrit/useHaunAsetukset';
+import { FullClientSpinner } from '@/components/client-spinner';
 
 type ValinnanHallintaContentParams = {
   hakuOid: string;

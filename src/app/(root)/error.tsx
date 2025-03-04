@@ -1,4 +1,4 @@
 'use client';
-import { ErrorView } from '@/app/components/error-view';
+import { ErrorView } from '@/components/error-view';
 
 export default ErrorView;

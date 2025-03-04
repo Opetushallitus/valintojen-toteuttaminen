@@ -1,18 +1,18 @@
 'use client';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
-import { getHenkiloTitle } from '@/app/lib/henkilo-utils';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { getHenkiloTitle } from '@/lib/henkilo-utils';
 import {
   getReadableHakemuksenTila,
   isIlmoittautuminenPossible,
-} from '@/app/lib/sijoittelun-tulokset-utils';
-import { HakijaInfo } from '@/app/lib/ataru/ataru-types';
-import { HakutoiveTitle } from '@/app/components/hakutoive-title';
+} from '@/lib/sijoittelun-tulokset-utils';
+import { HakijaInfo } from '@/lib/ataru/ataru-types';
+import { HakutoiveTitle } from '@/components/hakutoive-title';
 import { ValinnanTilatEditModal } from './valinnan-tilat-edit-modal';
-import { showModal } from '@/app/components/global-modal';
+import { showModal } from '@/components/modals/global-modal';
 import { styled, TableCell as MuiTableCell } from '@mui/material';
-import { EditButton } from '@/app/components/edit-button';
+import { EditButton } from '@/components/edit-button';
 import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
-import { useHaku } from '@/app/lib/kouta/useHaku';
+import { useHaku } from '@/lib/kouta/useHaku';
 
 const ValintaTableCell = styled(MuiTableCell)({
   verticalAlign: 'top',

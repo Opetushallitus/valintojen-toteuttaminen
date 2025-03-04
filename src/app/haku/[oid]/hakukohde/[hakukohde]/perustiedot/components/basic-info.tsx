@@ -1,10 +1,10 @@
 'use client';
 
-import { ExternalLink } from '@/app/components/external-link';
-import { getValintaryhma } from '@/app/lib/valintaperusteet/valintaperusteet-service';
+import { ExternalLink } from '@/components/external-link';
+import { getValintaryhma } from '@/lib/valintaperusteet/valintaperusteet-service';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { styled } from '@mui/material';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
+import { useTranslations } from '@/lib/localization/useTranslations';
 
 const BasicContainer = styled('div')(({ theme }) => ({
   display: 'flex',

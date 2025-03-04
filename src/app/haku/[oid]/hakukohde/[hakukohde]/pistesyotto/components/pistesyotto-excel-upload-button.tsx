@@ -5,20 +5,20 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { pisteTuloksetOptions } from '../hooks/usePisteTulokset';
-import useToaster from '@/app/hooks/useToaster';
-import { savePistesyottoExcel } from '@/app/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
-import { OphModalDialog } from '@/app/components/oph-modal-dialog';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
-import { OphApiError } from '@/app/lib/common';
+import useToaster from '@/hooks/useToaster';
+import { savePistesyottoExcel } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
+import { OphModal } from '@/components/modals/oph-modal';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { OphApiError } from '@/lib/common';
 import {
   createModal,
   hideModal,
   showModal,
   useOphModalProps,
-} from '@/app/components/global-modal';
-import { GlobalSpinnerModal } from '@/app/components/global-spinner-modal';
-import { FileSelectButton } from '@/app/components/file-select-button';
-import { ErrorTable } from '@/app/components/error-table';
+} from '@/components/modals/global-modal';
+import { SpinnerGlobalModal } from '@/components/modals/spinner-global-modal';
+import { FileSelectButton } from '@/components/file-select-button';
+import { ErrorTable } from '@/components/error-table';
 
 const refetchPisteTulokset = ({
   queryClient,
@@ -38,7 +38,7 @@ const ErrorModalDialog = createModal(({ error }: { error: Error }) => {
   const modalProps = useOphModalProps();
   const { t, i18n } = useTranslations();
   return (
-    <OphModalDialog
+    <OphModal
       {...modalProps}
       title={
         error?.message && i18n.exists(error.message)
@@ -56,7 +56,7 @@ const ErrorModalDialog = createModal(({ error }: { error: Error }) => {
         error={error}
         oidHeader="pistesyotto.tuonti-tulos-taulukko.hakemus-oid"
       />
-    </OphModalDialog>
+    </OphModal>
   );
 });
 
@@ -74,7 +74,7 @@ const useExcelUploadMutation = ({
 
   return useMutation({
     mutationFn: async ({ file }: { file: File }) => {
-      showModal(GlobalSpinnerModal, {
+      showModal(SpinnerGlobalModal, {
         title: t('pistesyotto.tuodaan-pistetietoja-taulukkolaskennasta'),
       });
       return await savePistesyottoExcel({
@@ -84,7 +84,7 @@ const useExcelUploadMutation = ({
       });
     },
     onError: (error) => {
-      hideModal(GlobalSpinnerModal);
+      hideModal(SpinnerGlobalModal);
       // Tuonti onnistui osittain -> ladataan muuttuneet pistetulokset
       if (error instanceof OphApiError) {
         refetchPisteTulokset({ queryClient, hakuOid, hakukohdeOid });
@@ -94,7 +94,7 @@ const useExcelUploadMutation = ({
     onSuccess: () => {
       // Ladataan muuttuneet pistetulokset
       refetchPisteTulokset({ queryClient, hakuOid, hakukohdeOid });
-      hideModal(GlobalSpinnerModal);
+      hideModal(SpinnerGlobalModal);
       addToast({
         key: 'put-pistesyotto-excel-success',
         message: 'pistesyotto.tuo-taulukkolaskennasta-onnistui',

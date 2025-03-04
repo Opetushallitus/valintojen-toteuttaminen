@@ -1,14 +1,14 @@
 'use client';
 
-import { NoResults } from '@/app/components/no-results';
-import { ListTable } from '@/app/components/table/list-table';
+import { NoResults } from '@/components/no-results';
+import { ListTable } from '@/components/table/list-table';
 import {
   makeExternalLinkColumn,
   makeGenericColumn,
-} from '@/app/components/table/table-columns';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
+} from '@/components/table/table-columns';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import { useHakukohdeSortAndPaging } from '../hooks/useHakukohdeSortAndPaging';
-import { TablePaginationWrapper } from '@/app/components/table/table-pagination-wrapper';
+import { TablePaginationWrapper } from '@/components/table/table-pagination-wrapper';
 
 export type HakukohdeWithLink = {
   oid: string;

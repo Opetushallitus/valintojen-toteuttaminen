@@ -1,15 +1,15 @@
-import { FormBox } from '@/app/components/form-box';
-import { useHasChanged } from '@/app/hooks/useHasChanged';
-import useToaster from '@/app/hooks/useToaster';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
-import { EMPTY_OBJECT, EMPTY_STRING_SET } from '@/app/lib/common';
+import { FormBox } from '@/components/form-box';
+import { useHasChanged } from '@/hooks/useHasChanged';
+import useToaster from '@/hooks/useToaster';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { EMPTY_OBJECT, EMPTY_STRING_SET } from '@/lib/common';
 import {
   HakemuksenHarkinnanvaraisuus,
   HarkinnanvarainenTilaValue,
   HarkinnanvaraisestiHyvaksytty,
   HarkinnanvaraisetTilatByHakemusOids,
-} from '@/app/lib/types/harkinnanvaraiset-types';
-import { setHarkinnanvaraisetTilat } from '@/app/lib/valintalaskenta/valintalaskenta-service';
+} from '@/lib/types/harkinnanvaraiset-types';
+import { setHarkinnanvaraisetTilat } from '@/lib/valintalaskenta/valintalaskenta-service';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useState } from 'react';
@@ -17,7 +17,7 @@ import { isEmpty } from 'remeda';
 import { harkinnanvaraisetTilatOptions } from '../hooks/useHarkinnanvaraisetHakemukset';
 import { HarkinnanvaraisetActionBar } from './harkinnanvaraiset-action-bar';
 import { HarkinnanvaraisetTable } from './harkinnanvaraiset-table';
-import { useConfirmChangesBeforeNavigation } from '@/app/hooks/useConfirmChangesBeforeNavigation';
+import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBeforeNavigation';
 
 const useTallennaMutation = ({
   hakuOid,

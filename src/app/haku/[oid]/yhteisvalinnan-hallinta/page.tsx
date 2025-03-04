@@ -1,5 +1,5 @@
 'use client';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import { Box } from '@mui/material';
 
 export default function YhteisvalinnanHallintaPage() {

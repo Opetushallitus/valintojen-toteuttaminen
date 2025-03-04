@@ -1,5 +1,5 @@
 import { expect, test, vi, describe, afterEach } from 'vitest';
-import { client } from '@/app/lib/http-client';
+import { client } from '@/lib/http-client';
 import { createActor, waitFor } from 'xstate';
 import { createSijoittelunTuloksetMachine } from './sijoittelun-tulokset-state';
 import {
@@ -7,7 +7,7 @@ import {
   SijoittelunHakemusValintatiedoilla,
   SijoittelunTila,
   VastaanottoTila,
-} from '@/app/lib/types/sijoittelu-types';
+} from '@/lib/types/sijoittelu-types';
 import {
   SijoittelunTuloksetEventType,
   SijoittelunTuloksetState,

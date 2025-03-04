@@ -1,10 +1,10 @@
-import { OPH_ORGANIZATION_OID } from '@/app/lib/constants';
-import { UserPermissions } from '@/app/lib/permissions';
+import { OPH_ORGANIZATION_OID } from '@/lib/constants';
+import { UserPermissions } from '@/lib/permissions';
 import { ButtonProps } from '@mui/material';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { useSijoitteluStatusMutation } from '../hooks/useSijoitteluStatusMutation';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
-import { LaskennanValintatapajonoTulosWithHakijaInfo } from '@/app/hooks/useEditableValintalaskennanTulokset';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { LaskennanValintatapajonoTulosWithHakijaInfo } from '@/hooks/useEditableValintalaskennanTulokset';
 
 const SijoitteluButton = ({ ...props }: ButtonProps) => {
   return <OphButton {...props} variant="outlined" />;

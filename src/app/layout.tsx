@@ -1,16 +1,16 @@
 import type { Metadata } from 'next';
-import ReactQueryClientProvider from './components/react-query-client-provider';
-import LocalizationProvider from './components/localization-provider';
+import ReactQueryClientProvider from '../components/providers/react-query-client-provider';
+import LocalizationProvider from '../components/providers/localization-provider';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
-import { checkAccessibility } from './lib/checkAccessibility';
-import { Toaster } from './components/toaster';
+import { checkAccessibility } from '../lib/checkAccessibility';
+import { Toaster } from '../components/toaster';
 import Script from 'next/script';
-import { configuration, isDev } from './lib/configuration';
-import { LocalizedThemeProvider } from './components/localized-theme-provider';
+import { configuration, isDev } from '../lib/configuration';
+import { LocalizedThemeProvider } from '../components/providers/localized-theme-provider';
 import { OphNextJsThemeProvider } from '@opetushallitus/oph-design-system/next/theme';
-import PermissionProvider from './components/permission-provider';
-import { THEME_OVERRIDES } from './lib/theme';
-import { GlobalModalProvider } from './components/global-modal';
+import PermissionProvider from '../components/providers/permission-provider';
+import { THEME_OVERRIDES } from '../lib/theme';
+import { GlobalModalProvider } from '../components/modals/global-modal';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import NextTopLoader from 'nextjs-toploader';
 

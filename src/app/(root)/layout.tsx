@@ -1,12 +1,12 @@
 'use client';
 
 import { AccessTime as AccessTimeIcon } from '@mui/icons-material';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import { Box, Typography } from '@mui/material';
-import { PageLayout } from '@/app/components/page-layout';
-import { Header } from '@/app/components/header';
-import { responsivePadding } from '../lib/responsive-padding';
-import { DEFAULT_BOX_BORDER } from '@/app/lib/theme';
+import { PageLayout } from '@/components/page-layout';
+import { Header } from '@/components/header';
+import { responsivePadding } from '@/lib/responsive-padding';
+import { DEFAULT_BOX_BORDER } from '@/lib/theme';
 
 const IconHeaderBlock = ({
   title,

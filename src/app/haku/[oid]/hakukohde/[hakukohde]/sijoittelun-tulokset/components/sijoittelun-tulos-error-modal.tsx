@@ -1,13 +1,16 @@
-import { ErrorWithIcon } from '@/app/components/error-with-icon';
-import { ExternalLink } from '@/app/components/external-link';
-import { createModal, useOphModalProps } from '@/app/components/global-modal';
-import { OphModalDialog } from '@/app/components/oph-modal-dialog';
-import { buildLinkToPerson } from '@/app/components/table/table-columns';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
-import { buildLinkToApplication } from '@/app/lib/ataru/ataru-service';
-import { OphApiError } from '@/app/lib/common';
-import { SijoittelunHakemusValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
-import { ValinnanTulosUpdateErrorResult } from '@/app/lib/valinta-tulos-service/valinta-tulos-types';
+import { ErrorWithIcon } from '@/components/error-with-icon';
+import { ExternalLink } from '@/components/external-link';
+import {
+  createModal,
+  useOphModalProps,
+} from '@/components/modals/global-modal';
+import { OphModal } from '@/components/modals/oph-modal';
+import { buildLinkToPerson } from '@/components/table/table-columns';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { buildLinkToApplication } from '@/lib/ataru/ataru-service';
+import { OphApiError } from '@/lib/common';
+import { SijoittelunHakemusValintatiedoilla } from '@/lib/types/sijoittelu-types';
+import { ValinnanTulosUpdateErrorResult } from '@/lib/valinta-tulos-service/valinta-tulos-types';
 import {
   TableContainer,
   Table,
@@ -29,7 +32,7 @@ export const SijoittelunTulosErrorModalDialog = createModal(
     const modalProps = useOphModalProps();
     const { t, i18n } = useTranslations();
     return (
-      <OphModalDialog
+      <OphModal
         {...modalProps}
         title={
           error?.message && i18n.exists(error.message)
@@ -44,7 +47,7 @@ export const SijoittelunTulosErrorModalDialog = createModal(
         }
       >
         <SijoittelunTulosTallennusError error={error} hakemukset={hakemukset} />
-      </OphModalDialog>
+      </OphModal>
     );
   },
 );

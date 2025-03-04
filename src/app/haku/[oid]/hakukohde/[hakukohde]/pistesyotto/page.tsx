@@ -2,14 +2,14 @@
 import { use } from 'react';
 
 import { TabContainer } from '../components/tab-container';
-import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
-import { FullClientSpinner } from '@/app/components/client-spinner';
+import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
+import { FullClientSpinner } from '@/components/client-spinner';
 import { PisteSyottoControls } from './components/pistesyotto-controls';
 import { Box } from '@mui/material';
 import { PisteSyottoForm } from './components/pistesyotto-form';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
-import { isEmpty } from '@/app/lib/common';
-import { NoResults } from '@/app/components/no-results';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { isEmpty } from '@/lib/common';
+import { NoResults } from '@/components/no-results';
 import {
   pisteTuloksetOptions,
   usePisteTulokset,

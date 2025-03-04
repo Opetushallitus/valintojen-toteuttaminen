@@ -1,4 +1,4 @@
-import { SijoittelunHakemusValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
+import { SijoittelunHakemusValintatiedoilla } from '@/lib/types/sijoittelu-types';
 import {
   type SijoittelunTulosEditableFields,
   type SijoittelunTuloksetContext,
@@ -9,7 +9,7 @@ import {
 import {
   isIlmoittautuminenPossible,
   isVastaanottoPossible,
-} from '@/app/lib/sijoittelun-tulokset-utils';
+} from '@/lib/sijoittelun-tulokset-utils';
 import { clone } from 'remeda';
 import { useSelector } from '@xstate/react';
 

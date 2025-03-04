@@ -7,8 +7,8 @@ import {
   fixtureFromFile,
   selectOption,
 } from './playwright-utils';
-import { configuration } from '@/app/lib/configuration';
-import { NDASH } from '@/app/lib/constants';
+import { configuration } from '@/lib/configuration';
+import { NDASH } from '@/lib/constants';
 
 async function goToHarkinnanvaraiset(page: Page) {
   await page.goto(

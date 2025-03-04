@@ -1,15 +1,15 @@
 'use client';
-import { ListTable } from '@/app/components/table/list-table';
+import { ListTable } from '@/components/table/list-table';
 import {
   createHakijaColumn,
   makeBooleanYesNoColumn,
   makeCountColumn,
   makeGenericColumn,
-} from '@/app/components/table/table-columns';
-import { ListTableColumn } from '@/app/components/table/table-types';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
-import { getReadableHakemuksenTila } from '@/app/lib/sijoittelun-tulokset-utils';
-import { HakijaryhmanHakija } from '@/app/lib/types/laskenta-types';
+} from '@/components/table/table-columns';
+import { ListTableColumn } from '@/components/table/table-types';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { getReadableHakemuksenTila } from '@/lib/sijoittelun-tulokset-utils';
+import { HakijaryhmanHakija } from '@/lib/types/laskenta-types';
 import { Box } from '@mui/material';
 import { TFunction } from 'i18next';
 import { useMemo } from 'react';

@@ -1,9 +1,9 @@
-import { useTranslations } from '@/app/lib/localization/useTranslations';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import { OphFormFieldWrapper } from '@opetushallitus/oph-design-system';
 import { useState } from 'react';
-import { EditorComponent } from '@/app/components/editor-component';
-import { Kirjepohja } from '@/app/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-types';
-import { LocalizedSelect } from '@/app/components/localized-select';
+import { EditorComponent } from '@/components/editor-component';
+import { Kirjepohja } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-types';
+import { LocalizedSelect } from '@/components/localized-select';
 import { SelectChangeEvent } from '@mui/material/Select';
 
 export const TemplateSection = ({

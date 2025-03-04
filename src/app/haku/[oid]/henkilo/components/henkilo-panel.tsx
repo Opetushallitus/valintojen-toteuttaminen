@@ -2,11 +2,11 @@
 
 import { useMediaQuery, useTheme } from '@mui/material';
 import { useState } from 'react';
-import { notLarge } from '@/app/lib/theme';
-import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
-import { FullClientSpinner } from '@/app/components/client-spinner';
+import { notLarge } from '@/lib/theme';
+import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
+import { FullClientSpinner } from '@/components/client-spinner';
 import { useParams } from 'next/navigation';
-import { LeftPanel } from '@/app/components/left-panel';
+import { LeftPanel } from '@/components/left-panel';
 import { HenkiloList } from './henkilo-list';
 import { HenkiloSearch } from './henkilo-search';
 

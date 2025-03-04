@@ -1,9 +1,9 @@
-import useToaster from '@/app/hooks/useToaster';
+import useToaster from '@/hooks/useToaster';
 import {
   hakukohteenValintalaskennanTuloksetQueryOptions,
   muutaSijoittelunStatus,
   MuutaSijoittelunStatusProps,
-} from '@/app/lib/valintalaskenta/valintalaskenta-service';
+} from '@/lib/valintalaskenta/valintalaskenta-service';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export const useSijoitteluStatusMutation = (hakukohdeOid: string) => {

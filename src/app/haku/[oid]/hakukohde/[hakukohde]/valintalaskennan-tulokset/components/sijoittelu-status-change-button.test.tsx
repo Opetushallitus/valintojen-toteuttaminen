@@ -2,9 +2,9 @@ import { describe, expect, test, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { SijoitteluStatusChangeButton } from './sijoittelu-status-change-button';
 import { useSijoitteluStatusMutation } from '../hooks/useSijoitteluStatusMutation';
-import { UserPermissions } from '@/app/lib/permissions';
-import { OPH_ORGANIZATION_OID } from '@/app/lib/constants';
-import { LaskennanValintatapajonoTulosWithHakijaInfo } from '@/app/hooks/useEditableValintalaskennanTulokset';
+import { UserPermissions } from '@/lib/permissions';
+import { OPH_ORGANIZATION_OID } from '@/lib/constants';
+import { LaskennanValintatapajonoTulosWithHakijaInfo } from '@/hooks/useEditableValintalaskennanTulokset';
 
 vi.mock('@/app/hooks/useTranslations', () => ({
   useTranslations: () => {

@@ -1,19 +1,19 @@
 'use client';
 import { use } from 'react';
 
-import { useTranslations } from '@/app/lib/localization/useTranslations';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import { TabContainer } from '../components/tab-container';
-import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
+import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { Box } from '@mui/material';
 import { useSuspenseQueries } from '@tanstack/react-query';
-import { getHakijaryhmat } from '@/app/lib/valintalaskenta/valintalaskenta-service';
-import { isEmpty } from '@/app/lib/common';
+import { getHakijaryhmat } from '@/lib/valintalaskenta/valintalaskenta-service';
+import { isEmpty } from '@/lib/common';
 import { HakijaryhmaContent } from './components/hakijaryhma-content';
-import { PageSizeSelector } from '@/app/components/table/page-size-selector';
+import { PageSizeSelector } from '@/components/table/page-size-selector';
 import { useHakijaryhmatSearchParams } from './hooks/useHakijaryhmatSearch';
 import { HakijaryhmatControls } from './components/hakijaryhmat-controls';
-import { NoResults } from '@/app/components/no-results';
-import { FullClientSpinner } from '@/app/components/client-spinner';
+import { NoResults } from '@/components/no-results';
+import { FullClientSpinner } from '@/components/client-spinner';
 
 type HakijaryhmatContentParams = {
   hakuOid: string;

@@ -1,18 +1,18 @@
 'use client';
 
-import { useTranslations } from '@/app/lib/localization/useTranslations';
-import { DEFAULT_BOX_BORDER, ophColors, styled } from '@/app/lib/theme';
-import { hakukohdeQueryOptions } from '@/app/lib/kouta/useHakukohde';
-import { hakuQueryOptions } from '@/app/lib/kouta/useHaku';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { DEFAULT_BOX_BORDER, ophColors, styled } from '@/lib/theme';
+import { hakukohdeQueryOptions } from '@/lib/kouta/useHakukohde';
+import { hakuQueryOptions } from '@/lib/kouta/useHaku';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { useSuspenseQueries } from '@tanstack/react-query';
-import { haunAsetuksetQueryOptions } from '@/app/lib/ohjausparametrit/useHaunAsetukset';
-import { getUsesValintalaskenta } from '@/app/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
-import { userPermissionsQueryOptions } from '@/app/hooks/useUserPermissions';
+import { haunAsetuksetQueryOptions } from '@/lib/ohjausparametrit/useHaunAsetukset';
+import { getUsesValintalaskenta } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
+import { userPermissionsQueryOptions } from '@/hooks/useUserPermissions';
 import { notFound } from 'next/navigation';
 import { HakukohdeTabLink } from './hakukohde-tab-link';
-import { useHakukohdeTab } from '@/app/hooks/useHakukohdeTab';
-import { getVisibleTabs, isTabVisible } from '@/app/lib/hakukohde-tab-utils';
+import { useHakukohdeTab } from '@/hooks/useHakukohdeTab';
+import { getVisibleTabs, isTabVisible } from '@/lib/hakukohde-tab-utils';
 
 const StyledContainer = styled('div')(({ theme }) => ({
   padding: theme.spacing(2, 3, 0),

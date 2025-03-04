@@ -1,7 +1,7 @@
 import { Search } from '@mui/icons-material';
 import { InputAdornment } from '@mui/material';
 import { useHarkinnanvaraisetSearchParams } from '../hooks/useHarkinnanvaraisetSearchParams';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import { ChangeEvent } from 'react';
 import {
   OphFormFieldWrapper,

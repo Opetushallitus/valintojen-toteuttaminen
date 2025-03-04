@@ -1,7 +1,7 @@
-import { LocalizedSelect } from '@/app/components/localized-select';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
-import { MaksunTila } from '@/app/lib/ataru/ataru-types';
-import { SijoittelunHakemusValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
+import { LocalizedSelect } from '@/components/localized-select';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { MaksunTila } from '@/lib/ataru/ataru-types';
+import { SijoittelunHakemusValintatiedoilla } from '@/lib/types/sijoittelu-types';
 import { SelectChangeEvent } from '@mui/material';
 import { SijoittelunTulosChangeParams } from '../lib/sijoittelun-tulokset-state';
 

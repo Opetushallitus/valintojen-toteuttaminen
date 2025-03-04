@@ -1,21 +1,21 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
-import { useDebounce } from '@/app/hooks/useDebounce';
+import { useDebounce } from '@/hooks/useDebounce';
 import { parseAsInteger, useQueryState } from 'nuqs';
-import { useHasChanged } from '@/app/hooks/useHasChanged';
+import { useHasChanged } from '@/hooks/useHasChanged';
 import {
   byProp,
   getSortParts,
   SortDirection,
-} from '@/app/components/table/table-utils';
+} from '@/components/table/table-utils';
 import {
   DEFAULT_NUQS_OPTIONS,
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
-} from '@/app/lib/constants';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
-import { HakijaryhmanHakija } from '@/app/lib/types/laskenta-types';
-import { hakemusFilter } from '@/app/lib/filters';
-import { sortBySijoittelunTila } from '@/app/lib/sortBySijoittelunTila';
+} from '@/lib/constants';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { HakijaryhmanHakija } from '@/lib/types/laskenta-types';
+import { hakemusFilter } from '@/lib/filters';
+import { sortBySijoittelunTila } from '@/lib/sortBySijoittelunTila';
 
 const DEFAULT_PAGE_SIZE = 10;
 

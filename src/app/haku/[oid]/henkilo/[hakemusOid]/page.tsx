@@ -1,19 +1,19 @@
 'use client';
 
-import { useTranslations } from '@/app/lib/localization/useTranslations';
-import { buildLinkToApplication } from '@/app/lib/ataru/ataru-service';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { buildLinkToApplication } from '@/lib/ataru/ataru-service';
 import { Stack, Typography } from '@mui/material';
-import { getHenkiloTitle } from '@/app/lib/henkilo-utils';
-import { LabeledInfoItem } from '@/app/components/labeled-info-item';
-import { ExternalLink } from '@/app/components/external-link';
-import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
-import { FullClientSpinner } from '@/app/components/client-spinner';
+import { getHenkiloTitle } from '@/lib/henkilo-utils';
+import { LabeledInfoItem } from '@/components/labeled-info-item';
+import { ExternalLink } from '@/components/external-link';
+import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
+import { FullClientSpinner } from '@/components/client-spinner';
 import { HakutoiveetTable } from './components/hakutoiveet-table';
 import { useHenkiloPageData } from './hooks/useHenkiloPageData';
 import { use } from 'react';
 import { HenkilonPistesyotto } from './components/henkilon-pistesyotto';
-import { useHaunAsetukset } from '@/app/lib/ohjausparametrit/useHaunAsetukset';
-import { useHaku } from '@/app/lib/kouta/useHaku';
+import { useHaunAsetukset } from '@/lib/ohjausparametrit/useHaunAsetukset';
+import { useHaku } from '@/lib/kouta/useHaku';
 import { HenkilonValintalaskenta } from './components/henkilon-valintalaskenta';
 
 const HenkiloContent = ({

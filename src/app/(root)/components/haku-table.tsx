@@ -1,12 +1,12 @@
 'use client';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
-import { HakuListItem } from '@/app/hooks/useHakuSearch';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { HakuListItem } from '@/hooks/useHakuSearch';
 import { useMemo } from 'react';
-import { ListTableColumn } from '@/app/components/table/table-types';
-import { makeCountColumn } from '@/app/components/table/table-columns';
-import { ListTable } from '@/app/components/table/list-table';
+import { ListTableColumn } from '@/components/table/table-types';
+import { makeCountColumn } from '@/components/table/table-columns';
+import { ListTable } from '@/components/table/list-table';
 import { OphLink } from '@opetushallitus/oph-design-system';
-import { isTranslatedName } from '@/app/lib/localization/translation-utils';
+import { isTranslatedName } from '@/lib/localization/translation-utils';
 
 export const HakuTable = ({
   haut,

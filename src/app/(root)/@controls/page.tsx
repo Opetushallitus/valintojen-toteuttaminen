@@ -3,13 +3,13 @@ import { Suspense, useMemo } from 'react';
 
 import { Select, SelectChangeEvent, Box, InputAdornment } from '@mui/material';
 
-import { Tila, getHakuAlkamisKaudet } from '@/app/lib/kouta/kouta-types';
-import { useHakuSearchParams } from '@/app/hooks/useHakuSearch';
-import { useHakutavat } from '@/app/lib/koodisto/useHakutavat';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
-import { SpinnerIcon } from '@/app/components/spinner-icon';
-import { LocalizedSelect } from '@/app/components/localized-select';
-import { SearchInput } from '@/app/components/search-input';
+import { Tila, getHakuAlkamisKaudet } from '@/lib/kouta/kouta-types';
+import { useHakuSearchParams } from '@/hooks/useHakuSearch';
+import { useHakutavat } from '@/lib/koodisto/useHakutavat';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { SpinnerIcon } from '@/components/spinner-icon';
+import { LocalizedSelect } from '@/components/localized-select';
+import { SearchInput } from '@/components/search-input';
 import { OphFormFieldWrapper } from '@opetushallitus/oph-design-system';
 
 const HakutapaSelect = ({

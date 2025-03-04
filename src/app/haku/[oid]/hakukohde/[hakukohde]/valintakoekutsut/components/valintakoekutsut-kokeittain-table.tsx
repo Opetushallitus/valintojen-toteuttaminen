@@ -1,16 +1,16 @@
 'use client';
 import { ValintakoekutsutActionBar } from './valintakoekutsut-action-bar';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import { Stack } from '@mui/material';
 import { useMemo, useState } from 'react';
-import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
-import { ValintakoeKutsuItem } from '@/app/lib/types/valintakoekutsut-types';
-import { ListTableColumn } from '@/app/components/table/table-types';
+import { toFormattedDateTimeString } from '@/lib/localization/translation-utils';
+import { ValintakoeKutsuItem } from '@/lib/types/valintakoekutsut-types';
+import { ListTableColumn } from '@/components/table/table-types';
 import {
   createHakijaColumn,
   makeColumnWithValueToTranslate,
-} from '@/app/components/table/table-columns';
-import { ListTable } from '@/app/components/table/list-table';
+} from '@/components/table/table-columns';
+import { ListTable } from '@/components/table/list-table';
 
 const TRANSLATIONS_PREFIX = 'valintakoekutsut.taulukko';
 

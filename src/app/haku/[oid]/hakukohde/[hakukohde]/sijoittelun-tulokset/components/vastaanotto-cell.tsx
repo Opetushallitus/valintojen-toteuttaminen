@@ -1,21 +1,21 @@
-import { LocalizedSelect } from '@/app/components/localized-select';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
-import { toFormattedDateTimeString } from '@/app/lib/localization/translation-utils';
+import { LocalizedSelect } from '@/components/localized-select';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { toFormattedDateTimeString } from '@/lib/localization/translation-utils';
 import {
   SijoittelunHakemusValintatiedoilla,
   VastaanottoTila,
-} from '@/app/lib/types/sijoittelu-types';
+} from '@/lib/types/sijoittelu-types';
 import { SelectChangeEvent, Typography } from '@mui/material';
 import { OphCheckbox } from '@opetushallitus/oph-design-system';
 import { SijoittelunTulosStyledCell } from './sijoittelun-tulos-styled-cell';
 import {
   isVastaanottotilaJulkaistavissa,
   isVastaanottoPossible,
-} from '@/app/lib/sijoittelun-tulokset-utils';
-import { useIsHakuPublishAllowed } from '@/app/hooks/useIsHakuPublishAllowed';
-import { Haku } from '@/app/lib/kouta/kouta-types';
+} from '@/lib/sijoittelun-tulokset-utils';
+import { useIsHakuPublishAllowed } from '@/hooks/useIsHakuPublishAllowed';
+import { Haku } from '@/lib/kouta/kouta-types';
 import { SijoittelunTulosChangeParams } from '../lib/sijoittelun-tulokset-state';
-import { useVastaanottoTilaOptions } from '@/app/hooks/useVastaanottoTilaOptions';
+import { useVastaanottoTilaOptions } from '@/hooks/useVastaanottoTilaOptions';
 
 export const VastaanOttoCell = ({
   haku,

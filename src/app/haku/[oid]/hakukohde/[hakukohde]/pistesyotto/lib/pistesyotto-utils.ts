@@ -1,7 +1,7 @@
 import {
   ValintakoeOsallistuminenTulos,
   ValintakokeenPisteet,
-} from '@/app/lib/types/laskenta-types';
+} from '@/lib/types/laskenta-types';
 
 export const isNotPartOfThisHakukohde = (
   pisteet: ValintakokeenPisteet | undefined,

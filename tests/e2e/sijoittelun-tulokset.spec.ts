@@ -4,11 +4,11 @@ import {
   expectAllSpinnersHidden,
   selectOption,
 } from './playwright-utils';
-import { configuration } from '@/app/lib/configuration';
+import { configuration } from '@/lib/configuration';
 import {
   IlmoittautumisTila,
   VastaanottoTila,
-} from '@/app/lib/types/sijoittelu-types';
+} from '@/lib/types/sijoittelu-types';
 
 test.beforeEach(async ({ page }) => await goToSijoittelunTulokset(page));
 

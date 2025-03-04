@@ -1,10 +1,10 @@
 'use client';
 import { use } from 'react';
 
-import { QuerySuspenseBoundary } from '@/app/components/query-suspense-boundary';
+import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { TabContainer } from '../components/tab-container';
-import { FullClientSpinner } from '@/app/components/client-spinner';
-import { AccordionBox } from '@/app/components/accordion-box';
+import { FullClientSpinner } from '@/components/client-spinner';
+import { AccordionBox } from '@/components/accordion-box';
 import {
   Box,
   FormControl,
@@ -14,25 +14,25 @@ import {
   ToggleButton,
   ToggleButtonGroup,
 } from '@mui/material';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import {
   useValintakoekutsutHakijoittain,
   useValintakoekutsutKokeittain,
-} from '@/app/hooks/useValintakoekutsut';
+} from '@/hooks/useValintakoekutsut';
 import { ValintakoekutsutKokeittainTable } from './components/valintakoekutsut-kokeittain-table';
 import {
   ryhmittelyParser,
   useValintakoekutsutGlobalSearchParams,
   useValintakoekutsutPaginated,
 } from './hooks/useValintakoekutsutPaginated';
-import { PageSizeSelector } from '@/app/components/table/page-size-selector';
+import { PageSizeSelector } from '@/components/table/page-size-selector';
 import { entries, isEmpty, map, pipe } from 'remeda';
-import { AccordionBoxTitle } from '@/app/components/accordion-box-title';
-import { ValintakoeKutsuItem } from '@/app/lib/types/valintakoekutsut-types';
-import { NoResults } from '@/app/components/no-results';
+import { AccordionBoxTitle } from '@/components/accordion-box-title';
+import { ValintakoeKutsuItem } from '@/lib/types/valintakoekutsut-types';
+import { NoResults } from '@/components/no-results';
 import { OphCheckbox } from '@opetushallitus/oph-design-system';
 import { ValintakoekutsutHakijoittainTable } from './components/valintakoekutsut-hakijoittain-table';
-import { FormBox } from '@/app/components/form-box';
+import { FormBox } from '@/components/form-box';
 import { ValintakoekutsutExcelDownloadButton } from './components/valintakoekutsut-excel-download-button';
 
 type ValintakoekutsutContentProps = {

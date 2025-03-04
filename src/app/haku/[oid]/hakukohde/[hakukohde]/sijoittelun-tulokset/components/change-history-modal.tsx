@@ -1,17 +1,20 @@
-import { useTranslations } from '@/app/lib/localization/useTranslations';
-import { SijoittelunHakemusValintatiedoilla } from '@/app/lib/types/sijoittelu-types';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { SijoittelunHakemusValintatiedoilla } from '@/lib/types/sijoittelu-types';
 import { Box, Typography } from '@mui/material';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { useMemo, useState } from 'react';
-import { createModal, useOphModalProps } from '@/app/components/global-modal';
-import { HakemusChangeEvent } from '@/app/lib/valinta-tulos-service/valinta-tulos-types';
-import { OphModalDialog } from '@/app/components/oph-modal-dialog';
+import {
+  createModal,
+  useOphModalProps,
+} from '@/components/modals/global-modal';
+import { HakemusChangeEvent } from '@/lib/valinta-tulos-service/valinta-tulos-types';
+import { OphModal } from '@/components/modals/oph-modal';
 import {
   makeColumnWithCustomRender,
   makeGenericColumn,
-} from '@/app/components/table/table-columns';
-import { ListTable } from '@/app/components/table/list-table';
-import { getSortParts } from '@/app/components/table/table-utils';
+} from '@/components/table/table-columns';
+import { ListTable } from '@/components/table/list-table';
+import { getSortParts } from '@/components/table/table-utils';
 import { sortBy } from 'remeda';
 
 const HistoryModalContent = ({
@@ -90,7 +93,7 @@ export const ChangeHistoryModal = createModal(
     }, [sort, changeHistory]);
 
     return (
-      <OphModalDialog
+      <OphModal
         {...modalProps}
         title={t('sijoittelun-tulokset.muutoshistoria.otsikko')}
         maxWidth="md"
@@ -108,7 +111,7 @@ export const ChangeHistoryModal = createModal(
           sort={sort}
           setSort={setSort}
         />
-      </OphModalDialog>
+      </OphModal>
     );
   },
 );

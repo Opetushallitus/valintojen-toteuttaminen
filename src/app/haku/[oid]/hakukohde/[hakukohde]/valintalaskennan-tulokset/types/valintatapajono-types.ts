@@ -1,8 +1,8 @@
 import {
   LaskennanValintatapajonoTulosWithHakijaInfo,
   LaskennanValinnanvaiheInfo,
-} from '@/app/hooks/useEditableValintalaskennanTulokset';
-import { Haku } from '@/app/lib/kouta/kouta-types';
+} from '@/hooks/useEditableValintalaskennanTulokset';
+import { Haku } from '@/lib/kouta/kouta-types';
 
 export type ValintatapajonoContentProps = {
   haku: Haku;

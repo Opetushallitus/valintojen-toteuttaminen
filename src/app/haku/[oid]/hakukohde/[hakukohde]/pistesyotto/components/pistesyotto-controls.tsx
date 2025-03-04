@@ -1,14 +1,14 @@
 import { usePisteSyottoSearchParams } from '../hooks/usePisteSyottoSearch';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import { Box, SelectChangeEvent, Stack } from '@mui/material';
-import { ValintakoeAvaimet } from '@/app/lib/valintaperusteet/valintaperusteet-types';
-import { LocalizedSelect } from '@/app/components/localized-select';
+import { ValintakoeAvaimet } from '@/lib/valintaperusteet/valintaperusteet-types';
+import { LocalizedSelect } from '@/components/localized-select';
 import {
   OphCheckbox,
   OphFormFieldWrapper,
 } from '@opetushallitus/oph-design-system';
-import { SearchInput } from '@/app/components/search-input';
-import { OsallistumisenTilaSelect } from '@/app/components/osallistumisen-tila-select';
+import { SearchInput } from '@/components/search-input';
+import { OsallistumisenTilaSelect } from '@/components/osallistumisen-tila-select';
 
 export const PisteSyottoControls = ({
   kokeet,

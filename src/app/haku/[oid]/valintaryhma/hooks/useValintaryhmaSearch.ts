@@ -1,15 +1,15 @@
 'use client';
 import { useMemo } from 'react';
-import { useDebounce } from '@/app/hooks/useDebounce';
+import { useDebounce } from '@/hooks/useDebounce';
 import { useQueryState } from 'nuqs';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import {
   DEFAULT_NUQS_OPTIONS,
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
-} from '@/app/lib/constants';
+} from '@/lib/constants';
 import { isDefined, isEmpty, uniqueBy } from 'remeda';
-import { getValintaryhmat } from '@/app/lib/valintaperusteet/valintaperusteet-service';
-import { ValintaryhmaHakukohteilla } from '@/app/lib/valintaperusteet/valintaperusteet-types';
+import { getValintaryhmat } from '@/lib/valintaperusteet/valintaperusteet-service';
+import { ValintaryhmaHakukohteilla } from '@/lib/valintaperusteet/valintaperusteet-types';
 
 export const useValintaryhmaSearchParams = () => {
   const [searchPhrase, setSearchPhrase] = useQueryState(

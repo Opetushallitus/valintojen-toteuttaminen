@@ -1,19 +1,19 @@
 'use client';
 
-import { useTranslations } from '@/app/lib/localization/useTranslations';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import { Box, Divider, Typography } from '@mui/material';
 import { isEmpty } from 'remeda';
-import { KoeInputs } from '@/app/components/koe-inputs';
-import { ValintakoeAvaimet } from '@/app/lib/valintaperusteet/valintaperusteet-types';
+import { KoeInputs } from '@/components/koe-inputs';
+import { ValintakoeAvaimet } from '@/lib/valintaperusteet/valintaperusteet-types';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
-import { usePistesyottoState } from '@/app/lib/state/pistesyotto-state';
-import { HakijaInfo } from '@/app/lib/ataru/ataru-types';
-import useToaster from '@/app/hooks/useToaster';
+import { usePistesyottoState } from '@/lib/state/pistesyotto-state';
+import { HakijaInfo } from '@/lib/ataru/ataru-types';
+import useToaster from '@/hooks/useToaster';
 import { useMemo } from 'react';
-import { useConfirmChangesBeforeNavigation } from '@/app/hooks/useConfirmChangesBeforeNavigation';
+import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBeforeNavigation';
 import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
-import { HakutoiveTitle } from '@/app/components/hakutoive-title';
-import { Range } from '@/app/components/range';
+import { HakutoiveTitle } from '@/components/hakutoive-title';
+import { Range } from '@/components/range';
 
 const KokeenPistesyotto = ({
   hakija,

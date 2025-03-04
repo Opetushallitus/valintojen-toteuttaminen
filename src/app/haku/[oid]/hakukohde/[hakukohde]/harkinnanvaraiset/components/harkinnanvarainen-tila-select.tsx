@@ -1,12 +1,12 @@
-import { LocalizedSelect } from '@/app/components/localized-select';
-import { useTranslations } from '@/app/lib/localization/useTranslations';
+import { LocalizedSelect } from '@/components/localized-select';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import { isDefined } from 'remeda';
 import { ophColors } from '@opetushallitus/oph-design-system';
 import {
   HarkinnanvarainenTila,
   HarkinnanvarainenTilaValue,
   HarkinnanvaraisetTilatByHakemusOids,
-} from '@/app/lib/types/harkinnanvaraiset-types';
+} from '@/lib/types/harkinnanvaraiset-types';
 
 export const TRANSLATIONS_PREFIX = 'harkinnanvaraiset.taulukko';
 

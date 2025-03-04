@@ -1,9 +1,9 @@
 'use client';
 
-import { useTranslations } from '@/app/lib/localization/useTranslations';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import { Divider, Stack, styled, Typography } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
-import { withDefaultProps } from '@/app/lib/mui-utils';
+import { withDefaultProps } from '@/lib/mui-utils';
 import {
   LaskentaActorRef,
   LaskentaEvent,
@@ -12,16 +12,16 @@ import {
   LaskentaState,
   useLaskentaError,
   useLaskentaState,
-} from '@/app/lib/state/laskenta-state';
+} from '@/lib/state/laskenta-state';
 import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
-import useToaster from '@/app/hooks/useToaster';
-import { HaunAsetukset } from '@/app/lib/ohjausparametrit/ohjausparametrit-types';
-import { Haku } from '@/app/lib/kouta/kouta-types';
-import { ErrorAlert } from '@/app/components/error-alert';
+import useToaster from '@/hooks/useToaster';
+import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
+import { Haku } from '@/lib/kouta/kouta-types';
+import { ErrorAlert } from '@/components/error-alert';
 import { useSelector } from '@xstate/react';
-import { SeurantaTiedot } from '@/app/lib/types/laskenta-types';
+import { SeurantaTiedot } from '@/lib/types/laskenta-types';
 import { TFunction } from 'i18next';
-import { ProgressBar } from '@/app/components/progress-bar';
+import { ProgressBar } from '@/components/progress-bar';
 import { SuorittamattomatHakukohteet } from './suorittamattomat-hakukohteet';
 import { ConfirmationModalDialog } from './confirmation-modal-dialog';
 
