@@ -1,6 +1,6 @@
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { Hakukohde } from '@/lib/kouta/kouta-types';
-import { HakukohdeTabLink } from '@/app/haku/[oid]/hakukohde/components/hakukohde-tab-link';
+import { HakukohdeTabLink } from '@/components/hakukohde-tab-link';
 import { Link } from '@mui/material';
 import { NDASH } from '@/lib/constants';
 

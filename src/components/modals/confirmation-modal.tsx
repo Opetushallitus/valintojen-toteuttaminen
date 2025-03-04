@@ -2,7 +2,7 @@ import { OphModal } from '@/components/modals/oph-modal';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { OphButton } from '@opetushallitus/oph-design-system';
 
-export type ConfirmationModalDialogProps = {
+export type ConfirmationModalProps = {
   title?: string;
   open: boolean;
   children?: React.ReactNode;
@@ -13,7 +13,7 @@ export type ConfirmationModalDialogProps = {
   maxWidth?: 'sm' | 'md' | false;
 };
 
-export const ConfirmationModalDialog = ({
+export const ConfirmationModal = ({
   title,
   open,
   children,
@@ -22,7 +22,7 @@ export const ConfirmationModalDialog = ({
   confirmLabel,
   cancelLabel,
   maxWidth = 'sm',
-}: ConfirmationModalDialogProps) => {
+}: ConfirmationModalProps) => {
   const { t } = useTranslations();
   return (
     <OphModal

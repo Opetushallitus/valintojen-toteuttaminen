@@ -23,7 +23,7 @@ import { SeurantaTiedot } from '@/lib/types/laskenta-types';
 import { TFunction } from 'i18next';
 import { ProgressBar } from '@/components/progress-bar';
 import { SuorittamattomatHakukohteet } from './suorittamattomat-hakukohteet';
-import { ConfirmationModalDialog } from './confirmation-modal-dialog';
+import { ConfirmationModal } from '@/components/modals/confirmation-modal';
 
 const LaskentaButton = withDefaultProps(
   styled(OphButton)({
@@ -174,7 +174,7 @@ export const HenkilonValintalaskenta = ({
 
   return (
     <Stack spacing={2}>
-      <ConfirmationModalDialog
+      <ConfirmationModal
         open={state.matches(LaskentaState.WAITING_CONFIRMATION)}
         onConfirm={() => send({ type: LaskentaEventType.CONFIRM })}
         onCancel={() => send({ type: LaskentaEventType.CANCEL })}

@@ -10,7 +10,7 @@ import { haunAsetuksetQueryOptions } from '@/lib/ohjausparametrit/useHaunAsetuks
 import { getUsesValintalaskenta } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { userPermissionsQueryOptions } from '@/hooks/useUserPermissions';
 import { notFound } from 'next/navigation';
-import { HakukohdeTabLink } from './hakukohde-tab-link';
+import { HakukohdeTabLink } from '@/components/hakukohde-tab-link';
 import { useHakukohdeTab } from '@/hooks/useHakukohdeTab';
 import { getVisibleTabs, isTabVisible } from '@/lib/hakukohde-tab-utils';
 

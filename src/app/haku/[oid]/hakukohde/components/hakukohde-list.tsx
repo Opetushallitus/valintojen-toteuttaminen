@@ -5,7 +5,7 @@ import { useTranslations } from '@/lib/localization/useTranslations';
 import { Hakukohde } from '@/lib/kouta/kouta-types';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { useParams } from 'next/navigation';
-import { HakukohdeTabLink } from './hakukohde-tab-link';
+import { HakukohdeTabLink } from '@/components/hakukohde-tab-link';
 import { useHakukohdeTab } from '@/hooks/useHakukohdeTab';
 import {
   NavigationList,

@@ -3,17 +3,17 @@ import {
   useOphModalProps,
 } from '@/components/modals/global-modal';
 import {
-  ConfirmationModalDialog,
-  ConfirmationModalDialogProps,
-} from '@/app/haku/[oid]/henkilo/[hakemusOid]/components/confirmation-modal-dialog';
+  ConfirmationModal,
+  ConfirmationModalProps,
+} from '@/components/modals/confirmation-modal';
 
 export const GlobalConfirmationModal = createModal<
-  Omit<ConfirmationModalDialogProps, 'children'> & { content?: React.ReactNode }
+  Omit<ConfirmationModalProps, 'children'> & { content?: React.ReactNode }
 >(({ content, onConfirm, onCancel, ...rest }) => {
   const { open, onClose } = useOphModalProps();
 
   return (
-    <ConfirmationModalDialog
+    <ConfirmationModal
       {...rest}
       open={open}
       onConfirm={() => {
@@ -26,6 +26,6 @@ export const GlobalConfirmationModal = createModal<
       }}
     >
       {content}
-    </ConfirmationModalDialog>
+    </ConfirmationModal>
   );
 });
