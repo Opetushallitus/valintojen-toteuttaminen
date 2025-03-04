@@ -1,9 +1,10 @@
 'use client';
 
-import { Alert, styled, Box, Typography, Slide } from '@mui/material';
+import { Alert, Box, Typography, Slide } from '@mui/material';
 import { Toast, useToaster } from '@/hooks/useToaster';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { ophColors } from '@opetushallitus/oph-design-system';
+import { styled } from '@/lib/theme';
 
 const ToasterContainer = styled(Box)(({ theme }) => ({
   display: 'flex',

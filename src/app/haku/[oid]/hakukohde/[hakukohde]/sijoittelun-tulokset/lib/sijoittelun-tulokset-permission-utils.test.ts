@@ -3,8 +3,8 @@ import {
   isKirjeidenMuodostaminenAllowed,
   isSendVastaanottoPostiVisible,
 } from './sijoittelun-tulokset-permission-utils';
-import { Haku, Tila } from '@/app/lib/types/kouta-types';
-import { UserPermissions } from '@/app/lib/permissions';
+import { Haku, Tila } from '@/lib/kouta/kouta-types';
+import { UserPermissions } from '@/lib/permissions';
 
 const mockHaku: Haku = {
   oid: 'mock-oid',

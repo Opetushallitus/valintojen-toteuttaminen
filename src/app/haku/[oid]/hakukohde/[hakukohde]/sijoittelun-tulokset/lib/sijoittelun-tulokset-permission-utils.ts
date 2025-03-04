@@ -1,6 +1,6 @@
-import { isToinenAsteKohdejoukko } from '@/app/lib/kouta';
-import { UserPermissions } from '@/app/lib/permissions';
-import { Haku } from '@/app/lib/types/kouta-types';
+import { UserPermissions } from '@/lib/permissions';
+import { Haku } from '@/lib/kouta/kouta-types';
+import { isToinenAsteKohdejoukko } from '@/lib/kouta/kouta-service';
 
 export const isKirjeidenMuodostaminenAllowed = (
   haku: Haku,

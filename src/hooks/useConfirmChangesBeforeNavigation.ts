@@ -3,9 +3,9 @@ import { useEffect } from 'react';
 import useToaster from './useToaster';
 import { useRouter } from 'next/navigation';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
-import { showModal } from '@/app/components/global-modal';
-import { GlobalConfirmationModal } from '@/app/components/global-confirmation-modal';
-import { useTranslations } from './useTranslations';
+import { showModal } from '@/components/modals/global-modal';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { ConfirmationGlobalModal } from '@/components/modals/confirmation-global-modal';
 
 const onBeforeUnload = (event: BeforeUnloadEvent) => {
   event.preventDefault();
@@ -32,7 +32,7 @@ export function useConfirmChangesBeforeNavigation(isDirty: boolean) {
 
     if (isDirty && router.push.name !== 'patched') {
       router.push = function patched(...args) {
-        showModal(GlobalConfirmationModal, {
+        showModal(ConfirmationGlobalModal, {
           title: t('lomake.tallentamattomia-muutoksia'),
           content: t('lomake.tallentamaton'),
           confirmLabel: t('lomake.jatka'),

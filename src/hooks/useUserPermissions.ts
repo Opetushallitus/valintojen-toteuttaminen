@@ -1,16 +1,16 @@
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
-import { client } from '@/app/lib/http-client';
-import { configuration } from '@/app/lib/configuration';
+import { client } from '@/lib/http-client';
+import { configuration } from '@/lib/configuration';
 import {
   OrganizationPermissions,
   UserPermissions,
   SERVICE_KEY,
   Permission,
   getOrgsForPermission,
-} from '@/app/lib/permissions';
-import { PermissionError } from '@/app/lib/common';
+} from '@/lib/permissions';
+import { PermissionError } from '@/lib/common';
 import { isNonNull } from 'remeda';
-import { OPH_ORGANIZATION_OID } from '@/app/lib/constants';
+import { OPH_ORGANIZATION_OID } from '@/lib/constants';
 
 const getUserPermissions = async (): Promise<UserPermissions> => {
   const response = await client.get<{

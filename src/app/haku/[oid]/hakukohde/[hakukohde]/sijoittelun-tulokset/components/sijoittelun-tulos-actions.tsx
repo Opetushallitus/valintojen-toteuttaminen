@@ -1,7 +1,6 @@
 import { useTranslations } from '@/lib/localization/useTranslations';
 import {
   Box,
-  styled,
   Table,
   TableBody,
   TableCell,
@@ -23,7 +22,7 @@ import { filter, isEmpty, pipe, prop } from 'remeda';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getMyohastyneetHakemukset } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { showModal } from '@/components/modals/global-modal';
-import { GlobalConfirmationModal } from '@/components/modals/confirmation-global-modal';
+import { ConfirmationGlobalModal } from '@/components/modals/confirmation-global-modal';
 import { buildLinkToApplication } from '@/lib/ataru/ataru-service';
 import { ExternalLink } from '@/components/external-link';
 import { useSelector } from '@xstate/react';
@@ -33,6 +32,7 @@ import {
   SijoittelunTuloksetState,
   SijoittelunTulosActorRef,
 } from '../lib/sijoittelun-tulokset-state';
+import { styled } from '@/lib/theme';
 
 const ActionsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -203,7 +203,7 @@ const MerkitseMyohastyneeksiButton = ({
       variant="contained"
       disabled={disabled || isEmpty(eraantyneetHakemukset ?? [])}
       onClick={() =>
-        showModal(GlobalConfirmationModal, {
+        showModal(ConfirmationGlobalModal, {
           title: t('sijoittelun-tulokset.merkitse-myohastyneeksi-modal-title'),
           maxWidth: 'md',
           content: (

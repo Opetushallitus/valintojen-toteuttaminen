@@ -40,8 +40,8 @@ const SijoitteluContent = ({
     }),
   );
 
-  const kaikkiJonotHyvaksytty = tulokset?.valintatapajonot.every(
-    (jono) => jono.accepted,
+  const kaikkiJonotHyvaksytty = Boolean(
+    tulokset?.valintatapajonot.every((jono) => jono.accepted),
   );
 
   return isEmpty(tulokset) ? (

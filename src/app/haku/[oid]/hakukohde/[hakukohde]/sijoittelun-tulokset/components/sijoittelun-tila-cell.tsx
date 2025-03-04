@@ -6,7 +6,7 @@ import {
 import { useHyvaksynnanEhdot } from '../hooks/useHyvaksynnanEhdot';
 import { ChangeEvent } from 'react';
 import { SijoittelunTulosStyledCell } from './sijoittelun-tulos-styled-cell';
-import { Box, InputAdornment, SelectChangeEvent, styled } from '@mui/material';
+import { Box, InputAdornment, SelectChangeEvent } from '@mui/material';
 import { LocalizedSelect } from '@/components/localized-select';
 import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
 import { Haku } from '@/lib/kouta/kouta-types';
@@ -19,6 +19,7 @@ import { Language } from '@/lib/localization/localization-types';
 import { getReadableHakemuksenTila } from '@/lib/sijoittelun-tulokset-utils';
 import { entries, map, pipe } from 'remeda';
 import { SijoittelunTulosChangeParams } from '../lib/sijoittelun-tulokset-state';
+import { styled } from '@/lib/theme';
 
 const LanguageAdornment = styled(InputAdornment)(() => ({
   backgroundColor: ophColors.grey200,

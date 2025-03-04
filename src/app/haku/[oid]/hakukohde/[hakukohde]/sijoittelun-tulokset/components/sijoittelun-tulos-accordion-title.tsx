@@ -4,7 +4,8 @@ import { AccordionBoxTitle } from '@/components/accordion-box-title';
 import { SijoitteluajonValintatapajonoValintatiedoilla } from '@/lib/types/sijoittelu-types';
 import { Haku } from '@/lib/kouta/kouta-types';
 import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
-import { styled, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
+import { styled } from '@/lib/theme';
 
 const Bolded = styled('span')(() => ({
   fontWeight: 700,

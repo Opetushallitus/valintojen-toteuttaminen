@@ -15,7 +15,7 @@ import PISTETIEDOT from './fixtures/pistetiedot.json';
 import KOKEET from './fixtures/valintakoe-avaimet.json';
 import EHDOT from './fixtures/hyvaksynnan_ehdot.json';
 import VALINTARYHMA_PUU from './fixtures/valintaryhma-puu.json';
-import { OPH_ORGANIZATION_OID } from '@/app/lib/constants';
+import { OPH_ORGANIZATION_OID } from '@/lib/constants';
 
 const port = 3104;
 

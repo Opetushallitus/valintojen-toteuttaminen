@@ -10,7 +10,7 @@ import { useTranslations } from '@/lib/localization/useTranslations';
 import { getValintatapaJonoNimi } from '@/lib/valintalaskenta/valintalaskenta-utils';
 import { LaskennatonValintatapajonoTable } from './laskennaton-valintatapajono-table';
 import { useCallback } from 'react';
-import { GlobalConfirmationModal } from '@/components/modals/confirmation-global-modal';
+import { ConfirmationGlobalModal } from '@/components/modals/confirmation-global-modal';
 import { showModal } from '@/components/modals/global-modal';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { Hakukohde } from '@/lib/kouta/kouta-types';
@@ -56,7 +56,7 @@ const LaskennatonVaiheActions = ({
     newJarjestysPeruste: string | null,
   ) => {
     if (newJarjestysPeruste) {
-      showModal(GlobalConfirmationModal, {
+      showModal(ConfirmationGlobalModal, {
         title: t('valintalaskennan-tulokset.vaihdetaanko-jarjestysperustetta'),
         content:
           newJarjestysPeruste === 'jonosija'

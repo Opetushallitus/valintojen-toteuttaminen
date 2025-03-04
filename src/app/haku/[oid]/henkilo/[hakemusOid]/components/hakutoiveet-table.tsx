@@ -3,7 +3,6 @@
 import { useTranslations } from '@/lib/localization/useTranslations';
 import {
   Box,
-  styled,
   Table,
   TableCell,
   TableHead,
@@ -12,6 +11,7 @@ import {
 import { HakijaInfo } from '@/lib/ataru/ataru-types';
 import { HakutoiveAccordion } from './hakutoive-accordion';
 import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
+import { styled } from '@/lib/theme';
 
 const StyledTable = styled(Table)(({ theme }) => ({
   '& .MuiTableCell-root': {

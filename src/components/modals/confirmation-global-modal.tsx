@@ -7,7 +7,7 @@ import {
   ConfirmationModalProps,
 } from '@/components/modals/confirmation-modal';
 
-export const GlobalConfirmationModal = createModal<
+export const ConfirmationGlobalModal = createModal<
   Omit<ConfirmationModalProps, 'children'> & { content?: React.ReactNode }
 >(({ content, onConfirm, onCancel, ...rest }) => {
   const { open, onClose } = useOphModalProps();

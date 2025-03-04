@@ -40,6 +40,14 @@ const config = ts.config(
         'error',
         {
           patterns: ['@mui/*/*/*', '../../*'],
+          paths: [
+            {
+              name: '@mui/material',
+              importNames: ['styled'],
+              message:
+                'Please use styled from @/lib/theme or @mui/material/styles instead.',
+            },
+          ],
         },
       ],
       '@typescript-eslint/array-type': [

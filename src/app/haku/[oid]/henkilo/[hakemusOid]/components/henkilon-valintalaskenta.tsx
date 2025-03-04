@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { Divider, Stack, styled, Typography } from '@mui/material';
+import { Divider, Stack, Typography } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { withDefaultProps } from '@/lib/mui-utils';
 import {
@@ -24,6 +24,7 @@ import { TFunction } from 'i18next';
 import { ProgressBar } from '@/components/progress-bar';
 import { SuorittamattomatHakukohteet } from './suorittamattomat-hakukohteet';
 import { ConfirmationModal } from '@/components/modals/confirmation-modal';
+import { styled } from '@/lib/theme';
 
 const LaskentaButton = withDefaultProps(
   styled(OphButton)({
