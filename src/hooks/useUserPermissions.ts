@@ -11,7 +11,7 @@ import {
 import { PermissionError } from '@/lib/common';
 import { intersection, isNonNull } from 'remeda';
 import { OPH_ORGANIZATION_OID } from '@/lib/constants';
-import { useOrgParentOids } from '@/lib/organisaatio-service';
+import { useOrganizationParentOids } from '@/lib/organisaatio-service';
 
 const getUserPermissions = async (): Promise<UserPermissions> => {
   const response = await client.get<{
@@ -34,9 +34,8 @@ const getUserPermissions = async (): Promise<UserPermissions> => {
 
   const crudOrganizations = getOrgsForPermission(organizations, 'CRUD');
 
-  const hasOphCRUD = crudOrganizations.includes(OPH_ORGANIZATION_OID);
   const userPermissions: UserPermissions = {
-    hasOphCRUD,
+    hasOphCRUD: crudOrganizations.includes(OPH_ORGANIZATION_OID),
     readOrganizations: getOrgsForPermission(organizations, 'READ'),
     writeOrganizations: getOrgsForPermission(organizations, 'READ_UPDATE'),
     crudOrganizations,
@@ -47,19 +46,26 @@ const getUserPermissions = async (): Promise<UserPermissions> => {
   return userPermissions;
 };
 
-export const useHasOrgPermissions = (
+export const useHasOrganizationPermissions = (
   oid: string,
-  permission: 'read' | 'update',
+  permission: Permission,
 ) => {
   const { data: userPermissions } = useUserPermissions();
-  const permissionOrgOids =
-    permission === 'update'
-      ? userPermissions?.writeOrganizations
-      : userPermissions?.readOrganizations;
+  const { readOrganizations, writeOrganizations, crudOrganizations } =
+    userPermissions;
 
-  const { data: orgParentOids } = useOrgParentOids(oid);
+  let permissionOrganizationOids = readOrganizations;
+  if (permission === 'CRUD') {
+    permissionOrganizationOids = crudOrganizations;
+  } else if (permission === 'READ_UPDATE') {
+    permissionOrganizationOids = writeOrganizations;
+  }
 
-  return intersection(orgParentOids, permissionOrgOids).length > 0;
+  const { data: organizationParentOids } = useOrganizationParentOids(oid);
+
+  return (
+    intersection(organizationParentOids, permissionOrganizationOids).length > 0
+  );
 };
 
 export const userPermissionsQueryOptions = {

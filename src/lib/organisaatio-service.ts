@@ -3,7 +3,8 @@ import { client } from './http-client';
 import { configuration } from './configuration';
 import { OPH_ORGANIZATION_OID } from './constants';
 
-export const getOrganisaatioParentOids = async (oid: string) => {
+export const getOrganizationParentOids = async (oid: string) => {
+  // OPH:n organisaatio-OID:n parent on aina organisaatio itse. Ei tarvetta noutaa.
   if (oid === OPH_ORGANIZATION_OID) {
     return [OPH_ORGANIZATION_OID];
   }
@@ -13,10 +14,10 @@ export const getOrganisaatioParentOids = async (oid: string) => {
   return response.data;
 };
 
-export const useOrgParentOids = (oid: string) => {
+export const useOrganizationParentOids = (oid: string) => {
   return useSuspenseQuery({
     queryKey: ['getOrganisaatioParentOids', oid],
-    queryFn: () => getOrganisaatioParentOids(oid),
+    queryFn: () => getOrganizationParentOids(oid),
     staleTime: Infinity,
   });
 };

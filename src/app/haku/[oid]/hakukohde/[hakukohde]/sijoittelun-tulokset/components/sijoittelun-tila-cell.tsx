@@ -20,7 +20,7 @@ import { getReadableHakemuksenTila } from '@/lib/sijoittelun-tulokset-utils';
 import { entries, map, pipe } from 'remeda';
 import { SijoittelunTulosChangeParams } from '../lib/sijoittelun-tulokset-state';
 import { styled } from '@/lib/theme';
-import { useHasOrgPermissions } from '@/hooks/useUserPermissions';
+import { useHasOrganizationPermissions } from '@/hooks/useUserPermissions';
 
 const LanguageAdornment = styled(InputAdornment)(() => ({
   backgroundColor: ophColors.grey200,
@@ -107,7 +107,10 @@ const EhdollinenFields = ({
     en: ehdollisenHyvaksymisenEhtoEN,
   };
 
-  const canUpdate = useHasOrgPermissions(haku.organisaatioOid, 'update');
+  const canUpdate = useHasOrganizationPermissions(
+    haku.organisaatioOid,
+    'READ_UPDATE',
+  );
 
   return (
     <>

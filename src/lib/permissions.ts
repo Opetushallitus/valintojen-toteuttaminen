@@ -15,21 +15,21 @@ export type UserPermissions = {
   hasOphCRUD: boolean;
 };
 
-const allowedToWrite = (right: Permission) =>
-  ['CRUD', 'READ_UPDATE'].includes(right);
-const allowedToCRUD = (right: Permission) => right === 'CRUD';
-const allowedToRead = (right: Permission) =>
-  ['CRUD', 'READ', 'READ_UPDATE'].includes(right);
+const allowedToWrite = (permission: Permission) =>
+  ['CRUD', 'READ_UPDATE'].includes(permission);
+const allowedToCRUD = (permission: Permission) => permission === 'CRUD';
+const allowedToRead = (permission: Permission) =>
+  ['CRUD', 'READ', 'READ_UPDATE'].includes(permission);
 
 export function getOrgsForPermission(
   permissions: Array<OrganizationPermissions>,
   permission: Permission,
 ): Array<string> {
   const filterByPermission = (
-    rightFn: (right: Permission) => boolean,
+    permissionFn: (permission: Permission) => boolean,
   ): Array<string> =>
     permissions
-      .filter((o) => o.permissions.some(rightFn))
+      .filter((o) => o.permissions.some(permissionFn))
       .map((o) => o.organizationOid);
   switch (permission) {
     case 'CRUD':
@@ -39,6 +39,6 @@ export function getOrgsForPermission(
     case 'READ':
       return filterByPermission(allowedToRead);
     default:
-      throw Error('Unknown right passed ' + permission);
+      throw Error('Unknown permission passed ' + permission);
   }
 }
