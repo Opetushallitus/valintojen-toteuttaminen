@@ -61,10 +61,12 @@ export const useHasOrganizationPermissions = (
     permissionOrganizationOids = writeOrganizations;
   }
 
-  const { data: organizationParentOids } = useOrganizationParentOids(oid);
+  const { data: organizationOidWithParentOids } =
+    useOrganizationParentOids(oid);
 
   return (
-    intersection(organizationParentOids, permissionOrganizationOids).length > 0
+    intersection(organizationOidWithParentOids, permissionOrganizationOids)
+      .length > 0
   );
 };
 
