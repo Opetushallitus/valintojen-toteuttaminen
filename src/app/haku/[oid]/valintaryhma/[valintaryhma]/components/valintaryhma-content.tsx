@@ -19,6 +19,7 @@ import {
 import { ValintaryhmanValintalaskenta } from './valintaryhma-valintalaskenta';
 import { useHaku } from '@/lib/kouta/useHaku';
 import { useHaunAsetukset } from '@/lib/ohjausparametrit/useHaunAsetukset';
+import { getLasketutHakukohteet } from '@/lib/valintalaskenta/valintalaskenta-service';
 
 const StyledContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -71,6 +72,10 @@ export const ValintaryhmaContent = ({
 
   const { data: haku } = useHaku({ hakuOid });
   const { data: haunAsetukset } = useHaunAsetukset({ hakuOid });
+  const { data: lasketutHakukohteet } = useSuspenseQuery({
+    queryKey: ['getLasketutHakukohteet', hakuOid],
+    queryFn: () => getLasketutHakukohteet(hakuOid),
+  });
 
   const { data: hakukohteet } = useSuspenseQuery(
     getHakukohteetQueryOptions(hakuOid, userPermissions),
@@ -121,6 +126,14 @@ export const ValintaryhmaContent = ({
         })
         .filter(isDefined);
     }
+
+    function findLaskentaValmistunut(hakukohde: Hakukohde) {
+      const laskettuHakukohde = lasketutHakukohteet.find(
+        (lhk) => lhk.hakukohdeOid === hakukohde.oid,
+      );
+      return laskettuHakukohde?.laskentaValmistunut ?? '';
+    }
+
     if (!valittuRyhma) {
       return [];
     }
@@ -129,10 +142,11 @@ export const ValintaryhmaContent = ({
         oid: hakukohde.oid,
         name: getHakukohdeFullName(hakukohde),
         link: `kouta/hakukohde/${hakukohde.oid}`,
+        laskentaValmistunut: findLaskentaValmistunut(hakukohde),
       })),
       prop('name'),
     );
-  }, [hakukohteet, valittuRyhma, translateEntity]);
+  }, [hakukohteet, lasketutHakukohteet, valittuRyhma, translateEntity]);
 
   function getHakukohteetForLaskenta() {
     return mappedHakukohteet

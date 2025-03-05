@@ -15,6 +15,7 @@ import {
   LaskentaStart,
   ValintalaskennanTulosValinnanvaiheModel,
   SeurantaTiedot,
+  LaskettuHakukohde,
 } from '../types/laskenta-types';
 import {
   HenkilonValintaTulos,
@@ -39,8 +40,14 @@ import {
 } from '../types/harkinnanvaraiset-types';
 import { queryOptions } from '@tanstack/react-query';
 import { getFullnameOfHakukohde, Haku, Hakukohde } from '../kouta/kouta-types';
-import { ValinnanvaiheTyyppi, ValintaryhmaHakukohteilla } from '../valintaperusteet/valintaperusteet-types';
-import { translateName } from '../localization/translation-utils';
+import {
+  ValinnanvaiheTyyppi,
+  ValintaryhmaHakukohteilla,
+} from '../valintaperusteet/valintaperusteet-types';
+import {
+  toFormattedDateTimeString,
+  translateName,
+} from '../localization/translation-utils';
 
 const formSearchParamsForStartLaskenta = ({
   laskentaUrl,
@@ -541,4 +548,16 @@ export const saveValinnanvaiheTulokset = ({
     url,
     valinnanvaihe,
   );
+};
+
+export const getLasketutHakukohteet = async (
+  hakuOid: string,
+): Promise<Array<LaskettuHakukohde>> => {
+  const { data } = await client.get<
+    Array<{ hakukohdeOid: string; lastModified: string }>
+  >(configuration.lasketutHakukohteet({ hakuOid }));
+  return data.map(({ hakukohdeOid, lastModified }) => ({
+    hakukohdeOid,
+    laskentaValmistunut: toFormattedDateTimeString(lastModified),
+  }));
 };

@@ -14,7 +14,7 @@ export type HakukohdeWithLink = {
   oid: string;
   name: string;
   link: string;
-  dateLaskettu?: string;
+  laskentaValmistunut: string;
 };
 
 type ValintaryhmaHakukohdeTableProps = {
@@ -46,8 +46,8 @@ export const ValintaryhmaHakukohdeTable = ({
 
   const valintalaskentaDoneColumn = makeGenericColumn<HakukohdeWithLink>({
     title: 'valintaryhmittain.tehty',
-    key: 'dateLaskettu',
-    valueProp: 'dateLaskettu',
+    key: 'laskentaValmistunut',
+    valueProp: 'laskentaValmistunut',
   });
 
   const columns = [nameColumn, valintalaskentaDoneColumn];

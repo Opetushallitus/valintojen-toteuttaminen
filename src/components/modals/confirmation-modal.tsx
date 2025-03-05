@@ -48,14 +48,6 @@ export const ConfirmationModal = ({
           >
             {confirmLabel ?? t('yleinen.kylla')}
           </OphButton>
-          <OphButton
-            variant="contained"
-            onClick={() => {
-              onConfirm();
-            }}
-          >
-            {t('yleinen.kylla')}
-          </OphButton>
         </>
       }
     >

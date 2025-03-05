@@ -91,6 +91,8 @@ export const configuration = {
     hakukohdeOid: string;
   }) =>
     `${DOMAIN}/valintalaskenta-laskenta-service/resources/hakukohde/${hakukohdeOid}/valinnanvaihe`,
+  lasketutHakukohteet: ({ hakuOid }: { hakuOid: string }) =>
+    `${DOMAIN}/valintalaskenta-laskenta-service/resources/haku/${hakuOid}/lasketut-hakukohteet`,
   hakukohdeHakijaryhmatUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
     `${DOMAIN}/valintalaskenta-laskenta-service/resources/hakukohde/${hakukohdeOid}/hakijaryhma`,
   seurantaUrl: `${DOMAIN}/valintalaskenta-laskenta-service/resources/seuranta/yhteenveto/`,
