@@ -1,9 +1,9 @@
 'use client';
 
-import { useTranslations } from '@/app/hooks/useTranslations';
-import { Divider, Stack, styled, Typography } from '@mui/material';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { Divider, Stack, Typography } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
-import { withDefaultProps } from '@/app/lib/mui-utils';
+import { withDefaultProps } from '@/lib/mui-utils';
 import {
   LaskentaActorRef,
   LaskentaEvent,
@@ -12,17 +12,18 @@ import {
   LaskentaState,
   useLaskentaError,
   useLaskentaState,
-} from '@/app/lib/state/laskenta-state';
-import useToaster from '@/app/hooks/useToaster';
-import { HaunAsetukset } from '@/app/lib/types/haun-asetukset';
-import { Haku, Hakukohde } from '@/app/lib/types/kouta-types';
-import { ErrorAlert } from '@/app/components/error-alert';
+} from '@/lib/state/laskenta-state';
+import useToaster from '@/hooks/useToaster';
+import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
+import { ErrorAlert } from '@/components/error-alert';
 import { useSelector } from '@xstate/react';
-import { SeurantaTiedot } from '@/app/lib/types/laskenta-types';
+import { SeurantaTiedot } from '@/lib/types/laskenta-types';
 import { TFunction } from 'i18next';
-import { ProgressBar } from '@/app/components/progress-bar';
-import { ConfirmationModalDialog } from '@/app/components/confirmation-modal-dialog';
-import { ValintaryhmaHakukohteilla } from '@/app/lib/types/valintaperusteet-types';
+import { ProgressBar } from '@/components/progress-bar';
+import { ConfirmationModal } from '@/components/modals/confirmation-modal';
+import { ValintaryhmaHakukohteilla } from '@/lib/valintaperusteet/valintaperusteet-types';
+import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
+import { styled } from '@/lib/theme';
 
 const LaskentaButton = withDefaultProps(
   styled(OphButton)({
@@ -176,7 +177,7 @@ export const ValintaryhmanValintalaskenta = ({
 
   return (
     <Stack spacing={2}>
-      <ConfirmationModalDialog
+      <ConfirmationModal
         open={state.matches(LaskentaState.WAITING_CONFIRMATION)}
         onConfirm={() => send({ type: LaskentaEventType.CONFIRM })}
         onCancel={() => send({ type: LaskentaEventType.CANCEL })}
