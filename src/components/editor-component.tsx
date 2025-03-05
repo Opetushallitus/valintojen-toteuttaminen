@@ -77,7 +77,7 @@ const Editor = forwardRef<Quill, EditorProps>(
     const id = useId();
     const editorId = `oph-editor-${id}`;
 
-    return <StyledEditor id={editorId} ref={containerRef} />;
+    return <StyledEditor id={editorId} ref={containerRef} spellCheck={false} />;
   },
 );
 
