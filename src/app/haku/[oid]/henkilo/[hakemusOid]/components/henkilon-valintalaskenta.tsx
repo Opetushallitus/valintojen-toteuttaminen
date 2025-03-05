@@ -19,12 +19,11 @@ import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { Haku } from '@/lib/kouta/kouta-types';
 import { ErrorAlert } from '@/components/error-alert';
 import { useSelector } from '@xstate/react';
-import { SeurantaTiedot } from '@/lib/types/laskenta-types';
-import { TFunction } from 'i18next';
 import { ProgressBar } from '@/components/progress-bar';
 import { SuorittamattomatHakukohteet } from './suorittamattomat-hakukohteet';
 import { ConfirmationModal } from '@/components/modals/confirmation-modal';
 import { styled } from '@/lib/theme';
+import { getLaskentaStatusText } from '@/lib/valintalaskenta/valintalaskenta-utils';
 
 const LaskentaButton = withDefaultProps(
   styled(OphButton)({
@@ -83,30 +82,6 @@ const LaskentaStateButton = ({
       );
     default:
       return null;
-  }
-};
-
-const getLaskentaStatusText = (
-  state: LaskentaMachineSnapshot,
-  seurantaTiedot: SeurantaTiedot | null,
-  t: TFunction,
-) => {
-  switch (true) {
-    case state.hasTag('canceling') ||
-      (state.matches(LaskentaState.FETCHING_SUMMARY) &&
-        state.context.seurantaTiedot?.tila === 'PERUUTETTU'):
-      return `${t('henkilo.keskeytetaan-laskentaa')} `;
-    case state.matches(LaskentaState.STARTING) ||
-      (state.hasTag('started') && seurantaTiedot == null):
-      return `${t('henkilo.kaynnistetaan-laskentaa')} `;
-    case state.hasTag('started'):
-      return seurantaTiedot?.jonosija
-        ? `${'henkilo.tehtava-on-laskennassa-jonosijalla'} ${seurantaTiedot?.jonosija}. `
-        : `${t('henkilo.tehtava-on-laskennassa-parhaillaan')}. `;
-    case state.hasTag('completed'):
-      return `${t('henkilo.laskenta-on-paattynyt')}. `;
-    default:
-      return '';
   }
 };
 

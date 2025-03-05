@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { Divider, Stack, Typography } from '@mui/material';
+import { CircularProgress, Divider, Stack, Typography } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { withDefaultProps } from '@/lib/mui-utils';
 import {
@@ -17,13 +17,11 @@ import useToaster from '@/hooks/useToaster';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import { ErrorAlert } from '@/components/error-alert';
 import { useSelector } from '@xstate/react';
-import { SeurantaTiedot } from '@/lib/types/laskenta-types';
-import { TFunction } from 'i18next';
-import { ProgressBar } from '@/components/progress-bar';
 import { ConfirmationModal } from '@/components/modals/confirmation-modal';
 import { ValintaryhmaHakukohteilla } from '@/lib/valintaperusteet/valintaperusteet-types';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { styled } from '@/lib/theme';
+import { getLaskentaStatusText } from '@/lib/valintalaskenta/valintalaskenta-utils';
 
 const LaskentaButton = withDefaultProps(
   styled(OphButton)({
@@ -85,30 +83,6 @@ const LaskentaStateButton = ({
   }
 };
 
-const getLaskentaStatusText = (
-  state: LaskentaMachineSnapshot,
-  seurantaTiedot: SeurantaTiedot | null,
-  t: TFunction,
-) => {
-  switch (true) {
-    case state.hasTag('canceling') ||
-      (state.matches(LaskentaState.FETCHING_SUMMARY) &&
-        state.context.seurantaTiedot?.tila === 'PERUUTETTU'):
-      return `${t('henkilo.keskeytetaan-laskentaa')} `;
-    case state.matches(LaskentaState.STARTING) ||
-      (state.hasTag('started') && seurantaTiedot == null):
-      return `${t('henkilo.kaynnistetaan-laskentaa')} `;
-    case state.hasTag('started'):
-      return seurantaTiedot?.jonosija
-        ? `${'henkilo.tehtava-on-laskennassa-jonosijalla'} ${seurantaTiedot?.jonosija}. `
-        : `${t('henkilo.tehtava-on-laskennassa-parhaillaan')}. `;
-    case state.hasTag('completed'):
-      return `${t('henkilo.laskenta-on-paattynyt')}. `;
-    default:
-      return '';
-  }
-};
-
 const LaskentaResult = ({ actorRef }: { actorRef: LaskentaActorRef }) => {
   const { t } = useTranslations();
 
@@ -116,15 +90,6 @@ const LaskentaResult = ({ actorRef }: { actorRef: LaskentaActorRef }) => {
 
   const state = useSelector(actorRef, (s) => s);
   const seurantaTiedot = useSelector(actorRef, (s) => s.context.seurantaTiedot);
-
-  const laskentaPercent = seurantaTiedot
-    ? Math.round(
-        (100 *
-          (seurantaTiedot?.hakukohteitaValmiina +
-            seurantaTiedot?.hakukohteitaKeskeytetty)) /
-          seurantaTiedot?.hakukohteitaYhteensa,
-      )
-    : 0;
 
   switch (true) {
     case state.matches({ [LaskentaState.IDLE]: LaskentaState.ERROR }):
@@ -140,7 +105,9 @@ const LaskentaResult = ({ actorRef }: { actorRef: LaskentaActorRef }) => {
           <OphTypography variant="h4">
             {t('henkilo.valintalaskenta')}
           </OphTypography>
-          <ProgressBar value={laskentaPercent} />
+          {state.matches(LaskentaState.PROCESSING) && (
+            <CircularProgress aria-label={t('valinnanhallinta.lasketaan')} />
+          )}
           <Typography>
             {getLaskentaStatusText(state, seurantaTiedot, t)}
             {seurantaTiedot &&
