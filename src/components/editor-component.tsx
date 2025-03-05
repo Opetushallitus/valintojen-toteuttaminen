@@ -1,6 +1,7 @@
 import React, { forwardRef, useEffect, useId, useRef } from 'react';
 import Quill from 'quill';
 import 'quill/dist/quill.snow.css';
+import { ophColors, styled } from '@/lib/theme';
 
 /**
  * Properties for the Editor component.
@@ -13,6 +14,20 @@ export type EditorProps = {
   editorContent: string;
   onContentChanged: (value: string) => void;
 };
+
+const EDITOR_BORDER = `1px solid ${ophColors.black}`;
+
+const StyledEditor = styled('div')({
+  '& .ql-container': {
+    fontFamily: 'Open Sans',
+  },
+  border: `${EDITOR_BORDER} !important`,
+  borderRadius: '2px',
+  '& .ql-toolbar': {
+    border: 'none !important',
+    borderBottom: `${EDITOR_BORDER} !important`,
+  },
+});
 
 // Editor is an uncontrolled React component
 const Editor = forwardRef<Quill, EditorProps>(
@@ -62,7 +77,7 @@ const Editor = forwardRef<Quill, EditorProps>(
     const id = useId();
     const editorId = `oph-editor-${id}`;
 
-    return <div id={editorId} ref={containerRef}></div>;
+    return <StyledEditor id={editorId} ref={containerRef} />;
   },
 );
 
