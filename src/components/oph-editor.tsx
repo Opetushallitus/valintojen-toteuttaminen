@@ -1,4 +1,10 @@
-import React, { forwardRef, useEffect, useId, useRef } from 'react';
+import React, {
+  forwardRef,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+} from 'react';
 import Quill from 'quill';
 import 'quill/dist/quill.snow.css';
 import { ophColors, styled } from '@/lib/theme';
@@ -30,11 +36,15 @@ const StyledEditor = styled('div')({
 });
 
 // Editor is an uncontrolled React component
-const Editor = forwardRef<Quill, EditorProps>(
+const QuillEditor = forwardRef<Quill, EditorProps>(
   ({ editorContent, onContentChanged }, ref) => {
     const containerRef = useRef<HTMLDivElement | null>(null);
     const contentRef = useRef(editorContent);
     const contentChangedRef = useRef(onContentChanged);
+
+    useLayoutEffect(() => {
+      contentChangedRef.current = onContentChanged;
+    });
 
     useEffect(() => {
       const container = containerRef.current;
@@ -61,7 +71,12 @@ const Editor = forwardRef<Quill, EditorProps>(
         }
 
         quill.on(Quill.events.TEXT_CHANGE, () => {
-          contentChangedRef?.current?.(quill.getSemanticHTML());
+          const semanticHTML = quill
+            .getSemanticHTML()
+            .replaceAll('&nbsp;', ' ')
+            // poistetaan tyhjä tekstikappale alusta
+            .replace(/^<p><\/p>/g, '');
+          contentChangedRef?.current?.(semanticHTML);
         });
         return () => {
           if (typeof ref === 'function') {
@@ -81,12 +96,9 @@ const Editor = forwardRef<Quill, EditorProps>(
   },
 );
 
-Editor.displayName = 'Editor';
+QuillEditor.displayName = 'OphEditor';
 
-export const EditorComponent = ({
-  editorContent,
-  onContentChanged,
-}: EditorProps) => {
+export const OphEditor = ({ editorContent, onContentChanged }: EditorProps) => {
   const quillRef = useRef<Quill | null>(null);
 
   useEffect(() => {
@@ -98,7 +110,7 @@ export const EditorComponent = ({
   }, [editorContent]);
 
   return (
-    <Editor
+    <QuillEditor
       ref={quillRef}
       editorContent={editorContent}
       onContentChanged={onContentChanged}

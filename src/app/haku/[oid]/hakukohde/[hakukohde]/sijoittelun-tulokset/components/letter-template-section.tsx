@@ -1,7 +1,7 @@
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { OphFormFieldWrapper } from '@opetushallitus/oph-design-system';
 import { useState } from 'react';
-import { EditorComponent } from '@/components/editor-component';
+import { OphEditor } from '@/components/oph-editor';
 import { Kirjepohja } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-types';
 import { LocalizedSelect } from '@/components/localized-select';
 import { SelectChangeEvent } from '@mui/material/Select';
@@ -49,7 +49,7 @@ export const TemplateSection = ({
           />
         )}
       />
-      <EditorComponent
+      <OphEditor
         editorContent={templateBody}
         onContentChanged={setLetterBody}
       />
