@@ -653,10 +653,6 @@ export const getUsesValintalaskenta = async ({
   return res.data.kayttaaValintalaskentaa;
 };
 
-function clearLetterBodySyntax(letterBody: string): string {
-  return letterBody.replaceAll('&nbsp;', ' ');
-}
-
 export const luoHyvaksymiskirjeetPDF = async ({
   hakemusOids,
   sijoitteluajoId,
@@ -696,7 +692,7 @@ export const luoHyvaksymiskirjeetPDF = async ({
   );
   const body = {
     hakemusOids: hakemusOids,
-    letterBodyText: clearLetterBodySyntax(letterBody),
+    letterBodyText: letterBody,
     tag: hakukohde.oid,
   };
   const startProcessResponse = await client.post<{ id: string }>(
@@ -726,7 +722,7 @@ export const luoEiHyvaksymiskirjeetPDF = async ({
   urlWithQuery.searchParams.append('templateName', 'jalkiohjauskirje');
   const body = {
     hakemusOids: null,
-    letterBodyText: clearLetterBodySyntax(letterBody),
+    letterBodyText: letterBody,
     tag: hakukohde.oid,
   };
   const startProcessResponse = await client.post<{ id: string }>(
