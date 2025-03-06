@@ -135,6 +135,8 @@ export const ValintaryhmanValintalaskenta = ({
 }) => {
   const { addToast } = useToaster();
 
+  const { t } = useTranslations();
+
   const [state, send, actorRef] = useLaskentaState({
     haku,
     valintaryhma,
@@ -142,6 +144,11 @@ export const ValintaryhmanValintalaskenta = ({
     hakukohteet,
     addToast,
   });
+
+  const summaryIlmoitus = useSelector(
+    actorRef,
+    (s) => s.context.summary?.ilmoitus,
+  );
 
   return (
     <Stack spacing={2}>
@@ -152,6 +159,13 @@ export const ValintaryhmanValintalaskenta = ({
       />
       <LaskentaResult actorRef={actorRef} />
       <LaskentaStateButton state={state} send={send} />
+      {state.hasTag('completed') && summaryIlmoitus && (
+        <ErrorAlert
+          title={t('valinnanhallinta.virhe')}
+          message={summaryIlmoitus.otsikko}
+          hasAccordion={true}
+        />
+      )}
       {state.hasTag('completed') && (
         <SuorittamattomatHakukohteet
           actorRef={actorRef}

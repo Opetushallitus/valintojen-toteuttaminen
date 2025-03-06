@@ -20,7 +20,7 @@ import { Haku } from '@/lib/kouta/kouta-types';
 import { ErrorAlert } from '@/components/error-alert';
 import { useSelector } from '@xstate/react';
 import { ProgressBar } from '@/components/progress-bar';
-import { SuorittamattomatHakukohteet } from './suorittamattomat-hakukohteet';
+import { SuorittamattomatHakukohteet } from '@/components/suorittamattomat-hakukohteet';
 import { ConfirmationModal } from '@/components/modals/confirmation-modal';
 import { styled } from '@/lib/theme';
 import { getLaskentaStatusText } from '@/lib/valintalaskenta/valintalaskenta-utils';

@@ -249,3 +249,11 @@ export const getValintaryhmat = async (
     muutRyhmat: sortRyhmatByName(muutRyhmat),
   };
 };
+
+export const onkoHaullaValintaryhma = async (
+  hakuOid: string,
+): Promise<boolean> => {
+  return (
+    await client.get<boolean>(configuration.onkoHaullaValintaryhma({ hakuOid }))
+  ).data;
+};

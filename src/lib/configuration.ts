@@ -65,6 +65,8 @@ export const configuration = {
   }) =>
     `${DOMAIN}/valintaperusteet-service/resources/hakukohde/${hakukohdeOid}/ilmanlaskentaa`,
   valintaryhmatHakukohteilla: `${DOMAIN}/valintaperusteet-service/resources/puu`,
+  onkoHaullaValintaryhma: ({ hakuOid }: { hakuOid: string }) =>
+    `${DOMAIN}/valintaperusteet-service/resources/valintaryhma/onko-haulla-valintaryhmia/${hakuOid}`,
   // -------------------------------------------------------------------------------------------------
   // ataru
   ataruEditoriLogin: `${DOMAIN}/lomake-editori/auth/cas`,
