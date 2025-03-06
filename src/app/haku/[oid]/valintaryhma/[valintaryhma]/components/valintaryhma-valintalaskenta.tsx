@@ -22,6 +22,7 @@ import { ValintaryhmaHakukohteilla } from '@/lib/valintaperusteet/valintaperuste
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { styled } from '@/lib/theme';
 import { getLaskentaStatusText } from '@/lib/valintalaskenta/valintalaskenta-utils';
+import { SuorittamattomatHakukohteet } from '@/components/suorittamattomat-hakukohteet';
 
 const LaskentaButton = withDefaultProps(
   styled(OphButton)({
@@ -151,12 +152,12 @@ export const ValintaryhmanValintalaskenta = ({
       />
       <LaskentaResult actorRef={actorRef} />
       <LaskentaStateButton state={state} send={send} />
-      {/*       {state.hasTag('completed') && (
+      {state.hasTag('completed') && (
         <SuorittamattomatHakukohteet
           actorRef={actorRef}
           hakukohteet={hakukohteet}
         />
-      )} */}
+      )}
       {(state.hasTag('started') || state.hasTag('completed')) && (
         <Divider sx={{ paddingTop: 1 }} />
       )}
