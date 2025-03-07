@@ -11,15 +11,11 @@ import {
   LaskentaMachineSnapshot,
   LaskentaState,
   useLaskentaError,
-  useLaskentaState,
 } from '@/lib/state/laskenta-state';
-import useToaster from '@/hooks/useToaster';
-import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
+import { Hakukohde } from '@/lib/kouta/kouta-types';
 import { ErrorAlert } from '@/components/error-alert';
 import { useSelector } from '@xstate/react';
 import { ConfirmationModal } from '@/components/modals/confirmation-modal';
-import { ValintaryhmaHakukohteilla } from '@/lib/valintaperusteet/valintaperusteet-types';
-import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { styled } from '@/lib/theme';
 import { getLaskentaStatusText } from '@/lib/valintalaskenta/valintalaskenta-utils';
 import { SuorittamattomatHakukohteet } from '@/components/suorittamattomat-hakukohteet';
@@ -123,27 +119,17 @@ const LaskentaResult = ({ actorRef }: { actorRef: LaskentaActorRef }) => {
 };
 
 export const ValintaryhmanValintalaskenta = ({
-  haku,
-  haunAsetukset,
   hakukohteet,
-  valintaryhma,
+  actorRef,
+  state,
+  send,
 }: {
-  haku: Haku;
-  haunAsetukset: HaunAsetukset;
   hakukohteet: Array<Hakukohde>;
-  valintaryhma: ValintaryhmaHakukohteilla;
+  actorRef: LaskentaActorRef;
+  state: LaskentaMachineSnapshot;
+  send: (event: LaskentaEvent) => void;
 }) => {
-  const { addToast } = useToaster();
-
   const { t } = useTranslations();
-
-  const [state, send, actorRef] = useLaskentaState({
-    haku,
-    valintaryhma,
-    haunAsetukset,
-    hakukohteet,
-    addToast,
-  });
 
   const summaryIlmoitus = useSelector(
     actorRef,
