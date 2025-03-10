@@ -29,16 +29,16 @@ export const getLaskentaStatusText = (
     case state.hasTag('canceling') ||
       (state.matches(LaskentaState.FETCHING_SUMMARY) &&
         state.context.seurantaTiedot?.tila === 'PERUUTETTU'):
-      return `${t('henkilo.keskeytetaan-laskentaa')} `;
+      return `${t('valintalaskenta.keskeytetaan-laskentaa')} `;
     case state.matches(LaskentaState.STARTING) ||
       (state.hasTag('started') && seurantaTiedot == null):
-      return `${t('henkilo.kaynnistetaan-laskentaa')} `;
+      return `${t('valintalaskenta.kaynnistetaan-laskentaa')} `;
     case state.hasTag('started'):
       return seurantaTiedot?.jonosija
-        ? `${t('henkilo.tehtava-on-laskennassa-jonosijalla')} ${seurantaTiedot?.jonosija}. `
-        : `${t('henkilo.tehtava-on-laskennassa-parhaillaan')}. `;
+        ? `${t('valintalaskenta.tehtava-on-laskennassa-jonosijalla')} ${seurantaTiedot?.jonosija}. `
+        : `${t('valintalaskenta.tehtava-on-laskennassa-parhaillaan')}. `;
     case state.hasTag('completed'):
-      return `${t('henkilo.laskenta-on-paattynyt')}. `;
+      return `${t('valintalaskenta.laskenta-on-paattynyt')}. `;
     default:
       return '';
   }
