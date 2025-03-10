@@ -21,7 +21,7 @@ export function findParent(
 
 export function findHakukohteetRecursively(
   ryhma: ValintaryhmaHakukohteilla,
-): string[] {
+): Array<string> {
   return unique(
     ryhma.hakukohteet.concat(
       ryhma.alaValintaryhmat.flatMap(findHakukohteetRecursively),
