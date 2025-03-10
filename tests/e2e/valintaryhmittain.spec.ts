@@ -204,7 +204,6 @@ test.describe('Valintaryhmään navigoiminen', () => {
     await page.goto(
       '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000017683/valintaryhma/2234567-3234567',
     );
-    await page.getByRole('link', { name: 'Pääsykoe' }).click();
     await expect(page.getByText('Valitse valintaryhmä')).toBeHidden();
     await expect(
       page.getByRole('cell', { name: 'Hiekkasärkät, Hiekkalinnan' }),
@@ -219,6 +218,29 @@ test.describe('Valintaryhmään navigoiminen', () => {
         name: 'Sibeliuksen puisto, Liukumäen testaajat',
       }),
     ).toBeHidden();
+  });
+
+  test('näyttää lasketut hakukohteet', async () => {
+    await page.route(
+      '**/valintalaskenta-laskenta-service/resources/haku/1.2.246.562.29.00000000000000017683/lasketut-hakukohteet',
+      async (route) => {
+        await route.fulfill({
+          json: [
+            {
+              hakukohdeOid: 'hakukohde-1',
+              lastModified: '2024-01-02 12:00:00',
+            },
+          ],
+        });
+      },
+    );
+    await page.goto(
+      '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000017683/valintaryhma/2234567-3234567',
+    );
+    await expect(page.getByText('Valitse valintaryhmä')).toBeHidden();
+    await expect(
+      page.getByRole('cell', { name: '2.1.2024 12:00:00' }),
+    ).toBeVisible();
   });
 });
 
