@@ -238,9 +238,7 @@ test.describe('Valintaryhmään navigoiminen', () => {
       '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000017683/valintaryhma/2234567-3234567',
     );
     await expect(page.getByText('Valitse valintaryhmä')).toBeHidden();
-    await expect(
-      page.getByRole('cell', { name: '2.1.2024 12:00:00' }),
-    ).toBeVisible();
+    await expect(page.getByRole('cell', { name: '2.1.2024' })).toBeVisible();
   });
 });
 
