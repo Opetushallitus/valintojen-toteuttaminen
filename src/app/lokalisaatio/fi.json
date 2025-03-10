@@ -513,10 +513,6 @@
     "valinta-save-error": "Valinnan tietojen tallentaminen epäonnistui",
     "valinta-save-success": "Valinnan tietojen tallentaminen onnistui",
     "pistesyotto": "Pistesyöttö",
-    "valintalaskenta": "Valintalaskenta",
-    "valintalaskenta-epaonnistui": "Valintalaskenta epäonnistui",
-    "hakukohteita-valmiina": "Hakukohteita valmiina",
-    "suorittamattomia-hakukohteita": "Suorittamattomia hakukohteita",
     "keskeytetaan-laskentaa": "Keskeytetään laskentaa...",
     "kaynnistetaan-laskentaa": "Käynnistetään laskentaa...",
     "tehtava-on-laskennassa-jonosijalla": "Tehtävä on laskennassa jonosijalla",
@@ -550,6 +546,10 @@
     "nayta-suorittamattomat-hakukohteet": "Näytä suorittamattomat hakukohteet",
     "sulje-laskennan-tiedot": "Sulje laskennan tiedot",
     "syy": "Syy",
+    "valintalaskenta": "Valintalaskenta",
+    "valintalaskenta-epaonnistui": "Valintalaskenta epäonnistui",
+    "hakukohteita-valmiina": "Hakukohteita valmiina",
+    "suorittamattomia-hakukohteita": "Suorittamattomia hakukohteita",
     "hyvaksymiskirjeet": {
       "eihakijoita": "Ei ole hakijoita, joille kirjeet voisi muodostaa"
     },

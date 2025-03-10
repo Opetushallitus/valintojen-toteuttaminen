@@ -43,7 +43,7 @@ const LaskentaResult = ({ actorRef }: { actorRef: LaskentaActorRef }) => {
     case state.matches({ [LaskentaState.IDLE]: LaskentaState.ERROR }):
       return (
         <ErrorAlert
-          title={t('henkilo.valintalaskenta-epaonnistui')}
+          title={t('valintalaskenta.valintalaskenta-epaonnistui')}
           message={laskentaError}
         />
       );
@@ -51,14 +51,14 @@ const LaskentaResult = ({ actorRef }: { actorRef: LaskentaActorRef }) => {
       return (
         <>
           <OphTypography variant="h4">
-            {t('henkilo.valintalaskenta')}
+            {t('valintalaskenta.valintalaskenta')}
           </OphTypography>
           <ProgressBar value={laskentaPercent} />
           <Typography>
             {getLaskentaStatusText(state, seurantaTiedot, t)}
             {seurantaTiedot &&
-              `${t('henkilo.hakukohteita-valmiina')} ${seurantaTiedot.hakukohteitaValmiina}/${seurantaTiedot.hakukohteitaYhteensa}. ` +
-                `${t('henkilo.suorittamattomia-hakukohteita')} ${seurantaTiedot?.hakukohteitaKeskeytetty ?? 0}.`}
+              `${t('valintalaskenta.hakukohteita-valmiina')} ${seurantaTiedot.hakukohteitaValmiina}/${seurantaTiedot.hakukohteitaYhteensa}. ` +
+                `${t('valintalaskenta.suorittamattomia-hakukohteita')} ${seurantaTiedot?.hakukohteitaKeskeytetty ?? 0}.`}
           </Typography>
         </>
       );
