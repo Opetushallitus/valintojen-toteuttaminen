@@ -91,7 +91,9 @@ export const ValintaryhmaHakukohdeTable = ({
         <Box sx={{ display: 'flex', flexDirection: 'row', columnGap: 1 }}>
           <Typography>{prop.laskentaValmistunut}</Typography>
           <HakukohdeError
-            errorSummary={summaryErrors?.find((e) => e.hakukohdeOid)}
+            errorSummary={summaryErrors?.find(
+              (e) => e.hakukohdeOid === prop.oid,
+            )}
           />
         </Box>
       ),
