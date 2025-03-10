@@ -134,6 +134,10 @@ export default async function playwrightSetup() {
     ) {
       return modifyResponse(response, VALINNANVAIHE);
     } else if (
+      request.url?.includes('valintaryhma/onko-haulla-valintaryhmia')
+    ) {
+      return modifyResponse(response, true);
+    } else if (
       request.url?.includes('valintaperusteet-service/resources/puu')
     ) {
       return modifyResponse(response, VALINTARYHMA_PUU);
