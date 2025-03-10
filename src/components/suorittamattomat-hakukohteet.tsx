@@ -28,8 +28,8 @@ export const SuorittamattomatHakukohteet = ({
 
   return isEmpty(summaryErrors) ? null : (
     <SimpleAccordion
-      titleOpen={t('henkilo.piilota-suorittamattomat-hakukohteet')}
-      titleClosed={t('henkilo.nayta-suorittamattomat-hakukohteet')}
+      titleOpen={t('valintalaskenta.piilota-suorittamattomat-hakukohteet')}
+      titleClosed={t('valintalaskenta.nayta-suorittamattomat-hakukohteet')}
     >
       <Stack spacing={1} sx={{ paddingLeft: 3 }}>
         {summaryErrors?.map((error) => {
@@ -47,7 +47,7 @@ export const SuorittamattomatHakukohteet = ({
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 1 }}>
                   <Typography component="span" variant="label">
-                    {t('henkilo.syy')}:
+                    {t('valintalaskenta.syy')}:
                   </Typography>
                   <Box>
                     {(error.ilmoitukset?.length ?? 0) > 0 ? (

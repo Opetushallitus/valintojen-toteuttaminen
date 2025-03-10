@@ -2,8 +2,7 @@
 
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { CircularProgress, Divider, Stack, Typography } from '@mui/material';
-import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
-import { withDefaultProps } from '@/lib/mui-utils';
+import { OphTypography } from '@opetushallitus/oph-design-system';
 import {
   LaskentaActorRef,
   LaskentaEvent,
@@ -16,69 +15,9 @@ import { Hakukohde } from '@/lib/kouta/kouta-types';
 import { ErrorAlert } from '@/components/error-alert';
 import { useSelector } from '@xstate/react';
 import { ConfirmationModal } from '@/components/modals/confirmation-modal';
-import { styled } from '@/lib/theme';
 import { getLaskentaStatusText } from '@/lib/valintalaskenta/valintalaskenta-utils';
 import { SuorittamattomatHakukohteet } from '@/components/suorittamattomat-hakukohteet';
-
-const LaskentaButton = withDefaultProps(
-  styled(OphButton)({
-    alignSelf: 'flex-start',
-  }),
-  {
-    variant: 'contained',
-  },
-);
-
-const LaskentaStateButton = ({
-  state,
-  send,
-}: {
-  state: LaskentaMachineSnapshot;
-  send: (event: LaskentaEvent) => void;
-}) => {
-  const { t } = useTranslations();
-
-  switch (true) {
-    case state.hasTag('stopped') && !state.hasTag('completed'):
-      return (
-        <LaskentaButton
-          key="suorita"
-          onClick={() => {
-            send({ type: LaskentaEventType.START });
-          }}
-        >
-          {t('henkilo.suorita-valintalaskenta')}
-        </LaskentaButton>
-      );
-    case state.hasTag('started'):
-      return (
-        <LaskentaButton
-          key="keskeyta"
-          variant="outlined"
-          disabled={state.hasTag('canceling')}
-          onClick={() => {
-            send({ type: LaskentaEventType.CANCEL });
-          }}
-        >
-          {t('henkilo.keskeyta-valintalaskenta')}
-        </LaskentaButton>
-      );
-    case state.hasTag('completed'):
-      return (
-        <LaskentaButton
-          key="sulje"
-          variant="outlined"
-          onClick={() => {
-            send({ type: LaskentaEventType.RESET_RESULTS });
-          }}
-        >
-          {t('henkilo.sulje-laskennan-tiedot')}
-        </LaskentaButton>
-      );
-    default:
-      return null;
-  }
-};
+import { LaskentaStateButton } from '@/components/laskenta-state-button';
 
 const LaskentaResult = ({ actorRef }: { actorRef: LaskentaActorRef }) => {
   const { t } = useTranslations();
