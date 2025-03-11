@@ -3,16 +3,29 @@ import { useUserPermissions } from '@/hooks/useUserPermissions';
 import { getHakukohteetQueryOptions } from '@/lib/kouta/kouta-service';
 import { getValintaryhmat } from '@/lib/valintaperusteet/valintaperusteet-service';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { ValintaryhmaHakukohdeTable } from './valintaryhma-hakukohde-table';
+import {
+  HakukohdeWithLink,
+  ValintaryhmaHakukohdeTable,
+} from './valintaryhma-hakukohde-table';
 import { Box } from '@mui/material';
 import { styled } from '@/lib/theme';
 import { useMemo } from 'react';
 import { ValintaryhmaHakukohteilla } from '@/lib/valintaperusteet/valintaperusteet-types';
-import { Hakukohde } from '@/lib/kouta/kouta-types';
+import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { isDefined, isNullish, prop, sortBy } from 'remeda';
+import { isDefined, prop, sortBy } from 'remeda';
 import { OphTypography } from '@opetushallitus/oph-design-system';
-import { findParent } from './lib/valintaryhma-util';
+import {
+  findHakukohteetRecursively,
+  findParent,
+} from '../lib/valintaryhma-util';
+import { ValintaryhmanValintalaskenta } from './valintaryhma-valintalaskenta';
+import { useHaku } from '@/lib/kouta/useHaku';
+import { useHaunAsetukset } from '@/lib/ohjausparametrit/useHaunAsetukset';
+import { getLasketutHakukohteet } from '@/lib/valintalaskenta/valintalaskenta-service';
+import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
+import useToaster from '@/hooks/useToaster';
+import { useLaskentaState } from '@/lib/state/laskenta-state';
 
 const StyledContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -49,6 +62,45 @@ const ValintaryhmaHeader = ({
   );
 };
 
+const ValintaryhmaBody = ({
+  valittuRyhma,
+  haunAsetukset,
+  hakukohteet,
+  hakukohteetWithLink,
+  haku,
+}: {
+  valittuRyhma: ValintaryhmaHakukohteilla;
+  haunAsetukset: HaunAsetukset;
+  hakukohteet: Array<Hakukohde>;
+  hakukohteetWithLink: Array<HakukohdeWithLink>;
+  haku: Haku;
+}) => {
+  const { addToast } = useToaster();
+
+  const [state, send, actorRef] = useLaskentaState({
+    haku,
+    valintaryhma: valittuRyhma,
+    haunAsetukset,
+    hakukohteet,
+    addToast,
+  });
+
+  return (
+    <>
+      <ValintaryhmanValintalaskenta
+        hakukohteet={hakukohteet}
+        actorRef={actorRef}
+        send={send}
+        state={state}
+      />
+      <ValintaryhmaHakukohdeTable
+        hakukohteet={hakukohteetWithLink}
+        actorRef={actorRef}
+      />
+    </>
+  );
+};
+
 export const ValintaryhmaContent = ({
   hakuOid,
   valintaryhmaOid,
@@ -57,16 +109,24 @@ export const ValintaryhmaContent = ({
   valintaryhmaOid: string;
 }) => {
   const { data: userPermissions } = useUserPermissions();
+
+  const { translateEntity } = useTranslations();
+
   const { data: ryhmat } = useSuspenseQuery({
     queryKey: ['getValintaryhmat', hakuOid],
     queryFn: () => getValintaryhmat(hakuOid),
   });
 
+  const { data: haku } = useHaku({ hakuOid });
+  const { data: haunAsetukset } = useHaunAsetukset({ hakuOid });
+  const { data: lasketutHakukohteet } = useSuspenseQuery({
+    queryKey: ['getLasketutHakukohteet', hakuOid],
+    queryFn: () => getLasketutHakukohteet(hakuOid),
+  });
+
   const { data: hakukohteet } = useSuspenseQuery(
     getHakukohteetQueryOptions(hakuOid, userPermissions),
   );
-
-  const { translateEntity } = useTranslations();
 
   const valittuRyhma = useMemo(() => {
     function findRecursively(
@@ -97,10 +157,7 @@ export const ValintaryhmaContent = ({
   }, [valittuRyhma, ryhmat]);
 
   const mappedHakukohteet = useMemo(() => {
-    function getHakukohdeFullName(hakukohde?: Hakukohde) {
-      if (!hakukohde) {
-        return '';
-      }
+    function getHakukohdeFullName(hakukohde: Hakukohde) {
       const jarjestysPaikka = hakukohde.jarjestyspaikkaHierarkiaNimi
         ? `${translateEntity(hakukohde.jarjestyspaikkaHierarkiaNimi)}, `
         : '';
@@ -108,14 +165,20 @@ export const ValintaryhmaContent = ({
     }
 
     function mapHakukohteet(valintaryhma: ValintaryhmaHakukohteilla) {
-      return valintaryhma.hakukohteet
+      return findHakukohteetRecursively(valintaryhma)
         .map((oid) => {
-          return hakukohteet.find(
-            (mappedHakukohde) => mappedHakukohde.oid === oid,
-          );
+          return hakukohteet.find((hk) => hk.oid === oid);
         })
-        .filter((hk) => !isNullish(hk));
+        .filter(isDefined);
     }
+
+    function findLaskentaValmistunut(hakukohde: Hakukohde) {
+      const laskettuHakukohde = lasketutHakukohteet.find(
+        (lhk) => lhk.hakukohdeOid === hakukohde.oid,
+      );
+      return laskettuHakukohde?.laskentaValmistunut ?? '';
+    }
+
     if (!valittuRyhma) {
       return [];
     }
@@ -124,17 +187,30 @@ export const ValintaryhmaContent = ({
         oid: hakukohde.oid,
         name: getHakukohdeFullName(hakukohde),
         link: `kouta/hakukohde/${hakukohde.oid}`,
+        laskentaValmistunut: findLaskentaValmistunut(hakukohde),
       })),
       prop('name'),
     );
-  }, [hakukohteet, valittuRyhma, translateEntity]);
+  }, [hakukohteet, lasketutHakukohteet, valittuRyhma, translateEntity]);
+
+  function getHakukohteetForLaskenta() {
+    return mappedHakukohteet
+      .map((mhk) => hakukohteet.find((hk) => hk.oid === mhk.oid))
+      .filter(isDefined);
+  }
 
   return !valittuRyhma ? (
     <></>
   ) : (
     <StyledContainer>
       <ValintaryhmaHeader valintaryhma={valittuRyhma} parentName={parentName} />
-      <ValintaryhmaHakukohdeTable hakukohteet={mappedHakukohteet} />
+      <ValintaryhmaBody
+        haku={haku}
+        hakukohteet={getHakukohteetForLaskenta()}
+        hakukohteetWithLink={mappedHakukohteet}
+        haunAsetukset={haunAsetukset}
+        valittuRyhma={valittuRyhma}
+      />
     </StyledContainer>
   );
 };

@@ -4,6 +4,7 @@ import { ActorRefFrom, assign, fromPromise, setup, SnapshotFrom } from 'xstate';
 import {
   Valinnanvaihe,
   ValinnanvaiheTyyppi,
+  ValintaryhmaHakukohteilla,
 } from '@/lib/valintaperusteet/valintaperusteet-types';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import {
@@ -40,6 +41,7 @@ const laskentaReducer = (state: Laskenta, action: Laskenta): Laskenta => {
 export type StartLaskentaParams = {
   haku: Haku;
   hakukohteet: Array<Hakukohde>;
+  valintaryhma?: ValintaryhmaHakukohteilla;
   valinnanvaiheTyyppi?: ValinnanvaiheTyyppi;
   sijoitellaanko: boolean;
   valinnanvaiheNumber?: number;
@@ -120,7 +122,10 @@ export const createLaskentaMachine = (
     error: null,
   };
 
-  const machineKey = `haku_${params.haku.oid}-hakukohteet_${params.hakukohteet.map(prop('oid')).join('_')}${keyPartValinnanvaihe}`;
+  const machineKey = params.valintaryhma
+    ? `haku_${params.haku.oid}-valintaryhma_${params.valintaryhma.oid}`
+    : `haku_${params.haku.oid}-hakukohteet_${params.hakukohteet.map(prop('oid')).join('_')}${keyPartValinnanvaihe}`;
+
   return setup({
     types: {
       context: {} as LaskentaContext,
@@ -132,6 +137,7 @@ export const createLaskentaMachine = (
           return kaynnistaLaskenta({
             haku: input.haku,
             hakukohteet: input.hakukohteet,
+            valintaryhma: input.valintaryhma,
             valinnanvaiheTyyppi: input.valinnanvaiheTyyppi,
             sijoitellaankoHaunHakukohteetLaskennanYhteydessa:
               input.sijoitellaanko,
@@ -406,6 +412,7 @@ type LaskentaStateParams = {
   hakukohteet: Hakukohde | Array<Hakukohde>;
   vaihe?: Valinnanvaihe;
   valinnanvaiheNumber?: number;
+  valintaryhma?: ValintaryhmaHakukohteilla;
   addToast: (toast: Toast) => void;
 };
 
@@ -414,6 +421,7 @@ export const useLaskentaState = ({
   haunAsetukset,
   hakukohteet,
   vaihe,
+  valintaryhma,
   valinnanvaiheNumber,
 }: LaskentaStateParams) => {
   const { addToast } = useToaster();
@@ -422,6 +430,7 @@ export const useLaskentaState = ({
     return createLaskentaMachine(
       {
         haku,
+        valintaryhma,
         hakukohteet: Array.isArray(hakukohteet) ? hakukohteet : [hakukohteet],
         sijoitellaanko: sijoitellaankoHaunHakukohteetLaskennanYhteydessa(
           haku,
@@ -437,7 +446,15 @@ export const useLaskentaState = ({
       },
       addToast,
     );
-  }, [haku, hakukohteet, haunAsetukset, vaihe, valinnanvaiheNumber, addToast]);
+  }, [
+    haku,
+    hakukohteet,
+    haunAsetukset,
+    vaihe,
+    valintaryhma,
+    valinnanvaiheNumber,
+    addToast,
+  ]);
 
   return useMachine(laskentaMachine);
 };

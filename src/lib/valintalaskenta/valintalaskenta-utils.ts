@@ -1,3 +1,10 @@
+import { SeurantaTiedot } from '../types/laskenta-types';
+import { TFunction } from 'i18next';
+import {
+  LaskentaMachineSnapshot,
+  LaskentaState,
+} from '../state/laskenta-state';
+
 export const getValintatapaJonoNimi = ({
   valinnanVaiheNimi,
   jonoNimi,
@@ -11,4 +18,28 @@ export const getValintatapaJonoNimi = ({
       : `${valinnanVaiheNimi}: ${jonoNimi}`;
   }
   return jonoNimi;
+};
+
+export const getLaskentaStatusText = (
+  state: LaskentaMachineSnapshot,
+  seurantaTiedot: SeurantaTiedot | null,
+  t: TFunction,
+) => {
+  switch (true) {
+    case state.hasTag('canceling') ||
+      (state.matches(LaskentaState.FETCHING_SUMMARY) &&
+        state.context.seurantaTiedot?.tila === 'PERUUTETTU'):
+      return `${t('valintalaskenta.keskeytetaan-laskentaa')} `;
+    case state.matches(LaskentaState.STARTING) ||
+      (state.hasTag('started') && seurantaTiedot == null):
+      return `${t('valintalaskenta.kaynnistetaan-laskentaa')} `;
+    case state.hasTag('started'):
+      return seurantaTiedot?.jonosija
+        ? `${t('valintalaskenta.tehtava-on-laskennassa-jonosijalla')} ${seurantaTiedot?.jonosija}. `
+        : `${t('valintalaskenta.tehtava-on-laskennassa-parhaillaan')}. `;
+    case state.hasTag('completed'):
+      return `${t('valintalaskenta.laskenta-on-paattynyt')}. `;
+    default:
+      return '';
+  }
 };

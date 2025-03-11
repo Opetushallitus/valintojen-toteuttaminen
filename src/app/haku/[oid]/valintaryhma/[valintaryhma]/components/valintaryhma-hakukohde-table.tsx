@@ -3,26 +3,60 @@
 import { NoResults } from '@/components/no-results';
 import { ListTable } from '@/components/table/list-table';
 import {
+  makeColumnWithCustomRender,
   makeExternalLinkColumn,
-  makeGenericColumn,
 } from '@/components/table/table-columns';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { useHakukohdeSortAndPaging } from '../hooks/useHakukohdeSortAndPaging';
 import { TablePaginationWrapper } from '@/components/table/table-pagination-wrapper';
+import { LaskentaActorRef } from '@/lib/state/laskenta-state';
+import { useSelector } from '@xstate/react';
+import { ErrorWithIcon } from '@/components/error-with-icon';
+import { Box, Typography } from '@mui/material';
 
 export type HakukohdeWithLink = {
   oid: string;
   name: string;
   link: string;
-  dateLaskettu?: string;
+  laskentaValmistunut: string;
 };
 
 type ValintaryhmaHakukohdeTableProps = {
   hakukohteet: Array<HakukohdeWithLink>;
+  actorRef: LaskentaActorRef;
+};
+
+const HakukohdeError = ({
+  errorSummary,
+}: {
+  errorSummary?: {
+    hakukohdeOid: string;
+    tila: 'TEKEMATTA' | 'VALMIS' | 'VIRHE';
+    ilmoitukset: Array<{
+      otsikko: string;
+      tyyppi: string;
+    }>;
+  };
+}) => {
+  return errorSummary && errorSummary.tila !== 'VALMIS' ? (
+    <ErrorWithIcon key={errorSummary.hakukohdeOid}>
+      {errorSummary.ilmoitukset.map((ilmoitus) => (
+        <Typography key={`${errorSummary.hakukohdeOid}_${ilmoitus.otsikko}`}>
+          {ilmoitus?.otsikko}
+        </Typography>
+      ))}
+      {errorSummary.ilmoitukset.length < 1 && (
+        <Typography>{errorSummary.tila}</Typography>
+      )}
+    </ErrorWithIcon>
+  ) : (
+    <></>
+  );
 };
 
 export const ValintaryhmaHakukohdeTable = ({
   hakukohteet,
+  actorRef,
 }: ValintaryhmaHakukohdeTableProps) => {
   const { t } = useTranslations();
   const {
@@ -36,19 +70,34 @@ export const ValintaryhmaHakukohdeTable = ({
     setPageSize,
   } = useHakukohdeSortAndPaging(hakukohteet);
 
+  const summaryErrors = useSelector(actorRef, (s) =>
+    s.context.summary?.hakukohteet.filter((hk) => hk?.tila !== 'VALMIS'),
+  );
+
   const nameColumn = makeExternalLinkColumn<HakukohdeWithLink>({
     title: 'valintaryhmittain.hakukohteet',
     key: 'name',
     linkProp: 'link',
     nameProp: 'name',
     linkBuilder: (row) => row,
+    style: { width: '65%' },
   });
 
-  const valintalaskentaDoneColumn = makeGenericColumn<HakukohdeWithLink>({
-    title: 'valintaryhmittain.tehty',
-    key: 'dateLaskettu',
-    valueProp: 'dateLaskettu',
-  });
+  const valintalaskentaDoneColumn =
+    makeColumnWithCustomRender<HakukohdeWithLink>({
+      title: 'valintaryhmittain.tehty',
+      key: 'laskentaValmistunut',
+      renderFn: (prop) => (
+        <Box sx={{ display: 'flex', flexDirection: 'row', columnGap: 1 }}>
+          <Typography>{prop.laskentaValmistunut}</Typography>
+          <HakukohdeError
+            errorSummary={summaryErrors?.find(
+              (e) => e.hakukohdeOid === prop.oid,
+            )}
+          />
+        </Box>
+      ),
+    });
 
   const columns = [nameColumn, valintalaskentaDoneColumn];
 

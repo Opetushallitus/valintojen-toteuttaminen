@@ -30,7 +30,7 @@ const TABS_TO_TEST: Array<Tab> = [
 ] as const;
 
 for (const tab of TABS_TO_TEST) {
-  test(`Navigates to ${tab.title}`, async ({ page }) => {
+  test(`Navigoi välilehdelle ${tab.title}`, async ({ page }) => {
     await page.goto(
       '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102',
     );
@@ -44,7 +44,7 @@ for (const tab of TABS_TO_TEST) {
     await expect(page.getByAltText('virhe')).toBeHidden();
   });
 
-  test(`${tab.title} page accessibility`, async ({ page }) => {
+  test(`${tab.title} saavutettavuus`, async ({ page }) => {
     await page.goto(
       `/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/${tab.route}`,
     );
@@ -52,3 +52,22 @@ for (const tab of TABS_TO_TEST) {
     await expectPageAccessibilityOk(page);
   });
 }
+
+test('Ei näytä valintaryhmittäin valintaa jos haulla ei ole valintaryhmiä', async ({
+  page,
+}) => {
+  await page.route(
+    '**/valintaperusteet-service/resources/valintaryhma/onko-haulla-valintaryhmia/1.2.246.562.29.00000000000000045102',
+    async (route) => {
+      await route.abort();
+    },
+  );
+
+  await page.goto(
+    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102',
+  );
+  await expectAllSpinnersHidden(page);
+  await expect(
+    page.getByRole('link', { name: 'Valintaryhmittäin' }),
+  ).toBeHidden();
+});

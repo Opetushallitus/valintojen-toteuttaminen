@@ -512,22 +512,7 @@
     "muokkaa-valintaa": "Muokkaa valintaa",
     "valinta-save-error": "Valinnan tietojen tallentaminen epäonnistui",
     "valinta-save-success": "Valinnan tietojen tallentaminen onnistui",
-    "pistesyotto": "Pistesyöttö",
-    "suorita-valintalaskenta": "Suorita valintalaskenta",
-    "keskeyta-valintalaskenta": "Keskeytä valintalaskenta",
-    "valintalaskenta": "Valintalaskenta",
-    "sulje-laskennan-tiedot": "Sulje laskennan tiedot",
-    "piilota-suorittamattomat-hakukohteet": "Piilota suorittamattomat hakukohteet",
-    "nayta-suorittamattomat-hakukohteet": "Näytä suorittamattomat hakukohteet",
-    "syy": "Syy",
-    "valintalaskenta-epaonnistui": "Valintalaskenta epäonnistui",
-    "hakukohteita-valmiina": "Hakukohteita valmiina",
-    "suorittamattomia-hakukohteita": "Suorittamattomia hakukohteita",
-    "keskeytetaan-laskentaa": "Keskeytetään laskentaa...",
-    "kaynnistetaan-laskentaa": "Käynnistetään laskentaa...",
-    "tehtava-on-laskennassa-jonosijalla": "Tehtävä on laskennassa jonosijalla",
-    "tehtava-on-laskennassa-parhaillaan": "Tehtävä on laskennassa parhaillaan",
-    "laskenta-on-paattynyt": "Laskenta on päättynyt"
+    "pistesyotto": "Pistesyöttö"
   },
   "kirje-modaali": {
     "otsikko-hyvaksymiskirjeet": "Hyväksymiskirjeiden muodostaminen",
@@ -550,6 +535,21 @@
     "organizationLatestByTag": "Hakukohteen viimeisin"
   },
   "valintalaskenta": {
+    "suorita-valintalaskenta": "Suorita valintalaskenta",
+    "keskeyta-valintalaskenta": "Keskeytä valintalaskenta",
+    "piilota-suorittamattomat-hakukohteet": "Piilota suorittamattomat hakukohteet",
+    "nayta-suorittamattomat-hakukohteet": "Näytä suorittamattomat hakukohteet",
+    "sulje-laskennan-tiedot": "Sulje laskennan tiedot",
+    "syy": "Syy",
+    "valintalaskenta": "Valintalaskenta",
+    "valintalaskenta-epaonnistui": "Valintalaskenta epäonnistui",
+    "hakukohteita-valmiina": "Hakukohteita valmiina",
+    "suorittamattomia-hakukohteita": "Suorittamattomia hakukohteita",
+    "keskeytetaan-laskentaa": "Keskeytetään laskentaa...",
+    "kaynnistetaan-laskentaa": "Käynnistetään laskentaa...",
+    "tehtava-on-laskennassa-jonosijalla": "Tehtävä on laskennassa jonosijalla",
+    "tehtava-on-laskennassa-parhaillaan": "Tehtävä on laskennassa parhaillaan",
+    "laskenta-on-paattynyt": "Laskenta on päättynyt",
     "hyvaksymiskirjeet": {
       "eihakijoita": "Ei ole hakijoita, joille kirjeet voisi muodostaa"
     },

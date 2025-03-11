@@ -65,6 +65,8 @@ export const configuration = {
   }) =>
     `${DOMAIN}/valintaperusteet-service/resources/hakukohde/${hakukohdeOid}/ilmanlaskentaa`,
   valintaryhmatHakukohteilla: `${DOMAIN}/valintaperusteet-service/resources/puu`,
+  onkoHaullaValintaryhma: ({ hakuOid }: { hakuOid: string }) =>
+    `${DOMAIN}/valintaperusteet-service/resources/valintaryhma/onko-haulla-valintaryhmia/${hakuOid}`,
   // -------------------------------------------------------------------------------------------------
   // ataru
   ataruEditoriLogin: `${DOMAIN}/lomake-editori/auth/cas`,
@@ -91,6 +93,8 @@ export const configuration = {
     hakukohdeOid: string;
   }) =>
     `${DOMAIN}/valintalaskenta-laskenta-service/resources/hakukohde/${hakukohdeOid}/valinnanvaihe`,
+  lasketutHakukohteet: ({ hakuOid }: { hakuOid: string }) =>
+    `${DOMAIN}/valintalaskenta-laskenta-service/resources/haku/${hakuOid}/lasketut-hakukohteet`,
   hakukohdeHakijaryhmatUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
     `${DOMAIN}/valintalaskenta-laskenta-service/resources/hakukohde/${hakukohdeOid}/hakijaryhma`,
   seurantaUrl: `${DOMAIN}/valintalaskenta-laskenta-service/resources/seuranta/yhteenveto/`,

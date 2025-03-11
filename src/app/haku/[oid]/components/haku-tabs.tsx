@@ -5,8 +5,9 @@ import { getHakukohteetQueryOptions } from '@/lib/kouta/kouta-service';
 import { DEFAULT_BOX_BORDER, styled } from '@/lib/theme';
 import { Box, Stack } from '@mui/material';
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { usePathname } from 'next/navigation';
+import { onkoHaullaValintaryhma } from '@/lib/valintaperusteet/valintaperusteet-service';
 
 const StyledButton = styled(OphButton)({
   borderRadius: 0,
@@ -50,6 +51,11 @@ export const HakuTabs = ({ hakuOid }: { hakuOid: string }) => {
     getHakukohteetQueryOptions(hakuOid, userPermissions),
   );
 
+  const { data: hasValintaryhma } = useQuery({
+    queryKey: ['onkoHaullaValintaryhma', hakuOid],
+    queryFn: () => onkoHaullaValintaryhma(hakuOid),
+  });
+
   return (
     <Stack
       component="nav"
@@ -63,7 +69,9 @@ export const HakuTabs = ({ hakuOid }: { hakuOid: string }) => {
     >
       <TabButton tabName="hakukohde" hakuOid={hakuOid} />
       <TabButton tabName="henkilo" hakuOid={hakuOid} />
-      <TabButton tabName="valintaryhma" hakuOid={hakuOid} />
+      {hasValintaryhma && (
+        <TabButton tabName="valintaryhma" hakuOid={hakuOid} />
+      )}
       <Box sx={{ flexGrow: 2 }}></Box>
       <TabButton tabName="yhteisvalinnan-hallinta" hakuOid={hakuOid} />
     </Stack>

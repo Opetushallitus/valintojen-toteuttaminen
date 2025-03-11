@@ -15,6 +15,7 @@ import {
   LaskentaStart,
   ValintalaskennanTulosValinnanvaiheModel,
   SeurantaTiedot,
+  LaskettuHakukohde,
 } from '../types/laskenta-types';
 import {
   HenkilonValintaTulos,
@@ -39,8 +40,14 @@ import {
 } from '../types/harkinnanvaraiset-types';
 import { queryOptions } from '@tanstack/react-query';
 import { getFullnameOfHakukohde, Haku, Hakukohde } from '../kouta/kouta-types';
-import { ValinnanvaiheTyyppi } from '../valintaperusteet/valintaperusteet-types';
-import { translateName } from '../localization/translation-utils';
+import {
+  ValinnanvaiheTyyppi,
+  ValintaryhmaHakukohteilla,
+} from '../valintaperusteet/valintaperusteet-types';
+import {
+  toFormattedDateTimeString,
+  translateName,
+} from '../localization/translation-utils';
 
 const formSearchParamsForStartLaskenta = ({
   laskentaUrl,
@@ -49,6 +56,7 @@ const formSearchParamsForStartLaskenta = ({
   valinnanvaiheTyyppi,
   sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
   valinnanvaihe,
+  valintaryhma,
 }: {
   laskentaUrl: URL;
   haku: Haku;
@@ -56,6 +64,7 @@ const formSearchParamsForStartLaskenta = ({
   valinnanvaiheTyyppi?: ValinnanvaiheTyyppi;
   sijoitellaankoHaunHakukohteetLaskennanYhteydessa: boolean;
   valinnanvaihe?: number;
+  valintaryhma?: ValintaryhmaHakukohteilla;
 }): URL => {
   laskentaUrl.searchParams.append(
     'erillishaku',
@@ -64,7 +73,11 @@ const formSearchParamsForStartLaskenta = ({
   laskentaUrl.searchParams.append('haunnimi', translateName(haku.nimi));
   laskentaUrl.searchParams.append(
     'nimi',
-    hakukohde ? getFullnameOfHakukohde(hakukohde, translateName) : '',
+    valintaryhma
+      ? valintaryhma.nimi
+      : hakukohde
+        ? getFullnameOfHakukohde(hakukohde, translateName)
+        : '',
   );
   if (valinnanvaihe && valinnanvaiheTyyppi !== ValinnanvaiheTyyppi.VALINTAKOE) {
     laskentaUrl.searchParams.append('valinnanvaihe', '' + valinnanvaihe);
@@ -74,6 +87,9 @@ const formSearchParamsForStartLaskenta = ({
       'valintakoelaskenta',
       `${valinnanvaiheTyyppi === ValinnanvaiheTyyppi.VALINTAKOE}`,
     );
+  }
+  if (valintaryhma) {
+    laskentaUrl.searchParams.append('valintaryhma', valintaryhma.oid);
   }
   return laskentaUrl;
 };
@@ -88,26 +104,30 @@ type LaskentaStatusResponseData = {
 export const kaynnistaLaskenta = async ({
   haku,
   hakukohteet,
+  valintaryhma,
   valinnanvaiheTyyppi,
   sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
   valinnanvaihe,
 }: {
   haku: Haku;
   hakukohteet: Array<Hakukohde>;
+  valintaryhma?: ValintaryhmaHakukohteilla;
   valinnanvaiheTyyppi?: ValinnanvaiheTyyppi;
   sijoitellaankoHaunHakukohteetLaskennanYhteydessa: boolean;
   valinnanvaihe?: number;
 }): Promise<LaskentaStart> => {
+  const laskentaTyyppi = valintaryhma ? 'VALINTARYHMA' : 'HAKUKOHDE';
   const singleHakukohde = hakukohteet.length === 1 ? hakukohteet[0] : undefined;
   const laskentaUrl = formSearchParamsForStartLaskenta({
     laskentaUrl: new URL(
-      `${configuration.valintalaskentakerrallaUrl}/haku/${haku.oid}/tyyppi/HAKUKOHDE/whitelist/true?`,
+      `${configuration.valintalaskentakerrallaUrl}/haku/${haku.oid}/tyyppi/${laskentaTyyppi}/whitelist/true?`,
     ),
     haku,
     hakukohde: singleHakukohde,
     valinnanvaiheTyyppi: valinnanvaiheTyyppi,
     sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
     valinnanvaihe,
+    valintaryhma,
   });
   const response = await client.post<LaskentaStatusResponseData>(
     laskentaUrl.toString(),
@@ -528,4 +548,16 @@ export const saveValinnanvaiheTulokset = ({
     url,
     valinnanvaihe,
   );
+};
+
+export const getLasketutHakukohteet = async (
+  hakuOid: string,
+): Promise<Array<LaskettuHakukohde>> => {
+  const { data } = await client.get<
+    Array<{ hakukohdeOid: string; lastModified: string }>
+  >(configuration.lasketutHakukohteet({ hakuOid }));
+  return data.map(({ hakukohdeOid, lastModified }) => ({
+    hakukohdeOid,
+    laskentaValmistunut: toFormattedDateTimeString(lastModified),
+  }));
 };

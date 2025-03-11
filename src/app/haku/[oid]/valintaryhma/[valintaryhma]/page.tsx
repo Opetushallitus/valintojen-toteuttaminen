@@ -3,7 +3,7 @@ import { FullClientSpinner } from '@/components/client-spinner';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { Box } from '@mui/material';
 import { use } from 'react';
-import { ValintaryhmaContent } from './components.tsx/valintaryhma-content';
+import { ValintaryhmaContent } from './components/valintaryhma-content';
 
 export default function ValintaryhmaPage(props: {
   params: Promise<{ oid: string; valintaryhma: string }>;

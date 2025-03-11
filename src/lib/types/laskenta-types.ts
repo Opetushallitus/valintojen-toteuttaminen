@@ -135,3 +135,8 @@ export enum TuloksenTila {
   MAARITTELEMATON = 'MAARITTELEMATON',
   HYVAKSYTTY_HARKINNANVARAISESTI = 'HYVAKSYTTY_HARKINNANVARAISESTI',
 }
+
+export type LaskettuHakukohde = {
+  hakukohdeOid: string;
+  laskentaValmistunut: string;
+};

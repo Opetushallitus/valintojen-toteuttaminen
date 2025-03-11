@@ -1,25 +1,22 @@
 'use client';
 
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { Divider, Stack, Typography } from '@mui/material';
+import { CircularProgress, Divider, Stack, Typography } from '@mui/material';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import {
   LaskentaActorRef,
+  LaskentaEvent,
   LaskentaEventType,
+  LaskentaMachineSnapshot,
   LaskentaState,
   useLaskentaError,
-  useLaskentaState,
 } from '@/lib/state/laskenta-state';
-import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
-import useToaster from '@/hooks/useToaster';
-import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
-import { Haku } from '@/lib/kouta/kouta-types';
+import { Hakukohde } from '@/lib/kouta/kouta-types';
 import { ErrorAlert } from '@/components/error-alert';
 import { useSelector } from '@xstate/react';
-import { ProgressBar } from '@/components/progress-bar';
-import { SuorittamattomatHakukohteet } from '@/components/suorittamattomat-hakukohteet';
 import { ConfirmationModal } from '@/components/modals/confirmation-modal';
 import { getLaskentaStatusText } from '@/lib/valintalaskenta/valintalaskenta-utils';
+import { SuorittamattomatHakukohteet } from '@/components/suorittamattomat-hakukohteet';
 import { LaskentaStateButton } from '@/components/laskenta-state-button';
 
 const LaskentaResult = ({ actorRef }: { actorRef: LaskentaActorRef }) => {
@@ -29,15 +26,6 @@ const LaskentaResult = ({ actorRef }: { actorRef: LaskentaActorRef }) => {
 
   const state = useSelector(actorRef, (s) => s);
   const seurantaTiedot = useSelector(actorRef, (s) => s.context.seurantaTiedot);
-
-  const laskentaPercent = seurantaTiedot
-    ? Math.round(
-        (100 *
-          (seurantaTiedot?.hakukohteitaValmiina +
-            seurantaTiedot?.hakukohteitaKeskeytetty)) /
-          seurantaTiedot?.hakukohteitaYhteensa,
-      )
-    : 0;
 
   switch (true) {
     case state.matches({ [LaskentaState.IDLE]: LaskentaState.ERROR }):
@@ -53,7 +41,9 @@ const LaskentaResult = ({ actorRef }: { actorRef: LaskentaActorRef }) => {
           <OphTypography variant="h4">
             {t('valintalaskenta.valintalaskenta')}
           </OphTypography>
-          <ProgressBar value={laskentaPercent} />
+          {state.matches(LaskentaState.PROCESSING) && (
+            <CircularProgress aria-label={t('valinnanhallinta.lasketaan')} />
+          )}
           <Typography>
             {getLaskentaStatusText(state, seurantaTiedot, t)}
             {seurantaTiedot &&
@@ -67,23 +57,23 @@ const LaskentaResult = ({ actorRef }: { actorRef: LaskentaActorRef }) => {
   }
 };
 
-export const HenkilonValintalaskenta = ({
-  haku,
-  haunAsetukset,
+export const ValintaryhmanValintalaskenta = ({
   hakukohteet,
+  actorRef,
+  state,
+  send,
 }: {
-  haku: Haku;
-  haunAsetukset: HaunAsetukset;
-  hakukohteet: Array<HenkilonHakukohdeTuloksilla>;
+  hakukohteet: Array<Hakukohde>;
+  actorRef: LaskentaActorRef;
+  state: LaskentaMachineSnapshot;
+  send: (event: LaskentaEvent) => void;
 }) => {
-  const { addToast } = useToaster();
+  const { t } = useTranslations();
 
-  const [state, send, actorRef] = useLaskentaState({
-    haku,
-    haunAsetukset,
-    hakukohteet,
-    addToast,
-  });
+  const summaryIlmoitus = useSelector(
+    actorRef,
+    (s) => s.context.summary?.ilmoitus,
+  );
 
   return (
     <Stack spacing={2}>
@@ -94,6 +84,13 @@ export const HenkilonValintalaskenta = ({
       />
       <LaskentaResult actorRef={actorRef} />
       <LaskentaStateButton state={state} send={send} />
+      {state.hasTag('completed') && summaryIlmoitus && (
+        <ErrorAlert
+          title={t('valinnanhallinta.virhe')}
+          message={summaryIlmoitus.otsikko}
+          hasAccordion={true}
+        />
+      )}
       {state.hasTag('completed') && (
         <SuorittamattomatHakukohteet
           actorRef={actorRef}
