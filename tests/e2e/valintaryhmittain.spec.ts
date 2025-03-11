@@ -41,8 +41,20 @@ const HAKUKOHTEET = [
 ] as const;
 
 test('Valintaryhmittäin saavutettavuus', async ({ page }) => {
+  await page.route(
+    '**/valintalaskenta-laskenta-service/resources/haku/1.2.246.562.29.00000000000000017683/lasketut-hakukohteet',
+    async (route) => {
+      await route.fulfill({ json: [] });
+    },
+  );
+  await page.route(
+    '*/**/kouta-internal/hakukohde/search?all=false&haku=1.2.246.562.29.00000000000000017683*',
+    async (route) => {
+      await route.fulfill({ json: HAKUKOHTEET });
+    },
+  );
   await page.goto(
-    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000017683/valintaryhma',
+    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000017683/valintaryhma/2234567-3234567',
   );
   await expectAllSpinnersHidden(page);
   await expectPageAccessibilityOk(page);
@@ -80,7 +92,7 @@ test.describe('Valintaryhmillä hakeminen', () => {
     await expect(page.getByRole('link', { name: 'Pääsykoe' })).toBeVisible();
   });
 
-  test('nimellä suodatus', async () => {
+  test('Nimellä suodatus', async () => {
     const hakuInput = page.getByRole('textbox', {
       name: 'Hae valintaryhmiä',
     });
@@ -137,7 +149,7 @@ test.describe('Valintaryhmään navigoiminen', () => {
     );
   });
 
-  test('klikkaamalla valintaryhmää', async () => {
+  test('Klikkaamalla valintaryhmää', async () => {
     await page.goto(
       '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000017683/valintaryhma',
     );
@@ -158,7 +170,7 @@ test.describe('Valintaryhmään navigoiminen', () => {
     ).toBeHidden();
   });
 
-  test('klikkaamalla valintaryhmää jolla ei suoria hakukohdeviitteitä', async () => {
+  test('Klikkaamalla valintaryhmää jolla ei suoria hakukohdeviitteitä', async () => {
     await page.goto(
       '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000017683/valintaryhma',
     );
@@ -179,7 +191,7 @@ test.describe('Valintaryhmään navigoiminen', () => {
     ).toBeHidden();
   });
 
-  test('klikkaamalla koko haun valintaryhmää', async () => {
+  test('Klikkaamalla koko haun valintaryhmää', async () => {
     await page.goto(
       '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000017683/valintaryhma',
     );
@@ -200,7 +212,7 @@ test.describe('Valintaryhmään navigoiminen', () => {
     ).toBeVisible();
   });
 
-  test('suoralla linkillä', async () => {
+  test('Suoralla linkillä', async () => {
     await page.goto(
       '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000017683/valintaryhma/2234567-3234567',
     );
@@ -220,7 +232,7 @@ test.describe('Valintaryhmään navigoiminen', () => {
     ).toBeHidden();
   });
 
-  test('näyttää lasketut hakukohteet', async () => {
+  test('Näyttää lasketut hakukohteet', async () => {
     await page.route(
       '**/valintalaskenta-laskenta-service/resources/haku/1.2.246.562.29.00000000000000017683/lasketut-hakukohteet',
       async (route) => {
@@ -261,7 +273,7 @@ test.describe('Valintaryhmän laskenta', () => {
     );
   });
 
-  test('käynnistää laskennan', async () => {
+  test('Käynnistää laskennan', async () => {
     await page.route(
       '**/valintalaskenta-laskenta-service/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000017683/tyyppi/VALINTARYHMA/whitelist/true?**',
       async (route) => {
@@ -293,7 +305,7 @@ test.describe('Valintaryhmän laskenta', () => {
     await expect(spinners).toHaveCount(1);
   });
 
-  test('näyttää laskennan valmistuneen', async () => {
+  test('Näyttää laskennan valmistuneen', async () => {
     await page.route(
       '**/valintalaskenta-laskenta-service/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000017683/tyyppi/VALINTARYHMA/whitelist/true?**',
       async (route) => {
@@ -348,7 +360,7 @@ test.describe('Valintaryhmän laskenta', () => {
     ).toBeVisible();
   });
 
-  test('näyttää virheen epäonnistuneessa laskennassa', async () => {
+  test('Näyttää virheen epäonnistuneessa laskennassa', async () => {
     await page.route(
       '**/valintalaskenta-laskenta-service/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000017683/tyyppi/VALINTARYHMA/whitelist/true?**',
       async (route) => {
@@ -420,7 +432,7 @@ test.describe('Valintaryhmän laskenta', () => {
     await expect(page.getByRole('cell', { name: 'Räjähti' })).toBeVisible();
   });
 
-  test('näyttää virheen kun laskennan aloitus epäonnistuu', async () => {
+  test('Näyttää virheen kun laskennan aloitus epäonnistuu', async () => {
     await page.route(
       '**/valintalaskenta-laskenta-service/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000017683/tyyppi/VALINTARYHMA/whitelist/true?**',
       async (route) => {

@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { checkRow, expectAllSpinnersHidden } from './playwright-utils';
 
-test('displays perustiedot', async ({ page }) => {
+test('Näyttää perustiedot', async ({ page }) => {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/perustiedot',
   );
@@ -64,7 +64,7 @@ test('displays perustiedot', async ({ page }) => {
   ]);
 });
 
-test('shows harkinnanvarainen column when toisen asteen yhteishaku', async ({
+test('Toisen asteen yhteishaulla näytetään harkinnanvaraisuussarake', async ({
   page,
 }) => {
   await page.route(

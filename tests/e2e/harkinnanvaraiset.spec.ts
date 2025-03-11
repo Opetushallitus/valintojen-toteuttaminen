@@ -47,12 +47,12 @@ test.beforeEach(async ({ page }) => {
   await goToHarkinnanvaraiset(page);
 });
 
-test('harkinnanvaraiset accessibility', async ({ page }) => {
+test('Harkinnanvaraiset saavutettavuus', async ({ page }) => {
   await expectAllSpinnersHidden(page);
   await expectPageAccessibilityOk(page);
 });
 
-test('displays harkinnanvaraiset', async ({ page }) => {
+test('Näyttää harkinnanvaraiset', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Tallenna' })).toBeEnabled();
 
   await expect(
@@ -138,7 +138,7 @@ test('"Valitse kaikki", "Poista valinta" and "Aseta valitut hyväksytyiksi" cont
 const HARKINNANVARAINEN_INPUT_NAME =
   'Harkinnanvarainen tila hakijan "Hui Haamu" hakemukselle';
 
-test('shows success toast when successfully updating harkinnanvarainen tila', async ({
+test('Näyttää ilmoituksen kun harkinnanvaraisen tilan päivitys onnistuu', async ({
   page,
 }) => {
   await page.route(
@@ -157,7 +157,7 @@ test('shows success toast when successfully updating harkinnanvarainen tila', as
   );
 });
 
-test('shows error toast when failed updating harkinnanvarainen tila', async ({
+test('Näyttää ilmoituksen kun harkinnanvaraisen tilan päivitys epäonnistuu', async ({
   page,
 }) => {
   await page.route(
@@ -178,7 +178,7 @@ test('shows error toast when failed updating harkinnanvarainen tila', async ({
   );
 });
 
-test('asks for confirmation before navigating to another view without saving changes', async ({
+test('Pyytää käyttäjältä vahvistusta navigointiin kun on tallentamattomia muutoksia', async ({
   page,
 }) => {
   await selectOption(page, HARKINNANVARAINEN_INPUT_NAME, 'Hyväksytty');

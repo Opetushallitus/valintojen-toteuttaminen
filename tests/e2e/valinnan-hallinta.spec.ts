@@ -1,7 +1,7 @@
 import { test, expect, Page } from '@playwright/test';
 import { expectAllSpinnersHidden, getMuiCloseButton } from './playwright-utils';
 
-test('displays valinnanvaiheet', async ({ page }) => {
+test('Näyttää valinnanvaiheet', async ({ page }) => {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/valinnan-hallinta',
   );
@@ -31,7 +31,7 @@ test('displays valinnanvaiheet', async ({ page }) => {
   await expect.soft(columns.nth(3).locator('button')).toBeEnabled();
 });
 
-test('starts laskenta', async ({ page }) => {
+test('Käynnistää laskennan', async ({ page }) => {
   await page.route(
     '*/**/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000045102/tyyppi/HAKUKOHDE/whitelist/true**',
     async (route) => {
@@ -68,7 +68,7 @@ test('starts laskenta', async ({ page }) => {
   await expect(spinners).toHaveCount(1);
 });
 
-test('shows success toast when laskenta completes', async ({ page }) => {
+test('Näyttää ilmoituksen kun laskenta valmistuu', async ({ page }) => {
   await page.route(
     '*/**/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000045102/tyyppi/HAKUKOHDE/whitelist/true**',
     async (route) => {
@@ -124,7 +124,9 @@ test('shows success toast when laskenta completes', async ({ page }) => {
   ).toBeHidden();
 });
 
-test('starting laskenta causes error', async ({ page }) => {
+test('Näyttää virheen kun laskennan käynnistäminen epäonnistuu', async ({
+  page,
+}) => {
   await page.route(
     '*/**/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000045102/tyyppi/HAKUKOHDE/whitelist/true**',
     async (route) => {
