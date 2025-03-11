@@ -44,7 +44,7 @@ test.beforeEach(async ({ page }) => {
   );
 });
 
-test('valintalaskennan tulokset ilman laskentaa accessibility', async ({
+test('Valintalaskennan tulokset ilman laskentaa saavutettavuus', async ({
   page,
 }) => {
   await page.goto(
@@ -55,7 +55,7 @@ test('valintalaskennan tulokset ilman laskentaa accessibility', async ({
   await expectPageAccessibilityOk(page);
 });
 
-test('displays valintalaskennan tulokset', async ({ page }) => {
+test('Näyttää valintalaskennan tulokset', async ({ page }) => {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/valintalaskennan-tulokset',
   );
@@ -113,7 +113,7 @@ test('displays valintalaskennan tulokset', async ({ page }) => {
   await checkRow(jonoHeadingRow, PISTEET_TABLE_HEADINGS, 'th');
 });
 
-test('Exports valintatapajono excel successfully', async ({ page }) => {
+test('Lataa valintatapajono excelin onnistuneesti', async ({ page }) => {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/valintalaskennan-tulokset',
   );
@@ -140,7 +140,7 @@ test('Exports valintatapajono excel successfully', async ({ page }) => {
   );
 });
 
-test('Fails valintatapajono excel export', async ({ page }) => {
+test('Valintatapajono excelin lataus epäonnistuu', async ({ page }) => {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/valintalaskennan-tulokset',
   );
@@ -172,7 +172,7 @@ test('Fails valintatapajono excel export', async ({ page }) => {
     'Valintatapajonon tulosten viemisessä taulukkolaskentaan tapahtui virhe!',
   );
 });
-test('Uploads valintatapajono excel successfully', async ({ page }) => {
+test('Valintatapajono excelin tuonti onnistuu', async ({ page }) => {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/valintalaskennan-tulokset',
   );
@@ -195,7 +195,7 @@ test('Uploads valintatapajono excel successfully', async ({ page }) => {
   );
 });
 
-test('Fails valintatapajono excel upload', async ({ page }) => {
+test('Valintatapajono excelin tuonti epäonnistuu', async ({ page }) => {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/valintalaskennan-tulokset',
   );
@@ -221,7 +221,7 @@ test('Fails valintatapajono excel upload', async ({ page }) => {
   );
 });
 
-test('Sends edited data to backend when saving', async ({ page }) => {
+test('Lähettää muokatun datan tallentaessa', async ({ page }) => {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/valintalaskennan-tulokset',
   );

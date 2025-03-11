@@ -45,7 +45,7 @@ const TABS_TO_TEST: Array<Tab> = [
   },
 ] as const;
 
-test('navigates to hakukohde tabs', async ({ page }) => {
+test('Navigoi hakukohde välilehdille', async ({ page }) => {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102',
   );
@@ -74,9 +74,9 @@ const checkTabContent = async (page: Page, tab: Tab) => {
   }
 };
 
-test.describe('Hakukohde tabs', () => {
+test.describe('Hakukohde välilehdet', () => {
   for (const tab of TABS_TO_TEST) {
-    test(`Navigates to ${tab.title}`, async ({ page }) => {
+    test(`Navigoi välilehdelle ${tab.title}`, async ({ page }) => {
       await page.goto(
         '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102',
       );
@@ -86,7 +86,7 @@ test.describe('Hakukohde tabs', () => {
       await checkTabContent(page, tab);
     });
 
-    test(`${tab.title} page accessibility`, async ({ page }) => {
+    test(`${tab.title} sivun saavutettavuus`, async ({ page }) => {
       await page.goto(
         `/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/${tab.route}`,
       );

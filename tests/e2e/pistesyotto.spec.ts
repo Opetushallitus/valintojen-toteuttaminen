@@ -9,7 +9,7 @@ import {
   startExcelImport,
 } from './playwright-utils';
 
-test('displays pistesyotto', async ({ page }) => {
+test('Näyttää pistesyotön', async ({ page }) => {
   await goToPisteSyotto(page);
   const headrow = page.locator('[data-test-id="pistesyotto-form"] thead tr');
   await checkRow(headrow, ['Hakija', 'Nakkikoe, oletko nakkisuojassa?'], 'th');
@@ -37,7 +37,7 @@ async function goToPisteSyotto(page: Page) {
 
 test.beforeEach(async ({ page }) => await goToPisteSyotto(page));
 
-test('displays pistesyotto with all exams', async ({ page }) => {
+test('Näyttää pistesyotöt kaikilla kokeilla', async ({ page }) => {
   await page.getByLabel('Näytä vain laskentaan').click();
   const headrow = page.locator('[data-test-id="pistesyotto-form"] thead tr');
   await checkRow(
@@ -69,7 +69,7 @@ test('displays pistesyotto with all exams', async ({ page }) => {
   ]);
 });
 
-test('shows success toast when updating value', async ({ page }) => {
+test('Näyttää ilmoituksen kun tallennus onnistuu', async ({ page }) => {
   await page.route(
     '*/**/valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105',
     async (route) =>
@@ -86,7 +86,7 @@ test('shows success toast when updating value', async ({ page }) => {
   await expect(page.getByText('Tiedot tallennettu.')).toBeHidden();
 });
 
-test('shows error toast when updating value', async ({ page }) => {
+test('Näyttää ilmoituksen kun tallennus epäonnistuu', async ({ page }) => {
   await page.route(
     '*/**/valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105',
     async (route) =>
@@ -108,7 +108,7 @@ test('shows error toast when updating value', async ({ page }) => {
   ).toBeHidden();
 });
 
-test('navigating to another view without saving changes asks for confirmation', async ({
+test('Ilmoittaa tallentamattomista muutoksista kun käyttäjä yrittää navigoida toiselle sivulle', async ({
   page,
 }) => {
   const huiRow = page.getByRole('row', { name: 'Hui Haamu' });
@@ -129,8 +129,8 @@ test('navigating to another view without saving changes asks for confirmation', 
   await expect(page).toHaveURL(/.*hakeneet/);
 });
 
-test.describe('filters', () => {
-  test('filters by name', async ({ page }) => {
+test.describe('Suodattimet', () => {
+  test('Nimellä', async ({ page }) => {
     const hakuInput = page.getByRole('textbox', {
       name: 'Hae hakijan nimellä tai tunnisteilla',
     });
@@ -144,7 +144,7 @@ test.describe('filters', () => {
     await checkRow(rows.nth(0), ['Hui Haamu', 'Valitse...Merkitsemättä']);
   });
 
-  test('filters by application oid', async ({ page }) => {
+  test('Hakemusoidilla', async ({ page }) => {
     const hakuInput = page.getByRole('textbox', {
       name: 'Hae hakijan nimellä tai tunnisteilla',
     });
@@ -154,7 +154,7 @@ test.describe('filters', () => {
     await checkRow(rows.nth(0), ['Hui Haamu', 'Valitse...Merkitsemättä']);
   });
 
-  test('filters henkiloOid', async ({ page }) => {
+  test('Henkilöoidilla', async ({ page }) => {
     const hakuInput = page.getByRole('textbox', {
       name: 'Hae hakijan nimellä tai tunnisteilla',
     });
@@ -164,7 +164,7 @@ test.describe('filters', () => {
     await checkRow(rows.nth(0), ['Purukumi Puru', 'Valitse...Merkitsemättä']);
   });
 
-  test('filters by osallistumisentila Merkitsemättä', async ({ page }) => {
+  test('Osallistumisentilalla Merkitsemättä', async ({ page }) => {
     await selectTila(page, 'Merkitsemättä');
     const rows = page.locator('[data-test-id="pistesyotto-form"] tbody tr');
     await expect(rows).toHaveCount(2);
@@ -172,7 +172,7 @@ test.describe('filters', () => {
     await checkRow(rows.nth(1), ['Purukumi Puru', 'Valitse...Merkitsemättä']);
   });
 
-  test('filters by osallistumisentila Osallistui', async ({ page }) => {
+  test('Osallistumisentilalla Osallistui', async ({ page }) => {
     await selectTila(page, 'Osallistui');
     const rows = page.locator('[data-test-id="pistesyotto-form"] tbody tr');
     await expect(rows).toHaveCount(2);
@@ -182,8 +182,8 @@ test.describe('filters', () => {
   });
 });
 
-test.describe('Excel export', () => {
-  test('Downloads excel on button press and no errors', async ({ page }) => {
+test.describe('Excelin lataus', () => {
+  test('Lataa excelin onnistuneesti', async ({ page }) => {
     await mockDocumentExport(page, (url) =>
       url.pathname.includes(
         '/valintalaskentakoostepalvelu/resources/pistesyotto/vienti',
@@ -202,7 +202,7 @@ test.describe('Excel export', () => {
     expect(download.suggestedFilename()).toEqual('pistesyotto.xls');
   });
 
-  test('Shows error toast when download fails', async ({ page }) => {
+  test('Näyttää virheen kun excelin lataus epäonnistuu', async ({ page }) => {
     await page.route(
       (url) =>
         url.pathname.includes(
@@ -223,8 +223,10 @@ test.describe('Excel export', () => {
   });
 });
 
-test.describe('Excel import', () => {
-  test('Shows error modal when upload fails completely', async ({ page }) => {
+test.describe('Excel tietojen tuonti', () => {
+  test('Näyttää virheen kun excelin tuonti epäonnistuu kokonaan', async ({
+    page,
+  }) => {
     await page.route(
       (url) =>
         url.pathname.includes(
@@ -243,7 +245,9 @@ test.describe('Excel import', () => {
     });
   });
 
-  test('Shows error modal when upload fails partially', async ({ page }) => {
+  test('Näyttää virheen kun excelin tuonti epäonnistuu osittain', async ({
+    page,
+  }) => {
     await page.route(
       (url) =>
         url.pathname.includes(

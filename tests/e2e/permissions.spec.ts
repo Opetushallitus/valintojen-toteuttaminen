@@ -2,7 +2,9 @@ import { test, expect, Page, Locator } from '@playwright/test';
 
 const getTableRows = (loc: Page | Locator) => loc.locator('tbody tr');
 
-test('shows only organizations user has permissions to', async ({ page }) => {
+test('Näyttää vain organisaatiot joille käyttäjällä on oikeus', async ({
+  page,
+}) => {
   await page.route(
     '*/**/kayttooikeus-service/henkilo/current/omattiedot',
     async (route) => {
@@ -28,7 +30,7 @@ test('shows only organizations user has permissions to', async ({ page }) => {
   );
 });
 
-test('shows unauthorized message if user has no proper access rights', async ({
+test('Näyttää virheviestin kun käyttäjällä ei ole oikeuksia', async ({
   page,
 }) => {
   await page.route(

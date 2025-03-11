@@ -49,10 +49,10 @@ const VALINTAKOEKUTSUT_KOKEITTAIN_TABLE_HEADINGS = [
   'Asiointikieli',
 ];
 
-test.describe('valintakoekutsut kokeittain', () => {
-  test('valintakoekutsut kokeittain accessibility', testAccessibility);
+test.describe('Valintakoekutsut kokeittain', () => {
+  test('Valintakoekutsut kokeittain saavutettavuus', testAccessibility);
 
-  test('displays valintakoekutsut kokeittain', async ({ page }) => {
+  test('Näyttää valintakoekutsut kokeittain', async ({ page }) => {
     const accordionHeadingText = 'Pääsykoe';
 
     const accordionContent = page.getByRole('region', {
@@ -106,7 +106,7 @@ test.describe('valintakoekutsut kokeittain', () => {
     ]);
   });
 
-  test('Can select kutsut and start excel or osoitetarrat download for selected', async ({
+  test('Excelin ja osoitetarrojen lataus valituille valintakoekutsuille', async ({
     page,
   }) => {
     const accordionContent = page.getByRole('region', {
@@ -166,10 +166,10 @@ test.describe('valintakoekutsut kokeittain', () => {
 
 const VALINTAKOEKUTSUT_HAKIJOITTAIN_TABLE_HEADINGS = ['Hakija', 'Pääsykoe'];
 
-test.describe('valintakoekutsut hakijoittain', () => {
-  test('valintakoekutsut hakijoittain accessibility', testAccessibility);
+test.describe('Valintakoekutsut hakijoittain', () => {
+  test('Valintakoekutsut hakijoittain saavutettavuus', testAccessibility);
 
-  test('displays valintakoekutsut hakijoittain', async ({ page }) => {
+  test('Näyttää valintakoekutsut hakijoittain', async ({ page }) => {
     await page.getByRole('button', { name: 'Hakijoittain' }).click();
 
     const headingRow = page.locator('thead tr');

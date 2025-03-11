@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Localization', () => {
-  test('translates page to finnish', async ({ page }) => {
+test.describe('Lokalisointi', () => {
+  test('Kääntää sivun suomeksi', async ({ page }) => {
     await page.goto('/');
     await expect(page).toHaveTitle(/Valintojen Toteuttaminen/);
     await expect(page.getByRole('combobox', { name: 'Tila' })).toContainText(
@@ -11,7 +11,7 @@ test.describe('Localization', () => {
     await expect(page.getByText('haut.otsikko')).toBeHidden();
   });
 
-  test('translates page to english', async ({ page }) => {
+  test('Kääntää sivun englanniksi', async ({ page }) => {
     await page.route(
       '*/**/oppijanumerorekisteri-service/henkilo/current/asiointiKieli',
       async (route) => {
@@ -27,7 +27,7 @@ test.describe('Localization', () => {
     await expect(page.getByText('haku.otsikko')).toBeVisible();
   });
 
-  test('translates page to swedish', async ({ page }) => {
+  test('Kääntää sivun ruotsiksi', async ({ page }) => {
     await page.route(
       '*/**/oppijanumerorekisteri-service/henkilo/current/asiointiKieli',
       async (route) => {

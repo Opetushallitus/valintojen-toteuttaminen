@@ -23,7 +23,7 @@ test.beforeEach(async ({ page }) => {
   await page.goto('/');
 });
 
-test('Haut-page accessibility', async ({ page }) => {
+test('Hakusivun saavutettavuus', async ({ page }) => {
   await expectAllSpinnersHidden(page);
   await expect(page).toHaveTitle(/Valintojen Toteuttaminen/);
   await expectPageAccessibilityOk(page);
@@ -31,7 +31,7 @@ test('Haut-page accessibility', async ({ page }) => {
 
 const getTableRows = (loc: Page | Locator) => loc.locator('tbody tr');
 
-test('filters haku by published state', async ({ page }) => {
+test('Suodattaa tilalla julkaistu', async ({ page }) => {
   await selectTila(page, 'Julkaistu');
   const tableRows = getTableRows(page);
   await expect(tableRows).toHaveCount(3);
@@ -41,14 +41,16 @@ test('filters haku by published state', async ({ page }) => {
   await expect(tableRows).toContainText('Hausjärven lukio jatkuva haku');
 });
 
-test('Set tila filter to julkaistu by default', async ({ page }) => {
+test('Asettaa tilasuodattimen vaihtoehtoon julkaistu oletuksena', async ({
+  page,
+}) => {
   await expectUrlParamToEqual(page, 'tila', 'julkaistu');
   await expect(page.getByRole('combobox', { name: 'Tila' })).toContainText(
     'Julkaistu',
   );
 });
 
-test('filters haku by archived state', async ({ page }) => {
+test('Suodattaa tilalla arkistoitu', async ({ page }) => {
   const tableRows = getTableRows(page);
   await selectTila(page, 'Arkistoitu');
 
@@ -62,7 +64,7 @@ test('filters haku by archived state', async ({ page }) => {
   await expectUrlParamToEqual(page, 'search', 'Leppä');
 });
 
-test('filters by hakutapa', async ({ page }) => {
+test('Suodattaa hakutavalla', async ({ page }) => {
   const tableRows = getTableRows(page);
   await selectHakutapa(page, 'Erillishaku');
   await expect(tableRows).toHaveCount(1);
@@ -72,7 +74,7 @@ test('filters by hakutapa', async ({ page }) => {
   await expectUrlParamToEqual(page, 'hakutapa', 'hakutapa_03');
 });
 
-test('filters by start period', async ({ page }) => {
+test('Suodattaa alkamiskaudella', async ({ page }) => {
   const tableRows = getTableRows(page);
   await selectKausi(page, '2024 syksy');
   await expect(tableRows).toHaveCount(1);
@@ -81,7 +83,7 @@ test('filters by start period', async ({ page }) => {
   await expectUrlParamToEqual(page, 'alkamiskausi', '2020_syksy');
 });
 
-test('filters by hakutapa and start period', async ({ page }) => {
+test('Suodattaa hakutavalla ja alkamiskaudella', async ({ page }) => {
   const tableRows = getTableRows(page);
   await selectHakutapa(page, 'Jatkuva haku');
   await expect(tableRows).toHaveCount(2);
@@ -89,7 +91,7 @@ test('filters by hakutapa and start period', async ({ page }) => {
   await expect(tableRows).toHaveCount(1);
 });
 
-test('sorts list by nimi when header clicked', async ({ page }) => {
+test('Järjestää hakutaulukon nimen perusteella', async ({ page }) => {
   await expectAllSpinnersHidden(page);
   const nimiHeader = page.getByRole('columnheader', { name: 'Nimi' });
   await nimiHeader.getByRole('button').click();
@@ -110,7 +112,7 @@ test('sorts list by nimi when header clicked', async ({ page }) => {
   ).toBeVisible();
 });
 
-test('navigates to haku page', async ({ page }) => {
+test('Navigoi hakusivulle', async ({ page }) => {
   await page.locator('tbody tr:last-child td:first-child a').click();
   await expect(page).toHaveURL(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde',
@@ -121,7 +123,7 @@ test('navigates to haku page', async ({ page }) => {
   await expect(getHakukohdeNaviLinks(page)).toHaveCount(3);
 });
 
-test('navigates to haku page with no hakukohde', async ({ page }) => {
+test('Navigoi hakusivulle missä ei ole hakukohteita', async ({ page }) => {
   await page.locator('tbody tr:first-child td:first-child a').click();
   await expect(page).toHaveURL(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000046872/hakukohde',

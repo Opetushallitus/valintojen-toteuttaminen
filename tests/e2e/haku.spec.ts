@@ -5,7 +5,7 @@ import {
   getHakukohdeNaviLinks,
 } from './playwright-utils';
 
-test('Haku-page accessibility', async ({ page }) => {
+test('Haku-sivun saavutettavuus', async ({ page }) => {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102',
   );
@@ -13,7 +13,7 @@ test('Haku-page accessibility', async ({ page }) => {
   await expectPageAccessibilityOk(page);
 });
 
-test.describe('hakukohde search', () => {
+test.describe('Hakukohde suodatin', () => {
   let page: Page;
 
   test.beforeAll(async ({ browser }) => {
@@ -23,7 +23,7 @@ test.describe('hakukohde search', () => {
     );
   });
 
-  test('filters by name', async () => {
+  test('Suodattaa nimellä', async () => {
     const hakuInput = page.getByRole('textbox', {
       name: 'Hae hakukohteita',
     });
@@ -40,7 +40,7 @@ test.describe('hakukohde search', () => {
     );
   });
 
-  test('filter by organizer name', async () => {
+  test('Suodattaa järjestäjän nimellä', async () => {
     const hakuInput = page.getByRole('textbox', {
       name: 'Hae hakukohteita',
     });
@@ -48,7 +48,7 @@ test.describe('hakukohde search', () => {
     await expect(getHakukohdeNaviLinks(page)).toHaveCount(2);
   });
 
-  test('filter by hakukohde oid', async () => {
+  test('Suodattaa hakukohteenoidilla', async () => {
     const hakuInput = page.getByRole('textbox', {
       name: 'Hae hakukohteita',
     });

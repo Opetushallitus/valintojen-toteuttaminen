@@ -86,7 +86,7 @@ const assertRows = async (
   }
 };
 
-test('displays hakijaryhmat', async ({ page }) => {
+test('Näyttää hakijaryhmat', async ({ page }) => {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/hakijaryhmat',
   );
@@ -130,7 +130,7 @@ test('displays hakijaryhmat', async ({ page }) => {
   ]);
 });
 
-test('sorts list by sijoittelun tila when header clicked', async ({ page }) => {
+test('Järjestää listan sijoittelun tilan mukaan', async ({ page }) => {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/hakijaryhmat',
   );
@@ -163,7 +163,7 @@ test('sorts list by sijoittelun tila when header clicked', async ({ page }) => {
   ]);
 });
 
-test.describe('filters', () => {
+test.describe('Suodattimet', () => {
   let page: Page;
 
   test.beforeEach(async ({ browser }) => {
@@ -174,7 +174,7 @@ test.describe('filters', () => {
     await expectAllSpinnersHidden(page);
   });
 
-  test('filters by name', async () => {
+  test('Suodattaa nimellä', async () => {
     const hakuInput = page.getByLabel('Hae hakijan nimellä tai');
     await hakuInput.fill('Ruht');
     const rows = getYoAccordionContent(page).locator('tbody tr');
@@ -183,33 +183,33 @@ test.describe('filters', () => {
     await assertRows(rows, [ROWS.haamuTable1]);
   });
 
-  test('filters by application oid', async () => {
+  test('Suodattaa hakemusoidilla', async () => {
     const hakuInput = page.getByLabel('Hae hakijan nimellä tai');
     await hakuInput.fill('1.2.246.562.11.00000000000001543832');
     const rows = getYoAccordionContent(page).locator('tbody tr');
     await assertRows(rows, [ROWS.haamuTable1]);
   });
 
-  test('filters henkiloOid', async () => {
+  test('Suodattaa henkilöoidilla', async () => {
     const hakuInput = page.getByLabel('Hae hakijan nimellä tai');
     await hakuInput.fill('1.2.246.562.24.14598775927');
     const rows = getYoAccordionContent(page).locator('tbody tr');
     await assertRows(rows, [ROWS.purukumiTable1]);
   });
 
-  test('filters by sijoittelutila hylätty', async () => {
+  test('Suodattaa sijoitteluntilalla HYLÄTTY', async () => {
     await selectTila(page, 'HYLÄTTY');
     const rows = getYoAccordionContent(page).locator('tbody tr');
     await assertRows(rows, [ROWS.haamuTable1]);
   });
 
-  test('filters by sijoittelutila varalla', async () => {
+  test('Suodattaa sijoitteluntilalla VARALLA', async () => {
     await selectTila(page, 'VARALLA');
     const rows = getYoAccordionContent(page).locator('tbody tr');
     await assertRows(rows, [ROWS.kreiviTable1, ROWS.purukumiTable1]);
   });
 
-  test('filters by kuuluu hakijaryhmaan', async () => {
+  test('Suodattaa tiedolla kuuluuko hakijaryhmaan', async () => {
     await selectKuuluuRyhmaan(page, 'Kyllä');
     const rows = getYoAccordionContent(page).locator('tbody tr');
     await expect(rows).toHaveCount(3);
@@ -217,7 +217,7 @@ test.describe('filters', () => {
     await assertRows(rows, [ROWS.haamuTable1]);
   });
 
-  test('filters by hyvaksytty hakijaryhmasta', async () => {
+  test('Suodattaa tiedolla onko hakemus hyvaksytty hakijaryhmasta', async () => {
     await selectHyvaksytty(page, 'Kyllä');
     const yoAccordionContent = getYoAccordionContent(page);
     const ammAccordionContent = getAmmAccordionContent(page);

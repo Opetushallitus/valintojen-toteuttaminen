@@ -38,14 +38,14 @@ test.beforeEach(async ({ page }) => {
   await expectAllSpinnersHidden(page);
 });
 
-test('valintalaskennan tulokset välilehti on saavutettava', async ({
+test('Valintalaskennan tulokset välilehti on saavutettava', async ({
   page,
 }) => {
   await page.locator('tbody tr').nth(1).hover();
   await expectPageAccessibilityOk(page);
 });
 
-test('näytetään valintalaskennan tulokset', async ({ page }) => {
+test('Näytetään valintalaskennan tulokset', async ({ page }) => {
   await expect(
     page.getByRole('heading', {
       level: 1,
@@ -131,7 +131,7 @@ test('näytetään valintalaskennan tulokset', async ({ page }) => {
   ]);
 });
 
-test('näytetään virheviesti, jos jonon poistaminen sijoittelusta epäonnistuu', async ({
+test('Näytetään virheviesti, jos jonon poistaminen sijoittelusta epäonnistuu', async ({
   page,
 }) => {
   const jono1HeadingText = 'Varsinainen valinta: Lukiokoulutus';
@@ -164,14 +164,14 @@ test.describe('Valintalaskennan muokkausmodaali', () => {
     await muokkaaButton.click();
   };
 
-  test('valintalaskennan tulosten muokkausmodaali on saavutettava', async ({
+  test('Valintalaskennan tulosten muokkausmodaali on saavutettava', async ({
     page,
   }) => {
     await initSaveModal(page);
     await expectPageAccessibilityOk(page);
   });
 
-  test('näytetään valintalaskennan muokkausmodaali ja siinä valintalaskennan tuloksen tiedot', async ({
+  test('Näytetään valintalaskennan muokkausmodaali ja siinä valintalaskennan tuloksen tiedot', async ({
     page,
   }) => {
     await initSaveModal(page);
@@ -212,7 +212,7 @@ test.describe('Valintalaskennan muokkausmodaali', () => {
     ).toBeDisabled();
   });
 
-  test('lähetetään laskennan tulosten tallennuspyyntö oikeilla arvoilla ja näytetään ilmoitus', async ({
+  test('Lähetetään laskennan tulosten tallennuspyyntö oikeilla arvoilla ja näytetään ilmoitus', async ({
     page,
   }) => {
     const muokkausUrl = configuration.jarjestyskriteeriMuokkausUrl({
@@ -260,7 +260,7 @@ test.describe('Valintalaskennan muokkausmodaali', () => {
     );
   });
 
-  test('näytetään virheilmoitus kun valintalaskennan tuloksen tallentaminen epäonnistuu', async ({
+  test('Näytetään virheilmoitus kun valintalaskennan tuloksen tallentaminen epäonnistuu', async ({
     page,
   }) => {
     await page.route(

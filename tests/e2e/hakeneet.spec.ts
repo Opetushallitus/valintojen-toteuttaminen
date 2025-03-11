@@ -1,7 +1,7 @@
 import { test, expect, Page } from '@playwright/test';
 import { checkRow, expectAllSpinnersHidden } from './playwright-utils';
 
-test('displays hakeneet', async ({ page }) => {
+test('Näyttää hakeneet', async ({ page }) => {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/hakeneet',
   );
@@ -58,7 +58,7 @@ test('displays hakeneet', async ({ page }) => {
   ]);
 });
 
-test('does not show maksuvelvollisuus and hakukelpoisuus columns when not korkeakouluhaku', async ({
+test('Ei näytä maksuvelvollisuutta ja hakukelpoisuutta kun kyseessä ei ole korkeakouluhaku', async ({
   page,
 }) => {
   await page.route(
@@ -101,7 +101,7 @@ test('does not show maksuvelvollisuus and hakukelpoisuus columns when not korkea
   ]);
 });
 
-test.describe('hakeneet search', () => {
+test.describe('Hakeneet suodatin', () => {
   let page: Page;
 
   test.beforeAll(async ({ browser }) => {
@@ -111,7 +111,7 @@ test.describe('hakeneet search', () => {
     );
   });
 
-  test('filters by name', async () => {
+  test('suodattaa nimellä', async () => {
     const hakuInput = page.getByRole('textbox', {
       name: 'Hae hakijan nimellä tai tunnisteilla',
     });
@@ -139,7 +139,7 @@ test.describe('hakeneet search', () => {
     ]);
   });
 
-  test('filters by application oid', async () => {
+  test('Suodattaa hakemusoidilla', async () => {
     const hakuInput = page.getByRole('textbox', {
       name: 'Hae hakijan nimellä tai tunnisteilla',
     });
@@ -156,7 +156,7 @@ test.describe('hakeneet search', () => {
     ]);
   });
 
-  test('filters henkiloOid', async () => {
+  test('Suodattaa henkilöoidilla', async () => {
     const hakuInput = page.getByRole('textbox', {
       name: 'Hae hakijan nimellä tai tunnisteilla',
     });
