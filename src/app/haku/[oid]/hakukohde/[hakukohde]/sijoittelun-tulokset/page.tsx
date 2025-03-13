@@ -5,7 +5,7 @@ import { TabContainer } from '../components/tab-container';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { Box } from '@mui/material';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { tryToGetLatestSijoitteluajonTuloksetWithValintaEsitysQueryOptions } from '@/lib/valinta-tulos-service/valinta-tulos-service';
 import { isEmpty } from '@/lib/common';
 import { PageSizeSelector } from '@/components/table/page-size-selector';
@@ -15,8 +15,7 @@ import { SijoittelunTulosContent } from './components/sijoittelun-tulos-content'
 import { SijoittelunTulosControls } from './components/sijoittelun-tulos-controls';
 import { useHaku } from '@/lib/kouta/useHaku';
 import { FullClientSpinner } from '@/components/client-spinner';
-import { useHakukohde } from '@/lib/kouta/useHakukohde';
-import { valinnanvaiheetIlmanLaskentaaQueryOptions } from '@/lib/valintaperusteet/valintaperusteet-service';
+import { documentIdForHakukohdeQueryOptions } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 
 type SijoitteluContentParams = {
   hakuOid: string;
@@ -103,6 +102,26 @@ export default function SijoittelunTuloksetPage(props: {
   params: Promise<{ oid: string; hakukohde: string }>;
 }) {
   const params = use(props.params);
+
+  const queryClient = useQueryClient();
+  queryClient.prefetchQuery(
+    documentIdForHakukohdeQueryOptions({
+      hakukohdeOid: params.hakukohde,
+      documentType: 'osoitetarrat',
+    }),
+  );
+  queryClient.prefetchQuery(
+    documentIdForHakukohdeQueryOptions({
+      hakukohdeOid: params.hakukohde,
+      documentType: 'hyvaksymiskirjeet',
+    }),
+  );
+  queryClient.prefetchQuery(
+    documentIdForHakukohdeQueryOptions({
+      hakukohdeOid: params.hakukohde,
+      documentType: 'sijoitteluntulokset',
+    }),
+  );
 
   return (
     <TabContainer>
