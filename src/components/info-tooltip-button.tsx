@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { Box, Button, Tooltip } from '@mui/material';
+import { Backdrop, Box, Button, Tooltip } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
@@ -42,6 +42,11 @@ export const InfoTooltipButton = ({ title }: Props) => {
 
   return (
     <StyleWrapper>
+      <Backdrop
+        sx={{ backgroundColor: 'transparent', zIndex: 2 }}
+        open={open}
+        onClick={handleClose}
+      />
       <Tooltip
         open={open}
         onClose={handleClose}
