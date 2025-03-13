@@ -55,6 +55,7 @@ const useColumns = ({
   actorRef,
   kaikkiJonotHyvaksytty,
   kayttaaLaskentaa,
+  hasNegativePisteet,
 }: {
   haku: Haku;
   hakukohde: Hakukohde;
@@ -62,6 +63,7 @@ const useColumns = ({
   actorRef: SijoittelunTulosActorRef;
   kaikkiJonotHyvaksytty: boolean;
   kayttaaLaskentaa: boolean;
+  hasNegativePisteet: boolean;
 }) => {
   const state = useSelector(actorRef, (s) => s);
   const { send } = actorRef;
@@ -94,7 +96,7 @@ const useColumns = ({
         key: 'hakutoive',
         amountProp: 'hakutoive',
       }),
-      kayttaaLaskentaa
+      kayttaaLaskentaa || !hasNegativePisteet
         ? makeCountColumn<SijoittelunHakemusValintatiedoilla>({
             title: t(`${TRANSLATIONS_PREFIX}.pisteet`),
             key: 'pisteet',
@@ -174,6 +176,7 @@ const useColumns = ({
     hakukohde,
     kaikkiJonotHyvaksytty,
     kayttaaLaskentaa,
+    hasNegativePisteet,
   ]);
 };
 
@@ -217,6 +220,7 @@ export const SijoittelunTulosTable = ({
     actorRef: sijoittelunTulosActorRef,
     kaikkiJonotHyvaksytty,
     kayttaaLaskentaa,
+    hasNegativePisteet: valintatapajono.hasNegativePisteet,
   });
 
   const changedHakemukset = useSelector(
