@@ -116,7 +116,8 @@
             "jonosija": 1,
             "tasasijaJonosija": 1,
             "prioriteetti": 0,
-            "onkoMuuttunutViimeSijoittelussa": false
+            "onkoMuuttunutViimeSijoittelussa": false,
+            "siirtynytToisestaValintatapajonosta": true
           },
           {
             "hakijaOid": "1.2.246.562.24.25732574711",
