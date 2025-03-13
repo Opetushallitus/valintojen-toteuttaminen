@@ -38,7 +38,7 @@ test.beforeEach(async ({ page }) => {
       await route.fulfill({ json: VALINNANVAIHE_TULOKSET_ILMAN_LASKENTAA }),
   );
   await page.route(
-    /valintaperusteet-service\/resources\/hakukohde\/\S+\/ilmanlaskentaa/,
+    /valintaperusteet-service\/resources\/hakukohde\/\S+\/valinnanvaihe/,
     async (route) =>
       await route.fulfill({ json: VALINNANVAIHEET_ILMAN_LASKENTAA }),
   );
