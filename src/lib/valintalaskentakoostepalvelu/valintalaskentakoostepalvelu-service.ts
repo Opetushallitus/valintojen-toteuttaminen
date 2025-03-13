@@ -48,6 +48,7 @@ import {
   translateName,
 } from '../localization/translation-utils';
 import { AssertionError } from 'assert';
+import { queryOptions } from '@tanstack/react-query';
 
 export const getHakukohteenValintatuloksetIlmanHakijanTilaa = async (
   hakuOid: string,
@@ -640,17 +641,6 @@ export const getHarkinnanvaraisuudetHakemuksille = async ({
     hakemusOids,
   );
   return res.data;
-};
-
-export const getUsesValintalaskenta = async ({
-  hakukohdeOid,
-}: {
-  hakukohdeOid: string;
-}) => {
-  const res = await client.get<{ kayttaaValintalaskentaa: boolean }>(
-    configuration.kayttaaValintalaskentaaUrl({ hakukohdeOid }),
-  );
-  return res.data.kayttaaValintalaskentaa;
 };
 
 export const luoHyvaksymiskirjeetPDF = async ({

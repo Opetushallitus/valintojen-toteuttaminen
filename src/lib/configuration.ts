@@ -127,8 +127,6 @@ export const configuration = {
   // valintalaskentakoostepalvelu
   valintalaskentaKoostePalveluLogin: `${DOMAIN}/valintalaskentakoostepalvelu/cas/login`,
   valintalaskentaKoostePalveluUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/`,
-  kayttaaValintalaskentaaUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
-    `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintaperusteet/hakukohde/${hakukohdeOid}/kayttaaValintalaskentaa`,
   koostetutPistetiedotHakukohteelleUrl: ({
     hakuOid,
     hakukohdeOid,
