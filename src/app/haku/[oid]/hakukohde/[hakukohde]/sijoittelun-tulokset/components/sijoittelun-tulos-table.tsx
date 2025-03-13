@@ -54,12 +54,16 @@ const useColumns = ({
   sijoitteluajoId,
   actorRef,
   kaikkiJonotHyvaksytty,
+  kayttaaLaskentaa,
+  hasNegativePisteet,
 }: {
   haku: Haku;
   hakukohde: Hakukohde;
   sijoitteluajoId: string;
   actorRef: SijoittelunTulosActorRef;
   kaikkiJonotHyvaksytty: boolean;
+  kayttaaLaskentaa: boolean;
+  hasNegativePisteet: boolean;
 }) => {
   const state = useSelector(actorRef, (s) => s);
   const { send } = actorRef;
@@ -92,11 +96,13 @@ const useColumns = ({
         key: 'hakutoive',
         amountProp: 'hakutoive',
       }),
-      makeCountColumn<SijoittelunHakemusValintatiedoilla>({
-        title: t(`${TRANSLATIONS_PREFIX}.pisteet`),
-        key: 'pisteet',
-        amountProp: 'pisteet',
-      }),
+      kayttaaLaskentaa || !hasNegativePisteet
+        ? makeCountColumn<SijoittelunHakemusValintatiedoilla>({
+            title: t(`${TRANSLATIONS_PREFIX}.pisteet`),
+            key: 'pisteet',
+            amountProp: 'pisteet',
+          })
+        : null,
       makeColumnWithCustomRender<SijoittelunHakemusValintatiedoilla>({
         title: t(`${TRANSLATIONS_PREFIX}.tila`),
         key: 'sijoittelunTila',
@@ -169,6 +175,8 @@ const useColumns = ({
     sijoitteluajoId,
     hakukohde,
     kaikkiJonotHyvaksytty,
+    kayttaaLaskentaa,
+    hasNegativePisteet,
   ]);
 };
 
@@ -179,6 +187,7 @@ export const SijoittelunTulosTable = ({
   valintatapajono,
   sijoittelunTulosActorRef,
   kaikkiJonotHyvaksytty,
+  kayttaaLaskentaa,
 }: {
   haku: Haku;
   hakukohde: Hakukohde;
@@ -186,6 +195,7 @@ export const SijoittelunTulosTable = ({
   sijoittelunTulosActorRef: SijoittelunTulosActorRef;
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
   kaikkiJonotHyvaksytty: boolean;
+  kayttaaLaskentaa: boolean;
 }) => {
   const { t } = useTranslations();
 
@@ -209,6 +219,8 @@ export const SijoittelunTulosTable = ({
     sijoitteluajoId,
     actorRef: sijoittelunTulosActorRef,
     kaikkiJonotHyvaksytty,
+    kayttaaLaskentaa,
+    hasNegativePisteet: valintatapajono.hasNegativePisteet,
   });
 
   const changedHakemukset = useSelector(

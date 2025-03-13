@@ -58,12 +58,6 @@ export const configuration = {
     `${DOMAIN}/valintaperusteet-service/resources/V2valintaperusteet/${valintatapajonoOid}/automaattinenSiirto?status=${status}`,
   hakukohdeValintakokeetUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
     `${DOMAIN}/valintaperusteet-service/resources/hakukohde/${hakukohdeOid}/valintakoe`,
-  valinnanvaiheetIlmanlaskentaaUrl: ({
-    hakukohdeOid,
-  }: {
-    hakukohdeOid: string;
-  }) =>
-    `${DOMAIN}/valintaperusteet-service/resources/hakukohde/${hakukohdeOid}/ilmanlaskentaa`,
   valintaryhmatHakukohteilla: `${DOMAIN}/valintaperusteet-service/resources/puu`,
   onkoHaullaValintaryhma: ({ hakuOid }: { hakuOid: string }) =>
     `${DOMAIN}/valintaperusteet-service/resources/valintaryhma/onko-haulla-valintaryhmia/${hakuOid}`,
@@ -127,8 +121,6 @@ export const configuration = {
   // valintalaskentakoostepalvelu
   valintalaskentaKoostePalveluLogin: `${DOMAIN}/valintalaskentakoostepalvelu/cas/login`,
   valintalaskentaKoostePalveluUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/`,
-  kayttaaValintalaskentaaUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
-    `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintaperusteet/hakukohde/${hakukohdeOid}/kayttaaValintalaskentaa`,
   koostetutPistetiedotHakukohteelleUrl: ({
     hakuOid,
     hakukohdeOid,

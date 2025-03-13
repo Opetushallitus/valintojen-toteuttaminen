@@ -122,6 +122,7 @@ export type SijoitteluajonValintatapajonoValintatiedoilla = {
   alkuperaisetAloituspaikat?: number;
   tasasijasaanto: 'YLITAYTTO' | 'ARVONTA' | 'ALITAYTTO';
   varasijataytto: boolean;
+  hasNegativePisteet: boolean;
 };
 
 export type SijoittelunHakijaryhmat = {

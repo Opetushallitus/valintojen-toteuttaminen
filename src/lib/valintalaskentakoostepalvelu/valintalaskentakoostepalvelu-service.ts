@@ -48,6 +48,7 @@ import {
   translateName,
 } from '../localization/translation-utils';
 import { AssertionError } from 'assert';
+import { queryOptions } from '@tanstack/react-query';
 
 export const getHakukohteenValintatuloksetIlmanHakijanTilaa = async (
   hakuOid: string,
@@ -642,17 +643,6 @@ export const getHarkinnanvaraisuudetHakemuksille = async ({
   return res.data;
 };
 
-export const getUsesValintalaskenta = async ({
-  hakukohdeOid,
-}: {
-  hakukohdeOid: string;
-}) => {
-  const res = await client.get<{ kayttaaValintalaskentaa: boolean }>(
-    configuration.kayttaaValintalaskentaaUrl({ hakukohdeOid }),
-  );
-  return res.data.kayttaaValintalaskentaa;
-};
-
 export const luoHyvaksymiskirjeetPDF = async ({
   hakemusOids,
   sijoitteluajoId,
@@ -784,6 +774,18 @@ export const getKirjepohjatHakukohteelle = async (
   });
 };
 
+export const documentIdForHakukohdeQueryOptions = ({
+  hakukohdeOid,
+  documentType,
+}: {
+  hakukohdeOid: string;
+  documentType: DokumenttiTyyppi;
+}) =>
+  queryOptions({
+    queryKey: ['getDocumentIdForHakukohde', hakukohdeOid, documentType],
+    queryFn: () => getDocumentIdForHakukohde(hakukohdeOid, documentType),
+  });
+
 export const getDocumentIdForHakukohde = async (
   hakukohdeOid: string,
   documentType: DokumenttiTyyppi,
@@ -809,7 +811,7 @@ export const getMyohastyneetHakemukset = async ({
   }
 
   const response = await client.post<
-    Array<{ hakemusOid: string; mennyt: true; vastaanottoDeadline: string }>
+    Array<{ hakemusOid: string; mennyt: boolean; vastaanottoDeadline: string }>
   >(
     configuration.myohastyneetHakemuksetUrl({
       hakuOid,

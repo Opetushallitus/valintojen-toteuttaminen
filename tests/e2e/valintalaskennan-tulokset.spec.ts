@@ -29,7 +29,7 @@ test.beforeEach(async ({ page }) => {
   );
 
   await page.route(
-    /valintaperusteet-service\/resources\/hakukohde\/\S+\/ilmanlaskentaa/,
+    /valintaperusteet-service\/resources\/hakukohde\/\S+\/valinnanvaihe/,
     async (route) => await route.fulfill({ json: [] }),
   );
   await page.goto(

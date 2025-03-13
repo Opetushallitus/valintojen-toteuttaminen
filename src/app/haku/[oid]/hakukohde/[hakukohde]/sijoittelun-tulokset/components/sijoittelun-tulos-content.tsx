@@ -13,6 +13,7 @@ export const SijoittelunTulosContent = ({
   sijoitteluajoId,
   lastModified,
   kaikkiJonotHyvaksytty,
+  kayttaaLaskentaa,
 }: {
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
   haku: Haku;
@@ -20,6 +21,7 @@ export const SijoittelunTulosContent = ({
   sijoitteluajoId: string;
   lastModified: string;
   kaikkiJonotHyvaksytty: boolean;
+  kayttaaLaskentaa: boolean;
 }) => {
   return (
     <Box
@@ -43,6 +45,7 @@ export const SijoittelunTulosContent = ({
           sijoitteluajoId={sijoitteluajoId}
           lastModified={lastModified}
           kaikkiJonotHyvaksytty={kaikkiJonotHyvaksytty}
+          kayttaaLaskentaa={kayttaaLaskentaa}
         />
       </AccordionBox>
     </Box>
