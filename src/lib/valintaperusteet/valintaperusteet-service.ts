@@ -15,23 +15,6 @@ import {
 } from './valintaperusteet-types';
 import { sort } from 'remeda';
 
-export const isLaskentaUsedForValinnanvaihe = (
-  valinnanvaihe: Valinnanvaihe,
-): boolean => {
-  return (
-    valinnanvaihe.aktiivinen &&
-    !valinnanvaihe.valisijoittelu &&
-    (valinnanvaihe.jonot.length < 1 ||
-      valinnanvaihe.jonot.some((jono) => {
-        return (
-          jono.kaytetaanValintalaskentaa &&
-          (!jono.eiLasketaPaivamaaranJalkeen ||
-            jono.eiLasketaPaivamaaranJalkeen.getTime() > new Date().getTime())
-        );
-      }))
-  );
-};
-
 export const getValintaryhma = async (
   hakukohdeOid: string,
 ): Promise<Valintaryhma> => {
