@@ -809,7 +809,7 @@ export const getMyohastyneetHakemukset = async ({
   }
 
   const response = await client.post<
-    Array<{ hakemusOid: string; mennyt: true; vastaanottoDeadline: string }>
+    Array<{ hakemusOid: string; mennyt: boolean; vastaanottoDeadline: string }>
   >(
     configuration.myohastyneetHakemuksetUrl({
       hakuOid,
