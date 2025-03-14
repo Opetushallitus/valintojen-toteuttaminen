@@ -5,6 +5,7 @@ import { OphEditor } from '@/components/oph-editor';
 import { Kirjepohja } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-types';
 import { LocalizedSelect } from '@/components/localized-select';
 import { SelectChangeEvent } from '@mui/material/Select';
+import { ClientOnly } from '@/components/client-only';
 
 export const TemplateSection = ({
   pohjat,
@@ -49,10 +50,12 @@ export const TemplateSection = ({
           />
         )}
       />
-      <OphEditor
-        editorContent={templateBody}
-        onContentChanged={setLetterBody}
-      />
+      <ClientOnly>
+        <OphEditor
+          editorContent={templateBody}
+          onContentChanged={setLetterBody}
+        />
+      </ClientOnly>
     </>
   );
 };
