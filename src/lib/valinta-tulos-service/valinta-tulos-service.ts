@@ -19,6 +19,7 @@ import { MaksunTila, Maksuvelvollisuus } from '../ataru/ataru-types';
 import { nullWhen404, OphApiError } from '../common';
 import {
   HakemusChangeEvent,
+  HakijanVastaanottoTila,
   ValinnanTulosModel,
   ValinnanTulosUpdateErrorResult,
 } from './valinta-tulos-types';
@@ -549,4 +550,31 @@ export const changeHistoryForHakemus = async (
       changes,
     };
   });
+};
+
+export const hakijoidenVastaanottotilatValintatapajonolle = async (
+  hakuOid: string,
+  hakukohdeOid: string,
+  valintatapajonoOid: string,
+  hakemusOids: Array<string>,
+): Promise<Array<HakijanVastaanottoTila>> => {
+  const response = await client.post<
+    Array<{
+      valintatapajonoOid: string;
+      hakemusOid: string;
+      tilaHakijalle: string;
+    }>
+  >(
+    configuration.hakijanTilatValintatapajonolleUrl({
+      hakuOid,
+      hakukohdeOid,
+      valintatapajonoOid,
+    }),
+    hakemusOids,
+  );
+  return response.data.map((hvt) => ({
+    valintatapaJonoOid: hvt.valintatapajonoOid,
+    vastaanottotila: hvt.tilaHakijalle as VastaanottoTila,
+    hakemusOid: hvt.hakemusOid,
+  }));
 };

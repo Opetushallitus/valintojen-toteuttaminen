@@ -108,6 +108,8 @@ test('Näytä "Sijoittelun tulokset" -välilehti ja sisältö', async ({ page })
     'td',
     false,
   );
+
+  await expect(page.getByText('Hakijalle näytetään: Kesken')).toBeVisible();
 });
 
 test('Ehdollista hyväksyntää ja maksusaraketta ei näytetä toisen asteen yhteishaulla', async ({

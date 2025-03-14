@@ -284,7 +284,7 @@
   "sijoittelun-tulokset": {
     "otsikko": "Sijoittelun tulokset",
     "julkaistavissa": "Julkaistavissa",
-    "hakijalle-naytetaan": "Hakijalle näytetään:",
+    "hakijalle-naytetaan": "Hakijalle näytetään: ",
     "ehdollinen": "Ehdollinen valinta",
     "varasijalta": "Hyväksytään varasijalta",
     "nayta-ehdolliset": "Näytä vain ehdollisesti hyväksytyt hakijat",
