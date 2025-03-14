@@ -320,7 +320,8 @@
       "ilmoittautumistieto": "Ilmoittautumistieto",
       "maksuntila": "Maksun tila",
       "toiminnot": "Toiminnot",
-      "valitse-hakemus": "Valitse hakijan {{hakijanNimi}} hakemus"
+      "valitse-hakemus": "Valitse hakijan {{hakijanNimi}} hakemus",
+      "siirtynyt-toisesta-valintatapajonosta": "Hakemus on siirtynyt toisesta valintatapajonosta"
     },
     "toiminnot": {
       "menu": "Muut toiminnot",

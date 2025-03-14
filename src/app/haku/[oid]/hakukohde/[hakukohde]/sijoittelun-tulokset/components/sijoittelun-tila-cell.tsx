@@ -8,7 +8,10 @@ import { ChangeEvent } from 'react';
 import { SijoittelunTulosStyledCell } from './sijoittelun-tulos-styled-cell';
 import { Box, InputAdornment, SelectChangeEvent } from '@mui/material';
 import { LocalizedSelect } from '@/components/localized-select';
-import { isKorkeakouluHaku, isToinenAsteKohdejoukko } from '@/lib/kouta/kouta-service';
+import {
+  isKorkeakouluHaku,
+  isToinenAsteKohdejoukko,
+} from '@/lib/kouta/kouta-service';
 import { Haku } from '@/lib/kouta/kouta-types';
 import {
   ophColors,
@@ -21,6 +24,7 @@ import { entries, map, pipe } from 'remeda';
 import { SijoittelunTulosChangeParams } from '../lib/sijoittelun-tulokset-state';
 import { styled } from '@/lib/theme';
 import { useHasOrganizationPermissions } from '@/hooks/useUserPermissions';
+import { InfoTooltipButton } from '@/components/info-tooltip-button';
 
 const LanguageAdornment = styled(InputAdornment)(() => ({
   backgroundColor: ophColors.grey200,
@@ -202,7 +206,11 @@ export const SijoittelunTilaCell = ({
 }) => {
   const { t } = useTranslations();
 
-  const { hakemusOid, hyvaksyttyVarasijalta } = hakemus;
+  const {
+    hakemusOid,
+    hyvaksyttyVarasijalta,
+    siirtynytToisestaValintatapajonosta,
+  } = hakemus;
 
   const hakemuksenTila = getReadableHakemuksenTila(hakemus, t);
 
@@ -215,7 +223,16 @@ export const SijoittelunTilaCell = ({
 
   return (
     <SijoittelunTulosStyledCell>
-      <span>{hakemuksenTila}</span>
+      <span>
+        {hakemuksenTila}
+        {siirtynytToisestaValintatapajonosta && (
+          <InfoTooltipButton
+            title={t(
+              'sijoittelun-tulokset.taulukko.siirtynyt-toisesta-valintatapajonosta',
+            )}
+          />
+        )}
+      </span>
       {isHyvaksyttyVarasijaltaVisible(hakemus) && (
         <OphCheckbox
           checked={hyvaksyttyVarasijalta}

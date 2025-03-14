@@ -91,6 +91,7 @@ export type SijoittelunHakemusValintatiedoilla = {
   hyvaksyttyHarkinnanvaraisesti?: boolean;
   hyvaksyPeruuntunut: boolean;
   hyvaksymiskirjeLahetetty?: string;
+  siirtynytToisestaValintatapajonosta?: boolean;
 };
 
 export const isHyvaksyttyHarkinnanvaraisesti = (
