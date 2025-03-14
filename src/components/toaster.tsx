@@ -27,7 +27,7 @@ const InfoToast = ({
   toast: Toast;
   toastType: 'error' | 'success';
 }) => {
-  const { t, i18n } = useTranslations();
+  const { t } = useTranslations();
   const { removeToast, toastEnter, toastLeave } = useToaster();
   return (
     <Slide direction="down" in={true}>
@@ -42,9 +42,11 @@ const InfoToast = ({
         sx={{ pointerEvents: 'all', marginBottom: 2, whiteSpace: 'pre' }}
       >
         <Typography sx={{ color: ophColors.white }}>
-          {i18n.exists(toast.message)
-            ? t(toast.message, toast.messageParams)
-            : toast.message}
+          {t({
+            key: toast.message,
+            defaultValue: toast.message,
+            params: toast.messageParams,
+          })}
         </Typography>
       </Alert>
     </Slide>

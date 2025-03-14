@@ -3,7 +3,7 @@ import { FullSpinner } from '@/components/full-spinner';
 import { ErrorView } from '@/components/error-view';
 import { useQueryUserPermissions } from '@/hooks/useUserPermissions';
 
-export default function PermissionProvider({
+export function PermissionProvider({
   children,
 }: {
   children: React.ReactNode;

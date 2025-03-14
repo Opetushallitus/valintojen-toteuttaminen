@@ -72,7 +72,7 @@ export const PisteSyottoForm = ({
         setPageSize={setPageSize}
         setPageNumber={setPage}
         pageNumber={page}
-        countTranslationKey="hakeneet.maara"
+        countTranslationKey="hakeneet.hakija-maara"
       >
         <PisteSyottoTable
           setSort={setSort}

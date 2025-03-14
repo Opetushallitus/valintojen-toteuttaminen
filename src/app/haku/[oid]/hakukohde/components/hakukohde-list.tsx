@@ -29,7 +29,7 @@ export const HakukohdeList = ({
   return (
     <>
       <OphTypography>
-        {results.length} {t('haku.hakukohdetta')}
+        {t('haku.hakukohde-maara', { count: results.length })}
       </OphTypography>
       <NavigationList tabIndex={0} aria-label={t('hakukohde.navigaatio')}>
         {results?.map((hk: Hakukohde) => (

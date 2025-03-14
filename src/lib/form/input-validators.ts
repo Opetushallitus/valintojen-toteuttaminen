@@ -1,4 +1,4 @@
-import { TFunction } from 'i18next';
+import { TFunction } from '../localization/useTranslations';
 
 export type ValidationResult = {
   error: boolean;

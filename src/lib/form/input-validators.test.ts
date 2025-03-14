@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 import { numberValidator } from './input-validators';
-import { TFunction } from 'i18next';
+import { TFunction } from '../localization/useTranslations';
 
 const t: TFunction = ((value: string) => value) as TFunction;
 

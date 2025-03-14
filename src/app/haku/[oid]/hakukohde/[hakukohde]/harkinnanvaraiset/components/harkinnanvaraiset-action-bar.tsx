@@ -1,5 +1,3 @@
-import { useTranslation } from 'react-i18next';
-
 import { Box } from '@mui/material';
 import {
   CheckOutlined,
@@ -11,6 +9,7 @@ import { getOsoitetarratHakemuksille } from '@/lib/valintalaskentakoostepalvelu/
 import { HarkinnanvaraisetTilatByHakemusOids } from '@/lib/types/harkinnanvaraiset-types';
 import { FileDownloadButton } from '@/components/file-download-button';
 import { useCallback } from 'react';
+import { useTranslations } from '@/lib/localization/useTranslations';
 
 const HyvaksyValitutButton = ({
   selection,
@@ -21,7 +20,7 @@ const HyvaksyValitutButton = ({
     harkinnanvaraisetTilat: HarkinnanvaraisetTilatByHakemusOids,
   ) => void;
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslations();
 
   return (
     <ActionBar.Button
@@ -45,7 +44,7 @@ const OsoitetarratDownloadButton = ({
 }: {
   selection: Set<string>;
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslations();
 
   const getFile = useCallback(
     () =>
@@ -82,7 +81,7 @@ export const HarkinnanvaraisetActionBar = ({
     harkinnanvaraisetTilat: HarkinnanvaraisetTilatByHakemusOids,
   ) => void;
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslations();
 
   return (
     <ActionBar.Container>
@@ -91,7 +90,7 @@ export const HarkinnanvaraisetActionBar = ({
           padding: 1,
         }}
       >
-        {t(`harkinnanvaraiset.valittu-maara`, { count: selection.size })}
+        {t('yleinen.hakijoita-valittu-maara', { count: selection.size })}
       </Box>
       <ActionBar.Divider />
       <HyvaksyValitutButton

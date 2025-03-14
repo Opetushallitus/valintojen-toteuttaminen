@@ -9,7 +9,9 @@ export const isDev = process.env.NODE_ENV === 'development';
 
 export const isProd = process.env.NODE_ENV === 'production';
 
-export const isTesting = process.env.TEST === 'true';
+export const isTesting = Boolean(process.env.TEST);
+
+export const localTranslations = process.env.LOCAL_TRANSLATIONS === 'true';
 
 export const xstateInspect = process.env.XSTATE_INSPECT === 'true';
 
@@ -28,7 +30,7 @@ export const configuration = {
   sessionCookie: process.env.SESSION_COOKIE || 'JSESSIONID',
   kayttoikeusUrl: `${DOMAIN}/kayttooikeus-service/henkilo/current/omattiedot`,
   asiointiKieliUrl: `${DOMAIN}/oppijanumerorekisteri-service/henkilo/current/asiointiKieli`,
-  lokalisaatioUrl: `${DOMAIN}/lokalisointi/cxf/rest/v1/localisation?category=valintojen-toteuttaminen&locale=`,
+  lokalisointiUrl: `${DOMAIN}/lokalisointi/tolgee`,
   ohjausparametritUrl: `${DOMAIN}/ohjausparametrit-service/api/v1/rest/parametri`,
   organisaatioParentOidsUrl: (organisaatioOid: string) =>
     `${DOMAIN}/organisaatio-service/api/${organisaatioOid}/parentoids`,

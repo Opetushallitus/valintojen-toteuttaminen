@@ -1,5 +1,5 @@
 'use client';
-import { useTranslations } from '@/lib/localization/useTranslations';
+import { TFunction, useTranslations } from '@/lib/localization/useTranslations';
 import { ValintakoeOsallistuminenTulos } from '@/lib/types/laskenta-types';
 import {
   ValintakoeAvaimet,
@@ -7,7 +7,6 @@ import {
 } from '@/lib/valintaperusteet/valintaperusteet-types';
 import { Box, SelectChangeEvent } from '@mui/material';
 import { LocalizedSelect } from '@/components/localized-select';
-import { TFunction } from 'i18next';
 import { PisteetInput } from './pisteet-input';
 import {
   PistesyottoActorRef,

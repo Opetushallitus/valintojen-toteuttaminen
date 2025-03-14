@@ -118,7 +118,7 @@ test('"Valitse kaikki", "Poista valinta" and "Aseta valitut hyväksytyiksi" cont
 
   await valitseKaikkiCheckbox.click();
 
-  await expect(page.getByText('Hakijoita valittu: 4')).toBeVisible();
+  await expect(page.getByText('4 hakijaa valittu')).toBeVisible();
   await asetaValitutButton.click();
 
   await expect(

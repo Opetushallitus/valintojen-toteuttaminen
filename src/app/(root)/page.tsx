@@ -24,7 +24,7 @@ export default function Home() {
       setPageNumber={setPage}
       pageSize={pageSize}
       setPageSize={setPageSize}
-      countTranslationKey="haku.maara"
+      countTranslationKey="haku.haku-maara"
     >
       <HakuTable haut={pageResults} setSort={setSort} sort={sort ?? ''} />
     </TablePaginationWrapper>

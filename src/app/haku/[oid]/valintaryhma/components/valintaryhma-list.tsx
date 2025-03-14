@@ -138,10 +138,9 @@ export const ValintaryhmaList = ({
   return (
     <>
       <OphTypography>
-        {results.length + 1}{' '}
-        {results.length + 1 === 1
-          ? t('valintaryhmittain.maara-1')
-          : t('valintaryhmittain.maara')}
+        {t('valintaryhmittain.valintaryhma-maara', {
+          count: results.length + 1,
+        })}
       </OphTypography>
       <ValintaryhmaNavigationList
         tabIndex={0}

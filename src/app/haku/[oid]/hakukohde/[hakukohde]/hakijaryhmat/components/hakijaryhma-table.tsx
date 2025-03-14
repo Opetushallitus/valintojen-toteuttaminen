@@ -7,11 +7,10 @@ import {
   makeGenericColumn,
 } from '@/components/table/table-columns';
 import { ListTableColumn } from '@/components/table/table-types';
-import { useTranslations } from '@/lib/localization/useTranslations';
+import { TFunction, useTranslations } from '@/lib/localization/useTranslations';
 import { getReadableHakemuksenTila } from '@/lib/sijoittelun-tulokset-utils';
 import { HakijaryhmanHakija } from '@/lib/types/laskenta-types';
 import { Box } from '@mui/material';
-import { TFunction } from 'i18next';
 import { useMemo } from 'react';
 
 const TRANSLATIONS_PREFIX = 'hakijaryhmat.taulukko';

@@ -1,5 +1,3 @@
-import { useTranslation } from 'react-i18next';
-
 import { Box, SelectChangeEvent } from '@mui/material';
 import { DeselectOutlined } from '@mui/icons-material';
 import { ActionBar } from '@/components/action-bar';
@@ -97,7 +95,7 @@ export const SijoittelunTuloksetActionBar = ({
   resetSelection: () => void;
   massStatusChangeForm: (changeParams: MassChangeParams) => void;
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslations();
 
   return (
     <ActionBar.Container sx={{ width: '100%' }}>
@@ -106,7 +104,7 @@ export const SijoittelunTuloksetActionBar = ({
           padding: 1,
         }}
       >
-        {t(`valintakoekutsut.valittu-maara`, { count: selection.size })}
+        {t('yleinen.hakijoita-valittu-maara', { count: selection.size })}
       </Box>
       <ActionBar.Divider />
       <Box

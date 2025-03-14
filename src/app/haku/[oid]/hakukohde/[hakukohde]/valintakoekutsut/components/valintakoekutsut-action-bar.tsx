@@ -1,5 +1,3 @@
-import { useTranslation } from 'react-i18next';
-
 import { Box } from '@mui/material';
 import { DeselectOutlined, NoteOutlined } from '@mui/icons-material';
 import { ActionBar } from '@/components/action-bar';
@@ -9,6 +7,7 @@ import {
 } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { ValintakoekutsutExcelDownloadButton } from './valintakoekutsut-excel-download-button';
 import { FileDownloadButton } from '@/components/file-download-button';
+import { useTranslations } from '@/lib/localization/useTranslations';
 
 const OsoitetarratDownloadButton = ({
   hakuOid,
@@ -21,7 +20,7 @@ const OsoitetarratDownloadButton = ({
   valintakoeTunniste: string;
   selection: Set<string>;
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslations();
 
   return (
     <FileDownloadButton
@@ -56,7 +55,7 @@ export const ValintakoekutsutActionBar = ({
   resetSelection: () => void;
   valintakoeTunniste: string;
 } & Omit<GetValintakoeExcelParams, 'valintakoeTunniste'>) => {
-  const { t } = useTranslation();
+  const { t } = useTranslations();
 
   return (
     <ActionBar.Container>
@@ -65,7 +64,7 @@ export const ValintakoekutsutActionBar = ({
           padding: 1,
         }}
       >
-        {t(`valintakoekutsut.valittu-maara`, { count: selection.size })}
+        {t('yleinen.hakijoita-valittu-maara', { count: selection.size })}
       </Box>
       <ActionBar.Divider />
       <ValintakoekutsutExcelDownloadButton

@@ -48,7 +48,7 @@ const HakeneetContent = ({ haku, hakukohdeOid }: HakeneetParams) => {
         setPageSize={setPageSize}
         setPageNumber={setPage}
         pageNumber={page}
-        countTranslationKey="hakeneet.maara"
+        countTranslationKey="hakeneet.hakija-maara"
       >
         <HakeneetTable
           setSort={setSort}

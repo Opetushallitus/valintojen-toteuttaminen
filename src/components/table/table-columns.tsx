@@ -1,7 +1,7 @@
-import { TFunction } from 'i18next';
 import { KeysMatching, ListTableColumn } from './table-types';
 import { ExternalLink } from '../external-link';
 import { ophColors } from '@opetushallitus/oph-design-system';
+import { TFunction } from '@/lib/localization/useTranslations';
 
 export const makeGenericColumn = <T extends Record<string, unknown>>({
   title,

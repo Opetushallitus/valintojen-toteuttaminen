@@ -36,13 +36,16 @@ const refetchPisteTulokset = ({
 
 const ErrorModalDialog = createModal(({ error }: { error: Error }) => {
   const modalProps = useOphModalProps();
-  const { t, i18n } = useTranslations();
+  const { t } = useTranslations();
   return (
     <OphModal
       {...modalProps}
       title={
-        error?.message && i18n.exists(error.message)
-          ? t(error.message)
+        error?.message
+          ? t({
+              key: error.message,
+              defaultValue: t('pistesyotto.virhe-tuo-taulukkolaskennasta'),
+            })
           : t('pistesyotto.virhe-tuo-taulukkolaskennasta')
       }
       maxWidth="md"

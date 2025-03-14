@@ -1,27 +1,37 @@
 'use client';
-import { I18nextProvider } from 'react-i18next';
 import { FullSpinner } from '@/components/full-spinner';
 import { useAsiointiKieli } from '@/hooks/useAsiointiKieli';
-import { createLocalization } from '@/lib/localization/localizations';
+import { changeLanguage, tolgee } from '@/lib/localization/localizations';
 import { ErrorView } from '../error-view';
+import { Language } from '@/lib/localization/localization-types';
 import { useEffect } from 'react';
-
-const localizations = createLocalization();
+import { TolgeeProvider } from '@tolgee/react';
 
 const LocalizationContent = ({
   lng,
   children,
 }: {
-  lng?: string;
+  lng?: Language;
   children: React.ReactNode;
 }) => {
   useEffect(() => {
-    localizations.changeLanguage(lng ?? 'fi');
+    if (lng) {
+      changeLanguage(lng);
+    }
   }, [lng]);
-  return <I18nextProvider i18n={localizations}>{children}</I18nextProvider>;
+
+  return children;
 };
 
-export default function LocalizationProvider({
+export function MyTolgeeProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <TolgeeProvider tolgee={tolgee} fallback={<FullSpinner />}>
+      {children}
+    </TolgeeProvider>
+  );
+}
+
+export function LocalizationProvider({
   children,
 }: {
   children: React.ReactNode;
