@@ -10,7 +10,7 @@ export const useHakijanVastaanottotila = (
 ) =>
   useSuspenseQuery({
     queryKey: [
-      'getHyvaksynnanEhdot',
+      'getHakijoidenVastaanottotilatValintatapajonolle',
       hakuOid,
       hakukohdeOid,
       valintatapajonoOid,

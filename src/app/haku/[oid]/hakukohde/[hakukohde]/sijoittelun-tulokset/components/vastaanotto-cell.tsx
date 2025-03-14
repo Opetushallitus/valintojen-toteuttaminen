@@ -51,6 +51,7 @@ const HakijanVastaanottoTilaSection = ({
     return (
       <Typography>
         {t('sijoittelun-tulokset.hakijalle-naytetaan')}
+        &nbsp;
         {t(`vastaanottotila.${hakijanVastaanottoTila}`)}
       </Typography>
     );
