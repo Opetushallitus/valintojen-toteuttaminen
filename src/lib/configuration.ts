@@ -195,6 +195,16 @@ export const configuration = {
     hakukohdeOid: string;
   }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/proxy/valintatulosservice/myohastyneet/haku/${hakuOid}/hakukohde/${hakukohdeOid}`,
+  hakijanTilatValintatapajonolleUrl: ({
+    hakuOid,
+    hakukohdeOid,
+    valintatapajonoOid,
+  }: {
+    hakuOid: string;
+    hakukohdeOid: string;
+    valintatapajonoOid: string;
+  }) =>
+    `${DOMAIN}/valintalaskentakoostepalvelu/resources/proxy/valintatulosservice/tilahakijalle/haku/${hakuOid}/hakukohde/${hakukohdeOid}/valintatapajono/${valintatapajonoOid}`,
   // -------------------------------------------------------------------------------------------------
   // valinta-tulos-service
   valintaTulosServiceLogin: `${DOMAIN}/valinta-tulos-service/auth/login`,
@@ -239,7 +249,6 @@ export const configuration = {
     valintatapajonoOid: string;
   }) =>
     `${DOMAIN}/valinta-tulos-service/auth/muutoshistoria?valintatapajonoOid=${valintatapajonoOid}&hakemusOid=${hakemusOid}`,
-
   // -------------------------------------------------------------------------------------------------
   // valintalaskenta-ui (vanha käyttöliittymä)
   // TODO: Poista kun korvattu uudella käyttöliittymällä

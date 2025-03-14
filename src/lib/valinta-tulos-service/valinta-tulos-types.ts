@@ -41,3 +41,9 @@ export type HakemusChangeEvent = {
   changeTime: string;
   changes: Array<HakemusChangeDetail>;
 };
+
+export type HakijanVastaanottoTila = {
+  valintatapaJonoOid: string;
+  vastaanottotila: VastaanottoTila;
+  hakemusOid: string;
+};

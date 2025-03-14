@@ -54,12 +54,14 @@ const useColumns = ({
   sijoitteluajoId,
   actorRef,
   kaikkiJonotHyvaksytty,
+  valintatapajono,
 }: {
   haku: Haku;
   hakukohde: Hakukohde;
   sijoitteluajoId: string;
   actorRef: SijoittelunTulosActorRef;
   kaikkiJonotHyvaksytty: boolean;
+  valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
 }) => {
   const state = useSelector(actorRef, (s) => s);
   const { send } = actorRef;
@@ -115,6 +117,8 @@ const useColumns = ({
         renderFn: (props) => (
           <VastaanOttoCell
             haku={haku}
+            hakukohde={hakukohde}
+            valintatapajono={valintatapajono}
             hakemus={props}
             updateForm={updateForm}
             disabled={disabled}
@@ -169,6 +173,7 @@ const useColumns = ({
     sijoitteluajoId,
     hakukohde,
     kaikkiJonotHyvaksytty,
+    valintatapajono,
   ]);
 };
 
@@ -209,6 +214,7 @@ export const SijoittelunTulosTable = ({
     sijoitteluajoId,
     actorRef: sijoittelunTulosActorRef,
     kaikkiJonotHyvaksytty,
+    valintatapajono,
   });
 
   const changedHakemukset = useSelector(

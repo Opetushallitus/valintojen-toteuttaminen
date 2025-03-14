@@ -15,6 +15,7 @@ import PISTETIEDOT from './fixtures/pistetiedot.json';
 import KOKEET from './fixtures/valintakoe-avaimet.json';
 import EHDOT from './fixtures/hyvaksynnan_ehdot.json';
 import VALINTARYHMA_PUU from './fixtures/valintaryhma-puu.json';
+import VASTAANOTTOTILAT_HAKIJOILLE from './fixtures/valintatapajonon-hakijoiden-vastaanottotila.json';
 import { OPH_ORGANIZATION_OID } from '@/lib/constants';
 
 const port = 3104;
@@ -122,6 +123,12 @@ export default async function playwrightSetup() {
       )
     ) {
       return modifyResponse(response, HAKUKOHTEEN_VALINTATULOKSET);
+    } else if (
+      request.url?.includes(
+        `valintalaskentakoostepalvelu/resources/proxy/valintatulosservice/tilahakijalle/haku/`,
+      )
+    ) {
+      return modifyResponse(response, VASTAANOTTOTILAT_HAKIJOILLE);
     } else if (
       request.url?.includes(
         'valintaperusteet-service/resources/hakukohde/avaimet',
