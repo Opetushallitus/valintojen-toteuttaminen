@@ -86,6 +86,7 @@ const SijoitteluContent = ({
           valinnanvaiheet,
           jono.oid,
         );
+
         return (
           <SijoittelunTulosContent
             valintatapajono={jono}
