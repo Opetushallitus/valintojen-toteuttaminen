@@ -16,6 +16,7 @@ import { SijoittelunTulosControls } from './components/sijoittelun-tulos-control
 import { useHaku } from '@/lib/kouta/useHaku';
 import { FullClientSpinner } from '@/components/client-spinner';
 import { useHakukohde } from '@/lib/kouta/useHakukohde';
+import { valinnanvaiheetIlmanLaskentaaQueryOptions } from '@/lib/valintaperusteet/valintaperusteet-service';
 
 type SijoitteluContentParams = {
   hakuOid: string;
@@ -42,6 +43,10 @@ const SijoitteluContent = ({
 
   const kaikkiJonotHyvaksytty = Boolean(
     tulokset?.valintatapajonot.every((jono) => jono.accepted),
+  );
+
+  const { data: laskennattomatValinnanvaiheet } = useSuspenseQuery(
+    valinnanvaiheetIlmanLaskentaaQueryOptions(hakukohde.oid),
   );
 
   return isEmpty(tulokset) ? (
@@ -71,17 +76,25 @@ const SijoitteluContent = ({
         />
         <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
       </Box>
-      {tulokset?.valintatapajonot.map((jono) => (
-        <SijoittelunTulosContent
-          valintatapajono={jono}
-          key={jono.oid}
-          haku={haku}
-          hakukohde={hakukohde}
-          sijoitteluajoId={tulokset.sijoitteluajoId}
-          lastModified={tulokset.lastModified}
-          kaikkiJonotHyvaksytty={kaikkiJonotHyvaksytty}
-        />
-      ))}
+      {tulokset?.valintatapajonot.map((jono) => {
+        const isLaskennaton = Boolean(
+          laskennattomatValinnanvaiheet?.find((v) =>
+            v.jonot.find((j) => j.oid === jono.oid),
+          ),
+        );
+        return (
+          <SijoittelunTulosContent
+            valintatapajono={jono}
+            key={jono.oid}
+            haku={haku}
+            hakukohde={hakukohde}
+            sijoitteluajoId={tulokset.sijoitteluajoId}
+            lastModified={tulokset.lastModified}
+            kaikkiJonotHyvaksytty={kaikkiJonotHyvaksytty}
+            isLaskennaton={isLaskennaton}
+          />
+        );
+      })}
     </Box>
   );
 };

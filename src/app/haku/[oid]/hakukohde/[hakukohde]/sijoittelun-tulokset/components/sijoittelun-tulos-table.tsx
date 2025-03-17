@@ -55,6 +55,7 @@ const useColumns = ({
   actorRef,
   kaikkiJonotHyvaksytty,
   valintatapajono,
+  isLaskennaton,
 }: {
   haku: Haku;
   hakukohde: Hakukohde;
@@ -62,6 +63,7 @@ const useColumns = ({
   actorRef: SijoittelunTulosActorRef;
   kaikkiJonotHyvaksytty: boolean;
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
+  isLaskennaton: boolean;
 }) => {
   const state = useSelector(actorRef, (s) => s);
   const { send } = actorRef;
@@ -94,11 +96,13 @@ const useColumns = ({
         key: 'hakutoive',
         amountProp: 'hakutoive',
       }),
-      makeCountColumn<SijoittelunHakemusValintatiedoilla>({
-        title: t(`${TRANSLATIONS_PREFIX}.pisteet`),
-        key: 'pisteet',
-        amountProp: 'pisteet',
-      }),
+      isLaskennaton
+        ? null
+        : makeCountColumn<SijoittelunHakemusValintatiedoilla>({
+            title: t(`${TRANSLATIONS_PREFIX}.pisteet`),
+            key: 'pisteet',
+            amountProp: 'pisteet',
+          }),
       makeColumnWithCustomRender<SijoittelunHakemusValintatiedoilla>({
         title: t(`${TRANSLATIONS_PREFIX}.tila`),
         key: 'sijoittelunTila',
@@ -174,6 +178,7 @@ const useColumns = ({
     hakukohde,
     kaikkiJonotHyvaksytty,
     valintatapajono,
+    isLaskennaton,
   ]);
 };
 
@@ -184,6 +189,7 @@ export const SijoittelunTulosTable = ({
   valintatapajono,
   sijoittelunTulosActorRef,
   kaikkiJonotHyvaksytty,
+  isLaskennaton,
 }: {
   haku: Haku;
   hakukohde: Hakukohde;
@@ -191,6 +197,7 @@ export const SijoittelunTulosTable = ({
   sijoittelunTulosActorRef: SijoittelunTulosActorRef;
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
   kaikkiJonotHyvaksytty: boolean;
+  isLaskennaton: boolean;
 }) => {
   const { t } = useTranslations();
 
@@ -215,6 +222,7 @@ export const SijoittelunTulosTable = ({
     actorRef: sijoittelunTulosActorRef,
     kaikkiJonotHyvaksytty,
     valintatapajono,
+    isLaskennaton,
   });
 
   const changedHakemukset = useSelector(
