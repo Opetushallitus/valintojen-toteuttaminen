@@ -784,6 +784,18 @@ export const getKirjepohjatHakukohteelle = async (
   });
 };
 
+export const documentIdForHakukohdeQueryOptions = ({
+  hakukohdeOid,
+  documentType,
+}: {
+  hakukohdeOid: string;
+  documentType: DokumenttiTyyppi;
+}) =>
+  queryOptions({
+    queryKey: ['getDocumentIdForHakukohde', hakukohdeOid, documentType],
+    queryFn: () => getDocumentIdForHakukohde(hakukohdeOid, documentType),
+  });
+
 export const getDocumentIdForHakukohde = async (
   hakukohdeOid: string,
   documentType: DokumenttiTyyppi,
