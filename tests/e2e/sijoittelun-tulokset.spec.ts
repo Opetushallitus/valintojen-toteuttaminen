@@ -2,6 +2,7 @@ import { test, expect, Page } from '@playwright/test';
 import {
   checkRow,
   expectAllSpinnersHidden,
+  findTableColumnIndexByTitle,
   selectOption,
 } from './playwright-utils';
 import { configuration } from '@/lib/configuration';
@@ -152,6 +153,42 @@ test('Näytä "Sijoittelun tulokset" -välilehti ja sisältö', async ({ page })
   );
 
   await expect(page.getByText('Hakijalle näytetään: Kesken')).toBeVisible();
+});
+
+test('Näytä info-ikoni ja tooltip sitä klikattaessa vain toisesta valintatapajonosta siirtyneelle hakemukselle', async ({
+  page,
+}) => {
+  const yoAccordionContent = getYoValintatapajonoContent(page);
+  const contentRows = yoAccordionContent.locator('tbody tr');
+  const contentRowsLength = await contentRows.count();
+  const sijoittelunTilaColumnIndex = await findTableColumnIndexByTitle(
+    yoAccordionContent,
+    'Sijoittelun tila',
+  );
+
+  for (let i = 0; i < contentRowsLength; i++) {
+    const row = contentRows.nth(i);
+    const sijoittelunTilaCell = row
+      .getByRole('cell')
+      .nth(sijoittelunTilaColumnIndex);
+    const infoButton = sijoittelunTilaCell.getByRole('button', {
+      name: 'Lisätietoja',
+    });
+    const rowText = await row.textContent();
+    if (rowText?.includes('Nukettaja Ruhtinas')) {
+      // Hakemukselle asetettu testidatassa siirtynytToisestaValintatapajonosta = true
+      const tooltip = page.getByRole('tooltip').filter({
+        hasText: 'Hakemus on siirtynyt toisesta valintatapajonosta',
+      });
+      await expect(infoButton).toBeVisible();
+      await infoButton.click();
+      await expect(tooltip).toBeVisible();
+      await tooltip.getByRole('button', { name: 'Sulje' }).click();
+      await expect(tooltip).toBeHidden();
+    } else {
+      await expect(infoButton).toBeHidden();
+    }
+  }
 });
 
 test('Ehdollista hyväksyntää ja maksusaraketta ei näytetä toisen asteen yhteishaulla', async ({

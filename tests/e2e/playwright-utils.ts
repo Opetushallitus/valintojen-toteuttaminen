@@ -191,3 +191,19 @@ export const startExcelImport = async (page: Page, within?: Locator) => {
   const fileChooser = await fileChooserPromise;
   await fileChooser.setFiles(path.join(__dirname, './fixtures/empty.xls'));
 };
+
+export const findTableColumnIndexByTitle = async (
+  parent: Page | Locator,
+  title: string,
+) => {
+  const headRowCells = parent.locator('tr th');
+  const headRowLength = await headRowCells.count();
+
+  for (let i = 0; i < headRowLength; ++i) {
+    const content = await headRowCells.nth(i).textContent();
+    if (content?.includes(title)) {
+      return i;
+    }
+  }
+  throw new Error(`Column with title "${title}" not found`);
+};

@@ -88,6 +88,7 @@ type SijoitteluajonTuloksetResponseData = {
         tasasijaJonosija: number;
         prioriteetti: number;
         onkoMuuttunutViimeSijoittelussa: boolean;
+        siirtynytToisestaValintatapajonosta: boolean;
       },
     ];
   }>;
@@ -126,7 +127,6 @@ type SijoitteluajonTuloksetWithValintaEsitysResponseData = {
     valintatapajonoOid: string;
     hyvaksytty?: string;
   }>;
-
   lastModified: string;
   sijoittelunTulokset: Omit<SijoitteluajonTuloksetResponseData, 'hakijaryhmat'>;
   kirjeLahetetty: [
@@ -142,11 +142,13 @@ const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
   hakuOid: string,
   hakukohdeOid: string,
 ): Promise<SijoitteluajonTuloksetValintatiedoilla> => {
-  const { data } =
-    await client.get<SijoitteluajonTuloksetWithValintaEsitysResponseData>(
+  const [{ data }, hakemukset] = await Promise.all([
+    client.get<SijoitteluajonTuloksetWithValintaEsitysResponseData>(
       `${configuration.valintaTulosServiceUrl}sijoitteluntulos/${hakuOid}/sijoitteluajo/latest/hakukohde/${hakukohdeOid}`,
-    );
-  const hakemukset = await getHakemukset({ hakuOid, hakukohdeOid });
+    ),
+    getHakemukset({ hakuOid, hakukohdeOid }),
+  ]);
+
   const hakemuksetIndexed = indexBy(hakemukset, (h) => h.hakemusOid);
   const lukuvuosimaksutIndexed = indexBy(
     data.lukuvuosimaksut,
@@ -177,6 +179,7 @@ const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
           if (h.pisteet < 0) {
             hasNegativePisteet = true;
           }
+
           return {
             hakijaOid: h.hakijaOid,
             hakemusOid: h.hakemusOid,
@@ -212,6 +215,8 @@ const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
             hyvaksyPeruuntunut: valintatulos.hyvaksyPeruuntunut,
             hyvaksymiskirjeLahetetty:
               lahetetytKirjeetIndexed[h.hakijaOid]?.kirjeLahetetty,
+            siirtynytToisestaValintatapajonosta:
+              h.siirtynytToisestaValintatapajonosta,
           };
         });
       hakemukset.sort((a, b) =>
