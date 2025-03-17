@@ -23,6 +23,7 @@ import {
   EMPTY_OBJECT,
   OphProcessError,
   OphProcessErrorData,
+  defaultWhen404,
 } from '../common';
 import { getHakemukset, getHakijat } from '../ataru/ataru-service';
 import {
@@ -223,7 +224,13 @@ const getValintakoeOsallistumiset = async ({
   return response.data;
 };
 
-export async function getValintakoekutsutData({
+const VALINTAKOKEET_EMPTY_RESPONSE = {
+  valintakokeet: EMPTY_ARRAY,
+  hakemuksetByOid: EMPTY_OBJECT,
+  valintakoeOsallistumiset: EMPTY_ARRAY,
+} as const;
+
+async function getValintakoekutsutData({
   hakuOid,
   hakukohdeOid,
 }: {
@@ -233,11 +240,7 @@ export async function getValintakoekutsutData({
   const valintakokeet = await getValintakokeet(hakukohdeOid);
 
   if (isEmpty(valintakokeet)) {
-    return {
-      valintakokeet: EMPTY_ARRAY,
-      hakemuksetByOid: EMPTY_OBJECT,
-      valintakoeOsallistumiset: EMPTY_ARRAY,
-    };
+    return VALINTAKOKEET_EMPTY_RESPONSE;
   }
 
   const [valintakoeOsallistumiset, hakukohdeHakemukset] = await Promise.all([
@@ -269,6 +272,19 @@ export async function getValintakoekutsutData({
     hakemuksetByOid,
     valintakoeOsallistumiset,
   };
+}
+
+export async function tryGetValintakoekutsutData({
+  hakuOid,
+  hakukohdeOid,
+}: {
+  hakuOid: string;
+  hakukohdeOid: string;
+}): Promise<ValintakoekutsutData> {
+  return defaultWhen404(
+    getValintakoekutsutData({ hakuOid, hakukohdeOid }),
+    VALINTAKOKEET_EMPTY_RESPONSE,
+  );
 }
 
 export type GetValintakoeExcelParams = {

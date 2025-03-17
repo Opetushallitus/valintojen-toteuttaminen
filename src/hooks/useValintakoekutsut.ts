@@ -1,6 +1,6 @@
 'use client';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { getValintakoekutsutData } from '../lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
+import { tryGetValintakoekutsutData } from '../lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import {
   selectValintakoekutsutHakijoittain,
   selectValintakoekutsutKokeittain,
@@ -23,7 +23,7 @@ const useValintakoekutsutData = <T>({
 }) => {
   const { data: valintakoekutsutData } = useSuspenseQuery({
     queryKey: ['getValintakoekutsutData', hakukohdeOid],
-    queryFn: () => getValintakoekutsutData({ hakuOid, hakukohdeOid }),
+    queryFn: () => tryGetValintakoekutsutData({ hakuOid, hakukohdeOid }),
     select,
   });
   return valintakoekutsutData;

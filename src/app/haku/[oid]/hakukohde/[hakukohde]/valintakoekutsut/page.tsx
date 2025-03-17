@@ -98,7 +98,7 @@ const ValintakoekutsutHakijoittain = ({
 
   const { t } = useTranslations();
 
-  return isEmpty(valintakoekutsutHakijoittain) ? (
+  return isEmpty(valintakoekutsutHakijoittain?.kokeet) ? (
     <NoResults text={t('valintakoekutsut.ei-valintakoekutsuja')} />
   ) : (
     <FormBox>
