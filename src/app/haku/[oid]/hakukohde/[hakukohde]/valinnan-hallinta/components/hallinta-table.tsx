@@ -1,7 +1,7 @@
 'use client';
 
 import {
-  getValinnanvaiheet,
+  hakukohteenValinnanvaiheetQueryOptions,
   isLaskentaUsedForValinnanvaihe,
 } from '@/lib/valintaperusteet/valintaperusteet-service';
 import { useSuspenseQueries } from '@tanstack/react-query';
@@ -54,10 +54,7 @@ const HallintaTable = ({
   const [valinnanvaiheetQuery, lasketutValinnanvaiheetQuery] =
     useSuspenseQueries({
       queries: [
-        {
-          queryKey: ['getValinnanvaiheet', hakukohde.oid],
-          queryFn: () => getValinnanvaiheet(hakukohde.oid),
-        },
+        hakukohteenValinnanvaiheetQueryOptions(hakukohde.oid),
         hakukohteenValintalaskennanTuloksetQueryOptions(hakukohde.oid),
       ],
     });

@@ -55,7 +55,7 @@ const useColumns = ({
   actorRef,
   kaikkiJonotHyvaksytty,
   valintatapajono,
-  isLaskennaton,
+  kayttaaLaskentaa,
 }: {
   haku: Haku;
   hakukohde: Hakukohde;
@@ -63,7 +63,7 @@ const useColumns = ({
   actorRef: SijoittelunTulosActorRef;
   kaikkiJonotHyvaksytty: boolean;
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
-  isLaskennaton: boolean;
+  kayttaaLaskentaa: boolean;
 }) => {
   const state = useSelector(actorRef, (s) => s);
   const { send } = actorRef;
@@ -96,13 +96,13 @@ const useColumns = ({
         key: 'hakutoive',
         amountProp: 'hakutoive',
       }),
-      isLaskennaton
-        ? null
-        : makeCountColumn<SijoittelunHakemusValintatiedoilla>({
+      kayttaaLaskentaa
+        ? makeCountColumn<SijoittelunHakemusValintatiedoilla>({
             title: t(`${TRANSLATIONS_PREFIX}.pisteet`),
             key: 'pisteet',
             amountProp: 'pisteet',
-          }),
+          })
+        : null,
       makeColumnWithCustomRender<SijoittelunHakemusValintatiedoilla>({
         title: t(`${TRANSLATIONS_PREFIX}.tila`),
         key: 'sijoittelunTila',
@@ -178,7 +178,7 @@ const useColumns = ({
     hakukohde,
     kaikkiJonotHyvaksytty,
     valintatapajono,
-    isLaskennaton,
+    kayttaaLaskentaa,
   ]);
 };
 
@@ -189,7 +189,7 @@ export const SijoittelunTulosTable = ({
   valintatapajono,
   sijoittelunTulosActorRef,
   kaikkiJonotHyvaksytty,
-  isLaskennaton,
+  kayttaaLaskentaa,
 }: {
   haku: Haku;
   hakukohde: Hakukohde;
@@ -197,7 +197,7 @@ export const SijoittelunTulosTable = ({
   sijoittelunTulosActorRef: SijoittelunTulosActorRef;
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
   kaikkiJonotHyvaksytty: boolean;
-  isLaskennaton: boolean;
+  kayttaaLaskentaa: boolean;
 }) => {
   const { t } = useTranslations();
 
@@ -222,7 +222,7 @@ export const SijoittelunTulosTable = ({
     actorRef: sijoittelunTulosActorRef,
     kaikkiJonotHyvaksytty,
     valintatapajono,
-    isLaskennaton,
+    kayttaaLaskentaa,
   });
 
   const changedHakemukset = useSelector(

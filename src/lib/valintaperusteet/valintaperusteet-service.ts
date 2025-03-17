@@ -92,6 +92,15 @@ const convertValinnanvaihe = (vaihe: ValinnanvaiheModel): Valinnanvaihe => {
   };
 };
 
+export const hakukohteenValinnanvaiheetQueryOptions = (
+  hakukohdeOid: string,
+) => {
+  return queryOptions({
+    queryKey: ['getValinnanvaiheet', hakukohdeOid],
+    queryFn: () => getValinnanvaiheet(hakukohdeOid),
+  });
+};
+
 export const getValinnanvaiheet = async (
   hakukohdeOid: string,
 ): Promise<Array<Valinnanvaihe>> => {

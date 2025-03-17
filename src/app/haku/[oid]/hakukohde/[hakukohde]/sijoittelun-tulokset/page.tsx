@@ -5,7 +5,7 @@ import { TabContainer } from '../components/tab-container';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { Box } from '@mui/material';
-import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
+import { useQueryClient, useSuspenseQueries } from '@tanstack/react-query';
 import { tryToGetLatestSijoitteluajonTuloksetWithValintaEsitysQueryOptions } from '@/lib/valinta-tulos-service/valinta-tulos-service';
 import { isEmpty } from '@/lib/common';
 import { PageSizeSelector } from '@/components/table/page-size-selector';
@@ -13,9 +13,12 @@ import { NoResults } from '@/components/no-results';
 import { useSijoittelunTulosSearchParams } from './hooks/useSijoittelunTulosSearch';
 import { SijoittelunTulosContent } from './components/sijoittelun-tulos-content';
 import { SijoittelunTulosControls } from './components/sijoittelun-tulos-controls';
-import { useHaku } from '@/lib/kouta/useHaku';
+import { hakuQueryOptions } from '@/lib/kouta/useHaku';
 import { FullClientSpinner } from '@/components/client-spinner';
+import { hakukohdeQueryOptions } from '@/lib/kouta/useHakukohde';
+import { hakukohteenValinnanvaiheetQueryOptions } from '@/lib/valintaperusteet/valintaperusteet-service';
 import { documentIdForHakukohdeQueryOptions } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
+import { checkIsValintalaskentaUsed } from '@/lib/valintaperusteet/valintaperusteet-utils';
 
 type SijoitteluContentParams = {
   hakuOid: string;
@@ -30,22 +33,25 @@ const SijoitteluContent = ({
 
   const { pageSize, setPageSize } = useSijoittelunTulosSearchParams();
 
-  const { data: haku } = useHaku({ hakuOid });
-  const { data: hakukohde } = useHakukohde({ hakukohdeOid });
-
-  const { data: tulokset } = useSuspenseQuery(
-    tryToGetLatestSijoitteluajonTuloksetWithValintaEsitysQueryOptions({
-      hakuOid,
-      hakukohdeOid,
-    }),
-  );
+  const [
+    { data: haku },
+    { data: hakukohde },
+    { data: tulokset },
+    { data: valinnanvaiheet },
+  ] = useSuspenseQueries({
+    queries: [
+      hakuQueryOptions({ hakuOid }),
+      hakukohdeQueryOptions({ hakukohdeOid }),
+      tryToGetLatestSijoitteluajonTuloksetWithValintaEsitysQueryOptions({
+        hakuOid,
+        hakukohdeOid,
+      }),
+      hakukohteenValinnanvaiheetQueryOptions(hakukohdeOid),
+    ],
+  });
 
   const kaikkiJonotHyvaksytty = Boolean(
     tulokset?.valintatapajonot.every((jono) => jono.accepted),
-  );
-
-  const { data: laskennattomatValinnanvaiheet } = useSuspenseQuery(
-    valinnanvaiheetIlmanLaskentaaQueryOptions(hakukohde.oid),
   );
 
   return isEmpty(tulokset) ? (
@@ -76,10 +82,9 @@ const SijoitteluContent = ({
         <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
       </Box>
       {tulokset?.valintatapajonot.map((jono) => {
-        const isLaskennaton = Boolean(
-          laskennattomatValinnanvaiheet?.find((v) =>
-            v.jonot.find((j) => j.oid === jono.oid),
-          ),
+        const kayttaaLaskentaa = checkIsValintalaskentaUsed(
+          valinnanvaiheet,
+          jono.oid,
         );
         return (
           <SijoittelunTulosContent
@@ -90,7 +95,7 @@ const SijoitteluContent = ({
             sijoitteluajoId={tulokset.sijoitteluajoId}
             lastModified={tulokset.lastModified}
             kaikkiJonotHyvaksytty={kaikkiJonotHyvaksytty}
-            isLaskennaton={isLaskennaton}
+            kayttaaLaskentaa={kayttaaLaskentaa}
           />
         );
       })}
