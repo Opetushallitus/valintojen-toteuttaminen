@@ -22,8 +22,9 @@ import {
   sortBy,
 } from 'remeda';
 import { Hakemus } from '@/lib/ataru/ataru-types';
-import { valinnanvaiheetIlmanLaskentaaQueryOptions } from '@/lib/valintaperusteet/valintaperusteet-service';
+import { hakukohteenValinnanvaiheetQueryOptions } from '@/lib/valintaperusteet/valintaperusteet-service';
 import { Valinnanvaihe } from '@/lib/valintaperusteet/valintaperusteet-types';
+import { selectLaskennattomatValinnanvaiheet } from '@/lib/valintaperusteet/valintaperusteet-utils';
 
 export type LaskennanJonosijaTulos<
   A extends Record<string, unknown> = Record<string, unknown>,
@@ -116,7 +117,7 @@ const selectJonosijaFields = (
  * @template HakemusOut - Tyyppi, joka määrittää hakemuksen ulostulon kentät. Päätellään selectHakemusFields-parametrin paluuarvosta.
  *
  * @param {Array<ValintalaskennanTulosValinnanvaiheModel>} params.valintalaskennanTulokset - Lista valintalaskennan tuloksista.
- * @param {Array<Valinnanvaihe>} params.laskennattomatValinnanvaiheet - Lista valinnanvaiheista, joissa ei ole laskentaa.
+ * @param {Array<Valinnanvaihe>} params.valinnanvaiheet - Lista valinnanvaiheista (valintaperusteet-servicestä).
  * @param {Array<HakemusIn>} params.hakemukset - Lista hakemuksista, joille tulokset halutaan listata.
  * @param {(hakemusOid: string) => HakemusOut} [params.selectHakemusFields] - Funktio, jonka antamalla voi täydentää jonosijoja hakemuksen tiedoilla.
  *
@@ -130,16 +131,17 @@ export const selectEditableValintalaskennanTulokset = <
   },
 >({
   valintalaskennanTulokset,
-  laskennattomatValinnanvaiheet: valinnanvaiheetIlmanLaskentaa,
+  valinnanvaiheet,
   hakemukset,
   selectHakemusFields,
 }: {
   valintalaskennanTulokset: Array<ValintalaskennanTulosValinnanvaiheModel>;
-  laskennattomatValinnanvaiheet: Array<Valinnanvaihe>;
+  valinnanvaiheet: Array<Valinnanvaihe>;
   hakemukset: Array<HakemusIn>;
   selectHakemusFields?: (hakemusOid: string) => HakemusOut;
 }) => {
-  const ilmanLaskentaaOids = map(valinnanvaiheetIlmanLaskentaa, prop('oid'));
+  const laskennattomatVaiheet =
+    selectLaskennattomatValinnanvaiheet(valinnanvaiheet);
 
   const lasketutJonotByOid = pipe(
     valintalaskennanTulokset,
@@ -147,8 +149,8 @@ export const selectEditableValintalaskennanTulokset = <
     groupBy(prop('oid')),
   );
 
-  const laskennattomatValinnanvaiheet = map(
-    valinnanvaiheetIlmanLaskentaa,
+  const laskennattomatVaiheetTuloksilla = map(
+    laskennattomatVaiheet,
     (vaihe) => {
       return {
         jarjestysnumero: 0,
@@ -192,9 +194,11 @@ export const selectEditableValintalaskennanTulokset = <
     },
   );
 
+  const laskennattomatVaiheetOids = map(laskennattomatVaiheet, prop('oid'));
+
   return pipe(
     valintalaskennanTulokset.filter(
-      (vaihe) => !ilmanLaskentaaOids.includes(vaihe.valinnanvaiheoid),
+      (vaihe) => !laskennattomatVaiheetOids.includes(vaihe.valinnanvaiheoid),
     ) ?? [],
     map((valinnanVaihe) => {
       return {
@@ -221,7 +225,8 @@ export const selectEditableValintalaskennanTulokset = <
       };
     }),
     sortBy([prop('jarjestysnumero'), 'desc']),
-    (lasketutVaiheet) => concat(laskennattomatValinnanvaiheet, lasketutVaiheet),
+    (lasketutVaiheet) =>
+      concat(laskennattomatVaiheetTuloksilla, lasketutVaiheet),
   );
 };
 
@@ -235,7 +240,7 @@ export const useEditableValintalaskennanTulokset = ({
   const [
     { data: hakemukset },
     { data: hakukohteenLaskennanTulokset },
-    { data: valinnanvaiheetIlmanLaskentaa },
+    { data: valinnanvaiheet },
   ] = useSuspenseQueries({
     queries: [
       {
@@ -243,7 +248,7 @@ export const useEditableValintalaskennanTulokset = ({
         queryFn: () => getHakemukset({ hakuOid, hakukohdeOid }),
       },
       hakukohteenValintalaskennanTuloksetQueryOptions(hakukohdeOid),
-      valinnanvaiheetIlmanLaskentaaQueryOptions(hakukohdeOid),
+      hakukohteenValinnanvaiheetQueryOptions(hakukohdeOid),
     ],
   });
 
@@ -251,7 +256,7 @@ export const useEditableValintalaskennanTulokset = ({
 
   return selectEditableValintalaskennanTulokset<AdditionalHakemusFields>({
     valintalaskennanTulokset: hakukohteenLaskennanTulokset,
-    laskennattomatValinnanvaiheet: valinnanvaiheetIlmanLaskentaa,
+    valinnanvaiheet,
     hakemukset,
     selectHakemusFields(hakemusOid) {
       const hakemus = hakemuksetByOid[hakemusOid];

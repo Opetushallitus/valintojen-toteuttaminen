@@ -110,25 +110,6 @@ export const getValinnanvaiheet = async (
   return response.data.map(convertValinnanvaihe);
 };
 
-export const valinnanvaiheetIlmanLaskentaaQueryOptions = (
-  hakukohdeOid: string,
-) => {
-  return queryOptions({
-    queryKey: ['getValinnanvaiheetIlmanLaskentaa', hakukohdeOid],
-    queryFn: () => getValinnanvaiheetIlmanLaskentaa(hakukohdeOid),
-  });
-};
-
-export const getValinnanvaiheetIlmanLaskentaa = async (
-  hakukohdeOid: string,
-): Promise<Array<Valinnanvaihe>> => {
-  const response = await client.get<Array<ValinnanvaiheModel>>(
-    configuration.valinnanvaiheetIlmanlaskentaaUrl({ hakukohdeOid }),
-  );
-
-  return response.data.map(convertValinnanvaihe);
-};
-
 const determineValintaKoeInputTyyppi = (
   tunniste: string,
   funktioTyyppi: string,

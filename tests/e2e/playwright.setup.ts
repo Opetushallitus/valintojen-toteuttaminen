@@ -136,7 +136,6 @@ export default async function playwrightSetup() {
     ) {
       return modifyResponse(response, KOKEET);
     } else if (
-      request.url?.includes(`valintaperusteet-service/resources/hakukohde`) &&
       request.url?.includes('valinnanvaihe?withValisijoitteluTieto=true')
     ) {
       return modifyResponse(response, VALINNANVAIHE);

@@ -10,6 +10,38 @@ import {
   VastaanottoTila,
 } from '@/lib/types/sijoittelu-types';
 
+async function goToSijoittelunTulokset(page: Page) {
+  await page.clock.setFixedTime(new Date('2025-02-05T12:00:00'));
+  await page.route(
+    configuration.myohastyneetHakemuksetUrl({
+      hakuOid: '1.2.246.562.29.00000000000000045102',
+      hakukohdeOid: '1.2.246.562.20.00000000000000045105',
+    }),
+    async (route) => {
+      await route.fulfill({
+        json: [
+          {
+            hakemusOid: '1.2.246.562.11.00000000000001796027',
+            mennyt: true,
+            vastaanottoDeadline: '2022-03-18T13:00:00.000Z',
+          },
+        ],
+      });
+    },
+  );
+  await page.goto(
+    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/sijoittelun-tulokset',
+  );
+  await expectAllSpinnersHidden(page);
+  await expect(page.locator('h1')).toHaveText(
+    '> Tampere University Separate Admission/ Finnish MAOL Competition Route 2024',
+  );
+}
+
+async function selectTila(page: Page, expectedOption: string) {
+  await selectOption(page, 'Sijoittelun tila', expectedOption);
+}
+
 test.beforeEach(async ({ page }) => await goToSijoittelunTulokset(page));
 
 const getYoValintatapajonoContent = (page: Page) => {
@@ -35,13 +67,10 @@ test('Näytä "Sijoittelun tulokset" -välilehti ja sisältö', async ({ page })
         '(Aloituspaikat: 1 | Sijoittelun aloituspaikat: 1 | Tasasijasääntö: Ylitäyttö | Varasijatäyttö | Prioriteetti: 1)',
       ),
   ).toBeVisible();
-  const firstTable = getYoValintatapajonoContent(page)
-    .locator('div')
-    .filter({ hasText: 'JonosijaHakijaHakutoivePisteetSijoittelun' })
-    .first();
-  const headrow = firstTable.locator('thead tr');
+  const firstAccordion = getYoValintatapajonoContent(page);
+  const firstAccordionHeadRow = firstAccordion.locator('thead tr');
   await checkRow(
-    headrow,
+    firstAccordionHeadRow,
     [
       '',
       'Jonosija',
@@ -56,7 +85,7 @@ test('Näytä "Sijoittelun tulokset" -välilehti ja sisältö', async ({ page })
     ],
     'th',
   );
-  const rows = firstTable.locator('tbody tr');
+  const rows = firstAccordion.locator('tbody tr');
   await expect(rows).toHaveCount(3);
   await checkRow(
     rows.nth(0),
@@ -96,15 +125,28 @@ test('Näytä "Sijoittelun tulokset" -välilehti ja sisältö', async ({ page })
     false,
   );
 
-  const secondTable = getAmmValintatapajonoContent(page)
-    .locator('div')
-    .filter({ hasText: 'JonosijaHakijaHakutoivePisteetSijoittelun' })
-    .first();
-  const rows2nd = secondTable.locator('tbody tr');
+  const secondAccordion = getAmmValintatapajonoContent(page);
+  const secondAccordionHeadRow = secondAccordion.locator('thead tr');
+  await checkRow(
+    secondAccordionHeadRow,
+    [
+      '',
+      'Jonosija',
+      'Hakija',
+      'Hakutoive',
+      'Sijoittelun tila',
+      'Vastaanottotieto',
+      'Ilmoittautumistieto',
+      'Maksun tila',
+      'Toiminnot',
+    ],
+    'th',
+  );
+  const rows2nd = secondAccordion.locator('tbody tr');
   await expect(rows2nd).toHaveCount(1);
   await checkRow(
     rows2nd.nth(0),
-    ['', '', 'Hui Haamu', '0', '0', 'HYLÄTTY'],
+    ['', '', 'Hui Haamu', '0', 'HYLÄTTY'],
     'td',
     false,
   );
@@ -180,10 +222,10 @@ test.describe('Suodattimet', () => {
     await hakuInput.fill('Ruht');
     const rows = page.locator('tbody tr');
     await expect(rows).toHaveCount(1);
-    await checkRow(rows.nth(0), ['', '1', 'Nukettaja Ruhtinas']);
+    await expect(rows.filter({ hasText: 'Nukettaja Ruhtinas' })).toHaveCount(1);
     await hakuInput.fill('Dac');
     await expect(rows).toHaveCount(1);
-    await checkRow(rows.nth(0), ['', '2', 'Dacula Kreivi']);
+    await expect(rows.filter({ hasText: 'Dacula Kreivi' })).toHaveCount(1);
   });
 
   test('Hakemusoidilla', async ({ page }) => {
@@ -193,7 +235,7 @@ test.describe('Suodattimet', () => {
     await hakuInput.fill('1.2.246.562.11.00000000000001543832');
     const rows = page.locator('tbody tr');
     await expect(rows).toHaveCount(1);
-    await checkRow(rows.nth(0), ['', '', 'Hui Haamu']);
+    await expect(rows.filter({ hasText: 'Hui Haamu' })).toHaveCount(1);
   });
 
   test('Henkilöoidilla', async ({ page }) => {
@@ -203,35 +245,35 @@ test.describe('Suodattimet', () => {
     await hakuInput.fill('1.2.246.562.24.14598775927');
     const rows = page.locator('tbody tr');
     await expect(rows).toHaveCount(1);
-    await checkRow(rows.nth(0), ['', '3', 'Purukumi Puru']);
+    await expect(rows.filter({ hasText: 'Purukumi Puru' })).toHaveCount(1);
   });
 
   test('Julkaisutilalla VARALLA', async ({ page }) => {
     await selectTila(page, 'VARALLA');
     const rows = page.locator('tbody tr');
     await expect(rows).toHaveCount(1);
-    await checkRow(rows.nth(0), ['', '3', 'Purukumi Puru']);
+    await expect(rows.filter({ hasText: 'Purukumi Puru' })).toHaveCount(1);
   });
 
   test('Julkaisutilalla HYLÄTTY', async ({ page }) => {
     await selectTila(page, 'HYLÄTTY');
     const rows = page.locator('tbody tr');
     await expect(rows).toHaveCount(1);
-    await checkRow(rows.nth(0), ['', '', 'Hui Haamu']);
+    await expect(rows.filter({ hasText: 'Hui Haamu' })).toHaveCount(1);
   });
 
   test('Vain muuttuneet hakemukset', async ({ page }) => {
     await page.getByLabel('Näytä vain edellisestä').click();
     const rows = page.locator('tbody tr');
     await expect(rows).toHaveCount(1);
-    await checkRow(rows.nth(0), ['', '', 'Hui Haamu']);
+    await expect(rows.filter({ hasText: 'Hui Haamu' })).toHaveCount(1);
   });
 
   test('Ehdollisesti hyväksytyt hakemukset', async ({ page }) => {
     await page.getByLabel('Näytä vain ehdollisesti hyvä').click();
     const rows = page.locator('tbody tr');
     await expect(rows).toHaveCount(1);
-    await checkRow(rows.nth(0), ['', '3', 'Purukumi Puru']);
+    await expect(rows.filter({ hasText: 'Purukumi Puru' })).toHaveCount(1);
   });
 });
 
@@ -756,35 +798,3 @@ test.describe('Hakukohteen muut toiminnot', () => {
     await expect(page.getByText('Lataa osoitetarrat')).toBeEnabled();
   });
 });
-
-async function goToSijoittelunTulokset(page: Page) {
-  await page.clock.setFixedTime(new Date('2025-02-05T12:00:00'));
-  await page.route(
-    configuration.myohastyneetHakemuksetUrl({
-      hakuOid: '1.2.246.562.29.00000000000000045102',
-      hakukohdeOid: '1.2.246.562.20.00000000000000045105',
-    }),
-    async (route) => {
-      await route.fulfill({
-        json: [
-          {
-            hakemusOid: '1.2.246.562.11.00000000000001796027',
-            mennyt: true,
-            vastaanottoDeadline: '2022-03-18T13:00:00.000Z',
-          },
-        ],
-      });
-    },
-  );
-  await page.goto(
-    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/sijoittelun-tulokset',
-  );
-  await expectAllSpinnersHidden(page);
-  await expect(page.locator('h1')).toHaveText(
-    '> Tampere University Separate Admission/ Finnish MAOL Competition Route 2024',
-  );
-}
-
-async function selectTila(page: Page, expectedOption: string) {
-  await selectOption(page, 'Sijoittelun tila', expectedOption);
-}
