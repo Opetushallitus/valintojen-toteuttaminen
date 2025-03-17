@@ -14,6 +14,9 @@ import { Haku } from '@/lib/kouta/kouta-types';
 import { FullClientSpinner } from '@/components/client-spinner';
 import { useHaku } from '@/lib/kouta/useHaku';
 import { SearchInput } from '@/components/search-input';
+import { NoResults } from '@/components/no-results';
+import { isEmpty } from 'remeda';
+import { useTranslations } from '@/lib/localization/useTranslations';
 
 type HakeneetParams = {
   haku: Haku;
@@ -33,8 +36,11 @@ const HakeneetContent = ({ haku, hakukohdeOid }: HakeneetParams) => {
   } = useHakeneetSearchResults(haku.oid, hakukohdeOid);
 
   const { searchPhrase, setSearchPhrase } = useHakeneetSearchParams();
+  const { t } = useTranslations();
 
-  return (
+  return isEmpty(pageResults) ? (
+    <NoResults text={t('hakeneet.ei-hakijoita')} />
+  ) : (
     <>
       <SearchInput
         searchPhrase={searchPhrase}
