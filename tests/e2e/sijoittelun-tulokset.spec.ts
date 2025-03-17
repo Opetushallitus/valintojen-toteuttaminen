@@ -154,6 +154,32 @@ test('Näytä "Sijoittelun tulokset" -välilehti ja sisältö', async ({ page })
   await expect(page.getByText('Hakijalle näytetään: Kesken')).toBeVisible();
 });
 
+test('Näytä info-ikoni ja tooltip sitä klikattaessa toisesta valintatapajonosta siirtyneelle hakemukselle', async ({
+  page,
+}) => {
+  const yoAccordionContent = getYoValintatapajonoContent(page);
+  const firstRow = yoAccordionContent.locator('tbody tr').first();
+
+  const sijoittelunTilaCell = firstRow
+    .locator('td')
+    .filter({ hasText: 'HYVÄKSYTTY' })
+    .first();
+
+  const infoButton = sijoittelunTilaCell.getByRole('button', {
+    name: 'Lisätietoja',
+  });
+
+  const tooltip = page
+  .getByRole('tooltip')
+  .filter({ hasText: 'Hakemus on siirtynyt toisesta valintatapajonosta' });
+
+  await expect(infoButton).toBeVisible();
+  await infoButton.click();
+  await expect(tooltip).toBeVisible();
+  await tooltip.getByRole('button', { name: 'Sulje' }).click();
+  await expect(tooltip).toBeHidden();
+});
+
 test('Ehdollista hyväksyntää ja maksusaraketta ei näytetä toisen asteen yhteishaulla', async ({
   page,
 }) => {
