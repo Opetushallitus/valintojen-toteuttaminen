@@ -23,7 +23,7 @@ import {
   EMPTY_OBJECT,
   OphProcessError,
   OphProcessErrorData,
-  defaultWhen404,
+  nullWhen404,
 } from '../common';
 import { getHakemukset, getHakijat } from '../ataru/ataru-service';
 import {
@@ -230,7 +230,7 @@ const VALINTAKOKEET_EMPTY_RESPONSE = {
   valintakoeOsallistumiset: EMPTY_ARRAY,
 } as const;
 
-async function getValintakoekutsutData({
+async function getAndCombineValintakoekutsutData({
   hakuOid,
   hakukohdeOid,
 }: {
@@ -274,17 +274,17 @@ async function getValintakoekutsutData({
   };
 }
 
-export async function tryGetValintakoekutsutData({
+export async function getValintakoekutsutData({
   hakuOid,
   hakukohdeOid,
 }: {
   hakuOid: string;
   hakukohdeOid: string;
 }): Promise<ValintakoekutsutData> {
-  return defaultWhen404(
-    getValintakoekutsutData({ hakuOid, hakukohdeOid }),
-    VALINTAKOKEET_EMPTY_RESPONSE,
+  const response = await nullWhen404(
+    getAndCombineValintakoekutsutData({ hakuOid, hakukohdeOid }),
   );
+  return response ?? VALINTAKOKEET_EMPTY_RESPONSE;
 }
 
 export type GetValintakoeExcelParams = {

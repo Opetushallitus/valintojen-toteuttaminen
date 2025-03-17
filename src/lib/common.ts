@@ -109,18 +109,3 @@ export const nullWhen404 = async <T>(
     throw e;
   }
 };
-
-export const defaultWhen404 = async <T>(
-  promise: Promise<T>,
-  defaultValue: T,
-): Promise<T> => {
-  try {
-    return await promise;
-  } catch (e) {
-    if (e instanceof FetchError && e?.response?.status === 404) {
-      console.error('FetchError with 404', e);
-      return Promise.resolve(defaultValue);
-    }
-    throw e;
-  }
-};

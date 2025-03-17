@@ -4,7 +4,7 @@ import VALINTAKOKEET from '@tests/e2e/fixtures/valintakokeet.json';
 import VALINTAKOEOSALLISTUMISET from '@tests/e2e/fixtures/valintakoeosallistumiset.json';
 import HAKEMUKSET from '@tests/e2e/fixtures/hakeneet.json';
 import {
-  tryGetValintakoekutsutData,
+  getValintakoekutsutData,
   luoEiHyvaksymiskirjeetPDF,
   luoHyvaksymiskirjeetPDF,
   luoOsoitetarratHakukohteessaHyvaksytyille,
@@ -90,7 +90,7 @@ describe('getValintakoekutsutData', () => {
       }
       return Promise.reject();
     });
-    const result = await tryGetValintakoekutsutData({
+    const result = await getValintakoekutsutData({
       hakuOid: '1.2.246.562.29.00000000000000045102',
       hakukohdeOid: '1.2.246.562.20.00000000000000045105',
     });
@@ -106,7 +106,7 @@ describe('getValintakoekutsutData', () => {
     clientSpy.mockImplementationOnce(() => {
       return Promise.reject(new FetchError({ status: 404 } as Response));
     });
-    const result = await tryGetValintakoekutsutData({
+    const result = await getValintakoekutsutData({
       hakuOid: '1.2.246.562.29.00000000000000045102',
       hakukohdeOid: '1.2.246.562.20.00000000000000045105',
     });
@@ -148,7 +148,7 @@ describe('getValintakoekutsutData', () => {
       }
       return Promise.reject();
     });
-    const result = await tryGetValintakoekutsutData({
+    const result = await getValintakoekutsutData({
       hakuOid: '1.2.246.562.29.00000000000000045102',
       hakukohdeOid: '1.2.246.562.20.00000000000000045105',
     });
@@ -204,7 +204,7 @@ describe('getValintakoekutsutData', () => {
       }
       return Promise.reject();
     });
-    const result = await tryGetValintakoekutsutData({
+    const result = await getValintakoekutsutData({
       hakuOid: '1.2.246.562.29.00000000000000045102',
       hakukohdeOid: '1.2.246.562.20.00000000000000045105',
     });
