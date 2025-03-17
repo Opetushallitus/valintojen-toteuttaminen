@@ -1,9 +1,6 @@
 'use client';
 
-import {
-  hakukohteenValinnanvaiheetQueryOptions,
-  isLaskentaUsedForValinnanvaihe,
-} from '@/lib/valintaperusteet/valintaperusteet-service';
+import { hakukohteenValinnanvaiheetQueryOptions } from '@/lib/valintaperusteet/valintaperusteet-service';
 import { useSuspenseQueries } from '@tanstack/react-query';
 import {
   Table,
@@ -29,6 +26,7 @@ import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { ErrorRow } from './error-row';
 import { hakukohteenValintalaskennanTuloksetQueryOptions } from '@/lib/valintalaskenta/valintalaskenta-service';
+import { checkCanStartLaskentaForValinnanvaihe } from '@/lib/valintaperusteet/valintaperusteet-utils';
 
 type HallintaTableParams = {
   haku: Haku;
@@ -132,7 +130,7 @@ const HallintaTable = ({
               disabled={
                 !state.matches(LaskentaState.IDLE) ||
                 !valinnanvaiheetQuery.data.some((vaihe) =>
-                  isLaskentaUsedForValinnanvaihe(vaihe),
+                  checkCanStartLaskentaForValinnanvaihe(vaihe),
                 ) ||
                 containsValisijoittelu
               }

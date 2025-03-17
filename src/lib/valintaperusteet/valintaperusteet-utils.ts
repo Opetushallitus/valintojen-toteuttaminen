@@ -42,3 +42,20 @@ export const selectLaskennattomatValinnanvaiheet = (
     return acc;
   }, [] as Array<Valinnanvaihe>);
 };
+
+export const checkCanStartLaskentaForValinnanvaihe = (
+  valinnanvaihe: Valinnanvaihe,
+): boolean => {
+  return (
+    valinnanvaihe.aktiivinen &&
+    !valinnanvaihe.valisijoittelu &&
+    (valinnanvaihe.jonot.length < 1 ||
+      valinnanvaihe.jonot.some((jono) => {
+        return (
+          jono.kaytetaanValintalaskentaa &&
+          (!jono.eiLasketaPaivamaaranJalkeen ||
+            jono.eiLasketaPaivamaaranJalkeen.getTime() > new Date().getTime())
+        );
+      }))
+  );
+};
