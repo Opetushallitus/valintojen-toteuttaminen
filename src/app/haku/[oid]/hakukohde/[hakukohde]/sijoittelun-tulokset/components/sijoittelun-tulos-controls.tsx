@@ -12,7 +12,7 @@ import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
 import { SearchInput } from '@/components/search-input';
 import { OtherActionsHakukohdeButton } from './other-actions-hakukohde-button';
 import { useSuspenseQueries } from '@tanstack/react-query';
-import { getDocumentIdForHakukohde } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
+import { documentIdForHakukohdeQueryOptions } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { SijoittelunTuloksetExcelDownloadButton } from './sijoittelun-tulokset-excel-download-button';
 
 export const SijoittelunTulosControls = ({
@@ -43,28 +43,18 @@ export const SijoittelunTulosControls = ({
     tuloksetDocumentQuery,
   ] = useSuspenseQueries({
     queries: [
-      {
-        queryKey: [
-          'getDocumentIdForHakukohde',
-          'hyvaksymiskirjeet',
-          hakukohde.oid,
-        ],
-        queryFn: () =>
-          getDocumentIdForHakukohde(hakukohde.oid, 'hyvaksymiskirjeet'),
-      },
-      {
-        queryKey: ['getDocumentIdForHakukohde', 'osoitetarrat', hakukohde.oid],
-        queryFn: () => getDocumentIdForHakukohde(hakukohde.oid, 'osoitetarrat'),
-      },
-      {
-        queryKey: [
-          'getDocumentIdForHakukohde',
-          'sijoitteluntulokset',
-          hakukohde.oid,
-        ],
-        queryFn: () =>
-          getDocumentIdForHakukohde(hakukohde.oid, 'sijoitteluntulokset'),
-      },
+      documentIdForHakukohdeQueryOptions({
+        hakukohdeOid: hakukohde.oid,
+        documentType: 'hyvaksymiskirjeet',
+      }),
+      documentIdForHakukohdeQueryOptions({
+        hakukohdeOid: hakukohde.oid,
+        documentType: 'osoitetarrat',
+      }),
+      documentIdForHakukohdeQueryOptions({
+        hakukohdeOid: hakukohde.oid,
+        documentType: 'sijoitteluntulokset',
+      }),
     ],
   });
 

@@ -163,6 +163,9 @@ const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
         data.valintatulokset.filter((vt) => vt.valintatapajonoOid === jono.oid),
         (vt) => vt.hakemusOid,
       );
+
+      let hasNegativePisteet: boolean = false;
+
       const hakemukset: Array<SijoittelunHakemusValintatiedoilla> =
         jono.hakemukset.map((h) => {
           const hakemus = hakemuksetIndexed[h.hakemusOid];
@@ -171,6 +174,9 @@ const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
             hakemus.maksuvelvollisuus === Maksuvelvollisuus.MAKSUVELVOLLINEN &&
             (lukuvuosimaksutIndexed[h.hakijaOid]?.maksuntila ??
               MaksunTila.MAKSAMATTA);
+          if (h.pisteet < 0) {
+            hasNegativePisteet = true;
+          }
           return {
             hakijaOid: h.hakijaOid,
             hakemusOid: h.hakemusOid,
@@ -227,6 +233,7 @@ const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
         oid: jono.oid,
         nimi: jono.nimi,
         hakemukset,
+        hasNegativePisteet,
         prioriteetti: jono.prioriteetti,
         accepted: data.valintaesitys?.find(
           (e) => e.valintatapajonoOid === jono.oid,

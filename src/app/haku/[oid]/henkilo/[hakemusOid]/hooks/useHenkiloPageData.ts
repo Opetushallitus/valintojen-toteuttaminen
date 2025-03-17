@@ -157,7 +157,7 @@ export const useHenkiloPageData = ({
               valinnanvaiheetByHakukohde?.[hakukohde.oid] ?? [],
             hakemukset: [{ hakemusOid, hakijaOid: hakija.hakijaOid }],
             // Henkilöittäin-näkymässä näytetään laskennattomat valinnanvaiheet vain, jos niille on tallennettu tuloksia
-            laskennattomatValinnanvaiheet: [],
+            valinnanvaiheet: [],
           }),
           valinnanTulos: valinnanTulos
             ? {

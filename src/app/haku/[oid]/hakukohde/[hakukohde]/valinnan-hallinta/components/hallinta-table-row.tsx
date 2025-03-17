@@ -1,6 +1,5 @@
 'use client';
 
-import { isLaskentaUsedForValinnanvaihe } from '@/lib/valintaperusteet/valintaperusteet-service';
 import { Box, CircularProgress, TableCell, TableRow } from '@mui/material';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { OphButton } from '@opetushallitus/oph-design-system';
@@ -16,6 +15,7 @@ import { useToaster } from '@/hooks/useToaster';
 import { Valinnanvaihe } from '@/lib/valintaperusteet/valintaperusteet-types';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { ErrorRow } from './error-row';
+import { checkCanStartLaskentaForValinnanvaihe } from '@/lib/valintaperusteet/valintaperusteet-utils';
 
 type HallintaTableRowParams = {
   haku: Haku;
@@ -60,6 +60,8 @@ const HallintaTableRow = ({
     send({ type: LaskentaEventType.CONFIRM });
   };
 
+  const canStartLaskenta = checkCanStartLaskentaForValinnanvaihe(vaihe);
+
   return (
     <>
       <TableRow>
@@ -85,7 +87,7 @@ const HallintaTableRow = ({
         </TableCell>
         <TableCell sx={{ verticalAlign: 'top' }}>{t(vaihe.tyyppi)}</TableCell>
         <TableCell>
-          {isLaskentaUsedForValinnanvaihe(vaihe) &&
+          {canStartLaskenta &&
             !state.matches(LaskentaState.WAITING_CONFIRMATION) && (
               <Box
                 sx={{
@@ -110,11 +112,11 @@ const HallintaTableRow = ({
                 )}
               </Box>
             )}
-          {isLaskentaUsedForValinnanvaihe(vaihe) &&
+          {canStartLaskenta &&
             state.matches(LaskentaState.WAITING_CONFIRMATION) && (
               <Confirm cancel={cancelConfirmation} confirm={confirm} />
             )}
-          {!isLaskentaUsedForValinnanvaihe(vaihe) && !vaihe.valisijoittelu && (
+          {!canStartLaskenta && !vaihe.valisijoittelu && (
             <Box>{t('valinnanhallinta.eilaskennassa')}</Box>
           )}
           {vaihe.valisijoittelu && (
