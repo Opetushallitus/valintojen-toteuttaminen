@@ -42,7 +42,7 @@ export const HarkinnanvaraisetTable = ({
 
   const columns: Array<ListTableColumn<HakemuksenHarkinnanvaraisuus>> = useMemo(
     () => [
-      createHakijaColumn('harkinnanvaraiset'),
+      createHakijaColumn({ keyPrefix: 'harkinnanvaraiset' }),
       makeColumnWithValueToTranslate<HakemuksenHarkinnanvaraisuus>({
         t,
         title: `${TRANSLATIONS_PREFIX}.harkinnanvaraisuuden-syy`,

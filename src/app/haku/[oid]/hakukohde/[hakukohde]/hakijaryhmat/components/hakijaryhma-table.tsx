@@ -64,7 +64,7 @@ export const HakijaryhmaTable = ({
 
   const columns: Array<ListTableColumn<HakijaryhmanHakija>> = useMemo(
     () => [
-      createHakijaColumn('hakijaryhmat'),
+      createHakijaColumn({ keyPrefix: 'hakijaryhmat' }),
       makeBooleanYesNoColumn<HakijaryhmanHakija>({
         t,
         title: `${TRANSLATIONS_PREFIX}.kuuluminen`,

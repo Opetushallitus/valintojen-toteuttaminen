@@ -188,7 +188,7 @@ export const LaskennatonValintatapajonoTable = ({
             } as JonoColumn,
           ]
         : []),
-      createHakijaColumn(),
+      createHakijaColumn({}),
       {
         title: `${TRANSLATIONS_PREFIX}.valintatieto`,
         key: 'tuloksenTila',

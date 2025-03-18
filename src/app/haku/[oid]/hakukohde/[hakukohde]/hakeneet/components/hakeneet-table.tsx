@@ -4,6 +4,7 @@ import { ListTable } from '@/components/table/list-table';
 import {
   buildLinkToPerson,
   createHakijaColumn,
+  HakijaColumnLinkType,
   makeColumnWithValueToTranslate,
   makeExternalLinkColumn,
   makeGenericColumn,
@@ -25,7 +26,10 @@ export const HakeneetTable = ({
 }) => {
   const { t } = useTranslations();
 
-  const hakijaColumn = createHakijaColumn('hakeneet');
+  const hakijaColumn = createHakijaColumn({
+    keyPrefix: 'hakeneet',
+    hakijaLinkType: HakijaColumnLinkType.HAKIJA,
+  });
 
   const hakukelpoisuusColumn = makeColumnWithValueToTranslate<Hakemus>({
     t,

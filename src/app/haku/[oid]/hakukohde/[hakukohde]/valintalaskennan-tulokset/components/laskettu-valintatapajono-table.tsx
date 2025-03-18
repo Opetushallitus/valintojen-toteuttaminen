@@ -65,7 +65,7 @@ export const LaskettuValintatapajonoTable = ({
     useMemo(
       () => [
         jonosijaColumn,
-        createHakijaColumn(),
+        createHakijaColumn({}),
         {
           title: `${TRANSLATIONS_PREFIX}.pisteet`,
           key: 'pisteet',
