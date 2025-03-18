@@ -2,6 +2,7 @@ import { TFunction } from 'i18next';
 import { KeysMatching, ListTableColumn } from './table-types';
 import { ExternalLink } from '../external-link';
 import { ophColors } from '@opetushallitus/oph-design-system';
+import { buildLinkToApplication } from '@/lib/ataru/ataru-service';
 
 export const makeGenericColumn = <T extends Record<string, unknown>>({
   title,
@@ -128,16 +129,31 @@ export const buildLinkToPerson = (personOid: string) =>
 
 type HakijaColumnType = {
   hakijanNimi: string;
+  hakemusOid: string;
   hakijaOid: string;
 };
 
-export const createHakijaColumn = (keyPrefix?: string) =>
+export enum HakijaColumnLinkType {
+  HAKEMUS = 'hakemusOid',
+  HAKIJA = 'hakijaOid',
+}
+
+export const createHakijaColumn = ({
+  keyPrefix,
+  hakijaLinkType = HakijaColumnLinkType.HAKEMUS,
+}: {
+  keyPrefix?: string;
+  hakijaLinkType?: HakijaColumnLinkType;
+}) =>
   makeExternalLinkColumn<HakijaColumnType>({
-    linkBuilder: buildLinkToPerson,
+    linkBuilder:
+      hakijaLinkType === HakijaColumnLinkType.HAKEMUS
+        ? buildLinkToApplication
+        : buildLinkToPerson,
     title: 'hakeneet.taulukko.hakija',
     key: keyPrefix ? `${keyPrefix}-hakijanNimi` : 'hakijanNimi',
     nameProp: 'hakijanNimi',
-    linkProp: 'hakijaOid',
+    linkProp: hakijaLinkType,
   });
 
 const stickyColumnStyle: React.CSSProperties = {
@@ -150,7 +166,7 @@ const stickyColumnStyle: React.CSSProperties = {
 };
 
 export const createStickyHakijaColumn = (keyPrefix: string, t: TFunction) =>
-  Object.assign(createHakijaColumn(keyPrefix), {
+  Object.assign(createHakijaColumn({ keyPrefix }), {
     style: stickyColumnStyle,
     title: t('hakeneet.taulukko.hakija'),
   });

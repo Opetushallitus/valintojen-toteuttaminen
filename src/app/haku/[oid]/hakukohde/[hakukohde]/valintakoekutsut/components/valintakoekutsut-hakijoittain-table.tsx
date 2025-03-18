@@ -33,7 +33,7 @@ export const ValintakoekutsutHakijoittainTable = ({
 
   const columns: Array<ListTableColumn<ValintakoekutsuHakijoittain>> = useMemo(
     () => [
-      createHakijaColumn(),
+      createHakijaColumn({}),
       ...kokeet.map((koe) =>
         makeColumnWithCustomRender<ValintakoekutsuHakijoittain>({
           title: koe.nimi,
