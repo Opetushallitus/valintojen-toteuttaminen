@@ -4,7 +4,7 @@ const config = {
   default: {},
   ...(skipOpennextBuild
     ? {
-        buildCommand: 'echo "Skipping Open Next build"',
+        buildCommand: 'echo "Skipping OpenNext build"',
       }
     : {}),
 };

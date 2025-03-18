@@ -31,21 +31,28 @@ jobs:
           cd cdk
           npm ci --prefer-offline
           npm install -g aws-cdk
-      - name: Configure AWS credentials
-        if: ${{ inputs.environment == 'hahtuva' || inputs.environment == 'untuva' || inputs.environment == 'pallero' }}
-        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
+      - name: Configure AWS utility-role credentials
+        uses: aws-actions/configure-aws-credentials@v4.1.0
+        with:
+          role-to-assume: ${{ secrets.AWS_OPH_UTILITY_ROLE_ARN }}
+          role-session-name: valintojen-toteuttaminen-download-build-zip
+          aws-region: eu-west-1
+      - name: Download build from s3
+        env:
+          bucket: ${{ secrets.CDK_DEPLOYMENTS_BUCKET_NAME }}
+        run: |
+          aws s3 cp --no-progress s3://"$bucket"/valintojen-toteuttaminen/ga-${{inputs.build-number}}.zip build.zip
+          unzip build.zip
+          cp -R .next/standalone/.next/server .next/server # OpenNext v3 needs server-files also in .next/server
+      - name: Configure AWS dev-role credentials
+        uses: aws-actions/configure-aws-credentials@v4.1.0
         with:
           role-to-assume: ${{ secrets.AWS_OPINTOPOLKU_DEV_ROLE_ARN }}
           role-session-name: valintojen-toteuttaminen-deploy
           aws-region: eu-west-1
-      - name: Download build from s3
-        env:
-          bucket: ${{ secrets.BUCKET_NAME }}
-          SKIP_OPENNEXT_BUILD: true
-        run: |
-          aws s3 cp --no-progress s3://"$bucket"/valintojen-toteuttaminen/ga-${{inputs.build-number}}.zip build.zip
-          unzip build.zip
       - name: Deploy Next.js app
+        env:
+          SKIP_OPENNEXT_BUILD: true
         run: |
           cd cdk
           cdk deploy SovellusStack --require-approval never -c "environment=${{ inputs.environment }}"
