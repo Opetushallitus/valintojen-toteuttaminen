@@ -27,7 +27,6 @@ export const HakeneetTable = ({
   const { t } = useTranslations();
 
   const hakijaColumn = createHakijaColumn({
-    keyPrefix: 'hakeneet',
     hakijaLinkType: HakijaColumnLinkType.HAKIJA,
   });
 
