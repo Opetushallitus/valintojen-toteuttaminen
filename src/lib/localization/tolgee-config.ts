@@ -2,7 +2,7 @@ import { configuration, isTesting, localTranslations } from '../configuration';
 import { BackendFetch, DevTools, Tolgee } from '@tolgee/react';
 import { FormatIcu } from '@tolgee/format-icu';
 
-const REVALIDATE_TIME_SECONDS = 60 * 60 * 2;
+const REVALIDATE_TIME_SECONDS = 10 * 60;
 
 const apiKey = process.env.NEXT_PUBLIC_TOLGEE_API_KEY;
 const apiUrl = process.env.NEXT_PUBLIC_TOLGEE_API_URL;
