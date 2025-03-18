@@ -139,10 +139,8 @@ export enum HakijaColumnLinkType {
 }
 
 export const createHakijaColumn = ({
-  keyPrefix,
   hakijaLinkType = HakijaColumnLinkType.HAKEMUS,
 }: {
-  keyPrefix?: string;
   hakijaLinkType?: HakijaColumnLinkType;
 }) =>
   makeExternalLinkColumn<HakijaColumnType>({
@@ -151,7 +149,7 @@ export const createHakijaColumn = ({
         ? buildLinkToApplication
         : buildLinkToPerson,
     title: 'hakeneet.taulukko.hakija',
-    key: keyPrefix ? `${keyPrefix}-hakijanNimi` : 'hakijanNimi',
+    key: 'hakijanNimi',
     nameProp: 'hakijanNimi',
     linkProp: hakijaLinkType,
   });
@@ -165,8 +163,8 @@ const stickyColumnStyle: React.CSSProperties = {
   backgroundColor: ophColors.white,
 };
 
-export const createStickyHakijaColumn = (keyPrefix: string, t: TFunction) =>
-  Object.assign(createHakijaColumn({ keyPrefix }), {
+export const createStickyHakijaColumn = (t: TFunction) =>
+  Object.assign(createHakijaColumn({}), {
     style: stickyColumnStyle,
     title: t('hakeneet.taulukko.hakija'),
   });

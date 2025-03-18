@@ -29,7 +29,7 @@ export const PisteSyottoTable = ({
   const { t } = useTranslations();
 
   const columns = useMemo(() => {
-    const stickyHakijaColumn = createStickyHakijaColumn('pistesyotto', t);
+    const stickyHakijaColumn = createStickyHakijaColumn(t);
     const koeColumns = kokeet.map((koe) => {
       return makeColumnWithCustomRender<HakemuksenPistetiedot>({
         title: koe.kuvaus,

@@ -85,7 +85,7 @@ const useColumns = ({
   );
 
   return useMemo(() => {
-    const stickyHakijaColumn = createStickyHakijaColumn('sijoittelun-tulos', t);
+    const stickyHakijaColumn = createStickyHakijaColumn(t);
     return [
       makeEmptyCountColumn<SijoittelunHakemusValintatiedoilla>({
         title: t(`${TRANSLATIONS_PREFIX}.jonosija`),
