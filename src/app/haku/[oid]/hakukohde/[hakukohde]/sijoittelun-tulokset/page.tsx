@@ -54,7 +54,7 @@ const SijoitteluContent = ({
     tulokset?.valintatapajonot.every((jono) => jono.accepted),
   );
 
-  return isEmpty(tulokset) ? (
+  return isEmpty(tulokset?.valintatapajonot) ? (
     <NoResults text={t('sijoittelun-tulokset.ei-tuloksia')} />
   ) : (
     <Box

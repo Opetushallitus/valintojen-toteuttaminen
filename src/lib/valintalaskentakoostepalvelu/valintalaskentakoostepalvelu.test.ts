@@ -11,6 +11,7 @@ import {
 } from './valintalaskentakoostepalvelu-service';
 import { Language } from '../localization/localization-types';
 import { Hakukohde } from '../kouta/kouta-types';
+import { FetchError } from '../common';
 
 const HAKEMUKSET_BY_OID = {
   '1.2.246.562.11.00000000000001796027': {
@@ -99,6 +100,23 @@ describe('getValintakoekutsutData', () => {
       valintakoeOsallistumiset: [],
     });
   });
+
+  test('Returns empty data when 404', async () => {
+    const clientSpy = vi.spyOn(client, 'get');
+    clientSpy.mockImplementationOnce(() => {
+      return Promise.reject(new FetchError({ status: 404 } as Response));
+    });
+    const result = await getValintakoekutsutData({
+      hakuOid: '1.2.246.562.29.00000000000000045102',
+      hakukohdeOid: '1.2.246.562.20.00000000000000045105',
+    });
+    expect(result).toEqual({
+      valintakokeet: [],
+      hakemuksetByOid: {},
+      valintakoeOsallistumiset: [],
+    });
+  });
+
   test('Returns active valintakokeet with hakemukset and valintakoeosallistumiset', async () => {
     const clientSpy = vi.spyOn(client, 'get');
     clientSpy.mockImplementation((url) => {

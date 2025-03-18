@@ -27,6 +27,7 @@ import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { ErrorRow } from './error-row';
 import { hakukohteenValintalaskennanTuloksetQueryOptions } from '@/lib/valintalaskenta/valintalaskenta-service';
 import { checkCanStartLaskentaForValinnanvaihe } from '@/lib/valintaperusteet/valintaperusteet-utils';
+import { NoResults } from '@/components/no-results';
 
 type HallintaTableParams = {
   haku: Haku;
@@ -70,7 +71,7 @@ const HallintaTable = ({
   };
 
   if (valinnanvaiheetQuery.data.length === 0) {
-    return <Box>{t('valinnanhallinta.eiolemallinnettu')}</Box>;
+    return <NoResults text={t('valinnanhallinta.eiolemallinnettu')} />;
   } else {
     const containsValisijoittelu = valinnanvaiheetQuery.data.some(
       (vv) => vv.valisijoittelu,
