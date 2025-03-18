@@ -87,6 +87,7 @@ fi
 
 if [[ "${build}" == "true" ]]; then
     echo "Building Lambda code and synthesizing CDK template"
+    cd "${git_root}/cdk/"
     npx cdk synth
 fi
 
@@ -95,11 +96,6 @@ if [[ -n "${dependencies}" ]]; then
     cd "${git_root}/cdk/" && npm ci
     echo "Installing app dependencies.."
     cd "${git_root}/" && npm ci
-fi
-
-if [[ "${build}" == "true" ]]; then
-    echo "Building Lambda code and synthesizing CDK template"
-    npx cdk synth
 fi
 
 if [[ "${deploy}" == "true" ]]; then

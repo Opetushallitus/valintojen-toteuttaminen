@@ -26,7 +26,6 @@ const publicHostedZoneIds: Record<EnvironmentName, string> = {
 
 interface ValintojenToteuttaminenStackProps extends cdk.StackProps {
   environmentName: EnvironmentName;
-  skipBuild: boolean;
 }
 
 const nameFunctionProps = (
@@ -92,14 +91,9 @@ export class SovellusStack extends cdk.Stack {
         region: 'us-east-1', // Cloudfront only checks this region for certificates.
       },
     );
+
     const nextjs = new Nextjs(this, 'Nextjs', {
       nextjsPath: '..', // relative path from your project root to NextJS
-      ...(props.skipBuild
-        ? {
-            buildCommand:
-              'npx --yes open-next@^2 build -- --build-command "npm run noop"',
-          }
-        : {}),
       basePath: '/valintojen-toteuttaminen',
       environment: {
         STANDALONE: 'true',
