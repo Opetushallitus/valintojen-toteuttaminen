@@ -42,7 +42,7 @@ jobs:
           bucket: ${{ secrets.BUCKET_NAME }}
           SKIP_OPENNEXT_BUILD: true
         run: |
-          aws s3 cp --no-progress s3://"$bucket"/ga-${{inputs.build-number}}.zip build.zip
+          aws s3 cp --no-progress s3://"$bucket"/valintojen-toteuttaminen/ga-${{inputs.build-number}}.zip build.zip
           unzip build.zip
       - name: Deploy Next.js app
         run: |
