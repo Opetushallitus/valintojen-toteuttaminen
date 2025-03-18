@@ -53,7 +53,7 @@ export const TablePaginationWrapper = ({
       >
         {!countHidden && (
           <Typography sx={{ textAlign: 'left' }}>
-            {t(countTranslationKey)} {totalCount}
+            {t(countTranslationKey, { count: totalCount })}
           </Typography>
         )}
         {hasPageSizeSelector && (

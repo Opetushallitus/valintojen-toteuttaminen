@@ -1,18 +1,19 @@
 /** @type {import('next').NextConfig} */
 
-const cspHeader = `
-    default-src 'self';
-    script-src 'self' 'unsafe-eval' 'unsafe-inline';
-    style-src 'self' 'unsafe-inline';
-    img-src 'self' blob: data:;
-    font-src 'self';
-    object-src 'none';
-    base-uri 'self';
-    form-action 'self';
-    frame-ancestors 'none';
-    block-all-mixed-content;
-    upgrade-insecure-requests;
-`;
+const cspHeaders = {
+  'default-src': "'self'",
+  'connect-src': "'self' https://app.tolgee.io",
+  'script-src': "'self' 'unsafe-eval' 'unsafe-inline' https://cdn.jsdelivr.net/npm/@tolgee/web@prerelease/dist/tolgee-in-context-tools.umd.min.js",
+  'style-src': "'self' 'unsafe-inline'",
+  'img-src': "'self' blob: data:",
+  'font-src': "'self'",
+  'object-src': "'none'",
+  'base-uri': "'self'",
+  'form-action': "'self'",
+  'frame-ancestors': "'none'",
+  'block-all-mixed-content': '',
+  'upgrade-insecure-requests': '',
+};
 
 const isStandalone = process.env.STANDALONE === 'true';
 
@@ -34,7 +35,9 @@ const nextConfig = {
         headers: [
           {
             key: 'Content-Security-Policy',
-            value: cspHeader.replace(/\n/g, ''),
+            value: Object.entries(cspHeaders)
+              .map(([k, v]) => `${k} ${v};`)
+              .join(''),
           },
         ],
       },
@@ -44,6 +47,8 @@ const nextConfig = {
     VIRKAILIJA_URL: process.env.VIRKAILIJA_URL,
     APP_URL: process.env.APP_URL,
     XSTATE_INSPECT: process.env.XSTATE_INSPECT,
+    TEST: process.env.TEST,
+    LOCAL_TRANSLATIONS: process.env.LOCAL_TRANSLATIONS,
   },
   output: isStandalone ? 'standalone' : undefined,
   async redirects() {

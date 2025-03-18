@@ -1,10 +1,11 @@
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { OphFormFieldWrapper } from '@opetushallitus/oph-design-system';
 import { useState } from 'react';
-import { OphEditor } from '@/components/oph-editor';
 import { Kirjepohja } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-types';
 import { LocalizedSelect } from '@/components/localized-select';
 import { SelectChangeEvent } from '@mui/material/Select';
+import { ClientOnly } from '@/components/client-only';
+import { DynamicOphEditor } from '@/components/dynamic-oph-editor';
 
 export const TemplateSection = ({
   pohjat,
@@ -49,10 +50,12 @@ export const TemplateSection = ({
           />
         )}
       />
-      <OphEditor
-        editorContent={templateBody}
-        onContentChanged={setLetterBody}
-      />
+      <ClientOnly>
+        <DynamicOphEditor
+          editorContent={templateBody}
+          onContentChanged={setLetterBody}
+        />
+      </ClientOnly>
     </>
   );
 };

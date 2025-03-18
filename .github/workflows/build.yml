@@ -71,4 +71,4 @@ jobs:
         run: |
           npm run build
           zip -r ga-${{github.run_number}}.zip .next/*.* .next/BUILD_ID .next/static .next/standalone public
-          aws s3 cp --no-progress ga-${{github.run_number}}.zip s3://"$bucket"/ga-${{github.run_number}}.zip
+          aws s3 cp --no-progress ga-${{github.run_number}}.zip s3://"$bucket"/valintojen-toteuttaminen/ga-${{github.run_number}}.zip

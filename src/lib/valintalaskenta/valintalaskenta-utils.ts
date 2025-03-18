@@ -1,9 +1,9 @@
 import { SeurantaTiedot } from '../types/laskenta-types';
-import { TFunction } from 'i18next';
 import {
   LaskentaMachineSnapshot,
   LaskentaState,
 } from '../state/laskenta-state';
+import { TFunction } from '../localization/useTranslations';
 
 export const getValintatapaJonoNimi = ({
   valinnanVaiheNimi,

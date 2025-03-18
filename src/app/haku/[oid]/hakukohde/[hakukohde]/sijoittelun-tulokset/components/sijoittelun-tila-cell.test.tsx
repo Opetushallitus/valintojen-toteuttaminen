@@ -3,12 +3,6 @@ import { render, screen } from '@testing-library/react';
 import { EhdollisestiHyvaksyttavissaCheckbox } from './sijoittelun-tila-cell';
 import { Haku, Tila } from '@/lib/kouta/kouta-types';
 
-vi.mock('@/lib/localization/useTranslations', () => ({
-  useTranslations: () => {
-    return { t: (x: string) => x };
-  },
-}));
-
 const ORG_OID = '1.2.3.4.5';
 
 const HAKU_BASE: Haku = {

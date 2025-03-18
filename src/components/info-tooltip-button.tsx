@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 
 import { Backdrop, Box, Button, Tooltip } from '@mui/material';
-import { useTranslation } from 'react-i18next';
 
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
 import { Close as CloseIcon, InfoOutlined } from '@mui/icons-material';
 import { styled } from '@/lib/theme';
+import { useTranslations } from '@/lib/localization/useTranslations';
 
 type Props = {
   title: React.JSX.Element | string;
@@ -32,7 +32,7 @@ const StyleWrapper = styled('span')(({ theme }) => ({
 }));
 
 export const InfoTooltipButton = ({ title }: Props) => {
-  const { t } = useTranslation();
+  const { t } = useTranslations();
   const [open, setOpen] = useState(false);
 
   const handleClose = (e: React.SyntheticEvent<Element, Event> | Event) => {

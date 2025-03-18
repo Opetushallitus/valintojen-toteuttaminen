@@ -1,5 +1,5 @@
 'use client';
-import { useTranslations } from '@/lib/localization/useTranslations';
+import { TFunction, useTranslations } from '@/lib/localization/useTranslations';
 import { toFormattedDateTimeString } from '@/lib/localization/translation-utils';
 import {
   LaskennanValintatapajonoTulosWithHakijaInfo,
@@ -7,7 +7,6 @@ import {
 } from '@/hooks/useEditableValintalaskennanTulokset';
 import { getValintatapaJonoNimi } from '@/lib/valintalaskenta/valintalaskenta-utils';
 import { AccordionBoxTitle } from '@/components/accordion-box-title';
-import { TFunction } from 'i18next';
 
 const makeSubtitle = ({
   createdAt,

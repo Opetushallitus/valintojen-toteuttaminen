@@ -1,4 +1,7 @@
-import { isKorkeakouluHaku, isToinenAsteKohdejoukko } from '@/lib/kouta/kouta-service';
+import {
+  isKorkeakouluHaku,
+  isToinenAsteKohdejoukko,
+} from '@/lib/kouta/kouta-service';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { Haku } from '@/lib/kouta/kouta-types';
 import {
@@ -7,10 +10,10 @@ import {
   VastaanottoTila,
 } from '@/lib/types/sijoittelu-types';
 import { isAfter } from 'date-fns';
-import { TFunction } from 'i18next';
 import { isNonNullish } from 'remeda';
 import { toFinnishDate } from './time-utils';
 import { UserPermissions } from './permissions';
+import { TFunction } from './localization/useTranslations';
 
 const VASTAANOTTOTILAT_JOILLE_NAYTETAAN_ILMOITTAUTUMISTILA = [
   VastaanottoTila.VASTAANOTTANUT_SITOVASTI,

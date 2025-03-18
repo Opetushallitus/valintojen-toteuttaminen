@@ -6,12 +6,6 @@ import { UserPermissions } from '@/lib/permissions';
 import { OPH_ORGANIZATION_OID } from '@/lib/constants';
 import { LaskennanValintatapajonoTulosWithHakijaInfo } from '@/hooks/useEditableValintalaskennanTulokset';
 
-vi.mock('@/lib/localization/useTranslations', () => ({
-  useTranslations: () => {
-    return { t: (x: string) => x };
-  },
-}));
-
 const ORG_OID = '1.2.3.4.5.6';
 const ORG_OID2 = '6.5.4.3.2.1';
 

@@ -120,7 +120,7 @@ export const CalendarComponent = ({
   selectedValue,
   setDate,
 }: CalendarProps) => {
-  const { t, language } = useTranslations();
+  const { t, getLanguage } = useTranslations();
 
   const refCustomInput = useRef<HTMLInputElement>(null);
 
@@ -140,6 +140,8 @@ export const CalendarComponent = ({
       );
     },
   );
+
+  const language = getLanguage();
 
   return (
     <CalendarStyles>

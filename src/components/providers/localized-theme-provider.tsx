@@ -9,10 +9,10 @@ export const LocalizedThemeProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const { language } = useTranslations();
+  const { getLanguage } = useTranslations();
   return (
     <OphNextJsThemeProvider
-      lang={language}
+      lang={getLanguage()}
       variant="oph"
       overrides={THEME_OVERRIDES}
     >
