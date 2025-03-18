@@ -39,7 +39,8 @@
     "sulje": "Sulje",
     "muokkaa": "Muokkaa",
     "suoritus-etenee": "Suoritus etenee virheettömästi ja varoituksetta",
-    "virhe": "Virhe"
+    "virhe": "Virhe",
+    "hakijoita-valittu-maara": "{count, plural, =0 {Ei hakijoita valittu} one {1 hakija valittu} other {{count} hakijaa valittu}}"
   },
   "kalenteri": {
     "aika": "Aika",
@@ -90,9 +91,9 @@
     "alkamiskausi": "Koulutuksen alkamiskausi",
     "haehakukohde": "Hae hakukohteita",
     "hakukohteet": "Hakukohteet",
-    "hakukohdetta": "hakukohdetta",
+    "hakukohde-maara": "{count, plural, =0 {Hakukohteita ei löytynyt} one {1 hakukohde} other {{count} hakukohdetta}}",
     "hae": "Hae hakuja",
-    "maara": "Hakuja:",
+    "haku-maara": "{count, plural, =0 {Hakuja ei löytynyt} one {1 haku} other {{count} hakua}}",
     "pienenna": "Pienennä hakukohteitten listaus",
     "suurenna": "Suurenna hakukohteitten listaus"
   },
@@ -136,8 +137,7 @@
   "hakeneet": {
     "otsikko": "Hakeneet",
     "hae": "Hae hakijan nimellä tai tunnisteilla",
-    "maara": "Hakijoita: ",
-    "ei-hakijoita": "Ei hakijoita",
+    "hakija-maara": "{count, plural, =0 {Ei hakijoita} one {1 hakija} other {{count} hakijaa}}",
     "taulukko": {
       "hakija": "Hakija",
       "hakukelpoisuus": "Hakukelpoisuus",
@@ -149,9 +149,9 @@
   },
   "valinnanhallinta": {
     "otsikko": "Valinnan hallinta",
-    "eilasketajalkeen": "Ei lasketa {{pvm}} jälkeen",
+    "eilasketajalkeen": "Ei lasketa {pvm} jälkeen",
     "eilaskennassa": "Valinnanvaihe ei ole aktiivinen",
-    "laskettuviimeksi": "Laskettu viimeksi: {{pvm}}",
+    "laskettuviimeksi": "Laskettu viimeksi: {pvm}",
     "mukanalaskennassa": "Mukana laskennassa",
     "kaynnista": "Käynnistä laskenta",
     "kaynnistakaikki": "Käynnistä kaikki laskennat",
@@ -167,7 +167,7 @@
     "eiolemallinnettu": "Valintaperusteita ei ole mallinnettu, mallinna valintaperusteet ennen valintalaskentaa.",
     "laskentaolikaynnissajo": "Laskenta oli jo käynnissä, seurataan käynnissä olevaa laskentaa.",
     "valmis": "Laskenta suoritettu onnistuneesti",
-    "valmisvalinnanvaihe": "Laskenta suoritettu onnistuneesti valinnanvaiheelle: {{nimi}}"
+    "valmisvalinnanvaihe": "Laskenta suoritettu onnistuneesti valinnanvaiheelle: {nimi}"
   },
   "valintakoekutsut": {
     "otsikko": "Valintakoekutsut",
@@ -177,15 +177,13 @@
     "vain-kutsuttavat": "Vain kutsuttavat",
     "muodosta-koekutsut": "Muodosta koekutsut",
     "muodosta-osoitetarrat": "Muodosta osoitetarrat",
-    "valittu-maara": "Hakijoita valittu: {{count}}",
-    "valittu-maara_zero": "Ei hakijoita valittu",
     "taulukko": {
       "hakija": "Hakija",
       "osallistuminen": "Osallistuminen",
       "lisatietoja": "Lisätietoja",
       "laskettuPvm": "Laskettu pvm",
       "asiointiKieli": "Asiointikieli",
-      "valitse-koekutsu-hakijalle": "Valitse koekutsu hakijalle \"{{hakijanNimi}}\""
+      "valitse-koekutsu-hakijalle": "Valitse koekutsu hakijalle \"{hakijanNimi}\""
     },
     "virhe-vie-taulukkolaskentaan": "Taulukkolaskentaan viemisessä tapahtui virhe!",
     "virhe-osoitetarrat": "Osoitetarrojen muodostamisessa tapahtui virhe!",
@@ -219,8 +217,6 @@
     "otsikko": "Harkinnanvaraiset",
     "hyvaksy-valitut": "Aseta valitut hyväksytyiksi",
     "muodosta-osoitetarrat": "Muodosta osoitetarrat",
-    "valittu-maara": "Hakijoita valittu: {{count}}",
-    "valittu-maara_zero": "Ei hakijoita valittu",
     "virhe-tallenna": "Harkinnanvaraisten tilojen tallentamisessa tapahtui virhe!",
     "tallennettu": "Harkinnanvaraisten tilojen tallentaminen onnistui",
     "tila-placeholder": "\u2013",
@@ -230,14 +226,14 @@
     "taulukko": {
       "harkinnanvaraisuuden-syy": "Harkinnanvaraisuuden syy",
       "harkinnanvarainen-tila": "Harkinnanvarainen tila",
-      "harkinnanvarainen-tila-hakijalle": "Harkinnanvarainen tila hakijan \"{{hakijanNimi}}\" hakemukselle",
-      "valitse-harkinnanvarainen-hakemus": "Valitse hakijan \"{{hakijanNimi}}\" hakemus"
+      "harkinnanvarainen-tila-hakijalle": "Harkinnanvarainen tila hakijan \"{hakijanNimi}\" hakemukselle",
+      "valitse-harkinnanvarainen-hakemus": "Valitse hakijan \"{hakijanNimi}\" hakemus"
     }
   },
   "hakijaryhmat": {
     "otsikko": "Hakijaryhmät",
     "ei-tuloksia": "Ei hakijaryhmiä tai valintojen tuloksia hakijaryhmille",
-    "kiintio": "(kiintiö: {{kiintio}})",
+    "kiintio": "(kiintiö: {kiintio})",
     "taulukko": {
       "otsikko": "Hakijaryhmä",
       "hakija": "Hakija",
@@ -294,7 +290,7 @@
     "muu-syy-aria-fi": "Ehdollisuuden syy suomeksi",
     "muu-syy-aria-sv": "Ehdollisuuden syy ruotsiksi",
     "muu-syy-aria-en": "Ehdollisuuden syy englanniksi",
-    "mass-status-change-done": "Muutettiin tila {{amount}} hakemukselle",
+    "mass-status-change-done": "Muutettiin tila {amount} hakemukselle",
     "hyvaksy": "Hyväksy ja tallenna valintaesitys",
     "valmis": "Valintaesityksen muutokset tallennettu",
     "hyvaksytty": "Valintaesitys hyväksytty",
@@ -321,7 +317,7 @@
       "ilmoittautumistieto": "Ilmoittautumistieto",
       "maksuntila": "Maksun tila",
       "toiminnot": "Toiminnot",
-      "valitse-hakemus": "Valitse hakijan {{hakijanNimi}} hakemus",
+      "valitse-hakemus": "Valitse hakijan {hakijanNimi} hakemus",
       "siirtynyt-toisesta-valintatapajonosta": "Hakemus on siirtynyt toisesta valintatapajonosta"
     },
     "toiminnot": {
@@ -439,9 +435,9 @@
   "validaatio": {
     "numero": {
       "syota": "Syötä numero",
-      "minmax": "Syötä numero väliltä {{min}}-{{max}}",
-      "min": "Syötä numero yhtä suuri tai isompi kuin {{min}}",
-      "max": "Syötä numero yhtä suuri tai pienempi kuin {{max}}"
+      "minmax": "Syötä numero väliltä {min}-{max}",
+      "min": "Syötä numero yhtä suuri tai isompi kuin {min}",
+      "max": "Syötä numero yhtä suuri tai pienempi kuin {max}"
     }
   },
   "osallistuminen": {
@@ -467,8 +463,7 @@
     "ATARU_RIITTAMATON_TUTKINTOKIELEN_TAITO": "Riittämätön tutkintokielen taito"
   },
   "valintaryhmittain": {
-    "maara": "valintaryhmää",
-    "maara-1": "valintaryhmä",
+    "valintaryhma-maara": "{count, plural, one {1 valintaryhmä} other {{count} valintaryhmää}}",
     "navigaatio": "Valintaryhmävalitsin",
     "haun-ryhma": "Koko haun valintaryhmä",
     "hae": "Hae valintaryhmiä",
@@ -478,14 +473,12 @@
     "valintaryhma": "Valintaryhmä",
     "ei-hakukohteita": "Valintaryhmässä ei ole hakukohteita",
     "valitse": "Valitse valintaryhmä",
-    "hakukohde-maara": "Hakukohteita: ",
+    "hakukohde-maara": "{count, plural, =0 {Hakukohteita ei löytynyt} one {1 hakukohde} other {{count} hakukohdetta}}",
     "nayta-alaryhmat": "Näytä alavalintaryhmät",
     "piilota-alaryhmat": "Piilota alavalintaryhmät"
   },
   "henkilo": {
-    "henkilo-maara_one": "{{count}} henkilö",
-    "henkilo-maara_zero": "Henkilöitä ei löytynyt",
-    "henkilo-maara_other": "{{count}} henkilöä",
+    "henkilo-maara": "{count, plural, =0 {Henkilöitä ei löytynyt} one {1 henkilö} other {{count} henkilöä}}",
     "valitse": "Valitse tai hae henkilö",
     "hakemus-oid": "Hakemuksen tekninen tunniste (OID)",
     "lahiosoite": "Lähiosoite",

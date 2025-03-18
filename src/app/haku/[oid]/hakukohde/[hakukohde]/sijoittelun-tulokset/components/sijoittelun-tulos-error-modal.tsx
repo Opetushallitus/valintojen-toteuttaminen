@@ -30,13 +30,16 @@ export const SijoittelunTulosErrorModalDialog = createModal(
     hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
   }) => {
     const modalProps = useOphModalProps();
-    const { t, i18n } = useTranslations();
+    const { t } = useTranslations();
     return (
       <OphModal
         {...modalProps}
         title={
-          error?.message && i18n.exists(error.message)
-            ? t(error.message)
+          error?.message
+            ? t({
+                key: error?.message,
+                defaultValue: t('virhe.tallennus'),
+              })
             : t('virhe.tallennus')
         }
         maxWidth="md"

@@ -321,14 +321,14 @@ test.describe('Monivalinta ja massamuutos', () => {
       .getByLabel('Valitse kaikki')
       .click();
     await expect(page.getByText('Ei hakijoita valittu')).toHaveCount(1);
-    await expect(page.getByText('Hakijoita valittu: 3')).toBeVisible();
+    await expect(page.getByText('3 hakijaa valittu')).toBeVisible();
   });
 
   test('Valitsee hakemuksia', async ({ page }) => {
     await page.getByLabel('Valitse hakijan Dacula Kreivi').click();
-    await expect(page.getByText('Hakijoita valittu: 1')).toBeVisible();
+    await expect(page.getByText('1 hakija valittu')).toBeVisible();
     await page.getByLabel('Valitse hakijan Purukumi Puru').click();
-    await expect(page.getByText('Hakijoita valittu: 2')).toBeVisible();
+    await expect(page.getByText('2 hakijaa valittu')).toBeVisible();
   });
 
   test('Massamuutos vastaanottotiedolla', async ({ page }) => {

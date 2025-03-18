@@ -1,19 +1,23 @@
 'use client';
 import { Language, TranslatedName } from './localization-types';
-import { useTranslation } from 'react-i18next';
 import { useCallback } from 'react';
 import { translateName } from './translation-utils';
+import { TFnType, useTolgee, useTranslate } from '@tolgee/react';
+
+export type TFunction = TFnType;
 
 export const useTranslations = () => {
-  const { t, i18n } = useTranslation();
+  const { getLanguage } = useTolgee(['language']);
+  const { t } = useTranslate();
+
   const translateEntity = useCallback(
     (translateable?: TranslatedName) => {
       return translateable
-        ? translateName(translateable, i18n.language as Language)
+        ? translateName(translateable, getLanguage() as Language)
         : '';
     },
-    [i18n.language],
+    [getLanguage],
   );
 
-  return { t, translateEntity, language: i18n.language as Language, i18n };
+  return { t, translateEntity, getLanguage: getLanguage as () => Language };
 };
