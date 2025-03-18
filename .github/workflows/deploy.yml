@@ -31,11 +31,10 @@ jobs:
           cd cdk
           npm ci --prefer-offline
           npm install -g aws-cdk
-      - name: Configure AWS credentials
-        if: ${{ inputs.environment == 'hahtuva' || inputs.environment == 'untuva' || inputs.environment == 'pallero' }}
+      - name: Configure AWS utility-role credentials
         uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
         with:
-          role-to-assume: ${{ secrets.AWS_OPINTOPOLKU_DEV_ROLE_ARN }}
+          role-to-assume: ${{ secrets.AWS_OPH_UTILITY_ROLE_ARN }}
           role-session-name: valintojen-toteuttaminen-deploy
           aws-region: eu-west-1
       - name: Download build from s3
@@ -45,6 +44,13 @@ jobs:
         run: |
           aws s3 cp --no-progress s3://"$bucket"/valintojen-toteuttaminen/ga-${{inputs.build-number}}.zip build.zip
           unzip build.zip
+
+      - name: Configure AWS dev-role credentials
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
+        with:
+          role-to-assume: ${{ secrets.AWS_OPH_DEV_ROLE_ARN }}
+          role-session-name: valintojen-toteuttaminen-deploy
+          aws-region: eu-west-1
       - name: Deploy Next.js app
         run: |
           cd cdk
