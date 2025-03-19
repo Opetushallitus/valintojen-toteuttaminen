@@ -74,7 +74,7 @@ export const LaskettuValintatapajonoTable = ({
               {pisteet}{' '}
               <OphLink
                 iconVisible={false}
-                href={configuration.valintalaskentahistoriaUrl({
+                href={configuration.valintalaskentahistoriaLinkUrl({
                   hakemusOid,
                   valintatapajonoOid: jono.oid,
                 })}
