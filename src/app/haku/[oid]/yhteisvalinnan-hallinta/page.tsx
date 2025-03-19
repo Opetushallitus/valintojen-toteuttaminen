@@ -9,10 +9,12 @@ import { buildLinkToHaku } from '@/lib/ataru/ataru-service';
 import { configuration } from '@/lib/configuration';
 import { useHaku } from '@/lib/kouta/useHaku';
 import { useTranslations } from '@/lib/localization/useTranslations';
+
 import { Stack } from '@mui/material';
 import { OphLink } from '@opetushallitus/oph-design-system';
 import { use } from 'react';
 import { YhteisvalinnanValintalaskenta } from './components/yhteisvalinnan-valintalaskenta';
+import { SijoitteluContainer } from './sijoittelu/components/sijoittelu-container';
 
 const YhteisvalinnanHallintaContent = ({ hakuOid }: { hakuOid: string }) => {
   const { data: haku } = useHaku({ hakuOid });
@@ -71,6 +73,7 @@ export default function YhteisvalinnanHallintaPage(props: {
     <Stack spacing={2} sx={{ margin: 4, overflowX: 'hidden' }}>
       <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
         <YhteisvalinnanHallintaContent hakuOid={hakuOid} />
+        <SijoitteluContainer hakuOid={hakuOid}/>
       </QuerySuspenseBoundary>
     </Stack>
   );
