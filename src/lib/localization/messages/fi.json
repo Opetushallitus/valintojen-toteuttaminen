@@ -567,5 +567,10 @@
       "delete-error": "Valintalaskennan muokkauksen poistaminen epäonnistui",
       "delete-success": "Valintalaskennan muokkauksen poistaminen onnistui"
     }
+  },
+  "yhteisvalinnan-hallinta": {
+    "valintalaskenta": "Valintalaskenta",
+    "valintakoelaskenta-haulle": "Valintakoelaskenta haulle",
+    "valintakoelaskenta-ja-valinta-haulle": "Valintakoelaskenta ja valinta haulle"
   }
 }

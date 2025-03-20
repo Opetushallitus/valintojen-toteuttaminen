@@ -30,7 +30,9 @@ import {
   groupBy,
   indexBy,
   isDefined,
+  isNonNull,
   mapValues,
+  only,
   pipe,
   prop,
 } from 'remeda';
@@ -49,47 +51,53 @@ import {
   translateName,
 } from '../localization/translation-utils';
 
-const formSearchParamsForStartLaskenta = ({
-  laskentaUrl,
+const formLaskentaURL = ({
+  laskentaTyyppi,
   haku,
-  hakukohde,
+  hakukohteet,
   valinnanvaiheTyyppi,
   sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
   valinnanvaihe,
   valintaryhma,
 }: {
-  laskentaUrl: URL;
+  laskentaTyyppi: LaskentaTyyppi;
   haku: Haku;
-  hakukohde?: Hakukohde;
+  hakukohteet: Array<Hakukohde> | null;
   valinnanvaiheTyyppi?: ValinnanvaiheTyyppi;
   sijoitellaankoHaunHakukohteetLaskennanYhteydessa: boolean;
   valinnanvaihe?: number;
   valintaryhma?: ValintaryhmaHakukohteilla;
 }): URL => {
-  laskentaUrl.searchParams.append(
+  const singleHakukohde = only(hakukohteet ?? []);
+
+  // Jos lasketaan koko haku, ei tarvitse antaa whitelist-parametria
+  const urlWhitelisPart = laskentaTyyppi === 'HAKU' ? '' : '/whitelist/true';
+
+  const laskentaUrl = new URL(
+    `${configuration.valintalaskentakerrallaUrl}/haku/${haku.oid}/tyyppi/${laskentaTyyppi}${urlWhitelisPart}`,
+  );
+  laskentaUrl.searchParams.set(
     'erillishaku',
     '' + sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
   );
-  laskentaUrl.searchParams.append('haunnimi', translateName(haku.nimi));
-  laskentaUrl.searchParams.append(
+  laskentaUrl.searchParams.set('haunnimi', translateName(haku.nimi));
+  laskentaUrl.searchParams.set(
     'nimi',
     valintaryhma
       ? valintaryhma.nimi
-      : hakukohde
-        ? getFullnameOfHakukohde(hakukohde, translateName)
+      : singleHakukohde
+        ? getFullnameOfHakukohde(singleHakukohde, translateName)
         : '',
   );
   if (valinnanvaihe && valinnanvaiheTyyppi !== ValinnanvaiheTyyppi.VALINTAKOE) {
-    laskentaUrl.searchParams.append('valinnanvaihe', '' + valinnanvaihe);
+    laskentaUrl.searchParams.set('valinnanvaihe', '' + valinnanvaihe);
   }
-  if (valinnanvaiheTyyppi) {
-    laskentaUrl.searchParams.append(
-      'valintakoelaskenta',
-      `${valinnanvaiheTyyppi === ValinnanvaiheTyyppi.VALINTAKOE}`,
-    );
-  }
+  laskentaUrl.searchParams.set(
+    'valintakoelaskenta',
+    `${valinnanvaiheTyyppi === ValinnanvaiheTyyppi.VALINTAKOE}`,
+  );
   if (valintaryhma) {
-    laskentaUrl.searchParams.append('valintaryhma', valintaryhma.oid);
+    laskentaUrl.searchParams.set('valintaryhma', valintaryhma.oid);
   }
   return laskentaUrl;
 };
@@ -101,6 +109,8 @@ type LaskentaStatusResponseData = {
   };
 };
 
+type LaskentaTyyppi = 'HAKU' | 'HAKUKOHTEET' | 'VALINTARYHMA';
+
 export const kaynnistaLaskenta = async ({
   haku,
   hakukohteet,
@@ -110,28 +120,31 @@ export const kaynnistaLaskenta = async ({
   valinnanvaihe,
 }: {
   haku: Haku;
-  hakukohteet: Array<Hakukohde>;
+  hakukohteet: Array<Hakukohde> | null;
   valintaryhma?: ValintaryhmaHakukohteilla;
   valinnanvaiheTyyppi?: ValinnanvaiheTyyppi;
   sijoitellaankoHaunHakukohteetLaskennanYhteydessa: boolean;
   valinnanvaihe?: number;
 }): Promise<LaskentaStart> => {
-  const laskentaTyyppi = valintaryhma ? 'VALINTARYHMA' : 'HAKUKOHDE';
-  const singleHakukohde = hakukohteet.length === 1 ? hakukohteet[0] : undefined;
-  const laskentaUrl = formSearchParamsForStartLaskenta({
-    laskentaUrl: new URL(
-      `${configuration.valintalaskentakerrallaUrl}/haku/${haku.oid}/tyyppi/${laskentaTyyppi}/whitelist/true?`,
-    ),
+  let laskentaTyyppi: LaskentaTyyppi = 'HAKU';
+  if (valintaryhma) {
+    laskentaTyyppi = 'VALINTARYHMA';
+  } else if (isNonNull(hakukohteet)) {
+    laskentaTyyppi = 'HAKUKOHTEET';
+  }
+
+  const laskentaUrl = formLaskentaURL({
+    laskentaTyyppi,
     haku,
-    hakukohde: singleHakukohde,
-    valinnanvaiheTyyppi: valinnanvaiheTyyppi,
+    hakukohteet,
+    valinnanvaiheTyyppi,
     sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
     valinnanvaihe,
     valintaryhma,
   });
   const response = await client.post<LaskentaStatusResponseData>(
     laskentaUrl.toString(),
-    hakukohteet.map(prop('oid')),
+    hakukohteet?.map(prop('oid')) ?? '',
   );
   return {
     startedNewLaskenta: response.data?.lisatiedot?.luotiinkoUusiLaskenta,
