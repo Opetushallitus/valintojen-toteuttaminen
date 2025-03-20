@@ -5,7 +5,7 @@ import { AccordionBoxTitle } from '@/components/accordion-box-title';
 import { SijoitteluSchedule } from './sijoittelu-schedule';
 import { Box } from '@mui/material';
 
-export const SijoitteluContainer = () => {
+export const SijoitteluContainer = ({ hakuOid }: { hakuOid: string }) => {
   const { t } = useTranslations();
 
   return (
@@ -18,7 +18,7 @@ export const SijoitteluContainer = () => {
       }
     >
       <Box sx={{ display: 'flex', flexDirection: 'column', rowGap: 3 }}>
-        <SijoitteluActions />
+        <SijoitteluActions hakuOid={hakuOid} />
         <SijoitteluSchedule />
       </Box>
     </AccordionBox>
