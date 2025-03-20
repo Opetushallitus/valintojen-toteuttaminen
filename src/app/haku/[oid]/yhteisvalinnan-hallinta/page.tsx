@@ -86,6 +86,7 @@ const ValintalaskentaAccordionContent = ({ haku }: { haku: Haku }) => {
         </OphButton>
       </Stack>
       <ConfirmationModal
+        title={t('valinnanhallinta.varmista')}
         open={state.matches(LaskentaState.WAITING_CONFIRMATION)}
         onConfirm={confirm}
         onCancel={cancel}
