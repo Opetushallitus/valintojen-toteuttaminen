@@ -2,6 +2,8 @@ import { AccordionBox } from '@/components/accordion-box';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { SijoitteluActions } from './sijoittelu-actions';
 import { AccordionBoxTitle } from '@/components/accordion-box-title';
+import { SijoitteluSchedule } from './sijoittelu-schedule';
+import { Box } from '@mui/material';
 
 export const SijoitteluContainer = () => {
   const { t } = useTranslations();
@@ -15,7 +17,10 @@ export const SijoitteluContainer = () => {
         />
       }
     >
-      <SijoitteluActions />
+      <Box sx={{ display: 'flex', flexDirection: 'column', rowGap: 3 }}>
+        <SijoitteluActions />
+        <SijoitteluSchedule />
+      </Box>
     </AccordionBox>
   );
 };

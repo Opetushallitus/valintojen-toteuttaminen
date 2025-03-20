@@ -207,6 +207,7 @@ export const AcceptedLetterTemplateModal = createModal(
             <CalendarComponent
               selectedValue={deadlineDate}
               setDate={setDeadlineDate}
+              label={t('sijoittelun-tulokset.toiminnot.palautuksen-erapaiva')}
             />
           </CustomContainer>
         )}

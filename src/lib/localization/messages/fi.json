@@ -574,6 +574,24 @@
     "valintalaskenta": "Valintalaskenta",
     "valintalaskenta-haulle": "Valintalaskenta haulle",
     "valintakoelaskenta-haulle": "Valintakoelaskenta haulle",
-    "kaikki-laskennat-haulle": "Valintakoelaskenta ja valinta haulle"
+    "kaikki-laskennat-haulle": "Valintakoelaskenta ja valinta haulle",
+    "sijoittelu": {
+      "otsikko": "Sijoittelu",
+      "suorita": "Suorita sijoittelu",
+      "vie-tulokset": "Vie tulokset taulukkolaskentaan",
+      "vie-tarrat": "Vie osoitetarroiksi",
+      "vie-kirjeiksi": "Vie hyväksymiskirjeiksi",
+      "ajastus": {
+        "otsikko": "Ajastettu sijoittelu",
+        "aloitusajankohta": "Aloitusajankohta",
+        "ajotiheys": "Ajotiheys",
+        "ajotiheys-tuntia": "{amount} tuntia",
+        "kayta": "Ota ajastettu sijoittelu käyttöön",
+        "poista": "Poista ajastus käytöstä",
+        "paivita": "Päivitä ajastettu sijoittelu",
+        "kaytossa": "Ajastettu sijoittelu on käytössä",
+        "ei-kaytossa": "Ajastettu sijoittelu ei ole käytössä"
+      }
+    }
   }
 }
