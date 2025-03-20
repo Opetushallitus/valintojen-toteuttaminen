@@ -244,6 +244,11 @@ export const configuration = {
   }) =>
     `${DOMAIN}/valinta-tulos-service/auth/muutoshistoria?valintatapajonoOid=${valintatapajonoOid}&hakemusOid=${hakemusOid}`,
   // -------------------------------------------------------------------------------------------------
+  // sijoittelu
+  kaynnistaSijoittelu: `${DOMAIN}/sijoittelu-service/resources/koostesijoittelu/aktivoi`,
+  sijoittelunStatus: ({ hakuOid }: { hakuOid: string }) =>
+    `${DOMAIN}/sijoittelu-service/resources/koostesijoittelu/status/${hakuOid}`,
+  // -------------------------------------------------------------------------------------------------
   // valintalaskenta-ui (vanha käyttöliittymä)
   // TODO: Poista kun korvattu uudella käyttöliittymällä
   valintalaskentahistoriaLinkUrl: ({
