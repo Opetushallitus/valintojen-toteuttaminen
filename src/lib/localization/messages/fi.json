@@ -564,5 +564,25 @@
       "delete-error": "Valintalaskennan muokkauksen poistaminen epäonnistui",
       "delete-success": "Valintalaskennan muokkauksen poistaminen onnistui"
     }
+  },
+  "yhteisvalinnan-hallinta": {
+    "sijoittelu": {
+      "otsikko": "Sijoittelu",
+      "suorita": "Suorita sijoittelu",
+      "vie-tulokset": "Vie tulokset taulukkolaskentaan",
+      "vie-tarrat": "Vie osoitetarroiksi",
+      "vie-kirjeiksi": "Vie hyväksymiskirjeiksi",
+      "ajastus": {
+        "otsikko": "Ajastettu sijoittelu",
+        "aloitusajankohta": "Aloitusajankohta",
+        "ajotiheys": "Ajotiheys",
+        "ajotiheys-tuntia": "{amount} tuntia",
+        "kayta": "Ota ajastettu sijoittelu käyttöön",
+        "poista": "Poista ajastus käytöstä",
+        "paivita": "Päivitä ajastettu sijoittelu",
+        "kaytossa": "Ajastettu sijoittelu on käytössä",
+        "ei-kaytossa": "Ajastettu sijoittelu ei ole käytössä"
+      }
+    }
   }
 }
