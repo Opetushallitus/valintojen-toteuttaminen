@@ -19,7 +19,7 @@ import { toFormattedDateTimeString } from '@/lib/localization/translation-utils'
 import {
   LaskentaEventType,
   LaskentaState,
-  useLaskentaState,
+  useLaskentaMachine,
 } from '@/lib/state/laskenta-state';
 import { useToaster } from '@/hooks/useToaster';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
@@ -43,7 +43,7 @@ const HallintaTable = ({
   const { t } = useTranslations();
   const { addToast } = useToaster();
 
-  const [state, send] = useLaskentaState({
+  const [state, send] = useLaskentaMachine({
     haku,
     haunAsetukset,
     hakukohteet: hakukohde,

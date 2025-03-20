@@ -25,10 +25,10 @@ export const getLaskentaStatusText = (
   seurantaTiedot: SeurantaTiedot | null,
   t: TFunction,
 ) => {
+  const canceling = state.context.canceling;
+
   switch (true) {
-    case state.hasTag('canceling') ||
-      (state.matches(LaskentaState.FETCHING_SUMMARY) &&
-        state.context.seurantaTiedot?.tila === 'PERUUTETTU'):
+    case canceling:
       return `${t('valintalaskenta.keskeytetaan-laskentaa')} `;
     case state.matches(LaskentaState.STARTING) ||
       (state.hasTag('started') && seurantaTiedot == null):

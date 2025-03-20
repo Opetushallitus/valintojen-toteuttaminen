@@ -51,21 +51,21 @@ import {
   translateName,
 } from '../localization/translation-utils';
 
-const formLaskentaURL = ({
+const createLaskentaURL = ({
   laskentaTyyppi,
   haku,
   hakukohteet,
-  valinnanvaiheTyyppi,
   sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
-  valinnanvaihe,
+  valinnanvaiheTyyppi,
+  valinnanvaiheNumero,
   valintaryhma,
 }: {
   laskentaTyyppi: LaskentaTyyppi;
   haku: Haku;
   hakukohteet: Array<Hakukohde> | null;
-  valinnanvaiheTyyppi?: ValinnanvaiheTyyppi;
   sijoitellaankoHaunHakukohteetLaskennanYhteydessa: boolean;
-  valinnanvaihe?: number;
+  valinnanvaiheTyyppi?: ValinnanvaiheTyyppi;
+  valinnanvaiheNumero?: number;
   valintaryhma?: ValintaryhmaHakukohteilla;
 }): URL => {
   const singleHakukohde = only(hakukohteet ?? []);
@@ -89,13 +89,15 @@ const formLaskentaURL = ({
         ? getFullnameOfHakukohde(singleHakukohde, translateName)
         : '',
   );
-  if (valinnanvaihe && valinnanvaiheTyyppi !== ValinnanvaiheTyyppi.VALINTAKOE) {
-    laskentaUrl.searchParams.set('valinnanvaihe', '' + valinnanvaihe);
+  if (
+    valinnanvaiheNumero &&
+    valinnanvaiheTyyppi !== ValinnanvaiheTyyppi.VALINTAKOE
+  ) {
+    laskentaUrl.searchParams.set('valinnanvaihe', '' + valinnanvaiheNumero);
   }
-  laskentaUrl.searchParams.set(
-    'valintakoelaskenta',
-    `${valinnanvaiheTyyppi === ValinnanvaiheTyyppi.VALINTAKOE}`,
-  );
+  if (valinnanvaiheTyyppi === ValinnanvaiheTyyppi.VALINTAKOE) {
+    laskentaUrl.searchParams.set('valintakoelaskenta', 'true');
+  }
   if (valintaryhma) {
     laskentaUrl.searchParams.set('valintaryhma', valintaryhma.oid);
   }
@@ -109,7 +111,7 @@ type LaskentaStatusResponseData = {
   };
 };
 
-type LaskentaTyyppi = 'HAKU' | 'HAKUKOHTEET' | 'VALINTARYHMA';
+type LaskentaTyyppi = 'HAKU' | 'HAKUKOHDE' | 'VALINTARYHMA';
 
 export const kaynnistaLaskenta = async ({
   haku,
@@ -117,33 +119,33 @@ export const kaynnistaLaskenta = async ({
   valintaryhma,
   valinnanvaiheTyyppi,
   sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
-  valinnanvaihe,
+  valinnanvaiheNumero,
 }: {
   haku: Haku;
   hakukohteet: Array<Hakukohde> | null;
   valintaryhma?: ValintaryhmaHakukohteilla;
   valinnanvaiheTyyppi?: ValinnanvaiheTyyppi;
   sijoitellaankoHaunHakukohteetLaskennanYhteydessa: boolean;
-  valinnanvaihe?: number;
+  valinnanvaiheNumero?: number;
 }): Promise<LaskentaStart> => {
   let laskentaTyyppi: LaskentaTyyppi = 'HAKU';
   if (valintaryhma) {
     laskentaTyyppi = 'VALINTARYHMA';
   } else if (isNonNull(hakukohteet)) {
-    laskentaTyyppi = 'HAKUKOHTEET';
+    laskentaTyyppi = 'HAKUKOHDE';
   }
 
-  const laskentaUrl = formLaskentaURL({
+  const laskentaUrl = createLaskentaURL({
     laskentaTyyppi,
     haku,
     hakukohteet,
     valinnanvaiheTyyppi,
     sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
-    valinnanvaihe,
+    valinnanvaiheNumero,
     valintaryhma,
   });
   const response = await client.post<LaskentaStatusResponseData>(
-    laskentaUrl.toString(),
+    laskentaUrl,
     hakukohteet?.map(prop('oid')) ?? '',
   );
   return {

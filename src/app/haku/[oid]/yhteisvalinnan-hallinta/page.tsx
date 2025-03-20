@@ -19,12 +19,11 @@ import { useHaku } from '@/lib/kouta/useHaku';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { withDefaultProps } from '@/lib/mui-utils';
 import { useHaunAsetukset } from '@/lib/ohjausparametrit/useHaunAsetukset';
-import { LaskentaEventType, LaskentaState, useLaskentaState } from '@/lib/state/laskenta-state';
+import { LaskentaState, useLaskentaState } from '@/lib/state/laskenta-state';
 import { styled } from '@/lib/theme';
-import { Divider, Stack } from '@mui/material';
+import { Stack } from '@mui/material';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { useSelector } from '@xstate/react';
 import { use } from 'react';
 
 const LaskentaButton = withDefaultProps(
@@ -48,40 +47,66 @@ const ValintalaskentaAccordionContent = ({ haku }: { haku: Haku }) => {
 
   const { addToast } = useToaster();
 
-  const [state, send, actorRef] = useLaskentaState({
+  const {
+    actorRef,
+    state,
+    startLaskenta,
+    confirm,
+    summary,
+    cancel,
+    reset,
+    isCanceling,
+  } = useLaskentaState({
     haku,
     haunAsetukset,
     hakukohteet: null,
     addToast,
   });
 
-  const summaryIlmoitus = useSelector(
-    actorRef,
-    (s) => s.context.summary?.ilmoitus,
-  );
-
-  const confirm = async () => {
-    send({ type: LaskentaEventType.CONFIRM });
-  };
-
-  const start = () => {
-    send({ type: LaskentaEventType.START });
-  };
-
-  const cancel = () => {
-    send({ type: LaskentaEventType.CANCEL });
-  };
+  const summaryIlmoitus = summary?.ilmoitus;
 
   return (
     <Stack spacing={2}>
       <Stack direction="row" justifyContent="flex-start" spacing={3}>
-        <OphButton variant="contained">
+        <OphButton
+          disabled={state.hasTag('started')}
+          variant="contained"
+          onClick={() =>
+            startLaskenta({
+              haku,
+              haunAsetukset,
+              hakukohteet: null,
+              valintakoelaskenta: true,
+            })
+          }
+        >
           {t('yhteisvalinnan-hallinta.valintakoelaskenta-haulle')}
         </OphButton>
-        <OphButton variant="contained" onClick={start}>
+        <OphButton
+          disabled={state.hasTag('started')}
+          variant="contained"
+          onClick={() =>
+            startLaskenta({
+              haku,
+              haunAsetukset,
+              hakukohteet: null,
+              valinnanvaiheNumber: -1,
+            })
+          }
+        >
           {t('yhteisvalinnan-hallinta.valintalaskenta')}
         </OphButton>
-        <OphButton variant="contained">
+        <OphButton
+          disabled={state.hasTag('started')}
+          variant="contained"
+          onClick={() =>
+            startLaskenta({
+              haku,
+              haunAsetukset,
+              hakukohteet: null,
+            })
+          }
+        >
           {t('yhteisvalinnan-hallinta.valintakoelaskenta-ja-valinta-haulle')}
         </OphButton>
       </Stack>
@@ -105,29 +130,20 @@ const ValintalaskentaAccordionContent = ({ haku }: { haku: Haku }) => {
           hakukohteet={hakukohteet}
         />
       )}
-      {(state.hasTag('started') || state.hasTag('completed')) && (
+      {state.hasTag('started') && (
         <LaskentaButton
           key="keskeyta"
           variant="outlined"
-          disabled={state.hasTag('canceling')}
+          disabled={isCanceling}
           onClick={cancel}
         >
           {t('valintalaskenta.keskeyta-valintalaskenta')}
         </LaskentaButton>
       )}
       {state.hasTag('completed') && (
-        <LaskentaButton
-          key="sulje"
-          variant="outlined"
-          onClick={() => {
-            send({ type: LaskentaEventType.RESET_RESULTS });
-          }}
-        >
+        <LaskentaButton key="sulje" variant="outlined" onClick={reset}>
           {t('valintalaskenta.sulje-laskennan-tiedot')}
         </LaskentaButton>
-      )}
-      {(state.hasTag('started') || state.hasTag('completed')) && (
-        <Divider sx={{ paddingTop: 1 }} />
       )}
     </Stack>
   );

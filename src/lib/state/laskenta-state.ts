@@ -50,6 +50,7 @@ export type StartLaskentaParams = {
 
 export type LaskentaContext = {
   laskenta: Laskenta;
+  canceling: boolean;
   startLaskentaParams: StartLaskentaParams;
   seurantaTiedot: SeurantaTiedot | null;
   errorSummary: LaskentaErrorSummary | null;
@@ -77,21 +78,25 @@ export enum LaskentaState {
 }
 
 export enum LaskentaEventType {
+  START_WITH_PARAMS = 'START_WITH_PARAMS',
   START = 'START',
   CONFIRM = 'CONFIRM',
   CANCEL = 'CANCEL',
   RESET_RESULTS = 'RESET_RESULTS',
 }
 
-export type LaskentaEvent = {
-  type: LaskentaEventType;
+export type LaskentaEvent =
+  | {
+      type: 'START' | 'CONFIRM' | 'CANCEL' | 'RESET_RESULTS';
+    }
+  | StartValintalaskentaEvent;
+
+export type StartValintalaskentaEvent = {
+  type: LaskentaEventType.START_WITH_PARAMS;
+  params: StartLaskentaParams;
 };
 
-export type LaskentaStateTags =
-  | 'stopped'
-  | 'started'
-  | 'completed'
-  | 'canceling';
+export type LaskentaStateTags = 'stopped' | 'started' | 'completed';
 
 export type LaskentaMachineSnapshot = SnapshotFrom<
   ReturnType<typeof createLaskentaMachine>
@@ -112,6 +117,7 @@ export const createLaskentaMachine = (
 
   const initialContext = {
     laskenta: {},
+    canceling: false,
     startLaskentaParams: params,
     seurantaTiedot: null,
     // Laskennan yhteenveto
@@ -130,6 +136,7 @@ export const createLaskentaMachine = (
     types: {
       context: {} as LaskentaContext,
       tags: 'stopped' as LaskentaStateTags,
+      events: {} as LaskentaEvent,
     },
     actors: {
       startLaskenta: fromPromise(
@@ -141,7 +148,7 @@ export const createLaskentaMachine = (
             valinnanvaiheTyyppi: input.valinnanvaiheTyyppi,
             sijoitellaankoHaunHakukohteetLaskennanYhteydessa:
               input.sijoitellaanko,
-            valinnanvaihe: input.valinnanvaiheNumber,
+            valinnanvaiheNumero: input.valinnanvaiheNumber,
           });
         },
       ),
@@ -185,9 +192,18 @@ export const createLaskentaMachine = (
       [LaskentaState.IDLE]: {
         tags: ['stopped'],
         initial: LaskentaState.INITIALIZED,
+        entry: assign({
+          canceling: false,
+        }),
         on: {
           [LaskentaEventType.START]: {
             target: LaskentaState.WAITING_CONFIRMATION,
+          },
+          [LaskentaEventType.START_WITH_PARAMS]: {
+            target: LaskentaState.WAITING_CONFIRMATION,
+            actions: assign({
+              startLaskentaParams: ({ event }) => event.params,
+            }),
           },
           [LaskentaEventType.RESET_RESULTS]: {
             target: '#INITIALIZED',
@@ -237,7 +253,6 @@ export const createLaskentaMachine = (
         on: {
           [LaskentaEventType.CONFIRM]: {
             target: LaskentaState.STARTING,
-            actions: assign(initialContext),
           },
           [LaskentaEventType.CANCEL]: {
             target: 'IDLE.previous',
@@ -311,7 +326,9 @@ export const createLaskentaMachine = (
           },
           [LaskentaState.CANCELING]: {
             id: LaskentaState.CANCELING,
-            tags: ['canceling'],
+            entry: assign({
+              canceling: true,
+            }),
             invoke: {
               src: 'stopLaskenta',
               input: ({ context }) => context.laskenta,
@@ -406,17 +423,62 @@ export const createLaskentaMachine = (
   });
 };
 
-type LaskentaStateParams = {
+/**
+ * valintakoelaskenta = false tai undefined, valinnanvaiheNumber=-1 -> vain tavallinen valintalaskenta haulle
+ * valintakoelaskenta = false tai undefined, valinnanvaiheNumber=undefined -> valintalaskenta ja valintakoelaskenta haulle
+ * valintakoelaskenta = true, valinnanvaiheNumber positiivinen kokonaisluku -> valintakoelaskenta valinnanvaiheelle
+ * valintakoelaskenta = true, valinnanvaiheNumber=undefined -> valintakoelaskenta haulle
+ */
+type LaskentaStartParams = {
   haku: Haku;
   haunAsetukset: HaunAsetukset;
   hakukohteet: Hakukohde | Array<Hakukohde> | null; // Jos null, suoritetaan laskenta koko haulle
   vaihe?: Valinnanvaihe;
   valinnanvaiheNumber?: number;
   valintaryhma?: ValintaryhmaHakukohteilla;
-  addToast: (toast: Toast) => void;
+  valintakoelaskenta?: boolean;
 };
 
-export const useLaskentaState = ({
+type LaskentaStateParams = {
+  addToast: (toast: Toast) => void;
+} & LaskentaStartParams;
+
+const laskentaStateParamsToMachineParams = ({
+  haku,
+  haunAsetukset,
+  hakukohteet,
+  vaihe,
+  valinnanvaiheNumber,
+  valintaryhma,
+  valintakoelaskenta,
+}: LaskentaStartParams): StartLaskentaParams => {
+  return {
+    haku,
+    valintaryhma,
+    hakukohteet:
+      Array.isArray(hakukohteet) || hakukohteet == null
+        ? hakukohteet
+        : [hakukohteet],
+    sijoitellaanko: sijoitellaankoHaunHakukohteetLaskennanYhteydessa(
+      haku,
+      haunAsetukset,
+    ),
+    valinnanvaiheNumber,
+    ...(valintakoelaskenta
+      ? {
+          valinnanvaiheTyyppi: ValinnanvaiheTyyppi.VALINTAKOE,
+        }
+      : {}),
+    ...(vaihe && valinnanvaiheNumber
+      ? {
+          valinnanvaiheTyyppi: vaihe.tyyppi,
+          valinnanvaiheNimi: vaihe.nimi,
+        }
+      : {}),
+  };
+};
+
+export const useLaskentaMachine = ({
   haku,
   haunAsetukset,
   hakukohteet,
@@ -428,25 +490,14 @@ export const useLaskentaState = ({
 
   const laskentaMachine = useMemo(() => {
     return createLaskentaMachine(
-      {
+      laskentaStateParamsToMachineParams({
         haku,
+        haunAsetukset,
+        hakukohteet,
+        vaihe,
         valintaryhma,
-        hakukohteet:
-          Array.isArray(hakukohteet) || hakukohteet == null
-            ? hakukohteet
-            : [hakukohteet],
-        sijoitellaanko: sijoitellaankoHaunHakukohteetLaskennanYhteydessa(
-          haku,
-          haunAsetukset,
-        ),
-        ...(vaihe && valinnanvaiheNumber
-          ? {
-              valinnanvaiheTyyppi: vaihe.tyyppi,
-              valinnanvaiheNumber,
-              valinnanvaiheNimi: vaihe.nimi,
-            }
-          : {}),
-      },
+        valinnanvaiheNumber,
+      }),
       addToast,
     );
   }, [
@@ -460,6 +511,28 @@ export const useLaskentaState = ({
   ]);
 
   return useMachine(laskentaMachine);
+};
+
+export const useLaskentaState = (params: LaskentaStateParams) => {
+  const [state, send, actorRef] = useLaskentaMachine(params);
+
+  const summary = useSelector(actorRef, (state) => state.context.summary);
+
+  return {
+    state,
+    actorRef,
+    summary,
+    isCanceling: useSelector(actorRef, (state) => state.context.canceling),
+    reset: () => send({ type: LaskentaEventType.RESET_RESULTS }),
+    confirm: () => send({ type: LaskentaEventType.CONFIRM }),
+    cancel: () => send({ type: LaskentaEventType.CANCEL }),
+    stopLaskenta: () => send({ type: LaskentaEventType.CANCEL }),
+    startLaskenta: (params: LaskentaStartParams) =>
+      send({
+        type: LaskentaEventType.START_WITH_PARAMS,
+        params: laskentaStateParamsToMachineParams(params),
+      }),
+  };
 };
 
 export const useLaskentaError = (actorRef: LaskentaActorRef) => {

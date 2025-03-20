@@ -8,7 +8,7 @@ import { toFormattedDateTimeString } from '@/lib/localization/translation-utils'
 import {
   LaskentaEventType,
   LaskentaState,
-  useLaskentaState,
+  useLaskentaMachine,
 } from '@/lib/state/laskenta-state';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import { useToaster } from '@/hooks/useToaster';
@@ -39,7 +39,7 @@ const HallintaTableRow = ({
   const { t } = useTranslations();
   const { addToast } = useToaster();
 
-  const [state, send] = useLaskentaState({
+  const [state, send] = useLaskentaMachine({
     haku,
     haunAsetukset,
     hakukohteet: hakukohde,
