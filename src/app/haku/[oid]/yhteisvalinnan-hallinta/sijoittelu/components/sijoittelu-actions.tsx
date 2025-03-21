@@ -17,7 +17,7 @@ const ActionsContainer = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(2),
 }));
 
-export const SijoitteluActions = ({
+const SijoitteluButton = ({
   hakuOid,
   sijoitteluRunning,
 }: {
@@ -44,6 +44,7 @@ export const SijoitteluActions = ({
           key: toastKey,
           type: result.valmis ? 'success' : 'error',
           message,
+          manualCloseOnly: true,
         });
         setSijoitteluInProgress(false);
       }
@@ -59,16 +60,33 @@ export const SijoitteluActions = ({
   };
 
   return (
+    <OphButton
+      onClick={startSijoittelu}
+      variant="contained"
+      loading={sijoitteluInProgress}
+      disabled={sijoitteluInProgress}
+    >
+      {t('yhteisvalinnan-hallinta.sijoittelu.suorita')}
+    </OphButton>
+  );
+};
+
+export const SijoitteluActions = ({
+  hakuOid,
+  sijoitteluRunning,
+}: {
+  hakuOid: string;
+  sijoitteluRunning: boolean;
+}) => {
+  const { t } = useTranslations();
+
+  return (
     <Box>
       <ActionsContainer>
-        <OphButton
-          onClick={startSijoittelu}
-          variant="contained"
-          loading={sijoitteluInProgress}
-          disabled={sijoitteluInProgress}
-        >
-          {t('yhteisvalinnan-hallinta.sijoittelu.suorita')}
-        </OphButton>
+        <SijoitteluButton
+          hakuOid={hakuOid}
+          sijoitteluRunning={sijoitteluRunning}
+        />
         <OphButton
           onClick={() => {}}
           variant="outlined"
