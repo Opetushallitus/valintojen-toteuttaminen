@@ -33,7 +33,7 @@ export type Toast = {
   type: 'error' | 'success';
   messageParams?: Record<string, string | number>;
   ref?: CallbackActorLogic<AnyEventObject>;
-  confirmFn?: () => void;
+  manualCloseOnly?: boolean;
 };
 
 const toasterMachine = setup({
@@ -52,6 +52,9 @@ const toasterMachine = setup({
             ...event.toast,
             ref: spawn(
               fromCallback(({ sendBack, receive }) => {
+                if (event.toast.manualCloseOnly) {
+                  return;
+                }
                 let id = setToastTimer(key, DEFAULT_TOAST_DURATION, sendBack);
 
                 receive(({ type }) => {
