@@ -7,8 +7,8 @@ import {
   sijoittelunStatus,
 } from '@/lib/sijoittelu/sijoittelu-service';
 import { useState } from 'react';
-import { FullClientSpinner } from '@/components/client-spinner';
 import { useQuery } from '@tanstack/react-query';
+import { SpinnerIcon } from '@/components/spinner-icon';
 
 const ProgressSijoittelu = ({
   hakuOid,
@@ -23,15 +23,16 @@ const ProgressSijoittelu = ({
     queryKey: ['sijoitteluStatus', hakuOid],
     queryFn: async () => {
       const result = await sijoittelunStatus(hakuOid);
-      if (result.valmis) {
+      if (result.valmis || result.ohitettu) {
         setSijoitteluInProgress(false);
       }
+      return result;
     },
     refetchInterval: 5000,
     enabled: sijoitteluInProgress,
   });
 
-  return <FullClientSpinner />;
+  return <SpinnerIcon />;
 };
 
 const ActionsContainer = styled(Box)(({ theme }) => ({
@@ -47,8 +48,8 @@ export const SijoitteluActions = ({ hakuOid }: { hakuOid: string }) => {
     useState<boolean>(false);
 
   const startSijoittelu = async () => {
-    await kaynnistaSijoittelu(hakuOid);
     setSijoitteluInProgress(true);
+    await kaynnistaSijoittelu(hakuOid);
   };
 
   return (

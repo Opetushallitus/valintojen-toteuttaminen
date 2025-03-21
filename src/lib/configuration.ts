@@ -245,7 +245,8 @@ export const configuration = {
     `${DOMAIN}/valinta-tulos-service/auth/muutoshistoria?valintatapajonoOid=${valintatapajonoOid}&hakemusOid=${hakemusOid}`,
   // -------------------------------------------------------------------------------------------------
   // sijoittelu
-  kaynnistaSijoittelu: `${DOMAIN}/sijoittelu-service/resources/koostesijoittelu/aktivoi`,
+  kaynnistaSijoittelu: ({ hakuOid }: { hakuOid: string }) =>
+    `${DOMAIN}/sijoittelu-service/resources/koostesijoittelu/aktivoi?hakuOid=${hakuOid}`,
   sijoittelunStatus: ({ hakuOid }: { hakuOid: string }) =>
     `${DOMAIN}/sijoittelu-service/resources/koostesijoittelu/status/${hakuOid}`,
   // -------------------------------------------------------------------------------------------------
