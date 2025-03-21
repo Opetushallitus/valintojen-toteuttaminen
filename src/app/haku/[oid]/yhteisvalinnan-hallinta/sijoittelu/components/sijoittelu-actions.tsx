@@ -8,32 +8,7 @@ import {
 } from '@/lib/sijoittelu/sijoittelu-service';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { SpinnerIcon } from '@/components/spinner-icon';
-
-const ProgressSijoittelu = ({
-  hakuOid,
-  sijoitteluInProgress,
-  setSijoitteluInProgress,
-}: {
-  hakuOid: string;
-  sijoitteluInProgress: boolean;
-  setSijoitteluInProgress: (value: boolean) => void;
-}) => {
-  useQuery({
-    queryKey: ['sijoitteluStatus', hakuOid],
-    queryFn: async () => {
-      const result = await sijoittelunStatus(hakuOid);
-      if (result.valmis || result.ohitettu) {
-        setSijoitteluInProgress(false);
-      }
-      return result;
-    },
-    refetchInterval: 5000,
-    enabled: sijoitteluInProgress,
-  });
-
-  return <SpinnerIcon />;
-};
+import useToaster from '@/hooks/useToaster';
 
 const ActionsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -42,10 +17,41 @@ const ActionsContainer = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(2),
 }));
 
-export const SijoitteluActions = ({ hakuOid }: { hakuOid: string }) => {
+export const SijoitteluActions = ({
+  hakuOid,
+  sijoitteluRunning,
+}: {
+  hakuOid: string;
+  sijoitteluRunning: boolean;
+}) => {
   const { t } = useTranslations();
+
+  const { addToast } = useToaster();
+
   const [sijoitteluInProgress, setSijoitteluInProgress] =
-    useState<boolean>(false);
+    useState<boolean>(sijoitteluRunning);
+
+  useQuery({
+    queryKey: ['sijoitteluStatusPolling', hakuOid],
+    queryFn: async () => {
+      const result = await sijoittelunStatus(hakuOid);
+      if (result.valmis || result.ohitettu) {
+        const toastKey = `sijoittelu-${hakuOid}}`;
+        const message = result.valmis
+          ? 'yhteisvalinnan-hallinta.sijoittelu.suoritus-onnistui'
+          : 'yhteisvalinnan-hallinta.sijoittelu.suoritus-epaonnistui';
+        addToast({
+          key: toastKey,
+          type: result.valmis ? 'success' : 'error',
+          message,
+        });
+        setSijoitteluInProgress(false);
+      }
+      return result;
+    },
+    refetchInterval: 5000,
+    enabled: sijoitteluInProgress,
+  });
 
   const startSijoittelu = async () => {
     setSijoitteluInProgress(true);
@@ -54,18 +60,11 @@ export const SijoitteluActions = ({ hakuOid }: { hakuOid: string }) => {
 
   return (
     <Box>
-      {sijoitteluInProgress && (
-        <ProgressSijoittelu
-          hakuOid={hakuOid}
-          sijoitteluInProgress={sijoitteluInProgress}
-          setSijoitteluInProgress={setSijoitteluInProgress}
-        />
-      )}
       <ActionsContainer>
         <OphButton
           onClick={startSijoittelu}
           variant="contained"
-          loading={false}
+          loading={sijoitteluInProgress}
           disabled={sijoitteluInProgress}
         >
           {t('yhteisvalinnan-hallinta.sijoittelu.suorita')}

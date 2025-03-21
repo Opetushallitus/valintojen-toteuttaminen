@@ -578,6 +578,8 @@
     "sijoittelu": {
       "otsikko": "Sijoittelu",
       "suorita": "Suorita sijoittelu",
+      "suoritus-onnistui": "Sijoittelu on valmis",
+      "suoritus-epaonnistui": "Sijoittelun suorittaminen epäonnistui",
       "vie-tulokset": "Vie tulokset taulukkolaskentaan",
       "vie-tarrat": "Vie osoitetarroiksi",
       "vie-kirjeiksi": "Vie hyväksymiskirjeiksi",

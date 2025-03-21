@@ -7,9 +7,11 @@ export async function kaynnistaSijoittelu(hakuOid: string) {
 
 export async function sijoittelunStatus(
   hakuOid: string,
-): Promise<{ valmis: boolean; ohitettu: boolean }> {
-  const response = await client.get<{ valmis: boolean; ohitettu: boolean }>(
-    configuration.sijoittelunStatus({ hakuOid }),
-  );
+): Promise<{ valmis: boolean; ohitettu: boolean; tekeillaan: boolean }> {
+  const response = await client.get<{
+    valmis: boolean;
+    ohitettu: boolean;
+    tekeillaan: boolean;
+  }>(configuration.sijoittelunStatus({ hakuOid }));
   return response.data;
 }
