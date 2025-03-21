@@ -9,7 +9,6 @@ import { ConfirmationModal } from '@/components/modals/confirmation-modal';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { SuorittamattomatHakukohteet } from '@/components/suorittamattomat-hakukohteet';
 import { ValintalaskentaStatus } from '@/components/ValintalaskentaStatus';
-import useToaster from '@/hooks/useToaster';
 import { useUserPermissions } from '@/hooks/useUserPermissions';
 import { buildLinkToHaku } from '@/lib/ataru/ataru-service';
 import { configuration } from '@/lib/configuration';
@@ -45,8 +44,6 @@ const ValintalaskentaAccordionContent = ({ haku }: { haku: Haku }) => {
     getHakukohteetQueryOptions(haku.oid, userPermissions),
   );
 
-  const { addToast } = useToaster();
-
   const {
     actorRef,
     state,
@@ -60,7 +57,6 @@ const ValintalaskentaAccordionContent = ({ haku }: { haku: Haku }) => {
     haku,
     haunAsetukset,
     hakukohteet: null,
-    addToast,
   });
 
   const summaryIlmoitus = summary?.ilmoitus;

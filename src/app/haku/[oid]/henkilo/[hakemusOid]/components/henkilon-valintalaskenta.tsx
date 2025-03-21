@@ -7,7 +7,6 @@ import {
   useLaskentaMachine,
 } from '@/lib/state/laskenta-state';
 import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
-import useToaster from '@/hooks/useToaster';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { Haku } from '@/lib/kouta/kouta-types';
 import { SuorittamattomatHakukohteet } from '@/components/suorittamattomat-hakukohteet';
@@ -25,14 +24,12 @@ export const HenkilonValintalaskenta = ({
   haunAsetukset: HaunAsetukset;
   hakukohteet: Array<HenkilonHakukohdeTuloksilla>;
 }) => {
-  const { addToast } = useToaster();
   const { t } = useTranslations();
 
   const [state, send, actorRef] = useLaskentaMachine({
     haku,
     haunAsetukset,
     hakukohteet,
-    addToast,
   });
 
   return (

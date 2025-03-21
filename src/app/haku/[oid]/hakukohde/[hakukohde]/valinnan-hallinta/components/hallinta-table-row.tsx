@@ -11,7 +11,6 @@ import {
   useLaskentaMachine,
 } from '@/lib/state/laskenta-state';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
-import { useToaster } from '@/hooks/useToaster';
 import { Valinnanvaihe } from '@/lib/valintaperusteet/valintaperusteet-types';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { ErrorRow } from './error-row';
@@ -37,14 +36,12 @@ const HallintaTableRow = ({
   lastCalculated,
 }: HallintaTableRowParams) => {
   const { t } = useTranslations();
-  const { addToast } = useToaster();
 
   const [state, send] = useLaskentaMachine({
     haku,
     haunAsetukset,
     hakukohteet: hakukohde,
     vaihe,
-    addToast,
     valinnanvaiheNumber: index,
   });
 

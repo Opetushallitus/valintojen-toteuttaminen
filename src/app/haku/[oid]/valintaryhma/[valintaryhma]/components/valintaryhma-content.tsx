@@ -24,7 +24,6 @@ import { useHaku } from '@/lib/kouta/useHaku';
 import { useHaunAsetukset } from '@/lib/ohjausparametrit/useHaunAsetukset';
 import { getLasketutHakukohteet } from '@/lib/valintalaskenta/valintalaskenta-service';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
-import useToaster from '@/hooks/useToaster';
 import { useLaskentaMachine } from '@/lib/state/laskenta-state';
 
 const StyledContainer = styled(Box)(({ theme }) => ({
@@ -75,14 +74,11 @@ const ValintaryhmaBody = ({
   hakukohteetWithLink: Array<HakukohdeWithLink>;
   haku: Haku;
 }) => {
-  const { addToast } = useToaster();
-
   const [state, send, actorRef] = useLaskentaMachine({
     haku,
     valintaryhma: valittuRyhma,
     haunAsetukset,
     hakukohteet,
-    addToast,
   });
 
   return (

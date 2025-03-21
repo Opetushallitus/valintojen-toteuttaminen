@@ -21,7 +21,6 @@ import {
   LaskentaState,
   useLaskentaMachine,
 } from '@/lib/state/laskenta-state';
-import { useToaster } from '@/hooks/useToaster';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { ErrorRow } from './error-row';
@@ -41,13 +40,11 @@ const HallintaTable = ({
   haunAsetukset,
 }: HallintaTableParams) => {
   const { t } = useTranslations();
-  const { addToast } = useToaster();
 
   const [state, send] = useLaskentaMachine({
     haku,
     haunAsetukset,
     hakukohteet: hakukohde,
-    addToast,
   });
 
   const [valinnanvaiheetQuery, lasketutValinnanvaiheetQuery] =
