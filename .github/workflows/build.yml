@@ -67,7 +67,7 @@ jobs:
           aws-region: eu-west-1
       - name: Deploy zip to s3
         env:
-          bucket: ${{ secrets.BUCKET_NAME }}
+          bucket: ${{ secrets.CDK_DEPLOYMENTS_BUCKET_NAME }}
         run: |
           npm run build
           zip -r ga-${{github.run_number}}.zip .next/*.* .next/BUILD_ID .next/static .next/standalone public
