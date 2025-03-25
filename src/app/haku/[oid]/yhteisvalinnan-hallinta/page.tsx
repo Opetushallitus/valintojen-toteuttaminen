@@ -6,9 +6,9 @@ import { ErrorAlert } from '@/components/error-alert';
 import { ExternalLink } from '@/components/external-link';
 import { LabeledInfoItem } from '@/components/labeled-info-item';
 import { ConfirmationModal } from '@/components/modals/confirmation-modal';
-import { ProgressBar } from '@/components/progress-bar';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { SuorittamattomatHakukohteet } from '@/components/suorittamattomat-hakukohteet';
+import { ValintalaskentaStatus } from '@/components/ValintalaskentaStatus';
 import useToaster from '@/hooks/useToaster';
 import { useUserPermissions } from '@/hooks/useUserPermissions';
 import { buildLinkToHaku } from '@/lib/ataru/ataru-service';
@@ -19,63 +19,13 @@ import { useHaku } from '@/lib/kouta/useHaku';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { withDefaultProps } from '@/lib/mui-utils';
 import { useHaunAsetukset } from '@/lib/ohjausparametrit/useHaunAsetukset';
-import {
-  LaskentaActorRef, LaskentaEventType, LaskentaState,
-  useLaskentaError,
-  useLaskentaState
-} from '@/lib/state/laskenta-state';
+import { LaskentaEventType, LaskentaState, useLaskentaState } from '@/lib/state/laskenta-state';
 import { styled } from '@/lib/theme';
-import { getLaskentaStatusText } from '@/lib/valintalaskenta/valintalaskenta-utils';
 import { Divider, Stack } from '@mui/material';
-import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
+import { OphButton } from '@opetushallitus/oph-design-system';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { useSelector } from '@xstate/react';
 import { use } from 'react';
-
-const LaskentaResult = ({ actorRef }: { actorRef: LaskentaActorRef }) => {
-  const { t } = useTranslations();
-
-  const laskentaError = useLaskentaError(actorRef);
-
-  const state = useSelector(actorRef, (s) => s);
-  const seurantaTiedot = useSelector(actorRef, (s) => s.context.seurantaTiedot);
-
-  const laskentaPercent = seurantaTiedot
-    ? Math.round(
-        (100 *
-          (seurantaTiedot?.hakukohteitaValmiina +
-            seurantaTiedot?.hakukohteitaKeskeytetty)) /
-          seurantaTiedot?.hakukohteitaYhteensa,
-      )
-    : 0;
-
-  switch (true) {
-    case state.matches({ [LaskentaState.IDLE]: LaskentaState.ERROR }):
-      return (
-        <ErrorAlert
-          title={t('valintalaskenta.valintalaskenta-epaonnistui')}
-          message={laskentaError}
-        />
-      );
-    case state.hasTag('started') || state.hasTag('completed'):
-      return (
-        <>
-          <OphTypography variant="h4">
-            {t('valintalaskenta.valintalaskenta')}
-          </OphTypography>
-          <ProgressBar value={laskentaPercent} />
-          <OphTypography>
-            {getLaskentaStatusText(state, seurantaTiedot, t)}
-            {seurantaTiedot &&
-              `${t('valintalaskenta.hakukohteita-valmiina')} ${seurantaTiedot.hakukohteitaValmiina}/${seurantaTiedot.hakukohteitaYhteensa}. ` +
-                `${t('valintalaskenta.suorittamattomia-hakukohteita')} ${seurantaTiedot?.hakukohteitaKeskeytetty ?? 0}.`}
-          </OphTypography>
-        </>
-      );
-    default:
-      return null;
-  }
-};
 
 const LaskentaButton = withDefaultProps(
   styled(OphButton)({
@@ -140,7 +90,7 @@ const ValintalaskentaAccordionContent = ({ haku }: { haku: Haku }) => {
         onConfirm={confirm}
         onCancel={cancel}
       />
-      <LaskentaResult actorRef={actorRef} />
+      <ValintalaskentaStatus laskentaActorRef={actorRef} progressType="bar" />
       {state.hasTag('completed') && summaryIlmoitus && (
         <ErrorAlert
           title={t('valinnanhallinta.virhe')}
