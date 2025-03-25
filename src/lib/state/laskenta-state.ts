@@ -18,9 +18,8 @@ import {
   LaskentaSummary,
   LaskentaStart,
   SeurantaTiedot,
-  LaskentaErrorSummary,
 } from '@/lib/types/laskenta-types';
-import { prop } from 'remeda';
+import { isNonNullish, prop } from 'remeda';
 import { useMemo } from 'react';
 import { sijoitellaankoHaunHakukohteetLaskennanYhteydessa } from '@/lib/kouta/kouta-service';
 import { useMachine, useSelector } from '@xstate/react';
@@ -53,7 +52,6 @@ export type LaskentaContext = {
   canceling: boolean;
   startLaskentaParams: StartLaskentaParams;
   seurantaTiedot: SeurantaTiedot | null;
-  errorSummary: LaskentaErrorSummary | null;
   summary: LaskentaSummary | null;
   error: Error | null;
 };
@@ -78,7 +76,6 @@ export enum LaskentaState {
 }
 
 export enum LaskentaEventType {
-  START_WITH_PARAMS = 'START_WITH_PARAMS',
   START = 'START',
   CONFIRM = 'CONFIRM',
   CANCEL = 'CANCEL',
@@ -87,13 +84,13 @@ export enum LaskentaEventType {
 
 export type LaskentaEvent =
   | {
-      type: 'START' | 'CONFIRM' | 'CANCEL' | 'RESET_RESULTS';
+      type: 'CONFIRM' | 'CANCEL' | 'RESET_RESULTS';
     }
-  | StartValintalaskentaEvent;
+  | StartLaskentaWithParamsEvent;
 
-export type StartValintalaskentaEvent = {
-  type: LaskentaEventType.START_WITH_PARAMS;
-  params: StartLaskentaParams;
+export type StartLaskentaWithParamsEvent = {
+  type: LaskentaEventType.START;
+  params?: StartLaskentaParams;
 };
 
 export type LaskentaStateTags = 'stopped' | 'started' | 'completed';
@@ -105,6 +102,16 @@ export type LaskentaMachineSnapshot = SnapshotFrom<
 export type LaskentaActorRef = ActorRefFrom<
   ReturnType<typeof createLaskentaMachine>
 >;
+
+const hasSummaryErrors = (context: LaskentaContext) =>
+  context.summary?.hakukohteet?.some((hk) =>
+    hk.ilmoitukset?.some((i) => i.tyyppi === 'VIRHE'),
+  ) ?? false;
+
+const getSummaryErrorMessages = (context: LaskentaContext) =>
+  context.summary?.hakukohteet?.flatMap((h) =>
+    h.ilmoitukset?.map((i) => i.otsikko),
+  );
 
 export const createLaskentaMachine = (
   params: StartLaskentaParams,
@@ -122,9 +129,7 @@ export const createLaskentaMachine = (
     seurantaTiedot: null,
     // Laskennan yhteenveto
     summary: null,
-    // Laskennan yhteenvedon virheilmoitukset
-    errorSummary: null,
-    // Mahdollinen virheolio. Huom! errorSummary voi sisältää jotain, vaikka error on null
+    // Mahdollinen virheolio. Jos tämä on asetettu, laskenta ei ole valmistunut
     error: null,
   };
 
@@ -198,11 +203,9 @@ export const createLaskentaMachine = (
         on: {
           [LaskentaEventType.START]: {
             target: LaskentaState.WAITING_CONFIRMATION,
-          },
-          [LaskentaEventType.START_WITH_PARAMS]: {
-            target: LaskentaState.WAITING_CONFIRMATION,
             actions: assign({
-              startLaskentaParams: ({ event }) => event.params,
+              startLaskentaParams: ({ event, context }) =>
+                event?.params ?? context.startLaskentaParams,
             }),
           },
           [LaskentaEventType.RESET_RESULTS]: {
@@ -352,20 +355,6 @@ export const createLaskentaMachine = (
             target: LaskentaState.DETERMINE_SUMMARY,
             actions: assign({
               summary: ({ event }) => event.output,
-              // TODO: Poista errorSummary, kun virheiden esittäminen on yhdenmukaistettu myös "valinnan hallinta"-näkymässä
-              errorSummary: ({ event }) =>
-                event.output?.hakukohteet
-                  ?.filter((hk) =>
-                    hk.ilmoitukset?.some((i) => i.tyyppi === 'VIRHE'),
-                  )
-                  .map((hakukohde) => {
-                    return {
-                      hakukohdeOid: hakukohde.hakukohdeOid,
-                      notifications: hakukohde.ilmoitukset?.map(
-                        (i) => i.otsikko,
-                      ),
-                    };
-                  })[0],
               seurantaTiedot: ({ event, context }) => {
                 const hakukohteitaYhteensa =
                   context.seurantaTiedot?.hakukohteitaYhteensa ?? 0;
@@ -376,14 +365,12 @@ export const createLaskentaMachine = (
                   )?.length ?? 0;
                 const hakukohteitaKeskeytetty =
                   hakukohteitaYhteensa - hakukohteitaValmiina;
-                const tila = event.output.tila ?? context?.seurantaTiedot?.tila;
 
                 return context.seurantaTiedot
                   ? {
                       ...context.seurantaTiedot,
-                      tila,
-                      hakukohteitaValmiina:
-                        hakukohteitaYhteensa - hakukohteitaKeskeytetty,
+                      tila: event.output.tila,
+                      hakukohteitaValmiina,
                       hakukohteitaKeskeytetty,
                     }
                   : context.seurantaTiedot;
@@ -405,14 +392,8 @@ export const createLaskentaMachine = (
             guard: ({ context }) =>
               (context.seurantaTiedot != null &&
                 context.seurantaTiedot.hakukohteitaKeskeytetty > 0) ||
-              (context.errorSummary?.notifications?.length ?? 0) > 0,
+              hasSummaryErrors(context),
             target: '#COMPLETED_WITH_ERRORS',
-            actions: assign({
-              laskenta: ({ context }) =>
-                laskentaReducer(context.laskenta, {
-                  errorMessage: context.errorSummary?.notifications,
-                }),
-            }),
           },
           {
             target: '#COMPLETED',
@@ -523,20 +504,21 @@ export const useLaskentaState = (params: LaskentaStartParams) => {
     confirm: () => send({ type: LaskentaEventType.CONFIRM }),
     cancel: () => send({ type: LaskentaEventType.CANCEL }),
     stopLaskenta: () => send({ type: LaskentaEventType.CANCEL }),
-    startLaskenta: (params: LaskentaStartParams) =>
+    startLaskenta: (params?: LaskentaStartParams) =>
       send({
-        type: LaskentaEventType.START_WITH_PARAMS,
-        params: laskentaStateParamsToMachineParams(params),
+        type: LaskentaEventType.START,
+        params: params ? laskentaStateParamsToMachineParams(params) : undefined,
       }),
   };
 };
 
 export const useLaskentaError = (actorRef: LaskentaActorRef) => {
   const error = useSelector(actorRef, (state) => state.context.error);
-  const laskenta = useSelector(actorRef, (state) => state.context.laskenta);
-  const hasError = laskenta.errorMessage != null || error;
+  const laskentaErrors = useSelector(actorRef, (state) =>
+    getSummaryErrorMessages(state.context),
+  );
 
-  return hasError
-    ? (laskenta.errorMessage ?? '' + (error?.message ?? error))
-    : '';
+  const hasError = isNonNullish(laskentaErrors) || error;
+
+  return hasError ? (laskentaErrors ?? '' + (error?.message ?? error)) : '';
 };
