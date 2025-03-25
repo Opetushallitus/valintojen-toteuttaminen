@@ -541,6 +541,7 @@
     "syy": "Syy",
     "valintalaskenta": "Valintalaskenta",
     "valintalaskenta-epaonnistui": "Valintalaskenta epäonnistui",
+    "valintalaskenta-valmis-virheita": "Valintalaskennassa tapahtui virheitä. Katso suorittamattomat hakukohteet alta.",
     "hakukohteita-valmiina": "Hakukohteita valmiina",
     "suorittamattomia-hakukohteita": "Suorittamattomia hakukohteita",
     "keskeytetaan-laskentaa": "Keskeytetään laskentaa...",

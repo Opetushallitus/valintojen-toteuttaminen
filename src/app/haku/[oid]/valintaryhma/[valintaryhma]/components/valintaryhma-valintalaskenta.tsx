@@ -10,8 +10,6 @@ import {
   LaskentaState,
 } from '@/lib/state/laskenta-state';
 import { Hakukohde } from '@/lib/kouta/kouta-types';
-import { ErrorAlert } from '@/components/error-alert';
-import { useSelector } from '@xstate/react';
 import { ConfirmationModal } from '@/components/modals/confirmation-modal';
 import { SuorittamattomatHakukohteet } from '@/components/suorittamattomat-hakukohteet';
 import { LaskentaStateButton } from '@/components/laskenta-state-button';
@@ -30,11 +28,6 @@ export const ValintaryhmanValintalaskenta = ({
 }) => {
   const { t } = useTranslations();
 
-  const summaryIlmoitus = useSelector(
-    actorRef,
-    (s) => s.context.summary?.ilmoitus,
-  );
-
   return (
     <Stack spacing={2}>
       <ConfirmationModal
@@ -48,13 +41,6 @@ export const ValintaryhmanValintalaskenta = ({
         progressType="spinner"
       />
       <LaskentaStateButton state={state} send={send} />
-      {state.hasTag('completed') && summaryIlmoitus && (
-        <ErrorAlert
-          title={t('valinnanhallinta.virhe')}
-          message={summaryIlmoitus.otsikko}
-          hasAccordion={true}
-        />
-      )}
       {state.hasTag('completed') && (
         <SuorittamattomatHakukohteet
           actorRef={actorRef}

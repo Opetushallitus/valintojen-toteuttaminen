@@ -19,11 +19,12 @@ import {
   LaskentaStart,
   SeurantaTiedot,
 } from '@/lib/types/laskenta-types';
-import { isNonNullish, prop } from 'remeda';
+import { isEmpty, prop } from 'remeda';
 import { useMemo } from 'react';
 import { sijoitellaankoHaunHakukohteetLaskennanYhteydessa } from '@/lib/kouta/kouta-service';
 import { useMachine, useSelector } from '@xstate/react';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
+import { useTranslations } from '@/lib/localization/useTranslations';
 
 const POLLING_INTERVAL = 5000;
 
@@ -50,6 +51,7 @@ export type StartLaskentaParams = {
 export type LaskentaContext = {
   laskenta: Laskenta;
   canceling: boolean;
+  oldLaskentaParams?: StartLaskentaParams;
   startLaskentaParams: StartLaskentaParams;
   seurantaTiedot: SeurantaTiedot | null;
   summary: LaskentaSummary | null;
@@ -69,8 +71,6 @@ export enum LaskentaState {
   DETERMINE_SUMMARY = 'DETERMINE_SUMMARY',
   // Laskennassa tai sen pyynnöissä tapahtui virhe, eikä laskenta siksi valmistunut
   ERROR = 'ERROR',
-  // Laskenta valmistui, mutta yhteenvedossa on virheitä
-  COMPLETED_WITH_ERRORS = 'COMPLETED_WITH_ERRORS',
   COMPLETED = 'COMPLETED',
   CANCELING = 'CANCELING',
 }
@@ -93,7 +93,7 @@ export type StartLaskentaWithParamsEvent = {
   params?: StartLaskentaParams;
 };
 
-export type LaskentaStateTags = 'stopped' | 'started' | 'completed';
+export type LaskentaStateTags = 'stopped' | 'started' | 'completed' | 'error';
 
 export type LaskentaMachineSnapshot = SnapshotFrom<
   ReturnType<typeof createLaskentaMachine>
@@ -108,10 +108,10 @@ const hasSummaryErrors = (context: LaskentaContext) =>
     hk.ilmoitukset?.some((i) => i.tyyppi === 'VIRHE'),
   ) ?? false;
 
-const getSummaryErrorMessages = (context: LaskentaContext) =>
-  context.summary?.hakukohteet?.flatMap((h) =>
-    h.ilmoitukset?.map((i) => i.otsikko),
-  );
+const hasCompletionErrors = (context: LaskentaContext) =>
+  (context.seurantaTiedot != null &&
+    context.seurantaTiedot.hakukohteitaKeskeytetty > 0) ||
+  hasSummaryErrors(context);
 
 export const createLaskentaMachine = (
   params: StartLaskentaParams,
@@ -125,6 +125,7 @@ export const createLaskentaMachine = (
   const initialContext = {
     laskenta: {},
     canceling: false,
+    oldLaskentaParams: undefined,
     startLaskentaParams: params,
     seurantaTiedot: null,
     // Laskennan yhteenveto
@@ -216,14 +217,11 @@ export const createLaskentaMachine = (
           previous: { type: 'history' },
           [LaskentaState.INITIALIZED]: {
             id: LaskentaState.INITIALIZED,
-            actions: assign(initialContext),
+            entry: assign(initialContext),
           },
           [LaskentaState.ERROR]: {
+            tags: ['error'],
             id: LaskentaState.ERROR,
-          },
-          [LaskentaState.COMPLETED_WITH_ERRORS]: {
-            id: LaskentaState.COMPLETED_WITH_ERRORS,
-            tags: ['completed'],
           },
           [LaskentaState.COMPLETED]: {
             id: LaskentaState.COMPLETED,
@@ -236,16 +234,19 @@ export const createLaskentaMachine = (
                   }),
               }),
               ({ context }) => {
-                const key = `laskenta-completed-for-${machineKey}`;
-                const message = valinnanvaiheSelected
-                  ? 'valinnanhallinta.valmisvalinnanvaihe'
-                  : 'valinnanhallinta.valmis';
-                const messageParams = valinnanvaiheSelected
-                  ? {
-                      nimi: context.startLaskentaParams.valinnanvaiheNimi ?? '',
-                    }
-                  : undefined;
-                addToast({ key, message, type: 'success', messageParams });
+                if (!hasCompletionErrors(context)) {
+                  const key = `laskenta-completed-for-${machineKey}`;
+                  const message = valinnanvaiheSelected
+                    ? 'valinnanhallinta.valmisvalinnanvaihe'
+                    : 'valinnanhallinta.valmis';
+                  const messageParams = valinnanvaiheSelected
+                    ? {
+                        nimi:
+                          context.startLaskentaParams.valinnanvaiheNimi ?? '',
+                      }
+                    : undefined;
+                  addToast({ key, message, type: 'success', messageParams });
+                }
               },
             ],
           },
@@ -264,6 +265,11 @@ export const createLaskentaMachine = (
       },
       [LaskentaState.STARTING]: {
         tags: ['started'],
+        entry: assign(({ context }) => ({
+          ...initialContext,
+          startLaskentaParams: context.startLaskentaParams,
+          oldLaskentaParams: context.startLaskentaParams,
+        })),
         invoke: {
           src: 'startLaskenta',
           input: ({ context }) => context.startLaskentaParams,
@@ -352,7 +358,7 @@ export const createLaskentaMachine = (
           src: 'fetchSummary',
           input: ({ context }) => context.laskenta,
           onDone: {
-            target: LaskentaState.DETERMINE_SUMMARY,
+            target: '#COMPLETED',
             actions: assign({
               summary: ({ event }) => event.output,
               seurantaTiedot: ({ event, context }) => {
@@ -366,14 +372,15 @@ export const createLaskentaMachine = (
                 const hakukohteitaKeskeytetty =
                   hakukohteitaYhteensa - hakukohteitaValmiina;
 
-                return context.seurantaTiedot
-                  ? {
-                      ...context.seurantaTiedot,
-                      tila: event.output.tila,
-                      hakukohteitaValmiina,
-                      hakukohteitaKeskeytetty,
-                    }
-                  : context.seurantaTiedot;
+                return {
+                  ...(context.seurantaTiedot ?? {
+                    jonosija: null,
+                  }),
+                  tila: event.output.tila,
+                  hakukohteitaValmiina,
+                  hakukohteitaKeskeytetty,
+                  hakukohteitaYhteensa,
+                };
               },
             }),
           },
@@ -385,30 +392,16 @@ export const createLaskentaMachine = (
           },
         },
       },
-      [LaskentaState.DETERMINE_SUMMARY]: {
-        tags: ['started'],
-        always: [
-          {
-            guard: ({ context }) =>
-              (context.seurantaTiedot != null &&
-                context.seurantaTiedot.hakukohteitaKeskeytetty > 0) ||
-              hasSummaryErrors(context),
-            target: '#COMPLETED_WITH_ERRORS',
-          },
-          {
-            target: '#COMPLETED',
-          },
-        ],
-      },
     },
   });
 };
 
 /**
- * valintakoelaskenta = false tai undefined, valinnanvaiheNumber=-1 -> vain tavallinen valintalaskenta haulle
- * valintakoelaskenta = false tai undefined, valinnanvaiheNumber=undefined -> valintalaskenta ja valintakoelaskenta haulle
- * valintakoelaskenta = true, valinnanvaiheNumber positiivinen kokonaisluku -> valintakoelaskenta valinnanvaiheelle
- * valintakoelaskenta = true, valinnanvaiheNumber=undefined -> valintakoelaskenta haulle
+ * Jos hakukohteet == null ja:
+ * - valintakoelaskenta=false tai undefined, valinnanvaiheNumber=-1 -> vain tavallinen valintalaskenta haulle
+ * - valintakoelaskenta=false tai undefined, valinnanvaiheNumber=undefined -> valintalaskenta ja valintakoelaskenta haulle
+ * - valinnanvaiheNumber positiivinen kokonaisluku -> valintakoelaskenta valinnanvaiheelle
+ * - valintakoelaskenta=true, valinnanvaiheNumber=undefined -> valintakoelaskenta haulle
  */
 type LaskentaStartParams = {
   haku: Haku;
@@ -493,12 +486,13 @@ export const useLaskentaMachine = ({
 export const useLaskentaState = (params: LaskentaStartParams) => {
   const [state, send, actorRef] = useLaskentaMachine(params);
 
-  const summary = useSelector(actorRef, (state) => state.context.summary);
-
   return {
     state,
     actorRef,
-    summary,
+    isLaskentaResultVisible: useSelector(
+      actorRef,
+      (state) => state.hasTag('stopped') && !isEmpty(state.context.laskenta),
+    ),
     isCanceling: useSelector(actorRef, (state) => state.context.canceling),
     reset: () => send({ type: LaskentaEventType.RESET_RESULTS }),
     confirm: () => send({ type: LaskentaEventType.CONFIRM }),
@@ -515,15 +509,15 @@ export const useLaskentaState = (params: LaskentaStartParams) => {
 export const useLaskentaTitle = (actorRef: LaskentaActorRef) => {
   const params = useSelector(
     actorRef,
-    (state) => state.context.startLaskentaParams,
+    (state) => state.context.oldLaskentaParams,
   );
 
   let laskentaTyyppi = 'valintalaskenta.valintalaskenta';
 
-  if (params.hakukohteet == null) {
-    if (params.valinnanvaiheTyyppi === ValinnanvaiheTyyppi.VALINTAKOE) {
+  if (params?.hakukohteet == null) {
+    if (params?.valinnanvaiheTyyppi === ValinnanvaiheTyyppi.VALINTAKOE) {
       laskentaTyyppi = 'yhteisvalinnan-hallinta.valintakoelaskenta-haulle';
-    } else if (params.valinnanvaiheNumber === -1) {
+    } else if (params?.valinnanvaiheNumber === -1) {
       laskentaTyyppi = 'yhteisvalinnan-hallinta.valintalaskenta-haulle';
     } else {
       laskentaTyyppi = 'yhteisvalinnan-hallinta.kaikki-laskennat-haulle';
@@ -534,11 +528,27 @@ export const useLaskentaTitle = (actorRef: LaskentaActorRef) => {
 
 export const useLaskentaError = (actorRef: LaskentaActorRef) => {
   const error = useSelector(actorRef, (state) => state.context.error);
-  const laskentaErrors = useSelector(actorRef, (state) =>
-    getSummaryErrorMessages(state.context),
+
+  const state = useSelector(actorRef, (s) => s);
+
+  const { t } = useTranslations();
+
+  const withCompletionErrors = useSelector(actorRef, (s) =>
+    hasCompletionErrors(s.context),
   );
 
-  const hasError = isNonNullish(laskentaErrors) || error;
+  const summaryMessage = useSelector(
+    actorRef,
+    (s) => s.context.summary?.ilmoitus?.otsikko,
+  );
+  const completionErrorsMessage = withCompletionErrors
+    ? t('valintalaskenta.valintalaskenta-valmis-virheita')
+    : null;
 
-  return hasError ? (laskentaErrors ?? '' + (error?.message ?? error)) : '';
+  const isErrorVisible =
+    state.hasTag('stopped') && !isEmpty(state.context.laskenta);
+
+  return isErrorVisible
+    ? (error?.message ?? summaryMessage ?? completionErrorsMessage ?? undefined)
+    : undefined;
 };

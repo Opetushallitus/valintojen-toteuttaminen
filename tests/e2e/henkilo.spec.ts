@@ -891,7 +891,7 @@ test.describe('Valintalaskenta', () => {
     );
   });
 
-  test('käynnistetään laskenta ja näyttetään yhteenveto virheistä', async ({
+  test('käynnistetään laskenta ja näytetään yhteenveto virheistä', async ({
     page,
   }) => {
     await page.route(

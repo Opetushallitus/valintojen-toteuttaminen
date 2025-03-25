@@ -1,8 +1,4 @@
-import {
-  LaskentaActorRef,
-  LaskentaState,
-  useLaskentaError,
-} from '@/lib/state/laskenta-state';
+import { LaskentaActorRef, useLaskentaError } from '@/lib/state/laskenta-state';
 import { ErrorAlert } from './error-alert';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { ProgressBar } from './progress-bar';
@@ -42,21 +38,15 @@ export function ValintalaskentaStatus({
   const laskentaError = useLaskentaError(laskentaActorRef);
 
   const state = useSelector(laskentaActorRef, (s) => s);
+
   const seurantaTiedot = useSelector(
     laskentaActorRef,
     (s) => s.context.seurantaTiedot,
   );
 
-  switch (true) {
-    case state.matches({ [LaskentaState.IDLE]: LaskentaState.ERROR }):
-      return (
-        <ErrorAlert
-          title={t('valintalaskenta.valintalaskenta-epaonnistui')}
-          message={laskentaError}
-        />
-      );
-    case state.hasTag('started') || state.hasTag('completed'):
-      return (
+  return (
+    <>
+      {!state.hasTag('error') && (state.hasTag('started') || seurantaTiedot) ? (
         <>
           <OphTypography variant="h4">
             {title ?? t('valintalaskenta.valintalaskenta')}
@@ -64,7 +54,7 @@ export function ValintalaskentaStatus({
           {progressType === 'bar' ? (
             <LaskentaProgressBar seurantaTiedot={seurantaTiedot} />
           ) : (
-            state.matches(LaskentaState.PROCESSING) && (
+            state.hasTag('started') && (
               <CircularProgress aria-label={t('valinnanhallinta.lasketaan')} />
             )
           )}
@@ -75,8 +65,13 @@ export function ValintalaskentaStatus({
                 `${t('valintalaskenta.suorittamattomia-hakukohteita')} ${seurantaTiedot?.hakukohteitaKeskeytetty ?? 0}.`}
           </Typography>
         </>
-      );
-    default:
-      return null;
-  }
+      ) : null}
+      {Boolean(laskentaError) && (
+        <ErrorAlert
+          title={t('valintalaskenta.valintalaskenta-epaonnistui')}
+          message={laskentaError}
+        />
+      )}
+    </>
+  );
 }

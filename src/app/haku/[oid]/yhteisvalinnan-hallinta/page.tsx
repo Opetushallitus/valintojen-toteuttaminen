@@ -2,7 +2,6 @@
 import { AccordionBox } from '@/components/accordion-box';
 import { AccordionBoxTitle } from '@/components/accordion-box-title';
 import { FullClientSpinner } from '@/components/client-spinner';
-import { ErrorAlert } from '@/components/error-alert';
 import { ExternalLink } from '@/components/external-link';
 import { LabeledInfoItem } from '@/components/labeled-info-item';
 import { ConfirmationModal } from '@/components/modals/confirmation-modal';
@@ -53,17 +52,16 @@ const ValintalaskentaAccordionContent = ({ haku }: { haku: Haku }) => {
     state,
     startLaskenta,
     confirm,
-    summary,
     cancel,
     reset,
     isCanceling,
+    isLaskentaResultVisible,
   } = useLaskentaState({
     haku,
     haunAsetukset,
     hakukohteet: null,
   });
 
-  const summaryIlmoitus = summary?.ilmoitus;
   const laskentaTitle = useLaskentaTitle(actorRef);
 
   return (
@@ -122,30 +120,23 @@ const ValintalaskentaAccordionContent = ({ haku }: { haku: Haku }) => {
         laskentaActorRef={actorRef}
         progressType="bar"
       />
-      {state.hasTag('completed') && summaryIlmoitus && (
-        <ErrorAlert
-          title={t('valinnanhallinta.virhe')}
-          message={summaryIlmoitus.otsikko}
-          hasAccordion={true}
-        />
-      )}
-      {state.hasTag('completed') && (
+      {isLaskentaResultVisible && (
         <SuorittamattomatHakukohteet
           actorRef={actorRef}
           hakukohteet={hakukohteet}
+          onlyErrors={true}
         />
       )}
       {state.hasTag('started') && (
         <LaskentaButton
-          key="keskeyta"
           variant="outlined"
-          disabled={isCanceling}
+          disabled={isCanceling || state.matches(LaskentaState.STARTING)}
           onClick={cancel}
         >
           {t('valintalaskenta.keskeyta-valintalaskenta')}
         </LaskentaButton>
       )}
-      {state.hasTag('completed') && (
+      {isLaskentaResultVisible && (
         <LaskentaButton key="sulje" variant="outlined" onClick={reset}>
           {t('valintalaskenta.sulje-laskennan-tiedot')}
         </LaskentaButton>
@@ -185,6 +176,7 @@ const YhteisvalinnanHallintaContent = ({ hakuOid }: { hakuOid: string }) => {
       </Stack>
       <AccordionBox
         id="yhteisvalinnan-hallinta-valintalaskenta"
+        headingComponent="h2"
         title={
           <AccordionBoxTitle
             title={t('yhteisvalinnan-hallinta.valintalaskenta')}

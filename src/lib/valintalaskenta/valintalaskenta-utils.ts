@@ -37,7 +37,7 @@ export const getLaskentaStatusText = (
       return seurantaTiedot?.jonosija
         ? `${t('valintalaskenta.tehtava-on-laskennassa-jonosijalla')} ${seurantaTiedot?.jonosija}. `
         : `${t('valintalaskenta.tehtava-on-laskennassa-parhaillaan')}. `;
-    case state.hasTag('completed'):
+    case state.hasTag('stopped') && Boolean(seurantaTiedot):
       return `${t('valintalaskenta.laskenta-on-paattynyt')}. `;
     default:
       return '';

@@ -289,20 +289,21 @@ test.describe('Valintaryhmän laskenta', () => {
     await page.route(
       '*/**/valintalaskenta-laskenta-service/resources/seuranta/yhteenveto/12345vr',
       async (route) => {
-        const seuranta = {
-          tila: 'MENEILLAAN',
-          hakukohteitaYhteensa: 1,
-          hakukohteitaValmiina: 0,
-          hakukohteitaKeskeytetty: 0,
-        };
         await route.fulfill({
-          json: seuranta,
+          json: {
+            tila: 'MENEILLAAN',
+            hakukohteitaYhteensa: 1,
+            hakukohteitaValmiina: 0,
+            hakukohteitaKeskeytetty: 0,
+          },
         });
       },
     );
     await startLaskenta(page);
-    const spinners = page.getByRole('progressbar');
-    await expect(spinners).toHaveCount(1);
+    await expect(page.getByRole('progressbar')).toHaveCount(1);
+    await expect(
+      page.getByText('Tehtävä on laskennassa parhaillaan'),
+    ).toBeVisible();
   });
 
   test('Näyttää laskennan valmistuneen', async () => {
