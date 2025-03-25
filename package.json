@@ -41,7 +41,7 @@
     "@xstate/react": "^5.0.3",
     "date-fns": "^4.1.0",
     "immer": "^10.1.1",
-    "next": "^15.2.2",
+    "next": "^15.2.3",
     "nextjs-toploader": "^3.7.15",
     "nuqs": "^2.4.1",
     "quill": "^2.0.3",
