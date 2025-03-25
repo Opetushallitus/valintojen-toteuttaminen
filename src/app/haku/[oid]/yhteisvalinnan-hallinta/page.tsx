@@ -18,7 +18,11 @@ import { useHaku } from '@/lib/kouta/useHaku';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { withDefaultProps } from '@/lib/mui-utils';
 import { useHaunAsetukset } from '@/lib/ohjausparametrit/useHaunAsetukset';
-import { LaskentaState, useLaskentaState } from '@/lib/state/laskenta-state';
+import {
+  LaskentaState,
+  useLaskentaState,
+  useLaskentaTitle,
+} from '@/lib/state/laskenta-state';
 import { styled } from '@/lib/theme';
 import { Stack } from '@mui/material';
 import { OphButton } from '@opetushallitus/oph-design-system';
@@ -60,6 +64,7 @@ const ValintalaskentaAccordionContent = ({ haku }: { haku: Haku }) => {
   });
 
   const summaryIlmoitus = summary?.ilmoitus;
+  const laskentaTitle = useLaskentaTitle(actorRef);
 
   return (
     <Stack spacing={2}>
@@ -103,7 +108,7 @@ const ValintalaskentaAccordionContent = ({ haku }: { haku: Haku }) => {
             })
           }
         >
-          {t('yhteisvalinnan-hallinta.valintakoelaskenta-ja-valinta-haulle')}
+          {t('yhteisvalinnan-hallinta.kaikki-laskennat-haulle')}
         </OphButton>
       </Stack>
       <ConfirmationModal
@@ -112,7 +117,11 @@ const ValintalaskentaAccordionContent = ({ haku }: { haku: Haku }) => {
         onConfirm={confirm}
         onCancel={cancel}
       />
-      <ValintalaskentaStatus laskentaActorRef={actorRef} progressType="bar" />
+      <ValintalaskentaStatus
+        title={t(laskentaTitle)}
+        laskentaActorRef={actorRef}
+        progressType="bar"
+      />
       {state.hasTag('completed') && summaryIlmoitus && (
         <ErrorAlert
           title={t('valinnanhallinta.virhe')}

@@ -512,6 +512,26 @@ export const useLaskentaState = (params: LaskentaStartParams) => {
   };
 };
 
+export const useLaskentaTitle = (actorRef: LaskentaActorRef) => {
+  const params = useSelector(
+    actorRef,
+    (state) => state.context.startLaskentaParams,
+  );
+
+  let laskentaTyyppi = 'valintalaskenta.valintalaskenta';
+
+  if (params.hakukohteet == null) {
+    if (params.valinnanvaiheTyyppi === ValinnanvaiheTyyppi.VALINTAKOE) {
+      laskentaTyyppi = 'yhteisvalinnan-hallinta.valintakoelaskenta-haulle';
+    } else if (params.valinnanvaiheNumber === -1) {
+      laskentaTyyppi = 'yhteisvalinnan-hallinta.valintalaskenta-haulle';
+    } else {
+      laskentaTyyppi = 'yhteisvalinnan-hallinta.kaikki-laskennat-haulle';
+    }
+  }
+  return laskentaTyyppi;
+};
+
 export const useLaskentaError = (actorRef: LaskentaActorRef) => {
   const error = useSelector(actorRef, (state) => state.context.error);
   const laskentaErrors = useSelector(actorRef, (state) =>

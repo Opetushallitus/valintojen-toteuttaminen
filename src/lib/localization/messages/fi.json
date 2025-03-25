@@ -570,7 +570,8 @@
   },
   "yhteisvalinnan-hallinta": {
     "valintalaskenta": "Valintalaskenta",
+    "valintalaskenta-haulle": "Valintalaskenta haulle",
     "valintakoelaskenta-haulle": "Valintakoelaskenta haulle",
-    "valintakoelaskenta-ja-valinta-haulle": "Valintakoelaskenta ja valinta haulle"
+    "kaikki-laskennat-haulle": "Valintakoelaskenta ja valinta haulle"
   }
 }
