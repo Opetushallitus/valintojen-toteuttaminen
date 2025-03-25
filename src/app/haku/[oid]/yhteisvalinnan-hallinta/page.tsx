@@ -1,14 +1,186 @@
 'use client';
+import { AccordionBox } from '@/components/accordion-box';
+import { AccordionBoxTitle } from '@/components/accordion-box-title';
 import { FullClientSpinner } from '@/components/client-spinner';
+import { ErrorAlert } from '@/components/error-alert';
 import { ExternalLink } from '@/components/external-link';
 import { LabeledInfoItem } from '@/components/labeled-info-item';
+import { ConfirmationModal } from '@/components/modals/confirmation-modal';
+import { ProgressBar } from '@/components/progress-bar';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
+import { SuorittamattomatHakukohteet } from '@/components/suorittamattomat-hakukohteet';
+import useToaster from '@/hooks/useToaster';
+import { useUserPermissions } from '@/hooks/useUserPermissions';
 import { buildLinkToHaku } from '@/lib/ataru/ataru-service';
 import { configuration } from '@/lib/configuration';
+import { getHakukohteetQueryOptions } from '@/lib/kouta/kouta-service';
+import { Haku } from '@/lib/kouta/kouta-types';
 import { useHaku } from '@/lib/kouta/useHaku';
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { Stack } from '@mui/material';
+import { withDefaultProps } from '@/lib/mui-utils';
+import { useHaunAsetukset } from '@/lib/ohjausparametrit/useHaunAsetukset';
+import {
+  LaskentaActorRef, LaskentaEventType, LaskentaState,
+  useLaskentaError,
+  useLaskentaState
+} from '@/lib/state/laskenta-state';
+import { styled } from '@/lib/theme';
+import { getLaskentaStatusText } from '@/lib/valintalaskenta/valintalaskenta-utils';
+import { Divider, Stack } from '@mui/material';
+import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { useSelector } from '@xstate/react';
 import { use } from 'react';
+
+const LaskentaResult = ({ actorRef }: { actorRef: LaskentaActorRef }) => {
+  const { t } = useTranslations();
+
+  const laskentaError = useLaskentaError(actorRef);
+
+  const state = useSelector(actorRef, (s) => s);
+  const seurantaTiedot = useSelector(actorRef, (s) => s.context.seurantaTiedot);
+
+  const laskentaPercent = seurantaTiedot
+    ? Math.round(
+        (100 *
+          (seurantaTiedot?.hakukohteitaValmiina +
+            seurantaTiedot?.hakukohteitaKeskeytetty)) /
+          seurantaTiedot?.hakukohteitaYhteensa,
+      )
+    : 0;
+
+  switch (true) {
+    case state.matches({ [LaskentaState.IDLE]: LaskentaState.ERROR }):
+      return (
+        <ErrorAlert
+          title={t('valintalaskenta.valintalaskenta-epaonnistui')}
+          message={laskentaError}
+        />
+      );
+    case state.hasTag('started') || state.hasTag('completed'):
+      return (
+        <>
+          <OphTypography variant="h4">
+            {t('valintalaskenta.valintalaskenta')}
+          </OphTypography>
+          <ProgressBar value={laskentaPercent} />
+          <OphTypography>
+            {getLaskentaStatusText(state, seurantaTiedot, t)}
+            {seurantaTiedot &&
+              `${t('valintalaskenta.hakukohteita-valmiina')} ${seurantaTiedot.hakukohteitaValmiina}/${seurantaTiedot.hakukohteitaYhteensa}. ` +
+                `${t('valintalaskenta.suorittamattomia-hakukohteita')} ${seurantaTiedot?.hakukohteitaKeskeytetty ?? 0}.`}
+          </OphTypography>
+        </>
+      );
+    default:
+      return null;
+  }
+};
+
+const LaskentaButton = withDefaultProps(
+  styled(OphButton)({
+    alignSelf: 'flex-start',
+  }),
+  {
+    variant: 'contained',
+  },
+);
+
+const ValintalaskentaAccordionContent = ({ haku }: { haku: Haku }) => {
+  const { t } = useTranslations();
+
+  const { data: userPermissions } = useUserPermissions();
+
+  const { data: haunAsetukset } = useHaunAsetukset({ hakuOid: haku.oid });
+  const { data: hakukohteet } = useSuspenseQuery(
+    getHakukohteetQueryOptions(haku.oid, userPermissions),
+  );
+
+  const { addToast } = useToaster();
+
+  const [state, send, actorRef] = useLaskentaState({
+    haku,
+    haunAsetukset,
+    hakukohteet: null,
+    addToast,
+  });
+
+  const summaryIlmoitus = useSelector(
+    actorRef,
+    (s) => s.context.summary?.ilmoitus,
+  );
+
+  const confirm = async () => {
+    send({ type: LaskentaEventType.CONFIRM });
+  };
+
+  const start = () => {
+    send({ type: LaskentaEventType.START });
+  };
+
+  const cancel = () => {
+    send({ type: LaskentaEventType.CANCEL });
+  };
+
+  return (
+    <Stack spacing={2}>
+      <Stack direction="row" justifyContent="flex-start" spacing={3}>
+        <OphButton variant="contained">
+          {t('yhteisvalinnan-hallinta.valintakoelaskenta-haulle')}
+        </OphButton>
+        <OphButton variant="contained" onClick={start}>
+          {t('yhteisvalinnan-hallinta.valintalaskenta')}
+        </OphButton>
+        <OphButton variant="contained">
+          {t('yhteisvalinnan-hallinta.valintakoelaskenta-ja-valinta-haulle')}
+        </OphButton>
+      </Stack>
+      <ConfirmationModal
+        open={state.matches(LaskentaState.WAITING_CONFIRMATION)}
+        onConfirm={confirm}
+        onCancel={cancel}
+      />
+      <LaskentaResult actorRef={actorRef} />
+      {state.hasTag('completed') && summaryIlmoitus && (
+        <ErrorAlert
+          title={t('valinnanhallinta.virhe')}
+          message={summaryIlmoitus.otsikko}
+          hasAccordion={true}
+        />
+      )}
+      {state.hasTag('completed') && (
+        <SuorittamattomatHakukohteet
+          actorRef={actorRef}
+          hakukohteet={hakukohteet}
+        />
+      )}
+      {(state.hasTag('started') || state.hasTag('completed')) && (
+        <LaskentaButton
+          key="keskeyta"
+          variant="outlined"
+          disabled={state.hasTag('canceling')}
+          onClick={cancel}
+        >
+          {t('valintalaskenta.keskeyta-valintalaskenta')}
+        </LaskentaButton>
+      )}
+      {state.hasTag('completed') && (
+        <LaskentaButton
+          key="sulje"
+          variant="outlined"
+          onClick={() => {
+            send({ type: LaskentaEventType.RESET_RESULTS });
+          }}
+        >
+          {t('valintalaskenta.sulje-laskennan-tiedot')}
+        </LaskentaButton>
+      )}
+      {(state.hasTag('started') || state.hasTag('completed')) && (
+        <Divider sx={{ paddingTop: 1 }} />
+      )}
+    </Stack>
+  );
+};
 
 const YhteisvalinnanHallintaContent = ({ hakuOid }: { hakuOid: string }) => {
   const { data: haku } = useHaku({ hakuOid });
@@ -16,28 +188,42 @@ const YhteisvalinnanHallintaContent = ({ hakuOid }: { hakuOid: string }) => {
   const { t, translateEntity } = useTranslations();
 
   return (
-    <Stack direction="row" spacing="4vw" sx={{ paddingTop: 1 }}>
-      <LabeledInfoItem
-        label={t('yleinen.haku')}
-        value={translateEntity(haku.nimi)}
-      />
-      <LabeledInfoItem label={t('yleinen.haun-tunniste')} value={haku.oid} />
-      <LabeledInfoItem
-        label={t('yleinen.lisatiedot')}
-        value={
-          <Stack direction="row" spacing={3}>
-            <ExternalLink
-              name={t('yleinen.haun-asetukset')}
-              href={configuration.haunAsetuksetLinkUrl({ hakuOid: haku.oid })}
-            />
-            <ExternalLink
-              name={t('yleinen.tarjonta')}
-              href={buildLinkToHaku(haku.oid)}
-            />
-          </Stack>
+    <>
+      <Stack direction="row" spacing="4vw" sx={{ paddingTop: 1 }}>
+        <LabeledInfoItem
+          label={t('yleinen.haku')}
+          value={translateEntity(haku.nimi)}
+        />
+        <LabeledInfoItem label={t('yleinen.haun-tunniste')} value={haku.oid} />
+        <LabeledInfoItem
+          label={t('yleinen.lisatiedot')}
+          value={
+            <Stack direction="row" spacing={3}>
+              <ExternalLink
+                name={t('yleinen.haun-asetukset')}
+                href={configuration.haunAsetuksetLinkUrl({ hakuOid: haku.oid })}
+              />
+              <ExternalLink
+                name={t('yleinen.tarjonta')}
+                href={buildLinkToHaku(haku.oid)}
+              />
+            </Stack>
+          }
+        />
+      </Stack>
+      <AccordionBox
+        id="yhteisvalinnan-hallinta-valintalaskenta"
+        title={
+          <AccordionBoxTitle
+            title={t('yhteisvalinnan-hallinta.valintalaskenta')}
+          />
         }
-      />
-    </Stack>
+      >
+        <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
+          <ValintalaskentaAccordionContent haku={haku} />
+        </QuerySuspenseBoundary>
+      </AccordionBox>
+    </>
   );
 };
 

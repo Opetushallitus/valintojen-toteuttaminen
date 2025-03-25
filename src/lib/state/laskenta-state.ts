@@ -40,7 +40,7 @@ const laskentaReducer = (state: Laskenta, action: Laskenta): Laskenta => {
 
 export type StartLaskentaParams = {
   haku: Haku;
-  hakukohteet: Array<Hakukohde>;
+  hakukohteet: Array<Hakukohde> | null;
   valintaryhma?: ValintaryhmaHakukohteilla;
   valinnanvaiheTyyppi?: ValinnanvaiheTyyppi;
   sijoitellaanko: boolean;
@@ -124,7 +124,7 @@ export const createLaskentaMachine = (
 
   const machineKey = params.valintaryhma
     ? `haku_${params.haku.oid}-valintaryhma_${params.valintaryhma.oid}`
-    : `haku_${params.haku.oid}-hakukohteet_${params.hakukohteet.map(prop('oid')).join('_')}${keyPartValinnanvaihe}`;
+    : `haku_${params.haku.oid}-hakukohteet_${params.hakukohteet?.map(prop('oid')).join('_')}${keyPartValinnanvaihe}`;
 
   return setup({
     types: {
@@ -409,7 +409,7 @@ export const createLaskentaMachine = (
 type LaskentaStateParams = {
   haku: Haku;
   haunAsetukset: HaunAsetukset;
-  hakukohteet: Hakukohde | Array<Hakukohde>;
+  hakukohteet: Hakukohde | Array<Hakukohde> | null; // Jos null, suoritetaan laskenta koko haulle
   vaihe?: Valinnanvaihe;
   valinnanvaiheNumber?: number;
   valintaryhma?: ValintaryhmaHakukohteilla;
@@ -431,7 +431,10 @@ export const useLaskentaState = ({
       {
         haku,
         valintaryhma,
-        hakukohteet: Array.isArray(hakukohteet) ? hakukohteet : [hakukohteet],
+        hakukohteet:
+          Array.isArray(hakukohteet) || hakukohteet == null
+            ? hakukohteet
+            : [hakukohteet],
         sijoitellaanko: sijoitellaankoHaunHakukohteetLaskennanYhteydessa(
           haku,
           haunAsetukset,
