@@ -14,12 +14,10 @@ const LaskentaProgressBar = ({
   seurantaTiedot: SeurantaTiedot | null;
 }) => {
   const laskentaPercent = seurantaTiedot
-    ? Math.round(
-        (100 *
-          (seurantaTiedot?.hakukohteitaValmiina +
-            seurantaTiedot?.hakukohteitaKeskeytetty)) /
-          seurantaTiedot?.hakukohteitaYhteensa,
-      )
+    ? (100 *
+        (seurantaTiedot?.hakukohteitaValmiina +
+          seurantaTiedot?.hakukohteitaKeskeytetty)) /
+      seurantaTiedot?.hakukohteitaYhteensa
     : 0;
   return <ProgressBar value={laskentaPercent} />;
 };
