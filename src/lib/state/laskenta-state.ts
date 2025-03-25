@@ -439,10 +439,6 @@ type LaskentaStartParams = {
   valintakoelaskenta?: boolean;
 };
 
-type LaskentaStateParams = {
-  addToast: (toast: Toast) => void;
-} & LaskentaStartParams;
-
 const laskentaStateParamsToMachineParams = ({
   haku,
   haunAsetukset,
@@ -485,7 +481,7 @@ export const useLaskentaMachine = ({
   vaihe,
   valintaryhma,
   valinnanvaiheNumber,
-}: LaskentaStateParams) => {
+}: LaskentaStartParams) => {
   const { addToast } = useToaster();
 
   const laskentaMachine = useMemo(() => {
@@ -513,7 +509,7 @@ export const useLaskentaMachine = ({
   return useMachine(laskentaMachine);
 };
 
-export const useLaskentaState = (params: LaskentaStateParams) => {
+export const useLaskentaState = (params: LaskentaStartParams) => {
   const [state, send, actorRef] = useLaskentaMachine(params);
 
   const summary = useSelector(actorRef, (state) => state.context.summary);
