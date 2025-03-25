@@ -246,7 +246,7 @@ export const configuration = {
   // -------------------------------------------------------------------------------------------------
   // valintalaskenta-ui (vanha käyttöliittymä)
   // TODO: Poista kun korvattu uudella käyttöliittymällä
-  valintalaskentahistoriaUrl: ({
+  valintalaskentahistoriaLinkUrl: ({
     valintatapajonoOid,
     hakemusOid,
   }: {
@@ -254,4 +254,8 @@ export const configuration = {
     hakemusOid: string;
   }) =>
     `${DOMAIN}/valintalaskenta-ui/app/index.html#/valintatapajono/${valintatapajonoOid}/hakemus/${hakemusOid}/valintalaskentahistoria`,
+  // -------------------------------------------------------------------------------------------------
+  // hakukohderyhmapalvelu
+  haunAsetuksetLinkUrl: ({ hakuOid }: { hakuOid: string }) =>
+    `${DOMAIN}/hakukohderyhmapalvelu/haun-asetukset?hakuOid=${hakuOid}`,
 } as const;

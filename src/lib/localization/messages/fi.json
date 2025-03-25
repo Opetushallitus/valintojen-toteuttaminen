@@ -40,7 +40,10 @@
     "muokkaa": "Muokkaa",
     "suoritus-etenee": "Suoritus etenee virheettömästi ja varoituksetta",
     "virhe": "Virhe",
-    "hakijoita-valittu-maara": "{count, plural, =0 {Ei hakijoita valittu} one {1 hakija valittu} other {{count} hakijaa valittu}}"
+    "hakijoita-valittu-maara": "{count, plural, =0 {Ei hakijoita valittu} one {1 hakija valittu} other {{count} hakijaa valittu}}",
+    "haun-tunniste": "Haun tunniste",
+    "haun-asetukset": "Haun asetukset",
+    "tarjonta": "Tarjonta"
   },
   "kalenteri": {
     "aika": "Aika",
