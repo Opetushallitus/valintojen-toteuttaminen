@@ -1,5 +1,13 @@
 import { CalendarComponent } from '@/components/calendar-component';
+import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { useTranslations } from '@/lib/localization/useTranslations';
+import {
+  createAjastettuSijoittelu,
+  deleteAjastettuSijoittelu,
+  getAjastettuSijoittelu,
+  updateAjastettuSijoittelu,
+} from '@/lib/sijoittelu/sijoittelu-service';
+import { AjastettuSijoittelu } from '@/lib/types/sijoittelu-types';
 import { InfoOutlined } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import {
@@ -8,92 +16,138 @@ import {
   OphFormFieldWrapper,
   OphSelect,
 } from '@opetushallitus/oph-design-system';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { useState } from 'react';
+import { isNullish } from 'remeda';
 
-export const SijoitteluSchedule = () => {
+const ScheduleContent = ({
+  hakuOid,
+  ajastettuSijoittelu,
+}: {
+  hakuOid: string;
+  ajastettuSijoittelu: AjastettuSijoittelu | null;
+}) => {
   const { t } = useTranslations();
-  const [scheduledDate, setScheduledDate] = useState<Date | null>(null);
-  const [frequency, setFrequency] = useState<string>('24');
-  const [scheduleInUse, setScheduleInUse] = useState<boolean>(false);
+  const [scheduledDate, setScheduledDate] = useState<Date | null>(
+    ajastettuSijoittelu?.startTime ?? null,
+  );
+  const [frequency, setFrequency] = useState<string>(
+    ajastettuSijoittelu?.frequency ?? '24',
+  );
+  const [scheduleInUse, setScheduleInUse] = useState<boolean>(
+    ajastettuSijoittelu?.active ?? false,
+  );
+
+  const upsertAjastettuSijoittelu = async () => {
+    if (scheduleInUse && scheduledDate) {
+      await updateAjastettuSijoittelu(hakuOid, scheduledDate, frequency);
+    } else if (scheduledDate) {
+      await createAjastettuSijoittelu(hakuOid, scheduledDate, frequency);
+    }
+    setScheduleInUse(true);
+  };
+
+  const removeAjastettuSijoittelu = async () => {
+    await deleteAjastettuSijoittelu(hakuOid);
+    setScheduleInUse(false);
+  };
+
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        columnGap: 2,
+        marginTop: 2,
+        alignItems: 'flex-end',
+      }}
+    >
+      <CalendarComponent
+        setDate={setScheduledDate}
+        selectedValue={scheduledDate}
+        label={t('yhteisvalinnan-hallinta.sijoittelu.ajastus.aloitusajankohta')}
+      />
+      <OphFormFieldWrapper
+        label={t('yhteisvalinnan-hallinta.sijoittelu.ajastus.ajotiheys')}
+        renderInput={() => (
+          <OphSelect
+            value={frequency}
+            onChange={(e) => setFrequency(e.target.value)}
+            sx={{ width: '120px' }}
+            options={[
+              {
+                value: '6',
+                label: t(
+                  'yhteisvalinnan-hallinta.sijoittelu.ajastus.ajotiheys-tuntia',
+                  { amount: 6 },
+                ),
+              },
+              {
+                value: '12',
+                label: t(
+                  'yhteisvalinnan-hallinta.sijoittelu.ajastus.ajotiheys-tuntia',
+                  { amount: 12 },
+                ),
+              },
+              {
+                value: '24',
+                label: t(
+                  'yhteisvalinnan-hallinta.sijoittelu.ajastus.ajotiheys-tuntia',
+                  { amount: 24 },
+                ),
+              },
+            ]}
+          />
+        )}
+      />
+      <OphButton
+        onClick={upsertAjastettuSijoittelu}
+        variant="contained"
+        disabled={isNullish(frequency) || isNullish(scheduledDate)}
+      >
+        {scheduleInUse
+          ? t('yhteisvalinnan-hallinta.sijoittelu.ajastus.paivita')
+          : t('yhteisvalinnan-hallinta.sijoittelu.ajastus.kayta')}
+      </OphButton>
+      <OphButton
+        onClick={removeAjastettuSijoittelu}
+        variant="outlined"
+        disabled={!scheduleInUse}
+      >
+        {t('yhteisvalinnan-hallinta.sijoittelu.ajastus.poista')}
+      </OphButton>
+    </Box>
+  );
+};
+
+export const SijoitteluSchedule = ({ hakuOid }: { hakuOid: string }) => {
+  const { t } = useTranslations();
+
+  const { data: ajastettuSijoittelu } = useSuspenseQuery({
+    queryKey: ['ajastettu-sijoittelu', hakuOid],
+    queryFn: () => getAjastettuSijoittelu(hakuOid),
+  });
 
   return (
     <Box>
-      <Box>
-        <Typography variant="h3">
-          {t('yhteisvalinnan-hallinta.sijoittelu.ajastus.otsikko')}
-        </Typography>
+      <Typography variant="h3">
+        {t('yhteisvalinnan-hallinta.sijoittelu.ajastus.otsikko')}
+      </Typography>
+      <QuerySuspenseBoundary>
         <Typography
           variant="body1"
           sx={{ display: 'flex', alignItems: 'flex-start', marginTop: 1 }}
         >
           <InfoOutlined htmlColor={ophColors.blue2} />
-          {scheduleInUse
+          {ajastettuSijoittelu?.active
             ? t('yhteisvalinnan-hallinta.sijoittelu.ajastus.kaytossa')
             : t('yhteisvalinnan-hallinta.sijoittelu.ajastus.ei-kaytossa')}
         </Typography>
-      </Box>
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          columnGap: 2,
-          marginTop: 2,
-          alignItems: 'flex-end',
-        }}
-      >
-        <CalendarComponent
-          setDate={setScheduledDate}
-          selectedValue={scheduledDate}
-          label={t(
-            'yhteisvalinnan-hallinta.sijoittelu.ajastus.aloitusajankohta',
-          )}
+        <ScheduleContent
+          hakuOid={hakuOid}
+          ajastettuSijoittelu={ajastettuSijoittelu}
         />
-        <OphFormFieldWrapper
-          label={t('yhteisvalinnan-hallinta.sijoittelu.ajastus.ajotiheys')}
-          renderInput={() => (
-            <OphSelect
-              value={frequency}
-              onChange={(e) => setFrequency(e.target.value)}
-              sx={{ width: '120px' }}
-              options={[
-                {
-                  value: '6',
-                  label: t(
-                    'yhteisvalinnan-hallinta.sijoittelu.ajastus.ajotiheys-tuntia',
-                    { amount: 6 },
-                  ),
-                },
-                {
-                  value: '12',
-                  label: t(
-                    'yhteisvalinnan-hallinta.sijoittelu.ajastus.ajotiheys-tuntia',
-                    { amount: 12 },
-                  ),
-                },
-                {
-                  value: '24',
-                  label: t(
-                    'yhteisvalinnan-hallinta.sijoittelu.ajastus.ajotiheys-tuntia',
-                    { amount: 24 },
-                  ),
-                },
-              ]}
-            />
-          )}
-        />
-        <OphButton onClick={() => setScheduleInUse(true)} variant="contained">
-          {scheduleInUse
-            ? t('yhteisvalinnan-hallinta.sijoittelu.ajastus.paivita')
-            : t('yhteisvalinnan-hallinta.sijoittelu.ajastus.kayta')}
-        </OphButton>
-        <OphButton
-          onClick={() => setScheduleInUse(false)}
-          variant="outlined"
-          disabled={!scheduleInUse}
-        >
-          {t('yhteisvalinnan-hallinta.sijoittelu.ajastus.poista')}
-        </OphButton>
-      </Box>
+      </QuerySuspenseBoundary>
     </Box>
   );
 };

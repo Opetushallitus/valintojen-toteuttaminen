@@ -48,6 +48,9 @@ const SijoitteluButton = ({
         });
         setSijoitteluInProgress(false);
       }
+      if (!result) {
+        setSijoitteluInProgress(false);
+      }
       return result;
     },
     refetchInterval: 5000,

@@ -249,6 +249,12 @@ export const configuration = {
     `${DOMAIN}/sijoittelu-service/resources/koostesijoittelu/aktivoi?hakuOid=${hakuOid}`,
   sijoittelunStatus: ({ hakuOid }: { hakuOid: string }) =>
     `${DOMAIN}/sijoittelu-service/resources/koostesijoittelu/status/${hakuOid}`,
+  getAjastettuSijoittelu: ({ hakuOid }: { hakuOid: string }) =>
+    `${DOMAIN}/sijoittelu-service/resources/koostesijoittelu/jatkuva?hakuOid=${hakuOid}`,
+  createAjastettuSijoittelu: `${DOMAIN}/sijoittelu-service/resources/koostesijoittelu/jatkuva`,
+  updateAjastettuSijoittelu: `${DOMAIN}/sijoittelu-service/resources/koostesijoittelu/jatkuva/paivita`,
+  deleteAjastettuSijoittelu: ({ hakuOid }: { hakuOid: string }) =>
+    `${DOMAIN}/sijoittelu-service/resources/koostesijoittelu/jatkuva/poista?hakuOid=${hakuOid}`,
   // -------------------------------------------------------------------------------------------------
   // valintalaskenta-ui (vanha käyttöliittymä)
   // TODO: Poista kun korvattu uudella käyttöliittymällä
