@@ -29,7 +29,7 @@ export const SijoitteluContainer = ({ hakuOid }: { hakuOid: string }) => {
           hakuOid={hakuOid}
           sijoitteluRunning={sijoitteluStatus.tekeillaan}
         />
-        <SijoitteluSchedule />
+        <SijoitteluSchedule hakuOid={hakuOid} />
       </Box>
     </AccordionBox>
   );
