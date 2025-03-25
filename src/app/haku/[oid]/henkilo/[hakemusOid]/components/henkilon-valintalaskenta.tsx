@@ -4,7 +4,7 @@ import { Divider, Stack } from '@mui/material';
 import {
   LaskentaEventType,
   LaskentaState,
-  useLaskentaState,
+  useLaskentaMachine,
 } from '@/lib/state/laskenta-state';
 import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
 import useToaster from '@/hooks/useToaster';
@@ -28,7 +28,7 @@ export const HenkilonValintalaskenta = ({
   const { addToast } = useToaster();
   const { t } = useTranslations();
 
-  const [state, send, actorRef] = useLaskentaState({
+  const [state, send, actorRef] = useLaskentaMachine({
     haku,
     haunAsetukset,
     hakukohteet,

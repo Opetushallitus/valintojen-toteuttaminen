@@ -29,9 +29,11 @@ const LaskentaProgressBar = ({
 };
 
 export function ValintalaskentaStatus({
+  title,
   laskentaActorRef,
   progressType,
 }: {
+  title?: string;
   laskentaActorRef: LaskentaActorRef;
   progressType: 'bar' | 'spinner';
 }) {
@@ -57,7 +59,7 @@ export function ValintalaskentaStatus({
       return (
         <>
           <OphTypography variant="h4">
-            {t('valintalaskenta.valintalaskenta')}
+            {title ?? t('valintalaskenta.valintalaskenta')}
           </OphTypography>
           {progressType === 'bar' ? (
             <LaskentaProgressBar seurantaTiedot={seurantaTiedot} />

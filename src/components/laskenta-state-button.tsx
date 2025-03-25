@@ -25,6 +25,7 @@ export const LaskentaStateButton = ({
   send: (event: LaskentaEvent) => void;
 }) => {
   const { t } = useTranslations();
+  const canceling = state.context.canceling;
 
   switch (true) {
     case state.hasTag('stopped') && !state.hasTag('completed'):
@@ -43,7 +44,7 @@ export const LaskentaStateButton = ({
         <LaskentaButton
           key="keskeyta"
           variant="outlined"
-          disabled={state.hasTag('canceling')}
+          disabled={canceling}
           onClick={() => {
             send({ type: LaskentaEventType.CANCEL });
           }}

@@ -25,7 +25,7 @@ import { useHaunAsetukset } from '@/lib/ohjausparametrit/useHaunAsetukset';
 import { getLasketutHakukohteet } from '@/lib/valintalaskenta/valintalaskenta-service';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import useToaster from '@/hooks/useToaster';
-import { useLaskentaState } from '@/lib/state/laskenta-state';
+import { useLaskentaMachine } from '@/lib/state/laskenta-state';
 
 const StyledContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -77,7 +77,7 @@ const ValintaryhmaBody = ({
 }) => {
   const { addToast } = useToaster();
 
-  const [state, send, actorRef] = useLaskentaState({
+  const [state, send, actorRef] = useLaskentaMachine({
     haku,
     valintaryhma: valittuRyhma,
     haunAsetukset,
