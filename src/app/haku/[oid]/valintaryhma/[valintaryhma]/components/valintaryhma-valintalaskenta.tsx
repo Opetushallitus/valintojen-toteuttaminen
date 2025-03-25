@@ -38,6 +38,7 @@ export const ValintaryhmanValintalaskenta = ({
   return (
     <Stack spacing={2}>
       <ConfirmationModal
+        title={t('valinnanhallinta.varmista')}
         open={state.matches(LaskentaState.WAITING_CONFIRMATION)}
         onConfirm={() => send({ type: LaskentaEventType.CONFIRM })}
         onCancel={() => send({ type: LaskentaEventType.CANCEL })}

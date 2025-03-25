@@ -14,6 +14,7 @@ import { SuorittamattomatHakukohteet } from '@/components/suorittamattomat-hakuk
 import { ConfirmationModal } from '@/components/modals/confirmation-modal';
 import { LaskentaStateButton } from '@/components/laskenta-state-button';
 import { ValintalaskentaStatus } from '@/components/ValintalaskentaStatus';
+import { useTranslations } from '@/lib/localization/useTranslations';
 
 export const HenkilonValintalaskenta = ({
   haku,
@@ -25,6 +26,7 @@ export const HenkilonValintalaskenta = ({
   hakukohteet: Array<HenkilonHakukohdeTuloksilla>;
 }) => {
   const { addToast } = useToaster();
+  const { t } = useTranslations();
 
   const [state, send, actorRef] = useLaskentaState({
     haku,
@@ -36,6 +38,7 @@ export const HenkilonValintalaskenta = ({
   return (
     <Stack spacing={2}>
       <ConfirmationModal
+        title={t('valinnanhallinta.varmista')}
         open={state.matches(LaskentaState.WAITING_CONFIRMATION)}
         onConfirm={() => send({ type: LaskentaEventType.CONFIRM })}
         onCancel={() => send({ type: LaskentaEventType.CANCEL })}
