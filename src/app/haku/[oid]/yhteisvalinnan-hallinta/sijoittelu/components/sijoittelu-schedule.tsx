@@ -1,5 +1,6 @@
 import { CalendarComponent } from '@/components/calendar-component';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
+import useToaster from '@/hooks/useToaster';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import {
   createAjastettuSijoittelu,
@@ -28,6 +29,8 @@ const ScheduleContent = ({
   ajastettuSijoittelu: AjastettuSijoittelu | null;
 }) => {
   const { t } = useTranslations();
+  const { addToast } = useToaster();
+
   const [scheduledDate, setScheduledDate] = useState<Date | null>(
     ajastettuSijoittelu?.startTime ?? null,
   );
@@ -39,17 +42,52 @@ const ScheduleContent = ({
   );
 
   const upsertAjastettuSijoittelu = async () => {
-    if (scheduleInUse && scheduledDate) {
-      await updateAjastettuSijoittelu(hakuOid, scheduledDate, frequency);
-    } else if (scheduledDate) {
-      await createAjastettuSijoittelu(hakuOid, scheduledDate, frequency);
+    if (isNullish(scheduledDate)) {
+      return;
     }
-    setScheduleInUse(true);
+    try {
+      if (scheduleInUse) {
+        await updateAjastettuSijoittelu(hakuOid, scheduledDate, frequency);
+      } else {
+        await createAjastettuSijoittelu(hakuOid, scheduledDate, frequency);
+      }
+      setScheduleInUse(true);
+      addToast({
+        key: `upsertAjastettuSijoittelu-${hakuOid}`,
+        message: scheduleInUse
+          ? 'yhteisvalinnan-hallinta.sijoittelu.ajastus.paivitys-ok'
+          : 'yhteisvalinnan-hallinta.sijoittelu.ajastus.luonti-ok',
+        type: 'success',
+      });
+    } catch (e) {
+      console.error(e);
+      addToast({
+        key: `upsertAjastettuSijoitteluError-${hakuOid}`,
+        message: scheduleInUse
+          ? 'yhteisvalinnan-hallinta.sijoittelu.ajastus.paivitys-virhe'
+          : 'yhteisvalinnan-hallinta.sijoittelu.ajastus.luonti-virhe',
+        type: 'error',
+      });
+    }
   };
 
   const removeAjastettuSijoittelu = async () => {
-    await deleteAjastettuSijoittelu(hakuOid);
-    setScheduleInUse(false);
+    try {
+      await deleteAjastettuSijoittelu(hakuOid);
+      setScheduleInUse(false);
+      addToast({
+        key: `deleteAjastettuSijoittelu-${hakuOid}`,
+        message: 'yhteisvalinnan-hallinta.sijoittelu.ajastus.poisto-ok',
+        type: 'success',
+      });
+    } catch (e) {
+      console.error(e);
+      addToast({
+        key: `deleteAjastettuSijoittelu-${hakuOid}`,
+        message: 'yhteisvalinnan-hallinta.sijoittelu.ajastus.poisto-virhe',
+        type: 'error',
+      });
+    }
   };
 
   return (

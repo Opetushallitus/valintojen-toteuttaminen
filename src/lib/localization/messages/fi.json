@@ -592,7 +592,13 @@
         "poista": "Poista ajastus käytöstä",
         "paivita": "Päivitä ajastettu sijoittelu",
         "kaytossa": "Ajastettu sijoittelu on käytössä",
-        "ei-kaytossa": "Ajastettu sijoittelu ei ole käytössä"
+        "ei-kaytossa": "Ajastettu sijoittelu ei ole käytössä",
+        "luonti-ok": "Ajastettu sijoittelu otettu käyttöön",
+        "luonti-virhe": "Ajastetun sijoittelun käyttöönotto epäonnistui",
+        "paivitys-ok": "Ajastettu sijoittelu päivitetty",
+        "paivitys-virhe": "Ajastetun sijoittelun päivitys epäonnistui",
+        "poisto-ok": "Ajastettu sijoittelu poistettu käytöstä",
+        "poisto-virhe": "Ajastetun sijoittelun poisto käytöstä epäonnistui"
       }
     }
   }
