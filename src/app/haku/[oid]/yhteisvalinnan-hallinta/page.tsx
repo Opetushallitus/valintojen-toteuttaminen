@@ -198,7 +198,7 @@ export default function YhteisvalinnanHallintaPage(props: {
   const hakuOid = params.oid;
 
   return (
-    <Stack spacing={2} sx={{ margin: 4, width: '100%', overflowX: 'hidden' }}>
+    <Stack spacing={2} sx={{ margin: 4, overflowX: 'hidden' }}>
       <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
         <YhteisvalinnanHallintaContent hakuOid={hakuOid} />
       </QuerySuspenseBoundary>
