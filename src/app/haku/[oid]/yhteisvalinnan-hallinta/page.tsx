@@ -24,7 +24,7 @@ import {
 } from '@/lib/state/laskenta-state';
 import { styled } from '@/lib/theme';
 import { Stack } from '@mui/material';
-import { OphButton } from '@opetushallitus/oph-design-system';
+import { OphButton, OphLink } from '@opetushallitus/oph-design-system';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { use } from 'react';
 
@@ -162,10 +162,11 @@ const YhteisvalinnanHallintaContent = ({ hakuOid }: { hakuOid: string }) => {
           label={t('yleinen.lisatiedot')}
           value={
             <Stack direction="row" spacing={3}>
-              <ExternalLink
-                name={t('yleinen.haun-asetukset')}
+              <OphLink
                 href={configuration.haunAsetuksetLinkUrl({ hakuOid: haku.oid })}
-              />
+              >
+                {t('yleinen.haun-asetukset')}
+              </OphLink>
               <ExternalLink
                 name={t('yleinen.tarjonta')}
                 href={buildLinkToHaku(haku.oid)}
