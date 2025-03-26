@@ -5,7 +5,11 @@ import { useTranslations } from '@/lib/localization/useTranslations';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import Confirm from './confirm';
 import { toFormattedDateTimeString } from '@/lib/localization/translation-utils';
-import { LaskentaState, useLaskentaState } from '@/lib/state/laskenta-state';
+import {
+  LaskentaState,
+  useLaskentaError,
+  useLaskentaState,
+} from '@/lib/state/laskenta-state';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import { Valinnanvaihe } from '@/lib/valintaperusteet/valintaperusteet-types';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
@@ -22,7 +26,7 @@ type HallintaTableRowParams = {
   lastCalculated?: number | null;
 };
 
-const HallintaTableRow = ({
+export const HallintaTableRow = ({
   haku,
   hakukohde,
   haunAsetukset,
@@ -33,8 +37,15 @@ const HallintaTableRow = ({
 }: HallintaTableRowParams) => {
   const { t } = useTranslations();
 
-  const { state, startLaskentaWithParams, cancelLaskenta, confirmLaskenta } =
-    useLaskentaState();
+  const {
+    actorRef,
+    state,
+    startLaskentaWithParams,
+    cancelLaskenta,
+    confirmLaskenta,
+  } = useLaskentaState();
+
+  const laskentaError = useLaskentaError(actorRef);
 
   const start = () => {
     startLaskentaWithParams({
@@ -108,26 +119,18 @@ const HallintaTableRow = ({
           {vaihe.valisijoittelu && (
             <Box>{t('valinnanhallinta.onvalisijoittelu')}</Box>
           )}
-          {(state.context.laskenta.calculatedTime || lastCalculated) && (
+          {(state.context.calculatedTime || lastCalculated) && (
             <Box>
               {t('valinnanhallinta.laskettuviimeksi', {
                 pvm: toFormattedDateTimeString(
-                  state.context.laskenta.calculatedTime ?? lastCalculated ?? 0,
+                  state.context.calculatedTime ?? lastCalculated ?? 0,
                 ),
               })}
             </Box>
           )}
         </TableCell>
       </TableRow>
-      {(state.context.laskenta.errorMessage != null || state.context.error) && (
-        <ErrorRow
-          errorMessage={
-            state.context.laskenta.errorMessage ?? '' + state.context.error
-          }
-        />
-      )}
+      {laskentaError && <ErrorRow errorMessage={laskentaError} />}
     </>
   );
 };
-
-export default HallintaTableRow;

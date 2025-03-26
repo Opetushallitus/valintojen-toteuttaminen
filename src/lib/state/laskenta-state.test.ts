@@ -65,12 +65,8 @@ describe('Laskenta state', async () => {
         [LaskentaState.PROCESSING]: LaskentaState.PROCESSING_WAITING,
       }),
     );
-    expect(state.context.laskenta.runningLaskenta?.loadingUrl).toEqual(
-      LASKENTA_URL,
-    );
-    expect(
-      state.context.laskenta.runningLaskenta?.startedNewLaskenta,
-    ).toBeTruthy();
+    expect(state.context.startedLaskenta?.loadingUrl).toEqual(LASKENTA_URL);
+    expect(state.context.startedLaskenta?.startedNewLaskenta).toBeTruthy();
     expect(state.context.seurantaTiedot?.tila).toEqual('MENEILLAAN');
     expect(state.context.seurantaTiedot?.hakukohteitaYhteensa).toEqual(1);
     expect(state.context.seurantaTiedot?.hakukohteitaValmiina).toEqual(0);
@@ -94,17 +90,13 @@ describe('Laskenta state', async () => {
     const state = await waitFor(actor, (state) =>
       state.matches(LaskentaState.IDLE),
     );
-    expect(state.context.laskenta.runningLaskenta?.loadingUrl).toEqual(
-      LASKENTA_URL,
-    );
-    expect(
-      state.context.laskenta.runningLaskenta?.startedNewLaskenta,
-    ).toBeTruthy();
+    expect(state.context.startedLaskenta?.loadingUrl).toEqual(LASKENTA_URL);
+    expect(state.context.startedLaskenta?.startedNewLaskenta).toBeTruthy();
     expect(state.context.seurantaTiedot?.tila).toEqual('VALMIS');
     expect(state.context.seurantaTiedot?.hakukohteitaYhteensa).toEqual(1);
     expect(state.context.seurantaTiedot?.hakukohteitaValmiina).toEqual(1);
     expect(state.context.seurantaTiedot?.hakukohteitaKeskeytetty).toEqual(0);
-    expect(state.context.laskenta.calculatedTime).not.toBeNull();
+    expect(state.context.calculatedTime).not.toBeNull();
   });
 
   test('starts calculation but stops to error', async () => {
@@ -131,17 +123,13 @@ describe('Laskenta state', async () => {
     const state = await waitFor(actor, (state) =>
       state.matches(LaskentaState.IDLE),
     );
-    expect(state.context.laskenta.runningLaskenta?.loadingUrl).toEqual(
-      LASKENTA_URL,
-    );
-    expect(
-      state.context.laskenta.runningLaskenta?.startedNewLaskenta,
-    ).toBeTruthy();
+    expect(state.context.startedLaskenta?.loadingUrl).toEqual(LASKENTA_URL);
+    expect(state.context.startedLaskenta?.startedNewLaskenta).toBeTruthy();
     expect(state.context.seurantaTiedot?.tila).toEqual('VALMIS');
     expect(state.context.seurantaTiedot?.hakukohteitaYhteensa).toEqual(1);
     expect(state.context.seurantaTiedot?.hakukohteitaValmiina).toEqual(0);
     expect(state.context.seurantaTiedot?.hakukohteitaKeskeytetty).toEqual(1);
-    expect(state.context.laskenta.calculatedTime).toBeUndefined();
+    expect(state.context.calculatedTime).toBeNull();
   });
 });
 

@@ -12,7 +12,7 @@ import {
   HakukohteenHakijaryhma,
   JarjestyskriteeriTila,
   LaskentaSummary,
-  LaskentaStart,
+  StartedLaskentaInfo,
   ValintalaskennanTulosValinnanvaiheModel,
   SeurantaTiedot,
   LaskettuHakukohde,
@@ -127,7 +127,7 @@ export const kaynnistaLaskenta = async ({
   valinnanvaiheTyyppi?: ValinnanvaiheTyyppi;
   sijoitellaankoHaunHakukohteetLaskennanYhteydessa: boolean;
   valinnanvaiheNumero?: number;
-}): Promise<LaskentaStart> => {
+}): Promise<StartedLaskentaInfo> => {
   let laskentaTyyppi: LaskentaTyyppi = 'HAKU';
   if (valintaryhma) {
     laskentaTyyppi = 'VALINTARYHMA';
