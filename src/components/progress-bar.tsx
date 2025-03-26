@@ -20,6 +20,7 @@ export const ProgressBar = ({ value }: { value: number }) => {
         height: PROGRESSBAR_HEIGHT,
         border: `1px solid ${ophColors.grey300}`,
         maxWidth: '700px',
+        width: '100%',
         borderRadius: '2px',
         '&:before, &:after': {
           position: 'absolute',

@@ -15,27 +15,16 @@ import { getHakukohteetQueryOptions } from '@/lib/kouta/kouta-service';
 import { Haku } from '@/lib/kouta/kouta-types';
 import { useHaku } from '@/lib/kouta/useHaku';
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { withDefaultProps } from '@/lib/mui-utils';
 import { useHaunAsetukset } from '@/lib/ohjausparametrit/useHaunAsetukset';
 import {
   LaskentaState,
   useLaskentaState,
   useLaskentaTitle,
 } from '@/lib/state/laskenta-state';
-import { styled } from '@/lib/theme';
 import { Stack } from '@mui/material';
 import { OphButton, OphLink } from '@opetushallitus/oph-design-system';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { use } from 'react';
-
-const LaskentaButton = withDefaultProps(
-  styled(OphButton)({
-    alignSelf: 'flex-start',
-  }),
-  {
-    variant: 'contained',
-  },
-);
 
 const ValintalaskentaAccordionContent = ({ haku }: { haku: Haku }) => {
   const { t } = useTranslations();
@@ -60,7 +49,7 @@ const ValintalaskentaAccordionContent = ({ haku }: { haku: Haku }) => {
   const laskentaTitle = useLaskentaTitle(actorRef);
 
   return (
-    <Stack spacing={2}>
+    <Stack spacing={2} alignItems="flex-start">
       <Stack direction="row" justifyContent="flex-start" spacing={3}>
         <OphButton
           disabled={state.hasTag('started')}
@@ -123,18 +112,18 @@ const ValintalaskentaAccordionContent = ({ haku }: { haku: Haku }) => {
         />
       )}
       {state.hasTag('started') && (
-        <LaskentaButton
+        <OphButton
           variant="outlined"
           disabled={isCanceling || state.matches(LaskentaState.STARTING)}
           onClick={cancelLaskenta}
         >
           {t('valintalaskenta.keskeyta-valintalaskenta')}
-        </LaskentaButton>
+        </OphButton>
       )}
       {isLaskentaResultVisible && (
-        <LaskentaButton key="sulje" variant="outlined" onClick={resetLaskenta}>
+        <OphButton variant="outlined" onClick={resetLaskenta}>
           {t('valintalaskenta.sulje-laskennan-tiedot')}
-        </LaskentaButton>
+        </OphButton>
       )}
     </Stack>
   );
