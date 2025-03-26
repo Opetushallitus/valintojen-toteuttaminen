@@ -470,6 +470,10 @@ const useLaskentaMachine = () => {
   return useMachine(laskentaMachine);
 };
 
+const selectIsLaskentaResultVisible = (state: LaskentaMachineSnapshot) =>
+  state.hasTag('stopped') &&
+  (!isEmpty(state.context.laskenta) || state.context.error);
+
 export const useLaskentaApi = (actorRef: LaskentaActorRef) => {
   const { send } = actorRef;
 
@@ -478,7 +482,7 @@ export const useLaskentaApi = (actorRef: LaskentaActorRef) => {
     actorRef,
     isLaskentaResultVisible: useSelector(
       actorRef,
-      (state) => state.hasTag('stopped') && !isEmpty(state.context.laskenta),
+      selectIsLaskentaResultVisible,
     ),
     isCanceling: useSelector(actorRef, (state) => state.context.canceling),
     setLaskentaParams: useCallback(
@@ -527,7 +531,6 @@ export const useLaskentaApi = (actorRef: LaskentaActorRef) => {
 
 export const useLaskentaState = () => {
   const [, , actorRef] = useLaskentaMachine();
-
   return useLaskentaApi(actorRef);
 };
 
@@ -537,41 +540,32 @@ export const useLaskentaTitle = (actorRef: LaskentaActorRef) => {
     (state) => state.context.oldLaskentaParams,
   );
 
-  let laskentaTyyppi = 'valintalaskenta.valintalaskenta';
-
   if (params?.hakukohteet == null) {
     if (params?.valinnanvaiheTyyppi === ValinnanvaiheTyyppi.VALINTAKOE) {
-      laskentaTyyppi = 'yhteisvalinnan-hallinta.valintakoelaskenta-haulle';
+      return 'yhteisvalinnan-hallinta.valintakoelaskenta-haulle';
     } else if (params?.valinnanvaiheNumber === -1) {
-      laskentaTyyppi = 'yhteisvalinnan-hallinta.valintalaskenta-haulle';
+      return 'yhteisvalinnan-hallinta.valintalaskenta-haulle';
     } else {
-      laskentaTyyppi = 'yhteisvalinnan-hallinta.kaikki-laskennat-haulle';
+      return 'yhteisvalinnan-hallinta.kaikki-laskennat-haulle';
     }
   }
-  return laskentaTyyppi;
+  return 'valintalaskenta.valintalaskenta';
 };
 
 export const useLaskentaError = (actorRef: LaskentaActorRef) => {
-  const error = useSelector(actorRef, (state) => state.context.error);
-
-  const state = useSelector(actorRef, (s) => s);
+  const { error, isErrorVisible, withUnfinishedHakukohteet, summaryMessage } =
+    useSelector(actorRef, (state) => ({
+      isErrorVisible: selectIsLaskentaResultVisible(state),
+      laskenta: state.context.laskenta,
+      error: state.context.error,
+      withUnfinishedHakukohteet: hasUnfinishedHakukohteet(state.context),
+      summaryMessage: state.context.summary?.ilmoitus?.otsikko,
+    }));
 
   const { t } = useTranslations();
-
-  const withUnfinishedHakukohteet = useSelector(actorRef, (s) =>
-    hasUnfinishedHakukohteet(s.context),
-  );
-
-  const summaryMessage = useSelector(
-    actorRef,
-    (s) => s.context.summary?.ilmoitus?.otsikko,
-  );
   const completionErrorsMessage = withUnfinishedHakukohteet
     ? t('valintalaskenta.valintalaskenta-valmis-virheita')
     : null;
-
-  const isErrorVisible =
-    state.hasTag('stopped') && (!isEmpty(state.context.laskenta) || error);
 
   return isErrorVisible
     ? (error?.message ?? summaryMessage ?? completionErrorsMessage ?? undefined)
