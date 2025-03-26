@@ -4,10 +4,7 @@ import { AccordionBoxTitle } from '@/components/accordion-box-title';
 import { FullClientSpinner } from '@/components/client-spinner';
 import { ExternalLink } from '@/components/external-link';
 import { LabeledInfoItem } from '@/components/labeled-info-item';
-import { ConfirmationModal } from '@/components/modals/confirmation-modal';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
-import { SuorittamattomatHakukohteet } from '@/components/suorittamattomat-hakukohteet';
-import { ValintalaskentaStatus } from '@/components/ValintalaskentaStatus';
 import { useUserPermissions } from '@/hooks/useUserPermissions';
 import { buildLinkToHaku } from '@/lib/ataru/ataru-service';
 import { configuration } from '@/lib/configuration';
@@ -16,15 +13,12 @@ import { Haku } from '@/lib/kouta/kouta-types';
 import { useHaku } from '@/lib/kouta/useHaku';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { useHaunAsetukset } from '@/lib/ohjausparametrit/useHaunAsetukset';
-import {
-  LaskentaState,
-  useLaskentaState,
-  useLaskentaTitle,
-} from '@/lib/state/laskenta-state';
+import { useLaskentaState } from '@/lib/state/laskenta-state';
 import { Stack } from '@mui/material';
 import { OphButton, OphLink } from '@opetushallitus/oph-design-system';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { use } from 'react';
+import { ValintalaskentaResult } from '@/components/ValintalaskentaResult';
 
 const ValintalaskentaAccordionContent = ({ haku }: { haku: Haku }) => {
   const { t } = useTranslations();
@@ -35,18 +29,7 @@ const ValintalaskentaAccordionContent = ({ haku }: { haku: Haku }) => {
     getHakukohteetQueryOptions(haku.oid, userPermissions),
   );
 
-  const {
-    actorRef,
-    state,
-    startLaskentaWithParams,
-    confirmLaskenta,
-    cancelLaskenta,
-    resetLaskenta,
-    isCanceling,
-    isLaskentaResultVisible,
-  } = useLaskentaState();
-
-  const laskentaTitle = useLaskentaTitle(actorRef);
+  const { actorRef, state, startLaskentaWithParams } = useLaskentaState();
 
   return (
     <Stack spacing={2} alignItems="flex-start">
@@ -93,38 +76,11 @@ const ValintalaskentaAccordionContent = ({ haku }: { haku: Haku }) => {
           {t('yhteisvalinnan-hallinta.kaikki-laskennat-haulle')}
         </OphButton>
       </Stack>
-      <ConfirmationModal
-        title={t('valinnanhallinta.varmista')}
-        open={state.matches(LaskentaState.WAITING_CONFIRMATION)}
-        onConfirm={confirmLaskenta}
-        onCancel={cancelLaskenta}
-      />
-      <ValintalaskentaStatus
-        title={t(laskentaTitle)}
-        laskentaActorRef={actorRef}
+      <ValintalaskentaResult
+        actorRef={actorRef}
+        hakukohteet={hakukohteet}
         progressType="bar"
       />
-      {isLaskentaResultVisible && (
-        <SuorittamattomatHakukohteet
-          actorRef={actorRef}
-          hakukohteet={hakukohteet}
-          onlyErrors={true}
-        />
-      )}
-      {state.hasTag('started') && (
-        <OphButton
-          variant="outlined"
-          disabled={isCanceling || state.matches(LaskentaState.STARTING)}
-          onClick={cancelLaskenta}
-        >
-          {t('valintalaskenta.keskeyta-valintalaskenta')}
-        </OphButton>
-      )}
-      {isLaskentaResultVisible && (
-        <OphButton variant="outlined" onClick={resetLaskenta}>
-          {t('valintalaskenta.sulje-laskennan-tiedot')}
-        </OphButton>
-      )}
     </Stack>
   );
 };

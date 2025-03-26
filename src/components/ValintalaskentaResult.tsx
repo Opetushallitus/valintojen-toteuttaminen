@@ -1,0 +1,73 @@
+'use client';
+import { ConfirmationModal } from '@/components/modals/confirmation-modal';
+import { SuorittamattomatHakukohteet } from '@/components/suorittamattomat-hakukohteet';
+import { ValintalaskentaStatus } from '@/components/ValintalaskentaStatus';
+import { Hakukohde } from '@/lib/kouta/kouta-types';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import {
+  LaskentaActorRef,
+  useLaskentaApi,
+  useLaskentaTitle,
+  LaskentaState,
+} from '@/lib/state/laskenta-state';
+import { OphButton } from '@opetushallitus/oph-design-system';
+
+export const ValintalaskentaResult = ({
+  actorRef,
+  hakukohteet,
+  progressType,
+}: {
+  actorRef: LaskentaActorRef;
+  hakukohteet: Array<Hakukohde>;
+  progressType: 'bar' | 'spinner';
+}) => {
+  const { t } = useTranslations();
+
+  const {
+    state,
+    isCanceling,
+    resetLaskenta,
+    confirmLaskenta,
+    cancelLaskenta,
+    isLaskentaResultVisible,
+  } = useLaskentaApi(actorRef);
+
+  const laskentaTitle = useLaskentaTitle(actorRef);
+
+  return (
+    <>
+      <ConfirmationModal
+        title={t('valinnanhallinta.varmista')}
+        open={state.matches(LaskentaState.WAITING_CONFIRMATION)}
+        onConfirm={confirmLaskenta}
+        onCancel={cancelLaskenta}
+      />
+      <ValintalaskentaStatus
+        title={t(laskentaTitle)}
+        laskentaActorRef={actorRef}
+        progressType={progressType}
+      />
+      {state.hasTag('started') && (
+        <OphButton
+          variant="outlined"
+          disabled={isCanceling || state.matches(LaskentaState.STARTING)}
+          onClick={cancelLaskenta}
+        >
+          {t('valintalaskenta.keskeyta-valintalaskenta')}
+        </OphButton>
+      )}
+      {isLaskentaResultVisible && (
+        <>
+          <OphButton variant="outlined" onClick={resetLaskenta}>
+            {t('valintalaskenta.sulje-laskennan-tiedot')}
+          </OphButton>
+          <SuorittamattomatHakukohteet
+            actorRef={actorRef}
+            hakukohteet={hakukohteet}
+            onlyErrors={true}
+          />
+        </>
+      )}
+    </>
+  );
+};

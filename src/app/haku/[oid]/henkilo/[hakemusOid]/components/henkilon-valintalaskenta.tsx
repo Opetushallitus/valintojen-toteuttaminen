@@ -1,16 +1,13 @@
 'use client';
 
 import { Divider, Stack } from '@mui/material';
-import { LaskentaState, useLaskentaState } from '@/lib/state/laskenta-state';
+import { useLaskentaState } from '@/lib/state/laskenta-state';
 import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { Haku } from '@/lib/kouta/kouta-types';
-import { SuorittamattomatHakukohteet } from '@/components/suorittamattomat-hakukohteet';
-import { ConfirmationModal } from '@/components/modals/confirmation-modal';
-import { LaskentaStateButton } from '@/components/laskenta-state-button';
-import { ValintalaskentaStatus } from '@/components/ValintalaskentaStatus';
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { useEffect } from 'react';
+import { OphButton } from '@opetushallitus/oph-design-system';
+import { ValintalaskentaResult } from '@/components/ValintalaskentaResult';
 
 export const HenkilonValintalaskenta = ({
   haku,
@@ -23,38 +20,29 @@ export const HenkilonValintalaskenta = ({
 }) => {
   const { t } = useTranslations();
 
-  const {
-    actorRef,
-    state,
-    confirmLaskenta,
-    cancelLaskenta,
-    setLaskentaParams,
-  } = useLaskentaState();
-
-  useEffect(() => {
-    setLaskentaParams({
-      haku,
-      haunAsetukset,
-      hakukohteet,
-    });
-  }, [setLaskentaParams, haku, haunAsetukset, hakukohteet]);
+  const { actorRef, state, startLaskentaWithParams } = useLaskentaState();
 
   return (
     <Stack spacing={2}>
-      <ConfirmationModal
-        title={t('valinnanhallinta.varmista')}
-        open={state.matches(LaskentaState.WAITING_CONFIRMATION)}
-        onConfirm={confirmLaskenta}
-        onCancel={cancelLaskenta}
-      />
-      <ValintalaskentaStatus laskentaActorRef={actorRef} progressType="bar" />
-      <LaskentaStateButton actorRef={actorRef} />
-      {state.hasTag('completed') && (
-        <SuorittamattomatHakukohteet
-          actorRef={actorRef}
-          hakukohteet={hakukohteet}
-        />
+      {state.hasTag('stopped') && !state.hasTag('completed') && (
+        <OphButton
+          variant="contained"
+          onClick={() =>
+            startLaskentaWithParams({
+              haku,
+              haunAsetukset,
+              hakukohteet,
+            })
+          }
+        >
+          {t('valintalaskenta.suorita-valintalaskenta')}
+        </OphButton>
       )}
+      <ValintalaskentaResult
+        actorRef={actorRef}
+        hakukohteet={hakukohteet}
+        progressType="bar"
+      />
       {(state.hasTag('started') || state.hasTag('completed')) && (
         <Divider sx={{ paddingTop: 1 }} />
       )}
