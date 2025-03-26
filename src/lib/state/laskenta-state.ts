@@ -19,7 +19,7 @@ import {
   StartedLaskentaInfo,
   SeurantaTiedot,
 } from '@/lib/types/laskenta-types';
-import { isNumber, prop } from 'remeda';
+import { isNumber } from 'remeda';
 import { useCallback, useMemo } from 'react';
 import { sijoitellaankoHaunHakukohteetLaskennanYhteydessa } from '@/lib/kouta/kouta-service';
 import { useMachine, useSelector } from '@xstate/react';
@@ -45,15 +45,15 @@ export type LaskentaContext = {
    *
    */
   canceling: boolean;
-  oldLaskentaParams?: LaskentaParams;
-  startLaskentaParams?: LaskentaParams;
+  resultLaskentaParams?: LaskentaParams;
+  laskentaParams?: LaskentaParams;
   seurantaTiedot: SeurantaTiedot | null;
   /**
    * Laskennan yhteenveto, jos laskenta saatiin päätökseen
    */
   summary: LaskentaSummary | null;
   /**
-   * Virhe-olio, jos laskennassa tai sen pyynnöissä tapahtui virhe
+   * Mahdollinen virheolio. Jos tämä on asetettu, laskenta ei ole valmistunut
    */
   error: Error | null;
 };
@@ -94,8 +94,6 @@ export type SetLaskentaParamsEvent = {
   params: LaskentaParams;
 };
 
-export type LaskentaStateTags = 'stopped' | 'started' | 'completed' | 'error';
-
 export type LaskentaMachineSnapshot = SnapshotFrom<
   ReturnType<typeof createLaskentaMachine>
 >;
@@ -108,34 +106,14 @@ const hasUnfinishedHakukohteet = (context: LaskentaContext) =>
   isNumber(context.seurantaTiedot?.hakukohteitaKeskeytetty) &&
   context.seurantaTiedot.hakukohteitaKeskeytetty > 0;
 
-const getLaskentaKey = (params?: LaskentaParams) => {
-  if (params) {
-    if (params.hakukohteet == null) {
-      return `haku_${params.haku.oid}`;
-    } else {
-      const valinnanvaiheSelected: boolean = Boolean(params.valinnanvaiheNimi);
-
-      const keyPartValinnanvaihe = valinnanvaiheSelected
-        ? `-valinnanvaihe_${params.valinnanvaiheNumber ?? 0}`
-        : '';
-      return params.valintaryhma
-        ? `haku_${params.haku.oid}-valintaryhma_${params.valintaryhma.oid}`
-        : `haku_${params.haku.oid}-hakukohteet_${params.hakukohteet?.map(prop('oid')).join('_')}${keyPartValinnanvaihe}`;
-    }
-  }
-  return '';
-};
-
 const initialContext: LaskentaContext = {
   startedLaskenta: undefined,
   calculatedTime: null,
   canceling: false,
-  oldLaskentaParams: undefined,
-  startLaskentaParams: undefined,
+  resultLaskentaParams: undefined,
+  laskentaParams: undefined,
   seurantaTiedot: null,
-  // Laskennan yhteenveto
   summary: null,
-  // Mahdollinen virheolio. Jos tämä on asetettu, laskenta ei ole valmistunut
   error: null,
 };
 
@@ -143,7 +121,7 @@ export const createLaskentaMachine = (addToast: (toast: Toast) => void) => {
   return setup({
     types: {
       context: {} as LaskentaContext,
-      tags: 'stopped' as LaskentaStateTags,
+      tags: 'stopped' as 'stopped' | 'started' | 'completed' | 'error',
       events: {} as LaskentaEvent,
     },
     actors: {
@@ -215,7 +193,7 @@ export const createLaskentaMachine = (addToast: (toast: Toast) => void) => {
         on: {
           [LaskentaEventType.SET_PARAMS]: {
             actions: assign({
-              startLaskentaParams: ({ event }) => event.params,
+              laskentaParams: ({ event }) => event.params,
             }),
           },
           [LaskentaEventType.START]: {
@@ -256,12 +234,12 @@ export const createLaskentaMachine = (addToast: (toast: Toast) => void) => {
         tags: ['started'],
         entry: assign(({ context }) => ({
           ...initialContext,
-          startLaskentaParams: context.startLaskentaParams,
-          oldLaskentaParams: context.startLaskentaParams,
+          laskentaParams: context.laskentaParams,
+          resultLaskentaParams: context.laskentaParams,
         })),
         invoke: {
           src: 'startLaskenta',
-          input: ({ context }) => context?.startLaskentaParams,
+          input: ({ context }) => context?.laskentaParams,
           onDone: {
             target: LaskentaState.PROCESSING,
             actions: assign({
@@ -350,8 +328,8 @@ export const createLaskentaMachine = (addToast: (toast: Toast) => void) => {
             target: '#COMPLETED',
             actions: [
               assign({
-                summary: ({ event }) => event.output,
                 calculatedTime: new Date(),
+                summary: ({ event }) => event.output,
                 seurantaTiedot: ({ event, context }) => {
                   const hakukohteitaYhteensa =
                     context.seurantaTiedot?.hakukohteitaYhteensa ?? 0;
@@ -360,8 +338,6 @@ export const createLaskentaMachine = (addToast: (toast: Toast) => void) => {
                     event.output?.hakukohteet?.filter(
                       (hk) => hk.tila === 'VALMIS',
                     )?.length ?? 0;
-                  const hakukohteitaKeskeytetty =
-                    hakukohteitaYhteensa - hakukohteitaValmiina;
 
                   return {
                     ...(context.seurantaTiedot ?? {
@@ -369,29 +345,31 @@ export const createLaskentaMachine = (addToast: (toast: Toast) => void) => {
                     }),
                     tila: event.output.tila,
                     hakukohteitaValmiina,
-                    hakukohteitaKeskeytetty,
                     hakukohteitaYhteensa,
+                    hakukohteitaKeskeytetty:
+                      hakukohteitaYhteensa - hakukohteitaValmiina,
                   };
                 },
               }),
               ({ context }) => {
                 if (!hasUnfinishedHakukohteet(context)) {
                   const valinnanvaiheSelected = Boolean(
-                    context.startLaskentaParams?.valinnanvaiheNimi,
+                    context.laskentaParams?.valinnanvaiheNimi,
                   );
-                  const key = `laskenta-completed-for-${getLaskentaKey(
-                    context.startLaskentaParams,
-                  )}`;
                   const message = valinnanvaiheSelected
                     ? 'valinnanhallinta.valmisvalinnanvaihe'
                     : 'valinnanhallinta.valmis';
                   const messageParams = valinnanvaiheSelected
                     ? {
-                        nimi:
-                          context.startLaskentaParams?.valinnanvaiheNimi ?? '',
+                        nimi: context.laskentaParams?.valinnanvaiheNimi ?? '',
                       }
                     : undefined;
-                  addToast({ key, message, type: 'success', messageParams });
+                  addToast({
+                    key: 'laskenta-success',
+                    message,
+                    type: 'success',
+                    messageParams,
+                  });
                 }
               },
             ],
@@ -537,7 +515,7 @@ export const useLaskentaState = () => {
 export const useLaskentaTitle = (actorRef: LaskentaActorRef) => {
   const params = useSelector(
     actorRef,
-    (state) => state.context.oldLaskentaParams,
+    (state) => state.context.resultLaskentaParams,
   );
 
   if (params?.hakukohteet == null) {
