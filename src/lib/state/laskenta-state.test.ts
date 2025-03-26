@@ -3,7 +3,7 @@ import {
   createLaskentaMachine,
   LaskentaEventType,
   LaskentaState,
-  StartLaskentaParams,
+  LaskentaParams,
 } from './laskenta-state';
 import { client } from '@/lib/http-client';
 import { Tila } from '@/lib/kouta/kouta-types';
@@ -13,7 +13,7 @@ import { range } from 'remeda';
 const LASKENTA_URL = 'urlmistatulosladataan';
 
 describe('Laskenta state', async () => {
-  const LASKENTAPARAMS: StartLaskentaParams = {
+  const LASKENTAPARAMS: LaskentaParams = {
     haku: {
       oid: 'haku-oid',
       alkamisKausiKoodiUri: '',
@@ -41,15 +41,16 @@ describe('Laskenta state', async () => {
     sijoitellaanko: false,
   };
 
-  let actor = createActor(createLaskentaMachine(LASKENTAPARAMS, vi.fn()));
+  let actor = createActor(createLaskentaMachine(vi.fn()));
 
   beforeEach(() => {
     actor.start();
+    actor.send({ type: LaskentaEventType.SET_PARAMS, params: LASKENTAPARAMS });
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
-    actor = createActor(createLaskentaMachine(LASKENTAPARAMS, vi.fn()));
+    actor = createActor(createLaskentaMachine(vi.fn()));
   });
 
   test('starts calculation and initializes polling', async () => {

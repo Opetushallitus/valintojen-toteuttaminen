@@ -41,7 +41,6 @@ const ValintalaskentaAccordionContent = ({ haku }: { haku: Haku }) => {
   const { t } = useTranslations();
 
   const { data: userPermissions } = useUserPermissions();
-
   const { data: haunAsetukset } = useHaunAsetukset({ hakuOid: haku.oid });
   const { data: hakukohteet } = useSuspenseQuery(
     getHakukohteetQueryOptions(haku.oid, userPermissions),
@@ -50,17 +49,13 @@ const ValintalaskentaAccordionContent = ({ haku }: { haku: Haku }) => {
   const {
     actorRef,
     state,
-    startLaskenta,
-    confirm,
-    cancel,
-    reset,
+    startLaskentaWithParams,
+    confirmLaskenta,
+    cancelLaskenta,
+    resetLaskenta,
     isCanceling,
     isLaskentaResultVisible,
-  } = useLaskentaState({
-    haku,
-    haunAsetukset,
-    hakukohteet: null,
-  });
+  } = useLaskentaState();
 
   const laskentaTitle = useLaskentaTitle(actorRef);
 
@@ -71,7 +66,7 @@ const ValintalaskentaAccordionContent = ({ haku }: { haku: Haku }) => {
           disabled={state.hasTag('started')}
           variant="contained"
           onClick={() =>
-            startLaskenta({
+            startLaskentaWithParams({
               haku,
               haunAsetukset,
               hakukohteet: null,
@@ -85,7 +80,7 @@ const ValintalaskentaAccordionContent = ({ haku }: { haku: Haku }) => {
           disabled={state.hasTag('started')}
           variant="contained"
           onClick={() =>
-            startLaskenta({
+            startLaskentaWithParams({
               haku,
               haunAsetukset,
               hakukohteet: null,
@@ -99,7 +94,7 @@ const ValintalaskentaAccordionContent = ({ haku }: { haku: Haku }) => {
           disabled={state.hasTag('started')}
           variant="contained"
           onClick={() =>
-            startLaskenta({
+            startLaskentaWithParams({
               haku,
               haunAsetukset,
               hakukohteet: null,
@@ -112,8 +107,8 @@ const ValintalaskentaAccordionContent = ({ haku }: { haku: Haku }) => {
       <ConfirmationModal
         title={t('valinnanhallinta.varmista')}
         open={state.matches(LaskentaState.WAITING_CONFIRMATION)}
-        onConfirm={confirm}
-        onCancel={cancel}
+        onConfirm={confirmLaskenta}
+        onCancel={cancelLaskenta}
       />
       <ValintalaskentaStatus
         title={t(laskentaTitle)}
@@ -131,13 +126,13 @@ const ValintalaskentaAccordionContent = ({ haku }: { haku: Haku }) => {
         <LaskentaButton
           variant="outlined"
           disabled={isCanceling || state.matches(LaskentaState.STARTING)}
-          onClick={cancel}
+          onClick={cancelLaskenta}
         >
           {t('valintalaskenta.keskeyta-valintalaskenta')}
         </LaskentaButton>
       )}
       {isLaskentaResultVisible && (
-        <LaskentaButton key="sulje" variant="outlined" onClick={reset}>
+        <LaskentaButton key="sulje" variant="outlined" onClick={resetLaskenta}>
           {t('valintalaskenta.sulje-laskennan-tiedot')}
         </LaskentaButton>
       )}

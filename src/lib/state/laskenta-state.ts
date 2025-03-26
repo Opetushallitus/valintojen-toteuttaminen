@@ -19,8 +19,8 @@ import {
   LaskentaStart,
   SeurantaTiedot,
 } from '@/lib/types/laskenta-types';
-import { isEmpty, prop } from 'remeda';
-import { useMemo } from 'react';
+import { isEmpty, isNumber, prop } from 'remeda';
+import { useCallback, useMemo } from 'react';
 import { sijoitellaankoHaunHakukohteetLaskennanYhteydessa } from '@/lib/kouta/kouta-service';
 import { useMachine, useSelector } from '@xstate/react';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
@@ -34,11 +34,7 @@ export type Laskenta = {
   runningLaskenta?: LaskentaStart;
 };
 
-const laskentaReducer = (state: Laskenta, action: Laskenta): Laskenta => {
-  return Object.assign({}, state, action);
-};
-
-export type StartLaskentaParams = {
+export type LaskentaParams = {
   haku: Haku;
   hakukohteet: Array<Hakukohde> | null;
   valintaryhma?: ValintaryhmaHakukohteilla;
@@ -51,10 +47,16 @@ export type StartLaskentaParams = {
 export type LaskentaContext = {
   laskenta: Laskenta;
   canceling: boolean;
-  oldLaskentaParams?: StartLaskentaParams;
-  startLaskentaParams: StartLaskentaParams;
+  oldLaskentaParams?: LaskentaParams;
+  startLaskentaParams?: LaskentaParams;
   seurantaTiedot: SeurantaTiedot | null;
+  /**
+   * Laskennan yhteenveto, jos laskenta saatiin päätökseen
+   */
   summary: LaskentaSummary | null;
+  /**
+   * Virhe-olio, jos laskennassa tai sen pyynnöissä tapahtui virhe
+   */
   error: Error | null;
 };
 
@@ -75,7 +77,8 @@ export enum LaskentaState {
   CANCELING = 'CANCELING',
 }
 
-export enum LaskentaEventType {
+export const enum LaskentaEventType {
+  SET_PARAMS = 'SET_PARAMS',
   START = 'START',
   CONFIRM = 'CONFIRM',
   CANCEL = 'CANCEL',
@@ -84,13 +87,13 @@ export enum LaskentaEventType {
 
 export type LaskentaEvent =
   | {
-      type: 'CONFIRM' | 'CANCEL' | 'RESET_RESULTS';
+      type: 'START' | 'CONFIRM' | 'CANCEL' | 'RESET_RESULTS';
     }
-  | StartLaskentaWithParamsEvent;
+  | SetLaskentaParamsEvent;
 
-export type StartLaskentaWithParamsEvent = {
-  type: LaskentaEventType.START;
-  params?: StartLaskentaParams;
+export type SetLaskentaParamsEvent = {
+  type: LaskentaEventType.SET_PARAMS;
+  params: LaskentaParams;
 };
 
 export type LaskentaStateTags = 'stopped' | 'started' | 'completed' | 'error';
@@ -103,41 +106,40 @@ export type LaskentaActorRef = ActorRefFrom<
   ReturnType<typeof createLaskentaMachine>
 >;
 
-const hasSummaryErrors = (context: LaskentaContext) =>
-  context.summary?.hakukohteet?.some((hk) =>
-    hk.ilmoitukset?.some((i) => i.tyyppi === 'VIRHE'),
-  ) ?? false;
+const hasUnfinishedHakukohteet = (context: LaskentaContext) =>
+  isNumber(context.seurantaTiedot?.hakukohteitaKeskeytetty) &&
+  context.seurantaTiedot.hakukohteitaKeskeytetty > 0;
 
-const hasCompletionErrors = (context: LaskentaContext) =>
-  (context.seurantaTiedot != null &&
-    context.seurantaTiedot.hakukohteitaKeskeytetty > 0) ||
-  hasSummaryErrors(context);
+const getLaskentaKey = (params?: LaskentaParams) => {
+  if (params) {
+    if (params.hakukohteet == null) {
+      return `haku_${params.haku.oid}`;
+    } else {
+      const valinnanvaiheSelected: boolean = Boolean(params.valinnanvaiheNimi);
 
-export const createLaskentaMachine = (
-  params: StartLaskentaParams,
-  addToast: (toast: Toast) => void,
-) => {
-  const valinnanvaiheSelected: boolean = Boolean(params.valinnanvaiheNimi);
-  const keyPartValinnanvaihe = valinnanvaiheSelected
-    ? `-valinnanvaihe_${params.valinnanvaiheNumber ?? 0}`
-    : '';
+      const keyPartValinnanvaihe = valinnanvaiheSelected
+        ? `-valinnanvaihe_${params.valinnanvaiheNumber ?? 0}`
+        : '';
+      return params.valintaryhma
+        ? `haku_${params.haku.oid}-valintaryhma_${params.valintaryhma.oid}`
+        : `haku_${params.haku.oid}-hakukohteet_${params.hakukohteet?.map(prop('oid')).join('_')}${keyPartValinnanvaihe}`;
+    }
+  }
+  return '';
+};
 
-  const initialContext = {
-    laskenta: {},
-    canceling: false,
-    oldLaskentaParams: undefined,
-    startLaskentaParams: params,
-    seurantaTiedot: null,
-    // Laskennan yhteenveto
-    summary: null,
-    // Mahdollinen virheolio. Jos tämä on asetettu, laskenta ei ole valmistunut
-    error: null,
-  };
-
-  const machineKey = params.valintaryhma
-    ? `haku_${params.haku.oid}-valintaryhma_${params.valintaryhma.oid}`
-    : `haku_${params.haku.oid}-hakukohteet_${params.hakukohteet?.map(prop('oid')).join('_')}${keyPartValinnanvaihe}`;
-
+const initialContext = {
+  laskenta: {},
+  canceling: false,
+  oldLaskentaParams: undefined,
+  startLaskentaParams: undefined,
+  seurantaTiedot: null,
+  // Laskennan yhteenveto
+  summary: null,
+  // Mahdollinen virheolio. Jos tämä on asetettu, laskenta ei ole valmistunut
+  error: null,
+};
+export const createLaskentaMachine = (addToast: (toast: Toast) => void) => {
   return setup({
     types: {
       context: {} as LaskentaContext,
@@ -145,19 +147,22 @@ export const createLaskentaMachine = (
       events: {} as LaskentaEvent,
     },
     actors: {
-      startLaskenta: fromPromise(
-        ({ input }: { input: StartLaskentaParams }) => {
-          return kaynnistaLaskenta({
-            haku: input.haku,
-            hakukohteet: input.hakukohteet,
-            valintaryhma: input.valintaryhma,
-            valinnanvaiheTyyppi: input.valinnanvaiheTyyppi,
-            sijoitellaankoHaunHakukohteetLaskennanYhteydessa:
-              input.sijoitellaanko,
-            valinnanvaiheNumero: input.valinnanvaiheNumber,
-          });
-        },
-      ),
+      startLaskenta: fromPromise(({ input }: { input?: LaskentaParams }) => {
+        if (!input) {
+          return Promise.reject(
+            Error('Tried to start laskenta without params'),
+          );
+        }
+        return kaynnistaLaskenta({
+          haku: input.haku,
+          hakukohteet: input.hakukohteet,
+          valintaryhma: input.valintaryhma,
+          valinnanvaiheTyyppi: input.valinnanvaiheTyyppi,
+          sijoitellaankoHaunHakukohteetLaskennanYhteydessa:
+            input.sijoitellaanko,
+          valinnanvaiheNumero: input.valinnanvaiheNumber,
+        });
+      }),
       pollLaskenta: fromPromise(({ input }: { input: Laskenta }) => {
         if (input.runningLaskenta) {
           return getLaskennanSeurantaTiedot(input.runningLaskenta.loadingUrl);
@@ -191,7 +196,7 @@ export const createLaskentaMachine = (
     },
   }).createMachine({
     /** @xstate-layout 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-cKFQPn-3PN8-Bp9uQ-05CoFkgscHKVBU9EyCJtlsNQQFPa3stzNDKLhEK49eiPCdgMd4OCG64qZtlZes1V7zVKuVMJoyiVqOKL4B4FYqjvCSuuD0OFXiHh6iYF0-8TAsqeS9acZNnn8scS2B4FIcHJRqFg7+e4qQAmku8TsuhyzgksRCtOUczZQvNBYXquEgS1mxslNC+jT7aUPFyaSR9cKvH0JY1uK8152pjg65cbheoBxMOCQOfg9AV3XG2XQ65EVzI5IEQIQA */
-    id: `LaskentaMachine-${machineKey}`,
+    id: `LaskentaMachine`,
     initial: LaskentaState.IDLE,
     context: initialContext,
     states: {
@@ -202,22 +207,23 @@ export const createLaskentaMachine = (
           canceling: false,
         }),
         on: {
+          [LaskentaEventType.SET_PARAMS]: {
+            actions: assign({
+              startLaskentaParams: ({ event }) => event.params,
+            }),
+          },
           [LaskentaEventType.START]: {
             target: LaskentaState.WAITING_CONFIRMATION,
-            actions: assign({
-              startLaskentaParams: ({ event, context }) =>
-                event?.params ?? context.startLaskentaParams,
-            }),
           },
           [LaskentaEventType.RESET_RESULTS]: {
             target: '#INITIALIZED',
+            actions: assign(initialContext),
           },
         },
         states: {
           previous: { type: 'history' },
           [LaskentaState.INITIALIZED]: {
             id: LaskentaState.INITIALIZED,
-            entry: assign(initialContext),
           },
           [LaskentaState.ERROR]: {
             tags: ['error'],
@@ -226,29 +232,6 @@ export const createLaskentaMachine = (
           [LaskentaState.COMPLETED]: {
             id: LaskentaState.COMPLETED,
             tags: ['completed'],
-            entry: [
-              assign({
-                laskenta: ({ context }) =>
-                  laskentaReducer(context.laskenta, {
-                    calculatedTime: new Date(),
-                  }),
-              }),
-              ({ context }) => {
-                if (!hasCompletionErrors(context)) {
-                  const key = `laskenta-completed-for-${machineKey}`;
-                  const message = valinnanvaiheSelected
-                    ? 'valinnanhallinta.valmisvalinnanvaihe'
-                    : 'valinnanhallinta.valmis';
-                  const messageParams = valinnanvaiheSelected
-                    ? {
-                        nimi:
-                          context.startLaskentaParams.valinnanvaiheNimi ?? '',
-                      }
-                    : undefined;
-                  addToast({ key, message, type: 'success', messageParams });
-                }
-              },
-            ],
           },
         },
       },
@@ -272,14 +255,14 @@ export const createLaskentaMachine = (
         })),
         invoke: {
           src: 'startLaskenta',
-          input: ({ context }) => context.startLaskentaParams,
+          input: ({ context }) => context?.startLaskentaParams,
           onDone: {
             target: LaskentaState.PROCESSING,
             actions: assign({
-              laskenta: ({ event, context }) =>
-                laskentaReducer(context.laskenta, {
-                  runningLaskenta: event.output,
-                }),
+              laskenta: ({ event, context }) => ({
+                ...context.laskenta,
+                runningLaskenta: event.output,
+              }),
             }),
           },
           onError: {
@@ -346,6 +329,9 @@ export const createLaskentaMachine = (
               },
               onError: {
                 target: '#ERROR',
+                actions: assign({
+                  error: ({ event }) => event.error as Error,
+                }),
               },
             },
           },
@@ -359,30 +345,56 @@ export const createLaskentaMachine = (
           input: ({ context }) => context.laskenta,
           onDone: {
             target: '#COMPLETED',
-            actions: assign({
-              summary: ({ event }) => event.output,
-              seurantaTiedot: ({ event, context }) => {
-                const hakukohteitaYhteensa =
-                  context.seurantaTiedot?.hakukohteitaYhteensa ?? 0;
+            actions: [
+              assign({
+                summary: ({ event }) => event.output,
+                laskenta: ({ context }) => ({
+                  ...context.laskenta,
+                  calculatedTime: new Date(),
+                }),
+                seurantaTiedot: ({ event, context }) => {
+                  const hakukohteitaYhteensa =
+                    context.seurantaTiedot?.hakukohteitaYhteensa ?? 0;
 
-                const hakukohteitaValmiina =
-                  event.output?.hakukohteet?.filter(
-                    (hk) => hk.tila === 'VALMIS',
-                  )?.length ?? 0;
-                const hakukohteitaKeskeytetty =
-                  hakukohteitaYhteensa - hakukohteitaValmiina;
+                  const hakukohteitaValmiina =
+                    event.output?.hakukohteet?.filter(
+                      (hk) => hk.tila === 'VALMIS',
+                    )?.length ?? 0;
+                  const hakukohteitaKeskeytetty =
+                    hakukohteitaYhteensa - hakukohteitaValmiina;
 
-                return {
-                  ...(context.seurantaTiedot ?? {
-                    jonosija: null,
-                  }),
-                  tila: event.output.tila,
-                  hakukohteitaValmiina,
-                  hakukohteitaKeskeytetty,
-                  hakukohteitaYhteensa,
-                };
+                  return {
+                    ...(context.seurantaTiedot ?? {
+                      jonosija: null,
+                    }),
+                    tila: event.output.tila,
+                    hakukohteitaValmiina,
+                    hakukohteitaKeskeytetty,
+                    hakukohteitaYhteensa,
+                  };
+                },
+              }),
+              ({ context }) => {
+                if (!hasUnfinishedHakukohteet(context)) {
+                  const valinnanvaiheSelected = Boolean(
+                    context.startLaskentaParams?.valinnanvaiheNimi,
+                  );
+                  const key = `laskenta-completed-for-${getLaskentaKey(
+                    context.startLaskentaParams,
+                  )}`;
+                  const message = valinnanvaiheSelected
+                    ? 'valinnanhallinta.valmisvalinnanvaihe'
+                    : 'valinnanhallinta.valmis';
+                  const messageParams = valinnanvaiheSelected
+                    ? {
+                        nimi:
+                          context.startLaskentaParams?.valinnanvaiheNimi ?? '',
+                      }
+                    : undefined;
+                  addToast({ key, message, type: 'success', messageParams });
+                }
               },
-            }),
+            ],
           },
           onError: {
             target: '#ERROR',
@@ -421,7 +433,7 @@ const laskentaStateParamsToMachineParams = ({
   valinnanvaiheNumber,
   valintaryhma,
   valintakoelaskenta,
-}: LaskentaStartParams): StartLaskentaParams => {
+}: LaskentaStartParams): LaskentaParams => {
   return {
     haku,
     valintaryhma,
@@ -448,62 +460,75 @@ const laskentaStateParamsToMachineParams = ({
   };
 };
 
-export const useLaskentaMachine = ({
-  haku,
-  haunAsetukset,
-  hakukohteet,
-  vaihe,
-  valintaryhma,
-  valinnanvaiheNumber,
-}: LaskentaStartParams) => {
+const useLaskentaMachine = () => {
   const { addToast } = useToaster();
 
   const laskentaMachine = useMemo(() => {
-    return createLaskentaMachine(
-      laskentaStateParamsToMachineParams({
-        haku,
-        haunAsetukset,
-        hakukohteet,
-        vaihe,
-        valintaryhma,
-        valinnanvaiheNumber,
-      }),
-      addToast,
-    );
-  }, [
-    haku,
-    hakukohteet,
-    haunAsetukset,
-    vaihe,
-    valintaryhma,
-    valinnanvaiheNumber,
-    addToast,
-  ]);
+    return createLaskentaMachine(addToast);
+  }, [addToast]);
 
   return useMachine(laskentaMachine);
 };
 
-export const useLaskentaState = (params: LaskentaStartParams) => {
-  const [state, send, actorRef] = useLaskentaMachine(params);
+export const useLaskentaApi = (actorRef: LaskentaActorRef) => {
+  const { send } = actorRef;
 
   return {
-    state,
+    state: useSelector(actorRef, (s) => s),
     actorRef,
     isLaskentaResultVisible: useSelector(
       actorRef,
       (state) => state.hasTag('stopped') && !isEmpty(state.context.laskenta),
     ),
     isCanceling: useSelector(actorRef, (state) => state.context.canceling),
-    reset: () => send({ type: LaskentaEventType.RESET_RESULTS }),
-    confirm: () => send({ type: LaskentaEventType.CONFIRM }),
-    cancel: () => send({ type: LaskentaEventType.CANCEL }),
-    stopLaskenta: () => send({ type: LaskentaEventType.CANCEL }),
-    startLaskenta: (params?: LaskentaStartParams) =>
-      send({
-        type: LaskentaEventType.START,
-        params: params ? laskentaStateParamsToMachineParams(params) : undefined,
-      }),
+    setLaskentaParams: useCallback(
+      (params: LaskentaStartParams) => {
+        send({
+          type: LaskentaEventType.SET_PARAMS,
+          params: laskentaStateParamsToMachineParams(params),
+        });
+      },
+      [send],
+    ),
+    resetLaskenta: useCallback(
+      () => send({ type: LaskentaEventType.RESET_RESULTS }),
+      [send],
+    ),
+    confirmLaskenta: useCallback(
+      () => send({ type: LaskentaEventType.CONFIRM }),
+      [send],
+    ),
+    cancelLaskenta: useCallback(
+      () => send({ type: LaskentaEventType.CANCEL }),
+      [send],
+    ),
+    stopLaskenta: useCallback(
+      () => send({ type: LaskentaEventType.CANCEL }),
+      [send],
+    ),
+    startLaskenta: useCallback(
+      () => send({ type: LaskentaEventType.START }),
+      [send],
+    ),
+    startLaskentaWithParams: useCallback(
+      (params: LaskentaStartParams) => {
+        send({
+          type: LaskentaEventType.SET_PARAMS,
+          params: laskentaStateParamsToMachineParams(params),
+        });
+        send({
+          type: LaskentaEventType.START,
+        });
+      },
+      [send],
+    ),
   };
+};
+
+export const useLaskentaState = () => {
+  const [, , actorRef] = useLaskentaMachine();
+
+  return useLaskentaApi(actorRef);
 };
 
 export const useLaskentaTitle = (actorRef: LaskentaActorRef) => {
@@ -533,20 +558,20 @@ export const useLaskentaError = (actorRef: LaskentaActorRef) => {
 
   const { t } = useTranslations();
 
-  const withCompletionErrors = useSelector(actorRef, (s) =>
-    hasCompletionErrors(s.context),
+  const withUnfinishedHakukohteet = useSelector(actorRef, (s) =>
+    hasUnfinishedHakukohteet(s.context),
   );
 
   const summaryMessage = useSelector(
     actorRef,
     (s) => s.context.summary?.ilmoitus?.otsikko,
   );
-  const completionErrorsMessage = withCompletionErrors
+  const completionErrorsMessage = withUnfinishedHakukohteet
     ? t('valintalaskenta.valintalaskenta-valmis-virheita')
     : null;
 
   const isErrorVisible =
-    state.hasTag('stopped') && !isEmpty(state.context.laskenta);
+    state.hasTag('stopped') && (!isEmpty(state.context.laskenta) || error);
 
   return isErrorVisible
     ? (error?.message ?? summaryMessage ?? completionErrorsMessage ?? undefined)

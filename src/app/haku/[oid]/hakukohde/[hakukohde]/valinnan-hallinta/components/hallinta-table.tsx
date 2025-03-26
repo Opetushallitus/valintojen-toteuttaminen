@@ -16,11 +16,7 @@ import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import HallintaTableRow from './hallinta-table-row';
 import Confirm from './confirm';
 import { toFormattedDateTimeString } from '@/lib/localization/translation-utils';
-import {
-  LaskentaEventType,
-  LaskentaState,
-  useLaskentaMachine,
-} from '@/lib/state/laskenta-state';
+import { LaskentaState, useLaskentaState } from '@/lib/state/laskenta-state';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { ErrorRow } from './error-row';
@@ -41,11 +37,8 @@ const HallintaTable = ({
 }: HallintaTableParams) => {
   const { t } = useTranslations();
 
-  const [state, send] = useLaskentaMachine({
-    haku,
-    haunAsetukset,
-    hakukohteet: hakukohde,
-  });
+  const { state, startLaskentaWithParams, confirmLaskenta, cancelLaskenta } =
+    useLaskentaState();
 
   const [valinnanvaiheetQuery, lasketutValinnanvaiheetQuery] =
     useSuspenseQueries({
@@ -55,16 +48,12 @@ const HallintaTable = ({
       ],
     });
 
-  const confirm = async () => {
-    send({ type: LaskentaEventType.CONFIRM });
-  };
-
   const start = () => {
-    send({ type: LaskentaEventType.START });
-  };
-
-  const cancel = () => {
-    send({ type: LaskentaEventType.CANCEL });
+    startLaskentaWithParams({
+      haku,
+      haunAsetukset,
+      hakukohteet: [hakukohde],
+    });
   };
 
   if (valinnanvaiheetQuery.data.length === 0) {
@@ -137,7 +126,7 @@ const HallintaTable = ({
             </OphButton>
           )}
           {state.matches(LaskentaState.WAITING_CONFIRMATION) && (
-            <Confirm cancel={cancel} confirm={confirm} />
+            <Confirm cancel={cancelLaskenta} confirm={confirmLaskenta} />
           )}
           {state.matches(LaskentaState.PROCESSING) && (
             <CircularProgress aria-label={t('valinnanhallinta.lasketaan')} />

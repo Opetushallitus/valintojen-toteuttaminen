@@ -1,11 +1,7 @@
 'use client';
 
 import { Divider, Stack } from '@mui/material';
-import {
-  LaskentaEventType,
-  LaskentaState,
-  useLaskentaMachine,
-} from '@/lib/state/laskenta-state';
+import { LaskentaState, useLaskentaState } from '@/lib/state/laskenta-state';
 import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { Haku } from '@/lib/kouta/kouta-types';
@@ -14,6 +10,7 @@ import { ConfirmationModal } from '@/components/modals/confirmation-modal';
 import { LaskentaStateButton } from '@/components/laskenta-state-button';
 import { ValintalaskentaStatus } from '@/components/ValintalaskentaStatus';
 import { useTranslations } from '@/lib/localization/useTranslations';
+import { useEffect } from 'react';
 
 export const HenkilonValintalaskenta = ({
   haku,
@@ -26,22 +23,32 @@ export const HenkilonValintalaskenta = ({
 }) => {
   const { t } = useTranslations();
 
-  const [state, send, actorRef] = useLaskentaMachine({
-    haku,
-    haunAsetukset,
-    hakukohteet,
-  });
+  const {
+    actorRef,
+    state,
+    confirmLaskenta,
+    cancelLaskenta,
+    setLaskentaParams,
+  } = useLaskentaState();
+
+  useEffect(() => {
+    setLaskentaParams({
+      haku,
+      haunAsetukset,
+      hakukohteet,
+    });
+  }, [setLaskentaParams, haku, haunAsetukset, hakukohteet]);
 
   return (
     <Stack spacing={2}>
       <ConfirmationModal
         title={t('valinnanhallinta.varmista')}
         open={state.matches(LaskentaState.WAITING_CONFIRMATION)}
-        onConfirm={() => send({ type: LaskentaEventType.CONFIRM })}
-        onCancel={() => send({ type: LaskentaEventType.CANCEL })}
+        onConfirm={confirmLaskenta}
+        onCancel={cancelLaskenta}
       />
       <ValintalaskentaStatus laskentaActorRef={actorRef} progressType="bar" />
-      <LaskentaStateButton state={state} send={send} />
+      <LaskentaStateButton actorRef={actorRef} />
       {state.hasTag('completed') && (
         <SuorittamattomatHakukohteet
           actorRef={actorRef}

@@ -1,11 +1,7 @@
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { withDefaultProps } from '@/lib/mui-utils';
-import {
-  LaskentaEvent,
-  LaskentaEventType,
-  LaskentaMachineSnapshot,
-} from '@/lib/state/laskenta-state';
+import { LaskentaActorRef, useLaskentaApi } from '@/lib/state/laskenta-state';
 import { styled } from '@/lib/theme';
 
 const LaskentaButton = withDefaultProps(
@@ -18,24 +14,20 @@ const LaskentaButton = withDefaultProps(
 );
 
 export const LaskentaStateButton = ({
-  state,
-  send,
+  actorRef,
 }: {
-  state: LaskentaMachineSnapshot;
-  send: (event: LaskentaEvent) => void;
+  actorRef: LaskentaActorRef;
 }) => {
+  const { state, startLaskenta, cancelLaskenta, resetLaskenta } =
+    useLaskentaApi(actorRef);
+
   const { t } = useTranslations();
   const canceling = state.context.canceling;
 
   switch (true) {
     case state.hasTag('stopped') && !state.hasTag('completed'):
       return (
-        <LaskentaButton
-          key="suorita"
-          onClick={() => {
-            send({ type: LaskentaEventType.START });
-          }}
-        >
+        <LaskentaButton key="suorita" onClick={startLaskenta}>
           {t('valintalaskenta.suorita-valintalaskenta')}
         </LaskentaButton>
       );
@@ -45,22 +37,14 @@ export const LaskentaStateButton = ({
           key="keskeyta"
           variant="outlined"
           disabled={canceling}
-          onClick={() => {
-            send({ type: LaskentaEventType.CANCEL });
-          }}
+          onClick={cancelLaskenta}
         >
           {t('valintalaskenta.keskeyta-valintalaskenta')}
         </LaskentaButton>
       );
     case state.hasTag('completed'):
       return (
-        <LaskentaButton
-          key="sulje"
-          variant="outlined"
-          onClick={() => {
-            send({ type: LaskentaEventType.RESET_RESULTS });
-          }}
-        >
+        <LaskentaButton key="sulje" variant="outlined" onClick={resetLaskenta}>
           {t('valintalaskenta.sulje-laskennan-tiedot')}
         </LaskentaButton>
       );

@@ -4,10 +4,8 @@ import { useTranslations } from '@/lib/localization/useTranslations';
 import { Divider, Stack } from '@mui/material';
 import {
   LaskentaActorRef,
-  LaskentaEvent,
-  LaskentaEventType,
-  LaskentaMachineSnapshot,
   LaskentaState,
+  useLaskentaApi,
 } from '@/lib/state/laskenta-state';
 import { Hakukohde } from '@/lib/kouta/kouta-types';
 import { ConfirmationModal } from '@/components/modals/confirmation-modal';
@@ -18,14 +16,12 @@ import { ValintalaskentaStatus } from '@/components/ValintalaskentaStatus';
 export const ValintaryhmanValintalaskenta = ({
   hakukohteet,
   actorRef,
-  state,
-  send,
 }: {
   hakukohteet: Array<Hakukohde>;
   actorRef: LaskentaActorRef;
-  state: LaskentaMachineSnapshot;
-  send: (event: LaskentaEvent) => void;
 }) => {
+  const { state, confirmLaskenta, cancelLaskenta } = useLaskentaApi(actorRef);
+
   const { t } = useTranslations();
 
   return (
@@ -33,14 +29,14 @@ export const ValintaryhmanValintalaskenta = ({
       <ConfirmationModal
         title={t('valinnanhallinta.varmista')}
         open={state.matches(LaskentaState.WAITING_CONFIRMATION)}
-        onConfirm={() => send({ type: LaskentaEventType.CONFIRM })}
-        onCancel={() => send({ type: LaskentaEventType.CANCEL })}
+        onConfirm={confirmLaskenta}
+        onCancel={cancelLaskenta}
       />
       <ValintalaskentaStatus
         laskentaActorRef={actorRef}
         progressType="spinner"
       />
-      <LaskentaStateButton state={state} send={send} />
+      <LaskentaStateButton actorRef={actorRef} />
       {state.hasTag('completed') && (
         <SuorittamattomatHakukohteet
           actorRef={actorRef}

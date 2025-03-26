@@ -5,11 +5,7 @@ import { useTranslations } from '@/lib/localization/useTranslations';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import Confirm from './confirm';
 import { toFormattedDateTimeString } from '@/lib/localization/translation-utils';
-import {
-  LaskentaEventType,
-  LaskentaState,
-  useLaskentaMachine,
-} from '@/lib/state/laskenta-state';
+import { LaskentaState, useLaskentaState } from '@/lib/state/laskenta-state';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import { Valinnanvaihe } from '@/lib/valintaperusteet/valintaperusteet-types';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
@@ -37,24 +33,17 @@ const HallintaTableRow = ({
 }: HallintaTableRowParams) => {
   const { t } = useTranslations();
 
-  const [state, send] = useLaskentaMachine({
-    haku,
-    haunAsetukset,
-    hakukohteet: hakukohde,
-    vaihe,
-    valinnanvaiheNumber: index,
-  });
+  const { state, startLaskentaWithParams, cancelLaskenta, confirmLaskenta } =
+    useLaskentaState();
 
   const start = () => {
-    send({ type: LaskentaEventType.START });
-  };
-
-  const cancelConfirmation = () => {
-    send({ type: LaskentaEventType.CANCEL });
-  };
-
-  const confirm = async () => {
-    send({ type: LaskentaEventType.CONFIRM });
+    startLaskentaWithParams({
+      haku,
+      haunAsetukset,
+      hakukohteet: hakukohde,
+      vaihe,
+      valinnanvaiheNumber: index,
+    });
   };
 
   const canStartLaskenta = checkCanStartLaskentaForValinnanvaihe(vaihe);
@@ -111,7 +100,7 @@ const HallintaTableRow = ({
             )}
           {canStartLaskenta &&
             state.matches(LaskentaState.WAITING_CONFIRMATION) && (
-              <Confirm cancel={cancelConfirmation} confirm={confirm} />
+              <Confirm cancel={cancelLaskenta} confirm={confirmLaskenta} />
             )}
           {!canStartLaskenta && !vaihe.valisijoittelu && (
             <Box>{t('valinnanhallinta.eilaskennassa')}</Box>

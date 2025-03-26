@@ -808,7 +808,7 @@ test.describe('Pistesyöttö', () => {
     await expectAlertTextVisible(page, 'Tiedot tallennettu');
   });
 
-  test('Näytetään virhe, kun pistesyötön tallennusn epäonnistuu', async ({
+  test('Näytetään virhe, kun pistesyötön tallennus epäonnistuu', async ({
     page,
   }) => {
     const pisteetSaveUrl = configuration.koostetutPistetiedotHakukohteelleUrl({
