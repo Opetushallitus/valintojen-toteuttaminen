@@ -121,7 +121,7 @@ const HallintaTable = ({
             rowGap: 2,
           }}
         >
-          {!state.matches(LaskentaState.WAITING_CONFIRMATION) && (
+          {!state.hasTag('waiting-confirmation') && (
             <OphButton
               variant="contained"
               onClick={start}
@@ -136,7 +136,7 @@ const HallintaTable = ({
               {t('valinnanhallinta.kaynnistakaikki')}
             </OphButton>
           )}
-          {state.matches(LaskentaState.WAITING_CONFIRMATION) && (
+          {state.hasTag('waiting-confirmation') && (
             <Confirm cancel={cancelLaskenta} confirm={confirmLaskenta} />
           )}
           {state.matches(LaskentaState.PROCESSING) && (

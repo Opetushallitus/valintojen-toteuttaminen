@@ -38,7 +38,7 @@ export const ValintalaskentaResult = ({
     <>
       <ConfirmationModal
         title={t('valinnanhallinta.varmista')}
-        open={state.matches(LaskentaState.WAITING_CONFIRMATION)}
+        open={state.hasTag('waiting-confirmation')}
         onConfirm={confirmLaskenta}
         onCancel={cancelLaskenta}
       />

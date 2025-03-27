@@ -84,35 +84,33 @@ export const HallintaTableRow = ({
         </TableCell>
         <TableCell sx={{ verticalAlign: 'top' }}>{t(vaihe.tyyppi)}</TableCell>
         <TableCell>
-          {canStartLaskenta &&
-            !state.matches(LaskentaState.WAITING_CONFIRMATION) && (
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  rowGap: 1,
-                }}
+          {canStartLaskenta && !state.hasTag('waiting-confirmation') && (
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                rowGap: 1,
+              }}
+            >
+              <OphButton
+                variant="outlined"
+                disabled={
+                  !state.matches(LaskentaState.IDLE) || areAllLaskentaRunning
+                }
+                onClick={() => start()}
               >
-                <OphButton
-                  variant="outlined"
-                  disabled={
-                    !state.matches(LaskentaState.IDLE) || areAllLaskentaRunning
-                  }
-                  onClick={() => start()}
-                >
-                  {t('valinnanhallinta.kaynnista')}
-                </OphButton>
-                {state.matches(LaskentaState.PROCESSING) && (
-                  <CircularProgress
-                    aria-label={t('valinnanhallinta.lasketaan')}
-                  />
-                )}
-              </Box>
-            )}
-          {canStartLaskenta &&
-            state.matches(LaskentaState.WAITING_CONFIRMATION) && (
-              <Confirm cancel={cancelLaskenta} confirm={confirmLaskenta} />
-            )}
+                {t('valinnanhallinta.kaynnista')}
+              </OphButton>
+              {state.matches(LaskentaState.PROCESSING) && (
+                <CircularProgress
+                  aria-label={t('valinnanhallinta.lasketaan')}
+                />
+              )}
+            </Box>
+          )}
+          {canStartLaskenta && state.hasTag('waiting-confirmation') && (
+            <Confirm cancel={cancelLaskenta} confirm={confirmLaskenta} />
+          )}
           {!canStartLaskenta && !vaihe.valisijoittelu && (
             <Box>{t('valinnanhallinta.eilaskennassa')}</Box>
           )}

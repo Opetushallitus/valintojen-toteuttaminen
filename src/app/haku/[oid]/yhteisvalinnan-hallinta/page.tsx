@@ -32,8 +32,8 @@ const ValintalaskentaAccordionContent = ({ haku }: { haku: Haku }) => {
   const { actorRef, state, startLaskentaWithParams } = useLaskentaState();
 
   return (
-    <Stack spacing={2} alignItems="flex-start">
-      <Stack direction="row" justifyContent="flex-start" spacing={3}>
+    <Stack spacing={2} sx={{ alignItems: 'flex-start' }}>
+      <Stack direction="row" spacing={3} sx={{ justifyContent: 'flex-start' }}>
         <OphButton
           disabled={state.hasTag('started')}
           variant="contained"
@@ -60,7 +60,7 @@ const ValintalaskentaAccordionContent = ({ haku }: { haku: Haku }) => {
             })
           }
         >
-          {t('yhteisvalinnan-hallinta.valintalaskenta')}
+          {t('yhteisvalinnan-hallinta.valintalaskenta-haulle')}
         </OphButton>
         <OphButton
           disabled={state.hasTag('started')}

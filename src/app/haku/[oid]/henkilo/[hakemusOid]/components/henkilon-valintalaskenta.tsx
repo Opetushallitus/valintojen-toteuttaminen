@@ -23,7 +23,7 @@ export const HenkilonValintalaskenta = ({
   const { actorRef, state, startLaskentaWithParams } = useLaskentaState();
 
   return (
-    <Stack spacing={2}>
+    <Stack spacing={2} sx={{ alignItems: 'flex-start' }}>
       {state.hasTag('stopped') && !state.hasTag('completed') && (
         <OphButton
           variant="contained"

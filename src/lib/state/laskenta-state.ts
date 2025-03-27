@@ -60,8 +60,11 @@ export type LaskentaContext = {
 
 export enum LaskentaState {
   IDLE = 'IDLE',
-  INITIALIZED = 'INITIALIZED',
-  WAITING_CONFIRMATION = 'WAITING_CONFIRMATION',
+  RESULT = 'RESULT',
+  NO_RESULT = 'NO_RESULT',
+  CONFIRMATION = 'CONFIRMATION',
+  CONFIRMATION_VISIBLE = 'CONFIRMATION_VISIBLE',
+  CONFIRMATION_HIDDEN = 'CONFIRMATION_HIDDEN',
   STARTING = 'STARTING',
   PROCESSING = 'PROCESSING',
   PROCESSING_FETCHING = 'FETCHING',
@@ -71,8 +74,9 @@ export enum LaskentaState {
   DETERMINE_SUMMARY = 'DETERMINE_SUMMARY',
   // Laskennassa tai sen pyynnöissä tapahtui virhe, eikä laskenta siksi valmistunut
   ERROR = 'ERROR',
+  // Laskenta valmistui, mutta yhteenvedossa voi olla suorittamattomia hakukohteita
   COMPLETED = 'COMPLETED',
-  CANCELING = 'CANCELING',
+  STOPPING = 'STOPPING',
 }
 
 export const enum LaskentaEventType {
@@ -80,12 +84,12 @@ export const enum LaskentaEventType {
   START = 'START',
   CONFIRM = 'CONFIRM',
   CANCEL = 'CANCEL',
-  RESET_RESULTS = 'RESET_RESULTS',
+  RESET_RESULT = 'RESET_RESULT',
 }
 
 export type LaskentaEvent =
   | {
-      type: 'START' | 'CONFIRM' | 'CANCEL' | 'RESET_RESULTS';
+      type: 'START' | 'CONFIRM' | 'CANCEL' | 'RESET_RESULT';
     }
   | SetLaskentaParamsEvent;
 
@@ -117,64 +121,61 @@ const initialContext: LaskentaContext = {
   error: null,
 };
 
+const rejectWithError = (message: string) => Promise.reject(Error(message));
+
 export const createLaskentaMachine = (addToast: (toast: Toast) => void) => {
   return setup({
     types: {
       context: {} as LaskentaContext,
-      tags: 'stopped' as 'stopped' | 'started' | 'completed' | 'error',
+      tags: 'stopped' as
+        | 'stopped'
+        | 'started'
+        | 'completed'
+        | 'error'
+        | 'waiting-confirmation',
       events: {} as LaskentaEvent,
     },
     actors: {
       startLaskenta: fromPromise(({ input }: { input?: LaskentaParams }) => {
-        if (!input) {
-          return Promise.reject(
-            Error('Tried to start laskenta without params'),
-          );
-        }
-        return kaynnistaLaskenta({
-          haku: input.haku,
-          hakukohteet: input.hakukohteet,
-          valintaryhma: input.valintaryhma,
-          valinnanvaiheTyyppi: input.valinnanvaiheTyyppi,
-          sijoitellaankoHaunHakukohteetLaskennanYhteydessa:
-            input.sijoitellaanko,
-          valinnanvaiheNumero: input.valinnanvaiheNumber,
-        });
+        return input
+          ? kaynnistaLaskenta({
+              haku: input.haku,
+              hakukohteet: input.hakukohteet,
+              valintaryhma: input.valintaryhma,
+              valinnanvaiheTyyppi: input.valinnanvaiheTyyppi,
+              sijoitellaankoHaunHakukohteetLaskennanYhteydessa:
+                input.sijoitellaanko,
+              valinnanvaiheNumero: input.valinnanvaiheNumber,
+            })
+          : rejectWithError('Tried to start laskenta without params');
       }),
       pollLaskenta: fromPromise(
         ({ input }: { input?: StartedLaskentaInfo }) => {
-          if (input) {
-            return getLaskennanSeurantaTiedot(input.loadingUrl);
-          }
-          return Promise.reject(
-            Error(
-              'Tried to fetch seurantatiedot without having access to started laskenta',
-            ),
-          );
+          return input
+            ? getLaskennanSeurantaTiedot(input.loadingUrl)
+            : rejectWithError(
+                'Tried to fetch seurantatiedot without having access to started laskenta',
+              );
         },
       ),
       fetchSummary: fromPromise(
         ({ input }: { input?: StartedLaskentaInfo }) => {
-          if (input) {
-            return getLaskennanYhteenveto(input.loadingUrl);
-          }
-          return Promise.reject(
-            Error('Tried to fetch summary without having access to laskenta'),
-          );
+          return input
+            ? getLaskennanYhteenveto(input.loadingUrl)
+            : rejectWithError(
+                'Tried to fetch summary without having access to laskenta',
+              );
         },
       ),
       stopLaskenta: fromPromise(
         ({ input }: { input?: StartedLaskentaInfo }) => {
-          if (input) {
-            return keskeytaLaskenta({
-              laskentaUuid: input.loadingUrl,
-            });
-          }
-          return Promise.reject(
-            Error(
-              'Failed to stop laskenta without having access to started laskenta',
-            ),
-          );
+          return input
+            ? keskeytaLaskenta({
+                laskentaUuid: input.loadingUrl,
+              })
+            : rejectWithError(
+                'Failed to stop laskenta without having access to started laskenta',
+              );
         },
       ),
     },
@@ -186,7 +187,7 @@ export const createLaskentaMachine = (addToast: (toast: Toast) => void) => {
     states: {
       [LaskentaState.IDLE]: {
         tags: ['stopped'],
-        initial: LaskentaState.INITIALIZED,
+        type: 'parallel',
         entry: assign({
           canceling: false,
         }),
@@ -196,41 +197,82 @@ export const createLaskentaMachine = (addToast: (toast: Toast) => void) => {
               laskentaParams: ({ event }) => event.params,
             }),
           },
-          [LaskentaEventType.START]: {
-            target: LaskentaState.WAITING_CONFIRMATION,
-          },
-          [LaskentaEventType.RESET_RESULTS]: {
-            target: '#INITIALIZED',
-            actions: assign(initialContext),
+          [LaskentaEventType.RESET_RESULT]: {
+            actions: assign(({ context }) => ({
+              initialContext,
+              laskentaParams: context.laskentaParams,
+            })),
+            target: '#NO_RESULT',
           },
         },
         states: {
-          previous: { type: 'history' },
-          [LaskentaState.INITIALIZED]: {
-            id: LaskentaState.INITIALIZED,
+          [LaskentaState.RESULT]: {
+            initial: LaskentaState.NO_RESULT,
+            states: {
+              [LaskentaState.NO_RESULT]: {
+                id: LaskentaState.NO_RESULT,
+              },
+              [LaskentaState.ERROR]: {
+                tags: ['error'],
+                id: LaskentaState.ERROR,
+              },
+              [LaskentaState.COMPLETED]: {
+                id: LaskentaState.COMPLETED,
+                tags: ['completed'],
+                entry: [
+                  ({ context }) => {
+                    if (!hasUnfinishedHakukohteet(context)) {
+                      const valinnanvaiheSelected = Boolean(
+                        context.laskentaParams?.valinnanvaiheNimi,
+                      );
+                      const message = valinnanvaiheSelected
+                        ? 'valinnanhallinta.valmisvalinnanvaihe'
+                        : 'valinnanhallinta.valmis';
+                      const messageParams = valinnanvaiheSelected
+                        ? {
+                            nimi:
+                              context.laskentaParams?.valinnanvaiheNimi ?? '',
+                          }
+                        : undefined;
+                      addToast({
+                        key: 'laskenta-success',
+                        message,
+                        type: 'success',
+                        messageParams,
+                      });
+                    }
+                  },
+                ],
+              },
+            },
           },
-          [LaskentaState.ERROR]: {
-            tags: ['error'],
-            id: LaskentaState.ERROR,
-          },
-          [LaskentaState.COMPLETED]: {
-            id: LaskentaState.COMPLETED,
-            tags: ['completed'],
-          },
-        },
-      },
-      [LaskentaState.WAITING_CONFIRMATION]: {
-        tags: ['stopped'],
-        on: {
-          [LaskentaEventType.CONFIRM]: {
-            target: LaskentaState.STARTING,
-          },
-          [LaskentaEventType.CANCEL]: {
-            target: 'IDLE.previous',
+          [LaskentaState.CONFIRMATION]: {
+            initial: LaskentaState.CONFIRMATION_HIDDEN,
+            states: {
+              [LaskentaState.CONFIRMATION_HIDDEN]: {
+                on: {
+                  [LaskentaEventType.START]: {
+                    target: [LaskentaState.CONFIRMATION_VISIBLE],
+                  },
+                },
+              },
+              [LaskentaState.CONFIRMATION_VISIBLE]: {
+                tags: ['waiting-confirmation'],
+                on: {
+                  [LaskentaEventType.CANCEL]: {
+                    target: LaskentaState.CONFIRMATION_HIDDEN,
+                  },
+                  [LaskentaEventType.CONFIRM]: {
+                    target: '#STARTING',
+                  },
+                },
+              },
+            },
           },
         },
       },
       [LaskentaState.STARTING]: {
+        id: LaskentaState.STARTING,
         tags: ['started'],
         entry: assign(({ context }) => ({
           ...initialContext,
@@ -258,7 +300,7 @@ export const createLaskentaMachine = (addToast: (toast: Toast) => void) => {
         tags: ['started'],
         initial: LaskentaState.PROCESSING_FETCHING,
         on: {
-          [LaskentaEventType.CANCEL]: '#CANCELING',
+          [LaskentaEventType.CANCEL]: '#STOPPING',
         },
         states: {
           [LaskentaState.PROCESSING_FETCHING]: {
@@ -297,8 +339,8 @@ export const createLaskentaMachine = (addToast: (toast: Toast) => void) => {
               },
             ],
           },
-          [LaskentaState.CANCELING]: {
-            id: LaskentaState.CANCELING,
+          [LaskentaState.STOPPING]: {
+            id: LaskentaState.STOPPING,
             entry: assign({
               canceling: true,
             }),
@@ -351,27 +393,6 @@ export const createLaskentaMachine = (addToast: (toast: Toast) => void) => {
                   };
                 },
               }),
-              ({ context }) => {
-                if (!hasUnfinishedHakukohteet(context)) {
-                  const valinnanvaiheSelected = Boolean(
-                    context.laskentaParams?.valinnanvaiheNimi,
-                  );
-                  const message = valinnanvaiheSelected
-                    ? 'valinnanhallinta.valmisvalinnanvaihe'
-                    : 'valinnanhallinta.valmis';
-                  const messageParams = valinnanvaiheSelected
-                    ? {
-                        nimi: context.laskentaParams?.valinnanvaiheNimi ?? '',
-                      }
-                    : undefined;
-                  addToast({
-                    key: 'laskenta-success',
-                    message,
-                    type: 'success',
-                    messageParams,
-                  });
-                }
-              },
             ],
           },
           onError: {
@@ -449,8 +470,8 @@ const useLaskentaMachine = () => {
 };
 
 const selectIsLaskentaResultVisible = (state: LaskentaMachineSnapshot) =>
-  state.hasTag('stopped') &&
-  (state.context.startedLaskenta || state.context.error);
+  state.hasTag('error') ||
+  (state.hasTag('completed') && hasUnfinishedHakukohteet(state.context));
 
 export const useLaskentaApi = (actorRef: LaskentaActorRef) => {
   const { send } = actorRef;
@@ -473,7 +494,7 @@ export const useLaskentaApi = (actorRef: LaskentaActorRef) => {
       [send],
     ),
     resetLaskenta: useCallback(
-      () => send({ type: LaskentaEventType.RESET_RESULTS }),
+      () => send({ type: LaskentaEventType.RESET_RESULT }),
       [send],
     ),
     confirmLaskenta: useCallback(
