@@ -39,17 +39,32 @@ export type LaskentaParams = {
 };
 
 export type LaskentaContext = {
+  /**
+   * Käynnistetyn laskennan tiedot. Asetetaan laskennan käynnistyksen yhteydessä.
+   */
   startedLaskenta?: StartedLaskentaInfo;
+  /**
+   * Milloin laskenta on viimeksi ajettu? Asetetaan laskennan valmistuttua onnistuneesti.
+   */
   calculatedTime: Date | number | null;
   /**
-   *
+   * True kun ollaan keskeyttämässä laskentaa.
    */
   canceling: boolean;
+  /**
+   * Aiemmin käynnistetyn laskennan parametrit.
+   */
   resultLaskentaParams?: LaskentaParams;
+  /**
+   * Parametrit, joita käytetään seuraavassa laskennassa.
+   */
   laskentaParams?: LaskentaParams;
+  /**
+   * Laskennan seurantatiedot. Asetetaan pollattaessa laskennan tilaa.
+   */
   seurantaTiedot: SeurantaTiedot | null;
   /**
-   * Laskennan yhteenveto, jos laskenta saatiin päätökseen
+   * Laskennan yhteenveto, jos laskenta saatiin päätökseen.
    */
   summary: LaskentaSummary | null;
   /**
@@ -412,7 +427,7 @@ export const createLaskentaMachine = (addToast: (toast: Toast) => void) => {
  * Jos hakukohteet == null ja:
  * - valintakoelaskenta=false tai undefined, valinnanvaiheNumber=-1 -> vain tavallinen valintalaskenta haulle
  * - valintakoelaskenta=false tai undefined, valinnanvaiheNumber=undefined -> valintalaskenta ja valintakoelaskenta haulle
- * - valinnanvaiheNumber positiivinen kokonaisluku -> valintakoelaskenta valinnanvaiheelle
+ * - valinnanvaiheNumber positiivinen kokonaisluku -> valintalaskenta valinnanvaiheelle (ei valintakoe)
  * - valintakoelaskenta=true, valinnanvaiheNumber=undefined -> valintakoelaskenta haulle
  */
 type LaskentaStartParams = {
