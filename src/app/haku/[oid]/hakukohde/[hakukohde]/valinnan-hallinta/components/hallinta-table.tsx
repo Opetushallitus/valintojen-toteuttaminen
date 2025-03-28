@@ -13,21 +13,20 @@ import {
 } from '@mui/material';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
-import HallintaTableRow from './hallinta-table-row';
 import Confirm from './confirm';
 import { toFormattedDateTimeString } from '@/lib/localization/translation-utils';
 import {
-  LaskentaEventType,
   LaskentaState,
+  useLaskentaError,
   useLaskentaState,
 } from '@/lib/state/laskenta-state';
-import { useToaster } from '@/hooks/useToaster';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { ErrorRow } from './error-row';
 import { hakukohteenValintalaskennanTuloksetQueryOptions } from '@/lib/valintalaskenta/valintalaskenta-service';
 import { checkCanStartLaskentaForValinnanvaihe } from '@/lib/valintaperusteet/valintaperusteet-utils';
 import { NoResults } from '@/components/no-results';
+import { HallintaTableRow } from './hallinta-table-row';
 
 type HallintaTableParams = {
   haku: Haku;
@@ -41,14 +40,16 @@ const HallintaTable = ({
   haunAsetukset,
 }: HallintaTableParams) => {
   const { t } = useTranslations();
-  const { addToast } = useToaster();
 
-  const [state, send] = useLaskentaState({
-    haku,
-    haunAsetukset,
-    hakukohteet: hakukohde,
-    addToast,
-  });
+  const {
+    actorRef,
+    state,
+    startLaskentaWithParams,
+    confirmLaskenta,
+    cancelLaskenta,
+  } = useLaskentaState();
+
+  const laskentaError = useLaskentaError(actorRef);
 
   const [valinnanvaiheetQuery, lasketutValinnanvaiheetQuery] =
     useSuspenseQueries({
@@ -58,16 +59,12 @@ const HallintaTable = ({
       ],
     });
 
-  const confirm = async () => {
-    send({ type: LaskentaEventType.CONFIRM });
-  };
-
   const start = () => {
-    send({ type: LaskentaEventType.START });
-  };
-
-  const cancel = () => {
-    send({ type: LaskentaEventType.CANCEL });
+    startLaskentaWithParams({
+      haku,
+      haunAsetukset,
+      hakukohteet: [hakukohde],
+    });
   };
 
   if (valinnanvaiheetQuery.data.length === 0) {
@@ -124,7 +121,7 @@ const HallintaTable = ({
             rowGap: 2,
           }}
         >
-          {!state.matches(LaskentaState.WAITING_CONFIRMATION) && (
+          {!state.hasTag('waiting-confirmation') && (
             <OphButton
               variant="contained"
               onClick={start}
@@ -139,8 +136,8 @@ const HallintaTable = ({
               {t('valinnanhallinta.kaynnistakaikki')}
             </OphButton>
           )}
-          {state.matches(LaskentaState.WAITING_CONFIRMATION) && (
-            <Confirm cancel={cancel} confirm={confirm} />
+          {state.hasTag('waiting-confirmation') && (
+            <Confirm cancel={cancelLaskenta} confirm={confirmLaskenta} />
           )}
           {state.matches(LaskentaState.PROCESSING) && (
             <CircularProgress aria-label={t('valinnanhallinta.lasketaan')} />
@@ -150,26 +147,18 @@ const HallintaTable = ({
               {t('valinnanhallinta.onvalisijoittelusuoritakaikki')}
             </OphTypography>
           )}
-          {state.context.laskenta.calculatedTime && (
+          {state.context.calculatedTime && (
             <OphTypography>
               {t('valinnanhallinta.laskettuviimeksi', {
-                pvm: toFormattedDateTimeString(
-                  state.context.laskenta.calculatedTime,
-                ),
+                pvm: toFormattedDateTimeString(state.context.calculatedTime),
               })}
             </OphTypography>
           )}
         </Box>
-        {(state.context.laskenta.errorMessage != null ||
-          state.context.error) && (
+        {laskentaError && (
           <Table>
             <TableBody>
-              <ErrorRow
-                errorMessage={
-                  state.context.laskenta.errorMessage ??
-                  '' + state.context.error
-                }
-              />
+              <ErrorRow errorMessage={laskentaError} />
             </TableBody>
           </Table>
         )}

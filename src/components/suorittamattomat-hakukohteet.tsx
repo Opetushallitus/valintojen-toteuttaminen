@@ -11,9 +11,11 @@ import { useSelector } from '@xstate/react';
 export const SuorittamattomatHakukohteet = ({
   actorRef,
   hakukohteet,
+  onlyErrors = false,
 }: {
   actorRef: LaskentaActorRef;
   hakukohteet: Array<Hakukohde>;
+  onlyErrors?: boolean;
 }) => {
   const { t, translateEntity } = useTranslations();
 
@@ -23,7 +25,9 @@ export const SuorittamattomatHakukohteet = ({
   );
 
   const summaryErrors = useSelector(actorRef, (s) =>
-    s.context.summary?.hakukohteet.filter((hk) => hk?.tila !== 'VALMIS'),
+    s.context.summary?.hakukohteet.filter((hk) =>
+      onlyErrors ? hk?.tila === 'VIRHE' : hk?.tila !== 'VALMIS',
+    ),
   );
 
   return isEmpty(summaryErrors) ? null : (

@@ -1,5 +1,9 @@
 import { test, expect, Page } from '@playwright/test';
-import { expectAllSpinnersHidden, getMuiCloseButton } from './playwright-utils';
+import {
+  expectAllSpinnersHidden,
+  getMuiCloseButton,
+  mockValintalaskentaRun,
+} from './playwright-utils';
 
 test('Näyttää valinnanvaiheet', async ({ page }) => {
   await page.goto(
@@ -32,34 +36,19 @@ test('Näyttää valinnanvaiheet', async ({ page }) => {
 });
 
 test('Käynnistää laskennan', async ({ page }) => {
-  await page.route(
-    '*/**/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000045102/tyyppi/HAKUKOHDE/whitelist/true**',
-    async (route) => {
-      const started = {
-        lisatiedot: {
-          luotiinkoUusiLaskenta: true,
-        },
-        latausUrl: '12345abs',
-      };
-      await route.fulfill({
-        json: started,
-      });
-    },
-  );
-  await page.route(
-    '*/**/valintalaskenta-laskenta-service/resources/seuranta/yhteenveto/12345abs',
-    async (route) => {
-      const seuranta = {
+  await mockValintalaskentaRun(page, {
+    hakuOid: '1.2.246.562.29.00000000000000045102',
+    tyyppi: 'HAKUKOHDE',
+    seurantaResponse: {
+      json: {
+        jonosija: null,
         tila: 'MENEILLAAN',
         hakukohteitaYhteensa: 1,
         hakukohteitaValmiina: 0,
         hakukohteitaKeskeytetty: 0,
-      };
-      await route.fulfill({
-        json: seuranta,
-      });
+      },
     },
-  );
+  });
   await startLaskenta(page);
   await expect(
     page.locator('tbody tr').first().locator('button'),
@@ -69,51 +58,32 @@ test('Käynnistää laskennan', async ({ page }) => {
 });
 
 test('Näyttää ilmoituksen kun laskenta valmistuu', async ({ page }) => {
-  await page.route(
-    '*/**/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000045102/tyyppi/HAKUKOHDE/whitelist/true**',
-    async (route) => {
-      const started = {
-        lisatiedot: {
-          luotiinkoUusiLaskenta: true,
-        },
-        latausUrl: '12345abs',
-      };
-      await route.fulfill({
-        json: started,
-      });
-    },
-  );
-  await page.route(
-    '*/**/valintalaskenta-laskenta-service/resources/seuranta/yhteenveto/12345abs',
-    async (route) => {
-      const seuranta = {
+  await mockValintalaskentaRun(page, {
+    hakuOid: '1.2.246.562.29.00000000000000045102',
+    tyyppi: 'HAKUKOHDE',
+    seurantaResponse: {
+      json: {
+        jonosija: null,
         tila: 'VALMIS',
         hakukohteitaYhteensa: 1,
         hakukohteitaValmiina: 1,
         hakukohteitaKeskeytetty: 0,
-      };
-      await route.fulfill({
-        json: seuranta,
-      });
+      },
     },
-  );
-  await page.route(
-    '*/**/resources/valintalaskentakerralla/status/12345abs/yhteenveto',
-    async (route) => {
-      await route.fulfill({
-        json: {
-          tila: 'VALMIS',
-          hakukohteet: [
-            {
-              tila: 'VALMIS',
-              hakukohde: '1.2.246.562.20.00000000000000045105',
-              ilmoitukset: [],
-            },
-          ],
-        },
-      });
+    yhteenvetoResponse: {
+      json: {
+        tila: 'VALMIS',
+        hakukohteet: [
+          {
+            tila: 'VALMIS',
+            hakukohdeOid: '1.2.246.562.20.00000000000000045105',
+            ilmoitukset: [],
+          },
+        ],
+      },
     },
-  );
+  });
+
   await startLaskenta(page);
   await expect(
     page.getByText('Laskenta suoritettu onnistuneesti'),
@@ -127,12 +97,14 @@ test('Näyttää ilmoituksen kun laskenta valmistuu', async ({ page }) => {
 test('Näyttää virheen kun laskennan käynnistäminen epäonnistuu', async ({
   page,
 }) => {
-  await page.route(
-    '*/**/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000045102/tyyppi/HAKUKOHDE/whitelist/true**',
-    async (route) => {
-      await route.fulfill({ status: 500, body: 'Unknown error' });
+  await mockValintalaskentaRun(page, {
+    hakuOid: '1.2.246.562.29.00000000000000045102',
+    tyyppi: 'HAKUKOHDE',
+    startResponse: {
+      status: 500,
+      body: 'Unknown error',
     },
-  );
+  });
   await startLaskenta(page);
   const error = page.getByText(
     'Laskenta epäonnistui. Yritä myöhemmin uudelleen',

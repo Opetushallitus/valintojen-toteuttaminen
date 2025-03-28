@@ -40,7 +40,11 @@
     "muokkaa": "Muokkaa",
     "suoritus-etenee": "Suoritus etenee virheettömästi ja varoituksetta",
     "virhe": "Virhe",
-    "hakijoita-valittu-maara": "{count, plural, =0 {Ei hakijoita valittu} one {1 hakija valittu} other {{count} hakijaa valittu}}"
+    "hakijoita-valittu-maara": "{count, plural, =0 {Ei hakijoita valittu} one {1 hakija valittu} other {{count} hakijaa valittu}}",
+    "haun-tunniste": "Haun tunniste",
+    "haun-asetukset": "Haun asetukset",
+    "tarjonta": "Tarjonta",
+    "kaynnistetaanko": "Käynnistetäänkö"
   },
   "kalenteri": {
     "aika": "Aika",
@@ -538,6 +542,7 @@
     "syy": "Syy",
     "valintalaskenta": "Valintalaskenta",
     "valintalaskenta-epaonnistui": "Valintalaskenta epäonnistui",
+    "valintalaskenta-valmis-virheita": "Joidenkin hakukohteiden valintalaskennassa tapahtui virheitä!",
     "hakukohteita-valmiina": "Hakukohteita valmiina",
     "suorittamattomia-hakukohteita": "Suorittamattomia hakukohteita",
     "keskeytetaan-laskentaa": "Keskeytetään laskentaa...",
@@ -564,5 +569,11 @@
       "delete-error": "Valintalaskennan muokkauksen poistaminen epäonnistui",
       "delete-success": "Valintalaskennan muokkauksen poistaminen onnistui"
     }
+  },
+  "yhteisvalinnan-hallinta": {
+    "valintalaskenta": "Valintalaskenta",
+    "valintalaskenta-haulle": "Valintalaskenta haulle",
+    "valintakoelaskenta-haulle": "Valintakoelaskenta haulle",
+    "kaikki-laskennat-haulle": "Valintakoelaskenta ja valinta haulle"
   }
 }

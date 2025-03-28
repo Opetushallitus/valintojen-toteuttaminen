@@ -3,7 +3,7 @@ import { useTranslations } from '@/lib/localization/useTranslations';
 import { OphButton } from '@opetushallitus/oph-design-system';
 
 export type ConfirmationModalProps = {
-  title?: string;
+  title: string;
   open: boolean;
   children?: React.ReactNode;
   onConfirm: () => void;
@@ -27,25 +27,15 @@ export const ConfirmationModal = ({
   return (
     <OphModal
       open={open}
-      onClose={() => onCancel()}
-      title={title ?? t('valinnanhallinta.varmista')}
+      onClose={onCancel}
+      title={title}
       maxWidth={maxWidth}
       actions={
         <>
-          <OphButton
-            variant="outlined"
-            onClick={() => {
-              onCancel();
-            }}
-          >
+          <OphButton variant="outlined" onClick={onCancel}>
             {cancelLabel ?? t('yleinen.ei')}
           </OphButton>
-          <OphButton
-            variant="contained"
-            onClick={() => {
-              onConfirm();
-            }}
-          >
+          <OphButton variant="contained" onClick={onConfirm}>
             {confirmLabel ?? t('yleinen.kylla')}
           </OphButton>
         </>

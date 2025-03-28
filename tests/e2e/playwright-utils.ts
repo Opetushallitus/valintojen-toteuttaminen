@@ -1,8 +1,15 @@
+import {
+  LaskentaSummary,
+  SeurantaTiedot,
+  StartedLaskentaInfo,
+} from '@/lib/types/laskenta-types';
+import { LaskentaTyyppi } from '@/lib/valintalaskenta/valintalaskenta-service';
 import AxeBuilder from '@axe-core/playwright';
 import { Locator, Page, Route, expect } from '@playwright/test';
 import { readFile } from 'fs/promises';
 import path from 'path';
-import { isFunction } from 'remeda';
+import { isFunction, isNonNull } from 'remeda';
+import regexpEscape from 'regexp.escape';
 
 export const expectPageAccessibilityOk = async (page: Page) => {
   const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
@@ -206,4 +213,80 @@ export const findTableColumnIndexByTitle = async (
     }
   }
   throw new Error(`Column with title "${title}" not found`);
+};
+
+type MockResponse<J> = {
+  body?: string;
+  json?: J;
+  status?: number;
+} | null;
+
+export const mockValintalaskentaRun = async (
+  page: Page,
+  {
+    hakuOid,
+    tyyppi,
+    latausUrl = '12345abc',
+    startResponse,
+    stopResponse,
+    yhteenvetoResponse,
+    seurantaResponse,
+  }: {
+    tyyppi: LaskentaTyyppi;
+    hakuOid: string;
+    latausUrl?: string;
+    startResponse?: MockResponse<StartedLaskentaInfo>;
+    stopResponse?: MockResponse<null>;
+    yhteenvetoResponse?: MockResponse<LaskentaSummary>;
+    seurantaResponse?: MockResponse<SeurantaTiedot>;
+  },
+) => {
+  const startUrlRegexp = new RegExp(
+    regexpEscape(
+      `/resources/valintalaskentakerralla/haku/${hakuOid}/tyyppi/${tyyppi}`,
+    ) + '($|\/)',
+  );
+
+  await page.route(
+    (url) => startUrlRegexp.test(url.pathname),
+    async (route) => {
+      if (isNonNull(startResponse)) {
+        await route.fulfill(
+          startResponse ?? {
+            json: {
+              lisatiedot: {
+                luotiinkoUusiLaskenta: false,
+              },
+              latausUrl,
+            },
+          },
+        );
+      }
+    },
+  );
+  await page.route(
+    `*/**/resources/valintalaskentakerralla/haku/${latausUrl}`,
+    async (route) => {
+      if (route.request().method() === 'DELETE') {
+        return route.fulfill(stopResponse ?? { body: '' });
+      }
+    },
+  );
+
+  await page.route(
+    `*/**/resources/seuranta/yhteenveto/${latausUrl}`,
+    async (route) => {
+      if (seurantaResponse) {
+        await route.fulfill(seurantaResponse);
+      }
+    },
+  );
+  await page.route(
+    `*/**/resources/valintalaskentakerralla/status/${latausUrl}/yhteenveto`,
+    async (route) => {
+      if (yhteenvetoResponse) {
+        await route.fulfill(yhteenvetoResponse);
+      }
+    },
+  );
 };

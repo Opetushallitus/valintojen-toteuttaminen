@@ -6,12 +6,11 @@ import { OphButton } from '@opetushallitus/oph-design-system';
 import Confirm from './confirm';
 import { toFormattedDateTimeString } from '@/lib/localization/translation-utils';
 import {
-  LaskentaEventType,
   LaskentaState,
+  useLaskentaError,
   useLaskentaState,
 } from '@/lib/state/laskenta-state';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
-import { useToaster } from '@/hooks/useToaster';
 import { Valinnanvaihe } from '@/lib/valintaperusteet/valintaperusteet-types';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { ErrorRow } from './error-row';
@@ -27,7 +26,7 @@ type HallintaTableRowParams = {
   lastCalculated?: number | null;
 };
 
-const HallintaTableRow = ({
+export const HallintaTableRow = ({
   haku,
   hakukohde,
   haunAsetukset,
@@ -37,27 +36,25 @@ const HallintaTableRow = ({
   lastCalculated,
 }: HallintaTableRowParams) => {
   const { t } = useTranslations();
-  const { addToast } = useToaster();
 
-  const [state, send] = useLaskentaState({
-    haku,
-    haunAsetukset,
-    hakukohteet: hakukohde,
-    vaihe,
-    addToast,
-    valinnanvaiheNumber: index,
-  });
+  const {
+    actorRef,
+    state,
+    startLaskentaWithParams,
+    cancelLaskenta,
+    confirmLaskenta,
+  } = useLaskentaState();
+
+  const laskentaError = useLaskentaError(actorRef);
 
   const start = () => {
-    send({ type: LaskentaEventType.START });
-  };
-
-  const cancelConfirmation = () => {
-    send({ type: LaskentaEventType.CANCEL });
-  };
-
-  const confirm = async () => {
-    send({ type: LaskentaEventType.CONFIRM });
+    startLaskentaWithParams({
+      haku,
+      haunAsetukset,
+      hakukohteet: hakukohde,
+      vaihe,
+      valinnanvaiheNumber: index,
+    });
   };
 
   const canStartLaskenta = checkCanStartLaskentaForValinnanvaihe(vaihe);
@@ -87,61 +84,51 @@ const HallintaTableRow = ({
         </TableCell>
         <TableCell sx={{ verticalAlign: 'top' }}>{t(vaihe.tyyppi)}</TableCell>
         <TableCell>
-          {canStartLaskenta &&
-            !state.matches(LaskentaState.WAITING_CONFIRMATION) && (
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  rowGap: 1,
-                }}
+          {canStartLaskenta && !state.hasTag('waiting-confirmation') && (
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                rowGap: 1,
+              }}
+            >
+              <OphButton
+                variant="outlined"
+                disabled={
+                  !state.matches(LaskentaState.IDLE) || areAllLaskentaRunning
+                }
+                onClick={() => start()}
               >
-                <OphButton
-                  variant="outlined"
-                  disabled={
-                    !state.matches(LaskentaState.IDLE) || areAllLaskentaRunning
-                  }
-                  onClick={() => start()}
-                >
-                  {t('valinnanhallinta.kaynnista')}
-                </OphButton>
-                {state.matches(LaskentaState.PROCESSING) && (
-                  <CircularProgress
-                    aria-label={t('valinnanhallinta.lasketaan')}
-                  />
-                )}
-              </Box>
-            )}
-          {canStartLaskenta &&
-            state.matches(LaskentaState.WAITING_CONFIRMATION) && (
-              <Confirm cancel={cancelConfirmation} confirm={confirm} />
-            )}
+                {t('valinnanhallinta.kaynnista')}
+              </OphButton>
+              {state.matches(LaskentaState.PROCESSING) && (
+                <CircularProgress
+                  aria-label={t('valinnanhallinta.lasketaan')}
+                />
+              )}
+            </Box>
+          )}
+          {canStartLaskenta && state.hasTag('waiting-confirmation') && (
+            <Confirm cancel={cancelLaskenta} confirm={confirmLaskenta} />
+          )}
           {!canStartLaskenta && !vaihe.valisijoittelu && (
             <Box>{t('valinnanhallinta.eilaskennassa')}</Box>
           )}
           {vaihe.valisijoittelu && (
             <Box>{t('valinnanhallinta.onvalisijoittelu')}</Box>
           )}
-          {(state.context.laskenta.calculatedTime || lastCalculated) && (
+          {(state.context.calculatedTime || lastCalculated) && (
             <Box>
               {t('valinnanhallinta.laskettuviimeksi', {
                 pvm: toFormattedDateTimeString(
-                  state.context.laskenta.calculatedTime ?? lastCalculated ?? 0,
+                  state.context.calculatedTime ?? lastCalculated ?? 0,
                 ),
               })}
             </Box>
           )}
         </TableCell>
       </TableRow>
-      {(state.context.laskenta.errorMessage != null || state.context.error) && (
-        <ErrorRow
-          errorMessage={
-            state.context.laskenta.errorMessage ?? '' + state.context.error
-          }
-        />
-      )}
+      {laskentaError && <ErrorRow errorMessage={laskentaError} />}
     </>
   );
 };
-
-export default HallintaTableRow;

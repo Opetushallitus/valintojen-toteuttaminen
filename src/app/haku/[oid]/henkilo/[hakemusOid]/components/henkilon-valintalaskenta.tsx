@@ -1,71 +1,13 @@
 'use client';
 
-import { useTranslations } from '@/lib/localization/useTranslations';
-import { Divider, Stack, Typography } from '@mui/material';
-import { OphTypography } from '@opetushallitus/oph-design-system';
-import {
-  LaskentaActorRef,
-  LaskentaEventType,
-  LaskentaState,
-  useLaskentaError,
-  useLaskentaState,
-} from '@/lib/state/laskenta-state';
+import { Divider, Stack } from '@mui/material';
+import { useLaskentaState } from '@/lib/state/laskenta-state';
 import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
-import useToaster from '@/hooks/useToaster';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { Haku } from '@/lib/kouta/kouta-types';
-import { ErrorAlert } from '@/components/error-alert';
-import { useSelector } from '@xstate/react';
-import { ProgressBar } from '@/components/progress-bar';
-import { SuorittamattomatHakukohteet } from '@/components/suorittamattomat-hakukohteet';
-import { ConfirmationModal } from '@/components/modals/confirmation-modal';
-import { getLaskentaStatusText } from '@/lib/valintalaskenta/valintalaskenta-utils';
-import { LaskentaStateButton } from '@/components/laskenta-state-button';
-
-const LaskentaResult = ({ actorRef }: { actorRef: LaskentaActorRef }) => {
-  const { t } = useTranslations();
-
-  const laskentaError = useLaskentaError(actorRef);
-
-  const state = useSelector(actorRef, (s) => s);
-  const seurantaTiedot = useSelector(actorRef, (s) => s.context.seurantaTiedot);
-
-  const laskentaPercent = seurantaTiedot
-    ? Math.round(
-        (100 *
-          (seurantaTiedot?.hakukohteitaValmiina +
-            seurantaTiedot?.hakukohteitaKeskeytetty)) /
-          seurantaTiedot?.hakukohteitaYhteensa,
-      )
-    : 0;
-
-  switch (true) {
-    case state.matches({ [LaskentaState.IDLE]: LaskentaState.ERROR }):
-      return (
-        <ErrorAlert
-          title={t('valintalaskenta.valintalaskenta-epaonnistui')}
-          message={laskentaError}
-        />
-      );
-    case state.hasTag('started') || state.hasTag('completed'):
-      return (
-        <>
-          <OphTypography variant="h4">
-            {t('valintalaskenta.valintalaskenta')}
-          </OphTypography>
-          <ProgressBar value={laskentaPercent} />
-          <Typography>
-            {getLaskentaStatusText(state, seurantaTiedot, t)}
-            {seurantaTiedot &&
-              `${t('valintalaskenta.hakukohteita-valmiina')} ${seurantaTiedot.hakukohteitaValmiina}/${seurantaTiedot.hakukohteitaYhteensa}. ` +
-                `${t('valintalaskenta.suorittamattomia-hakukohteita')} ${seurantaTiedot?.hakukohteitaKeskeytetty ?? 0}.`}
-          </Typography>
-        </>
-      );
-    default:
-      return null;
-  }
-};
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { OphButton } from '@opetushallitus/oph-design-system';
+import { ValintalaskentaResult } from '@/components/ValintalaskentaResult';
 
 export const HenkilonValintalaskenta = ({
   haku,
@@ -76,30 +18,31 @@ export const HenkilonValintalaskenta = ({
   haunAsetukset: HaunAsetukset;
   hakukohteet: Array<HenkilonHakukohdeTuloksilla>;
 }) => {
-  const { addToast } = useToaster();
+  const { t } = useTranslations();
 
-  const [state, send, actorRef] = useLaskentaState({
-    haku,
-    haunAsetukset,
-    hakukohteet,
-    addToast,
-  });
+  const { actorRef, state, startLaskentaWithParams } = useLaskentaState();
 
   return (
-    <Stack spacing={2}>
-      <ConfirmationModal
-        open={state.matches(LaskentaState.WAITING_CONFIRMATION)}
-        onConfirm={() => send({ type: LaskentaEventType.CONFIRM })}
-        onCancel={() => send({ type: LaskentaEventType.CANCEL })}
-      />
-      <LaskentaResult actorRef={actorRef} />
-      <LaskentaStateButton state={state} send={send} />
-      {state.hasTag('completed') && (
-        <SuorittamattomatHakukohteet
-          actorRef={actorRef}
-          hakukohteet={hakukohteet}
-        />
+    <Stack spacing={2} sx={{ alignItems: 'flex-start' }}>
+      {state.hasTag('stopped') && !state.hasTag('completed') && (
+        <OphButton
+          variant="contained"
+          onClick={() =>
+            startLaskentaWithParams({
+              haku,
+              haunAsetukset,
+              hakukohteet,
+            })
+          }
+        >
+          {t('valintalaskenta.suorita-valintalaskenta')}
+        </OphButton>
       )}
+      <ValintalaskentaResult
+        actorRef={actorRef}
+        hakukohteet={hakukohteet}
+        progressType="bar"
+      />
       {(state.hasTag('started') || state.hasTag('completed')) && (
         <Divider sx={{ paddingTop: 1 }} />
       )}
