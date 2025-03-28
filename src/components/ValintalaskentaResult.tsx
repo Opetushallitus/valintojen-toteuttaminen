@@ -11,6 +11,7 @@ import {
   LaskentaState,
 } from '@/lib/state/laskenta-state';
 import { OphButton } from '@opetushallitus/oph-design-system';
+import { toLowerCase } from 'remeda';
 
 export const ValintalaskentaResult = ({
   actorRef,
@@ -26,18 +27,19 @@ export const ValintalaskentaResult = ({
   const { state, isCanceling, resetLaskenta, confirmLaskenta, cancelLaskenta } =
     useLaskentaApi(actorRef);
 
-  const laskentaTitle = useLaskentaTitle(actorRef);
+  const startingLaskentaTitle = useLaskentaTitle(actorRef, 'current');
+  const resultLaskentaTitle = useLaskentaTitle(actorRef, 'result');
 
   return (
     <>
       <ConfirmationModal
-        title={t('valinnanhallinta.varmista')}
+        title={`${t('yleinen.kaynnistetaanko')} ${toLowerCase(startingLaskentaTitle)}?`}
         open={state.hasTag('waiting-confirmation')}
         onConfirm={confirmLaskenta}
         onCancel={cancelLaskenta}
       />
       <ValintalaskentaStatus
-        title={t(laskentaTitle)}
+        title={resultLaskentaTitle}
         laskentaActorRef={actorRef}
         progressType={progressType}
       />

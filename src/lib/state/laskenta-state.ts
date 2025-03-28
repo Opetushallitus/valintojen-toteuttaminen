@@ -526,22 +526,28 @@ export const useLaskentaState = () => {
   return useLaskentaApi(actorRef);
 };
 
-export const useLaskentaTitle = (actorRef: LaskentaActorRef) => {
-  const params = useSelector(
-    actorRef,
-    (state) => state.context.resultLaskentaParams,
+export const useLaskentaTitle = (
+  actorRef: LaskentaActorRef,
+  type: 'current' | 'result',
+) => {
+  const params = useSelector(actorRef, (state) =>
+    type === 'current'
+      ? state.context.laskentaParams
+      : state.context.resultLaskentaParams,
   );
+
+  const { t } = useTranslations();
 
   if (params?.hakukohteet == null) {
     if (params?.valinnanvaiheTyyppi === ValinnanvaiheTyyppi.VALINTAKOE) {
-      return 'yhteisvalinnan-hallinta.valintakoelaskenta-haulle';
+      return t('yhteisvalinnan-hallinta.valintakoelaskenta-haulle');
     } else if (params?.valinnanvaiheNumber === -1) {
-      return 'yhteisvalinnan-hallinta.valintalaskenta-haulle';
+      return t('yhteisvalinnan-hallinta.valintalaskenta-haulle');
     } else {
-      return 'yhteisvalinnan-hallinta.kaikki-laskennat-haulle';
+      return t('yhteisvalinnan-hallinta.kaikki-laskennat-haulle');
     }
   }
-  return 'valintalaskenta.valintalaskenta';
+  return t('valintalaskenta.valintalaskenta');
 };
 
 export const useLaskentaError = (actorRef: LaskentaActorRef) => {
