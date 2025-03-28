@@ -23,14 +23,8 @@ export const ValintalaskentaResult = ({
 }) => {
   const { t } = useTranslations();
 
-  const {
-    state,
-    isCanceling,
-    resetLaskenta,
-    confirmLaskenta,
-    cancelLaskenta,
-    isLaskentaResultVisible,
-  } = useLaskentaApi(actorRef);
+  const { state, isCanceling, resetLaskenta, confirmLaskenta, cancelLaskenta } =
+    useLaskentaApi(actorRef);
 
   const laskentaTitle = useLaskentaTitle(actorRef);
 
@@ -56,7 +50,7 @@ export const ValintalaskentaResult = ({
           {t('valintalaskenta.keskeyta-valintalaskenta')}
         </OphButton>
       )}
-      {isLaskentaResultVisible && (
+      {state.hasTag('result') && (
         <>
           <OphButton variant="outlined" onClick={resetLaskenta}>
             {t('valintalaskenta.sulje-laskennan-tiedot')}

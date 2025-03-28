@@ -3,6 +3,7 @@ import {
   expectAlertTextVisible,
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
+  mockValintalaskentaRun,
   selectOption,
 } from './playwright-utils';
 import HAKENEET from './fixtures/hakeneet.json';
@@ -877,12 +878,12 @@ test.describe('Valintalaskenta', () => {
   test('näytetään virhe, kun valintalaskennan käynnistäminen epäonnistuu', async ({
     page,
   }) => {
-    await page.route(
-      '*/**/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000045102/tyyppi/HAKUKOHDE/whitelist/true**',
-      async (route) => {
-        await route.fulfill({ status: 500, body: 'Unknown error' });
-      },
-    );
+    await mockValintalaskentaRun(page, {
+      hakuOid: '1.2.246.562.29.00000000000000045102',
+      tyyppi: 'HAKUKOHDE',
+      startResponse: { status: 500, body: 'Unknown error' },
+    });
+
     await startLaskenta(page);
 
     await expectAlertTextVisible(
@@ -894,54 +895,37 @@ test.describe('Valintalaskenta', () => {
   test('käynnistetään laskenta ja näytetään yhteenveto virheistä', async ({
     page,
   }) => {
-    await page.route(
-      '*/**/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000045102/tyyppi/HAKUKOHDE/whitelist/true**',
-      async (route) => {
-        const started = {
-          lisatiedot: {
-            luotiinkoUusiLaskenta: true,
-          },
-          latausUrl: '12345abs',
-        };
-        await route.fulfill({
-          json: started,
-        });
-      },
-    );
-    await page.route(
-      '*/**/valintalaskenta-laskenta-service/resources/seuranta/yhteenveto/12345abs',
-      async (route) => {
-        const seuranta = {
+    await mockValintalaskentaRun(page, {
+      hakuOid: '1.2.246.562.29.00000000000000045102',
+      tyyppi: 'HAKUKOHDE',
+      seurantaResponse: {
+        json: {
+          jonosija: null,
           tila: 'VALMIS',
           hakukohteitaYhteensa: 1,
           hakukohteitaValmiina: 1,
           hakukohteitaKeskeytetty: 0,
-        };
-        await route.fulfill({
-          json: seuranta,
-        });
+        },
       },
-    );
-    await page.route(
-      '*/**/resources/valintalaskentakerralla/status/12345abs/yhteenveto',
-      async (route) => {
-        await route.fulfill({
-          json: {
-            hakukohteet: [
-              {
-                hakukohdeOid: '1.2.246.562.20.00000000000000045105',
-                tila: 'VIRHE',
-                ilmoitukset: [
-                  {
-                    otsikko: 'Unknown Error',
-                  },
-                ],
-              },
-            ],
-          },
-        });
+      yhteenvetoResponse: {
+        json: {
+          tila: 'VALMIS',
+          hakukohteet: [
+            {
+              hakukohdeOid: '1.2.246.562.20.00000000000000045105',
+              tila: 'VIRHE',
+              ilmoitukset: [
+                {
+                  tyyppi: 'VIRHE',
+                  otsikko: 'Unknown Error',
+                },
+              ],
+            },
+          ],
+        },
       },
-    );
+    });
+
     await startLaskenta(page);
     await expect(
       page.getByText(
@@ -958,7 +942,7 @@ test.describe('Valintalaskenta', () => {
         `Tampereen yliopisto, Rakennetun ympäristön tiedekunta ${NDASH} Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs) (1.2.246.562.20.00000000000000045105)`,
       ),
     ).toBeVisible();
-    await expect(page.getByText('Unknown Error')).toBeVisible();
+    await expect(page.getByText('Syy:Unknown Error')).toBeVisible();
 
     await expect(
       page.getByRole('button', { name: 'Suorita valintalaskenta' }),
@@ -974,50 +958,31 @@ test.describe('Valintalaskenta', () => {
   test('näytetään laskennan tulokset ja ilmoitus laskennan onnistumisesta', async ({
     page,
   }) => {
-    await page.route(
-      '*/**/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000045102/tyyppi/HAKUKOHDE/whitelist/true**',
-      async (route) => {
-        const started = {
-          lisatiedot: {
-            luotiinkoUusiLaskenta: true,
-          },
-          latausUrl: '12345abs',
-        };
-        await route.fulfill({
-          json: started,
-        });
+    await mockValintalaskentaRun(page, {
+      hakuOid: '1.2.246.562.29.00000000000000045102',
+      tyyppi: 'HAKUKOHDE',
+      seurantaResponse: {
+        json: {
+          jonosija: null,
+          tila: 'VALMIS',
+          hakukohteitaYhteensa: 1,
+          hakukohteitaValmiina: 1,
+          hakukohteitaKeskeytetty: 0,
+        },
       },
-    );
-    await page.route(
-      '*/**/valintalaskenta-laskenta-service/resources/seuranta/yhteenveto/12345abs',
-      async (route) => {
-        await route.fulfill({
-          json: {
-            tila: 'VALMIS',
-            hakukohteitaYhteensa: 1,
-            hakukohteitaValmiina: 1,
-            hakukohteitaKeskeytetty: 0,
-          },
-        });
+      yhteenvetoResponse: {
+        json: {
+          tila: 'VALMIS',
+          hakukohteet: [
+            {
+              hakukohdeOid: '1.2.246.562.20.00000000000000045105',
+              tila: 'VALMIS',
+              ilmoitukset: [],
+            },
+          ],
+        },
       },
-    );
-    await page.route(
-      '*/**/resources/valintalaskentakerralla/status/12345abs/yhteenveto',
-      async (route) => {
-        await route.fulfill({
-          json: {
-            tila: 'VALMIS',
-            hakukohteet: [
-              {
-                hakukohdeOid: '1.2.246.562.20.00000000000000045105',
-                tila: 'VALMIS',
-                ilmoitukset: [],
-              },
-            ],
-          },
-        });
-      },
-    );
+    });
     await startLaskenta(page);
     await expect(
       page.getByText(

@@ -44,7 +44,7 @@ export function ValintalaskentaStatus({
 
   return (
     <>
-      {!state.hasTag('error') && (state.hasTag('started') || seurantaTiedot) ? (
+      {state.hasTag('started') || state.hasTag('completed') ? (
         <>
           <OphTypography variant="h4">
             {title ?? t('valintalaskenta.valintalaskenta')}

@@ -2,6 +2,7 @@ import { test, expect, Page } from '@playwright/test';
 import {
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
+  mockValintalaskentaRun,
 } from './playwright-utils';
 
 const HAKUKOHTEET = [
@@ -274,31 +275,19 @@ test.describe('Valintaryhmän laskenta', () => {
   });
 
   test('Käynnistää laskennan', async () => {
-    await page.route(
-      '**/valintalaskenta-laskenta-service/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000017683/tyyppi/VALINTARYHMA/whitelist/true?**',
-      async (route) => {
-        const started = {
-          lisatiedot: {
-            luotiinkoUusiLaskenta: true,
-          },
-          latausUrl: '12345vr',
-        };
-        await route.fulfill({ status: 200, json: started });
+    await mockValintalaskentaRun(page, {
+      hakuOid: '1.2.246.562.29.00000000000000017683',
+      tyyppi: 'VALINTARYHMA',
+      seurantaResponse: {
+        json: {
+          jonosija: null,
+          tila: 'MENEILLAAN',
+          hakukohteitaYhteensa: 1,
+          hakukohteitaValmiina: 0,
+          hakukohteitaKeskeytetty: 0,
+        },
       },
-    );
-    await page.route(
-      '*/**/valintalaskenta-laskenta-service/resources/seuranta/yhteenveto/12345vr',
-      async (route) => {
-        await route.fulfill({
-          json: {
-            tila: 'MENEILLAAN',
-            hakukohteitaYhteensa: 1,
-            hakukohteitaValmiina: 0,
-            hakukohteitaKeskeytetty: 0,
-          },
-        });
-      },
-    );
+    });
     await startLaskenta(page);
     await expect(page.getByRole('progressbar')).toHaveCount(1);
     await expect(
@@ -307,54 +296,37 @@ test.describe('Valintaryhmän laskenta', () => {
   });
 
   test('Näyttää laskennan valmistuneen', async () => {
-    await page.route(
-      '**/valintalaskenta-laskenta-service/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000017683/tyyppi/VALINTARYHMA/whitelist/true?**',
-      async (route) => {
-        const started = {
-          lisatiedot: {
-            luotiinkoUusiLaskenta: true,
-          },
-          latausUrl: '12345vr',
-        };
-        await route.fulfill({ status: 200, json: started });
-      },
-    );
-    await page.route(
-      '*/**/valintalaskenta-laskenta-service/resources/seuranta/yhteenveto/12345vr',
-      async (route) => {
-        const seuranta = {
+    await mockValintalaskentaRun(page, {
+      hakuOid: '1.2.246.562.29.00000000000000017683',
+      tyyppi: 'VALINTARYHMA',
+      latausUrl: '12345vr',
+      seurantaResponse: {
+        json: {
+          jonosija: null,
           tila: 'VALMIS',
           hakukohteitaYhteensa: 2,
           hakukohteitaValmiina: 2,
           hakukohteitaKeskeytetty: 0,
-        };
-        await route.fulfill({
-          json: seuranta,
-        });
+        },
       },
-    );
-    await page.route(
-      '*/**/resources/valintalaskentakerralla/status/12345vr/yhteenveto',
-      async (route) => {
-        await route.fulfill({
-          json: {
-            tila: 'VALMIS',
-            hakukohteet: [
-              {
-                tila: 'VALMIS',
-                hakukohde: 'hakukohde-1',
-                ilmoitukset: [],
-              },
-              {
-                tila: 'VALMIS',
-                hakukohde: 'hakukohde-2',
-                ilmoitukset: [],
-              },
-            ],
-          },
-        });
+      yhteenvetoResponse: {
+        json: {
+          tila: 'VALMIS',
+          hakukohteet: [
+            {
+              tila: 'VALMIS',
+              hakukohdeOid: 'hakukohde-1',
+              ilmoitukset: [],
+            },
+            {
+              tila: 'VALMIS',
+              hakukohdeOid: 'hakukohde-2',
+              ilmoitukset: [],
+            },
+          ],
+        },
       },
-    );
+    });
     await startLaskenta(page);
     await expect(
       page.getByText('Laskenta suoritettu onnistuneesti'),
@@ -362,54 +334,37 @@ test.describe('Valintaryhmän laskenta', () => {
   });
 
   test('Näyttää virheen epäonnistuneessa laskennassa', async () => {
-    await page.route(
-      '**/valintalaskenta-laskenta-service/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000017683/tyyppi/VALINTARYHMA/whitelist/true?**',
-      async (route) => {
-        const started = {
-          lisatiedot: {
-            luotiinkoUusiLaskenta: true,
-          },
-          latausUrl: '12345vr',
-        };
-        await route.fulfill({ status: 200, json: started });
-      },
-    );
-    await page.route(
-      '*/**/valintalaskenta-laskenta-service/resources/seuranta/yhteenveto/12345vr',
-      async (route) => {
-        const seuranta = {
+    await mockValintalaskentaRun(page, {
+      hakuOid: '1.2.246.562.29.00000000000000017683',
+      tyyppi: 'VALINTARYHMA',
+      seurantaResponse: {
+        json: {
+          jonosija: null,
           tila: 'VALMIS',
           hakukohteitaYhteensa: 2,
           hakukohteitaValmiina: 0,
           hakukohteitaKeskeytetty: 2,
-        };
-        await route.fulfill({
-          json: seuranta,
-        });
+        },
       },
-    );
-    await page.route(
-      '*/**/resources/valintalaskentakerralla/status/12345vr/yhteenveto',
-      async (route) => {
-        await route.fulfill({
-          json: {
-            tila: 'VALMIS',
-            hakukohteet: [
-              {
-                tila: 'VIRHE',
-                hakukohdeOid: 'hakukohde-1',
-                ilmoitukset: [{ otsikko: 'Rusahti' }],
-              },
-              {
-                tila: 'VIRHE',
-                hakukohdeOid: 'hakukohde-2',
-                ilmoitukset: [{ otsikko: 'Räjähti' }],
-              },
-            ],
-          },
-        });
+      yhteenvetoResponse: {
+        json: {
+          tila: 'VALMIS',
+          hakukohteet: [
+            {
+              tila: 'VIRHE',
+              hakukohdeOid: 'hakukohde-1',
+              ilmoitukset: [{ tyyppi: 'VIRHE', otsikko: 'Rusahti' }],
+            },
+            {
+              tila: 'VIRHE',
+              hakukohdeOid: 'hakukohde-2',
+              ilmoitukset: [{ tyyppi: 'VIRHE', otsikko: 'Räjähti' }],
+            },
+          ],
+        },
       },
-    );
+    });
+
     await startLaskenta(page);
     await expect(
       page.getByText(
@@ -417,29 +372,19 @@ test.describe('Valintaryhmän laskenta', () => {
       ),
     ).toBeVisible();
     await page.getByRole('button', { name: 'Näytä suorittamattomat' }).click();
-    await expect(
-      page
-        .locator('div')
-        .filter({ hasText: /^Syy:Rusahti$/ })
-        .getByRole('paragraph'),
-    ).toBeVisible();
-    await expect(
-      page
-        .locator('div')
-        .filter({ hasText: /^Syy:Räjähti$/ })
-        .getByRole('paragraph'),
-    ).toBeVisible();
+    await expect(page.getByText(/^Syy:Rusahti$/)).toBeVisible();
+    await expect(page.getByText(/^Syy:Räjähti$/)).toBeVisible();
     await expect(page.getByRole('cell', { name: 'Rusahti' })).toBeVisible();
     await expect(page.getByRole('cell', { name: 'Räjähti' })).toBeVisible();
   });
 
   test('Näyttää virheen kun laskennan aloitus epäonnistuu', async () => {
-    await page.route(
-      '**/valintalaskenta-laskenta-service/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000017683/tyyppi/VALINTARYHMA/whitelist/true?**',
-      async (route) => {
-        await route.fulfill({ status: 500, body: 'Unknown error' });
-      },
-    );
+    await mockValintalaskentaRun(page, {
+      hakuOid: '1.2.246.562.29.00000000000000017683',
+      tyyppi: 'VALINTARYHMA',
+      startResponse: { status: 500, body: 'Unknown error' },
+    });
+
     await startLaskenta(page);
     await expect(page.getByText('Valintalaskenta epäonnistui')).toBeVisible();
     await expect(page.getByText('Unknown error')).toBeVisible();

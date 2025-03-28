@@ -111,7 +111,7 @@ type LaskentaStatusResponseData = {
   };
 };
 
-type LaskentaTyyppi = 'HAKU' | 'HAKUKOHDE' | 'VALINTARYHMA';
+export type LaskentaTyyppi = 'HAKU' | 'HAKUKOHDE' | 'VALINTARYHMA';
 
 export const kaynnistaLaskenta = async ({
   haku,

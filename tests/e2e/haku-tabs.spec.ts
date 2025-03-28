@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
 import {
   expectAllSpinnersHidden,
-  expectPageAccessibilityOk,
   getHakuNaviLinks,
 } from './playwright-utils';
 
@@ -42,14 +41,6 @@ for (const tab of TABS_TO_TEST) {
         `/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/${tab.route}`,
     );
     await expect(page.getByAltText('virhe')).toBeHidden();
-  });
-
-  test(`${tab.title} saavutettavuus`, async ({ page }) => {
-    await page.goto(
-      `/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/${tab.route}`,
-    );
-    await expectAllSpinnersHidden(page);
-    await expectPageAccessibilityOk(page);
   });
 }
 

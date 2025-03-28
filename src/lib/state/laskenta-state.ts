@@ -132,7 +132,8 @@ export const createLaskentaMachine = (addToast: (toast: Toast) => void) => {
         | 'started'
         | 'completed'
         | 'error'
-        | 'waiting-confirmation',
+        | 'waiting-confirmation'
+        | 'result',
       events: {} as LaskentaEvent,
     },
     actors: {
@@ -213,12 +214,12 @@ export const createLaskentaMachine = (addToast: (toast: Toast) => void) => {
                 id: LaskentaState.NO_RESULT,
               },
               [LaskentaState.ERROR]: {
-                tags: ['error'],
+                tags: ['error', 'result'],
                 id: LaskentaState.ERROR,
               },
               [LaskentaState.COMPLETED]: {
                 id: LaskentaState.COMPLETED,
-                tags: ['completed'],
+                tags: ['completed', 'result'],
                 entry: [
                   ({ context }) => {
                     if (!hasUnfinishedHakukohteet(context)) {
@@ -469,20 +470,12 @@ const useLaskentaMachine = () => {
   return useMachine(laskentaMachine);
 };
 
-const selectIsLaskentaResultVisible = (state: LaskentaMachineSnapshot) =>
-  state.hasTag('error') ||
-  (state.hasTag('completed') && hasUnfinishedHakukohteet(state.context));
-
 export const useLaskentaApi = (actorRef: LaskentaActorRef) => {
   const { send } = actorRef;
 
   return {
     state: useSelector(actorRef, (s) => s),
     actorRef,
-    isLaskentaResultVisible: useSelector(
-      actorRef,
-      selectIsLaskentaResultVisible,
-    ),
     isCanceling: useSelector(actorRef, (state) => state.context.canceling),
     setLaskentaParams: useCallback(
       (params: LaskentaStartParams) => {
@@ -554,7 +547,7 @@ export const useLaskentaTitle = (actorRef: LaskentaActorRef) => {
 export const useLaskentaError = (actorRef: LaskentaActorRef) => {
   const { error, isErrorVisible, withUnfinishedHakukohteet, summaryMessage } =
     useSelector(actorRef, (state) => ({
-      isErrorVisible: selectIsLaskentaResultVisible(state),
+      isErrorVisible: state.hasTag('result'),
       error: state.context.error,
       withUnfinishedHakukohteet: hasUnfinishedHakukohteet(state.context),
       summaryMessage: state.context.summary?.ilmoitus?.otsikko,
