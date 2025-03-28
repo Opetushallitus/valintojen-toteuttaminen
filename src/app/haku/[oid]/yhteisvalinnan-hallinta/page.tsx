@@ -5,85 +5,14 @@ import { FullClientSpinner } from '@/components/client-spinner';
 import { ExternalLink } from '@/components/external-link';
 import { LabeledInfoItem } from '@/components/labeled-info-item';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
-import { useUserPermissions } from '@/hooks/useUserPermissions';
 import { buildLinkToHaku } from '@/lib/ataru/ataru-service';
 import { configuration } from '@/lib/configuration';
-import { getHakukohteetQueryOptions } from '@/lib/kouta/kouta-service';
-import { Haku } from '@/lib/kouta/kouta-types';
 import { useHaku } from '@/lib/kouta/useHaku';
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { useHaunAsetukset } from '@/lib/ohjausparametrit/useHaunAsetukset';
-import { useLaskentaState } from '@/lib/state/laskenta-state';
 import { Stack } from '@mui/material';
-import { OphButton, OphLink } from '@opetushallitus/oph-design-system';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { OphLink } from '@opetushallitus/oph-design-system';
 import { use } from 'react';
-import { ValintalaskentaResult } from '@/components/ValintalaskentaResult';
-
-const ValintalaskentaAccordionContent = ({ haku }: { haku: Haku }) => {
-  const { t } = useTranslations();
-
-  const { data: userPermissions } = useUserPermissions();
-  const { data: haunAsetukset } = useHaunAsetukset({ hakuOid: haku.oid });
-  const { data: hakukohteet } = useSuspenseQuery(
-    getHakukohteetQueryOptions(haku.oid, userPermissions),
-  );
-
-  const { actorRef, state, startLaskentaWithParams } = useLaskentaState();
-
-  return (
-    <Stack spacing={2} sx={{ alignItems: 'flex-start' }}>
-      <Stack direction="row" spacing={3} sx={{ justifyContent: 'flex-start' }}>
-        <OphButton
-          disabled={state.hasTag('started')}
-          variant="contained"
-          onClick={() =>
-            startLaskentaWithParams({
-              haku,
-              haunAsetukset,
-              hakukohteet: null,
-              valintakoelaskenta: true,
-            })
-          }
-        >
-          {t('yhteisvalinnan-hallinta.valintakoelaskenta-haulle')}
-        </OphButton>
-        <OphButton
-          disabled={state.hasTag('started')}
-          variant="contained"
-          onClick={() =>
-            startLaskentaWithParams({
-              haku,
-              haunAsetukset,
-              hakukohteet: null,
-              valinnanvaiheNumber: -1,
-            })
-          }
-        >
-          {t('yhteisvalinnan-hallinta.valintalaskenta-haulle')}
-        </OphButton>
-        <OphButton
-          disabled={state.hasTag('started')}
-          variant="contained"
-          onClick={() =>
-            startLaskentaWithParams({
-              haku,
-              haunAsetukset,
-              hakukohteet: null,
-            })
-          }
-        >
-          {t('yhteisvalinnan-hallinta.kaikki-laskennat-haulle')}
-        </OphButton>
-      </Stack>
-      <ValintalaskentaResult
-        actorRef={actorRef}
-        hakukohteet={hakukohteet}
-        progressType="bar"
-      />
-    </Stack>
-  );
-};
+import { YhteisvalinnanValintalaskenta } from './components/yhteisvalinnan-valintalaskenta';
 
 const YhteisvalinnanHallintaContent = ({ hakuOid }: { hakuOid: string }) => {
   const { data: haku } = useHaku({ hakuOid });
@@ -125,7 +54,7 @@ const YhteisvalinnanHallintaContent = ({ hakuOid }: { hakuOid: string }) => {
         }
       >
         <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
-          <ValintalaskentaAccordionContent haku={haku} />
+          <YhteisvalinnanValintalaskenta haku={haku} />
         </QuerySuspenseBoundary>
       </AccordionBox>
     </>
