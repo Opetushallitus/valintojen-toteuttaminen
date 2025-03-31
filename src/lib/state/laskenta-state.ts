@@ -22,7 +22,7 @@ import {
 import { isNumber } from 'remeda';
 import { useCallback, useMemo } from 'react';
 import { sijoitellaankoHaunHakukohteetLaskennanYhteydessa } from '@/lib/kouta/kouta-service';
-import { useMachine, useSelector } from '@xstate/react';
+import { useActorRef, useSelector } from '@xstate/react';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { useTranslations } from '@/lib/localization/useTranslations';
 
@@ -475,17 +475,17 @@ const laskentaStateParamsToMachineParams = ({
   };
 };
 
-const useLaskentaMachine = () => {
+const useLaskentaActorRef = () => {
   const { addToast } = useToaster();
 
   const laskentaMachine = useMemo(() => {
     return createLaskentaMachine(addToast);
   }, [addToast]);
 
-  return useMachine(laskentaMachine);
+  return useActorRef(laskentaMachine);
 };
 
-export const useLaskentaApi = (actorRef: LaskentaActorRef) => {
+export const useLaskentaActorState = (actorRef: LaskentaActorRef) => {
   const { send } = actorRef;
 
   return {
@@ -537,8 +537,8 @@ export const useLaskentaApi = (actorRef: LaskentaActorRef) => {
 };
 
 export const useLaskentaState = () => {
-  const [, , actorRef] = useLaskentaMachine();
-  return useLaskentaApi(actorRef);
+  const actorRef = useLaskentaActorRef();
+  return useLaskentaActorState(actorRef);
 };
 
 export const useLaskentaTitle = (

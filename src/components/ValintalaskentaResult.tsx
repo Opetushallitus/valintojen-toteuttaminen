@@ -6,7 +6,7 @@ import { Hakukohde } from '@/lib/kouta/kouta-types';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import {
   LaskentaActorRef,
-  useLaskentaApi,
+  useLaskentaActorState,
   useLaskentaTitle,
   LaskentaState,
 } from '@/lib/state/laskenta-state';
@@ -25,7 +25,7 @@ export const ValintalaskentaResult = ({
   const { t } = useTranslations();
 
   const { state, isCanceling, resetLaskenta, confirmLaskenta, cancelLaskenta } =
-    useLaskentaApi(actorRef);
+    useLaskentaActorState(actorRef);
 
   const startingLaskentaTitle = useLaskentaTitle(actorRef, 'current');
   const resultLaskentaTitle = useLaskentaTitle(actorRef, 'result');

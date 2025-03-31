@@ -2,7 +2,10 @@
 
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { Divider, Stack } from '@mui/material';
-import { LaskentaActorRef, useLaskentaApi } from '@/lib/state/laskenta-state';
+import {
+  LaskentaActorRef,
+  useLaskentaActorState,
+} from '@/lib/state/laskenta-state';
 import { Hakukohde } from '@/lib/kouta/kouta-types';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { ValintalaskentaResult } from '@/components/ValintalaskentaResult';
@@ -14,7 +17,7 @@ export const ValintaryhmanValintalaskenta = ({
   hakukohteet: Array<Hakukohde>;
   actorRef: LaskentaActorRef;
 }) => {
-  const { state, startLaskenta } = useLaskentaApi(actorRef);
+  const { state, startLaskenta } = useLaskentaActorState(actorRef);
 
   const { t } = useTranslations();
 
