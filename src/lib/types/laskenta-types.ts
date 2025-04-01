@@ -75,7 +75,7 @@ export type SeurantaTiedot = {
   jonosija: number | null;
 };
 
-export type LaskentaStart = {
+export type StartedLaskentaInfo = {
   startedNewLaskenta: boolean;
   loadingUrl: string;
 };

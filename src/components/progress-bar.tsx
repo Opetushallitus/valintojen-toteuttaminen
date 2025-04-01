@@ -5,7 +5,8 @@ import { TRANSITION_DURATION } from '@/lib/constants';
 const PROGRESSBAR_HEIGHT = '42px';
 
 export const ProgressBar = ({ value }: { value: number }) => {
-  const valuePercent = `${value}%`;
+  const valuePercent = `${Math.round(value)}%`;
+  const widthPercent = `${value}%`;
   return (
     <Box
       role="progressbar"
@@ -19,6 +20,7 @@ export const ProgressBar = ({ value }: { value: number }) => {
         height: PROGRESSBAR_HEIGHT,
         border: `1px solid ${ophColors.grey300}`,
         maxWidth: '700px',
+        width: '100%',
         borderRadius: '2px',
         '&:before, &:after': {
           position: 'absolute',
@@ -38,7 +40,7 @@ export const ProgressBar = ({ value }: { value: number }) => {
         '&:after': {
           backgroundColor: ophColors.cyan1,
           color: ophColors.white,
-          width: valuePercent,
+          width: widthPercent,
           transition: `${TRANSITION_DURATION} width linear`,
         },
       }}

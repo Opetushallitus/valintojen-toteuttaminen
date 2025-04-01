@@ -9,7 +9,7 @@ import {
 } from './valintaryhma-hakukohde-table';
 import { Box } from '@mui/material';
 import { styled } from '@/lib/theme';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { ValintaryhmaHakukohteilla } from '@/lib/valintaperusteet/valintaperusteet-types';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import { useTranslations } from '@/lib/localization/useTranslations';
@@ -24,7 +24,6 @@ import { useHaku } from '@/lib/kouta/useHaku';
 import { useHaunAsetukset } from '@/lib/ohjausparametrit/useHaunAsetukset';
 import { getLasketutHakukohteet } from '@/lib/valintalaskenta/valintalaskenta-service';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
-import useToaster from '@/hooks/useToaster';
 import { useLaskentaState } from '@/lib/state/laskenta-state';
 
 const StyledContainer = styled(Box)(({ theme }) => ({
@@ -75,23 +74,22 @@ const ValintaryhmaBody = ({
   hakukohteetWithLink: Array<HakukohdeWithLink>;
   haku: Haku;
 }) => {
-  const { addToast } = useToaster();
+  const { actorRef, setLaskentaParams } = useLaskentaState();
 
-  const [state, send, actorRef] = useLaskentaState({
-    haku,
-    valintaryhma: valittuRyhma,
-    haunAsetukset,
-    hakukohteet,
-    addToast,
-  });
+  useEffect(() => {
+    setLaskentaParams({
+      haku,
+      valintaryhma: valittuRyhma,
+      haunAsetukset,
+      hakukohteet,
+    });
+  }, [setLaskentaParams, haku, valittuRyhma, haunAsetukset, hakukohteet]);
 
   return (
     <>
       <ValintaryhmanValintalaskenta
         hakukohteet={hakukohteet}
         actorRef={actorRef}
-        send={send}
-        state={state}
       />
       <ValintaryhmaHakukohdeTable
         hakukohteet={hakukohteetWithLink}

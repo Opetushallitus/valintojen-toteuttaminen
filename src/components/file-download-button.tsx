@@ -22,6 +22,7 @@ export function FileDownloadButton({
   errorKey,
   errorMessage,
   startIcon,
+  component,
   ...props
 }: FileDownloadProps) {
   const { addToast } = useToaster();
@@ -37,14 +38,16 @@ export function FileDownloadButton({
     defaultFileName,
   });
 
+  const ButtonComponent = component ?? OphButton;
+
   return (
-    <OphButton
+    <ButtonComponent
       startIcon={startIcon ?? <FileDownloadOutlined />}
       loading={mutation.isPending}
       onClick={() => mutation.mutate()}
       {...props}
     >
       {children}
-    </OphButton>
+    </ButtonComponent>
   );
 }

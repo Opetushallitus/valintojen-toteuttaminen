@@ -23,7 +23,7 @@ export const Button = withDefaultProps(
 export const Container = styled(Box)(({ theme }) => ({
   display: 'flex',
   backgroundColor: theme.palette.primary.main,
-  color: 'white',
+  color: ophColors.white,
   padding: theme.spacing(0.5, 1),
   alignItems: 'center',
   borderRadius: '3px',
