@@ -71,10 +71,10 @@ const createLaskentaURL = ({
   const singleHakukohde = only(hakukohteet ?? []);
 
   // Jos lasketaan koko haku, ei tarvitse antaa whitelist-parametria
-  const urlWhitelisPart = laskentaTyyppi === 'HAKU' ? '' : '/whitelist/true';
+  const urlWhitelistPart = laskentaTyyppi === 'HAKU' ? '' : '/whitelist/true';
 
   const laskentaUrl = new URL(
-    `${configuration.valintalaskentakerrallaUrl}/haku/${haku.oid}/tyyppi/${laskentaTyyppi}${urlWhitelisPart}`,
+    `${configuration.valintalaskentakerrallaUrl}/haku/${haku.oid}/tyyppi/${laskentaTyyppi}${urlWhitelistPart}`,
   );
   laskentaUrl.searchParams.set(
     'erillishaku',
