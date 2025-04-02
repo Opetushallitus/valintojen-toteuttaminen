@@ -1,6 +1,5 @@
 'use client';
 import { useEffect } from 'react';
-import useToaster from './useToaster';
 import { useRouter } from 'next/navigation';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import { showModal } from '@/components/modals/global-modal';
@@ -19,14 +18,13 @@ const restoreOriginalPush = (router: AppRouterInstance) => {
 };
 
 export function useConfirmChangesBeforeNavigation(isDirty: boolean) {
-  const { addToast } = useToaster();
   const router = useRouter();
 
   const { t } = useTranslations();
 
   useEffect(() => {
     if (router.push.name !== 'patched') {
-      // @ts-expect-error storing original function to the router
+      // @ts-expect-error storing original push function to the router
       router.originalPush = router.push;
     }
 
@@ -47,5 +45,9 @@ export function useConfirmChangesBeforeNavigation(isDirty: boolean) {
     } else if (router.push.name === 'patched' && !isDirty) {
       restoreOriginalPush(router);
     }
-  }, [addToast, isDirty, router, t]);
+
+    return () => {
+      restoreOriginalPush(router);
+    };
+  }, [isDirty, router, t]);
 }
