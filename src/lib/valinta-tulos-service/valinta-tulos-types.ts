@@ -1,3 +1,4 @@
+import { MaksunTila } from '../ataru/ataru-types';
 import {
   IlmoittautumisTila,
   SijoittelunTila,
@@ -46,4 +47,72 @@ export type HakijanVastaanottoTila = {
   valintatapaJonoOid: string;
   vastaanottotila: VastaanottoTila;
   hakemusOid: string;
+};
+
+export type SijoitteluajonTuloksetResponseData = {
+  valintatapajonot: Array<{
+    oid: string;
+    nimi: string;
+    prioriteetti: number;
+    aloituspaikat: number;
+    alkuperaisetAloituspaikat?: number;
+    tasasijasaanto: 'YLITAYTTO' | 'ARVONTA' | 'ALITAYTTO';
+    eiVarasijatayttoa: boolean;
+    hakemukset: Array<{
+      hakijaOid: string;
+      hakemusOid: string;
+      pisteet: number;
+      tila: SijoittelunTila;
+      valintatapajonoOid: string;
+      hyvaksyttyHakijaryhmista: Array<string>;
+      varasijanNumero: number;
+      jonosija: number;
+      tasasijaJonosija: number;
+      prioriteetti: number;
+      onkoMuuttunutViimeSijoittelussa: boolean;
+      siirtynytToisestaValintatapajonosta: boolean;
+    }>;
+  }>;
+  sijoitteluajoId: string;
+  hakijaryhmat: Array<{ oid: string; kiintio: number }>;
+};
+
+export type SijoitteluajonTuloksetWithValintaEsitysResponseData = {
+  valintatulokset: Array<{
+    valintatapajonoOid: string;
+    hakemusOid: string;
+    henkiloOid: string;
+    pisteet: number;
+    valinnantila: 'VARALLA' | 'HYLATTY' | 'HYVAKSYTTY';
+    ehdollisestiHyvaksyttavissa: boolean;
+    julkaistavissa: boolean;
+    hyvaksyttyVarasijalta: boolean;
+    hyvaksyPeruuntunut: boolean;
+    hyvaksyttyHakijaryhmista: Array<string>;
+    varasijanNumero: number;
+    jonosija: number;
+    tasasijaJonosija: number;
+    prioriteetti: number;
+    vastaanottotila: VastaanottoTila;
+    ilmoittautumistila: IlmoittautumisTila;
+    ehdollisenHyvaksymisenEhtoKoodi?: string;
+    ehdollisenHyvaksymisenEhtoFI?: string;
+    ehdollisenHyvaksymisenEhtoSV?: string;
+    ehdollisenHyvaksymisenEhtoEN?: string;
+    vastaanottoDeadlineMennyt?: boolean;
+    vastaanottoDeadline?: string;
+    hyvaksyttyHarkinnanvaraisesti: boolean;
+  }>;
+  valintaesitys: Array<{
+    hakukohdeOid: string;
+    valintatapajonoOid: string;
+    hyvaksytty?: string;
+  }>;
+  lastModified: string;
+  sijoittelunTulokset: Omit<SijoitteluajonTuloksetResponseData, 'hakijaryhmat'>;
+  kirjeLahetetty: Array<{
+    henkiloOid: string;
+    kirjeLahetetty: string;
+  }>;
+  lukuvuosimaksut: Array<{ personOid: string; maksuntila: MaksunTila }>;
 };

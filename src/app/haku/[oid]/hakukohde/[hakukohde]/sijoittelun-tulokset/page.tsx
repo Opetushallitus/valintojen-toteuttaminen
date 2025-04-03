@@ -6,7 +6,7 @@ import { useTranslations } from '@/lib/localization/useTranslations';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { Box } from '@mui/material';
 import { useQueryClient, useSuspenseQueries } from '@tanstack/react-query';
-import { tryToGetLatestSijoitteluajonTuloksetWithValintaEsitysQueryOptions } from '@/lib/valinta-tulos-service/valinta-tulos-service';
+import { getLatestSijoitteluajonTuloksetWithValintaEsitysQueryOptions } from '@/lib/valinta-tulos-service/valinta-tulos-service';
 import { isEmpty } from '@/lib/common';
 import { PageSizeSelector } from '@/components/table/page-size-selector';
 import { NoResults } from '@/components/no-results';
@@ -19,6 +19,8 @@ import { hakukohdeQueryOptions } from '@/lib/kouta/useHakukohde';
 import { hakukohteenValinnanvaiheetQueryOptions } from '@/lib/valintaperusteet/valintaperusteet-service';
 import { documentIdForHakukohdeQueryOptions } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { checkIsValintalaskentaUsed } from '@/lib/valintaperusteet/valintaperusteet-utils';
+import { getHakemuksetQueryOptions } from '@/lib/ataru/ataru-service';
+import { useSijoitteluajonTuloksetValintatiedoilla } from '@/lib/valinta-tulos-service/useSijoitteluajonTuloksetValintatiedoilla';
 
 type SijoitteluContentParams = {
   hakuOid: string;
@@ -36,25 +38,35 @@ const SijoitteluContent = ({
   const [
     { data: haku },
     { data: hakukohde },
-    { data: tulokset },
+    { data: sijoittelunTulokset },
     { data: valinnanvaiheet },
+    { data: hakemukset },
   ] = useSuspenseQueries({
     queries: [
       hakuQueryOptions({ hakuOid }),
       hakukohdeQueryOptions({ hakukohdeOid }),
-      tryToGetLatestSijoitteluajonTuloksetWithValintaEsitysQueryOptions({
+      getLatestSijoitteluajonTuloksetWithValintaEsitysQueryOptions({
         hakuOid,
         hakukohdeOid,
       }),
       hakukohteenValinnanvaiheetQueryOptions(hakukohdeOid),
+      getHakemuksetQueryOptions({
+        hakuOid,
+        hakukohdeOid,
+      }),
     ],
   });
 
+  const tuloksetValintatiedoilla = useSijoitteluajonTuloksetValintatiedoilla({
+    hakemukset,
+    sijoittelunTulokset,
+  });
+
   const kaikkiJonotHyvaksytty = Boolean(
-    tulokset?.valintatapajonot.every((jono) => jono.accepted),
+    tuloksetValintatiedoilla?.valintatapajonot.every((jono) => jono.accepted),
   );
 
-  return isEmpty(tulokset?.valintatapajonot) ? (
+  return isEmpty(tuloksetValintatiedoilla?.valintatapajonot) ? (
     <NoResults text={t('sijoittelun-tulokset.ei-tuloksia')} />
   ) : (
     <Box
@@ -77,11 +89,11 @@ const SijoitteluContent = ({
         <SijoittelunTulosControls
           haku={haku}
           hakukohde={hakukohde}
-          sijoitteluajoId={tulokset?.sijoitteluajoId}
+          sijoitteluajoId={tuloksetValintatiedoilla?.sijoitteluajoId}
         />
         <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
       </Box>
-      {tulokset?.valintatapajonot.map((jono) => {
+      {tuloksetValintatiedoilla?.valintatapajonot.map((jono) => {
         const kayttaaLaskentaa = checkIsValintalaskentaUsed(
           valinnanvaiheet,
           jono.oid,
@@ -93,8 +105,8 @@ const SijoitteluContent = ({
             key={jono.oid}
             haku={haku}
             hakukohde={hakukohde}
-            sijoitteluajoId={tulokset.sijoitteluajoId}
-            lastModified={tulokset.lastModified}
+            sijoitteluajoId={tuloksetValintatiedoilla.sijoitteluajoId}
+            lastModified={tuloksetValintatiedoilla.lastModified}
             kaikkiJonotHyvaksytty={kaikkiJonotHyvaksytty}
             kayttaaLaskentaa={kayttaaLaskentaa}
           />

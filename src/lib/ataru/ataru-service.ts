@@ -7,6 +7,7 @@ import {
 import { configuration } from '../configuration';
 import { client } from '../http-client';
 import { Language } from '../localization/localization-types';
+import { queryOptions } from '@tanstack/react-query';
 
 const getMaksuvelvollisuus = (toive?: {
   hakukohdeOid: string;
@@ -159,6 +160,21 @@ type GetHakijatParams = Partial<GetHakemuksetParams>;
 export const getHakijat = async (params: GetHakijatParams) => {
   const ataruHakemukset = await getAtaruHakemukset(params);
   return ataruHakemukset.map(parseHakijaTiedot);
+};
+
+export const getHakemuksetQueryOptions = (params: GetHakemuksetParams) => {
+  return queryOptions({
+    queryKey: [
+      'getHakemukset',
+      params.hakuOid,
+      params.hakukohdeOid,
+      params.hakemusOids,
+      params.henkiloOid,
+      params.name,
+      params.henkilotunnus,
+    ],
+    queryFn: () => getHakemukset(params),
+  });
 };
 
 export async function getHakemukset({

@@ -1,7 +1,7 @@
 'use client';
 import { useSuspenseQueries } from '@tanstack/react-query';
 import { hakukohteenValintalaskennanTuloksetQueryOptions } from '../lib/valintalaskenta/valintalaskenta-service';
-import { getHakemukset } from '../lib/ataru/ataru-service';
+import { getHakemuksetQueryOptions } from '../lib/ataru/ataru-service';
 import { TranslatedName } from '../lib/localization/localization-types';
 import {
   ValintalaskennanValintatapaJonosijaModel,
@@ -243,10 +243,10 @@ export const useEditableValintalaskennanTulokset = ({
     { data: valinnanvaiheet },
   ] = useSuspenseQueries({
     queries: [
-      {
-        queryKey: ['getHakemukset', hakuOid, hakukohdeOid],
-        queryFn: () => getHakemukset({ hakuOid, hakukohdeOid }),
-      },
+      getHakemuksetQueryOptions({
+        hakuOid,
+        hakukohdeOid,
+      }),
       hakukohteenValintalaskennanTuloksetQueryOptions(hakukohdeOid),
       hakukohteenValinnanvaiheetQueryOptions(hakukohdeOid),
     ],

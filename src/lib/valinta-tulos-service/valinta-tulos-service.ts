@@ -1,25 +1,22 @@
 'use client';
 
 import { indexBy, pick, prop } from 'remeda';
-import { getHakemukset } from '../ataru/ataru-service';
 import { configuration } from '../configuration';
 import { client } from '../http-client';
 import {
-  IlmoittautumisTila,
   SijoitteluajonTulokset,
-  SijoitteluajonTuloksetValintatiedoilla,
-  SijoitteluajonValintatapajonoValintatiedoilla,
   SijoittelunHakemus,
   SijoittelunHakemusValintatiedoilla,
   SijoittelunTila,
   SijoittelunValintatapajonoTulos,
   VastaanottoTila,
 } from '../types/sijoittelu-types';
-import { MaksunTila, Maksuvelvollisuus } from '../ataru/ataru-types';
 import { nullWhen404, OphApiError } from '../common';
 import {
   HakemusChangeEvent,
   HakijanVastaanottoTila,
+  SijoitteluajonTuloksetResponseData,
+  SijoitteluajonTuloksetWithValintaEsitysResponseData,
   ValinnanTulosModel,
   ValinnanTulosUpdateErrorResult,
 } from './valinta-tulos-types';
@@ -66,218 +63,33 @@ export const getSijoittelunTulokset = async (
   return jsonTulokset;
 };
 
-type SijoitteluajonTuloksetResponseData = {
-  valintatapajonot: Array<{
-    oid: string;
-    nimi: string;
-    prioriteetti: number;
-    aloituspaikat: number;
-    alkuperaisetAloituspaikat?: number;
-    tasasijasaanto: 'YLITAYTTO' | 'ARVONTA' | 'ALITAYTTO';
-    eiVarasijatayttoa: boolean;
-    hakemukset: [
-      {
-        hakijaOid: string;
-        hakemusOid: string;
-        pisteet: number;
-        tila: SijoittelunTila;
-        valintatapajonoOid: string;
-        hyvaksyttyHakijaryhmista: Array<string>;
-        varasijanNumero: number;
-        jonosija: number;
-        tasasijaJonosija: number;
-        prioriteetti: number;
-        onkoMuuttunutViimeSijoittelussa: boolean;
-        siirtynytToisestaValintatapajonosta: boolean;
-      },
-    ];
-  }>;
-  sijoitteluajoId: string;
-  hakijaryhmat: Array<{ oid: string; kiintio: number }>;
-};
+export const getLatestSijoitteluajonTuloksetWithValintaEsitysQueryOptions = ({
+  hakuOid,
+  hakukohdeOid,
+}: {
+  hakuOid: string;
+  hakukohdeOid: string;
+}) =>
+  queryOptions({
+    queryKey: [
+      'getLatestSijoitteluajonTuloksetWithValintaEsitys',
+      hakuOid,
+      hakukohdeOid,
+    ],
+    queryFn: () =>
+      getLatestSijoitteluajonTuloksetWithValintaEsitys(hakuOid, hakukohdeOid),
+  });
 
-type SijoitteluajonTuloksetWithValintaEsitysResponseData = {
-  valintatulokset: Array<{
-    valintatapajonoOid: string;
-    hakemusOid: string;
-    henkiloOid: string;
-    pisteet: number;
-    valinnantila: 'VARALLA' | 'HYLATTY' | 'HYVAKSYTTY';
-    ehdollisestiHyvaksyttavissa: boolean;
-    julkaistavissa: boolean;
-    hyvaksyttyVarasijalta: boolean;
-    hyvaksyPeruuntunut: boolean;
-    hyvaksyttyHakijaryhmista: Array<string>;
-    varasijanNumero: number;
-    jonosija: number;
-    tasasijaJonosija: number;
-    prioriteetti: number;
-    vastaanottotila: VastaanottoTila;
-    ilmoittautumistila: IlmoittautumisTila;
-    ehdollisenHyvaksymisenEhtoKoodi?: string;
-    ehdollisenHyvaksymisenEhtoFI?: string;
-    ehdollisenHyvaksymisenEhtoSV?: string;
-    ehdollisenHyvaksymisenEhtoEN?: string;
-    vastaanottoDeadlineMennyt?: boolean;
-    vastaanottoDeadline?: string;
-    hyvaksyttyHarkinnanvaraisesti: boolean;
-  }>;
-  valintaesitys: Array<{
-    hakukohdeOid: string;
-    valintatapajonoOid: string;
-    hyvaksytty?: string;
-  }>;
-  lastModified: string;
-  sijoittelunTulokset: Omit<SijoitteluajonTuloksetResponseData, 'hakijaryhmat'>;
-  kirjeLahetetty: [
-    {
-      henkiloOid: string;
-      kirjeLahetetty: string;
-    },
-  ];
-  lukuvuosimaksut: Array<{ personOid: string; maksuntila: MaksunTila }>;
-};
-
-const getLatestSijoitteluAjonTuloksetWithValintaEsitys = async (
+export const getLatestSijoitteluajonTuloksetWithValintaEsitys = async (
   hakuOid: string,
   hakukohdeOid: string,
-): Promise<SijoitteluajonTuloksetValintatiedoilla> => {
-  const [{ data }, hakemukset] = await Promise.all([
+) => {
+  const response = await nullWhen404(
     client.get<SijoitteluajonTuloksetWithValintaEsitysResponseData>(
       `${configuration.valintaTulosServiceUrl}sijoitteluntulos/${hakuOid}/sijoitteluajo/latest/hakukohde/${hakukohdeOid}`,
     ),
-    getHakemukset({ hakuOid, hakukohdeOid }),
-  ]);
-
-  const hakemuksetIndexed = indexBy(hakemukset, (h) => h.hakemusOid);
-  const lukuvuosimaksutIndexed = indexBy(
-    data.lukuvuosimaksut,
-    (m) => m.personOid,
   );
-  const lahetetytKirjeetIndexed = indexBy(
-    data.kirjeLahetetty,
-    (k) => k.henkiloOid,
-  );
-
-  const sijoitteluajonTulokset: Array<SijoitteluajonValintatapajonoValintatiedoilla> =
-    data.sijoittelunTulokset.valintatapajonot.map((jono) => {
-      const valintatuloksetIndexed = indexBy(
-        data.valintatulokset.filter((vt) => vt.valintatapajonoOid === jono.oid),
-        (vt) => vt.hakemusOid,
-      );
-
-      let hasNegativePisteet: boolean = false;
-
-      const hakemukset: Array<SijoittelunHakemusValintatiedoilla> =
-        jono.hakemukset.map((h) => {
-          const hakemus = hakemuksetIndexed[h.hakemusOid];
-          const valintatulos = valintatuloksetIndexed[h.hakemusOid];
-          const maksunTila =
-            hakemus.maksuvelvollisuus === Maksuvelvollisuus.MAKSUVELVOLLINEN &&
-            (lukuvuosimaksutIndexed[h.hakijaOid]?.maksuntila ??
-              MaksunTila.MAKSAMATTA);
-          if (h.pisteet < 0) {
-            hasNegativePisteet = true;
-          }
-
-          return {
-            hakijaOid: h.hakijaOid,
-            hakemusOid: h.hakemusOid,
-            hakijanNimi: hakemus?.hakijanNimi,
-            pisteet: h.pisteet,
-            tila: h.tila,
-            valintatapajonoOid: h.valintatapajonoOid,
-            hyvaksyttyHakijaryhmista: h.hyvaksyttyHakijaryhmista,
-            varasijanNumero: h.varasijanNumero,
-            jonosija: h.jonosija,
-            tasasijaJonosija: h.tasasijaJonosija,
-            hakutoive: h.prioriteetti,
-            ilmoittautumisTila: valintatulos.ilmoittautumistila,
-            julkaistavissa: valintatulos.julkaistavissa,
-            vastaanottotila: valintatulos.vastaanottotila,
-            maksunTila: maksunTila || undefined,
-            ehdollisestiHyvaksyttavissa:
-              valintatulos.ehdollisestiHyvaksyttavissa,
-            hyvaksyttyVarasijalta: valintatulos.hyvaksyttyVarasijalta,
-            onkoMuuttunutViimeSijoittelussa: h.onkoMuuttunutViimeSijoittelussa,
-            ehdollisenHyvaksymisenEhtoKoodi:
-              valintatulos.ehdollisenHyvaksymisenEhtoKoodi,
-            ehdollisenHyvaksymisenEhtoFI:
-              valintatulos.ehdollisenHyvaksymisenEhtoFI,
-            ehdollisenHyvaksymisenEhtoSV:
-              valintatulos.ehdollisenHyvaksymisenEhtoSV,
-            ehdollisenHyvaksymisenEhtoEN:
-              valintatulos.ehdollisenHyvaksymisenEhtoEN,
-            vastaanottoDeadlineMennyt: valintatulos.vastaanottoDeadlineMennyt,
-            vastaanottoDeadline: valintatulos.vastaanottoDeadline,
-            hyvaksyttyHarkinnanvaraisesti:
-              valintatulos.hyvaksyttyHarkinnanvaraisesti,
-            hyvaksyPeruuntunut: valintatulos.hyvaksyPeruuntunut,
-            hyvaksymiskirjeLahetetty:
-              lahetetytKirjeetIndexed[h.hakijaOid]?.kirjeLahetetty,
-            siirtynytToisestaValintatapajonosta:
-              h.siirtynytToisestaValintatapajonosta,
-          };
-        });
-      hakemukset.sort((a, b) =>
-        a.jonosija === b.jonosija
-          ? a.tasasijaJonosija - b.tasasijaJonosija
-          : a.jonosija - b.jonosija,
-      );
-      hakemukset
-        .filter(function (hakemus) {
-          return (
-            hakemus.tila === 'HYVAKSYTTY' ||
-            hakemus.tila === 'VARASIJALTA_HYVAKSYTTY' ||
-            hakemus.tila === 'VARALLA'
-          );
-        })
-        .forEach((hakemus, i) => (hakemus.sija = i + 1));
-
-      return {
-        oid: jono.oid,
-        nimi: jono.nimi,
-        hakemukset,
-        hasNegativePisteet,
-        prioriteetti: jono.prioriteetti,
-        accepted: data.valintaesitys?.find(
-          (e) => e.valintatapajonoOid === jono.oid,
-        )?.hyvaksytty,
-        varasijataytto: !jono.eiVarasijatayttoa,
-        aloituspaikat: jono.aloituspaikat,
-        alkuperaisetAloituspaikat: jono.alkuperaisetAloituspaikat,
-        tasasijasaanto: jono.tasasijasaanto,
-      };
-    });
-  return {
-    sijoitteluajoId: data.sijoittelunTulokset.sijoitteluajoId,
-    valintatapajonot: sijoitteluajonTulokset,
-    lastModified: data.lastModified,
-  };
-};
-
-export const tryToGetLatestSijoitteluajonTuloksetWithValintaEsitysQueryOptions =
-  ({ hakuOid, hakukohdeOid }: { hakuOid: string; hakukohdeOid: string }) =>
-    queryOptions({
-      queryKey: [
-        'tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys',
-        hakuOid,
-        hakukohdeOid,
-      ],
-      queryFn: () =>
-        tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys(
-          hakuOid,
-          hakukohdeOid,
-        ),
-    });
-
-export const tryToGetLatestSijoitteluajonTuloksetWithValintaEsitys = async (
-  hakuOid: string,
-  hakukohdeOid: string,
-): Promise<SijoitteluajonTuloksetValintatiedoilla | null> => {
-  return nullWhen404(
-    getLatestSijoitteluAjonTuloksetWithValintaEsitys(hakuOid, hakukohdeOid),
-  );
+  return response ? response.data : null;
 };
 
 export const getLatestSijoitteluAjonTuloksetForHakukohde = async (
