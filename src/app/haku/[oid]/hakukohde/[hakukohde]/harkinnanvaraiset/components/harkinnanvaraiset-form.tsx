@@ -2,7 +2,7 @@ import { FormBox } from '@/components/form-box';
 import { useHasChanged } from '@/hooks/useHasChanged';
 import useToaster from '@/hooks/useToaster';
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { EMPTY_OBJECT, EMPTY_STRING_SET } from '@/lib/common';
+import { EMPTY_OBJECT } from '@/lib/common';
 import {
   HakemuksenHarkinnanvaraisuus,
   HarkinnanvarainenTilaValue,
@@ -18,6 +18,7 @@ import { harkinnanvaraisetTilatOptions } from '../hooks/useHarkinnanvaraisetHake
 import { HarkinnanvaraisetActionBar } from './harkinnanvaraiset-action-bar';
 import { HarkinnanvaraisetTable } from './harkinnanvaraiset-table';
 import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBeforeNavigation';
+import { useSelection } from '@/hooks/useSelection';
 
 const useTallennaMutation = ({
   hakuOid,
@@ -89,8 +90,8 @@ export const HarkinnanvaraisetForm = ({
 }) => {
   const { t } = useTranslations();
 
-  const [selection, setSelection] = useState<Set<string>>(
-    () => EMPTY_STRING_SET,
+  const { selection, setSelection, resetSelection } = useSelection(
+    harkinnanvaraisetHakemukset,
   );
 
   const [harkinnanvaraisetTilat, setHarkinnanvaraisetTilat] =
@@ -154,7 +155,7 @@ export const HarkinnanvaraisetForm = ({
       <HarkinnanvaraisetActionBar
         selection={selection}
         onHarkinnanvaraisetTilatChange={handleHarkinnanvaraisetTilatChange}
-        resetSelection={() => setSelection(EMPTY_STRING_SET)}
+        resetSelection={resetSelection}
       />
       <HarkinnanvaraisetTable
         data={harkinnanvaraisetHakemukset}
