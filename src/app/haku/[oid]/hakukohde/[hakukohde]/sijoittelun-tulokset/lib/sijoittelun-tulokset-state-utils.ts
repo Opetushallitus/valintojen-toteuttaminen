@@ -42,51 +42,6 @@ export const hasChangedHakemukset = ({
 }) => context.changedHakemukset.length > 0;
 
 /**
- * Palauttaa päivitetyn hakemukset-taulukon. Korvataan alkuperäisessä datassa päivitetyt hakemukset muuttuneilla.
- * Ei päivitetä, jos tallennuksessa tapahtui virhe (hakemuksen oid löytyy erroredHakemusOids-taulukosta).
- */
-export const applyChangesToHakemukset = (
-  context: SijoittelunTuloksetContext,
-  erroredHakemusOids: Array<string> = [],
-) => {
-  return context.hakemukset.map((hakemus) => {
-    if (erroredHakemusOids.includes(hakemus.hakemusOid)) {
-      return hakemus;
-    }
-
-    const isOverride = context.hakemuksetForMassUpdate !== undefined;
-
-    if (isOverride) {
-      return (
-        context.hakemuksetForMassUpdate?.find(
-          (c) => c.hakemusOid === hakemus.hakemusOid,
-        ) ?? hakemus
-      );
-    } else {
-      return (
-        context.changedHakemukset.find(
-          (c) => c.hakemusOid === hakemus.hakemusOid,
-        ) ?? hakemus
-      );
-    }
-  });
-};
-
-/**
- * Palauttaa päivitetyn changedHakemukset-taulukon. Jos muuttunut hakemus on arvoiltaan sama kuin alkuperäinen, poistetaan se changedHakemukset-taulukosta.
- */
-export const filterUnchangedFromChangedHakemukset = (
-  context: SijoittelunTuloksetContext,
-) => {
-  return context.changedHakemukset.filter((changedHakemus) => {
-    const original = context.hakemukset.find(
-      (hakemus) => hakemus.hakemusOid === changedHakemus.hakemusOid,
-    );
-    return original && !isUnchanged(changedHakemus, original);
-  });
-};
-
-/**
  * Tekee eventin mukaiset muokkaukset changedHakemukset-taulukkoon ja palauttaa muokatun taulukon.
  */
 const applyEditsToChangedHakemukset = ({
