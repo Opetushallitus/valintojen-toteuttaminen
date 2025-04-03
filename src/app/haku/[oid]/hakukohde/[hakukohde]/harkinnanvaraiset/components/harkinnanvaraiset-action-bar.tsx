@@ -63,7 +63,7 @@ const OsoitetarratDownloadButton = ({
       defaultFileName="osoitetarrat.pdf"
       getFile={getFile}
       errorKey="get-osoitetarrat-error"
-      errorMessage="harkinnanvaraiset.virhe-osoitetarrat"
+      errorMessage="virhe.osoitetarrat"
     >
       {t('harkinnanvaraiset.muodosta-osoitetarrat')}
     </FileDownloadButton>

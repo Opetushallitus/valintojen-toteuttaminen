@@ -36,7 +36,7 @@ const OsoitetarratDownloadButton = ({
         })
       }
       errorKey="get-osoitetarrat-error"
-      errorMessage="valintakoekutsut.virhe-osoitetarrat"
+      errorMessage="virhe.osoitetarrat"
       defaultFileName="osoitetarrat.pdf"
     >
       {t('valintakoekutsut.muodosta-osoitetarrat')}

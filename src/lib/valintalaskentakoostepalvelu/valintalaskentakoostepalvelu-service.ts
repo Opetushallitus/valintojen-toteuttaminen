@@ -385,22 +385,16 @@ const processDocumentAndReturnDocumentId = async (
   return dokumenttiId;
 };
 
-const downloadProcessDocument = async (processId: string) => {
-  const dokumenttiId = await processDocumentAndReturnDocumentId(processId);
-
-  const documentRes = await client.get<Blob>(
-    configuration.lataaDokumenttiUrl({ dokumenttiId }),
-  );
-
-  return createFileResult(documentRes);
-};
-
 export const downloadReadyProcessDocument = async (dokumenttiId: string) => {
   const documentRes = await client.get<Blob>(
     configuration.lataaDokumenttiUrl({ dokumenttiId }),
   );
-
   return createFileResult(documentRes);
+};
+
+const downloadProcessDocument = async (processId: string) => {
+  const dokumenttiId = await processDocumentAndReturnDocumentId(processId);
+  return downloadReadyProcessDocument(dokumenttiId);
 };
 
 export const getValintakoeExcel = async ({
