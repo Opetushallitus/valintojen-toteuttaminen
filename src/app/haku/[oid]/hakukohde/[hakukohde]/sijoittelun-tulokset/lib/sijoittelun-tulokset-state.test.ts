@@ -149,7 +149,7 @@ describe('Sijoittelun tulokset states', async () => {
     expect(state.context.changedHakemukset.length).toEqual(0);
   });
 
-  test('mass update preserves other changes and modifies original hakemukset on success', async () => {
+  test('mass update calls onUpdated on success', async () => {
     const actor = createActorLogic();
     vi.spyOn(client, 'post').mockImplementationOnce(() =>
       Promise.resolve({ headers: new Headers(), data: {} }),
@@ -202,6 +202,26 @@ describe('Sijoittelun tulokset states', async () => {
     actor.send({ type: SijoittelunTuloksetEventType.UPDATE });
     state = await waitIdle(actor);
     expect(onUpdatedFn).not.toHaveBeenCalled();
+  });
+
+  test('Should change ilmoittautumistila to EI_TEHTY when changing vastannottotila to KESKEN', async () => {
+    const actor = createActorLogic();
+
+    actor.send({
+      type: SijoittelunTuloksetEventType.CHANGE,
+      hakemusOid: 'hakemus-1',
+      vastaanottotila: VastaanottoTila.KESKEN,
+    });
+
+    const state = await waitIdle(actor);
+
+    expect(state.context.changedHakemukset.length).toEqual(1);
+    expect(state.context.changedHakemukset[0].vastaanottotila).toEqual(
+      VastaanottoTila.KESKEN,
+    );
+    expect(state.context.changedHakemukset[0].ilmoittautumisTila).toEqual(
+      IlmoittautumisTila.EI_TEHTY,
+    );
   });
 
   test('Should call onUpdated when saving one hakemus succeeded and other failed', async () => {

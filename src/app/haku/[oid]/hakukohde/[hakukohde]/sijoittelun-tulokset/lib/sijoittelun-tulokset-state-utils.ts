@@ -1,4 +1,8 @@
-import { SijoittelunHakemusValintatiedoilla } from '@/lib/types/sijoittelu-types';
+import {
+  IlmoittautumisTila,
+  SijoittelunHakemusValintatiedoilla,
+  VastaanottoTila,
+} from '@/lib/types/sijoittelu-types';
 import {
   type SijoittelunTulosEditableFields,
   type SijoittelunTuloksetContext,
@@ -9,6 +13,7 @@ import {
 import {
   isIlmoittautuminenPossible,
   isVastaanottoPossible,
+  VASTAANOTTOTILAT_JOISSA_VOI_ILMOITTAUTUA,
 } from '@/lib/sijoittelun-tulokset-utils';
 import { clone } from 'remeda';
 import { useSelector } from '@xstate/react';
@@ -63,6 +68,14 @@ const applyEditsToChangedHakemukset = ({
     if (event[fieldName] !== undefined) {
       (hakenut[fieldName] as string | boolean) = event[fieldName];
     }
+  }
+  if (
+    event.vastaanottotila &&
+    !VASTAANOTTOTILAT_JOISSA_VOI_ILMOITTAUTUA.includes(
+      event.vastaanottotila as VastaanottoTila,
+    )
+  ) {
+    hakenut.ilmoittautumisTila = IlmoittautumisTila.EI_TEHTY;
   }
 
   if (changedHakenut) {
