@@ -1,3 +1,4 @@
+import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 import Link, { type LinkProps } from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
@@ -7,14 +8,13 @@ export const HakukohdeTabLink = ({
   children,
   tabRoute,
   ...props
-}: Omit<LinkProps, 'href'> & {
-  hakuOid: string;
-  hakukohdeOid: string;
-  children: React.ReactNode;
-  className?: string;
-  tabRoute: string;
-  tabIndex?: number;
-}) => {
+}: Omit<LinkProps, 'href'> &
+  KoutaOidParams & {
+    children: React.ReactNode;
+    className?: string;
+    tabRoute: string;
+    tabIndex?: number;
+  }) => {
   const searchParams = useSearchParams();
   const hakukohdeSearchParam = searchParams.get('hksearch');
 

@@ -8,15 +8,14 @@ import {
 import { ValintakoekutsutExcelDownloadButton } from './valintakoekutsut-excel-download-button';
 import { FileDownloadButton } from '@/components/file-download-button';
 import { useTranslations } from '@/lib/localization/useTranslations';
+import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 
 const OsoitetarratDownloadButton = ({
   hakuOid,
   hakukohdeOid,
   valintakoeTunniste,
   selection,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
+}: KoutaOidParams & {
   valintakoeTunniste: string;
   selection: Set<string>;
 }) => {

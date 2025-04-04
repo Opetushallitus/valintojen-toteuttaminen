@@ -58,6 +58,11 @@ export enum Tila {
   ARKISTOITU = 'arkistoitu',
 }
 
+export type KoutaOidParams = {
+  hakuOid: string;
+  hakukohdeOid: string;
+};
+
 export function getFullnameOfHakukohde(
   hakukohde: Hakukohde,
   translateEntity: (translateable: TranslatedName) => string,

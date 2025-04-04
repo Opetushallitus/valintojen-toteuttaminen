@@ -12,6 +12,7 @@ import {
 } from '@/components/table/table-columns';
 import { ListTable } from '@/components/table/list-table';
 import { useSelection } from '@/hooks/useSelection';
+import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 
 const TRANSLATIONS_PREFIX = 'valintakoekutsut.taulukko';
 
@@ -25,9 +26,7 @@ export const ValintakoekutsutKokeittainTable = ({
   page,
   setPage,
   pageSize,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
+}: KoutaOidParams & {
   valintakoeTunniste: string;
   data: Array<ValintakoeKutsuItem>;
   sort: string;

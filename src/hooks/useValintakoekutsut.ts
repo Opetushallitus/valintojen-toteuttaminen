@@ -11,14 +11,13 @@ import {
   GetValintakoekutsutParams,
   ValintakoekutsutData,
 } from '../lib/types/valintakoekutsut-types';
+import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 
 const useValintakoekutsutData = <T>({
   hakuOid,
   hakukohdeOid,
   select,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
+}: KoutaOidParams & {
   select: (data: ValintakoekutsutData) => T;
 }) => {
   const { data: valintakoekutsutData } = useSuspenseQuery({

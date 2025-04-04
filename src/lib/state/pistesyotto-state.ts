@@ -8,6 +8,7 @@ import { useActorRef, useSelector } from '@xstate/react';
 import { useMemo } from 'react';
 import { clone, isEmpty } from 'remeda';
 import { ActorRefFrom, assign, createMachine, fromPromise } from 'xstate';
+import { KoutaOidParams } from '../kouta/kouta-types';
 
 export type PisteSyottoContext = {
   pistetiedot: Array<HakemuksenPistetiedot>;
@@ -258,9 +259,7 @@ export const createPisteSyottoMachine = (
   });
 };
 
-type PistesyottoMachineParams = {
-  hakuOid: string;
-  hakukohdeOid: string;
+type PistesyottoMachineParams = KoutaOidParams & {
   pistetiedot: Array<HakemuksenPistetiedot>;
   addToast: (toast: Toast) => void;
 };

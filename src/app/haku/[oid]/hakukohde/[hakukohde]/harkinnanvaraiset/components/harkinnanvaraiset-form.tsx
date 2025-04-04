@@ -19,14 +19,9 @@ import { HarkinnanvaraisetActionBar } from './harkinnanvaraiset-action-bar';
 import { HarkinnanvaraisetTable } from './harkinnanvaraiset-table';
 import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBeforeNavigation';
 import { useSelection } from '@/hooks/useSelection';
+import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 
-const useTallennaMutation = ({
-  hakuOid,
-  hakukohdeOid,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
-}) => {
+const useTallennaMutation = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const { addToast } = useToaster();
 
   const queryClient = useQueryClient();
@@ -83,9 +78,7 @@ export const HarkinnanvaraisetForm = ({
   hakuOid,
   hakukohdeOid,
   harkinnanvaraisetHakemukset,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
+}: KoutaOidParams & {
   harkinnanvaraisetHakemukset: Array<HakemuksenHarkinnanvaraisuus>;
 }) => {
   const { t } = useTranslations();

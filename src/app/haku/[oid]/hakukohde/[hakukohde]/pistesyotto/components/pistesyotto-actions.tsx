@@ -3,14 +3,13 @@ import { CircularProgress, Stack } from '@mui/material';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { PistesyottoExcelUploadButton } from './pistesyotto-excel-upload-button';
 import { PistesyottoExcelDownloadButton } from './pistesyotto-excel-download-button';
+import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 
 export const PisteSyottoActions = ({
   hakuOid,
   hakukohdeOid,
   isUpdating,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
+}: KoutaOidParams & {
   isUpdating: boolean;
 }) => {
   const { t } = useTranslations();

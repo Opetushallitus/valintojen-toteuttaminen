@@ -41,7 +41,12 @@ import {
   HarkinnanvaraisestiHyvaksytty,
 } from '../types/harkinnanvaraiset-types';
 import { queryOptions } from '@tanstack/react-query';
-import { getFullnameOfHakukohde, Haku, Hakukohde } from '../kouta/kouta-types';
+import {
+  getFullnameOfHakukohde,
+  Haku,
+  Hakukohde,
+  KoutaOidParams,
+} from '../kouta/kouta-types';
 import {
   ValinnanvaiheTyyppi,
   ValintaryhmaHakukohteilla,
@@ -458,10 +463,7 @@ const getKiintio = (
 export const getHarkinnanvaraisetTilat = async ({
   hakuOid,
   hakukohdeOid,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
-}) => {
+}: KoutaOidParams) => {
   const { data } = await client.get<Array<HarkinnanvaraisestiHyvaksytty>>(
     configuration.getHarkinnanvaraisetTilatUrl({ hakuOid, hakukohdeOid }),
   );
@@ -493,9 +495,7 @@ export type SaveJarjestyskriteeriParams = JarjestyskriteeriKeyParams & {
   selite: string;
 };
 
-type JarjestyskriteeriChangeResult = {
-  hakukohdeOid: string;
-  hakuOid: string;
+type JarjestyskriteeriChangeResult = KoutaOidParams & {
   valintatapajonoOid: string;
   hakemusOid: string;
   harkinnanvarainen: boolean | null;

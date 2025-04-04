@@ -10,18 +10,13 @@ import { PisteSyottoActions } from './pistesyotto-actions';
 import { HakukohteenPistetiedot } from '@/lib/types/laskenta-types';
 import { FormBox } from '@/components/form-box';
 import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBeforeNavigation';
-
-type PisteSyottoFormParams = {
-  hakuOid: string;
-  hakukohdeOid: string;
-  pistetulokset: HakukohteenPistetiedot;
-};
+import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 
 export const PisteSyottoForm = ({
   hakuOid,
   hakukohdeOid,
   pistetulokset,
-}: PisteSyottoFormParams) => {
+}: KoutaOidParams & { pistetulokset: HakukohteenPistetiedot }) => {
   const { addToast } = useToaster();
 
   const {

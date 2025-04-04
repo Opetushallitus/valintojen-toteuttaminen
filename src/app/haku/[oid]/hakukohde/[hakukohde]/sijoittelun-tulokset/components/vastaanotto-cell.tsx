@@ -35,12 +35,12 @@ const HakijanVastaanottoTilaSection = ({
 }) => {
   const { t } = useTranslations();
 
-  const { data: hakijoidenVastaanottoTila } = useHakijanVastaanottotila(
-    haku.oid,
-    hakukohde.oid,
-    valintatapajono.oid,
-    valintatapajono.hakemukset.map((h) => h.hakemusOid),
-  );
+  const { data: hakijoidenVastaanottoTila } = useHakijanVastaanottotila({
+    hakuOid: haku.oid,
+    hakukohdeOid: hakukohde.oid,
+    valintatapajonoOid: valintatapajono.oid,
+    hakemusOids: valintatapajono.hakemukset.map((h) => h.hakemusOid),
+  });
 
   const hakijanVastaanottoTila = hakijoidenVastaanottoTila?.find(
     (vastaanottoTila) =>
