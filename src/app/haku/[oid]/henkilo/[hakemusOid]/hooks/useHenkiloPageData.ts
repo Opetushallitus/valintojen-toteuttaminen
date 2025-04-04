@@ -17,7 +17,7 @@ import { hakemuksenValintalaskennanTuloksetQueryOptions } from '@/lib/valintalas
 import { selectEditableValintalaskennanTulokset } from '@/hooks/useEditableValintalaskennanTulokset';
 import {
   getLatestSijoitteluajonTuloksetForHakemus,
-  getValinnanTulokset,
+  getHakemuksenValinnanTulokset,
 } from '@/lib/valinta-tulos-service/valinta-tulos-service';
 import { notFound } from 'next/navigation';
 import { useMemo } from 'react';
@@ -63,14 +63,14 @@ export const latestSijoitteluajonTuloksetForHakemusQueryOptions = ({
       getLatestSijoitteluajonTuloksetForHakemus({ hakuOid, hakemusOid }),
   });
 
-export const valinnanTuloksetQueryOptions = ({
+export const getHakemuksenValinnanTuloksetQueryOptions = ({
   hakemusOid,
 }: {
   hakemusOid: string;
 }) =>
   queryOptions({
-    queryKey: ['getValinnanTulokset', hakemusOid],
-    queryFn: () => getValinnanTulokset({ hakemusOid }),
+    queryKey: ['getHakemuksenValinnanTulokset', hakemusOid],
+    queryFn: () => getHakemuksenValinnanTulokset({ hakemusOid }),
   });
 
 export const useHenkiloPageData = ({
@@ -93,7 +93,7 @@ export const useHenkiloPageData = ({
         hakuOid,
         hakemusOid,
       }),
-      valinnanTuloksetQueryOptions({ hakemusOid }),
+      getHakemuksenValinnanTuloksetQueryOptions({ hakemusOid }),
     ],
   });
 

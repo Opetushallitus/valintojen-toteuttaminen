@@ -18,7 +18,7 @@ import {
   IlmoittautumisTila,
   VastaanottoTila,
 } from '@/lib/types/sijoittelu-types';
-import { valinnanTuloksetQueryOptions } from '../hooks/useHenkiloPageData';
+import { getHakemuksenValinnanTuloksetQueryOptions } from '../hooks/useHenkiloPageData';
 import {
   isIlmoittautuminenPossible,
   isVastaanottoPossible,
@@ -67,7 +67,7 @@ const refetchValinnanTulokset = ({
   queryClient: QueryClient;
   hakemusOid: string;
 }) => {
-  const valintaQueryOptions = valinnanTuloksetQueryOptions({
+  const valintaQueryOptions = getHakemuksenValinnanTuloksetQueryOptions({
     hakemusOid,
   });
   queryClient.resetQueries(valintaQueryOptions);

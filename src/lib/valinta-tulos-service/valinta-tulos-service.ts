@@ -293,7 +293,36 @@ export const hyvaksyValintaEsitys = async (valintatapajonoOid: string) => {
   );
 };
 
-export const getValinnanTulokset = async ({
+export type HakukohteenValinnanTuloksetData = {
+  lastModified: string | null;
+  data: Record<string, ValinnanTulosModel>;
+};
+
+export const getHakukohteenValinnanTuloksetQueryOptions = (
+  params: KoutaOidParams,
+) =>
+  queryOptions({
+    queryKey: [
+      'getHakukohteenValinnanTulokset',
+      params.hakuOid,
+      params.hakukohdeOid,
+    ],
+    queryFn: () => getHakukohteenValinnanTulokset(params),
+  });
+
+export const getHakukohteenValinnanTulokset = async (
+  params: KoutaOidParams,
+): Promise<HakukohteenValinnanTuloksetData> => {
+  const { data, headers } = await client.get<Array<ValinnanTulosModel>>(
+    configuration.hakukohteenValinnanTulosUrl(params),
+  );
+  return {
+    lastModified: headers.get('X-Last-Modified'),
+    data: indexBy(data ?? [], prop('hakemusOid')),
+  };
+};
+
+export const getHakemuksenValinnanTulokset = async ({
   hakemusOid,
 }: {
   hakemusOid: string;
