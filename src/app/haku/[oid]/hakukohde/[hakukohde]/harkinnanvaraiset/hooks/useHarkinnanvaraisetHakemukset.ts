@@ -1,6 +1,6 @@
 'use client';
 
-import { getHakemukset } from '@/lib/ataru/ataru-service';
+import { getHakemuksetQueryOptions } from '@/lib/ataru/ataru-service';
 import { HakemuksenHarkinnanvaraisuus } from '@/lib/types/harkinnanvaraiset-types';
 import { getHarkinnanvaraisetTilat } from '@/lib/valintalaskenta/valintalaskenta-service';
 import { getHarkinnanvaraisuudetHakemuksille } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
@@ -33,10 +33,9 @@ export const useHarkinnanvaraisetHakemukset = ({
   hakuOid: string;
   hakukohdeOid: string;
 }): Array<HakemuksenHarkinnanvaraisuus> => {
-  const { data: hakemukset } = useSuspenseQuery({
-    queryKey: ['getHakemukset', hakuOid, hakukohdeOid],
-    queryFn: () => getHakemukset({ hakuOid, hakukohdeOid }),
-  });
+  const { data: hakemukset } = useSuspenseQuery(
+    getHakemuksetQueryOptions({ hakuOid, hakukohdeOid }),
+  );
 
   const hakemusOids = hakemukset.map((h) => h.hakemusOid);
 

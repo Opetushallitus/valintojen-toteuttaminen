@@ -21,10 +21,13 @@ export type FileResult = {
 
 export const createFileResult = async (
   response: HttpClientResponse<Blob>,
-): Promise<FileResult> => ({
-  fileName: getContentFilename(response.headers),
-  blob: response.data,
-});
+): Promise<FileResult> => {
+  console.assert(response.data instanceof Blob, 'Response data is not a blob');
+  return {
+    fileName: getContentFilename(response.headers),
+    blob: response.data,
+  };
+};
 
 const doFetch = async (request: Request) => {
   try {
@@ -81,12 +84,14 @@ const retryWithLogin = async (request: Request, loginUrl: string) => {
 
 type BodyParser<T> = (res: Response) => Promise<T>;
 
-const TEXT_PARSER = async (res: Response) => await res.text();
-const BLOB_PARSER = async (response: Response) => await response.blob();
+const TEXT_PARSER = (res: Response) => res.text();
+const BLOB_PARSER = (response: Response) => response.blob();
 
 const RESPONSE_BODY_PARSERS: Record<string, BodyParser<unknown>> = {
   'application/json': async (response: Response) => await response.json(),
   'application/octet-stream': BLOB_PARSER,
+  'application/pdf': BLOB_PARSER,
+  'application/vnd.ms-excel': BLOB_PARSER,
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
     BLOB_PARSER,
   'text/plain': TEXT_PARSER,

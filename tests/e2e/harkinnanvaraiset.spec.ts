@@ -182,6 +182,10 @@ test('Pyytää käyttäjältä vahvistusta navigointiin kun on tallentamattomia 
   page,
 }) => {
   await selectOption(page, HARKINNANVARAINEN_INPUT_NAME, 'Hyväksytty');
+  // Tyhjennetään, ja valitaan uudelleen, jotta useConfirmChangesBeforeNavigation-hook ajetaan toisen kerran
+  await selectOption(page, HARKINNANVARAINEN_INPUT_NAME, NDASH);
+  await selectOption(page, HARKINNANVARAINEN_INPUT_NAME, 'Hyväksytty');
+
   const confirmationDialog = page.getByRole('dialog').filter({
     hasText:
       'Olet poistumassa lomakkeelta jolla on tallentamattomia muutoksia. Jatketaanko silti?',

@@ -10,7 +10,7 @@ import {
   SijoitteluajonValintatapajonoValintatiedoilla,
   SijoittelunHakemusValintatiedoilla,
 } from '@/lib/types/sijoittelu-types';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { KeysMatching, ListTableColumn } from '@/components/table/table-types';
 import { MaksuCell } from './maksu-cell';
 import { IlmoittautumisCell } from './ilmoittautumis-cell';
@@ -30,6 +30,7 @@ import {
   SijoittelunTulosChangeParams,
 } from '../lib/sijoittelun-tulokset-state';
 import { useSijoittelunTulosSearch } from '../hooks/useSijoittelunTulosSearch';
+import { useSelection } from '@/hooks/useSelection';
 
 export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
   title,
@@ -250,14 +251,14 @@ export const SijoittelunTulosTable = ({
     [hakemukset, changedHakemukset],
   );
 
-  const [selection, setSelection] = useState<Set<string>>(() => new Set());
+  const { selection, setSelection, resetSelection } = useSelection(hakemukset);
 
   return (
     <>
       <SijoittelunTuloksetActionBar
         hakemukset={contextHakemukset}
         selection={selection}
-        resetSelection={() => setSelection(new Set())}
+        resetSelection={resetSelection}
         massStatusChangeForm={(changeParams: MassChangeParams) => {
           sijoittelunTulosActorRef.send({
             type: SijoittelunTuloksetEventType.MASS_CHANGE,

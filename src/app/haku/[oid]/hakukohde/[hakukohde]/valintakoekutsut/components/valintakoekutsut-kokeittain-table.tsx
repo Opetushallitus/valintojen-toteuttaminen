@@ -2,7 +2,7 @@
 import { ValintakoekutsutActionBar } from './valintakoekutsut-action-bar';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { Stack } from '@mui/material';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { toFormattedDateTimeString } from '@/lib/localization/translation-utils';
 import { ValintakoeKutsuItem } from '@/lib/types/valintakoekutsut-types';
 import { ListTableColumn } from '@/components/table/table-types';
@@ -11,6 +11,7 @@ import {
   makeColumnWithValueToTranslate,
 } from '@/components/table/table-columns';
 import { ListTable } from '@/components/table/list-table';
+import { useSelection } from '@/hooks/useSelection';
 
 const TRANSLATIONS_PREFIX = 'valintakoekutsut.taulukko';
 
@@ -66,7 +67,7 @@ export const ValintakoekutsutKokeittainTable = ({
     [t, translateEntity],
   );
 
-  const [selection, setSelection] = useState<Set<string>>(() => new Set());
+  const { selection, setSelection, resetSelection } = useSelection(data);
 
   return (
     <Stack spacing={1}>
@@ -75,7 +76,7 @@ export const ValintakoekutsutKokeittainTable = ({
         hakukohdeOid={hakukohdeOid}
         valintakoeTunniste={valintakoeTunniste}
         selection={selection}
-        resetSelection={() => setSelection(new Set())}
+        resetSelection={resetSelection}
       />
       <ListTable
         rowKeyProp="hakemusOid"

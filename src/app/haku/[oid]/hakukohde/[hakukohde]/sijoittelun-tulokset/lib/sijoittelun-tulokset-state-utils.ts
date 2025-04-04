@@ -1,4 +1,8 @@
-import { SijoittelunHakemusValintatiedoilla } from '@/lib/types/sijoittelu-types';
+import {
+  IlmoittautumisTila,
+  SijoittelunHakemusValintatiedoilla,
+  VastaanottoTila,
+} from '@/lib/types/sijoittelu-types';
 import {
   type SijoittelunTulosEditableFields,
   type SijoittelunTuloksetContext,
@@ -9,6 +13,7 @@ import {
 import {
   isIlmoittautuminenPossible,
   isVastaanottoPossible,
+  VASTAANOTTOTILAT_JOISSA_VOI_ILMOITTAUTUA,
 } from '@/lib/sijoittelun-tulokset-utils';
 import { clone } from 'remeda';
 import { useSelector } from '@xstate/react';
@@ -42,51 +47,6 @@ export const hasChangedHakemukset = ({
 }) => context.changedHakemukset.length > 0;
 
 /**
- * Palauttaa päivitetyn hakemukset-taulukon. Korvataan alkuperäisessä datassa päivitetyt hakemukset muuttuneilla.
- * Ei päivitetä, jos tallennuksessa tapahtui virhe (hakemuksen oid löytyy erroredHakemusOids-taulukosta).
- */
-export const applyChangesToHakemukset = (
-  context: SijoittelunTuloksetContext,
-  erroredHakemusOids: Array<string> = [],
-) => {
-  return context.hakemukset.map((hakemus) => {
-    if (erroredHakemusOids.includes(hakemus.hakemusOid)) {
-      return hakemus;
-    }
-
-    const isOverride = context.hakemuksetForMassUpdate !== undefined;
-
-    if (isOverride) {
-      return (
-        context.hakemuksetForMassUpdate?.find(
-          (c) => c.hakemusOid === hakemus.hakemusOid,
-        ) ?? hakemus
-      );
-    } else {
-      return (
-        context.changedHakemukset.find(
-          (c) => c.hakemusOid === hakemus.hakemusOid,
-        ) ?? hakemus
-      );
-    }
-  });
-};
-
-/**
- * Palauttaa päivitetyn changedHakemukset-taulukon. Jos muuttunut hakemus on arvoiltaan sama kuin alkuperäinen, poistetaan se changedHakemukset-taulukosta.
- */
-export const filterUnchangedFromChangedHakemukset = (
-  context: SijoittelunTuloksetContext,
-) => {
-  return context.changedHakemukset.filter((changedHakemus) => {
-    const original = context.hakemukset.find(
-      (hakemus) => hakemus.hakemusOid === changedHakemus.hakemusOid,
-    );
-    return original && !isUnchanged(changedHakemus, original);
-  });
-};
-
-/**
  * Tekee eventin mukaiset muokkaukset changedHakemukset-taulukkoon ja palauttaa muokatun taulukon.
  */
 const applyEditsToChangedHakemukset = ({
@@ -108,6 +68,14 @@ const applyEditsToChangedHakemukset = ({
     if (event[fieldName] !== undefined) {
       (hakenut[fieldName] as string | boolean) = event[fieldName];
     }
+  }
+  if (
+    event.vastaanottotila &&
+    !VASTAANOTTOTILAT_JOISSA_VOI_ILMOITTAUTUA.includes(
+      event.vastaanottotila as VastaanottoTila,
+    )
+  ) {
+    hakenut.ilmoittautumisTila = IlmoittautumisTila.EI_TEHTY;
   }
 
   if (changedHakenut) {

@@ -56,7 +56,7 @@ export const useHenkiloSearchResults = ({ hakuOid }: { hakuOid: string }) => {
   }
   return useQuery({
     queryKey: [
-      'getHakemukset',
+      'getHakijat',
       hakuOid,
       name,
       hakemusOids,

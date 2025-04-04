@@ -87,7 +87,8 @@
     "tallennus": "Tietojen tallentamisessa tapahtui virhe.",
     "eimuutoksia": "Ei muutoksia mitä tallentaa.",
     "tiedosto-lataus": "Tiedoston latauksessa tapahtui virhe.",
-    "dokumentin-luonti": "Dokumentin luonti epäonnistui. Yritä uudelleen tai ota yhteyttä ylläpitoon."
+    "dokumentin-luonti": "Dokumentin luonti epäonnistui. Yritä uudelleen tai ota yhteyttä ylläpitoon.",
+    "osoitetarrat": "Osoitetarrojen muodostamisessa tapahtui virhe!"
   },
   "haku": {
     "otsikko": "Haut",
@@ -190,7 +191,6 @@
       "valitse-koekutsu-hakijalle": "Valitse koekutsu hakijalle \"{hakijanNimi}\""
     },
     "virhe-vie-taulukkolaskentaan": "Taulukkolaskentaan viemisessä tapahtui virhe!",
-    "virhe-osoitetarrat": "Osoitetarrojen muodostamisessa tapahtui virhe!",
     "ei-valintakokeita": "Ei valintakokeita",
     "ei-valintakoekutsuja": "Ei valintakoekutsuja"
   },

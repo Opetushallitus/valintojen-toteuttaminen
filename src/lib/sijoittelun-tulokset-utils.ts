@@ -15,7 +15,7 @@ import { toFinnishDate } from './time-utils';
 import { UserPermissions } from './permissions';
 import { TFunction } from './localization/useTranslations';
 
-const VASTAANOTTOTILAT_JOILLE_NAYTETAAN_ILMOITTAUTUMISTILA = [
+export const VASTAANOTTOTILAT_JOISSA_VOI_ILMOITTAUTUA = [
   VastaanottoTila.VASTAANOTTANUT_SITOVASTI,
   VastaanottoTila.EHDOLLISESTI_VASTAANOTTANUT,
 ];
@@ -38,9 +38,7 @@ export const isVastaanottoPossible = (h: SijoittelunTilaKentat): boolean =>
 
 export const isIlmoittautuminenPossible = (h: SijoittelunTilaKentat): boolean =>
   isSijoittelunTilaVastaanotettavissa(h.tila) &&
-  VASTAANOTTOTILAT_JOILLE_NAYTETAAN_ILMOITTAUTUMISTILA.includes(
-    h.vastaanottotila,
-  );
+  VASTAANOTTOTILAT_JOISSA_VOI_ILMOITTAUTUA.includes(h.vastaanottotila);
 
 export const isValintaesitysJulkaistavissa = (
   haku: Haku,

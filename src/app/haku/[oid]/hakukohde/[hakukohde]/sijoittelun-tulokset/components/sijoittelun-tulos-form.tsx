@@ -1,16 +1,17 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useCallback } from 'react';
 import useToaster from '@/hooks/useToaster';
-import { useActorRef } from '@xstate/react';
 import { Box } from '@mui/material';
 import { SijoittelunTuloksetActions } from './sijoittelun-tulos-actions';
-import { createSijoittelunTuloksetMachine } from '../lib/sijoittelun-tulokset-state';
+import { useSijoittelunTulosActorRef } from '../lib/sijoittelun-tulokset-state';
 import { SijoitteluajonValintatapajonoValintatiedoilla } from '@/lib/types/sijoittelu-types';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import { SijoittelunTulosTable } from './sijoittelun-tulos-table';
 import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBeforeNavigation';
 import { useIsDirtySijoittelunTulos } from '../lib/sijoittelun-tulokset-state-utils';
+import { useQueryClient } from '@tanstack/react-query';
+import { refetchSijoittelunTulokset } from '../lib/refetch-sijoittelun-tulokset';
 
 type SijoittelunTuloksetFormParams = {
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
@@ -33,17 +34,20 @@ export const SijoittelunTulosForm = ({
 }: SijoittelunTuloksetFormParams) => {
   const { addToast } = useToaster();
 
-  const sijoittelunTulosMachine = useMemo(() => {
-    return createSijoittelunTuloksetMachine(
-      hakukohde.oid,
-      valintatapajono.oid,
-      valintatapajono.hakemukset,
-      lastModified,
-      addToast,
-    );
-  }, [hakukohde, valintatapajono, addToast, lastModified]);
+  const queryClient = useQueryClient();
 
-  const sijoittelunTulosActorRef = useActorRef(sijoittelunTulosMachine);
+  const onUpdated = useCallback(() => {
+    refetchSijoittelunTulokset(haku.oid, hakukohde.oid, queryClient);
+  }, [haku.oid, hakukohde.oid, queryClient]);
+
+  const sijoittelunTulosActorRef = useSijoittelunTulosActorRef({
+    hakukohdeOid: hakukohde.oid,
+    valintatapajonoOid: valintatapajono.oid,
+    hakemukset: valintatapajono.hakemukset,
+    lastModified,
+    addToast,
+    onUpdated: onUpdated,
+  });
 
   const isDirty = useIsDirtySijoittelunTulos(sijoittelunTulosActorRef);
 

@@ -11,7 +11,7 @@ import {
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
 } from '@/lib/constants';
 import { useTranslations } from '../lib/localization/useTranslations';
-import { getHakemukset } from '../lib/ataru/ataru-service';
+import { getHakemuksetQueryOptions } from '../lib/ataru/ataru-service';
 import { hakemusFilter } from '../lib/filters';
 
 export const useHakeneetSearchParams = () => {
@@ -65,10 +65,9 @@ export const useHakeneetSearchResults = (
 ) => {
   const { translateEntity } = useTranslations();
 
-  const { data: hakeneet } = useSuspenseQuery({
-    queryKey: ['getHakemukset', hakuOid, hakukohdeOid],
-    queryFn: () => getHakemukset({ hakuOid, hakukohdeOid }),
-  });
+  const { data: hakeneet } = useSuspenseQuery(
+    getHakemuksetQueryOptions({ hakuOid, hakukohdeOid }),
+  );
 
   const { searchPhrase, page, setPage, pageSize, setPageSize, sort, setSort } =
     useHakeneetSearchParams();
