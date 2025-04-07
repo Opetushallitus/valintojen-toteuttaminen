@@ -148,6 +148,7 @@ export const configuration = {
   startExportValintakoeOsoitetarratUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/osoitetarrat/aktivoi`,
   startExportOsoitetarratHakemuksilleUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/osoitetarrat/hakemuksille/aktivoi`,
   startExportOsoitetarratSijoittelussaHyvaksytyilleUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/osoitetarrat/sijoittelussahyvaksytyille/aktivoi`,
+  startExportOsoitetarratHaulleUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/sijoitteluntuloshaulle/osoitetarrat`,
   startExportPistesyottoExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/pistesyotto/vienti`,
   kirjepohjat: ({
     templateName,

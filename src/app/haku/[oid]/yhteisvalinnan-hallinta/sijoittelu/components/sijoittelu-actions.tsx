@@ -9,6 +9,9 @@ import {
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import useToaster from '@/hooks/useToaster';
+import { FileDownloadButton } from '@/components/file-download-button';
+import { NoteOutlined } from '@mui/icons-material';
+import { getOsoitetarratHaulle } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 
 const ActionsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -98,14 +101,21 @@ export const SijoitteluActions = ({
         >
           {t('yhteisvalinnan-hallinta.sijoittelu.vie-tulokset')}
         </OphButton>
-        <OphButton
-          onClick={() => {}}
+        <FileDownloadButton
+          component={OphButton}
           variant="outlined"
-          loading={false}
-          disabled={false}
+          startIcon={<NoteOutlined />}
+          getFile={() =>
+            getOsoitetarratHaulle({
+              hakuOid,
+            })
+          }
+          errorKey="get-haku-osoitetarrat-error"
+          errorMessage="yhteisvalinnan-hallinta.sijoittelu.vie-tarrat-virhe"
+          defaultFileName="haku-osoitetarrat.pdf"
         >
           {t('yhteisvalinnan-hallinta.sijoittelu.vie-tarrat')}
-        </OphButton>
+        </FileDownloadButton>
         <OphButton
           onClick={() => {}}
           variant="outlined"

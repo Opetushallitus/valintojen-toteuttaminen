@@ -463,6 +463,21 @@ export const getOsoitetarratHakemuksille = async ({
   return downloadProcessDocument(tarratProcessId);
 };
 
+export const getOsoitetarratHaulle = async ({
+  hakuOid,
+}: {
+  hakuOid: string;
+}) => {
+  const startProcessResponse = await client.post<{ id: string }>(
+    configuration.startExportOsoitetarratHaulleUrl,
+    {
+      hakuOid,
+    },
+  );
+  const tarratProcessId = startProcessResponse?.data?.id;
+  return downloadProcessDocument(tarratProcessId);
+};
+
 export const getValintalaskennanTulosExcel = async ({
   hakukohdeOid,
 }: {
