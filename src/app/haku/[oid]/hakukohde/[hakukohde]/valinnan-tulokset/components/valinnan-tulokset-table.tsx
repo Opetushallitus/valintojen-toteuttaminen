@@ -10,6 +10,8 @@ import { KeysMatching, ListTableColumn } from '@/components/table/table-types';
 import { useSelection } from '@/hooks/useSelection';
 import { IlmoittautumisTilaSelect } from '@/components/ilmoittautumistila-select';
 import { HakemusValinnanTuloksilla } from '../lib/valinnan-tulos-types';
+import { VastaanOttoCell } from '@/components/vastaanotto-cell';
+import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 
 export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
   title,
@@ -28,7 +30,13 @@ export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
 
 const TRANSLATIONS_PREFIX = 'valinnan-tulokset.taulukko';
 
-const useColumns = () => {
+const useColumns = ({
+  haku,
+  hakukohde,
+}: {
+  haku: Haku;
+  hakukohde: Hakukohde;
+}) => {
   const { t } = useTranslations();
   return useMemo(() => {
     const stickyHakijaColumn = createStickyHakijaColumn(t);
@@ -44,13 +52,24 @@ const useColumns = () => {
         title: t(`${TRANSLATIONS_PREFIX}.vastaanoton-tila`),
         key: 'vastaanottotila',
         renderFn: ({ valinnanTulos }) =>
-          valinnanTulos && <div>{valinnanTulos.vastaanottotila}</div>,
+          valinnanTulos && (
+            <VastaanOttoCell
+              haku={haku}
+              hakukohde={hakukohde}
+              hakemus={{
+                hakemusOid: valinnanTulos.hakemusOid,
+                tila: valinnanTulos.valinnantila,
+                vastaanottotila: valinnanTulos.vastaanottotila,
+                julkaistavissa: valinnanTulos.julkaistavissa,
+              }}
+              updateForm={() => {}}
+            />
+          ),
       }),
       makeColumnWithCustomRender<HakemusValinnanTuloksilla>({
         title: t(`${TRANSLATIONS_PREFIX}.ilmoittautumisen-tila`),
         key: 'ilmoittautumisTila',
-        renderFn: ({ hakijanNimi, hakemusOid, valinnanTulos }) => {
-          console.log({ hakijanNimi, valinnanTulos });
+        renderFn: ({ hakemusOid, valinnanTulos }) => {
           return (
             valinnanTulos && (
               <IlmoittautumisTilaSelect
@@ -74,17 +93,21 @@ const useColumns = () => {
         sortable: false,
       }),
     ];
-  }, [t]);
+  }, [t, haku, hakukohde]);
 };
 
 export const ValinnanTuloksetTable = ({
+  haku,
+  hakukohde,
   hakemukset,
 }: {
+  haku: Haku;
+  hakukohde: Hakukohde;
   hakemukset: Array<HakemusValinnanTuloksilla>;
 }) => {
   const { t } = useTranslations();
 
-  const columns = useColumns();
+  const columns = useColumns({ haku, hakukohde });
 
   const { selection, setSelection } = useSelection(hakemukset);
 

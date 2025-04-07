@@ -20,6 +20,8 @@ import { FormBox } from '@/components/form-box';
 import { ValinnanTuloksetTable } from './components/valinnan-tulokset-table';
 import { HakemusValinnanTuloksilla } from './lib/valinnan-tulos-types';
 import { omit, prop, sortBy } from 'remeda';
+import { hakuQueryOptions } from '@/lib/kouta/useHaku';
+import { hakukohdeQueryOptions } from '@/lib/kouta/useHakukohde';
 
 const useHakemuksetValinnanTuloksilla = ({
   hakemukset,
@@ -49,20 +51,25 @@ const useHakemuksetValinnanTuloksilla = ({
 const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const { t } = useTranslations();
 
-  const [{ data: valinnanTulokset }, { data: hakemukset }] = useSuspenseQueries(
-    {
-      queries: [
-        getHakukohteenValinnanTuloksetQueryOptions({
-          hakuOid,
-          hakukohdeOid,
-        }),
-        getHakemuksetQueryOptions({
-          hakuOid,
-          hakukohdeOid,
-        }),
-      ],
-    },
-  );
+  const [
+    { data: haku },
+    { data: hakukohde },
+    { data: valinnanTulokset },
+    { data: hakemukset },
+  ] = useSuspenseQueries({
+    queries: [
+      hakuQueryOptions({ hakuOid }),
+      hakukohdeQueryOptions({ hakukohdeOid }),
+      getHakukohteenValinnanTuloksetQueryOptions({
+        hakuOid,
+        hakukohdeOid,
+      }),
+      getHakemuksetQueryOptions({
+        hakuOid,
+        hakukohdeOid,
+      }),
+    ],
+  });
 
   const hakemuksetTuloksilla = useHakemuksetValinnanTuloksilla({
     hakemukset,
@@ -81,7 +88,11 @@ const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
       }}
     >
       <FormBox>
-        <ValinnanTuloksetTable hakemukset={hakemuksetTuloksilla} />
+        <ValinnanTuloksetTable
+          haku={haku}
+          hakukohde={hakukohde}
+          hakemukset={hakemuksetTuloksilla}
+        />
       </FormBox>
     </Box>
   );
