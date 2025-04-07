@@ -22,6 +22,7 @@ import { HakemusValinnanTuloksilla } from './lib/valinnan-tulos-types';
 import { omit, prop, sortBy } from 'remeda';
 import { hakuQueryOptions } from '@/lib/kouta/useHaku';
 import { hakukohdeQueryOptions } from '@/lib/kouta/useHakukohde';
+import { ValinnanTuloksetControls } from './components/valinnan-tulokset-controls';
 
 const useHakemuksetValinnanTuloksilla = ({
   hakemukset,
@@ -87,6 +88,7 @@ const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
         alignItems: 'flex-start',
       }}
     >
+      <ValinnanTuloksetControls />
       <FormBox>
         <ValinnanTuloksetTable
           haku={haku}
