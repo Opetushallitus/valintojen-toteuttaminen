@@ -18,6 +18,8 @@ import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 import { Hakemus } from '@/lib/ataru/ataru-types';
 import { FormBox } from '@/components/form-box';
 import { ValinnanTuloksetTable } from './components/valinnan-tulokset-table';
+import { HakemusValinnanTuloksilla } from './lib/valinnan-tulos-types';
+import { omit, prop, sortBy } from 'remeda';
 
 const useHakemuksetValinnanTuloksilla = ({
   hakemukset,
@@ -25,15 +27,23 @@ const useHakemuksetValinnanTuloksilla = ({
 }: {
   hakemukset: Array<Hakemus>;
   valinnanTulokset: HakukohteenValinnanTuloksetData;
-}) => {
-  return hakemukset.map((hakemus) => {
-    const tulos = valinnanTulokset.data[hakemus.hakemusOid];
+}): Array<HakemusValinnanTuloksilla> => {
+  return sortBy(
+    hakemukset.map((hakemus) => {
+      const tulos = valinnanTulokset.data[hakemus.hakemusOid];
 
-    return {
-      ...hakemus,
-      ...tulos,
-    };
-  });
+      return {
+        ...hakemus,
+        valinnanTulos: tulos
+          ? {
+              ...omit(tulos, ['ilmoittautumistila']),
+              ilmoittautumisTila: tulos.ilmoittautumistila,
+            }
+          : undefined,
+      };
+    }),
+    prop('hakijanNimi'),
+  );
 };
 
 const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {

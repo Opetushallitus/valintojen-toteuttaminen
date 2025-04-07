@@ -30,6 +30,10 @@ export type ValinnanTulosModel = {
   hyvaksyPeruuntunut: boolean;
 };
 
+export type ValinnanTulos = Omit<ValinnanTulosModel, 'ilmoittautumistila'> & {
+  ilmoittautumisTila: IlmoittautumisTila;
+};
+
 export type HakemusChangeDetail = {
   field: string;
   from: string | boolean;
