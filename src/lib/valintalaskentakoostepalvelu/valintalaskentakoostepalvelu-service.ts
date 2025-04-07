@@ -1,5 +1,10 @@
 import { configuration } from '../configuration';
-import { abortableClient, client, createFileResult } from '../http-client';
+import {
+  abortableClient,
+  client,
+  createFileResult,
+  FileResult,
+} from '../http-client';
 import { HenkilonValintaTulos } from '../types/sijoittelu-types';
 import {
   HakemuksenPistetiedot,
@@ -392,8 +397,8 @@ export const downloadReadyProcessDocument = async (dokumenttiId: string) => {
   return createFileResult(documentRes);
 };
 
-const downloadProcessDocument = async (processId: string) => {
-  const dokumenttiId = await processDocumentAndReturnDocumentId(processId);
+const downloadProcessDocument = async (processId: string, infiniteWait: boolean = false) => {
+  const dokumenttiId = await processDocumentAndReturnDocumentId(processId, infiniteWait);
   return downloadReadyProcessDocument(dokumenttiId);
 };
 
@@ -716,6 +721,25 @@ export const luoHyvaksymiskirjeetPDF = async ({
   );
   const kirjeetProcessId = startProcessResponse?.data?.id;
   return await processDocumentAndReturnDocumentId(kirjeetProcessId, true);
+};
+
+export const luoHyvaksymiskirjeetHaullePDF = async ({
+  hakuOid,
+}: {
+  hakuOid: string;
+}): Promise<FileResult> => {
+  const urlWithQuery = new URL(configuration.hyvaksymiskirjeetUrl);
+  urlWithQuery.searchParams.append('hakuOid', hakuOid);
+  urlWithQuery.searchParams.append('vainTulosEmailinKieltaneet', 'false');
+  urlWithQuery.searchParams.append('templateName', 'hyvaksymiskirje');
+  const startProcessResponse = await client.post<{ id: string }>(
+    urlWithQuery.toString(),
+    {
+      tag: hakuOid,
+    },
+  );
+  const kirjeetProcessId = startProcessResponse?.data?.id;
+  return downloadProcessDocument(kirjeetProcessId, true);
 };
 
 export const luoEiHyvaksymiskirjeetPDF = async ({

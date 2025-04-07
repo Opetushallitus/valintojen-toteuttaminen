@@ -582,8 +582,9 @@
       "suoritus-epaonnistui": "Sijoittelun suorittaminen epäonnistui",
       "vie-tulokset": "Vie tulokset taulukkolaskentaan",
       "vie-tarrat": "Vie osoitetarroiksi",
-      "vie-tarrat-virhe": "Osoitetarrojen muodostamisessa haulle tapahtui virhe!",
+      "vie-tarrat-virhe": "Virhe muodostaessa osoitetarroja haulle!",
       "vie-kirjeiksi": "Vie hyväksymiskirjeiksi",
+      "vie-kirjeiksi-virhe": "Virhe muodostaessa hyväksymiskirjeitä haulle!",
       "ajastus": {
         "otsikko": "Ajastettu sijoittelu",
         "aloitusajankohta": "Aloitusajankohta",

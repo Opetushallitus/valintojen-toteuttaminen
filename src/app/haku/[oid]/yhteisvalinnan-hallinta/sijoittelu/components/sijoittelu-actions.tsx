@@ -10,8 +10,10 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import useToaster from '@/hooks/useToaster';
 import { FileDownloadButton } from '@/components/file-download-button';
-import { NoteOutlined } from '@mui/icons-material';
-import { getOsoitetarratHaulle } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
+import {
+  getOsoitetarratHaulle,
+  luoHyvaksymiskirjeetHaullePDF,
+} from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 
 const ActionsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -104,26 +106,33 @@ export const SijoitteluActions = ({
         <FileDownloadButton
           component={OphButton}
           variant="outlined"
-          startIcon={<NoteOutlined />}
           getFile={() =>
             getOsoitetarratHaulle({
               hakuOid,
             })
           }
+          manualCloseOnlyError={true}
           errorKey="get-haku-osoitetarrat-error"
           errorMessage="yhteisvalinnan-hallinta.sijoittelu.vie-tarrat-virhe"
           defaultFileName="haku-osoitetarrat.pdf"
         >
           {t('yhteisvalinnan-hallinta.sijoittelu.vie-tarrat')}
         </FileDownloadButton>
-        <OphButton
-          onClick={() => {}}
+        <FileDownloadButton
+          component={OphButton}
           variant="outlined"
-          loading={false}
-          disabled={false}
+          getFile={() =>
+            luoHyvaksymiskirjeetHaullePDF({
+              hakuOid,
+            })
+          }
+          manualCloseOnlyError={true}
+          errorKey="get-haku-osoitetarrat-error"
+          errorMessage="yhteisvalinnan-hallinta.sijoittelu.vie-kirjeiksi-virhe"
+          defaultFileName="haku-hyvaksymiskirjeet.pdf"
         >
           {t('yhteisvalinnan-hallinta.sijoittelu.vie-kirjeiksi')}
-        </OphButton>
+        </FileDownloadButton>
       </ActionsContainer>
     </Box>
   );

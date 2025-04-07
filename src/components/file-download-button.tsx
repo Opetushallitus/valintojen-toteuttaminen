@@ -13,6 +13,7 @@ type FileDownloadProps = {
   defaultFileName: string;
   errorKey: string;
   errorMessage: string;
+  manualCloseOnlyError?: boolean;
 } & Omit<ButtonProps, 'onClick' | 'loading' | 'loadingPosition'>;
 
 export function FileDownloadButton({
@@ -23,6 +24,7 @@ export function FileDownloadButton({
   errorMessage,
   startIcon,
   component,
+  manualCloseOnlyError = false,
   ...props
 }: FileDownloadProps) {
   const { addToast } = useToaster();
@@ -32,6 +34,7 @@ export function FileDownloadButton({
         key: errorKey,
         message: errorMessage,
         type: 'error',
+        manualCloseOnly: manualCloseOnlyError,
       });
     },
     getFile,
