@@ -12,6 +12,7 @@ import useToaster from '@/hooks/useToaster';
 import { FileDownloadButton } from '@/components/file-download-button';
 import {
   getOsoitetarratHaulle,
+  getSijoittelunTulosHaulleExcel,
   luoHyvaksymiskirjeetHaullePDF,
 } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 
@@ -95,14 +96,17 @@ export const SijoitteluActions = ({
           hakuOid={hakuOid}
           sijoitteluRunning={sijoitteluRunning}
         />
-        <OphButton
-          onClick={() => {}}
+        <FileDownloadButton
+          component={OphButton}
           variant="outlined"
-          loading={false}
-          disabled={false}
+          getFile={() => getSijoittelunTulosHaulleExcel(hakuOid)}
+          manualCloseOnlyError={true}
+          errorKey="get-haku-tulokset-error"
+          errorMessage="yhteisvalinnan-hallinta.sijoittelu.vie-tulokset-virhe"
+          defaultFileName="haku-tulokset.xlsx"
         >
           {t('yhteisvalinnan-hallinta.sijoittelu.vie-tulokset')}
-        </OphButton>
+        </FileDownloadButton>
         <FileDownloadButton
           component={OphButton}
           variant="outlined"

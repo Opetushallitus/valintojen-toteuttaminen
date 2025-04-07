@@ -621,6 +621,20 @@ export const getSijoittelunTulosExcel = async ({
   return await downloadProcessDocument(excelProcessId);
 };
 
+export const getSijoittelunTulosHaulleExcel = async (
+  hakuOid: string,
+): Promise<FileResult> => {
+  const urlWithQuery = new URL(configuration.sijoittelunTulosHaulleExcelUrl);
+  urlWithQuery.searchParams.append('hakuOid', hakuOid);
+  const createResponse = await client.post<{ id: string }>(
+    urlWithQuery.toString(),
+    '',
+  );
+  const excelProcessId = createResponse?.data?.id;
+
+  return await downloadProcessDocument(excelProcessId, true);
+};
+
 export const savePistesyottoExcel = async ({
   hakuOid,
   hakukohdeOid,
