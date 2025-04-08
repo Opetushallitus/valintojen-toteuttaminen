@@ -174,7 +174,12 @@ export const SijoitteluSchedule = ({ hakuOid }: { hakuOid: string }) => {
       <QuerySuspenseBoundary>
         <Typography
           variant="body1"
-          sx={{ display: 'flex', alignItems: 'flex-start', marginTop: 1 }}
+          sx={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            marginTop: 1,
+            columnGap: 1,
+          }}
         >
           <InfoOutlined htmlColor={ophColors.blue2} />
           {ajastettuSijoittelu?.active

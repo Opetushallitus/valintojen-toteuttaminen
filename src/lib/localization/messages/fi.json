@@ -577,6 +577,7 @@
     "kaikki-laskennat-haulle": "Valintakoelaskenta ja valinta haulle",
     "sijoittelu": {
       "otsikko": "Sijoittelu",
+      "ei-kaytossa": "Sijoittelu ei ole haussa käytössä",
       "suorita": "Suorita sijoittelu",
       "suoritus-onnistui": "Sijoittelu on valmis",
       "suoritus-epaonnistui": "Sijoittelun suorittaminen epäonnistui",
