@@ -4,12 +4,12 @@ import {
   VastaanottoTila,
 } from '@/lib/types/sijoittelu-types';
 import {
-  type SijoittelunTulosEditableFields,
-  type SijoittelunTuloksetContext,
+  type ValinnanTulosEditableFields,
+  type ValinnanTulosContext,
   type SijoittelunTulosChangeEvent,
-  type SijoittelunTulosMassChangeEvent,
-  type SijoittelunTulosActorRef,
-} from './sijoittelun-tulokset-state';
+  type ValinnanTulosMassChangeEvent,
+  ValinnanTulosActorRef,
+} from './valinnan-tulos-machine';
 import {
   isIlmoittautuminenPossible,
   isVastaanottoPossible,
@@ -43,7 +43,7 @@ export const isUnchanged = (
 export const hasChangedHakemukset = ({
   context,
 }: {
-  context: SijoittelunTuloksetContext;
+  context: ValinnanTulosContext;
 }) => context.changedHakemukset.length > 0;
 
 /**
@@ -54,9 +54,9 @@ const applyEditsToChangedHakemukset = ({
   originalHakenut,
   event,
 }: {
-  changedHakemukset: SijoittelunTuloksetContext['changedHakemukset'];
+  changedHakemukset: ValinnanTulosContext['changedHakemukset'];
   originalHakenut: SijoittelunHakemusValintatiedoilla;
-  event: SijoittelunTulosEditableFields;
+  event: ValinnanTulosEditableFields;
 }) => {
   const changedHakenut = changedHakemukset.find(
     (h) => h.hakemusOid === originalHakenut?.hakemusOid,
@@ -90,7 +90,7 @@ const applyEditsToChangedHakemukset = ({
 };
 
 export const applySingleHakemusChange = (
-  context: SijoittelunTuloksetContext,
+  context: ValinnanTulosContext,
   event: SijoittelunTulosChangeEvent,
 ): Array<SijoittelunHakemusValintatiedoilla> => {
   const originalHakenut = context.hakemukset.find(
@@ -108,8 +108,8 @@ export const applySingleHakemusChange = (
 };
 
 export const applyMassHakemusChanges = (
-  context: SijoittelunTuloksetContext,
-  event: SijoittelunTulosMassChangeEvent,
+  context: ValinnanTulosContext,
+  event: ValinnanTulosMassChangeEvent,
 ) => {
   let changed: Array<SijoittelunHakemusValintatiedoilla> =
     context.changedHakemukset;
@@ -144,8 +144,8 @@ export const applyMassHakemusChanges = (
   };
 };
 
-export const useIsDirtySijoittelunTulos = (
-  sijoittelunTulosActorRef: SijoittelunTulosActorRef,
+export const useIsDirtyValinnanTulos = (
+  sijoittelunTulosActorRef: ValinnanTulosActorRef,
 ) => {
   return useSelector(sijoittelunTulosActorRef, hasChangedHakemukset);
 };

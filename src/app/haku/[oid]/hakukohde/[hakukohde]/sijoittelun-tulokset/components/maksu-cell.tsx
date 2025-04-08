@@ -3,7 +3,7 @@ import { useTranslations } from '@/lib/localization/useTranslations';
 import { MaksunTila } from '@/lib/ataru/ataru-types';
 import { SijoittelunHakemusValintatiedoilla } from '@/lib/types/sijoittelu-types';
 import { SelectChangeEvent } from '@mui/material';
-import { SijoittelunTulosChangeParams } from '../lib/sijoittelun-tulokset-state';
+import { ValinnanTulosChangeParams } from '@/lib/state/valinnan-tulos-machine';
 
 export const MaksuCell = ({
   hakemus,
@@ -12,7 +12,7 @@ export const MaksuCell = ({
 }: {
   hakemus: SijoittelunHakemusValintatiedoilla;
   disabled: boolean;
-  updateForm: (params: SijoittelunTulosChangeParams) => void;
+  updateForm: (params: ValinnanTulosChangeParams) => void;
 }) => {
   const { t } = useTranslations();
   const { hakemusOid, maksunTila } = hakemus;

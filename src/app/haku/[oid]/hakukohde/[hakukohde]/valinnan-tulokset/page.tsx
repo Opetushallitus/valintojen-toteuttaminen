@@ -18,11 +18,14 @@ import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 import { Hakemus } from '@/lib/ataru/ataru-types';
 import { FormBox } from '@/components/form-box';
 import { ValinnanTuloksetTable } from './components/valinnan-tulokset-table';
-import { HakemusValinnanTuloksilla } from './lib/valinnan-tulos-types';
-import { omit, prop, sortBy } from 'remeda';
 import { hakuQueryOptions } from '@/lib/kouta/useHaku';
 import { hakukohdeQueryOptions } from '@/lib/kouta/useHakukohde';
-import { ValinnanTuloksetControls } from './components/valinnan-tulokset-controls';
+import { ValinnanTuloksetSearchControls } from './components/valinnan-tulokset-search-controls';
+import { HakemusValinnanTuloksilla } from '@/lib/valinta-tulos-service/valinta-tulos-types';
+import { TranslatedName } from '@/lib/localization/localization-types';
+
+const nonEmptyTranslatedName = (tn: TranslatedName) =>
+  tn.fi || tn.sv || tn.en ? tn : undefined;
 
 const useHakemuksetValinnanTuloksilla = ({
   hakemukset,
@@ -31,22 +34,34 @@ const useHakemuksetValinnanTuloksilla = ({
   hakemukset: Array<Hakemus>;
   valinnanTulokset: HakukohteenValinnanTuloksetData;
 }): Array<HakemusValinnanTuloksilla> => {
-  return sortBy(
-    hakemukset.map((hakemus) => {
-      const tulos = valinnanTulokset.data[hakemus.hakemusOid];
-
-      return {
-        ...hakemus,
-        valinnanTulos: tulos
-          ? {
-              ...omit(tulos, ['ilmoittautumistila']),
-              ilmoittautumisTila: tulos.ilmoittautumistila,
-            }
-          : undefined,
-      };
-    }),
-    prop('hakijanNimi'),
-  );
+  return hakemukset.map((hakemus) => {
+    const valinnanTulos = valinnanTulokset.data[hakemus.hakemusOid];
+    return {
+      ...hakemus,
+      valinnanTulos: valinnanTulos
+        ? {
+            hakukohdeOid: valinnanTulos.hakukohdeOid,
+            valintatapajonoOid: valinnanTulos.valintatapajonoOid,
+            valinnanTila: valinnanTulos.valinnantila,
+            vastaanottoTila: valinnanTulos.vastaanottotila,
+            ilmoittautumisTila: valinnanTulos.ilmoittautumistila,
+            ehdollisenHyvaksymisenEhtoKoodi:
+              valinnanTulos.ehdollisenHyvaksymisenEhtoKoodi,
+            ehdollisenHyvaksymisenEhto: nonEmptyTranslatedName({
+              fi: valinnanTulos.ehdollisenHyvaksymisenEhtoFI,
+              sv: valinnanTulos.ehdollisenHyvaksymisenEhtoSV,
+              en: valinnanTulos.ehdollisenHyvaksymisenEhtoEN,
+            }),
+            valinnanTilanKuvaus: nonEmptyTranslatedName({
+              fi: valinnanTulos.valinnantilanKuvauksenTekstiFI,
+              sv: valinnanTulos.valinnantilanKuvauksenTekstiSV,
+              en: valinnanTulos.valinnantilanKuvauksenTekstiEN,
+            }),
+            julkaistavissa: valinnanTulos.julkaistavissa,
+          }
+        : undefined,
+    };
+  });
 };
 
 const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
@@ -88,8 +103,8 @@ const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
         alignItems: 'flex-start',
       }}
     >
-      <ValinnanTuloksetControls />
-      <FormBox>
+      <ValinnanTuloksetSearchControls />
+      <FormBox sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <ValinnanTuloksetTable
           haku={haku}
           hakukohde={hakukohde}

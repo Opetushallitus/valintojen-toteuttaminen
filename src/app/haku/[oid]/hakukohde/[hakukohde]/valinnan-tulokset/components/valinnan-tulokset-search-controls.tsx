@@ -7,7 +7,7 @@ import { SearchInput } from '@/components/search-input';
 import { useValinnanTuloksetSearchParams } from '../hooks/useValinnanTuloksetSearch';
 import { useVastaanottoTilaOptions } from '@/hooks/useVastaanottoTilaOptions';
 
-export const ValinnanTuloksetControls = () => {
+export const ValinnanTuloksetSearchControls = () => {
   const {
     searchPhrase,
     setSearchPhrase,

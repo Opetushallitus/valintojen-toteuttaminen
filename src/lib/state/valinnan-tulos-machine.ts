@@ -1,24 +1,14 @@
 import { Toast } from '@/hooks/useToaster';
 import { SijoittelunHakemusValintatiedoilla } from '@/lib/types/sijoittelu-types';
-import { ActorRefFrom, assign, createMachine, fromPromise } from 'xstate';
-import {
-  hyvaksyValintaEsitys,
-  saveMaksunTilanMuutokset,
-  saveSijoitteluAjonTulokset,
-} from '@/lib/valinta-tulos-service/valinta-tulos-service';
-import { clone, isNullish } from 'remeda';
-import { SijoittelunTulosErrorModalDialog } from '../components/sijoittelun-tulos-error-modal';
-import { showModal } from '@/components/modals/global-modal';
-import { OphApiError } from '@/lib/common';
+import { ActorRefFrom, assign, createMachine } from 'xstate';
+import { clone } from 'remeda';
 import {
   hasChangedHakemukset,
   applyMassHakemusChanges,
   applySingleHakemusChange,
-} from './sijoittelun-tulokset-state-utils';
-import { useEffect } from 'react';
-import { useActorRef } from '@xstate/react';
+} from './valinnan-tulos-machine-utils';
 
-export type SijoittelunTuloksetContext = {
+export type ValinnanTulosContext = {
   addToast?: (toast: Toast) => void;
   onUpdated?: () => void;
   hakukohdeOid?: string;
@@ -31,14 +21,14 @@ export type SijoittelunTuloksetContext = {
   publishAfterUpdate?: boolean;
 };
 
-export enum SijoittelunTuloksetState {
+export enum ValinnanTulosState {
   IDLE = 'IDLE',
   UPDATING = 'UPDATING',
   UPDATE_COMPLETED = 'UPDATE_COMPLETED',
   PUBLISHING = 'PUBLISHING',
 }
 
-export enum SijoittelunTuloksetEventType {
+export enum ValinnanTulosEventType {
   UPDATE = 'UPDATE',
   MASS_UPDATE = 'MASS_UPDATE',
   MASS_CHANGE = 'MASS_CHANGE',
@@ -47,11 +37,11 @@ export enum SijoittelunTuloksetEventType {
   RESET = 'RESET',
 }
 
-export type SijoittelunTulosUpdateEvent = {
-  type: SijoittelunTuloksetEventType.UPDATE;
+export type ValinnanTulosUpdateEvent = {
+  type: ValinnanTulosEventType.UPDATE;
 };
 
-type SijoitteluntuloksetMachineParams = {
+export type ValinnanTulosMachineParams = {
   hakukohdeOid: string;
   valintatapajonoOid: string;
   hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
@@ -63,26 +53,26 @@ type SijoitteluntuloksetMachineParams = {
   onUpdated?: () => void;
 };
 
-export type SijoittelunTulosResetEvent = {
-  type: SijoittelunTuloksetEventType.RESET;
-  params: SijoitteluntuloksetMachineParams;
+export type ValinnanTulosResetEvent = {
+  type: ValinnanTulosEventType.RESET;
+  params: ValinnanTulosMachineParams;
 };
 
 /**
  * Massatallennus parametrina annetuilla tiedoilla. Ei käytetä tallennuksessa changedHakemukset-arvoja.
  * */
-export type SijoittelunTulosMassUpdateEvent = {
-  type: SijoittelunTuloksetEventType.MASS_UPDATE;
+export type ValinnanTulosMassUpdateEvent = {
+  type: ValinnanTulosEventType.MASS_UPDATE;
 } & MassChangeParams;
 
 /**
  * Massamuutos parametrina annetuilla tiedoilla. Ei tallenna tietoja, vaan muuttaa context.changedHakemukset-arvoja.
  */
-export type SijoittelunTulosMassChangeEvent = {
-  type: SijoittelunTuloksetEventType.MASS_CHANGE;
+export type ValinnanTulosMassChangeEvent = {
+  type: ValinnanTulosEventType.MASS_CHANGE;
 } & MassChangeParams;
 
-export type SijoittelunTulosEditableFields = Partial<
+export type ValinnanTulosEditableFields = Partial<
   Pick<
     SijoittelunHakemusValintatiedoilla,
     | 'julkaistavissa'
@@ -95,46 +85,47 @@ export type SijoittelunTulosEditableFields = Partial<
     | 'vastaanottotila'
     | 'ilmoittautumisTila'
     | 'maksunTila'
+    | 'tila' // valinnan/sijoittelun tila
   >
 >;
 
 export type MassChangeParams = Pick<
-  SijoittelunTulosEditableFields,
-  'vastaanottotila' | 'ilmoittautumisTila'
+  ValinnanTulosEditableFields,
+  'tila' | 'vastaanottotila' | 'ilmoittautumisTila'
 > & {
   hakemusOids: Set<string>;
 };
 
-export type SijoittelunTulosChangeParams = SijoittelunTulosEditableFields & {
+export type ValinnanTulosChangeParams = ValinnanTulosEditableFields & {
   hakemusOid: string;
 };
 
 export type SijoittelunTulosChangeEvent = {
-  type: SijoittelunTuloksetEventType.CHANGE;
-} & SijoittelunTulosChangeParams;
+  type: ValinnanTulosEventType.CHANGE;
+} & ValinnanTulosChangeParams;
 
-export type SijoittelunTulosPublishEvent = {
-  type: SijoittelunTuloksetEventType.PUBLISH;
+export type ValinnanTulosPublishEvent = {
+  type: ValinnanTulosEventType.PUBLISH;
 };
 
 export type SijoittelunTuloksetEvents =
-  | SijoittelunTulosUpdateEvent
+  | ValinnanTulosUpdateEvent
   | SijoittelunTulosChangeEvent
-  | SijoittelunTulosMassChangeEvent
-  | SijoittelunTulosPublishEvent
-  | SijoittelunTulosMassUpdateEvent
-  | SijoittelunTulosResetEvent;
+  | ValinnanTulosMassChangeEvent
+  | ValinnanTulosPublishEvent
+  | ValinnanTulosMassUpdateEvent
+  | ValinnanTulosResetEvent;
 
-export type SijoittelunTulosActorRef = ActorRefFrom<
-  typeof sijoittelunTuloksetMachine
+export type ValinnanTulosActorRef = ActorRefFrom<
+  typeof valinnanTulosMachineBase
 >;
 
-export const sijoittelunTuloksetMachine = createMachine({
+export const valinnanTulosMachineBase = createMachine({
   /** @xstate-layout N4IgpgJg5mDOIC5QAoC2BDAxgCwJYDswBKAOgEkARAGQFEBiAYQAkBBAOQHEaBtABgF1EoAA4B7WLgAuuUfiEgAHogC0Adl4BGEgE4ArNo0A2XgCZeq7doAsugDQgAnoiO6SADitWTut712GAZg0TAICAXzD7NCw8QlJKWjoAWRYAZVSAfWZ2Lj5BJBAxCWlZeSUEZQ0AtxJeDytDVSrVVWrW+ycEEw0ai15DQw0rdTc3DTqIqIwcAmJyanoU9IyAVQAFChYAFR4BeSKpGTkC8qNtEkM3XRMvK21TLyMOxEaTEgCrDW1RkNUTQ2skxA0RmcXmiXWmx2eX24kOpROiGsJF0pgMTS8jUuVmeFSCJH+vG0FhMJlGbgGqkMQJBsTmCXokO2PA0+REcJKx1A5WUhlcek8ug+AR8gV0OMcLxqdWuhisAQMqNUNOmdPiCzoaxWACEqGRUkwYQUDpyyioAqSLgE6sETOp9A1ccMtHcbBbzN0yQMVTFZurElrdfrDazYcUjmaKq1DATLoYydpvGN47jGrwLmSrrohY0PlYfaC5kytmROHQILIwCQCAA3UQAayrtL9JGLpY4CFrokw6E5eSN7PDCO5iG8qhIQ10GhaRn6-w0uLGVhIVk0dSuql0TW9kWBqpbbbLYAATsfRMeSMIADa9gBm59QJGbYMPHa7Pb7AgHhQ5EcRCE8GoAjlf55Q8PRVFxAwtF8NxgJuUkxk3As1VbDZmSyAB5JI1loHYKDob8TT-Ec8RITdrg8K5BkaXxhlxcYvgJEUbX0bQ+T+FCD3QnYsJwvCaAI7hQ2NX9h0URBswJBp7lXEJ4LtQwGKGcdQgaYJPh6fwNC4sFAz1A123LStq3wOtGyffc9J1AymHbTszO7Xsjn7PZRKHLkJKjExzj+FS3Gsa0hgYolzkeDFeGtJVlV3Z85n04MjJPM8L2vO8H0s31rKDQzOAcusPxcr83MHeFPJ5bN0x89iLQVKk5UgyUEA0L4Y1Ce4rm0UIWlUfMgXwUQIDgeQ4qIMMysjNQPFjCkEyTIwTFxSoehXRTAjJHpgOA3T6QWcbTX-ZRPHOIk-D8K43BaS47Cano3hsAw+XGfwPhiqYsqLHj232kivJ6ZdBTqSxLoC7xcUolc5UCOpIoTXQdtIYsaD43CaHwn7xJ5HzXDlW1TFaRibs6CxxzcMlKLJyKPmpWKrPimzEs4DHypUS4Tu6Kwya8S6Pm0RdvhXOpesugYtztCIIiAA */
-  id: 'SijoittelunTuloksetMachine',
-  initial: SijoittelunTuloksetState.IDLE,
+  id: 'ValinnanTuloksetMachine',
+  initial: ValinnanTulosState.IDLE,
   types: {} as {
-    context: SijoittelunTuloksetContext;
+    context: ValinnanTulosContext;
     events: SijoittelunTuloksetEvents;
     actions:
       | { type: 'alert'; params: { message: string } }
@@ -148,7 +139,7 @@ export const sijoittelunTuloksetMachine = createMachine({
     changedHakemukset: [],
   },
   on: {
-    [SijoittelunTuloksetEventType.RESET]: {
+    [ValinnanTulosEventType.RESET]: {
       actions: assign(({ event }) => {
         return {
           valintatapajonoOid: event.params.valintatapajonoOid,
@@ -164,16 +155,16 @@ export const sijoittelunTuloksetMachine = createMachine({
     },
   },
   states: {
-    [SijoittelunTuloksetState.IDLE]: {
+    [ValinnanTulosState.IDLE]: {
       on: {
-        [SijoittelunTuloksetEventType.CHANGE]: {
+        [ValinnanTulosEventType.CHANGE]: {
           actions: assign({
             changedHakemukset: ({ context, event }) => {
               return applySingleHakemusChange(context, event);
             },
           }),
         },
-        [SijoittelunTuloksetEventType.MASS_CHANGE]: {
+        [ValinnanTulosEventType.MASS_CHANGE]: {
           actions: [
             assign(({ context, event }) => {
               return applyMassHakemusChanges(context, event);
@@ -181,8 +172,8 @@ export const sijoittelunTuloksetMachine = createMachine({
             'notifyMassStatusChange',
           ],
         },
-        [SijoittelunTuloksetEventType.MASS_UPDATE]: {
-          target: SijoittelunTuloksetState.UPDATING,
+        [ValinnanTulosEventType.MASS_UPDATE]: {
+          target: ValinnanTulosState.UPDATING,
           actions: assign({
             hakemuksetForMassUpdate: ({ context, event }) => {
               return context.hakemukset.reduce((result, hakemus) => {
@@ -203,10 +194,10 @@ export const sijoittelunTuloksetMachine = createMachine({
             },
           }),
         },
-        [SijoittelunTuloksetEventType.UPDATE]: [
+        [ValinnanTulosEventType.UPDATE]: [
           {
             guard: 'hasChangedHakemukset',
-            target: SijoittelunTuloksetState.UPDATING,
+            target: ValinnanTulosState.UPDATING,
           },
           {
             actions: {
@@ -215,19 +206,19 @@ export const sijoittelunTuloksetMachine = createMachine({
             },
           },
         ],
-        [SijoittelunTuloksetEventType.PUBLISH]: [
+        [ValinnanTulosEventType.PUBLISH]: [
           {
             guard: 'hasChangedHakemukset',
             actions: assign({ publishAfterUpdate: true }),
-            target: SijoittelunTuloksetState.UPDATING,
+            target: ValinnanTulosState.UPDATING,
           },
           {
-            target: SijoittelunTuloksetState.PUBLISHING,
+            target: ValinnanTulosState.PUBLISHING,
           },
         ],
       },
     },
-    [SijoittelunTuloksetState.UPDATING]: {
+    [ValinnanTulosState.UPDATING]: {
       invoke: {
         src: 'updateHakemukset',
         input: ({ context }) => ({
@@ -238,10 +229,10 @@ export const sijoittelunTuloksetMachine = createMachine({
           lastModified: context.lastModified,
         }),
         onDone: {
-          target: SijoittelunTuloksetState.UPDATE_COMPLETED,
+          target: ValinnanTulosState.UPDATE_COMPLETED,
         },
         onError: {
-          target: SijoittelunTuloksetState.IDLE,
+          target: ValinnanTulosState.IDLE,
           actions: [
             {
               type: 'errorModal',
@@ -262,7 +253,7 @@ export const sijoittelunTuloksetMachine = createMachine({
         },
       },
     },
-    [SijoittelunTuloksetState.UPDATE_COMPLETED]: {
+    [ValinnanTulosState.UPDATE_COMPLETED]: {
       entry: [
         assign({
           hakemuksetForMassUpdate: undefined,
@@ -271,11 +262,11 @@ export const sijoittelunTuloksetMachine = createMachine({
       always: [
         {
           guard: 'shouldPublishAfterUpdate',
-          target: SijoittelunTuloksetState.PUBLISHING,
+          target: ValinnanTulosState.PUBLISHING,
           actions: assign({ publishAfterUpdate: false }),
         },
         {
-          target: SijoittelunTuloksetState.IDLE,
+          target: ValinnanTulosState.IDLE,
           actions: [
             'updated',
             {
@@ -286,21 +277,21 @@ export const sijoittelunTuloksetMachine = createMachine({
         },
       ],
     },
-    [SijoittelunTuloksetState.PUBLISHING]: {
+    [ValinnanTulosState.PUBLISHING]: {
       invoke: {
         src: 'publish',
         input: ({ context }) => ({
           valintatapajonoOid: context.valintatapajonoOid,
         }),
         onDone: {
-          target: SijoittelunTuloksetState.IDLE,
+          target: ValinnanTulosState.IDLE,
           actions: {
             type: 'successNotify',
             params: { message: 'sijoittelun-tulokset.hyvaksytty' },
           },
         },
         onError: {
-          target: SijoittelunTuloksetState.IDLE,
+          target: ValinnanTulosState.IDLE,
           actions: {
             type: 'errorModal',
             params: ({ event }) => ({ error: event.error as Error }),
@@ -315,119 +306,6 @@ export const sijoittelunTuloksetMachine = createMachine({
     shouldPublishAfterUpdate: ({ context }) =>
       Boolean(context.publishAfterUpdate),
   },
-  actions: {
-    alert: ({ context }, params) =>
-      context.addToast?.({
-        key: `sijoittelun-tulokset-update-failed-for-${context.hakukohdeOid}-${context.valintatapajonoOid}`,
-        message: params.message,
-        type: 'error',
-      }),
-
-    successNotify: ({ context }, params) => {
-      context.onUpdated?.();
-      context.addToast?.({
-        key: `sijoittelun-tulokset-updated-for-${context.hakukohdeOid}-${context.valintatapajonoOid}`,
-        message: params.message,
-        type: 'success',
-      });
-    },
-    notifyMassStatusChange: ({ context }) => {
-      context.addToast?.({
-        key: `sijoittelun-tulokset-mass-status-change-for-${context.hakukohdeOid}-${context.valintatapajonoOid}`,
-        message: 'sijoittelun-tulokset.mass-status-change-done',
-        type: 'success',
-        messageParams: { amount: context.massChangeAmount ?? 0 },
-      });
-    },
-    updated: ({ context }, params) => {
-      if (isNullish(params?.error)) {
-        context.onUpdated?.();
-      } else if (
-        params.error instanceof OphApiError &&
-        Array.isArray(params.error?.response?.data)
-      ) {
-        const erroredHakemusOids = params.error?.response.data?.map(
-          (error) => error.hakemusOid as string,
-        );
-        const someHakemusUpdated = context.changedHakemukset.some(
-          (h) => !erroredHakemusOids.includes(h.hakemusOid),
-        );
-        if (someHakemusUpdated) {
-          context.onUpdated?.();
-        }
-      }
-    },
-    errorModal: ({ context }, params) => {
-      showModal(SijoittelunTulosErrorModalDialog, {
-        error: params.error,
-        hakemukset: context.hakemukset,
-      });
-    },
-  },
-  actors: {
-    updateHakemukset: fromPromise(
-      async ({
-        input,
-      }: {
-        input: {
-          hakukohdeOid: string;
-          valintatapajonoOid: string;
-          lastModified: string;
-          changed: Array<SijoittelunHakemusValintatiedoilla>;
-          original: Array<SijoittelunHakemusValintatiedoilla>;
-        };
-      }) => {
-        await saveMaksunTilanMuutokset(
-          input.hakukohdeOid,
-          input.changed,
-          input.original,
-        );
-        return saveSijoitteluAjonTulokset(
-          input.valintatapajonoOid,
-          input.hakukohdeOid,
-          input.lastModified,
-          input.changed,
-        );
-      },
-    ),
-    publish: fromPromise(
-      ({ input }: { input: { valintatapajonoOid: string } }) =>
-        hyvaksyValintaEsitys(input.valintatapajonoOid),
-    ),
-  },
 });
 
-export const useSijoittelunTulosActorRef = ({
-  hakukohdeOid,
-  hakemukset,
-  valintatapajonoOid,
-  lastModified,
-  addToast,
-  onUpdated,
-}: SijoitteluntuloksetMachineParams) => {
-  const sijoittelunTuloksetActorRef = useActorRef(sijoittelunTuloksetMachine);
-
-  useEffect(() => {
-    sijoittelunTuloksetActorRef.send({
-      type: SijoittelunTuloksetEventType.RESET,
-      params: {
-        hakukohdeOid,
-        valintatapajonoOid,
-        hakemukset,
-        lastModified,
-        onUpdated,
-        addToast,
-      },
-    });
-  }, [
-    sijoittelunTuloksetActorRef,
-    hakemukset,
-    hakukohdeOid,
-    lastModified,
-    valintatapajonoOid,
-    onUpdated,
-    addToast,
-  ]);
-
-  return sijoittelunTuloksetActorRef;
-};
+export const valinnanTulosMachine = valinnanTulosMachineBase.provide({});
