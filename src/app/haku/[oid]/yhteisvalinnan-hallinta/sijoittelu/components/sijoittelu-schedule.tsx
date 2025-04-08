@@ -109,6 +109,11 @@ const ScheduleContent = ({
         label={t('yhteisvalinnan-hallinta.sijoittelu.ajastus.ajotiheys')}
         renderInput={() => (
           <OphSelect
+            inputProps={{
+              'aria-label': t(
+                'yhteisvalinnan-hallinta.sijoittelu.ajastus.valitse-ajotiheys',
+              ),
+            }}
             value={frequency}
             onChange={(e) => setFrequency(e.target.value)}
             sx={{ width: '120px' }}
