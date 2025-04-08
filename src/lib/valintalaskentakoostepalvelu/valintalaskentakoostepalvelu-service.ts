@@ -474,10 +474,8 @@ export const getOsoitetarratHaulle = async ({
   hakuOid: string;
 }) => {
   const startProcessResponse = await client.post<{ id: string }>(
-    configuration.startExportOsoitetarratHaulleUrl,
-    {
-      hakuOid,
-    },
+    `${configuration.startExportOsoitetarratHaulleUrl}?hakuOid=${hakuOid}`,
+    '',
   );
   const tarratProcessId = startProcessResponse?.data?.id;
   return downloadProcessDocument(tarratProcessId);
