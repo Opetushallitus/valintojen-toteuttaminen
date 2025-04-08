@@ -456,10 +456,10 @@ const laskentaStateParamsToMachineParams = ({
       Array.isArray(hakukohteet) || hakukohteet == null
         ? hakukohteet
         : [hakukohteet],
-    sijoitellaanko: sijoitellaankoHaunHakukohteetLaskennanYhteydessa(
+    sijoitellaanko: sijoitellaankoHaunHakukohteetLaskennanYhteydessa({
       haku,
       haunAsetukset,
-    ),
+    }),
     valinnanvaiheNumber,
     ...(valintakoelaskenta
       ? {

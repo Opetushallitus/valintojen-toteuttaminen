@@ -1,6 +1,7 @@
 import {
   isHarkinnanvarainenHakukohde,
   isKorkeakouluHaku,
+  sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
 } from '@/lib/kouta/kouta-service';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { UserPermissions } from '@/lib/permissions';
@@ -19,28 +20,6 @@ export type BasicTab = {
   title: string;
   route: string;
   visibleFn?: (props: VisibleFnProps) => boolean;
-};
-
-const plainKoodiUri = (koodiUri: string) => koodiUri.split('#')[0];
-
-const ONLY_VALINNAN_TULOKSET_HAKUTAPA_KOODI_URIS = [
-  'hakutapa_02', // Erillishaku
-  'hakutapa_03', // Jatkuva haku
-  'hakutapa_04', // Joustava haku
-  'hakutapa_05', // Lisähaku
-  'hakutapa_06', // Siirtohaku
-];
-
-const hasOnlyValinnanTulokset = ({
-  haku,
-  haunAsetukset,
-}: Pick<VisibleFnProps, 'haku' | 'haunAsetukset'>) => {
-  return (
-    !haunAsetukset.sijoittelu &&
-    ONLY_VALINNAN_TULOKSET_HAKUTAPA_KOODI_URIS.includes(
-      plainKoodiUri(haku.hakutapaKoodiUri),
-    )
-  );
 };
 
 const isAllowedToUseValinnat = (
@@ -96,7 +75,10 @@ export const TABS: Array<BasicTab> = [
     route: 'hakijaryhmat',
     visibleFn: ({ haku, haunAsetukset, usesValintalaskenta, permissions }) =>
       isKorkeakouluHaku(haku) &&
-      (!hasOnlyValinnanTulokset({ haku, haunAsetukset }) ||
+      (!sijoitellaankoHaunHakukohteetLaskennanYhteydessa({
+        haku,
+        haunAsetukset,
+      }) ||
         usesValintalaskenta) &&
       isAllowedToUseValinnat(haunAsetukset, permissions),
   },
@@ -104,7 +86,10 @@ export const TABS: Array<BasicTab> = [
     title: 'valintalaskennan-tulokset.otsikko',
     route: 'valintalaskennan-tulokset',
     visibleFn: ({ haku, haunAsetukset, usesValintalaskenta, permissions }) =>
-      (!hasOnlyValinnanTulokset({ haku, haunAsetukset }) ||
+      (!sijoitellaankoHaunHakukohteetLaskennanYhteydessa({
+        haku,
+        haunAsetukset,
+      }) ||
         usesValintalaskenta) &&
       isAllowedToUseValinnat(haunAsetukset, permissions),
   },
@@ -112,7 +97,10 @@ export const TABS: Array<BasicTab> = [
     title: 'sijoittelun-tulokset.otsikko',
     route: 'sijoittelun-tulokset',
     visibleFn: ({ haku, haunAsetukset, usesValintalaskenta, permissions }) =>
-      (!hasOnlyValinnanTulokset({ haku, haunAsetukset }) ||
+      (!sijoitellaankoHaunHakukohteetLaskennanYhteydessa({
+        haku,
+        haunAsetukset,
+      }) ||
         usesValintalaskenta) &&
       isAllowedToUseValinnat(haunAsetukset, permissions),
   },
@@ -120,7 +108,10 @@ export const TABS: Array<BasicTab> = [
     title: 'valinnan-tulokset.otsikko',
     route: 'valinnan-tulokset',
     visibleFn: ({ haku, haunAsetukset, usesValintalaskenta, permissions }) =>
-      hasOnlyValinnanTulokset({ haku, haunAsetukset }) &&
+      sijoitellaankoHaunHakukohteetLaskennanYhteydessa({
+        haku,
+        haunAsetukset,
+      }) &&
       !usesValintalaskenta &&
       isAllowedToUseValinnat(haunAsetukset, permissions),
   },

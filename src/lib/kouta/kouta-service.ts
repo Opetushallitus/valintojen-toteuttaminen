@@ -56,10 +56,13 @@ export async function getHaut(userPermissions: UserPermissions) {
 export const isYhteishaku = (haku: Haku): boolean =>
   haku.hakutapaKoodiUri.startsWith('hakutapa_01');
 
-export const sijoitellaankoHaunHakukohteetLaskennanYhteydessa = (
-  haku: Haku,
-  haunAsetukset: HaunAsetukset,
-): boolean => !(isYhteishaku(haku) || haunAsetukset.sijoittelu);
+export const sijoitellaankoHaunHakukohteetLaskennanYhteydessa = ({
+  haku,
+  haunAsetukset,
+}: {
+  haku: Haku;
+  haunAsetukset: HaunAsetukset;
+}): boolean => !(isYhteishaku(haku) || haunAsetukset.sijoittelu);
 
 export function isToisenAsteenYhteisHaku(haku: Haku): boolean {
   return (
