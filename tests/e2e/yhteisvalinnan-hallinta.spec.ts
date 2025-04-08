@@ -255,9 +255,61 @@ test.describe('Sijoittelu', () => {
     await expect(page.getByPlaceholder('pp.kk.vvvv hh.mm')).toHaveValue(
       '20.02.2025 16:00',
     );
+    await expect(
+      page.getByRole('combobox', { name: 'Valitse ajotiheys' }),
+    ).toContainText('12 tuntia');
     await page.getByRole('button', { name: 'Poista ajastus käytöstä' }).click();
     await expect(
       page.getByText('Ajastettu sijoittelu ei ole käytössä'),
+    ).toBeVisible();
+  });
+
+  test('Käynnistetään sijoittelu', async ({ page }) => {
+    await page.route(
+      '**/sijoittelu-service/resources/koostesijoittelu/aktivoi?hakuOid=1.2.246.562.29.00000000000000045102',
+      async (route) => {
+        await route.fulfill({
+          json: {},
+        });
+      },
+    );
+    await page.route(
+      '**/sijoittelu-service/resources/koostesijoittelu/status/1.2.246.562.29.00000000000000045102',
+      async (route) => {
+        await route.fulfill({
+          json: {
+            valmis: true,
+            ohitettu: false,
+            tekeillaan: false,
+          },
+        });
+      },
+    );
+    await page.getByRole('button', { name: 'Suorita sijoittelu' }).click();
+    await expect(page.getByText('Sijoittelu on valmis')).toBeVisible();
+  });
+
+  test('Sijoittelu päätyy virheeseen', async ({ page }) => {
+    await page.route(
+      '**/sijoittelu-service/resources/koostesijoittelu/aktivoi?hakuOid=1.2.246.562.29.00000000000000045102',
+      async (route) =>
+        await route.fulfill({ status: 500, body: 'Unknown error' }),
+    );
+    await page.route(
+      '**/sijoittelu-service/resources/koostesijoittelu/status/1.2.246.562.29.00000000000000045102',
+      async (route) => {
+        await route.fulfill({
+          json: {
+            valmis: false,
+            ohitettu: true,
+            tekeillaan: false,
+          },
+        });
+      },
+    );
+    await page.getByRole('button', { name: 'Suorita sijoittelu' }).click();
+    await expect(
+      page.getByText('Sijoittelun suorittaminen epäonnistui'),
     ).toBeVisible();
   });
 });
