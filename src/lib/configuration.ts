@@ -246,6 +246,8 @@ export const configuration = {
   }) =>
     `${DOMAIN}/valinta-tulos-service/auth/muutoshistoria?valintatapajonoOid=${valintatapajonoOid}&hakemusOid=${hakemusOid}`,
   // -------------------------------------------------------------------------------------------------
+  sijoittelunTuloksenPerustiedotHaulleUrl: ({ hakuOid }: { hakuOid: string }) =>
+    `${DOMAIN}/valinta-tulos-service/auth/sijoittelu/${hakuOid}/sijoitteluajo/latest/perustiedot`,
   // sijoittelu
   kaynnistaSijoittelu: ({ hakuOid }: { hakuOid: string }) =>
     `${DOMAIN}/sijoittelu-service/resources/koostesijoittelu/aktivoi?hakuOid=${hakuOid}`,

@@ -1,6 +1,6 @@
 'use client';
 
-import { indexBy, pick, prop } from 'remeda';
+import { indexBy, isNullish, pick, prop } from 'remeda';
 import { configuration } from '../configuration';
 import { client } from '../http-client';
 import {
@@ -17,6 +17,7 @@ import {
   HakijanVastaanottoTila,
   SijoitteluajonTuloksetResponseData,
   SijoitteluajonTuloksetWithValintaEsitysResponseData,
+  SijoittelunTulosBasicInfo,
   ValinnanTulosModel,
   ValinnanTulosUpdateErrorResult,
 } from './valinta-tulos-types';
@@ -402,3 +403,19 @@ export const hakijoidenVastaanottotilatValintatapajonolle = async (
     hakemusOid: hvt.hakemusOid,
   }));
 };
+
+export async function getSijoittelunTuloksenPerustiedotHaulle(
+  hakuOid: string,
+): Promise<SijoittelunTulosBasicInfo | null> {
+  const response = await nullWhen404(
+    client.get<{ startMils: number; endMils: number }>(
+      configuration.sijoittelunTuloksenPerustiedotHaulleUrl({ hakuOid }),
+    ),
+  );
+  return isNullish(response)
+    ? null
+    : {
+        startDate: new Date(response.data.startMils),
+        endDate: new Date(response.data.endMils),
+      };
+}

@@ -116,3 +116,8 @@ export type SijoitteluajonTuloksetWithValintaEsitysResponseData = {
   }>;
   lukuvuosimaksut: Array<{ personOid: string; maksuntila: MaksunTila }>;
 };
+
+export type SijoittelunTulosBasicInfo = {
+  startDate: Date;
+  endDate: Date;
+};

@@ -586,6 +586,7 @@
       "vie-tarrat-virhe": "Virhe muodostaessa osoitetarroja haulle!",
       "vie-kirjeiksi": "Vie hyväksymiskirjeiksi",
       "vie-kirjeiksi-virhe": "Virhe muodostaessa hyväksymiskirjeitä haulle!",
+      "ajettu": "Edellinen onnistunut sijoittelu {alku} - {loppu}",
       "ajastus": {
         "otsikko": "Ajastettu sijoittelu",
         "aloitusajankohta": "Aloitusajankohta",

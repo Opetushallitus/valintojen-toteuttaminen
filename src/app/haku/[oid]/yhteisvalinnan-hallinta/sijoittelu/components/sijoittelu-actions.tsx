@@ -15,6 +15,8 @@ import {
   getSijoittelunTulosHaulleExcel,
   luoHyvaksymiskirjeetHaullePDF,
 } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
+import { getSijoittelunTuloksenPerustiedotHaulle } from '@/lib/valinta-tulos-service/valinta-tulos-service';
+import { SijoitteluBasicInfo } from './sijoittelu-basic-info';
 
 const ActionsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -26,13 +28,17 @@ const ActionsContainer = styled(Box)(({ theme }) => ({
 const SijoitteluButton = ({
   hakuOid,
   sijoitteluRunning,
+  infoRefetch,
 }: {
   hakuOid: string;
   sijoitteluRunning: boolean;
+  infoRefetch: () => void;
 }) => {
   const { t } = useTranslations();
 
   const { addToast } = useToaster();
+
+  const [startingSijoittelu, setStartingSijoittelu] = useState(false);
 
   const [sijoitteluInProgress, setSijoitteluInProgress] =
     useState<boolean>(sijoitteluRunning);
@@ -53,6 +59,9 @@ const SijoitteluButton = ({
           manualCloseOnly: true,
         });
         setSijoitteluInProgress(false);
+        if (result.valmis) {
+          infoRefetch();
+        }
       }
       if (!result) {
         setSijoitteluInProgress(false);
@@ -64,16 +73,29 @@ const SijoitteluButton = ({
   });
 
   const startSijoittelu = async () => {
-    setSijoitteluInProgress(true);
-    await kaynnistaSijoittelu(hakuOid);
+    setStartingSijoittelu(true);
+    try {
+      await kaynnistaSijoittelu(hakuOid);
+      setStartingSijoittelu(false);
+      setSijoitteluInProgress(true);
+    } catch (e) {
+      console.error(e);
+      addToast({
+        key: `sijoittelu-${hakuOid}}`,
+        type: 'error',
+        message: 'yhteisvalinnan-hallinta.sijoittelu.suoritus-epaonnistui',
+        manualCloseOnly: true,
+      });
+      setStartingSijoittelu(false);
+    }
   };
 
   return (
     <OphButton
       onClick={startSijoittelu}
       variant="contained"
-      loading={sijoitteluInProgress}
-      disabled={sijoitteluInProgress}
+      loading={sijoitteluInProgress || startingSijoittelu}
+      disabled={sijoitteluInProgress || startingSijoittelu}
     >
       {t('yhteisvalinnan-hallinta.sijoittelu.suorita')}
     </OphButton>
@@ -89,12 +111,19 @@ export const SijoitteluActions = ({
 }) => {
   const { t } = useTranslations();
 
+  const { data: basicInfo, refetch } = useQuery({
+    queryKey: ['sijoittelu-basic-info', hakuOid],
+    queryFn: async () => getSijoittelunTuloksenPerustiedotHaulle(hakuOid),
+  });
+
   return (
     <Box>
+      <SijoitteluBasicInfo basicInfo={basicInfo} />
       <ActionsContainer>
         <SijoitteluButton
           hakuOid={hakuOid}
           sijoitteluRunning={sijoitteluRunning}
+          infoRefetch={refetch}
         />
         <FileDownloadButton
           component={OphButton}
