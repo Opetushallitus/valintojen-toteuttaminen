@@ -3,14 +3,13 @@ import { useTranslations } from '@/lib/localization/useTranslations';
 import { SijoitteluActions } from './sijoittelu-actions';
 import { AccordionBoxTitle } from '@/components/accordion-box-title';
 import { SijoitteluSchedule } from './sijoittelu-schedule';
-import { Box, Typography } from '@mui/material';
+import { Box } from '@mui/material';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { sijoittelunStatus } from '@/lib/sijoittelu/sijoittelu-service';
 import { useHaku } from '@/lib/kouta/useHaku';
 import { useHaunAsetukset } from '@/lib/ohjausparametrit/useHaunAsetukset';
 import { sijoitellaankoHaunHakukohteetLaskennanYhteydessa } from '@/lib/kouta/kouta-service';
-import { InfoOutlined } from '@mui/icons-material';
-import { ophColors } from '@opetushallitus/oph-design-system';
+import { SijoitteluInfo } from './sijoittelu-info';
 
 export const SijoitteluContainer = ({ hakuOid }: { hakuOid: string }) => {
   const { t } = useTranslations();
@@ -36,18 +35,9 @@ export const SijoitteluContainer = ({ hakuOid }: { hakuOid: string }) => {
       }
     >
       {sijoitteluFunctionalityNotInUse && (
-        <Typography
-          variant="body1"
-          sx={{
-            display: 'flex',
-            alignItems: 'flex-start',
-            marginTop: 1,
-            columnGap: 1,
-          }}
-        >
-          <InfoOutlined htmlColor={ophColors.blue2} />
-          {t('yhteisvalinnan-hallinta.sijoittelu.ei-kaytossa')}
-        </Typography>
+        <SijoitteluInfo
+          text={t('yhteisvalinnan-hallinta.sijoittelu.ei-kaytossa')}
+        />
       )}
       {!sijoitteluFunctionalityNotInUse && (
         <Box sx={{ display: 'flex', flexDirection: 'column', rowGap: 3 }}>

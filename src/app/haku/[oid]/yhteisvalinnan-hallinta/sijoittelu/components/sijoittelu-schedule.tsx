@@ -9,17 +9,16 @@ import {
   updateAjastettuSijoittelu,
 } from '@/lib/sijoittelu/sijoittelu-service';
 import { AjastettuSijoittelu } from '@/lib/types/sijoittelu-types';
-import { InfoOutlined } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import {
   OphButton,
-  ophColors,
   OphFormFieldWrapper,
   OphSelect,
 } from '@opetushallitus/oph-design-system';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { isNullish } from 'remeda';
+import { SijoitteluInfo } from './sijoittelu-info';
 
 const ScheduleContent = ({
   hakuOid,
@@ -92,20 +91,13 @@ const ScheduleContent = ({
 
   return (
     <>
-      <Typography
-        variant="body1"
-        sx={{
-          display: 'flex',
-          alignItems: 'flex-start',
-          marginTop: 1,
-          columnGap: 1,
-        }}
-      >
-        <InfoOutlined htmlColor={ophColors.blue2} />
-        {scheduleInUse
-          ? t('yhteisvalinnan-hallinta.sijoittelu.ajastus.kaytossa')
-          : t('yhteisvalinnan-hallinta.sijoittelu.ajastus.ei-kaytossa')}
-      </Typography>
+      <SijoitteluInfo
+        text={
+          scheduleInUse
+            ? t('yhteisvalinnan-hallinta.sijoittelu.ajastus.kaytossa')
+            : t('yhteisvalinnan-hallinta.sijoittelu.ajastus.ei-kaytossa')
+        }
+      />
       <Box
         sx={{
           display: 'flex',
