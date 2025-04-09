@@ -119,7 +119,7 @@ export const SijoitteluActions = ({
   return (
     <Box>
       <SijoitteluBasicInfo basicInfo={basicInfo} />
-      <ActionsContainer>
+      <ActionsContainer sx={{ flexWrap: 'wrap', rowGap: 1 }}>
         <SijoitteluButton
           hakuOid={hakuOid}
           sijoitteluRunning={sijoitteluRunning}
@@ -128,6 +128,7 @@ export const SijoitteluActions = ({
         <FileDownloadButton
           component={OphButton}
           variant="outlined"
+          sx={{ flexWrap: 'wrap' }}
           getFile={() => getSijoittelunTulosHaulleExcel(hakuOid)}
           manualCloseOnlyError={true}
           errorKey="get-haku-tulokset-error"

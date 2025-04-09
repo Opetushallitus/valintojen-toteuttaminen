@@ -105,6 +105,8 @@ const ScheduleContent = ({
           columnGap: 2,
           marginTop: 2,
           alignItems: 'flex-end',
+          flexWrap: 'wrap',
+          rowGap: 1,
         }}
       >
         <CalendarComponent
