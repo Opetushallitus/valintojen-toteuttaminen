@@ -156,8 +156,8 @@ export const ValinnanTilatEditModal = createModal<{
   });
 
   const ilmoittautuminenPossible = isIlmoittautuminenPossible({
-    tila: valinnanTulos.valinnantila,
-    vastaanottotila: vastaanottoTila as VastaanottoTila,
+    valinnanTila: valinnanTulos.valinnantila,
+    vastaanottoTila: vastaanottoTila as VastaanottoTila,
     julkaistavissa,
   });
 
@@ -209,13 +209,15 @@ export const ValinnanTilatEditModal = createModal<{
         label={t('henkilo.taulukko.julkaistavissa')}
         renderInput={({ labelId }) => (
           <OphCheckbox
-            inputProps={{ 'aria-labelledby': labelId }}
+            slotProps={{
+              input: { 'aria-labelledby': labelId },
+            }}
             checked={julkaistavissa}
             disabled={
               isPending ||
               !isValintaesitysJulkaistavissa ||
               !isVastaanottotilaJulkaistavissa({
-                vastaanottotila: vastaanottoTila as VastaanottoTila,
+                vastaanottoTila: vastaanottoTila as VastaanottoTila,
               })
             }
             onChange={(e) => setJulkaistavissa(e.target.checked)}
@@ -223,8 +225,8 @@ export const ValinnanTilatEditModal = createModal<{
         )}
       />
       {isVastaanottoPossible({
-        tila: valinnanTulos.valinnantila,
-        vastaanottotila: valinnanTulos.vastaanottotila,
+        valinnanTila: valinnanTulos.valinnantila,
+        vastaanottoTila: valinnanTulos.vastaanottotila,
         julkaistavissa,
       }) && (
         <InlineFormControl

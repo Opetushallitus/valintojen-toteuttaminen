@@ -14,7 +14,7 @@ import {
 } from '@/lib/sijoittelun-tulokset-utils';
 import { useVastaanottoTilaOptions } from '@/hooks/useVastaanottoTilaOptions';
 import { useIlmoittautumisTilaOptions } from '@/hooks/useIlmoittautumisTilaOptions';
-import { MassChangeParams } from '@/lib/state/valinnan-tulos-machine';
+import { ValinnanTulosMassChangeParams } from '@/lib/state/valinnan-tulos-machine';
 
 const IlmoittautumisSelect = ({
   hakemukset,
@@ -23,7 +23,7 @@ const IlmoittautumisSelect = ({
 }: {
   hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
   selection: Set<string>;
-  massStatusChangeForm: (changeParams: MassChangeParams) => void;
+  massStatusChangeForm: (changeParams: ValinnanTulosMassChangeParams) => void;
 }) => {
   const { t } = useTranslations();
 
@@ -58,7 +58,7 @@ const VastaanOttoSelect = ({
 }: {
   hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
   selection: Set<string>;
-  massStatusChangeForm: (changeParams: MassChangeParams) => void;
+  massStatusChangeForm: (changeParams: ValinnanTulosMassChangeParams) => void;
 }) => {
   const { t } = useTranslations();
 
@@ -67,7 +67,7 @@ const VastaanOttoSelect = ({
   const massUpdateVastaanOtto = (event: SelectChangeEvent<string>) => {
     massStatusChangeForm({
       hakemusOids: selection,
-      vastaanottotila: event.target.value as VastaanottoTila,
+      vastaanottoTila: event.target.value as VastaanottoTila,
     });
   };
 
@@ -95,7 +95,7 @@ export const SijoittelunTuloksetActionBar = ({
   hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
   selection: Set<string>;
   resetSelection: () => void;
-  massStatusChangeForm: (changeParams: MassChangeParams) => void;
+  massStatusChangeForm: (changeParams: ValinnanTulosMassChangeParams) => void;
 }) => {
   const { t } = useTranslations();
 

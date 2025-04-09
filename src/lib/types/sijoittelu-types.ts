@@ -1,4 +1,4 @@
-import { MaksunTila } from '../ataru/ataru-types';
+import { ValinnanTulosFields } from '../valinta-tulos-service/valinta-tulos-types';
 
 export type SijoittelunValintatapajonoTulos = {
   nimi: string;
@@ -64,9 +64,7 @@ export type SijoittelunHakemus = {
 
 export type SijoittelunHakemusValintatiedoilla = {
   hakijaOid: string;
-  hakemusOid: string;
   pisteet: number;
-  tila: SijoittelunTila;
   valintatapajonoOid: string;
   hyvaksyttyHakijaryhmista: Array<string>;
   varasijanNumero: number;
@@ -75,35 +73,15 @@ export type SijoittelunHakemusValintatiedoilla = {
   tasasijaJonosija: number;
   hakutoive: number;
   sija?: number;
-  julkaistavissa: boolean;
-  ilmoittautumisTila: IlmoittautumisTila;
-  vastaanottotila: VastaanottoTila;
-  maksunTila?: MaksunTila;
-  ehdollisestiHyvaksyttavissa: boolean;
   hyvaksyttyVarasijalta: boolean;
   onkoMuuttunutViimeSijoittelussa: boolean;
-  ehdollisenHyvaksymisenEhtoKoodi?: string;
-  ehdollisenHyvaksymisenEhtoFI?: string;
-  ehdollisenHyvaksymisenEhtoSV?: string;
-  ehdollisenHyvaksymisenEhtoEN?: string;
   vastaanottoDeadlineMennyt?: boolean;
   vastaanottoDeadline?: string;
   hyvaksyttyHarkinnanvaraisesti?: boolean;
   hyvaksyPeruuntunut: boolean;
   hyvaksymiskirjeLahetetty?: string;
   siirtynytToisestaValintatapajonosta?: boolean;
-};
-
-export const isHyvaksyttyHarkinnanvaraisesti = (
-  hakemus: Pick<
-    SijoittelunHakemusValintatiedoilla,
-    'tila' | 'hyvaksyttyHarkinnanvaraisesti'
-  >,
-): boolean =>
-  Boolean(hakemus?.hyvaksyttyHarkinnanvaraisesti) &&
-  [SijoittelunTila.HYVAKSYTTY, SijoittelunTila.VARASIJALTA_HYVAKSYTTY].includes(
-    hakemus.tila,
-  );
+} & ValinnanTulosFields;
 
 export type SijoitteluajonValintatapajono = {
   oid: string;

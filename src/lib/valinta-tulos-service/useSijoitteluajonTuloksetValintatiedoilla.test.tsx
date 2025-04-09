@@ -89,8 +89,8 @@ function assertHakemus(
   expect(hakemus.hakijaOid).toEqual('hakija' + oidNumber);
   expect(hakemus.pisteet).toEqual(pisteet);
   expect(hakemus.valintatapajonoOid).toEqual('jono1');
-  expect(hakemus.tila).toEqual(tila);
-  expect(hakemus.vastaanottotila).toEqual(vastaanottoTila);
+  expect(hakemus.valinnanTila).toEqual(tila);
+  expect(hakemus.vastaanottoTila).toEqual(vastaanottoTila);
   expect(hakemus.ilmoittautumisTila).toEqual(ilmoTila);
   expect(hakemus.maksunTila).not.toBeDefined();
 }

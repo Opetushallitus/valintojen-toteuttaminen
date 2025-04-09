@@ -25,12 +25,12 @@ import { isNonNull } from 'remeda';
 import { useSijoittelunTulosSearch } from '../hooks/useSijoittelunTulosSearch';
 import { useSelection } from '@/hooks/useSelection';
 import {
-  MassChangeParams,
-  ValinnanTulosActorRef,
+  ValinnanTulosMassChangeParams,
   ValinnanTulosChangeParams,
   ValinnanTulosEventType,
   ValinnanTulosState,
 } from '@/lib/state/valinnan-tulos-machine';
+import { SijoittelunTulosActorRef } from '../lib/sijoittelun-tulokset-state';
 
 export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
   title,
@@ -62,7 +62,7 @@ const useColumns = ({
   haku: Haku;
   hakukohde: Hakukohde;
   sijoitteluajoId: string;
-  actorRef: ValinnanTulosActorRef;
+  actorRef: SijoittelunTulosActorRef;
   kaikkiJonotHyvaksytty: boolean;
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
   kayttaaLaskentaa: boolean;
@@ -203,7 +203,7 @@ export const SijoittelunTulosTable = ({
   haku: Haku;
   hakukohde: Hakukohde;
   sijoitteluajoId: string;
-  sijoittelunTulosActorRef: ValinnanTulosActorRef;
+  sijoittelunTulosActorRef: SijoittelunTulosActorRef;
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
   kaikkiJonotHyvaksytty: boolean;
   kayttaaLaskentaa: boolean;
@@ -212,7 +212,7 @@ export const SijoittelunTulosTable = ({
 
   const contextHakemukset = useSelector(
     sijoittelunTulosActorRef,
-    (state) => state.context.hakemukset,
+    (state) => state.context.tulokset,
   );
 
   const {
@@ -237,7 +237,7 @@ export const SijoittelunTulosTable = ({
 
   const changedHakemukset = useSelector(
     sijoittelunTulosActorRef,
-    (state) => state.context.changedHakemukset,
+    (state) => state.context.changedTulokset,
   );
 
   const rows = useMemo(
@@ -264,7 +264,7 @@ export const SijoittelunTulosTable = ({
         hakemukset={contextHakemukset}
         selection={selection}
         resetSelection={resetSelection}
-        massStatusChangeForm={(changeParams: MassChangeParams) => {
+        massStatusChangeForm={(changeParams: ValinnanTulosMassChangeParams) => {
           sijoittelunTulosActorRef.send({
             type: ValinnanTulosEventType.MASS_CHANGE,
             ...changeParams,

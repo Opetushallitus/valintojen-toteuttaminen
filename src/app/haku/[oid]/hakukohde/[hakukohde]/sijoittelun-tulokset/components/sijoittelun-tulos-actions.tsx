@@ -11,11 +11,7 @@ import {
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import useToaster from '@/hooks/useToaster';
 import { Haku, Hakukohde, KoutaOidParams } from '@/lib/kouta/kouta-types';
-import {
-  SijoittelunHakemusValintatiedoilla,
-  SijoittelunTila,
-  VastaanottoTila,
-} from '@/lib/types/sijoittelu-types';
+import { SijoittelunTila, VastaanottoTila } from '@/lib/types/sijoittelu-types';
 import { sendVastaanottopostiValintatapaJonolle } from '@/lib/valinta-tulos-service/valinta-tulos-service';
 import { filter, isEmpty, pipe, prop } from 'remeda';
 import { useSuspenseQuery } from '@tanstack/react-query';
@@ -28,11 +24,12 @@ import { useSelector } from '@xstate/react';
 import { styled } from '@/lib/theme';
 import { useIsValintaesitysJulkaistavissa } from '@/hooks/useIsValintaesitysJulkaistavissa';
 import {
-  MassChangeParams,
-  ValinnanTulosActorRef,
+  ValinnanTulosMassChangeParams,
   ValinnanTulosEventType,
   ValinnanTulosState,
 } from '@/lib/state/valinnan-tulos-machine';
+import { ValinnanTulosFields } from '@/lib/valinta-tulos-service/valinta-tulos-types';
+import { SijoittelunTulosActorRef } from '../lib/sijoittelun-tulokset-state';
 
 const ActionsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -101,19 +98,19 @@ const useEraantyneetHakemukset = ({
   hakukohdeOid,
   hakemukset,
 }: KoutaOidParams & {
-  hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
+  hakemukset: Array<ValinnanTulosFields>;
 }) => {
   const hakemuksetJotkaTarvitsevatAikarajaMennytTiedon = pipe(
     hakemukset,
     filter(
       (hakemus) =>
-        hakemus.vastaanottotila === VastaanottoTila.KESKEN &&
+        hakemus.vastaanottoTila === VastaanottoTila.KESKEN &&
         hakemus.julkaistavissa &&
         [
           SijoittelunTila.HYVAKSYTTY,
           SijoittelunTila.VARASIJALTA_HYVAKSYTTY,
           SijoittelunTila.PERUNUT,
-        ].includes(hakemus.tila),
+        ].includes(hakemus.valinnanTila),
     ),
   );
 
@@ -137,13 +134,13 @@ const useEraantyneetHakemukset = ({
     );
 
     return hakemus && eraantynytHakemus?.mennyt ? [...result, hakemus] : result;
-  }, [] as Array<SijoittelunHakemusValintatiedoilla>);
+  }, [] as Array<ValinnanTulosFields>);
 };
 
 const EraantyneetInfoTable = ({
   eraantyneetHakemukset,
 }: {
-  eraantyneetHakemukset: Array<SijoittelunHakemusValintatiedoilla>;
+  eraantyneetHakemukset: Array<ValinnanTulosFields>;
 }) => {
   const { t } = useTranslations();
   return (
@@ -183,8 +180,8 @@ const MerkitseMyohastyneeksiButton = ({
   hakemukset,
 }: KoutaOidParams & {
   disabled: boolean;
-  massUpdateForm: (params: MassChangeParams) => void;
-  hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
+  massUpdateForm: (params: ValinnanTulosMassChangeParams) => void;
+  hakemukset: Array<ValinnanTulosFields>;
 }) => {
   const { t } = useTranslations();
 
@@ -216,7 +213,7 @@ const MerkitseMyohastyneeksiButton = ({
           cancelLabel: t('yleinen.peruuta'),
           onConfirm: () => {
             massUpdateForm({
-              vastaanottotila: VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA,
+              vastaanottoTila: VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA,
               hakemusOids: new Set(
                 eraantyneetHakemukset.map(prop('hakemusOid')),
               ),
@@ -239,7 +236,7 @@ export const SijoittelunTuloksetActions = ({
   haku: Haku;
   hakukohde: Hakukohde;
   valintatapajonoOid: string;
-  sijoittelunTulosActorRef: ValinnanTulosActorRef;
+  sijoittelunTulosActorRef: SijoittelunTulosActorRef;
 }) => {
   const { t } = useTranslations();
 
@@ -249,7 +246,7 @@ export const SijoittelunTuloksetActions = ({
 
   const hakemukset = useSelector(
     sijoittelunTulosActorRef,
-    (s) => s.context.hakemukset,
+    (s) => s.context.tulokset,
   );
 
   const isValintaesitysJulkaistavissa = useIsValintaesitysJulkaistavissa({
@@ -276,7 +273,7 @@ export const SijoittelunTuloksetActions = ({
           !isValintaesitysJulkaistavissa ||
           !state.matches(ValinnanTulosState.IDLE)
         }
-        massUpdateForm={(changeParams: MassChangeParams) => {
+        massUpdateForm={(changeParams: ValinnanTulosMassChangeParams) => {
           send({
             type: ValinnanTulosEventType.MASS_UPDATE,
             ...changeParams,

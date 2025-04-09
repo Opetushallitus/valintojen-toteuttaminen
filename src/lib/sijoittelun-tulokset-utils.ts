@@ -22,7 +22,7 @@ export const VASTAANOTTOTILAT_JOISSA_VOI_ILMOITTAUTUA = [
 
 type SijoittelunTilaKentat = Pick<
   SijoittelunHakemusValintatiedoilla,
-  'julkaistavissa' | 'tila' | 'vastaanottotila'
+  'julkaistavissa' | 'valinnanTila' | 'vastaanottoTila'
 >;
 
 const isSijoittelunTilaVastaanotettavissa = (hakemuksenTila: SijoittelunTila) =>
@@ -34,11 +34,11 @@ const isSijoittelunTilaVastaanotettavissa = (hakemuksenTila: SijoittelunTila) =>
   ].includes(hakemuksenTila);
 
 export const isVastaanottoPossible = (h: SijoittelunTilaKentat): boolean =>
-  isSijoittelunTilaVastaanotettavissa(h.tila) && h.julkaistavissa;
+  isSijoittelunTilaVastaanotettavissa(h.valinnanTila) && h.julkaistavissa;
 
 export const isIlmoittautuminenPossible = (h: SijoittelunTilaKentat): boolean =>
-  isSijoittelunTilaVastaanotettavissa(h.tila) &&
-  VASTAANOTTOTILAT_JOISSA_VOI_ILMOITTAUTUA.includes(h.vastaanottotila);
+  isSijoittelunTilaVastaanotettavissa(h.valinnanTila) &&
+  VASTAANOTTOTILAT_JOISSA_VOI_ILMOITTAUTUA.includes(h.vastaanottoTila);
 
 export const isValintaesitysJulkaistavissa = (
   haku: Haku,
@@ -56,25 +56,25 @@ export const isValintaesitysJulkaistavissa = (
   );
 
 export const isVastaanottotilaJulkaistavissa = (h: {
-  vastaanottotila: VastaanottoTila;
+  vastaanottoTila: VastaanottoTila;
 }): boolean =>
-  h.vastaanottotila === VastaanottoTila.KESKEN ||
-  h.vastaanottotila === VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA;
+  h.vastaanottoTila === VastaanottoTila.KESKEN ||
+  h.vastaanottoTila === VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA;
 
 export const isHyvaksyttyHarkinnanvaraisesti = (
   hakemus: Pick<
     SijoittelunHakemusValintatiedoilla,
-    'tila' | 'hyvaksyttyHarkinnanvaraisesti'
+    'valinnanTila' | 'hyvaksyttyHarkinnanvaraisesti'
   >,
 ): boolean =>
   Boolean(hakemus?.hyvaksyttyHarkinnanvaraisesti) &&
   [SijoittelunTila.HYVAKSYTTY, SijoittelunTila.VARASIJALTA_HYVAKSYTTY].includes(
-    hakemus.tila,
+    hakemus.valinnanTila,
   );
 
 export const getReadableHakemuksenTila = (
   hakemus: {
-    tila: SijoittelunTila;
+    valinnanTila: SijoittelunTila;
     hyvaksyttyHarkinnanvaraisesti?: boolean;
     varasijanNumero?: number | null;
   },
@@ -83,11 +83,11 @@ export const getReadableHakemuksenTila = (
   switch (true) {
     case isHyvaksyttyHarkinnanvaraisesti(hakemus):
       return t('sijoitteluntila.HARKINNANVARAISESTI_HYVAKSYTTY');
-    case hakemus.tila === SijoittelunTila.VARALLA &&
+    case hakemus.valinnanTila === SijoittelunTila.VARALLA &&
       isNonNullish(hakemus.varasijanNumero):
-      return `${t(`sijoitteluntila.${hakemus.tila}`)} (${hakemus.varasijanNumero})`;
+      return `${t(`sijoitteluntila.${hakemus.valinnanTila}`)} (${hakemus.varasijanNumero})`;
     default:
-      return t(`sijoitteluntila.${hakemus.tila}`);
+      return t(`sijoitteluntila.${hakemus.valinnanTila}`);
   }
 };
 

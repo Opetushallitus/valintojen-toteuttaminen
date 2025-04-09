@@ -119,7 +119,7 @@ const filterBySijoittelunTila = (
     isHyvaksyttyHarkinnanvaraisesti(hakemus);
   return (
     tila.length < 1 ||
-    hakemus.tila === tila ||
+    hakemus.valinnanTila === tila ||
     (tila === SijoittelunTila.HARKINNANVARAISESTI_HYVAKSYTTY &&
       harkinnanvaraisestiHyvaksytty)
   );

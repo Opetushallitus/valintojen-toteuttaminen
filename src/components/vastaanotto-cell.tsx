@@ -65,10 +65,10 @@ export type VastaanOttoCellProps = {
   hakemus: Pick<
     SijoittelunHakemusValintatiedoilla,
     | 'hakemusOid'
-    | 'vastaanottotila'
+    | 'vastaanottoTila'
     | 'julkaistavissa'
     | 'vastaanottoDeadline'
-    | 'tila'
+    | 'valinnanTila'
   >;
   disabled?: boolean;
   updateForm: (params: {
@@ -92,7 +92,7 @@ export const VastaanOttoCell = ({
     haku,
   });
 
-  const { julkaistavissa, vastaanottotila } = hakemus;
+  const { julkaistavissa, vastaanottoTila } = hakemus;
 
   const vastaanottotilaOptions = useVastaanottoTilaOptions();
 
@@ -134,13 +134,13 @@ export const VastaanOttoCell = ({
                 haku={haku}
                 hakukohde={hakukohde}
                 valintatapajono={valintatapajono}
-                vastaanottotila={vastaanottotila}
+                vastaanottotila={vastaanottoTila}
               />
             )}
           </QuerySuspenseBoundary>
           <LocalizedSelect
             ariaLabel={t('sijoittelun-tulokset.taulukko.vastaanottotieto')}
-            value={vastaanottotila}
+            value={vastaanottoTila}
             onChange={updateVastaanottoTila}
             options={vastaanottotilaOptions}
             disabled={disabled}

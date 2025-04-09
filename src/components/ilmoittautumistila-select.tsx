@@ -17,8 +17,8 @@ export const IlmoittautumisTilaSelect = ({
     SijoittelunHakemusValintatiedoilla,
     | 'hakemusOid'
     | 'ilmoittautumisTila'
-    | 'tila'
-    | 'vastaanottotila'
+    | 'valinnanTila'
+    | 'vastaanottoTila'
     | 'julkaistavissa'
   >;
   disabled?: boolean;

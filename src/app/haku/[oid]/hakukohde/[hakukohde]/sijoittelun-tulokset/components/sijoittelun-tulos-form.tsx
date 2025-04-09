@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback } from 'react';
-import useToaster from '@/hooks/useToaster';
 import { Box } from '@mui/material';
 import { SijoittelunTuloksetActions } from './sijoittelun-tulos-actions';
 import { useSijoittelunTulosActorRef } from '../lib/sijoittelun-tulokset-state';
@@ -32,8 +31,6 @@ export const SijoittelunTulosForm = ({
   kaikkiJonotHyvaksytty,
   kayttaaLaskentaa,
 }: SijoittelunTuloksetFormParams) => {
-  const { addToast } = useToaster();
-
   const queryClient = useQueryClient();
 
   const onUpdated = useCallback(() => {
@@ -45,7 +42,6 @@ export const SijoittelunTulosForm = ({
     valintatapajonoOid: valintatapajono.oid,
     hakemukset: valintatapajono.hakemukset,
     lastModified,
-    addToast,
     onUpdated: onUpdated,
   });
 
