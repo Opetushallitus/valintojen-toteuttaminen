@@ -75,33 +75,36 @@ export const sijoittelunTuloksetMachine =
     actors: {
       updateHakemukset: fromPromise(
         async ({
-          input,
-        }: {
           input: {
-            hakukohdeOid: string;
-            valintatapajonoOid: string;
-            lastModified: string;
-            changed: Array<SijoittelunHakemusValintatiedoilla>;
-            original: Array<SijoittelunHakemusValintatiedoilla>;
-          };
+            valintatapajonoOid,
+            hakukohdeOid,
+            lastModified,
+            changed,
+            original,
+          },
         }) => {
-          await saveMaksunTilanMuutokset(
-            input.hakukohdeOid,
-            input.changed,
-            input.original,
-          );
+          if (!valintatapajonoOid || !hakukohdeOid || !lastModified) {
+            throw new Error(
+              'SijoittelunTuloksetMachine.updateHakemukset: Missing required parameters',
+            );
+          }
+          await saveMaksunTilanMuutokset(hakukohdeOid, changed, original);
           return saveSijoitteluAjonTulokset(
-            input.valintatapajonoOid,
-            input.hakukohdeOid,
-            input.lastModified,
-            input.changed,
+            valintatapajonoOid,
+            hakukohdeOid,
+            lastModified,
+            changed,
           );
         },
       ),
-      publish: fromPromise(
-        ({ input }: { input: { valintatapajonoOid: string } }) =>
-          hyvaksyValintaEsitys(input.valintatapajonoOid),
-      ),
+      publish: fromPromise(async ({ input }) => {
+        if (!input.valintatapajonoOid) {
+          throw new Error(
+            'SijoittelunTuloksetMachine.publish: Missing required parameters',
+          );
+        }
+        await hyvaksyValintaEsitys(input.valintatapajonoOid);
+      }),
     },
   });
 

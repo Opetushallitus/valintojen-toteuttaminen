@@ -22,10 +22,6 @@ import { hakuQueryOptions } from '@/lib/kouta/useHaku';
 import { hakukohdeQueryOptions } from '@/lib/kouta/useHakukohde';
 import { ValinnanTuloksetSearchControls } from './components/valinnan-tulokset-search-controls';
 import { HakemusValinnanTuloksilla } from '@/lib/valinta-tulos-service/valinta-tulos-types';
-import { TranslatedName } from '@/lib/localization/localization-types';
-
-const nonEmptyTranslatedName = (tn: TranslatedName) =>
-  tn.fi || tn.sv || tn.en ? tn : undefined;
 
 const useHakemuksetValinnanTuloksilla = ({
   hakemukset,
@@ -51,16 +47,15 @@ const useHakemuksetValinnanTuloksilla = ({
               valinnanTulos.ehdollisestiHyvaksyttavissa,
             ehdollisenHyvaksymisenEhtoKoodi:
               valinnanTulos.ehdollisenHyvaksymisenEhtoKoodi,
-            ehdollisenHyvaksymisenEhto: nonEmptyTranslatedName({
-              fi: valinnanTulos.ehdollisenHyvaksymisenEhtoFI,
-              sv: valinnanTulos.ehdollisenHyvaksymisenEhtoSV,
-              en: valinnanTulos.ehdollisenHyvaksymisenEhtoEN,
-            }),
-            valinnanTilanKuvaus: nonEmptyTranslatedName({
-              fi: valinnanTulos.valinnantilanKuvauksenTekstiFI,
-              sv: valinnanTulos.valinnantilanKuvauksenTekstiSV,
-              en: valinnanTulos.valinnantilanKuvauksenTekstiEN,
-            }),
+            ehcollisenHyvaksymisenEhtoFI:
+              valinnanTulos.ehdollisenHyvaksymisenEhtoFI,
+            ehdollisenHyvaksymisenEhtoSV:
+              valinnanTulos.ehdollisenHyvaksymisenEhtoSV,
+            ehdollisenHyvaksymisenEhtoEN:
+              valinnanTulos.ehdollisenHyvaksymisenEhtoEN,
+            valinnanTilanKuvausFI: valinnanTulos.valinnantilanKuvauksenTekstiFI,
+            valinnanTilanKuvausSV: valinnanTulos.valinnantilanKuvauksenTekstiSV,
+            valinnanTilanKuvausEN: valinnanTulos.valinnantilanKuvauksenTekstiEN,
             julkaistavissa: valinnanTulos.julkaistavissa,
             hyvaksyttyVarasijalta: valinnanTulos.hyvaksyttyVarasijalta,
             hyvaksyPeruuntunut: valinnanTulos.hyvaksyPeruuntunut,
