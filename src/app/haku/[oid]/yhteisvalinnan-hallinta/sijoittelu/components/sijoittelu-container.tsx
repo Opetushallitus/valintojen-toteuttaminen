@@ -8,7 +8,7 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 import { sijoittelunStatus } from '@/lib/sijoittelu/sijoittelu-service';
 import { useHaku } from '@/lib/kouta/useHaku';
 import { useHaunAsetukset } from '@/lib/ohjausparametrit/useHaunAsetukset';
-import { sijoitellaankoHaunHakukohteetLaskennanYhteydessa } from '@/lib/kouta/kouta-service';
+import { usesLaskentaOrSijoittelu } from '@/lib/kouta/kouta-service';
 import { SijoitteluInfo } from './sijoittelu-info';
 
 export const SijoitteluContainer = ({ hakuOid }: { hakuOid: string }) => {
@@ -22,8 +22,7 @@ export const SijoitteluContainer = ({ hakuOid }: { hakuOid: string }) => {
   const { data: haku } = useHaku({ hakuOid });
   const { data: haunAsetukset } = useHaunAsetukset({ hakuOid });
 
-  const sijoitteluFunctionalityNotInUse =
-    sijoitellaankoHaunHakukohteetLaskennanYhteydessa({ haku, haunAsetukset });
+  const sijoitteluInUse = usesLaskentaOrSijoittelu({ haku, haunAsetukset });
 
   return (
     <AccordionBox
@@ -34,12 +33,12 @@ export const SijoitteluContainer = ({ hakuOid }: { hakuOid: string }) => {
         />
       }
     >
-      {sijoitteluFunctionalityNotInUse && (
+      {!sijoitteluInUse && (
         <SijoitteluInfo
           text={t('yhteisvalinnan-hallinta.sijoittelu.ei-kaytossa')}
         />
       )}
-      {!sijoitteluFunctionalityNotInUse && (
+      {sijoitteluInUse && (
         <Box sx={{ display: 'flex', flexDirection: 'column', rowGap: 3 }}>
           <SijoitteluActions
             hakuOid={hakuOid}
