@@ -146,3 +146,10 @@ export type HenkilonValintaTulos = {
   tila: string;
   hakijaOid: string;
 };
+
+export type AjastettuSijoittelu = {
+  hakuOid: string;
+  active: boolean;
+  startTime: Date;
+  frequency: string;
+};

@@ -221,6 +221,22 @@ export default async function playwrightSetup() {
       return modifyResponse(response, pohjat);
     } else if (
       request.url?.includes(
+        'sijoittelu-service/resources/koostesijoittelu/status',
+      )
+    ) {
+      return modifyResponse(response, {
+        valmis: false,
+        ohitettu: false,
+        tekeillaan: false,
+      });
+    } else if (
+      request.url?.includes(
+        'sijoittelu-service/resources/koostesijoittelu/jatkuva',
+      )
+    ) {
+      return modifyResponse(response, null);
+    } else if (
+      request.url?.includes(
         '/resources/proxy/valintatulosservice/myohastyneet/haku/',
       )
     ) {

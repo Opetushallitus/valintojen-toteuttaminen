@@ -8,6 +8,7 @@ import {
 import { NDASH } from '@/lib/constants';
 
 test.beforeEach(async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2025-02-05T12:00:00'));
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/yhteisvalinnan-hallinta',
   );
@@ -213,5 +214,102 @@ test.describe('Valintalaskenta', () => {
     await expect(page.getByText('Laskenta on päättynyt')).toBeVisible();
     await page.getByRole('button', { name: 'Sulje laskennan tiedot' }).click();
     await expect(page.getByText('Laskenta on päättynyt')).toBeHidden();
+  });
+});
+
+test.describe('Sijoittelu', () => {
+  test('Otetaan ajastettu sijoittelu käyttöön', async ({ page }) => {
+    await expect(
+      page.getByText('Ajastettu sijoittelu ei ole käytössä'),
+    ).toBeVisible();
+    await page.getByPlaceholder('pp.kk.vvvv hh.mm').click();
+    await page.getByLabel('Choose maanantaina 17.').click();
+    await page.getByRole('option', { name: '16.30' }).click();
+    await expect(page.getByPlaceholder('pp.kk.vvvv hh.mm')).toHaveValue(
+      '17.02.2025 16:30',
+    );
+    await page
+      .getByRole('button', { name: 'Ota ajastettu sijoittelu kä' })
+      .click();
+    await expect(
+      page.getByText('Ajastettu sijoittelu on käytössä'),
+    ).toBeVisible();
+  });
+
+  test('Poistetaan ajastettu sijoittelu käytöstä', async ({ page }) => {
+    await page.route(
+      '**/sijoittelu-service/resources/koostesijoittelu/jatkuva**',
+      async (route) => {
+        await route.fulfill({
+          json: {
+            ajossa: true,
+            aloitusajankohta: 'Feb 20, 2025, 4:00:00 PM',
+            ajotiheys: '12',
+          },
+        });
+      },
+    );
+    await expect(
+      page.getByText('Ajastettu sijoittelu on käytössä'),
+    ).toBeVisible();
+    await expect(page.getByPlaceholder('pp.kk.vvvv hh.mm')).toHaveValue(
+      '20.02.2025 16:00',
+    );
+    await expect(
+      page.getByRole('combobox', { name: 'Valitse ajotiheys' }),
+    ).toContainText('12 tuntia');
+    await page.getByRole('button', { name: 'Poista ajastus käytöstä' }).click();
+    await expect(
+      page.getByText('Ajastettu sijoittelu ei ole käytössä'),
+    ).toBeVisible();
+  });
+
+  test('Käynnistetään sijoittelu', async ({ page }) => {
+    await page.route(
+      '**/sijoittelu-service/resources/koostesijoittelu/aktivoi?hakuOid=1.2.246.562.29.00000000000000045102',
+      async (route) => {
+        await route.fulfill({
+          json: {},
+        });
+      },
+    );
+    await page.route(
+      '**/sijoittelu-service/resources/koostesijoittelu/status/1.2.246.562.29.00000000000000045102',
+      async (route) => {
+        await route.fulfill({
+          json: {
+            valmis: true,
+            ohitettu: false,
+            tekeillaan: false,
+          },
+        });
+      },
+    );
+    await page.getByRole('button', { name: 'Suorita sijoittelu' }).click();
+    await expect(page.getByText('Sijoittelu on valmis')).toBeVisible();
+  });
+
+  test('Sijoittelu päätyy virheeseen', async ({ page }) => {
+    await page.route(
+      '**/sijoittelu-service/resources/koostesijoittelu/aktivoi?hakuOid=1.2.246.562.29.00000000000000045102',
+      async (route) =>
+        await route.fulfill({ status: 500, body: 'Unknown error' }),
+    );
+    await page.route(
+      '**/sijoittelu-service/resources/koostesijoittelu/status/1.2.246.562.29.00000000000000045102',
+      async (route) => {
+        await route.fulfill({
+          json: {
+            valmis: false,
+            ohitettu: true,
+            tekeillaan: false,
+          },
+        });
+      },
+    );
+    await page.getByRole('button', { name: 'Suorita sijoittelu' }).click();
+    await expect(
+      page.getByText('Sijoittelun suorittaminen epäonnistui'),
+    ).toBeVisible();
   });
 });

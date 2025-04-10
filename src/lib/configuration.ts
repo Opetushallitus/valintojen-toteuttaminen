@@ -142,12 +142,14 @@ export const configuration = {
   startExportValintatapajonoTulosExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintatapajonolaskenta/vienti`,
   startImportValintatapajonoTulosExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintatapajonolaskenta/tuonti`,
   sijoittelunTulosExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintalaskentaexcel/sijoitteluntulos/aktivoi`,
+  sijoittelunTulosHaulleExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/sijoitteluntuloshaulle/taulukkolaskennat`,
   valintakoeOsallistumisetUrl: ({ hakukohdeOid }: { hakukohdeOid: string }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintakoe/hakutoive/${hakukohdeOid}`,
   startExportValintakoeExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/valintalaskentaexcel/valintakoekutsut/aktivoi`,
   startExportValintakoeOsoitetarratUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/osoitetarrat/aktivoi`,
   startExportOsoitetarratHakemuksilleUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/osoitetarrat/hakemuksille/aktivoi`,
   startExportOsoitetarratSijoittelussaHyvaksytyilleUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/osoitetarrat/sijoittelussahyvaksytyille/aktivoi`,
+  startExportOsoitetarratHaulleUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/sijoitteluntuloshaulle/osoitetarrat`,
   startExportPistesyottoExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/pistesyotto/vienti`,
   kirjepohjat: ({
     templateName,
@@ -243,6 +245,20 @@ export const configuration = {
     valintatapajonoOid: string;
   }) =>
     `${DOMAIN}/valinta-tulos-service/auth/muutoshistoria?valintatapajonoOid=${valintatapajonoOid}&hakemusOid=${hakemusOid}`,
+  // -------------------------------------------------------------------------------------------------
+  sijoittelunTuloksenPerustiedotHaulleUrl: ({ hakuOid }: { hakuOid: string }) =>
+    `${DOMAIN}/valinta-tulos-service/auth/sijoittelu/${hakuOid}/sijoitteluajo/latest/perustiedot`,
+  // sijoittelu
+  kaynnistaSijoittelu: ({ hakuOid }: { hakuOid: string }) =>
+    `${DOMAIN}/sijoittelu-service/resources/koostesijoittelu/aktivoi?hakuOid=${hakuOid}`,
+  sijoittelunStatus: ({ hakuOid }: { hakuOid: string }) =>
+    `${DOMAIN}/sijoittelu-service/resources/koostesijoittelu/status/${hakuOid}`,
+  getAjastettuSijoittelu: ({ hakuOid }: { hakuOid: string }) =>
+    `${DOMAIN}/sijoittelu-service/resources/koostesijoittelu/jatkuva?hakuOid=${hakuOid}`,
+  createAjastettuSijoittelu: `${DOMAIN}/sijoittelu-service/resources/koostesijoittelu/jatkuva`,
+  updateAjastettuSijoittelu: `${DOMAIN}/sijoittelu-service/resources/koostesijoittelu/jatkuva/paivita`,
+  deleteAjastettuSijoittelu: ({ hakuOid }: { hakuOid: string }) =>
+    `${DOMAIN}/sijoittelu-service/resources/koostesijoittelu/jatkuva/poista?hakuOid=${hakuOid}`,
   // -------------------------------------------------------------------------------------------------
   // valintalaskenta-ui (vanha käyttöliittymä)
   // TODO: Poista kun korvattu uudella käyttöliittymällä

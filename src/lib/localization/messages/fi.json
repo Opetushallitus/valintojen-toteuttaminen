@@ -574,6 +574,37 @@
     "valintalaskenta": "Valintalaskenta",
     "valintalaskenta-haulle": "Valintalaskenta haulle",
     "valintakoelaskenta-haulle": "Valintakoelaskenta haulle",
-    "kaikki-laskennat-haulle": "Valintakoelaskenta ja valinta haulle"
+    "kaikki-laskennat-haulle": "Valintakoelaskenta ja valinta haulle",
+    "sijoittelu": {
+      "otsikko": "Sijoittelu",
+      "ei-kaytossa": "Sijoittelu ei ole haussa käytössä",
+      "suorita": "Suorita sijoittelu",
+      "suoritus-onnistui": "Sijoittelu on valmis",
+      "suoritus-epaonnistui": "Sijoittelun suorittaminen epäonnistui",
+      "vie-tulokset": "Vie tulokset taulukkolaskentaan",
+      "vie-tarrat": "Vie osoitetarroiksi",
+      "vie-tarrat-virhe": "Virhe muodostaessa osoitetarroja haulle!",
+      "vie-kirjeiksi": "Vie hyväksymiskirjeiksi",
+      "vie-kirjeiksi-virhe": "Virhe muodostaessa hyväksymiskirjeitä haulle!",
+      "ajettu": "Edellinen onnistunut sijoittelu {alku} - {loppu}",
+      "ajastus": {
+        "otsikko": "Ajastettu sijoittelu",
+        "aloitusajankohta": "Aloitusajankohta",
+        "ajotiheys": "Ajotiheys",
+        "ajotiheys-tuntia": "{amount} tuntia",
+        "valitse-ajotiheys": "Valitse ajotiheys",
+        "kayta": "Ota ajastettu sijoittelu käyttöön",
+        "poista": "Poista ajastus käytöstä",
+        "paivita": "Päivitä ajastettu sijoittelu",
+        "kaytossa": "Ajastettu sijoittelu on käytössä",
+        "ei-kaytossa": "Ajastettu sijoittelu ei ole käytössä",
+        "luonti-ok": "Ajastettu sijoittelu otettu käyttöön",
+        "luonti-virhe": "Ajastetun sijoittelun käyttöönotto epäonnistui",
+        "paivitys-ok": "Ajastettu sijoittelu päivitetty",
+        "paivitys-virhe": "Ajastetun sijoittelun päivitys epäonnistui",
+        "poisto-ok": "Ajastettu sijoittelu poistettu käytöstä",
+        "poisto-virhe": "Ajastetun sijoittelun poisto käytöstä epäonnistui"
+      }
+    }
   }
 }

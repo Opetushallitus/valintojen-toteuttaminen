@@ -114,11 +114,13 @@ interface CalendarInputProps {
 export type CalendarProps = {
   selectedValue?: Date | null;
   setDate: (value: Date | null) => void;
+  label: string;
 };
 
 export const CalendarComponent = ({
   selectedValue,
   setDate,
+  label,
 }: CalendarProps) => {
   const { t, getLanguage } = useTranslations();
 
@@ -146,7 +148,7 @@ export const CalendarComponent = ({
   return (
     <CalendarStyles>
       <OphFormFieldWrapper
-        label={t('sijoittelun-tulokset.toiminnot.palautuksen-erapaiva')}
+        label={label}
         renderInput={({ labelId }) => (
           <DatePicker
             ariaLabelledBy={labelId}
