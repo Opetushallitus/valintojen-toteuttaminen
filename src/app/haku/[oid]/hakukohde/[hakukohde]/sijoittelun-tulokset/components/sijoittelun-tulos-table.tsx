@@ -212,7 +212,7 @@ export const SijoittelunTulosTable = ({
 
   const contextHakemukset = useSelector(
     sijoittelunTulosActorRef,
-    (state) => state.context.tulokset,
+    (state) => state.context.hakemukset,
   );
 
   const {
@@ -237,7 +237,7 @@ export const SijoittelunTulosTable = ({
 
   const changedHakemukset = useSelector(
     sijoittelunTulosActorRef,
-    (state) => state.context.changedTulokset,
+    (state) => state.context.changedHakemukset,
   );
 
   const rows = useMemo(

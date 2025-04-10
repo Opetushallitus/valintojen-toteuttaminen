@@ -64,7 +64,7 @@ export const sijoittelunTuloksetMachine =
           const erroredHakemusOids = params.error?.response.data?.map(
             (error) => error.hakemusOid as string,
           );
-          const someTulosUpdated = context.changedTulokset.some(
+          const someTulosUpdated = context.changedHakemukset.some(
             (h) => !erroredHakemusOids.includes(h.hakemusOid),
           );
           if (someTulosUpdated) {
@@ -143,7 +143,6 @@ export const useSijoittelunTulosActorRef = ({
           hakukohdeOid,
           valintatapajonoOid,
           hakemukset,
-          tulokset: hakemukset,
           lastModified,
           onUpdated,
           addToast,

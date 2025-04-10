@@ -11,7 +11,7 @@ import {
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { hakemusFilter } from '@/lib/filters';
 import { isEmpty } from 'remeda';
-import { HakemusValinnanTuloksilla } from '@/lib/valinta-tulos-service/valinta-tulos-types';
+import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -82,7 +82,7 @@ export const useValinnanTuloksetSearchParams = () => {
 };
 
 export const useValinnanTuloksetSearch = (
-  hakemukset: Array<HakemusValinnanTuloksilla>,
+  hakemukset: Array<HakemuksenValinnanTulos>,
 ) => {
   const { translateEntity } = useTranslations();
 
@@ -103,10 +103,9 @@ export const useValinnanTuloksetSearch = (
 
     const filtered = hakemukset.filter(
       (hakemus) =>
-        (isEmpty(valinnanTila) ||
-          valinnanTila === hakemus.valinnanTulos?.valinnanTila) &&
+        (isEmpty(valinnanTila) || valinnanTila === hakemus?.valinnanTila) &&
         (isEmpty(vastaanottoTila) ||
-          vastaanottoTila === hakemus.valinnanTulos?.vastaanottoTila) &&
+          vastaanottoTila === hakemus?.vastaanottoTila) &&
         hakemusFilter(hakemus, searchPhrase),
     );
 

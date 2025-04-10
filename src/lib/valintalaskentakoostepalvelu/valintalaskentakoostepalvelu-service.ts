@@ -389,8 +389,14 @@ export const downloadReadyProcessDocument = async (dokumenttiId: string) => {
   return createFileResult(documentRes);
 };
 
-const downloadProcessDocument = async (processId: string, infiniteWait: boolean = false) => {
-  const dokumenttiId = await processDocumentAndReturnDocumentId(processId, infiniteWait);
+const downloadProcessDocument = async (
+  processId: string,
+  infiniteWait: boolean = false,
+) => {
+  const dokumenttiId = await processDocumentAndReturnDocumentId(
+    processId,
+    infiniteWait,
+  );
   return downloadReadyProcessDocument(dokumenttiId);
 };
 
@@ -863,6 +869,4 @@ export const getMyohastyneetHakemukset = async ({
   return response?.data;
 };
 
-export async function saveErillishakuValinnanTulokset({}) {
-  await client.post();
-}
+export async function saveErillishakuValinnanTulokset({}) {}
