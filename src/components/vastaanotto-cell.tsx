@@ -18,18 +18,19 @@ import { useIsValintaesitysJulkaistavissa } from '@/hooks/useIsValintaesitysJulk
 import { useHakijanVastaanottotila } from '@/hooks/useHakijanVastaanottotila';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { ClientSpinner } from '@/components/client-spinner';
+import { ValinnanTulosChangeParams } from '@/lib/state/valinnan-tulos-machine';
 
 const HakijanVastaanottoTilaSection = ({
   haku,
   hakukohde,
   valintatapajono,
-  vastaanottotila,
+  vastaanottoTila,
 }: {
   haku: Haku;
   hakukohde: Hakukohde;
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
   hakijanVastaanottoTila?: VastaanottoTila;
-  vastaanottotila: VastaanottoTila;
+  vastaanottoTila?: VastaanottoTila;
 }) => {
   const { t } = useTranslations();
 
@@ -45,7 +46,7 @@ const HakijanVastaanottoTilaSection = ({
       vastaanottoTila.hakemusOid === vastaanottoTila.hakemusOid,
   )?.vastaanottotila;
 
-  if (hakijanVastaanottoTila && hakijanVastaanottoTila !== vastaanottotila) {
+  if (hakijanVastaanottoTila && hakijanVastaanottoTila !== vastaanottoTila) {
     return (
       <Typography>
         {t('sijoittelun-tulokset.hakijalle-naytetaan')}
@@ -71,11 +72,7 @@ export type VastaanOttoCellProps = {
     | 'valinnanTila'
   >;
   disabled?: boolean;
-  updateForm: (params: {
-    hakemusOid: string;
-    vastaanottotila?: VastaanottoTila;
-    julkaistavissa?: boolean;
-  }) => void;
+  updateForm: (params: ValinnanTulosChangeParams) => void;
 };
 
 export const VastaanOttoCell = ({
@@ -97,8 +94,10 @@ export const VastaanOttoCell = ({
   const vastaanottotilaOptions = useVastaanottoTilaOptions();
 
   const updateVastaanottoTila = (event: SelectChangeEvent<string>) => {
-    const tila = event.target.value as VastaanottoTila;
-    updateForm({ hakemusOid: hakemus.hakemusOid, vastaanottotila: tila });
+    updateForm({
+      hakemusOid: hakemus.hakemusOid,
+      vastaanottoTila: event.target.value as VastaanottoTila,
+    });
   };
 
   const updateJulkaistu = () => {
@@ -134,7 +133,7 @@ export const VastaanOttoCell = ({
                 haku={haku}
                 hakukohde={hakukohde}
                 valintatapajono={valintatapajono}
-                vastaanottotila={vastaanottoTila}
+                vastaanottoTila={vastaanottoTila}
               />
             )}
           </QuerySuspenseBoundary>

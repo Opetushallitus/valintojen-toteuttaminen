@@ -2,7 +2,6 @@ import { Toast } from '@/hooks/useToaster';
 import { ActorRefFrom, assign, createMachine, PromiseActorLogic } from 'xstate';
 import { clone } from 'remeda';
 import {
-  hasChangedHakemukset,
   applyMassHakemusChanges,
   applySingleHakemusChange,
   ValinnanTulosEditableFields,
@@ -54,7 +53,7 @@ export type ValinnanTulosMachineParams<T extends ValinnanTulosFields> = {
   valintatapajonoOid?: string;
   hakemukset: Array<MinimalHakemusInfo>;
   tulokset: Array<T>;
-  lastModified: string;
+  lastModified?: string;
   addToast: (toast: Toast) => void;
   /**
    * Kutsutaan, jos ainakin osa hakemuksista saatiin päivitettyä onnistuneesti.
@@ -114,7 +113,7 @@ export type ValinnanTulosActorRef<
 
 export function createValinnanTulosMachine<T extends ValinnanTulosFields>() {
   return createMachine({
-    /** @xstate-layout N4IgpgJg5mDOIC5QAoC2BDAxgCwJYDswBKAOgEkARAGQFEBiAYQAkBBAOQHEaBtABgF1EoAA4B7WLgAuuUfiEgAHogC0Adl4BGEgE4ArNo0A2XgCZeq7doAsugDQgAnoiO6SADitWTut712GAZg0TAICAXzD7NCw8QlJKWjoAWRYAZVSAfWZ2Lj5BJBAxCWlZeSUEZQ0AtxJeDytDVSrVVWrW+ycEEw0ai15DQw0rdTc3DTqIqIwcAmJyanoU9IyAVQAFChYAFR4BeSKpGTkC8qNtEkM3XRMvK21TLyMOxEaTEgCrDW1RkNUTQ2skxA0RmcXmiXWmx2eX24kOpROiGsJF0pgMTS8jUuVmeFSCJH+vG0FhMJlGbgGqkMQJBsTmCXokO2PA0+REcJKx1A5WUhlcek8ug+AR8gV0OMcLxqdWuhisAQMqNUNOmdPiCzoaxWACEqGRUkwYQUDpyyioAqSLgE6sETOp9A1ccMtHcbBbzN0yQMVTFZurElrdfrDazYcUjmaKq1DATLoYydpvGN47jGrwLmSrrohY0PlYfaC5kytmROHQILIwCQCAA3UQAayrtL9JGLpY4CFrokw6E5eSN7PDCO5iG8qhIQ10GhaRn6-w0uLGVhIVk0dSuql0TW9kWBqpbbbLYAATsfRMeSMIADa9gBm59QJGbYMPHa7Pb7AgHhQ5EcRCE8GoAjlf55Q8PRVFxAwtF8NxgJuUkxk3As1VbDZmSyAB5JI1loHYKDob8TT-Ec8RITdrg8K5BkaXxhlxcYvgJEUbX0bQ+T+FCD3QnYsJwvCaAI7hQ2NX9h0URBswJBp7lXEJ4LtQwGKGcdQgaYJPh6fwNC4sFAz1A123LStq3wOtGyffc9J1AymHbTszO7Xsjn7PZRKHLkJKjExzj+FS3Gsa0hgYolzkeDFeGtJVlV3Z85n04MjJPM8L2vO8H0s31rKDQzOAcusPxcr83MHeFPJ5bN0x89iLQVKk5UgyUEA0L4Y1Ce4rm0UIWlUfMgXwUQIDgeQ4qIMMysjNQPFjCkEyTIwTFxSoehXRTAjJHpgOA3T6QWcbTX-ZRPHOIk-D8K43BaS47Cano3hsAw+XGfwPhiqYsqLHj232kivJ6ZdBTqSxLoC7xcUolc5UCOpIoTXQdtIYsaD43CaHwn7xJ5HzXDlW1TFaRibs6CxxzcMlKLJyKPmpWKrPimzEs4DHypUS4Tu6Kwya8S6Pm0RdvhXOpesugYtztCIIiAA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QDUCGAbAlgO267AKgK7oD2A1rGAC4CyqAxgBY5gDEASgKIDKXBAbQAMAXUSgADqViZqmUtnEgAHogAcAdgBsAOgAsavQGZjATiNqhAJgCsegDQgAnogCMVgL4fHaLLnzEZJQ09MysOgCSACIAMlxsAMIAEgCCAHIA4lzCYkggUjJyCkqqCK5CrjpGQnpaahYaQkauGq6OLgimWno6VlYaeu6WVnp62l4+GDh4hCQUVHSMLNhgkbHxtCk8PAD6yelZOUoFsvKKeaU2VjquRlZqI6Y2jaZqNjbt6oM6D66uWn1TKZXHp7hMQL5pgE5sFFmEVms4mxNtsdgBVAAKURSBGyomO0lOxQuiCMFiqxgGTT+Jn+Wk+CG0ulamlcalMrRaajU4Mh-lmQQWoWWq2iSMx2NxRzyJyK51ApTJagpRipzVugy09Oc6gBOi0LKMWmsqrUAN5U35gXmISW4TF8QlOOyrlykkJcpKiFqOiBfv9-rNDIGNh+dSatTsRnMRgtfhm1thwvt6zYGLRACEYhEeElpe7CmcvQglSq1TTNdqOsCjDcWc93gMtXo41CBTa4SLEfF01mc3nXQTC8SFaTySZVXpqRq6QyTKGtDYAVpqpZulYja2rTChXaEU6CBFMmwIApVjgAG4UVZ8hM723w1YHo8ZBCX0gMVBynL5-Ieoskp0Vi6K8xhkiCrjmMBDJvBoNxWGydg2NUoy1Fud6Cg+XbPseYAAE54aQeE6BI6BfgAZkRAC2Oi3tCmGduEOGvu+n7fqIv6ygBo4IMYyoIZooLmBoG73EYDIAkIPw2MJphWBUtiDOh9Edsm+5Ys6ewAPK0BicS4lEbCcf+I4qG4RqmPoyFCAaqrWMYVgwQhOgiWaRh2IuG4rsp7ZJnuT4abi2m6fpXCGQIg4yiZ8pmZ05g6DZIwaE80ZCNYDK1LoU4AlcWrNK8tg+Ymu6PjovbZrmL4nmeOjvuQN6Whhqn+WVmYVUkL5vtgV5sWcP74lFw4xaUIIri5ehAjYtxvEIuUMuUNjKiChg2dG5gPLG3gQo1Kl+aV5X9lV+GEcRpEUdRtE7b5JVdgdlWZF1PVfn1HEDQWRLDW4Yw9BuxhCBohiyfNDxWc0k7AeUJpeFt2CkBAcBKHR11YawQ4fcWAC0lRpTjuO4yCjk6p0PQpbcVimFODw1BoRX3oxCIOmjnqAeUlQGmyrQ2YYqrIfNNmhmys2QcB5PuKYtMMWpAWSi+TPcbFBqhnJbKTv9ri80T9TXACiGNHY2hAhLzWlQeXDBXp-BhXLpkjerujTuy7gaLlGgwZBvRC1B0aKS2W1I8VKMIndHWZNbn1lCuzJslqQgcu5GgiTBsc3O8kETRNFMTdDHhAA */
     id: 'ValinnanTuloksetMachine',
     initial: ValinnanTulosState.IDLE,
     types: {} as {
@@ -152,6 +151,7 @@ export function createValinnanTulosMachine<T extends ValinnanTulosFields>() {
     },
     on: {
       [ValinnanTulosEventType.RESET]: {
+        target: '.IDLE',
         actions: assign(({ event }) => {
           return {
             valintatapajonoOid: event.params.valintatapajonoOid,
@@ -312,12 +312,6 @@ export function createValinnanTulosMachine<T extends ValinnanTulosFields>() {
           },
         },
       },
-    },
-  }).provide({
-    guards: {
-      hasChangedHakemukset,
-      shouldPublishAfterUpdate: ({ context }) =>
-        Boolean(context.publishAfterUpdate),
     },
   });
 }

@@ -17,12 +17,19 @@ import {
   ValinnanTulosEventType,
 } from '@/lib/state/valinnan-tulos-machine';
 import useToaster from '@/hooks/useToaster';
+import { hasChangedHakemukset } from '@/lib/state/valinnan-tulos-machine-utils';
+import { useHasChanged } from '@/hooks/useHasChanged';
 
 export type SijoittelunTulosActorRef =
   ValinnanTulosActorRef<SijoittelunHakemusValintatiedoilla>;
 
 export const sijoittelunTuloksetMachine =
   createValinnanTulosMachine<SijoittelunHakemusValintatiedoilla>().provide({
+    guards: {
+      hasChangedHakemukset,
+      shouldPublishAfterUpdate: ({ context }) =>
+        Boolean(context.publishAfterUpdate),
+    },
     actions: {
       alert: ({ context }, params) =>
         context.addToast?.({
@@ -126,20 +133,25 @@ export const useSijoittelunTulosActorRef = ({
   const sijoittelunTuloksetActorRef = useActorRef(sijoittelunTuloksetMachine);
   const { addToast } = useToaster();
 
+  const hakemuksetChanged = useHasChanged(hakemukset);
+
   useEffect(() => {
-    sijoittelunTuloksetActorRef.send({
-      type: ValinnanTulosEventType.RESET,
-      params: {
-        hakukohdeOid,
-        valintatapajonoOid,
-        hakemukset,
-        tulokset: hakemukset,
-        lastModified,
-        onUpdated,
-        addToast,
-      },
-    });
+    if (hakemuksetChanged) {
+      sijoittelunTuloksetActorRef.send({
+        type: ValinnanTulosEventType.RESET,
+        params: {
+          hakukohdeOid,
+          valintatapajonoOid,
+          hakemukset,
+          tulokset: hakemukset,
+          lastModified,
+          onUpdated,
+          addToast,
+        },
+      });
+    }
   }, [
+    hakemuksetChanged,
     sijoittelunTuloksetActorRef,
     hakemukset,
     hakukohdeOid,

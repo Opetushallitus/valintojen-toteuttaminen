@@ -63,6 +63,7 @@ export type SijoittelunHakemus = {
 };
 
 export type SijoittelunHakemusValintatiedoilla = {
+  hakemusOid: string;
   hakijaOid: string;
   pisteet: number;
   valintatapajonoOid: string;

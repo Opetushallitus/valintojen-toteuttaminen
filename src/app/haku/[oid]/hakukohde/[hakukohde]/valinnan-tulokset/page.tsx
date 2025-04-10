@@ -87,6 +87,7 @@ const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
       }),
     ],
   });
+  const { lastModified } = valinnanTulokset;
 
   const hakemuksetTuloksilla = useHakemuksetValinnanTuloksilla({
     hakemukset,
@@ -109,6 +110,7 @@ const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
         <ValinnanTuloksetTable
           haku={haku}
           hakukohde={hakukohde}
+          lastModified={lastModified}
           hakemukset={hakemuksetTuloksilla}
         />
       </FormBox>

@@ -51,7 +51,7 @@ const isHyvaksyttyVarasijaltaVisible = (
       SijoittelunTila.PERUUNTUNUT,
       SijoittelunTila.VARALLA,
       SijoittelunTila.VARASIJALTA_HYVAKSYTTY,
-    ].includes(hakemus.valinnanTila));
+    ].includes(hakemus?.valinnanTila as SijoittelunTila));
 
 export const EhdollisestiHyvaksyttavissaCheckbox = ({
   haku,

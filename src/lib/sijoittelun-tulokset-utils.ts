@@ -25,20 +25,25 @@ type SijoittelunTilaKentat = Pick<
   'julkaistavissa' | 'valinnanTila' | 'vastaanottoTila'
 >;
 
-const isSijoittelunTilaVastaanotettavissa = (hakemuksenTila: SijoittelunTila) =>
+const isSijoittelunTilaVastaanotettavissa = (
+  hakemuksenTila?: SijoittelunTila,
+) =>
   [
     SijoittelunTila.HYVAKSYTTY,
     SijoittelunTila.VARASIJALTA_HYVAKSYTTY,
     SijoittelunTila.PERUNUT,
     SijoittelunTila.PERUUTETTU,
-  ].includes(hakemuksenTila);
+  ].includes(hakemuksenTila as SijoittelunTila);
 
 export const isVastaanottoPossible = (h: SijoittelunTilaKentat): boolean =>
-  isSijoittelunTilaVastaanotettavissa(h.valinnanTila) && h.julkaistavissa;
+  isSijoittelunTilaVastaanotettavissa(h?.valinnanTila) &&
+  Boolean(h?.julkaistavissa);
 
 export const isIlmoittautuminenPossible = (h: SijoittelunTilaKentat): boolean =>
   isSijoittelunTilaVastaanotettavissa(h.valinnanTila) &&
-  VASTAANOTTOTILAT_JOISSA_VOI_ILMOITTAUTUA.includes(h.vastaanottoTila);
+  VASTAANOTTOTILAT_JOISSA_VOI_ILMOITTAUTUA.includes(
+    h.vastaanottoTila as VastaanottoTila,
+  );
 
 export const isValintaesitysJulkaistavissa = (
   haku: Haku,
@@ -56,7 +61,7 @@ export const isValintaesitysJulkaistavissa = (
   );
 
 export const isVastaanottotilaJulkaistavissa = (h: {
-  vastaanottoTila: VastaanottoTila;
+  vastaanottoTila?: VastaanottoTila;
 }): boolean =>
   h.vastaanottoTila === VastaanottoTila.KESKEN ||
   h.vastaanottoTila === VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA;
@@ -69,12 +74,12 @@ export const isHyvaksyttyHarkinnanvaraisesti = (
 ): boolean =>
   Boolean(hakemus?.hyvaksyttyHarkinnanvaraisesti) &&
   [SijoittelunTila.HYVAKSYTTY, SijoittelunTila.VARASIJALTA_HYVAKSYTTY].includes(
-    hakemus.valinnanTila,
+    hakemus.valinnanTila as SijoittelunTila,
   );
 
 export const getReadableHakemuksenTila = (
   hakemus: {
-    valinnanTila: SijoittelunTila;
+    valinnanTila?: SijoittelunTila;
     hyvaksyttyHarkinnanvaraisesti?: boolean;
     varasijanNumero?: number | null;
   },

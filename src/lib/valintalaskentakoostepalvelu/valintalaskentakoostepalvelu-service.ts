@@ -862,3 +862,7 @@ export const getMyohastyneetHakemukset = async ({
 
   return response?.data;
 };
+
+export async function saveErillishakuValinnanTulokset({}) {
+  await client.post();
+}

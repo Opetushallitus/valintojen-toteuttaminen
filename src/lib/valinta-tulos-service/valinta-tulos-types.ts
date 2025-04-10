@@ -132,22 +132,22 @@ export type SijoittelunTulosBasicInfo = {
 export type ValinnanTulosFields = {
   hakemusOid: string;
   hakijanNimi?: string;
-  valintatapajonoOid: string;
-  valinnanTila: SijoittelunTila;
+  valintatapajonoOid?: string;
+  valinnanTila?: SijoittelunTila;
   valinnanTilanKuvaus?: TranslatedName;
   valinnanTilanKuvausFI?: string;
   valinnanTilanKuvausSV?: string;
   valinnanTilanKuvausEN?: string;
-  ehdollisestiHyvaksyttavissa: boolean;
-  hyvaksyttyVarasijalta: boolean;
+  ehdollisestiHyvaksyttavissa?: boolean;
+  hyvaksyttyVarasijalta?: boolean;
   ehdollisenHyvaksymisenEhtoKoodi?: string;
   ehdollisenHyvaksymisenEhtoFI?: string;
   ehdollisenHyvaksymisenEhtoSV?: string;
   ehdollisenHyvaksymisenEhtoEN?: string;
-  vastaanottoTila: VastaanottoTila;
-  ilmoittautumisTila: IlmoittautumisTila;
-  julkaistavissa: boolean;
-  hyvaksyPeruuntunut: boolean;
+  vastaanottoTila?: VastaanottoTila;
+  ilmoittautumisTila?: IlmoittautumisTila;
+  julkaistavissa?: boolean;
+  hyvaksyPeruuntunut?: boolean;
   maksunTila?: string;
 };
 

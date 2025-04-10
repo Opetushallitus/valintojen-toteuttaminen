@@ -189,7 +189,7 @@ export const saveMaksunTilanMuutokset = async (
   }
 };
 
-const pickValinnanTulosProps = (value: ValinnanTulosModel) =>
+const pickValinnanTulosProps = (value: Partial<ValinnanTulosModel>) =>
   pick(value, [
     'hakukohdeOid',
     'valintatapajonoOid',
@@ -215,7 +215,7 @@ export const saveValinnanTulokset = async ({
 }: {
   valintatapajonoOid: string;
   lastModified: Date | string | null;
-  tulokset: Array<ValinnanTulosModel>;
+  tulokset: Array<Partial<ValinnanTulosModel>>;
 }) => {
   const ifUnmodifiedSince = (
     lastModified ? new Date(lastModified) : new Date()
@@ -294,7 +294,7 @@ export const hyvaksyValintaEsitys = async (valintatapajonoOid: string) => {
 };
 
 export type HakukohteenValinnanTuloksetData = {
-  lastModified: string | null;
+  lastModified?: string;
   data: Record<string, ValinnanTulosModel>;
 };
 
@@ -317,7 +317,7 @@ export const getHakukohteenValinnanTulokset = async (
     configuration.hakukohteenValinnanTulosUrl(params),
   );
   return {
-    lastModified: headers.get('X-Last-Modified'),
+    lastModified: headers.get('X-Last-Modified') ?? undefined,
     data: indexBy(data ?? [], prop('hakemusOid')),
   };
 };
