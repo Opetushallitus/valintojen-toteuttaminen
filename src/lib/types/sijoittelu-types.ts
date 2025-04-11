@@ -1,3 +1,4 @@
+import { ValinnanTulosActorRef } from '../state/valinnan-tulos-machine';
 import { HakemuksenValinnanTulos } from '../valinta-tulos-service/valinta-tulos-types';
 
 export type SijoittelunValintatapajonoTulos = {
@@ -131,3 +132,6 @@ export type AjastettuSijoittelu = {
   startTime: Date;
   frequency: string;
 };
+
+export type SijoittelunTulosActorRef =
+  ValinnanTulosActorRef<SijoittelunHakemusValintatiedoilla>;

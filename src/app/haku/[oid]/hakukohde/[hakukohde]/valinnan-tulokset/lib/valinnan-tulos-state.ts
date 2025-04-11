@@ -12,6 +12,10 @@ import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tul
 import { saveErillishakuValinnanTulokset } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
+import {
+  getHakukohteenValinnanTulokset,
+  hyvaksyValintaEsitys,
+} from '@/lib/valinta-tulos-service/valinta-tulos-service';
 
 export const valinnanTuloksetMachine =
   createValinnanTulosMachine<HakemuksenValinnanTulos>().provide({
@@ -69,6 +73,12 @@ type ValinnanTulosStateParams = {
   onUpdated?: () => void;
 };
 
+const getValintatapajonoOidFromHakemukset = (
+  hakemukset: Array<{ valintatapajonoOid?: string }>,
+) => {
+  return hakemukset.find((h) => h.valintatapajonoOid)?.valintatapajonoOid;
+};
+
 export const useValinnanTulosActorRef = ({
   haku,
   hakukohde,
@@ -83,14 +93,38 @@ export const useValinnanTulosActorRef = ({
           await saveErillishakuValinnanTulokset({
             hakuOid: hakukohde.hakuOid,
             hakukohdeOid: hakukohde.oid,
-            tarjoajaOid: hakukohde.tarjoajaOid,
             hakemukset: input.changed,
             hakutyyppi: isKorkeakouluHaku(haku)
               ? 'KORKEAKOULU'
               : 'TOISEN_ASTEEN_OPPILAITOS',
           });
         }),
-        publish: fromPromise(() => Promise.reject()),
+        publish: fromPromise(async ({ input }) => {
+          let valintatapajonoOid = input.valintatapajonoOid;
+          if (!valintatapajonoOid) {
+            /*
+              Jos valintatapajonoOid ei ole määritelty, se tarkoittaa, että
+              aiemmin noudettu valinnan tulokset oli tyhjä, eli tuloksia ei ollut tallennettu.
+              Ensimmäiset tulokset ollaan siis juuri tallennettu edellisessä UPDATE-vaiheessa.
+              Jotta saadaan valintatapajonoOid tallennetuista tuloksista, täytyy hakea
+              valinnan tulokset uudestaan.
+             */
+            const { data: valinnanTulos } =
+              await getHakukohteenValinnanTulokset({
+                hakuOid: haku.oid,
+                hakukohdeOid: hakukohde.oid,
+              });
+            valintatapajonoOid = getValintatapajonoOidFromHakemukset(
+              Object.values(valinnanTulos),
+            );
+          }
+          if (!valintatapajonoOid) {
+            throw new Error(
+              'ValinnanTulosMachine.publish: Missing valintatapajonoOid',
+            );
+          }
+          await hyvaksyValintaEsitys(valintatapajonoOid);
+        }),
       },
     }),
   );
@@ -101,6 +135,7 @@ export const useValinnanTulosActorRef = ({
     valinnanTulosActorRef.send({
       type: ValinnanTulosEventType.RESET,
       params: {
+        valintatapajonoOid: getValintatapajonoOidFromHakemukset(hakemukset),
         hakukohdeOid: hakukohde.oid,
         hakemukset,
         lastModified,

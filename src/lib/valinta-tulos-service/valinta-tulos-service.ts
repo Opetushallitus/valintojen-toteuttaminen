@@ -381,7 +381,7 @@ type ChangeHistoryEventResponse = {
   ];
 };
 
-export const changeHistoryForHakemus = async (
+export const getChangeHistoryForHakemus = async (
   hakemusOid: string,
   valintatapajonoOid: string,
 ): Promise<Array<HakemusChangeEvent>> => {

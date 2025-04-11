@@ -11,8 +11,15 @@ import {
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import useToaster from '@/hooks/useToaster';
 import { Haku, Hakukohde, KoutaOidParams } from '@/lib/kouta/kouta-types';
-import { SijoittelunTila, VastaanottoTila } from '@/lib/types/sijoittelu-types';
-import { sendVastaanottopostiValintatapaJonolle } from '@/lib/valinta-tulos-service/valinta-tulos-service';
+import {
+  SijoittelunTila,
+  SijoittelunTulosActorRef,
+  VastaanottoTila,
+} from '@/lib/types/sijoittelu-types';
+import {
+  sendVastaanottopostiHakukohteelle,
+  sendVastaanottopostiValintatapaJonolle,
+} from '@/lib/valinta-tulos-service/valinta-tulos-service';
 import { isEmpty, prop } from 'remeda';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getMyohastyneetHakemukset } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
@@ -27,14 +34,14 @@ import {
   ValinnanTulosMassChangeParams,
   ValinnanTulosEventType,
   ValinnanTulosState,
+  ValinnanTulosActorRef,
 } from '@/lib/state/valinnan-tulos-machine';
 import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
-import { SijoittelunTulosActorRef } from '../lib/sijoittelun-tulokset-state';
 
 const ActionsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'row',
-  columnGap: theme.spacing(2),
+  gap: theme.spacing(2),
   marginBottom: theme.spacing(2),
 }));
 
@@ -45,17 +52,19 @@ const SendVastaanottopostiButton = ({
 }: {
   disabled: boolean;
   hakukohdeOid: string;
-  valintatapajonoOid: string;
+  valintatapajonoOid?: string;
 }) => {
   const { addToast } = useToaster();
   const { t } = useTranslations();
 
   const sendVastaanottoposti = async () => {
     try {
-      const data = await sendVastaanottopostiValintatapaJonolle(
-        hakukohdeOid,
-        valintatapajonoOid,
-      );
+      const data = valintatapajonoOid
+        ? await sendVastaanottopostiValintatapaJonolle(
+            hakukohdeOid,
+            valintatapajonoOid,
+          )
+        : await sendVastaanottopostiHakukohteelle(hakukohdeOid);
       if (!data || data.length < 1) {
         addToast({
           key: 'vastaanottoposti-valintatapajono-empty',
@@ -88,7 +97,11 @@ const SendVastaanottopostiButton = ({
       disabled={disabled}
       onClick={sendVastaanottoposti}
     >
-      {t('sijoittelun-tulokset.toiminnot.laheta-vastaanottoposti-jonolle')}
+      {valintatapajonoOid
+        ? t('sijoittelun-tulokset.toiminnot.laheta-vastaanottoposti-jonolle')
+        : t(
+            'valinnan-tulokset.toiminnot.laheta-vastaanottoposti-hakukohteelle',
+          )}
     </OphButton>
   );
 };
@@ -224,25 +237,24 @@ const MerkitseMyohastyneeksiButton = ({
   );
 };
 
-export const SijoittelunTuloksetActions = ({
+export const ValinnanTulosActions = ({
   haku,
   hakukohde,
+  valinnanTulosActorRef,
   valintatapajonoOid,
-  sijoittelunTulosActorRef,
 }: {
   haku: Haku;
   hakukohde: Hakukohde;
-  valintatapajonoOid: string;
-  sijoittelunTulosActorRef: SijoittelunTulosActorRef;
+  valinnanTulosActorRef: ValinnanTulosActorRef | SijoittelunTulosActorRef;
+  valintatapajonoOid?: string;
 }) => {
   const { t } = useTranslations();
 
-  const { send } = sijoittelunTulosActorRef;
-
-  const state = useSelector(sijoittelunTulosActorRef, (s) => s);
+  const { send } = valinnanTulosActorRef;
+  const state = useSelector(valinnanTulosActorRef, (s) => s);
 
   const hakemukset = useSelector(
-    sijoittelunTulosActorRef,
+    valinnanTulosActorRef,
     (s) => s.context.hakemukset,
   );
 

@@ -2,7 +2,7 @@
 
 import { useCallback } from 'react';
 import { Box } from '@mui/material';
-import { SijoittelunTuloksetActions } from './sijoittelun-tulos-actions';
+import { ValinnanTulosActions } from '@/components/valinnan-tulos-actions';
 import { useSijoittelunTulosActorRef } from '../lib/sijoittelun-tulokset-state';
 import { SijoitteluajonValintatapajonoValintatiedoilla } from '@/lib/types/sijoittelu-types';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
@@ -54,11 +54,11 @@ export const SijoittelunTulosForm = ({
       sx={{ width: '100%' }}
       data-test-id={`sijoittelun-tulokset-form-${valintatapajono.oid}`}
     >
-      <SijoittelunTuloksetActions
+      <ValinnanTulosActions
         haku={haku}
         hakukohde={hakukohde}
         valintatapajonoOid={valintatapajono.oid}
-        sijoittelunTulosActorRef={sijoittelunTulosActorRef}
+        valinnanTulosActorRef={sijoittelunTulosActorRef}
       />
       <SijoittelunTulosTable
         haku={haku}
