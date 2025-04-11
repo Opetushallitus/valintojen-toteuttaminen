@@ -44,7 +44,12 @@
     "haun-tunniste": "Haun tunniste",
     "haun-asetukset": "Haun asetukset",
     "tarjonta": "Tarjonta",
-    "kaynnistetaanko": "Käynnistetäänkö"
+    "kaynnistetaanko": "Käynnistetäänkö",
+    "kieleksi": {
+      "fi": "suomeksi",
+      "sv": "ruotsiksi",
+      "en": "englanniksi"
+    }
   },
   "kalenteri": {
     "aika": "Aika",
@@ -513,6 +518,13 @@
     "valinta-save-success": "Valinnan tietojen tallentaminen onnistui",
     "pistesyotto": "Pistesyöttö"
   },
+  "kirjetyypit": {
+    "hyvaksymiskirje": "Hyväksymiskirje",
+    "hyvaksymiskirje-huoltajille": "Hyväksymiskirje huoltajille",
+    "jalkiohjauskirje": "Jälkiohjauskirje",
+    "jalkiohjauskirje-huoltajille": "Jälkiohjauskirje huoltajille",
+    "ei-hyvaksytyt": "Ei hyväksyttyjen kirje"
+  },
   "kirje-modaali": {
     "otsikko-hyvaksymiskirjeet": "Hyväksymiskirjeiden muodostaminen",
     "otsikko-hyvaksymiskirje": "Hyväksymiskirjeen muodostaminen",
@@ -605,6 +617,13 @@
         "poisto-ok": "Ajastettu sijoittelu poistettu käytöstä",
         "poisto-virhe": "Ajastetun sijoittelun poisto käytöstä epäonnistui"
       }
+    },
+    "kirjeet": {
+      "otsikko": "Hyväksymis- ja jälkiohjauskirjeet",
+      "kirjevalitsin": "Kirje",
+      "valitse-kirje": "Valitse kirje",
+      "muodosta": "Muodosta kirjeet",
+      "paivita-muodosta": "Päivitä muodostuksen tilanne"
     }
   }
 }
