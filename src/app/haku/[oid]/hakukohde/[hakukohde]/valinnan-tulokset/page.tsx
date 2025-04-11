@@ -1,5 +1,5 @@
 'use client';
-import { use, useCallback } from 'react';
+import { use, useCallback, useMemo } from 'react';
 
 import { TabContainer } from '../components/tab-container';
 import { useTranslations } from '@/lib/localization/useTranslations';
@@ -36,31 +36,39 @@ const useHakemuksetValinnanTuloksilla = ({
   hakemukset: Array<Hakemus>;
   valinnanTulokset: HakukohteenValinnanTuloksetData;
 }): Array<HakemuksenValinnanTulos> => {
-  return hakemukset.map((hakemus) => {
-    const valinnanTulos = valinnanTulokset.data[hakemus.hakemusOid] ?? {};
-    return {
-      hakijaOid: hakemus.hakijaOid,
-      hakemusOid: hakemus.hakemusOid,
-      hakijanNimi: hakemus.hakijanNimi,
-      hakukohdeOid: valinnanTulos.hakukohdeOid,
-      valintatapajonoOid: valinnanTulos.valintatapajonoOid,
-      valinnanTila: valinnanTulos.valinnantila,
-      vastaanottoTila: valinnanTulos.vastaanottotila,
-      ilmoittautumisTila: valinnanTulos.ilmoittautumistila,
-      ehdollisestiHyvaksyttavissa: valinnanTulos.ehdollisestiHyvaksyttavissa,
-      ehdollisenHyvaksymisenEhtoKoodi:
-        valinnanTulos.ehdollisenHyvaksymisenEhtoKoodi,
-      ehcollisenHyvaksymisenEhtoFI: valinnanTulos.ehdollisenHyvaksymisenEhtoFI,
-      ehdollisenHyvaksymisenEhtoSV: valinnanTulos.ehdollisenHyvaksymisenEhtoSV,
-      ehdollisenHyvaksymisenEhtoEN: valinnanTulos.ehdollisenHyvaksymisenEhtoEN,
-      valinnanTilanKuvausFI: valinnanTulos.valinnantilanKuvauksenTekstiFI,
-      valinnanTilanKuvausSV: valinnanTulos.valinnantilanKuvauksenTekstiSV,
-      valinnanTilanKuvausEN: valinnanTulos.valinnantilanKuvauksenTekstiEN,
-      julkaistavissa: valinnanTulos.julkaistavissa,
-      hyvaksyttyVarasijalta: valinnanTulos.hyvaksyttyVarasijalta,
-      hyvaksyPeruuntunut: valinnanTulos.hyvaksyPeruuntunut,
-    };
-  });
+  return useMemo(
+    () =>
+      hakemukset.map((hakemus) => {
+        const valinnanTulos = valinnanTulokset.data[hakemus.hakemusOid] ?? {};
+        return {
+          hakijaOid: hakemus.hakijaOid,
+          hakemusOid: hakemus.hakemusOid,
+          hakijanNimi: hakemus.hakijanNimi,
+          hakukohdeOid: valinnanTulos.hakukohdeOid,
+          valintatapajonoOid: valinnanTulos.valintatapajonoOid,
+          valinnanTila: valinnanTulos.valinnantila,
+          vastaanottoTila: valinnanTulos.vastaanottotila,
+          ilmoittautumisTila: valinnanTulos.ilmoittautumistila,
+          ehdollisestiHyvaksyttavissa:
+            valinnanTulos.ehdollisestiHyvaksyttavissa,
+          ehdollisenHyvaksymisenEhtoKoodi:
+            valinnanTulos.ehdollisenHyvaksymisenEhtoKoodi,
+          ehcollisenHyvaksymisenEhtoFI:
+            valinnanTulos.ehdollisenHyvaksymisenEhtoFI,
+          ehdollisenHyvaksymisenEhtoSV:
+            valinnanTulos.ehdollisenHyvaksymisenEhtoSV,
+          ehdollisenHyvaksymisenEhtoEN:
+            valinnanTulos.ehdollisenHyvaksymisenEhtoEN,
+          valinnanTilanKuvausFI: valinnanTulos.valinnantilanKuvauksenTekstiFI,
+          valinnanTilanKuvausSV: valinnanTulos.valinnantilanKuvauksenTekstiSV,
+          valinnanTilanKuvausEN: valinnanTulos.valinnantilanKuvauksenTekstiEN,
+          julkaistavissa: valinnanTulos.julkaistavissa,
+          hyvaksyttyVarasijalta: valinnanTulos.hyvaksyttyVarasijalta,
+          hyvaksyPeruuntunut: valinnanTulos.hyvaksyPeruuntunut,
+        };
+      }),
+    [hakemukset, valinnanTulokset],
+  );
 };
 
 const refetchHakukohteenValinnanTulokset = ({
