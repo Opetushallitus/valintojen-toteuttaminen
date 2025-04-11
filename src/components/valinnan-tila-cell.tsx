@@ -1,9 +1,8 @@
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { SijoittelunTila } from '@/lib/types/sijoittelu-types';
-import { useHyvaksynnanEhdot } from '../hooks/useHyvaksynnanEhdot';
+import { useHyvaksynnanEhdot } from '@/lib/koodisto/useHyvaksynnanEhdot';
 import { ChangeEvent } from 'react';
-import { SijoittelunTulosStyledCell } from './sijoittelun-tulos-styled-cell';
-import { Box, InputAdornment, SelectChangeEvent } from '@mui/material';
+import { Box, InputAdornment, SelectChangeEvent, Stack } from '@mui/material';
 import { LocalizedSelect } from '@/components/localized-select';
 import {
   isKorkeakouluHaku,
@@ -23,6 +22,7 @@ import { useHasOrganizationPermissions } from '@/hooks/useUserPermissions';
 import { InfoTooltipButton } from '@/components/info-tooltip-button';
 import { ValinnanTulosChangeParams } from '@/lib/state/valinnan-tulos-machine';
 import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
+import { useValinnanTilaOptions } from '@/hooks/useValinnanTilaOptions';
 
 const LanguageAdornment = styled(InputAdornment)(() => ({
   backgroundColor: ophColors.grey200,
@@ -189,13 +189,39 @@ const EhdollinenFields = ({
     </>
   );
 };
-export const SijoittelunTilaCell = ({
+
+const ValinnanTilaSelect = ({
+  value,
+  onChange,
+  disabled,
+}: Pick<
+  React.ComponentProps<typeof LocalizedSelect>,
+  'value' | 'onChange' | 'disabled'
+>) => {
+  const options = useValinnanTilaOptions(
+    (tila) => tila !== SijoittelunTila.HARKINNANVARAISESTI_HYVAKSYTTY,
+  );
+
+  return (
+    <LocalizedSelect
+      sx={{ width: '300px' }}
+      value={value}
+      onChange={onChange}
+      disabled={disabled}
+      options={options}
+    />
+  );
+};
+
+export const ValinnanTilaCell = ({
   hakemus,
   haku,
   disabled,
   updateForm,
+  isValinnanTilaEditable,
 }: {
   hakemus: HakemuksenValinnanTulos;
+  isValinnanTilaEditable?: boolean;
   haku: Haku;
   disabled: boolean;
   updateForm: (params: ValinnanTulosChangeParams) => void;
@@ -206,6 +232,7 @@ export const SijoittelunTilaCell = ({
     hakemusOid,
     hyvaksyttyVarasijalta,
     siirtynytToisestaValintatapajonosta,
+    valinnanTila,
   } = hakemus;
 
   const hakemuksenTila = getReadableHakemuksenTila(hakemus, t);
@@ -217,10 +244,25 @@ export const SijoittelunTilaCell = ({
     });
   };
 
+  const updateValinnanTila = (event: SelectChangeEvent<string>) => {
+    updateForm({
+      hakemusOid,
+      valinnanTila: event.target.value as SijoittelunTila,
+    });
+  };
+
   return (
-    <SijoittelunTulosStyledCell>
+    <Stack gap={1} sx={{ minWidth: '240px' }}>
       <span>
-        {hakemuksenTila}
+        {isValinnanTilaEditable ? (
+          hakemuksenTila
+        ) : (
+          <ValinnanTilaSelect
+            value={valinnanTila}
+            onChange={updateValinnanTila}
+            disabled={disabled}
+          />
+        )}
         {siirtynytToisestaValintatapajonosta && (
           <InfoTooltipButton
             title={t(
@@ -243,6 +285,6 @@ export const SijoittelunTilaCell = ({
         disabled={disabled}
         updateForm={updateForm}
       />
-    </SijoittelunTulosStyledCell>
+    </Stack>
   );
 };

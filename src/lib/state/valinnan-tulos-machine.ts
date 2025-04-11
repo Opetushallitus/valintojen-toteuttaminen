@@ -4,6 +4,7 @@ import { clone } from 'remeda';
 import {
   applyMassHakemusChanges,
   applySingleHakemusChange,
+  hasChangedHakemukset,
   ValinnanTulosEditableFields,
 } from './valinnan-tulos-machine-utils';
 import { HakemuksenValinnanTulos } from '../valinta-tulos-service/valinta-tulos-types';
@@ -311,6 +312,12 @@ export function createValinnanTulosMachine<
           },
         },
       },
+    },
+  }).provide({
+    guards: {
+      hasChangedHakemukset,
+      shouldPublishAfterUpdate: ({ context }) =>
+        Boolean(context.publishAfterUpdate),
     },
   });
 }

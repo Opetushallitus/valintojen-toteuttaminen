@@ -63,6 +63,7 @@ export const isValintaesitysJulkaistavissa = (
 export const isVastaanottotilaJulkaistavissa = (h: {
   vastaanottoTila?: VastaanottoTila;
 }): boolean =>
+  h.vastaanottoTila === undefined ||
   h.vastaanottoTila === VastaanottoTila.KESKEN ||
   h.vastaanottoTila === VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA;
 

@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { EhdollisestiHyvaksyttavissaCheckbox } from './sijoittelun-tila-cell';
+import { EhdollisestiHyvaksyttavissaCheckbox } from './valinnan-tila-cell';
 import { Haku, Tila } from '@/lib/kouta/kouta-types';
 
 const ORG_OID = '1.2.3.4.5';

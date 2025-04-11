@@ -15,7 +15,7 @@ import { KeysMatching, ListTableColumn } from '@/components/table/table-types';
 import { MaksuCell } from './maksu-cell';
 import { IlmoittautumisTilaSelect } from '@/components/ilmoittautumistila-select';
 import { VastaanOttoCell } from '@/components/vastaanotto-cell';
-import { SijoittelunTilaCell } from './sijoittelun-tila-cell';
+import { ValinnanTilaCell } from '@/components/valinnan-tila-cell';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
 import { SijoittelunTuloksetActionBar } from './sijoittelun-tulos-action-bar';
@@ -110,7 +110,7 @@ const useColumns = ({
         title: t(`${TRANSLATIONS_PREFIX}.tila`),
         key: 'sijoittelunTila',
         renderFn: (props) => (
-          <SijoittelunTilaCell
+          <ValinnanTilaCell
             hakemus={props}
             haku={haku}
             updateForm={updateForm}

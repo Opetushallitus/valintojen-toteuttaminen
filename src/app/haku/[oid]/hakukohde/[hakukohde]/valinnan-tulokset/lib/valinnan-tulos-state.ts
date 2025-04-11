@@ -9,6 +9,9 @@ import {
 } from '@/lib/state/valinnan-tulos-machine';
 import useToaster from '@/hooks/useToaster';
 import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
+import { saveErillishakuValinnanTulokset } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
+import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
+import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
 
 export const valinnanTuloksetMachine =
   createValinnanTulosMachine<HakemuksenValinnanTulos>().provide({
@@ -56,35 +59,49 @@ export const valinnanTuloksetMachine =
       },
       errorModal: () => {},
     },
-    actors: {
-      updateHakemukset: fromPromise(async () => {
-        return Promise.reject();
-      }),
-      publish: fromPromise(() => Promise.reject()),
-    },
   });
 
-type SijoittelunTulosStateParams = {
-  hakukohdeOid: string;
+type ValinnanTulosStateParams = {
+  haku: Haku;
+  hakukohde: Hakukohde;
   hakemukset: Array<HakemuksenValinnanTulos>;
   lastModified?: string;
   onUpdated?: () => void;
 };
 
 export const useValinnanTulosActorRef = ({
-  hakukohdeOid,
+  haku,
+  hakukohde,
   hakemukset,
   lastModified,
   onUpdated,
-}: SijoittelunTulosStateParams) => {
-  const valinnanTulosActorRef = useActorRef(valinnanTuloksetMachine);
+}: ValinnanTulosStateParams) => {
+  const valinnanTulosActorRef = useActorRef(
+    valinnanTuloksetMachine.provide({
+      actors: {
+        updateHakemukset: fromPromise(async ({ input }) => {
+          await saveErillishakuValinnanTulokset({
+            hakuOid: hakukohde.hakuOid,
+            hakukohdeOid: hakukohde.oid,
+            tarjoajaOid: hakukohde.tarjoajaOid,
+            hakemukset: input.changed,
+            hakutyyppi: isKorkeakouluHaku(haku)
+              ? 'KORKEAKOULU'
+              : 'TOISEN_ASTEEN_OPPILAITOS',
+          });
+        }),
+        publish: fromPromise(() => Promise.reject()),
+      },
+    }),
+  );
+
   const { addToast } = useToaster();
 
   useEffect(() => {
     valinnanTulosActorRef.send({
       type: ValinnanTulosEventType.RESET,
       params: {
-        hakukohdeOid,
+        hakukohdeOid: hakukohde.oid,
         hakemukset,
         lastModified,
         onUpdated,
@@ -94,7 +111,7 @@ export const useValinnanTulosActorRef = ({
   }, [
     valinnanTulosActorRef,
     hakemukset,
-    hakukohdeOid,
+    hakukohde.oid,
     lastModified,
     onUpdated,
     addToast,

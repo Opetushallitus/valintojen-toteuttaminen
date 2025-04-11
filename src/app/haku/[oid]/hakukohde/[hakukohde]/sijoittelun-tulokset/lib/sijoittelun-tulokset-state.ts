@@ -17,7 +17,6 @@ import {
   ValinnanTulosEventType,
 } from '@/lib/state/valinnan-tulos-machine';
 import useToaster from '@/hooks/useToaster';
-import { hasChangedHakemukset } from '@/lib/state/valinnan-tulos-machine-utils';
 import { useHasChanged } from '@/hooks/useHasChanged';
 
 export type SijoittelunTulosActorRef =
@@ -25,11 +24,6 @@ export type SijoittelunTulosActorRef =
 
 export const sijoittelunTuloksetMachine =
   createValinnanTulosMachine<SijoittelunHakemusValintatiedoilla>().provide({
-    guards: {
-      hasChangedHakemukset,
-      shouldPublishAfterUpdate: ({ context }) =>
-        Boolean(context.publishAfterUpdate),
-    },
     actions: {
       alert: ({ context }, params) =>
         context.addToast?.({
