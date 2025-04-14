@@ -79,6 +79,7 @@ const useColumns = ({
             hakemus={hakemus}
             disabled={disabled}
             updateForm={updateForm}
+            isValinnanTilaEditable={true}
           />
         ),
       }),

@@ -2,7 +2,13 @@ import { useTranslations } from '@/lib/localization/useTranslations';
 import { SijoittelunTila } from '@/lib/types/sijoittelu-types';
 import { useHyvaksynnanEhdot } from '@/lib/koodisto/useHyvaksynnanEhdot';
 import { ChangeEvent } from 'react';
-import { Box, InputAdornment, SelectChangeEvent, Stack } from '@mui/material';
+import {
+  Box,
+  InputAdornment,
+  SelectChangeEvent,
+  Stack,
+  Typography,
+} from '@mui/material';
 import { LocalizedSelect } from '@/components/localized-select';
 import {
   isKorkeakouluHaku,
@@ -90,6 +96,73 @@ export const EhdollisestiHyvaksyttavissaCheckbox = ({
   );
 };
 
+const HylkayksenSyyFields = ({
+  hakemus,
+  disabled,
+  updateForm,
+}: {
+  hakemus: HakemuksenValinnanTulos;
+  disabled: boolean;
+  updateForm: (params: ValinnanTulosChangeParams) => void;
+}) => {
+  const { t } = useTranslations();
+
+  const updateValinnanTilanKuvaus = (
+    event: ChangeEvent<HTMLInputElement>,
+    kieli: Language,
+  ) => {
+    updateForm({
+      hakemusOid: hakemus.hakemusOid,
+      [`valinnanTilanKuvaus${kieli.toUpperCase()}`]: event.target.value,
+    });
+  };
+
+  const valinnanTilanKuvaus = {
+    fi: hakemus.valinnanTilanKuvausFI,
+    sv: hakemus.valinnanTilanKuvausSV,
+    en: hakemus.valinnanTilanKuvausEN,
+  };
+
+  const labelId = `hylkayksen-syy-label-${hakemus.hakemusOid}`;
+
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', rowGap: 1 }}>
+      <Typography id={labelId}>
+        {t('valinnan-tulokset.hakijalle-nakyva-syy')}:
+      </Typography>
+      <Box
+        sx={{ display: 'flex', flexDirection: 'column', rowGap: 1 }}
+        aria-labelledby={labelId}
+      >
+        {pipe(
+          entries(valinnanTilanKuvaus),
+          map(([kieli, syy]) => (
+            <StyledInput
+              key={kieli}
+              value={syy ?? ''}
+              onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                updateValinnanTilanKuvaus(event, kieli)
+              }
+              startAdornment={
+                <LanguageAdornment position="start">
+                  {kieli.toUpperCase()}
+                </LanguageAdornment>
+              }
+              inputProps={{
+                'aria-label': t(
+                  `valinnan-tulokset.valinnan-tilan-kuvaus-aria-${kieli}`,
+                ),
+              }}
+              disabled={disabled}
+              required={true}
+            />
+          )),
+        )}
+      </Box>
+    </Box>
+  );
+};
+
 const EhdollinenFields = ({
   haku,
   hakemus,
@@ -128,7 +201,6 @@ const EhdollinenFields = ({
 
   const {
     hakemusOid,
-    valinnanTila,
     ehdollisestiHyvaksyttavissa,
     ehdollisenHyvaksymisenEhtoKoodi,
   } = hakemus;
@@ -140,56 +212,54 @@ const EhdollinenFields = ({
   };
 
   return (
-    valinnanTila !== SijoittelunTila.HYLATTY && (
-      <>
-        <EhdollisestiHyvaksyttavissaCheckbox
-          haku={haku}
-          hakemus={hakemus}
-          updateForm={updateForm}
-          disabled={disabled}
-        />
-        {isKorkeakouluHaku(haku) && ehdollisestiHyvaksyttavissa && (
-          <>
-            <LocalizedSelect
-              sx={{ maxWidth: '300px' }}
-              value={ehdollisenHyvaksymisenEhtoKoodi}
-              onChange={updateEhdollisuudenSyy}
-              options={ehtoOptions}
-              disabled={disabled}
-              required={true}
-            />
-            {ehdollisenHyvaksymisenEhtoKoodi === 'muu' && (
-              <Box sx={{ display: 'flex', flexDirection: 'column', rowGap: 1 }}>
-                {pipe(
-                  entries(ehdollisenHyvaksymisenSyyt),
-                  map(([kieli, syy]) => (
-                    <StyledInput
-                      key={kieli}
-                      value={syy ?? ''}
-                      onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                        updateEhdollisuudenMuuSyy(event, kieli)
-                      }
-                      startAdornment={
-                        <LanguageAdornment position="start">
-                          {kieli.toUpperCase()}
-                        </LanguageAdornment>
-                      }
-                      inputProps={{
-                        'aria-label': t(
-                          `sijoittelun-tulokset.muu-syy-aria-${kieli}`,
-                        ),
-                      }}
-                      disabled={disabled}
-                      required={true}
-                    />
-                  )),
-                )}
-              </Box>
-            )}
-          </>
-        )}
-      </>
-    )
+    <>
+      <EhdollisestiHyvaksyttavissaCheckbox
+        haku={haku}
+        hakemus={hakemus}
+        updateForm={updateForm}
+        disabled={disabled}
+      />
+      {isKorkeakouluHaku(haku) && ehdollisestiHyvaksyttavissa && (
+        <>
+          <LocalizedSelect
+            sx={{ maxWidth: '300px' }}
+            value={ehdollisenHyvaksymisenEhtoKoodi}
+            onChange={updateEhdollisuudenSyy}
+            options={ehtoOptions}
+            disabled={disabled}
+            required={true}
+          />
+          {ehdollisenHyvaksymisenEhtoKoodi === 'muu' && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', rowGap: 1 }}>
+              {pipe(
+                entries(ehdollisenHyvaksymisenSyyt),
+                map(([kieli, syy]) => (
+                  <StyledInput
+                    key={kieli}
+                    value={syy ?? ''}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                      updateEhdollisuudenMuuSyy(event, kieli)
+                    }
+                    startAdornment={
+                      <LanguageAdornment position="start">
+                        {kieli.toUpperCase()}
+                      </LanguageAdornment>
+                    }
+                    inputProps={{
+                      'aria-label': t(
+                        `sijoittelun-tulokset.muu-syy-aria-${kieli}`,
+                      ),
+                    }}
+                    disabled={disabled}
+                    required={true}
+                  />
+                )),
+              )}
+            </Box>
+          )}
+        </>
+      )}
+    </>
   );
 };
 
@@ -258,13 +328,13 @@ export const ValinnanTilaCell = ({
     <Stack gap={1} sx={{ minWidth: '240px' }}>
       <span>
         {isValinnanTilaEditable ? (
-          hakemuksenTila
-        ) : (
           <ValinnanTilaSelect
             value={valinnanTila}
             onChange={updateValinnanTila}
             disabled={disabled}
           />
+        ) : (
+          hakemuksenTila
         )}
         {siirtynytToisestaValintatapajonosta && (
           <InfoTooltipButton
@@ -282,12 +352,21 @@ export const ValinnanTilaCell = ({
           disabled={disabled}
         />
       )}
-      <EhdollinenFields
-        haku={haku}
-        hakemus={hakemus}
-        disabled={disabled}
-        updateForm={updateForm}
-      />
+      {isValinnanTilaEditable && valinnanTila === SijoittelunTila.HYLATTY && (
+        <HylkayksenSyyFields
+          hakemus={hakemus}
+          disabled={disabled}
+          updateForm={updateForm}
+        />
+      )}
+      {valinnanTila !== SijoittelunTila.HYLATTY && (
+        <EhdollinenFields
+          haku={haku}
+          hakemus={hakemus}
+          disabled={disabled}
+          updateForm={updateForm}
+        />
+      )}
     </Stack>
   );
 };

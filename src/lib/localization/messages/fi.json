@@ -398,7 +398,8 @@
     "toiminnot": {
       "laheta-vastaanottoposti-hakukohteelle": "Lähetä vastaanottoposti hakukohteelle"
     },
-    "tunniste-tai-tyyppi": "Tunniste tai tyyppi"
+    "tunniste-tai-tyyppi": "Tunniste tai tyyppi",
+    "hakijalle-nakyva-syy": "Hakijalle näkyvä syy"
   },
   "sijoittelu": {
     "tasasijasaanto": {

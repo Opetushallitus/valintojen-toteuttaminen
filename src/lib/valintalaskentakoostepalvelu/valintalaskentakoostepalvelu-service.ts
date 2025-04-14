@@ -900,6 +900,9 @@ export async function saveErillishakuValinnanTulokset({
     ilmoittautumisTila: hakemus.ilmoittautumisTila,
     julkaistaankoTiedot: hakemus.julkaistavissa,
     ehdollisestiHyvaksyttavissa: hakemus.ehdollisestiHyvaksyttavissa,
+    valinnantilanKuvauksenTekstiFI: hakemus.valinnanTilanKuvausFI,
+    valinnantilanKuvauksenTekstiSV: hakemus.valinnanTilanKuvausSV,
+    valinnantilanKuvauksenTekstiEN: hakemus.valinnanTilanKuvausEN,
   }));
 
   const urlWithQuery = new URL(
