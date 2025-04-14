@@ -6,7 +6,7 @@ import {
   saveSijoitteluAjonTulokset,
 } from '@/lib/valinta-tulos-service/valinta-tulos-service';
 import { isNullish } from 'remeda';
-import { SijoittelunTulosErrorModalDialog } from '../components/sijoittelun-tulos-error-modal';
+import { ValinnanTulosErrorGlobalModal } from '@/components/modals/valinnan-tulos-error-global-modal';
 import { showModal } from '@/components/modals/global-modal';
 import { OphApiError } from '@/lib/common';
 import { useEffect } from 'react';
@@ -63,7 +63,7 @@ export const sijoittelunTuloksetMachine =
         }
       },
       errorModal: ({ context }, params) => {
-        showModal(SijoittelunTulosErrorModalDialog, {
+        showModal(ValinnanTulosErrorGlobalModal, {
           error: params.error,
           hakemukset: context.hakemukset,
         });

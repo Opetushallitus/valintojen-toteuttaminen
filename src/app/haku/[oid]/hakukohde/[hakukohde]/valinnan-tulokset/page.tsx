@@ -127,7 +127,7 @@ const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const valinnanTulosActorRef = useValinnanTulosActorRef({
     haku,
     hakukohde,
-    hakemukset,
+    hakemukset: hakemuksetTuloksilla,
     lastModified: valinnanTulokset.lastModified,
     onUpdated,
   });

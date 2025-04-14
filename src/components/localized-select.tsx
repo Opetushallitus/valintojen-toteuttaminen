@@ -12,6 +12,7 @@ export const LocalizedSelect = ({
       inputProps={{ 'aria-label': ariaLabel ?? t('yleinen.valitsevaihtoehto') }}
       MenuProps={{ id: 'select-menu' }}
       placeholder={t('yleinen.valitse')}
+      value={props.value ?? ''}
       {...props}
     />
   );

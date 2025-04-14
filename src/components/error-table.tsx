@@ -39,6 +39,8 @@ export const ErrorTable = ({
 
   const errorData = mapErrorToTableData(error);
 
+  console.log({ errorData });
+
   if (!isEmpty(errorData)) {
     return (
       <TableContainer>

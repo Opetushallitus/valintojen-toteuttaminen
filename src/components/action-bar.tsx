@@ -6,7 +6,6 @@ import { withDefaultProps } from '../lib/mui-utils';
 export const Button = withDefaultProps(
   styled(OphButton)(({ theme }) => ({
     color: ophColors.white,
-    padding: theme.spacing(1),
     '&:hover': {
       color: ophColors.white,
       backgroundColor: theme.palette.primary.light,
@@ -24,7 +23,7 @@ export const Container = styled(Box)(({ theme }) => ({
   display: 'flex',
   backgroundColor: theme.palette.primary.main,
   color: ophColors.white,
-  padding: theme.spacing(0.5, 1),
+  padding: theme.spacing(1),
   alignItems: 'center',
   borderRadius: '3px',
   columnGap: theme.spacing(1),
@@ -38,7 +37,6 @@ const Divider = withDefaultProps(
   {
     orientation: 'vertical',
     flexItem: true,
-    variant: 'middle',
   },
 );
 

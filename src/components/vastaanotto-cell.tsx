@@ -110,7 +110,7 @@ export const VastaanOttoCell = ({
   return (
     <Stack gap={1} sx={{ minWidth: '180px' }}>
       <OphCheckbox
-        checked={julkaistavissa}
+        checked={Boolean(julkaistavissa)}
         onChange={updateJulkaistu}
         label={t('sijoittelun-tulokset.julkaistavissa')}
         disabled={
@@ -139,7 +139,7 @@ export const VastaanOttoCell = ({
           </QuerySuspenseBoundary>
           <LocalizedSelect
             ariaLabel={t('sijoittelun-tulokset.taulukko.vastaanottotieto')}
-            value={vastaanottoTila}
+            value={vastaanottoTila ?? ''}
             onChange={updateVastaanottoTila}
             options={vastaanottotilaOptions}
             disabled={disabled}

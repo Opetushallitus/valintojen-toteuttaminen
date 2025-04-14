@@ -41,7 +41,7 @@ export const IlmoittautumisTilaSelect = ({
       {isVisible && (
         <LocalizedSelect
           ariaLabel={t('sijoittelun-tulokset.taulukko.ilmoittautumistieto')}
-          value={ilmoittautumisTila}
+          value={ilmoittautumisTila ?? ''}
           onChange={updateIlmoittautumisTila}
           options={ilmoittautumistilaOptions}
           disabled={disabled}
