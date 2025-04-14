@@ -147,7 +147,10 @@ const ValinnanTulosTallennusError = ({
         {!isEmpty(normalErrors) && (
           <Box>
             <Typography variant="h3">{t('virhe.varoitukset')}</Typography>
-            <ErrorTable error={error} />
+            <ErrorTable
+              oidHeader={t('valinnan-tulokset.tunniste-tai-tyyppi')}
+              error={error}
+            />
           </Box>
         )}
       </Box>

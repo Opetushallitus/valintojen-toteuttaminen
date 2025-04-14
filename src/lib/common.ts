@@ -109,3 +109,5 @@ export const nullWhen404 = async <T>(
     throw e;
   }
 };
+
+export const isOphOid = (x?: string) => x?.startsWith('1.2.246.562.');

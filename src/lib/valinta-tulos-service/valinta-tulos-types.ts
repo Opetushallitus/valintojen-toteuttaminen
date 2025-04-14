@@ -1,5 +1,4 @@
 import { MaksunTila } from '../ataru/ataru-types';
-import { TranslatedName } from '../localization/localization-types';
 import {
   IlmoittautumisTila,
   SijoittelunTila,
@@ -135,7 +134,6 @@ export type HakemuksenValinnanTulos = {
   hakijanNimi: string;
   valintatapajonoOid?: string;
   valinnanTila?: SijoittelunTila;
-  valinnanTilanKuvaus?: TranslatedName;
   valinnanTilanKuvausFI?: string;
   valinnanTilanKuvausSV?: string;
   valinnanTilanKuvausEN?: string;

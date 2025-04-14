@@ -1,5 +1,6 @@
 import {
   IlmoittautumisTila,
+  SijoittelunTila,
   VastaanottoTila,
 } from '@/lib/types/sijoittelu-types';
 import {
@@ -172,6 +173,24 @@ export function applyMassHakemusChanges<T extends HakemuksenValinnanTulos>(
     changedHakemukset: changedHakemukset,
     massChangeAmount: changedAmount,
   };
+}
+
+export function prepareChangedHakemuksetForSave<
+  T extends HakemuksenValinnanTulos,
+>(changedHakemukset: Array<T>) {
+  return changedHakemukset.map((hakemus) => {
+    const { valinnanTila } = hakemus;
+    const result = clone(hakemus);
+
+    if (valinnanTila === SijoittelunTila.HYLATTY) {
+      result.ehdollisestiHyvaksyttavissa = false;
+      result.ehdollisenHyvaksymisenEhtoKoodi = '';
+      result.ehdollisenHyvaksymisenEhtoEN = '';
+      result.ehdollisenHyvaksymisenEhtoEN = '';
+      result.ehdollisenHyvaksymisenEhtoEN = '';
+    }
+    return result;
+  });
 }
 
 export const useIsDirtyValinnanTulos = <T extends HakemuksenValinnanTulos>(

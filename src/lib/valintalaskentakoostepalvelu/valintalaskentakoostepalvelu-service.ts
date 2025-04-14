@@ -29,6 +29,7 @@ import {
   OphProcessError,
   OphProcessErrorData,
   nullWhen404,
+  isOphOid,
 } from '../common';
 import { getHakemukset, getHakijat } from '../ataru/ataru-service';
 import {
@@ -303,7 +304,7 @@ type ProcessResponse = {
     tunnisteet: Array<{
       oid?: string;
       tunniste: string;
-      tyyppi?: string;
+      tyyppi: string;
     }>;
     palvelu: string;
     viesti: string;
@@ -328,9 +329,12 @@ function mapProcessResponseToErrorData(
       ];
       return serviceError.concat(
         p.tunnisteet.map((t) => {
-          return t.oid
-            ? { id: t.oid, message: t.tunniste }
-            : { id: t.tunniste, message: p.viesti };
+          if (t.oid) {
+            return { id: t.oid, message: t.tunniste };
+          } else if (isOphOid(t.tunniste)) {
+            return { id: t.tunniste, message: p.viesti };
+          }
+          return { id: t.tyyppi, message: t.tunniste ?? p.viesti };
         }),
       );
     })
