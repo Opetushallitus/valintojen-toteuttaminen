@@ -64,7 +64,7 @@ export const MenuSelectorButton = ({
         aria-expanded={open ? 'true' : undefined}
         onClick={showMenu}
         {...(type === 'icon-only'
-          ? { endIcon: <MoreHoriz />, variant: 'text' }
+          ? { startIcon: <MoreHoriz />, variant: 'text' }
           : {
               endIcon: <ArrowDropDown />,
               variant: 'outlined',

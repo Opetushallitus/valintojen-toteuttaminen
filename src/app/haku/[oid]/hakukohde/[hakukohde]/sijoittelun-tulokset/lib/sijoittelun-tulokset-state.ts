@@ -29,7 +29,6 @@ export const sijoittelunTuloksetMachine =
         }),
 
       successNotify: ({ context }, params) => {
-        context.onUpdated?.();
         context.addToast?.({
           key: `sijoittelun-tulokset-updated-for-${context.hakukohdeOid}-${context.valintatapajonoOid}`,
           message: params.message,
@@ -44,7 +43,7 @@ export const sijoittelunTuloksetMachine =
           messageParams: { amount: context.massChangeAmount ?? 0 },
         });
       },
-      updated: ({ context }, params) => {
+      refetchTulokset: ({ context }, params) => {
         if (isNullish(params?.error)) {
           context.onUpdated?.();
         } else if (

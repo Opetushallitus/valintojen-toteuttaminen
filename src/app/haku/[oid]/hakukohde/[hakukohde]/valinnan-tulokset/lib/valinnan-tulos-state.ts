@@ -1,7 +1,5 @@
 import { fromPromise } from 'xstate';
-import { isNullish } from 'remeda';
-import { OphApiError } from '@/lib/common';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useActorRef } from '@xstate/react';
 import {
   createValinnanTulosMachine,
@@ -10,15 +8,18 @@ import {
 import useToaster from '@/hooks/useToaster';
 import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
 import { saveErillishakuValinnanTulokset } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
-import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
-import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
+import { Haku, Hakukohde, KoutaOidParams } from '@/lib/kouta/kouta-types';
 import {
   getHakukohteenValinnanTulokset,
+  getHakukohteenValinnanTuloksetQueryOptions,
   hyvaksyValintaEsitys,
 } from '@/lib/valinta-tulos-service/valinta-tulos-service';
 import { inspect } from '@/lib/xstate-utils';
 import { ValinnanTulosErrorGlobalModal } from '@/components/modals/valinnan-tulos-error-global-modal';
 import { showModal } from '@/components/modals/global-modal';
+import { QueryClient, useQueryClient } from '@tanstack/react-query';
+import { isNullish } from 'remeda';
+import { isHakemusOid, OphProcessError } from '@/lib/common';
 
 export const valinnanTuloksetMachine =
   createValinnanTulosMachine<HakemuksenValinnanTulos>().provide({
@@ -31,7 +32,6 @@ export const valinnanTuloksetMachine =
         }),
 
       successNotify: ({ context }, params) => {
-        context.onUpdated?.();
         context.addToast?.({
           key: `valinnan-tulokset-updated-for-${context.hakukohdeOid}-${context.valintatapajonoOid}`,
           message: params.message,
@@ -46,16 +46,20 @@ export const valinnanTuloksetMachine =
           messageParams: { amount: context.massChangeAmount ?? 0 },
         });
       },
-      updated: ({ context }, params) => {
+      refetchTulokset: ({ context }, params) => {
         if (isNullish(params?.error)) {
           context.onUpdated?.();
         } else if (
-          params.error instanceof OphApiError &&
-          Array.isArray(params.error?.response?.data)
+          params.error instanceof OphProcessError &&
+          Array.isArray(params.error?.processObject)
         ) {
-          const erroredHakemusOids = params.error?.response.data?.map(
-            (error) => error.hakemusOid as string,
+          const erroredHakemusOids = params.error?.processObject?.reduce(
+            (acc, error) => {
+              return isHakemusOid(error.id) ? [...acc, error.id] : acc;
+            },
+            [] as Array<string>,
           );
+
           const someTulosUpdated = context.changedHakemukset.some(
             (h) => !erroredHakemusOids.includes(h.hakemusOid),
           );
@@ -87,24 +91,45 @@ const getValintatapajonoOidFromHakemukset = (
   return hakemukset.find((h) => h.valintatapajonoOid)?.valintatapajonoOid;
 };
 
+const refetchHakukohteenValinnanTulokset = ({
+  queryClient,
+  hakuOid,
+  hakukohdeOid,
+}: KoutaOidParams & {
+  queryClient: QueryClient;
+}) => {
+  const valintaQueryOptions = getHakukohteenValinnanTuloksetQueryOptions({
+    hakuOid,
+    hakukohdeOid,
+  });
+  queryClient.resetQueries(valintaQueryOptions);
+  queryClient.invalidateQueries(valintaQueryOptions);
+};
+
 export const useValinnanTulosActorRef = ({
   haku,
   hakukohde,
   hakemukset,
   lastModified,
-  onUpdated,
 }: ValinnanTulosStateParams) => {
+  const queryClient = useQueryClient();
+
+  const onUpdated = useCallback(() => {
+    refetchHakukohteenValinnanTulokset({
+      queryClient,
+      hakuOid: haku.oid,
+      hakukohdeOid: hakukohde.oid,
+    });
+  }, [queryClient, hakukohde.oid, haku.oid]);
+
   const valinnanTulosActorRef = useActorRef(
     valinnanTuloksetMachine.provide({
       actors: {
         updateHakemukset: fromPromise(async ({ input }) => {
           await saveErillishakuValinnanTulokset({
-            hakuOid: hakukohde.hakuOid,
+            haku,
             hakukohdeOid: hakukohde.oid,
             hakemukset: input.changed,
-            hakutyyppi: isKorkeakouluHaku(haku)
-              ? 'KORKEAKOULU'
-              : 'TOISEN_ASTEEN_OPPILAITOS',
           });
         }),
         publish: fromPromise(async ({ input }) => {
@@ -132,6 +157,23 @@ export const useValinnanTulosActorRef = ({
             );
           }
           await hyvaksyValintaEsitys(valintatapajonoOid);
+        }),
+        remove: fromPromise(async ({ input }) => {
+          if (!input.hakemus) {
+            throw new Error(
+              'ValinnanTulosMachine.remove: Could not find hakemus',
+            );
+          }
+          await saveErillishakuValinnanTulokset({
+            haku,
+            hakukohdeOid: hakukohde.oid,
+            hakemukset: [
+              {
+                ...input.hakemus,
+                poistetaankoRivi: true,
+              },
+            ],
+          });
         }),
       },
     }),

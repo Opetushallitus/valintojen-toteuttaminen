@@ -1,6 +1,7 @@
 import { Toast } from '@/hooks/useToaster';
 import {
   ActorRefFrom,
+  assertEvent,
   assign,
   createMachine,
   fromPromise,
@@ -34,12 +35,14 @@ export type ValinnanTulosContext<T extends HakemuksenValinnanTulos> = {
   hakemuksetForMassUpdate?: Array<T>;
   massChangeAmount?: number;
   publishAfterUpdate?: boolean;
+  hakemusOidForRemoval?: string;
 };
 
 export enum ValinnanTulosState {
   IDLE = 'IDLE',
   UPDATING = 'UPDATING',
   PUBLISHING = 'PUBLISHING',
+  REMOVING = 'REMOVING',
 }
 
 export enum ValinnanTulosEventType {
@@ -49,6 +52,7 @@ export enum ValinnanTulosEventType {
   CHANGE = 'CHANGE',
   PUBLISH = 'PUBLISH',
   RESET = 'RESET',
+  REMOVE = 'REMOVE',
 }
 
 export type ValinnanTulosUpdateEvent = {
@@ -105,13 +109,19 @@ export type ValinnanTulosPublishEvent = {
   type: ValinnanTulosEventType.PUBLISH;
 };
 
+export type ValinnanTulosRemoveEvent = {
+  type: ValinnanTulosEventType.REMOVE;
+  hakemusOid: string;
+};
+
 export type ValinnanTuloksetEvents<T extends HakemuksenValinnanTulos> =
   | ValinnanTulosUpdateEvent
   | ValinnanTulosChangeEvent
   | ValinnanTulosMassChangeEvent
   | ValinnanTulosPublishEvent
   | ValinnanTulosMassUpdateEvent
-  | ValinnanTulosResetEvent<T>;
+  | ValinnanTulosResetEvent<T>
+  | ValinnanTulosRemoveEvent;
 
 export type ValinnanTulosActorRef<
   T extends HakemuksenValinnanTulos = HakemuksenValinnanTulos,
@@ -132,7 +142,7 @@ export function createValinnanTulosMachine<
         | { type: 'successNotify'; params: { message: string } }
         | { type: 'errorModal'; params: { error: Error } }
         | { type: 'notifyMassStatusChange' }
-        | { type: 'updated'; params?: { error?: Error } };
+        | { type: 'refetchTulokset'; params?: { error?: Error } };
       actors:
         | {
             src: 'updateHakemukset';
@@ -150,6 +160,10 @@ export function createValinnanTulosMachine<
         | {
             src: 'publish';
             logic: PromiseActorLogic<void, { valintatapajonoOid?: string }>;
+          }
+        | {
+            src: 'remove';
+            logic: PromiseActorLogic<void, { hakemus?: T }>;
           };
     },
     context: {
@@ -175,7 +189,13 @@ export function createValinnanTulosMachine<
     },
     states: {
       [ValinnanTulosState.IDLE]: {
+        entry: assign({
+          hakemusOidForRemoval: undefined,
+        }),
         on: {
+          [ValinnanTulosEventType.REMOVE]: {
+            target: ValinnanTulosState.REMOVING,
+          },
           [ValinnanTulosEventType.CHANGE]: {
             actions: assign({
               changedHakemukset: ({ context, event }) => {
@@ -238,6 +258,7 @@ export function createValinnanTulosMachine<
         },
       },
       [ValinnanTulosState.UPDATING]: {
+        tags: ['saving'],
         exit: assign({
           hakemuksetForMassUpdate: undefined,
         }),
@@ -261,7 +282,7 @@ export function createValinnanTulosMachine<
             {
               target: ValinnanTulosState.IDLE,
               actions: [
-                'updated',
+                'refetchTulokset',
                 {
                   type: 'successNotify',
                   params: { message: 'sijoittelun-tulokset.valmis' },
@@ -279,7 +300,7 @@ export function createValinnanTulosMachine<
                 }),
               },
               {
-                type: 'updated',
+                type: 'refetchTulokset',
                 params: ({ event }) => ({
                   error: event.error as Error,
                 }),
@@ -288,7 +309,66 @@ export function createValinnanTulosMachine<
           },
         },
       },
+      [ValinnanTulosState.REMOVING]: {
+        tags: ['saving'],
+        entry: assign({
+          hakemusOidForRemoval: ({ event }) => {
+            assertEvent(event, ValinnanTulosEventType.REMOVE);
+            return event.hakemusOid;
+          },
+        }),
+        invoke: {
+          src: 'remove',
+          input: ({ context }) => {
+            const hakemus = context.hakemukset.find(
+              (h) => h.hakemusOid === context.hakemusOidForRemoval,
+            );
+            return {
+              hakemus,
+            };
+          },
+          onDone: {
+            target: ValinnanTulosState.IDLE,
+            actions: [
+              {
+                type: 'successNotify',
+                params: { message: 'valinnan-tulokset.poistettu' },
+              },
+              assign({
+                hakemukset: ({ context }) => {
+                  return context.hakemukset.map((h) => {
+                    return h.hakemusOid === context.hakemusOidForRemoval
+                      ? ({
+                          hakemusOid: h.hakemusOid,
+                          hakijanNimi: h.hakijanNimi,
+                          hakijaOid: h.hakijaOid,
+                        } as T)
+                      : h;
+                  });
+                },
+                changedHakemukset: ({ context }) => {
+                  return context.changedHakemukset.filter(
+                    (h) => h.hakemusOid !== context.hakemusOidForRemoval,
+                  );
+                },
+              }),
+            ],
+          },
+          onError: {
+            target: ValinnanTulosState.IDLE,
+            actions: [
+              {
+                type: 'alert',
+                params: {
+                  message: 'valinnan-tulokset.poistaminen-epaonnistui',
+                },
+              },
+            ],
+          },
+        },
+      },
       [ValinnanTulosState.PUBLISHING]: {
+        tags: ['saving'],
         invoke: {
           src: 'publish',
           input: ({ context }) => ({

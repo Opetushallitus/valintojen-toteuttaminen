@@ -1,15 +1,11 @@
 'use client';
-import { use, useCallback, useMemo } from 'react';
+import { use, useMemo } from 'react';
 
 import { TabContainer } from '../components/tab-container';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { Box } from '@mui/material';
-import {
-  QueryClient,
-  useQueryClient,
-  useSuspenseQueries,
-} from '@tanstack/react-query';
+import { useSuspenseQueries } from '@tanstack/react-query';
 import {
   getHakukohteenValinnanTuloksetQueryOptions,
   HakukohteenValinnanTuloksetData,
@@ -28,6 +24,9 @@ import { ValinnanTuloksetSearchControls } from './components/valinnan-tulokset-s
 import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
 import { useValinnanTulosActorRef } from './lib/valinnan-tulos-state';
 import { ValinnanTulosActions } from '@/components/valinnan-tulos-actions';
+import { SpinnerModal } from '@/components/modals/spinner-modal';
+import { useSelector } from '@xstate/react';
+import { ValinnanTulosState } from '@/lib/state/valinnan-tulos-machine';
 
 const useHakemuksetValinnanTuloksilla = ({
   hakemukset,
@@ -71,21 +70,6 @@ const useHakemuksetValinnanTuloksilla = ({
   );
 };
 
-const refetchHakukohteenValinnanTulokset = ({
-  queryClient,
-  hakuOid,
-  hakukohdeOid,
-}: KoutaOidParams & {
-  queryClient: QueryClient;
-}) => {
-  const valintaQueryOptions = getHakukohteenValinnanTuloksetQueryOptions({
-    hakuOid,
-    hakukohdeOid,
-  });
-  queryClient.resetQueries(valintaQueryOptions);
-  queryClient.invalidateQueries(valintaQueryOptions);
-};
-
 const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const { t } = useTranslations();
 
@@ -114,23 +98,23 @@ const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
     valinnanTulokset: valinnanTulokset,
   });
 
-  const queryClient = useQueryClient();
-
-  const onUpdated = useCallback(() => {
-    refetchHakukohteenValinnanTulokset({
-      queryClient,
-      hakuOid,
-      hakukohdeOid,
-    });
-  }, [queryClient, hakukohdeOid, hakuOid]);
-
   const valinnanTulosActorRef = useValinnanTulosActorRef({
     haku,
     hakukohde,
     hakemukset: hakemuksetTuloksilla,
     lastModified: valinnanTulokset.lastModified,
-    onUpdated,
   });
+
+  const state = useSelector(valinnanTulosActorRef, (state) => state);
+
+  let spinnerTitle = '';
+  if (state.matches(ValinnanTulosState.REMOVING)) {
+    spinnerTitle = t('valinnan-tulokset.poistetaan-tuloksia');
+  } else if (state.matches(ValinnanTulosState.PUBLISHING)) {
+    spinnerTitle = t('valinnan-tulokset.julkaistaan-valintaesitystä');
+  } else if (state.matches(ValinnanTulosState.UPDATING)) {
+    spinnerTitle = t('valinnan-tulokset.tallennetaan-valinnan-tuloksia');
+  }
 
   return isEmpty(hakemuksetTuloksilla) ? (
     <NoResults text={t('valinnan-tulokset.ei-hakemuksia')} />
@@ -143,6 +127,7 @@ const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
         alignItems: 'flex-start',
       }}
     >
+      <SpinnerModal title={spinnerTitle} open={state.hasTag('saving')} />
       <ValinnanTuloksetSearchControls />
       <FormBox sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <ValinnanTulosActions
@@ -153,7 +138,6 @@ const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
         <ValinnanTuloksetTable
           haku={haku}
           hakukohde={hakukohde}
-          hakemukset={hakemuksetTuloksilla}
           actorRef={valinnanTulosActorRef}
         />
       </FormBox>
