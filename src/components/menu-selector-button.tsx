@@ -1,5 +1,5 @@
 import { styled } from '@/lib/theme';
-import { ArrowDropDown } from '@mui/icons-material';
+import { ArrowDropDown, MoreHoriz } from '@mui/icons-material';
 import {
   Box,
   Divider,
@@ -16,6 +16,7 @@ type MenuOption =
       type?: 'menuitem';
       label: string;
       icon?: React.ReactNode;
+      disabled?: boolean;
       onClick: () => void;
     }
   | { type: 'divider' };
@@ -34,10 +35,12 @@ export const MenuSelectorButton = ({
   label,
   options,
   disabled,
+  type = 'default',
 }: {
-  label: string;
+  label?: string;
   disabled?: boolean;
   options: Array<MenuOption>;
+  type?: 'default' | 'icon-only';
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -53,15 +56,19 @@ export const MenuSelectorButton = ({
   const closeMenu = () => setAnchorEl(null);
 
   return (
-    <Box display="block" position="relative">
+    <Box sx={{ display: 'block', position: 'relative' }}>
       <OphButton
         disabled={disabled}
         id={buttonId}
-        variant="outlined"
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
         onClick={showMenu}
-        endIcon={<ArrowDropDown />}
+        {...(type === 'icon-only'
+          ? { endIcon: <MoreHoriz />, variant: 'text' }
+          : {
+              endIcon: <ArrowDropDown />,
+              variant: 'outlined',
+            })}
       >
         {label}
       </OphButton>
@@ -81,6 +88,7 @@ export const MenuSelectorButton = ({
           ) : (
             <MenuItem
               key={option.label}
+              disabled={option.disabled}
               onClick={() => {
                 option.onClick();
                 closeMenu();

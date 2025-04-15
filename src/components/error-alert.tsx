@@ -12,6 +12,7 @@ import { useTranslations } from '@/lib/localization/useTranslations';
 import { useState } from 'react';
 import { styled } from '@/lib/theme';
 import { ArrowRight } from '@mui/icons-material';
+import { OphButton } from '@opetushallitus/oph-design-system';
 
 const StyledAccordionSummary = styled(AccordionSummary)({
   flexDirection: 'row-reverse',
@@ -41,16 +42,27 @@ export const ErrorAlert = ({
   title,
   message,
   hasAccordion = false,
+  retry,
 }: {
   title: string;
-  message: string | Array<string> | undefined;
+  message?: string | Array<string> | undefined;
   hasAccordion?: boolean;
+  retry?: () => void;
 }) => {
   const [errorVisible, setErrorVisible] = useState(false);
   const { t } = useTranslations();
 
   return (
-    <Alert severity="error">
+    <Alert
+      severity="error"
+      action={
+        retry && (
+          <OphButton sx={{ float: 'right' }} variant="text" onClick={retry}>
+            {t('virhe.uudelleenyritys')}
+          </OphButton>
+        )
+      }
+    >
       <Typography color="error">{title}</Typography>
       <Box sx={{ marginTop: 1 }}>
         {hasAccordion ? (

@@ -35,7 +35,7 @@ export type ValinnanTulosModel = {
 
 export type HakemusChangeDetail = {
   field: string;
-  from: string | boolean;
+  from?: string | boolean;
   to: string | boolean;
 };
 
