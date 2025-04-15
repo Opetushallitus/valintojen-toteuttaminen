@@ -263,7 +263,7 @@ export const ValinnanTulosActions = ({
   });
 
   return (
-    <ActionsContainer>
+    <ActionsContainer sx={{ width: '100%', flexWrap: 'wrap', gap: 2 }}>
       <OphButton
         onClick={() => {
           send({ type: ValinnanTulosEventType.UPDATE });

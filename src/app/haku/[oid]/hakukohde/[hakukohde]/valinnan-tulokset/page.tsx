@@ -4,7 +4,7 @@ import { use, useMemo } from 'react';
 import { TabContainer } from '../components/tab-container';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
-import { Box } from '@mui/material';
+import { Box, Stack } from '@mui/material';
 import { useSuspenseQueries } from '@tanstack/react-query';
 import {
   getHakukohteenValinnanTuloksetQueryOptions,
@@ -27,6 +27,8 @@ import { ValinnanTulosActions } from '@/components/valinnan-tulos-actions';
 import { SpinnerModal } from '@/components/modals/spinner-modal';
 import { useSelector } from '@xstate/react';
 import { ValinnanTulosState } from '@/lib/state/valinnan-tulos-machine';
+import { PageSizeSelector } from '@/components/table/page-size-selector';
+import { useValinnanTuloksetSearchParams } from './hooks/useValinnanTuloksetSearch';
 
 const useHakemuksetValinnanTuloksilla = ({
   hakemukset,
@@ -105,6 +107,8 @@ const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
     lastModified: valinnanTulokset.lastModified,
   });
 
+  const { pageSize, setPageSize } = useValinnanTuloksetSearchParams();
+
   const state = useSelector(valinnanTulosActorRef, (state) => state);
 
   let spinnerTitle = '';
@@ -128,7 +132,19 @@ const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
       }}
     >
       <SpinnerModal title={spinnerTitle} open={state.hasTag('saving')} />
-      <ValinnanTuloksetSearchControls />
+      <Stack
+        flexDirection="row"
+        gap={2}
+        sx={{
+          width: '100%',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          alignItems: 'flex-end',
+        }}
+      >
+        <ValinnanTuloksetSearchControls />
+        <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
+      </Stack>
       <FormBox sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <ValinnanTulosActions
           haku={haku}
