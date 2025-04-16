@@ -11,9 +11,12 @@ import { isToisenAsteenYhteisHaku } from '@/lib/kouta/kouta-service';
 import {
   KK_KIRJETYYPIT,
   Letter,
+  LetterType,
   TOINEN_ASTE_KIRJETYYPIT,
 } from '../lib/letter-options';
 import { useState } from 'react';
+import { FileDownloadButton } from '@/components/file-download-button';
+import { luoHyvaksymiskirjeetHaullePDF } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 
 const ActionsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -43,6 +46,17 @@ export const LettersActions = ({ haku }: { haku: Haku }) => {
     };
   });
 
+  async function createLetters() {
+    return luoHyvaksymiskirjeetHaullePDF({
+      hakuOid: haku.oid,
+      lang: letter.lang,
+      templateName:
+        letter.letterType === LetterType.HYVAKSYMISKIRJE
+          ? 'hyvaksymiskirje'
+          : 'hyvaksymiskirje_huoltajille',
+    });
+  }
+
   return (
     <ActionsContainer>
       <OphFormFieldWrapper
@@ -59,14 +73,17 @@ export const LettersActions = ({ haku }: { haku: Haku }) => {
           />
         )}
       />
-      <OphButton
-        onClick={() => console.log('click')}
+      <FileDownloadButton
+        component={OphButton}
+        getFile={createLetters}
         variant="contained"
-        disabled={false}
         sx={{ marginRight: 3 }}
+        defaultFileName={`${letter.letterType}_${letter.lang}.pdf`}
+        errorKey="yhteisvalinta-kirjeet-muodostus"
+        errorMessage="yhteisvalinnan-hallinta.sijoittelu.vie-kirjeiksi-virhe"
       >
         {t('yhteisvalinnan-hallinta.kirjeet.muodosta')}
-      </OphButton>
+      </FileDownloadButton>
       <OphButton
         onClick={() => console.log('click')}
         variant="outlined"
