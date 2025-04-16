@@ -12,11 +12,15 @@ import {
   KK_KIRJETYYPIT,
   Letter,
   LetterType,
+  templateNameOfLetterType,
   TOINEN_ASTE_KIRJETYYPIT,
 } from '../lib/letter-options';
 import { useState } from 'react';
 import { FileDownloadButton } from '@/components/file-download-button';
-import { luoHyvaksymiskirjeetHaullePDF } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
+import {
+  luoEiHyvaksymiskirjeetPDFHaulle,
+  luoHyvaksymiskirjeetHaullePDF,
+} from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 
 const ActionsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -47,14 +51,27 @@ export const LettersActions = ({ haku }: { haku: Haku }) => {
   });
 
   async function createLetters() {
-    return luoHyvaksymiskirjeetHaullePDF({
-      hakuOid: haku.oid,
-      lang: letter.lang,
-      templateName:
-        letter.letterType === LetterType.HYVAKSYMISKIRJE
-          ? 'hyvaksymiskirje'
-          : 'hyvaksymiskirje_huoltajille',
-    });
+    const templateName: string = templateNameOfLetterType.get(
+      letter.letterType,
+    )!;
+    if (
+      [
+        LetterType.HYVAKSYMISKIRJE,
+        LetterType.HYVAKSYMISKIRJE_HUOLTAJILLE,
+      ].includes(letter.letterType)
+    ) {
+      return await luoHyvaksymiskirjeetHaullePDF({
+        hakuOid: haku.oid,
+        lang: letter.lang,
+        templateName,
+      });
+    } else {
+      return await luoEiHyvaksymiskirjeetPDFHaulle({
+        hakuOid: haku.oid,
+        lang: letter.lang,
+        templateName,
+      });
+    }
   }
 
   return (

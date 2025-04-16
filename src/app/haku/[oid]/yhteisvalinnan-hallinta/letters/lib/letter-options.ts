@@ -8,6 +8,14 @@ export enum LetterType {
   EI_HYVAKSYTTYJEN_KIRJE = 'ei-hyvaksytyt',
 }
 
+export const templateNameOfLetterType = new Map<LetterType, string>([
+  [LetterType.HYVAKSYMISKIRJE, 'hyvaksymiskirje'],
+  [LetterType.HYVAKSYMISKIRJE_HUOLTAJILLE, 'hyvaksymiskirje_huoltajille'],
+  [LetterType.JALKIOHJAUSKIRJE, 'jalkiohjauskirje'],
+  [LetterType.JALKIOHJAUSKIRJE_HUOLTAJILLE, 'jalkiohjauskirje_huoltajille'],
+  [LetterType.EI_HYVAKSYTTYJEN_KIRJE, 'jalkiohjauskirje'],
+]);
+
 export type Letter = {
   id: number;
   lang: Language;

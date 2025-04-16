@@ -756,12 +756,13 @@ export const luoHyvaksymiskirjeetHaullePDF = async ({
   urlWithQuery.searchParams.append('vainTulosEmailinKieltaneet', 'false');
   urlWithQuery.searchParams.append('templateName', templateName);
   if (isNonNullish(lang)) {
-    urlWithQuery.searchParams.append('asiointikieli', lang);
+    urlWithQuery.searchParams.append('asiointikieli', lang.toUpperCase());
   }
   const startProcessResponse = await client.post<{ id: string }>(
     urlWithQuery.toString(),
     {
       tag: hakuOid,
+      letterBodyText: '',
     },
   );
   const kirjeetProcessId = startProcessResponse?.data?.id;
@@ -796,6 +797,32 @@ export const luoEiHyvaksymiskirjeetPDF = async ({
   );
   const kirjeetProcessId = startProcessResponse?.data?.id;
   return await processDocumentAndReturnDocumentId(kirjeetProcessId, true);
+};
+
+export const luoEiHyvaksymiskirjeetPDFHaulle = async ({
+  hakuOid,
+  templateName,
+  lang,
+}: {
+  hakuOid: string;
+  templateName: string;
+  lang: Language;
+}): Promise<FileResult> => {
+  const urlWithQuery = new URL(configuration.eihyvaksymiskirjeetUrl);
+  urlWithQuery.searchParams.append('hakuOid', hakuOid);
+  urlWithQuery.searchParams.append('tag', hakuOid);
+  urlWithQuery.searchParams.append('templateName', templateName);
+  const body = {
+    hakemusOids: null,
+    letterBodyText: null,
+    languageCode: lang.toUpperCase(),
+  };
+  const startProcessResponse = await client.post<{ id: string }>(
+    urlWithQuery.toString(),
+    body,
+  );
+  const kirjeetProcessId = startProcessResponse?.data?.id;
+  return await downloadProcessDocument(kirjeetProcessId, true);
 };
 
 export const luoOsoitetarratHakukohteessaHyvaksytyille = async ({
