@@ -14,6 +14,7 @@ import {
   LetterType,
   templateNameOfLetterType,
   TOINEN_ASTE_KIRJETYYPIT,
+  translateLetter,
 } from '../lib/letter-options';
 import { useState } from 'react';
 import { FileDownloadButton } from '@/components/file-download-button';
@@ -32,7 +33,7 @@ const ActionsContainer = styled(Box)(({ theme }) => ({
   alignItems: 'flex-end',
 }));
 
-export const LettersActions = ({ haku }: { haku: Haku }) => {
+export const LettersActions = ({ haku, refetchLetterCounts }: { haku: Haku, refetchLetterCounts: () => void }) => {
   const { t } = useTranslations();
 
   const letters = isToisenAsteenYhteisHaku(haku)
@@ -42,11 +43,9 @@ export const LettersActions = ({ haku }: { haku: Haku }) => {
   const [letter, setLetter] = useState<Letter>(letters[0]);
 
   const letterOptions = letters.map((l, index) => {
-    const letterType = t(`kirjetyypit.${l.letterType}`);
-    const lang = t(`yleinen.kieleksi.${l.lang}`);
     return {
       value: '' + index,
-      label: `${letterType} ${lang}`,
+      label: translateLetter(l, t),
     };
   });
 
@@ -102,7 +101,7 @@ export const LettersActions = ({ haku }: { haku: Haku }) => {
         {t('yhteisvalinnan-hallinta.kirjeet.muodosta')}
       </FileDownloadButton>
       <OphButton
-        onClick={() => console.log('click')}
+        onClick={refetchLetterCounts}
         variant="outlined"
         disabled={false}
       >

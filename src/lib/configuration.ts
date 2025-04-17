@@ -165,10 +165,12 @@ export const configuration = {
     hakuOid: string;
   }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/proxy/viestintapalvelu/template/getHistory?templateName=${templateName}&languageCode=${language}&oid=${tarjoajaOid}&tag=${tag}&applicationPeriod=${hakuOid}`,
+  tuloskirjeidenMuodostuksenTilanne: ({hakuOid} : {hakuOid: string}) => `${DOMAIN}/valintalaskentakoostepalvelu/resources/proxy/viestintapalvelu/count/haku/${hakuOid}`,
   hyvaksymiskirjeetUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/hyvaksymiskirjeet/aktivoi`,
   dokumenttiSeurantaUrl: ({ uuid }: { uuid: string }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/dokumentinseuranta/${uuid}`,
   eihyvaksymiskirjeetUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/hakukohteessahylatyt/aktivoi`,
+  jalkiohjauskirjeetUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/jalkiohjauskirjeet/aktivoi`,
   dokumentitUrl: ({
     tyyppi,
     hakukohdeOid,

@@ -42,6 +42,7 @@ import {
   HakutoiveValintakoeOsallistumiset,
   Kirjepohja,
   KirjepohjaNimi,
+  LetterCounts,
 } from './valintalaskentakoostepalvelu-types';
 import { HarkinnanvaraisuudenSyy } from '../types/harkinnanvaraiset-types';
 import { ValintakoeAvaimet } from '../valintaperusteet/valintaperusteet-types';
@@ -808,13 +809,13 @@ export const luoEiHyvaksymiskirjeetPDFHaulle = async ({
   templateName: string;
   lang: Language;
 }): Promise<FileResult> => {
-  const urlWithQuery = new URL(configuration.eihyvaksymiskirjeetUrl);
+  const urlWithQuery = new URL(configuration.jalkiohjauskirjeetUrl);
   urlWithQuery.searchParams.append('hakuOid', hakuOid);
   urlWithQuery.searchParams.append('tag', hakuOid);
   urlWithQuery.searchParams.append('templateName', templateName);
   const body = {
+    letterBodyText: "",
     hakemusOids: null,
-    letterBodyText: null,
     languageCode: lang.toUpperCase(),
   };
   const startProcessResponse = await client.post<{ id: string }>(
@@ -923,4 +924,27 @@ export const getMyohastyneetHakemukset = async ({
   );
 
   return response?.data;
+};
+
+export const tuloskirjeidenMuodostuksenTilanne = async (hakuOid: string): Promise<Array<LetterCounts>> => {
+  // TODO: vastauksessa on muitakin kenttiä, tarkistetaan tarviiko niitä.
+  const res = await client.get<{[key: string]: { [key: string]: {
+    letterBatchId: number | null,
+    letterTotalCount: number,
+    letterReadyCount: number,
+    letterErrorCount: number,
+    letterPublishedCount: number,
+  }}}>(configuration.tuloskirjeidenMuodostuksenTilanne({hakuOid}));
+  const letterCounts: Array<LetterCounts> = [];
+  for (let key of Object.keys(res.data)) {
+    for (let lang of ['fi', 'sv', 'en']) {
+      const countObject = res.data[key][lang];
+      letterCounts.push({
+        templateName: key,
+        lang: lang as Language,
+        ...countObject
+      });
+    }
+  }
+  return letterCounts;
 };
