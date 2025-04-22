@@ -50,11 +50,13 @@ export type DokumenttiTyyppi =
   | 'osoitetarrat';
 
 export type LetterCounts = {
-  templateName: string,
-  lang: Language,
-  letterBatchId: number | null,
-  letterTotalCount: number,
-  letterReadyCount: number,
-  letterErrorCount: number,
-  letterPublishedCount: number,
+  templateName: string;
+  lang: Language;
+  letterBatchId: number | null;
+  letterTotalCount: number;
+  letterReadyCount: number;
+  letterErrorCount: number;
+  letterPublishedCount: number;
+  readyForPublish: boolean;
+  readyForEPosti: boolean;
 };

@@ -814,7 +814,7 @@ export const luoEiHyvaksymiskirjeetPDFHaulle = async ({
   urlWithQuery.searchParams.append('tag', hakuOid);
   urlWithQuery.searchParams.append('templateName', templateName);
   const body = {
-    letterBodyText: "",
+    letterBodyText: '',
     hakemusOids: null,
     languageCode: lang.toUpperCase(),
   };
@@ -926,25 +926,45 @@ export const getMyohastyneetHakemukset = async ({
   return response?.data;
 };
 
-export const tuloskirjeidenMuodostuksenTilanne = async (hakuOid: string): Promise<Array<LetterCounts>> => {
-  // TODO: vastauksessa on muitakin kenttiä, tarkistetaan tarviiko niitä.
-  const res = await client.get<{[key: string]: { [key: string]: {
-    letterBatchId: number | null,
-    letterTotalCount: number,
-    letterReadyCount: number,
-    letterErrorCount: number,
-    letterPublishedCount: number,
-  }}}>(configuration.tuloskirjeidenMuodostuksenTilanne({hakuOid}));
+export const tuloskirjeidenMuodostuksenTilanne = async (
+  hakuOid: string,
+): Promise<Array<LetterCounts>> => {
+  const res = await client.get<{
+    [key: string]: {
+      [key: string]: {
+        letterBatchId: number | null;
+        letterTotalCount: number;
+        letterReadyCount: number;
+        letterErrorCount: number;
+        letterPublishedCount: number;
+        readyForPublish: boolean;
+        readyForEPosti: boolean;
+      };
+    };
+  }>(configuration.tuloskirjeidenMuodostuksenTilanneUrl({ hakuOid }));
   const letterCounts: Array<LetterCounts> = [];
-  for (let key of Object.keys(res.data)) {
-    for (let lang of ['fi', 'sv', 'en']) {
+  for (const key of Object.keys(res.data)) {
+    for (const lang of ['fi', 'sv', 'en']) {
       const countObject = res.data[key][lang];
       letterCounts.push({
         templateName: key,
         lang: lang as Language,
-        ...countObject
+        ...countObject,
       });
     }
   }
   return letterCounts;
 };
+
+export async function publishLetters(
+  hakuOid: string,
+  templateName: string,
+  lang: Language,
+) {
+  const urlWithQuery = new URL(
+    configuration.julkaiseTuloskirjeetUrl({ hakuOid }),
+  );
+  urlWithQuery.searchParams.append('kirjeenTyyppi', templateName);
+  urlWithQuery.searchParams.append('asiointikieli', lang);
+  await client.post(urlWithQuery.toString(), {});
+}

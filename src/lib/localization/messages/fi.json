@@ -523,7 +523,12 @@
     "hyvaksymiskirje-huoltajille": "Hyväksymiskirje huoltajille",
     "jalkiohjauskirje": "Jälkiohjauskirje",
     "jalkiohjauskirje-huoltajille": "Jälkiohjauskirje huoltajille",
-    "ei-hyvaksytyt": "Ei hyväksyttyjen kirje"
+    "ei-hyvaksytyt": "Ei hyväksyttyjen kirje",
+    "hyvaksymiskirje-monikko": "Hyväksymiskirjeet",
+    "hyvaksymiskirje-huoltajille-monikko": "Hyväksymiskirjeet huoltajille",
+    "jalkiohjauskirje-monikko": "Jälkiohjauskirjeet",
+    "jalkiohjauskirje-huoltajille-monikko": "Jälkiohjauskirjeet huoltajille",
+    "ei-hyvaksytyt-monikko": "Ei hyväksyttyjen kirjeet"
   },
   "kirje-modaali": {
     "otsikko-hyvaksymiskirjeet": "Hyväksymiskirjeiden muodostaminen",
@@ -623,7 +628,18 @@
       "kirjevalitsin": "Kirje",
       "valitse-kirje": "Valitse kirje",
       "muodosta": "Muodosta kirjeet",
-      "paivita-muodosta": "Päivitä muodostuksen tilanne"
+      "paivita-muodosta": "Päivitä muodostuksen tilanne",
+      "kirjeen-nimi": "Kirjeen nimi",
+      "lahetyksen-tunniste": "Lähetyksen tunniste",
+      "virheellisia": "Virheellisiä",
+      "kesken": "Kesken",
+      "valmiit": "Valmiit",
+      "julkaistut": "Julkaistut",
+      "julkaistu": "julkaistu",
+      "julkaise": "Julkaise",
+      "julkaisussa-virhe": "julkaisussa tapahtui virhe",
+      "vahvista-julkaisu": "Vahvista julkaisu",
+      "julkaisemassa": "Olet julkaisemassa"
     }
   }
 }

@@ -165,7 +165,10 @@ export const configuration = {
     hakuOid: string;
   }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/proxy/viestintapalvelu/template/getHistory?templateName=${templateName}&languageCode=${language}&oid=${tarjoajaOid}&tag=${tag}&applicationPeriod=${hakuOid}`,
-  tuloskirjeidenMuodostuksenTilanne: ({hakuOid} : {hakuOid: string}) => `${DOMAIN}/valintalaskentakoostepalvelu/resources/proxy/viestintapalvelu/count/haku/${hakuOid}`,
+  tuloskirjeidenMuodostuksenTilanneUrl: ({ hakuOid }: { hakuOid: string }) =>
+    `${DOMAIN}/valintalaskentakoostepalvelu/resources/proxy/viestintapalvelu/count/haku/${hakuOid}`,
+  julkaiseTuloskirjeetUrl: ({ hakuOid }: { hakuOid: string }) =>
+    `${DOMAIN}/valintalaskentakoostepalvelu/resources/proxy/viestintapalvelu/publish/haku/${hakuOid}`,
   hyvaksymiskirjeetUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/hyvaksymiskirjeet/aktivoi`,
   dokumenttiSeurantaUrl: ({ uuid }: { uuid: string }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/dokumentinseuranta/${uuid}`,

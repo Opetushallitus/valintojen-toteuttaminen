@@ -49,30 +49,43 @@ export const TOINEN_ASTE_KIRJETYYPIT = mapLetterOptions([
 
 export type LetterStats = {
   id: number;
-  letter: Letter,
+  letter: Letter;
   letterBatchId: string;
   letterProgressCount: number;
   letterTotalCount: number;
   letterReadyCount: number;
   letterErrorCount: number;
   letterPublishedCount: number;
+  readyForPublish: boolean;
+  readyForEPosti: boolean;
 };
 
-export function mapLetterCountsToLetterStats(letterCounts: Array<LetterCounts>): Array<LetterStats> {
+export function mapLetterCountsToLetterStats(
+  letterCounts: Array<LetterCounts>,
+): Array<LetterStats> {
   return letterCounts.map((lc, idx) => {
-      const templateName = templateNameOfLetterType.entries().find(val => val[1] === lc.templateName)?.[0];
-      return {
-        id: idx, 
-        letter: {id: idx, letterType: templateName, lang: lc.lang}, 
-        ...lc, 
-        letterBatchId: '' + (lc.letterBatchId ?? ''),
-        letterProgressCount: (lc.letterTotalCount - lc.letterErrorCount - lc.letterReadyCount)
-      } as LetterStats;
+    const templateName = templateNameOfLetterType
+      .entries()
+      .find((val) => val[1] === lc.templateName)?.[0];
+    return {
+      id: idx,
+      letter: { id: idx, letterType: templateName, lang: lc.lang },
+      ...lc,
+      letterBatchId: '' + (lc.letterBatchId ?? ''),
+      letterProgressCount:
+        lc.letterTotalCount - lc.letterErrorCount - lc.letterReadyCount,
+    } as LetterStats;
   });
-};
+}
 
-export function translateLetter(letter: Letter, t: TFunction): string {
-  const letterType = t(`kirjetyypit.${letter.letterType}`);
+export function translateLetter(
+  letter: Letter,
+  t: TFunction,
+  plural = false,
+): string {
+  const letterType = t(
+    `kirjetyypit.${letter.letterType}${plural ? '-monikko' : ''}`,
+  );
   const lang = t(`yleinen.kieleksi.${letter.lang}`);
   return `${letterType} ${lang}`;
 }
