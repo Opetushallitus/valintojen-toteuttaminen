@@ -13,10 +13,10 @@ export const LettersContainer = ({ hakuOid }: { hakuOid: string }) => {
   const { t } = useTranslations();
 
   const { data: haku } = useHaku({ hakuOid });
-  const { data: letterCounts, refetch  } = useQuery({
+  const { data: letterCounts, refetch } = useQuery({
     queryKey: ['letters', hakuOid],
-    queryFn: () => tuloskirjeidenMuodostuksenTilanne(hakuOid)
-  })
+    queryFn: () => tuloskirjeidenMuodostuksenTilanne(hakuOid),
+  });
 
   return (
     <AccordionBox
@@ -29,7 +29,13 @@ export const LettersContainer = ({ hakuOid }: { hakuOid: string }) => {
     >
       <Box sx={{ display: 'flex', flexDirection: 'column', rowGap: 3 }}>
         <LettersActions haku={haku} refetchLetterCounts={refetch} />
-        {isNonNullish(letterCounts) && <LettersTable haku={haku} letterCounts={letterCounts} />}
+        {isNonNullish(letterCounts) && (
+          <LettersTable
+            haku={haku}
+            letterCounts={letterCounts}
+            refetchLetterCounts={refetch}
+          />
+        )}
       </Box>
     </AccordionBox>
   );

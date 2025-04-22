@@ -7,7 +7,7 @@ import {
   mapLetterCountsToLetterStats,
   translateLetter,
 } from '../lib/letter-options';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   makeColumnWithCustomRender,
   makeCountColumn,
@@ -22,15 +22,19 @@ const buildLinkToLetters = (letterBatchId: string) =>
 export const LettersTable = ({
   haku,
   letterCounts,
+  refetchLetterCounts,
 }: {
   haku: Haku;
   letterCounts: Array<LetterCounts>;
+  refetchLetterCounts: () => void;
 }) => {
   const { t } = useTranslations();
 
-  const [letterStats] = useState<Array<LetterStats>>(
-    mapLetterCountsToLetterStats(letterCounts),
-  );
+  const [letterStats, setLetterStats] = useState<Array<LetterStats>>([]);
+
+  useEffect(() => {
+    setLetterStats(mapLetterCountsToLetterStats(letterCounts));
+  }, [letterCounts]);
 
   const columns = [
     makeColumnWithCustomRender<LetterStats>({
@@ -63,7 +67,11 @@ export const LettersTable = ({
       key: 'id',
       title: 'yhteisvalinnan-hallinta.kirjeet.julkaistut',
       renderFn: (props) => (
-        <LettersPublishCell haku={haku} letterStats={props} />
+        <LettersPublishCell
+          haku={haku}
+          letterStats={props}
+          refetchLetterCounts={refetchLetterCounts}
+        />
       ),
     }),
   ];

@@ -21,9 +21,11 @@ const StyledCell = styled(Box)(({ theme }) => ({
 export const LettersPublishCell = ({
   haku,
   letterStats,
+  refetchLetterCounts,
 }: {
   haku: Haku;
   letterStats: LetterStats;
+  refetchLetterCounts: () => void;
 }) => {
   const { t } = useTranslations();
   const { addToast } = useToaster();
@@ -45,6 +47,7 @@ export const LettersPublishCell = ({
         message: `${translateLetter(letterStats.letter, t, true)} ${t('yhteisvalinnan-hallinta.kirjeet.julkaistu')}`,
         type: 'success',
       });
+      refetchLetterCounts();
     } catch (error) {
       console.error(error);
       addToast({
