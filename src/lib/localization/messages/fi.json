@@ -639,7 +639,9 @@
       "julkaise": "Julkaise",
       "julkaisussa-virhe": "julkaisussa tapahtui virhe",
       "vahvista-julkaisu": "Vahvista julkaisu",
-      "julkaisemassa": "Olet julkaisemassa"
+      "julkaisemassa": "Olet julkaisemassa",
+      "eposti": "ePosti",
+      "esikatsele": "Esikatsele"
     }
   }
 }
