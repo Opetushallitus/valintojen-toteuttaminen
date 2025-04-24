@@ -59,4 +59,5 @@ export type LetterCounts = {
   letterPublishedCount: number;
   readyForPublish: boolean;
   readyForEPosti: boolean;
+  groupEmailId: number | null;
 };

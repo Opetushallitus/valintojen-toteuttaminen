@@ -50,7 +50,7 @@ export const TOINEN_ASTE_KIRJETYYPIT = mapLetterOptions([
 export type LetterStats = {
   id: number;
   letter: Letter;
-  letterBatchId: string;
+  letterBatchId: number | null;
   letterProgressCount: number;
   letterTotalCount: number;
   letterReadyCount: number;
@@ -58,6 +58,7 @@ export type LetterStats = {
   letterPublishedCount: number;
   readyForPublish: boolean;
   readyForEPosti: boolean;
+  groupEmailId: number | null;
 };
 
 export function mapLetterCountsToLetterStats(
@@ -71,7 +72,6 @@ export function mapLetterCountsToLetterStats(
       id: idx,
       letter: { id: idx, letterType: templateName, lang: lc.lang },
       ...lc,
-      letterBatchId: '' + (lc.letterBatchId ?? ''),
       letterProgressCount:
         lc.letterTotalCount - lc.letterErrorCount - lc.letterReadyCount,
     } as LetterStats;

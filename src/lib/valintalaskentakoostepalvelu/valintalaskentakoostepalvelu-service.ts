@@ -939,6 +939,7 @@ export const tuloskirjeidenMuodostuksenTilanne = async (
         letterPublishedCount: number;
         readyForPublish: boolean;
         readyForEPosti: boolean;
+        groupEmailId: number | null;
       };
     };
   }>(configuration.tuloskirjeidenMuodostuksenTilanneUrl({ hakuOid }));
@@ -967,4 +968,19 @@ export async function publishLetters(
   urlWithQuery.searchParams.append('kirjeenTyyppi', templateName);
   urlWithQuery.searchParams.append('asiointikieli', lang);
   await client.post(urlWithQuery.toString(), {});
+}
+
+export async function sendLetters(
+  hakuOid: string,
+  templateName: string,
+  lang: Language,
+  letterId: number,
+) {
+  const reqBody = {
+    hakuOid,
+    letterId,
+    asiointikieli: lang,
+    kirjeenTyyppi: templateName,
+  };
+  await client.post(configuration.lahetaEPostiUrl, reqBody);
 }

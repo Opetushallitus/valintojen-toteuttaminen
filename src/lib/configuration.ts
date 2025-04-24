@@ -174,6 +174,7 @@ export const configuration = {
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/dokumentinseuranta/${uuid}`,
   eihyvaksymiskirjeetUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/hakukohteessahylatyt/aktivoi`,
   jalkiohjauskirjeetUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/jalkiohjauskirjeet/aktivoi`,
+  lahetaEPostiUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/securelinkit/aktivoi`,
   dokumentitUrl: ({
     tyyppi,
     hakukohdeOid,

@@ -16,6 +16,7 @@ import {
   makeExternalLinkColumn,
 } from '@/components/table/table-columns';
 import { LettersPublishCell } from './letters-publish-cell';
+import { LettersSendCell } from './letters-send-cell';
 
 const buildLinkToLetters = (letterBatchId: string) =>
   `viestintapalvelu-ui/#/reportLetters/${letterBatchId}`;
@@ -24,9 +25,9 @@ const buildLinkToPreview = (hakuOid: string) => {
   return (letter: Letter): string => {
     const templateName = templateNameOfLetterType.get(letter.letterType);
     return `valintalaskentakoostepalvelu/resources/viestintapalvelu/securelinkit/esikatselu?hakuOid=${hakuOid}&kirjeenTyyppi=${templateName}&asiointikieli=${letter.lang}`;
-  }
+  };
 };
- 
+
 export const LettersTable = ({
   haku,
   letterCounts,
@@ -84,10 +85,21 @@ export const LettersTable = ({
     }),
     makeExternalLinkColumn<LetterStats>({
       linkBuilder: buildLinkToPreview(haku.oid),
-      key:'letter',
+      key: 'letter',
       title: 'yhteisvalinnan-hallinta.kirjeet.eposti',
       linkName: t('yhteisvalinnan-hallinta.kirjeet.esikatsele'),
       linkProp: 'letter',
+    }),
+    makeColumnWithCustomRender<LetterStats>({
+      key: 'sendColumn',
+      title: 'yhteisvalinnan-hallinta.kirjeet.lahetys',
+      renderFn: (props) => (
+        <LettersSendCell
+          haku={haku}
+          letterStats={props}
+          refetchLetterCounts={refetchLetterCounts}
+        />
+      ),
     }),
   ];
 

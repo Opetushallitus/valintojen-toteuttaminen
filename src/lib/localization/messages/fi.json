@@ -641,7 +641,13 @@
       "vahvista-julkaisu": "Vahvista julkaisu",
       "julkaisemassa": "Olet julkaisemassa",
       "eposti": "ePosti",
-      "esikatsele": "Esikatsele"
+      "esikatsele": "Esikatsele",
+      "lahetys": "Lähetys",
+      "laheta": "Lähetä ePosti",
+      "vahvista-lahetys": "Vahvista lähetys",
+      "lahettamassa": "Olet lähettämässä",
+      "lahetetty": "lähetetty",
+      "lahetyksessa-virhe": "lähetyksessä tapahtui virhe"
     }
   }
 }
