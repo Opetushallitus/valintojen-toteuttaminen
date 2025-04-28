@@ -107,7 +107,7 @@ export class SovellusStack extends cdk.Stack {
       overrides: {
         nextjsDistribution: {
           serverBehaviorOptions: {
-            cachePolicy: CachePolicy.CACHING_DISABLED,
+            cachePolicy: CachePolicy.CACHING_OPTIMIZED,
           },
           imageBehaviorOptions: {
             // We don't need image optimization, so doesn't matter what cache policy we use
