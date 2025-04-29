@@ -103,5 +103,12 @@ export const LettersTable = ({
     }),
   ];
 
-  return <ListTable rowKeyProp="id" columns={columns} rows={letterStats} />;
+  return (
+    <ListTable
+      data-test-id="kirjeiden-muodostuksen-tilanne"
+      rowKeyProp="id"
+      columns={columns}
+      rows={letterStats}
+    />
+  );
 };

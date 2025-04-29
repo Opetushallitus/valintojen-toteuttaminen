@@ -1,0 +1,66 @@
+{
+  "hyvaksymiskirje": {
+    "fi": {
+      "letterBatchId": 1346334,
+      "letterTotalCount": 36783,
+      "letterReadyCount": 36783,
+      "letterErrorCount": 0,
+      "letterPublishedCount": 36783,
+      "readyForPublish": false,
+      "readyForEPosti": true,
+      "groupEmailId": null
+    },
+    "sv": {
+      "letterBatchId": 1861300,
+      "letterTotalCount": 3239,
+      "letterReadyCount": 3239,
+      "letterErrorCount": 0,
+      "letterPublishedCount": 0,
+      "readyForPublish": true,
+      "readyForEPosti": false,
+      "groupEmailId": null
+    },
+    "en": {
+      "letterBatchId": 757042,
+      "letterTotalCount": 50,
+      "letterReadyCount": 50,
+      "letterErrorCount": 0,
+      "letterPublishedCount": 50,
+      "readyForPublish": false,
+      "readyForEPosti": false,
+      "groupEmailId": 2526793
+    }
+  },
+  "jalkiohjauskirje": {
+    "fi": {
+      "letterBatchId": null,
+      "letterTotalCount": 0,
+      "letterReadyCount": 0,
+      "letterErrorCount": 0,
+      "letterPublishedCount": 0,
+      "readyForPublish": false,
+      "readyForEPosti": false,
+      "groupEmailId": null
+    },
+    "sv": {
+      "letterBatchId": null,
+      "letterTotalCount": 0,
+      "letterReadyCount": 0,
+      "letterErrorCount": 0,
+      "letterPublishedCount": 0,
+      "readyForPublish": false,
+      "readyForEPosti": false,
+      "groupEmailId": null
+    },
+    "en": {
+      "letterBatchId": null,
+      "letterTotalCount": 0,
+      "letterReadyCount": 0,
+      "letterErrorCount": 0,
+      "letterPublishedCount": 0,
+      "readyForPublish": false,
+      "readyForEPosti": false,
+      "groupEmailId": null
+    }
+  }
+}

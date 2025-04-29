@@ -17,6 +17,7 @@ import EHDOT from './fixtures/hyvaksynnan_ehdot.json';
 import VALINTARYHMA_PUU from './fixtures/valintaryhma-puu.json';
 import VASTAANOTTOTILAT_HAKIJOILLE from './fixtures/valintatapajonon-hakijoiden-vastaanottotila.json';
 import { OPH_ORGANIZATION_OID } from '@/lib/constants';
+import KIRJEIDEN_MUODOSTUKSEN_TILANNE from './fixtures/kirjeiden-muodostuksen-tilanne.json';
 
 const port = 3104;
 
@@ -219,6 +220,12 @@ export default async function playwrightSetup() {
         },
       ];
       return modifyResponse(response, pohjat);
+    } else if (
+      request.url?.includes(
+        '/valintalaskentakoostepalvelu/resources/proxy/viestintapalvelu/count/haku',
+      )
+    ) {
+      return modifyResponse(response, KIRJEIDEN_MUODOSTUKSEN_TILANNE);
     } else if (
       request.url?.includes(
         'sijoittelu-service/resources/koostesijoittelu/status',
