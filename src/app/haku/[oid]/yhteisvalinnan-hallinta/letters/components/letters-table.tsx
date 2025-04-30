@@ -53,16 +53,19 @@ export const LettersTable = ({
       key: 'letterErrorCount',
       title: 'yhteisvalinnan-hallinta.kirjeet.virheellisia',
       amountProp: 'letterErrorCount',
+      style: { textAlign: 'right', minWidth: '100px' },
     }),
     makeCountColumn<LetterStats>({
       key: 'letterProgressCount',
       title: 'yhteisvalinnan-hallinta.kirjeet.kesken',
       amountProp: 'letterProgressCount',
+      style: { textAlign: 'right', minWidth: '100px' },
     }),
     makeCountColumn<LetterStats>({
       key: 'letterReadyCount',
       title: 'yhteisvalinnan-hallinta.kirjeet.valmiit',
       amountProp: 'letterReadyCount',
+      style: { textAlign: 'right', minWidth: '100px' },
     }),
     makeColumnWithCustomRender<LetterStats>({
       key: 'letterPublishedCount',

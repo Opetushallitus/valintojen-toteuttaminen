@@ -85,15 +85,17 @@ export const makeCountColumn = <T extends Record<string, unknown>>({
   title,
   key,
   amountProp,
+  style = {},
 }: {
   title: string;
   key: string;
   amountProp: KeysMatching<T, number | string | undefined>;
+  style?: React.CSSProperties;
 }): ListTableColumn<T> => ({
   title,
   key,
   render: (props) => <span>{(props[amountProp] as number) ?? ''}</span>,
-  style: { width: 0 },
+  style: { width: 0, ...style },
 });
 
 export const makeExternalLinkColumn = <T extends Record<string, unknown>>({

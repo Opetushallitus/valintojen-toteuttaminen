@@ -16,6 +16,8 @@ const StyledCell = styled(Box)(({ theme }) => ({
   flexWrap: 'wrap',
   rowGap: theme.spacing(1),
   alignItems: 'center',
+  justifyContent: 'end',
+  maxWidth: '200px',
 }));
 
 export const LettersPublishCell = ({
