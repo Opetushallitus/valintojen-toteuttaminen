@@ -42,9 +42,7 @@ export const KK_KIRJETYYPIT: Array<Letter> = mapLetterOptions([
 
 export const TOINEN_ASTE_KIRJETYYPIT = mapLetterOptions([
   LetterType.HYVAKSYMISKIRJE,
-  LetterType.HYVAKSYMISKIRJE_HUOLTAJILLE,
   LetterType.JALKIOHJAUSKIRJE,
-  LetterType.JALKIOHJAUSKIRJE_HUOLTAJILLE,
 ]);
 
 export type LetterStats = {
