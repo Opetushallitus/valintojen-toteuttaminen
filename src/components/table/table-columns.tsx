@@ -105,7 +105,7 @@ export const makeExternalLinkColumn = <T extends Record<string, unknown>>({
   linkProp,
   style = {},
 }: {
-  linkBuilder: (s: any) => string;
+  linkBuilder: (s: string) => string;
   title: string;
   key: string;
   linkName?: string;
@@ -115,13 +115,14 @@ export const makeExternalLinkColumn = <T extends Record<string, unknown>>({
 }): ListTableColumn<T> => ({
   title,
   key,
-  render: (props) => isNullish(props[linkProp]) ? null : (
-    <ExternalLink
-      noIcon={true}
-      name={linkName ?? props[nameProp ?? linkProp] as string}
-      href={linkBuilder(props[linkProp])}
-    />
-  ),
+  render: (props) =>
+    isNullish(props[linkProp]) ? null : (
+      <ExternalLink
+        noIcon={true}
+        name={linkName ?? (props[nameProp ?? linkProp] as string)}
+        href={linkBuilder(props[linkProp] as string)}
+      />
+    ),
   style: { width: 'auto', ...style },
 });
 
