@@ -76,7 +76,7 @@ export class SovellusStack extends cdk.Stack {
       StringParameter.fromStringParameterAttributes(
         this,
         'serverCachePolicyId',
-        { parameterName: '/untuva/NextJs/serverCachePolicyId' },
+        { parameterName: '/dev/NextJs/serverCachePolicyId' },
       ).stringValue;
 
     const hostedZone = route53.HostedZone.fromHostedZoneAttributes(
