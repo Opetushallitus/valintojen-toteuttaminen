@@ -14,8 +14,8 @@ import { Stack } from '@mui/material';
 import { OphLink } from '@opetushallitus/oph-design-system';
 import { use } from 'react';
 import { YhteisvalinnanValintalaskenta } from './components/yhteisvalinnan-valintalaskenta';
-import { SijoitteluContainer } from './sijoittelu/components/sijoittelu-container';
-import { LettersContainer } from './letters/components/letters-container';
+import { SijoitteluContainer } from './components/sijoittelu-container';
+import { LettersContainer } from './components/letters-container';
 
 const YhteisvalinnanHallintaContent = ({ hakuOid }: { hakuOid: string }) => {
   const { data: haku } = useHaku({ hakuOid });

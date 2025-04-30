@@ -33,7 +33,13 @@ const ActionsContainer = styled(Box)(({ theme }) => ({
   alignItems: 'flex-end',
 }));
 
-export const LettersActions = ({ haku, refetchLetterCounts }: { haku: Haku, refetchLetterCounts: () => void }) => {
+export const LettersActions = ({
+  haku,
+  refetchLetterCounts,
+}: {
+  haku: Haku;
+  refetchLetterCounts: () => void;
+}) => {
   const { t } = useTranslations();
 
   const letters = isToisenAsteenYhteisHaku(haku)
