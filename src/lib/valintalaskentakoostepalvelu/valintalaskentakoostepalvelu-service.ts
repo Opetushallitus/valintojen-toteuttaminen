@@ -42,6 +42,7 @@ import {
   HakutoiveValintakoeOsallistumiset,
   Kirjepohja,
   KirjepohjaNimi,
+  LetterCounts,
 } from './valintalaskentakoostepalvelu-types';
 import { HarkinnanvaraisuudenSyy } from '../types/harkinnanvaraiset-types';
 import { ValintakoeAvaimet } from '../valintaperusteet/valintaperusteet-types';
@@ -55,6 +56,7 @@ import {
 } from '../localization/translation-utils';
 import { AssertionError } from 'assert';
 import { queryOptions } from '@tanstack/react-query';
+import { Language } from '../localization/localization-types';
 
 export const getHakukohteenValintatuloksetIlmanHakijanTilaa = async (
   hakuOid: string,
@@ -397,8 +399,14 @@ export const downloadReadyProcessDocument = async (dokumenttiId: string) => {
   return createFileResult(documentRes);
 };
 
-const downloadProcessDocument = async (processId: string, infiniteWait: boolean = false) => {
-  const dokumenttiId = await processDocumentAndReturnDocumentId(processId, infiniteWait);
+const downloadProcessDocument = async (
+  processId: string,
+  infiniteWait: boolean = false,
+) => {
+  const dokumenttiId = await processDocumentAndReturnDocumentId(
+    processId,
+    infiniteWait,
+  );
   return downloadReadyProcessDocument(dokumenttiId);
 };
 
@@ -737,17 +745,25 @@ export const luoHyvaksymiskirjeetPDF = async ({
 
 export const luoHyvaksymiskirjeetHaullePDF = async ({
   hakuOid,
+  lang,
+  templateName = 'hyvaksymiskirje',
 }: {
   hakuOid: string;
+  lang?: Language;
+  templateName?: string;
 }): Promise<FileResult> => {
   const urlWithQuery = new URL(configuration.hyvaksymiskirjeetUrl);
   urlWithQuery.searchParams.append('hakuOid', hakuOid);
   urlWithQuery.searchParams.append('vainTulosEmailinKieltaneet', 'false');
-  urlWithQuery.searchParams.append('templateName', 'hyvaksymiskirje');
+  urlWithQuery.searchParams.append('templateName', templateName);
+  if (isNonNullish(lang)) {
+    urlWithQuery.searchParams.append('asiointikieli', lang.toUpperCase());
+  }
   const startProcessResponse = await client.post<{ id: string }>(
     urlWithQuery.toString(),
     {
       tag: hakuOid,
+      letterBodyText: '',
     },
   );
   const kirjeetProcessId = startProcessResponse?.data?.id;
@@ -782,6 +798,32 @@ export const luoEiHyvaksymiskirjeetPDF = async ({
   );
   const kirjeetProcessId = startProcessResponse?.data?.id;
   return await processDocumentAndReturnDocumentId(kirjeetProcessId, true);
+};
+
+export const luoEiHyvaksymiskirjeetPDFHaulle = async ({
+  hakuOid,
+  templateName,
+  lang,
+}: {
+  hakuOid: string;
+  templateName: string;
+  lang: Language;
+}): Promise<FileResult> => {
+  const urlWithQuery = new URL(configuration.jalkiohjauskirjeetUrl);
+  urlWithQuery.searchParams.append('hakuOid', hakuOid);
+  urlWithQuery.searchParams.append('tag', hakuOid);
+  urlWithQuery.searchParams.append('templateName', templateName);
+  const body = {
+    letterBodyText: '',
+    hakemusOids: null,
+    languageCode: lang.toUpperCase(),
+  };
+  const startProcessResponse = await client.post<{ id: string }>(
+    urlWithQuery.toString(),
+    body,
+  );
+  const kirjeetProcessId = startProcessResponse?.data?.id;
+  return await downloadProcessDocument(kirjeetProcessId, true);
 };
 
 export const luoOsoitetarratHakukohteessaHyvaksytyille = async ({
@@ -883,3 +925,62 @@ export const getMyohastyneetHakemukset = async ({
 
   return response?.data;
 };
+
+export const tuloskirjeidenMuodostuksenTilanne = async (
+  hakuOid: string,
+): Promise<Array<LetterCounts>> => {
+  const res = await client.get<{
+    [key: string]: {
+      [key: string]: {
+        letterBatchId: number | null;
+        letterTotalCount: number;
+        letterReadyCount: number;
+        letterErrorCount: number;
+        letterPublishedCount: number;
+        readyForPublish: boolean;
+        readyForEPosti: boolean;
+        groupEmailId: number | null;
+      };
+    };
+  }>(configuration.tuloskirjeidenMuodostuksenTilanneUrl({ hakuOid }));
+  const letterCounts: Array<LetterCounts> = [];
+  for (const key of Object.keys(res.data)) {
+    for (const lang of ['fi', 'sv', 'en']) {
+      const countObject = res.data[key][lang];
+      letterCounts.push({
+        templateName: key,
+        lang: lang as Language,
+        ...countObject,
+      });
+    }
+  }
+  return letterCounts;
+};
+
+export async function publishLetters(
+  hakuOid: string,
+  templateName: string,
+  lang: Language,
+) {
+  const urlWithQuery = new URL(
+    configuration.julkaiseTuloskirjeetUrl({ hakuOid }),
+  );
+  urlWithQuery.searchParams.append('kirjeenTyyppi', templateName);
+  urlWithQuery.searchParams.append('asiointikieli', lang);
+  await client.post(urlWithQuery.toString(), {});
+}
+
+export async function sendLetters(
+  hakuOid: string,
+  templateName: string,
+  lang: Language,
+  letterId: number,
+) {
+  const reqBody = {
+    hakuOid,
+    letterId,
+    asiointikieli: lang,
+    kirjeenTyyppi: templateName,
+  };
+  await client.post(configuration.lahetaEPostiUrl, reqBody);
+}

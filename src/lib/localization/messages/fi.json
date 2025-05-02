@@ -44,7 +44,12 @@
     "haun-tunniste": "Haun tunniste",
     "haun-asetukset": "Haun asetukset",
     "tarjonta": "Tarjonta",
-    "kaynnistetaanko": "Käynnistetäänkö"
+    "kaynnistetaanko": "Käynnistetäänkö",
+    "kieleksi": {
+      "fi": "suomeksi",
+      "sv": "ruotsiksi",
+      "en": "englanniksi"
+    }
   },
   "kalenteri": {
     "aika": "Aika",
@@ -513,6 +518,18 @@
     "valinta-save-success": "Valinnan tietojen tallentaminen onnistui",
     "pistesyotto": "Pistesyöttö"
   },
+  "kirjetyypit": {
+    "hyvaksymiskirje": "Hyväksymiskirje",
+    "hyvaksymiskirje-huoltajille": "Hyväksymiskirje huoltajille",
+    "jalkiohjauskirje": "Jälkiohjauskirje",
+    "jalkiohjauskirje-huoltajille": "Jälkiohjauskirje huoltajille",
+    "ei-hyvaksytyt": "Ei hyväksyttyjen kirje",
+    "hyvaksymiskirje-monikko": "Hyväksymiskirjeet",
+    "hyvaksymiskirje-huoltajille-monikko": "Hyväksymiskirjeet huoltajille",
+    "jalkiohjauskirje-monikko": "Jälkiohjauskirjeet",
+    "jalkiohjauskirje-huoltajille-monikko": "Jälkiohjauskirjeet huoltajille",
+    "ei-hyvaksytyt-monikko": "Ei hyväksyttyjen kirjeet"
+  },
   "kirje-modaali": {
     "otsikko-hyvaksymiskirjeet": "Hyväksymiskirjeiden muodostaminen",
     "otsikko-hyvaksymiskirje": "Hyväksymiskirjeen muodostaminen",
@@ -605,6 +622,32 @@
         "poisto-ok": "Ajastettu sijoittelu poistettu käytöstä",
         "poisto-virhe": "Ajastetun sijoittelun poisto käytöstä epäonnistui"
       }
+    },
+    "kirjeet": {
+      "otsikko": "Hyväksymis- ja jälkiohjauskirjeet",
+      "kirjevalitsin": "Kirje",
+      "valitse-kirje": "Valitse kirje",
+      "muodosta": "Muodosta kirjeet",
+      "paivita-muodosta": "Päivitä muodostuksen tilanne",
+      "kirjeen-nimi": "Kirjeen nimi",
+      "lahetyksen-tunniste": "Lähetyksen tunniste",
+      "virheellisia": "Virheellisiä",
+      "kesken": "Kesken",
+      "valmiit": "Valmiit",
+      "julkaistut": "Julkaistut",
+      "julkaistu": "julkaistu",
+      "julkaise": "Julkaise",
+      "julkaisussa-virhe": "julkaisussa tapahtui virhe",
+      "vahvista-julkaisu": "Vahvista julkaisu",
+      "julkaisemassa": "Olet julkaisemassa",
+      "eposti": "ePosti",
+      "esikatsele": "Esikatsele",
+      "lahetys": "Lähetys",
+      "laheta": "Lähetä ePosti",
+      "vahvista-lahetys": "Vahvista lähetys",
+      "lahettamassa": "Olet lähettämässä",
+      "lahetetty": "lähetetty",
+      "lahetyksessa-virhe": "lähetyksessä tapahtui virhe"
     }
   }
 }

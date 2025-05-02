@@ -3,6 +3,7 @@ import { ExternalLink } from '../external-link';
 import { ophColors } from '@opetushallitus/oph-design-system';
 import { buildLinkToApplication } from '@/lib/ataru/ataru-service';
 import { TFunction } from '@/lib/localization/useTranslations';
+import { isNullish } from 'remeda';
 
 export const makeGenericColumn = <T extends Record<string, unknown>>({
   title,
@@ -84,21 +85,24 @@ export const makeCountColumn = <T extends Record<string, unknown>>({
   title,
   key,
   amountProp,
+  style = {},
 }: {
   title: string;
   key: string;
   amountProp: KeysMatching<T, number | string | undefined>;
+  style?: React.CSSProperties;
 }): ListTableColumn<T> => ({
   title,
   key,
   render: (props) => <span>{(props[amountProp] as number) ?? ''}</span>,
-  style: { width: 0 },
+  style: { width: 0, ...style },
 });
 
 export const makeExternalLinkColumn = <T extends Record<string, unknown>>({
   linkBuilder,
   title,
   key,
+  linkName,
   nameProp,
   linkProp,
   style = {},
@@ -106,19 +110,21 @@ export const makeExternalLinkColumn = <T extends Record<string, unknown>>({
   linkBuilder: (s: string) => string;
   title: string;
   key: string;
+  linkName?: string;
   nameProp?: KeysMatching<T, string>;
-  linkProp: KeysMatching<T, string>;
+  linkProp: KeysMatching<T, string | unknown>;
   style?: React.CSSProperties;
 }): ListTableColumn<T> => ({
   title,
   key,
-  render: (props) => (
-    <ExternalLink
-      noIcon={true}
-      name={props[nameProp ?? linkProp] as string}
-      href={linkBuilder(props[linkProp] as string)}
-    />
-  ),
+  render: (props) =>
+    isNullish(props[linkProp]) ? null : (
+      <ExternalLink
+        noIcon={true}
+        name={linkName ?? (props[nameProp ?? linkProp] as string)}
+        href={linkBuilder(props[linkProp] as string)}
+      />
+    ),
   style: { width: 'auto', ...style },
 });
 

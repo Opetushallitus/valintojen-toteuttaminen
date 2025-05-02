@@ -161,7 +161,7 @@ export const SijoitteluActions = ({
             })
           }
           manualCloseOnlyError={true}
-          errorKey="get-haku-osoitetarrat-error"
+          errorKey="get-haku-kirjeet-error"
           errorMessage="yhteisvalinnan-hallinta.sijoittelu.vie-kirjeiksi-virhe"
           defaultFileName="haku-hyvaksymiskirjeet.pdf"
         >

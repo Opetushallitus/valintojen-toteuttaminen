@@ -313,3 +313,122 @@ test.describe('Sijoittelu', () => {
     ).toBeVisible();
   });
 });
+
+test.describe('Kirjeet', () => {
+  test('Näyttää kirjeiden muodostuksen tilanteen', async ({ page }) => {
+    await expect(
+      page.getByText('Hyväksymis- ja jälkiohjauskirjeet'),
+    ).toBeVisible();
+    const table = page.locator(
+      '[data-test-id="kirjeiden-muodostuksen-tilanne"]',
+    );
+    await expect(table).toBeVisible();
+    await expect(table.getByRole('row')).toHaveCount(7);
+    await expect(
+      table.getByRole('cell', { name: 'Hyväksymiskirjeet suomeksi' }),
+    ).toBeVisible();
+    await expect(
+      table.getByRole('cell', { name: 'Hyväksymiskirjeet ruotsiksi' }),
+    ).toBeVisible();
+    await expect(
+      table.getByRole('cell', { name: 'Hyväksymiskirjeet englanniksi' }),
+    ).toBeVisible();
+    const suomiCells = table.getByRole('row').nth(1).getByRole('cell');
+    await expect(suomiCells.first()).toContainText(
+      'Hyväksymiskirjeet suomeksi',
+    );
+    await expect(suomiCells.nth(1)).toContainText('1346334');
+    await expect(suomiCells.nth(2)).toContainText('0');
+    await expect(suomiCells.nth(3)).toContainText('0');
+    await expect(suomiCells.nth(4)).toContainText('36783');
+    await expect(suomiCells.nth(5)).toContainText('36783');
+    await expect(suomiCells.nth(6)).toContainText('Esikatsele');
+    await expect(suomiCells.nth(7)).toContainText('Lähetä ePosti');
+  });
+
+  test('Muodostaa hyväksymiskirjeet suomeksi epäonnistuu', async ({ page }) => {
+    await page.route(
+      '*/**/valintalaskentakoostepalvelu/resources/viestintapalvelu/hyvaksymiskirjeet/aktivoi**',
+      async (route) =>
+        await route.fulfill({ status: 500, body: 'Unknown error' }),
+    );
+    await page.getByRole('button', { name: 'Muodosta kirjeet' }).click();
+    await expect(
+      page.getByText('Virhe muodostaessa hyväksymiskirjeitä haulle!'),
+    ).toBeVisible();
+  });
+
+  test('Julkaisee hyväksymiskirjeet ruotsiksi', async ({ page }) => {
+    await page.route(
+      '*/**/valintalaskentakoostepalvelu/resources/proxy/viestintapalvelu/publish/haku/1.2.246.562.29.00000000000000045102?kirjeenTyyppi=hyvaksymiskirje&asiointikieli=sv**',
+      async (route) =>
+        await route.fulfill({
+          json: {},
+        }),
+    );
+    await page
+      .getByRole('row', { name: 'Hyväksymiskirjeet ruotsiksi' })
+      .getByRole('button', { name: 'Julkaise' })
+      .click();
+    await expect(page.getByText('Vahvista julkaisu')).toBeVisible();
+    await page.getByRole('button', { name: 'Kyllä' }).click();
+    await expect(
+      page.getByText('Hyväksymiskirjeet ruotsiksi julkaistu'),
+    ).toBeVisible();
+  });
+
+  test('Julkaisee hyväksymiskirjeet ruotsiksi epäonnistuu', async ({
+    page,
+  }) => {
+    await page.route(
+      '*/**/valintalaskentakoostepalvelu/resources/proxy/viestintapalvelu/publish/haku/1.2.246.562.29.00000000000000045102?kirjeenTyyppi=hyvaksymiskirje&asiointikieli=sv**',
+      async (route) =>
+        await route.fulfill({ status: 500, body: 'Unknown error' }),
+    );
+    await page
+      .getByRole('row', { name: 'Hyväksymiskirjeet ruotsiksi' })
+      .getByRole('button', { name: 'Julkaise' })
+      .click();
+    await expect(page.getByText('Vahvista julkaisu')).toBeVisible();
+    await page.getByRole('button', { name: 'Kyllä' }).click();
+    await expect(
+      page.getByText('Hyväksymiskirjeet ruotsiksi julkaisussa tapahtui virhe'),
+    ).toBeVisible();
+  });
+
+  test('Lähettää hyväksymiskirjeet suomeksi', async ({ page }) => {
+    await page.route(
+      '*/**/valintalaskentakoostepalvelu/resources/viestintapalvelu/securelinkit/aktivoi**',
+      async (route) =>
+        await route.fulfill({
+          json: {},
+        }),
+    );
+    await page
+      .getByRole('row', { name: 'Hyväksymiskirjeet suomeksi' })
+      .getByRole('button', { name: 'Lähetä ePosti' })
+      .click();
+    await expect(page.getByText('Vahvista lähetys')).toBeVisible();
+    await page.getByRole('button', { name: 'Kyllä' }).click();
+    await expect(
+      page.getByText('Hyväksymiskirjeet suomeksi lähetetty'),
+    ).toBeVisible();
+  });
+
+  test('Hyväksymiskirjeiden lähetys suomeksi epäonnistuu', async ({ page }) => {
+    await page.route(
+      '*/**/valintalaskentakoostepalvelu/resources/viestintapalvelu/securelinkit/aktivoi**',
+      async (route) =>
+        await route.fulfill({ status: 500, body: 'Unknown error' }),
+    );
+    await page
+      .getByRole('row', { name: 'Hyväksymiskirjeet suomeksi' })
+      .getByRole('button', { name: 'Lähetä ePosti' })
+      .click();
+    await expect(page.getByText('Vahvista lähetys')).toBeVisible();
+    await page.getByRole('button', { name: 'Kyllä' }).click();
+    await expect(
+      page.getByText('Hyväksymiskirjeet suomeksi lähetyksessä tapahtui virhe'),
+    ).toBeVisible();
+  });
+});

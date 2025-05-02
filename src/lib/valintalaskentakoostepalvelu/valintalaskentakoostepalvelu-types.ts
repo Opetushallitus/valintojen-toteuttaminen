@@ -1,3 +1,4 @@
+import { Language } from '../localization/localization-types';
 import { ValintakoeOsallistuminen } from '../types/valintakoekutsut-types';
 
 export type HakutoiveValintakoe = {
@@ -47,3 +48,16 @@ export type DokumenttiTyyppi =
   | 'hyvaksymiskirjeet'
   | 'sijoitteluntulokset'
   | 'osoitetarrat';
+
+export type LetterCounts = {
+  templateName: string;
+  lang: Language;
+  letterBatchId: number | null;
+  letterTotalCount: number;
+  letterReadyCount: number;
+  letterErrorCount: number;
+  letterPublishedCount: number;
+  readyForPublish: boolean;
+  readyForEPosti: boolean;
+  groupEmailId: number | null;
+};

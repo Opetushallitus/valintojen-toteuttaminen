@@ -14,7 +14,8 @@ import { Stack } from '@mui/material';
 import { OphLink } from '@opetushallitus/oph-design-system';
 import { use } from 'react';
 import { YhteisvalinnanValintalaskenta } from './components/yhteisvalinnan-valintalaskenta';
-import { SijoitteluContainer } from './sijoittelu/components/sijoittelu-container';
+import { SijoitteluContainer } from './components/sijoittelu-container';
+import { LettersContainer } from './components/letters-container';
 
 const YhteisvalinnanHallintaContent = ({ hakuOid }: { hakuOid: string }) => {
   const { data: haku } = useHaku({ hakuOid });
@@ -73,7 +74,8 @@ export default function YhteisvalinnanHallintaPage(props: {
     <Stack spacing={2} sx={{ margin: 4, overflowX: 'hidden' }}>
       <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
         <YhteisvalinnanHallintaContent hakuOid={hakuOid} />
-        <SijoitteluContainer hakuOid={hakuOid}/>
+        <SijoitteluContainer hakuOid={hakuOid} />
+        <LettersContainer hakuOid={hakuOid} />
       </QuerySuspenseBoundary>
     </Stack>
   );

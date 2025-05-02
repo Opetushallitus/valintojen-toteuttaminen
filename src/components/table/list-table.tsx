@@ -29,9 +29,6 @@ const StyledCell = styled(TableCell)(({ theme }) => ({
   whiteSpace: 'pre-wrap',
   height: '64px',
   borderWidth: 0,
-  'button:focus': {
-    color: ophColors.blue2,
-  },
 }));
 
 const StyledTableBody = styled(TableBody)({

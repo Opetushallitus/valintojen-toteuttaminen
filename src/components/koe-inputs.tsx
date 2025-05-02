@@ -117,7 +117,7 @@ export const KoeInputsStateless = ({
           {osallistuminen !== ValintakoeOsallistuminenTulos.EI_OSALLISTUNUT && (
             <PisteetInput
               min={koe.min}
-              max={koe.min}
+              max={koe.max}
               disabled={disabled}
               value={arvo}
               onChange={(newArvo: string) => {
