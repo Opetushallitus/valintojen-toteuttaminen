@@ -6,7 +6,7 @@ import {
 import { updatePisteetForHakukohde } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { useActorRef, useSelector } from '@xstate/react';
 import { useMemo } from 'react';
-import { clone, indexBy, isEmpty, isNonNullish, prop } from 'remeda';
+import { clone, indexBy, isEmpty, isNonNullish, isNumber, prop } from 'remeda';
 import { ActorRefFrom, assign, createMachine, fromPromise } from 'xstate';
 import { ValintakoeAvaimet } from '../valintaperusteet/valintaperusteet-types';
 
@@ -245,7 +245,7 @@ export const createPisteSyottoMachine = (
   }).provide({
     guards: {
       hasUnchangedPistetiedot: ({ context }) =>
-        context.changedPistetiedot.length > 0,
+        context.changedPistetiedot.length < 1,
       hasInvalidPisteet: ({ context }) =>
         isNonNullish(
           context.changedPistetiedot
@@ -259,10 +259,12 @@ export const createPisteSyottoMachine = (
                 isNonNullish(matchingKoe.min) &&
                 Number.parseFloat(matchingKoe.min);
               const invalid: boolean =
-                (!!minVal &&
-                  (isNaN(Number(p.arvo)) || minVal > Number(p.arvo))) ||
-                (!!maxVal &&
-                  (isNaN(Number(p.arvo)) || maxVal < Number(p.arvo)));
+                (isNumber(minVal) &&
+                  (isNaN(Number(p.arvo)) ||
+                    (minVal as number) > Number(p.arvo))) ||
+                (isNumber(maxVal) &&
+                  (isNaN(Number(p.arvo)) ||
+                    (maxVal as number) < Number(p.arvo)));
               return invalid;
             }),
         ),

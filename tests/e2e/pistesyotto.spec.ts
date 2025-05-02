@@ -69,6 +69,25 @@ test('Näyttää pistesyotöt kaikilla kokeilla', async ({ page }) => {
   ]);
 });
 
+test('Näyttää ilmoituksen ettei mitään tallennettavaa', async ({ page }) => {
+  await page.getByRole('button', { name: 'Tallenna' }).click();
+  await expect(page.getByText('Ei muutoksia mitä tallentaa.')).toBeVisible();
+});
+
+test('Näyttää ilmoituksen virheellisestä syötteestä tallennettaessa', async ({
+  page,
+}) => {
+  await page.getByLabel('Näytä vain laskentaan').click();
+  await page
+    .getByRole('row', { name: 'Dacula Kreivi Arvo' })
+    .getByLabel('Pisteet')
+    .fill('3');
+  await page.getByRole('button', { name: 'Tallenna' }).click();
+  await expect(
+    page.getByText('Virheellinen syöte. Tarkista antamasi tiedot.'),
+  ).toBeVisible();
+});
+
 test('Näyttää ilmoituksen kun tallennus onnistuu', async ({ page }) => {
   await page.route(
     '*/**/valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105',
