@@ -33,6 +33,7 @@ export const PisteSyottoForm = ({
     hakuOid,
     hakukohdeOid,
     pistetiedot: pistetulokset.hakemukset,
+    valintakokeet: pistetulokset.valintakokeet,
     addToast,
   });
 

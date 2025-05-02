@@ -51,6 +51,7 @@ const KokeenPistesyotto = ({
     hakuOid: hakukohde.hakuOid,
     hakukohdeOid: hakukohde.oid,
     pistetiedot,
+    valintakokeet: [koe],
     addToast,
   });
 
