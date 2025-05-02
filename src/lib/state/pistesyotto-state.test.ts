@@ -38,6 +38,7 @@ const initPistesyottoState = (pistetiedot: HakemuksenPistetiedot) => {
     'haku-oid',
     'hakukohde-oid',
     [pistetiedot],
+    [],
     () => {},
   );
   const actor = createActor(machine);
