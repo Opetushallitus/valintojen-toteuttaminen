@@ -6,12 +6,14 @@ import {
 import { updatePisteetForHakukohde } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { useActorRef, useSelector } from '@xstate/react';
 import { useMemo } from 'react';
-import { clone, isEmpty } from 'remeda';
+import { clone, indexBy, isEmpty, isNonNullish, isNumber, prop } from 'remeda';
 import { ActorRefFrom, assign, createMachine, fromPromise } from 'xstate';
+import { ValintakoeAvaimet } from '../valintaperusteet/valintaperusteet-types';
 
 export type PisteSyottoContext = {
   pistetiedot: Array<HakemuksenPistetiedot>;
   changedPistetiedot: Array<HakemuksenPistetiedot>;
+  kokeetByTunniste: Record<string, ValintakoeAvaimet>;
   toastMessage?: string;
 };
 
@@ -144,14 +146,17 @@ export const createPisteSyottoMachine = (
   hakuOid: string,
   hakukohdeOid: string,
   pistetiedot: Array<HakemuksenPistetiedot>,
+  valintakokeet: Array<ValintakoeAvaimet>,
   addToast: (toast: Toast) => void,
 ) => {
+  const kokeetByTunniste = indexBy(valintakokeet, prop('tunniste'));
   return createMachine({
     id: `PistesyottoMachine-${hakukohdeOid}`,
     initial: PisteSyottoStates.IDLE,
     context: {
       pistetiedot,
       changedPistetiedot: [],
+      kokeetByTunniste,
     },
     types: {} as {
       context: PisteSyottoContext;
@@ -170,15 +175,23 @@ export const createPisteSyottoMachine = (
           },
           [PisteSyottoEvent.UPDATE]: [
             {
-              guard: 'hasChangedPistetiedot',
-              target: PisteSyottoStates.UPDATING,
-            },
-            {
+              guard: 'hasUnchangedPistetiedot',
               target: PisteSyottoStates.IDLE,
               actions: {
                 type: 'alert',
                 params: { message: 'virhe.eimuutoksia' },
               },
+            },
+            {
+              guard: 'hasInvalidPisteet',
+              target: PisteSyottoStates.IDLE,
+              actions: {
+                type: 'alert',
+                params: { message: 'virhe.tarkistasyote' },
+              },
+            },
+            {
+              target: PisteSyottoStates.UPDATING,
             },
           ],
         },
@@ -231,8 +244,30 @@ export const createPisteSyottoMachine = (
     },
   }).provide({
     guards: {
-      hasChangedPistetiedot: ({ context }) =>
-        context.changedPistetiedot.length > 0,
+      hasUnchangedPistetiedot: ({ context }) =>
+        context.changedPistetiedot.length < 1,
+      hasInvalidPisteet: ({ context }) =>
+        isNonNullish(
+          context.changedPistetiedot
+            .flatMap((pt) => pt.valintakokeenPisteet)
+            .find((p) => {
+              const matchingKoe = context.kokeetByTunniste[p.tunniste];
+              const maxVal =
+                isNonNullish(matchingKoe.max) &&
+                Number.parseFloat(matchingKoe.max);
+              const minVal =
+                isNonNullish(matchingKoe.min) &&
+                Number.parseFloat(matchingKoe.min);
+              const invalid: boolean =
+                (isNumber(minVal) &&
+                  (isNaN(Number(p.arvo)) ||
+                    (minVal as number) > Number(p.arvo))) ||
+                (isNumber(maxVal) &&
+                  (isNaN(Number(p.arvo)) ||
+                    (maxVal as number) < Number(p.arvo)));
+              return invalid;
+            }),
+        ),
     },
     actions: {
       alert: (_, params) =>
@@ -262,6 +297,7 @@ type PistesyottoMachineParams = {
   hakuOid: string;
   hakukohdeOid: string;
   pistetiedot: Array<HakemuksenPistetiedot>;
+  valintakokeet: Array<ValintakoeAvaimet> | ValintakoeAvaimet;
   addToast: (toast: Toast) => void;
 };
 
@@ -269,6 +305,7 @@ export const usePistesyottoState = ({
   hakuOid,
   hakukohdeOid,
   pistetiedot,
+  valintakokeet,
   addToast,
 }: PistesyottoMachineParams) => {
   const machine = useMemo(() => {
@@ -276,9 +313,10 @@ export const usePistesyottoState = ({
       hakuOid,
       hakukohdeOid,
       pistetiedot,
+      Array.isArray(valintakokeet) ? valintakokeet : [valintakokeet],
       addToast,
     );
-  }, [hakuOid, hakukohdeOid, pistetiedot, addToast]);
+  }, [hakuOid, hakukohdeOid, pistetiedot, valintakokeet, addToast]);
 
   const actorRef = useActorRef(machine);
   return usePistesyottoActorRef(actorRef);

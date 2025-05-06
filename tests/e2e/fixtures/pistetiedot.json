@@ -20,7 +20,7 @@
         "additionalData": {
           "nakki": "false",
           "nakki-osallistuminen": "OSALLISTUI",
-          "koksa": null,
+          "koksa": 6,
           "koksa-osallistuminen": "MERKITSEMATTA"
         }
       }
@@ -32,7 +32,7 @@
         "additionalData": {
           "nakki": null,
           "nakki-osallistuminen": "MERKITSEMATTA",
-          "koksa": null,
+          "koksa": 7,
           "koksa-osallistuminen": "EI_OSALLISTUNUT"
         }
       }
@@ -44,7 +44,7 @@
         "additionalData": {
           "nakki": null,
           "nakki-osallistuminen": "MERKITSEMATTA",
-          "koksa": null,
+          "koksa": 4,
           "koksa-osallistuminen": "EI_OSALLISTUNUT"
         }
       }
