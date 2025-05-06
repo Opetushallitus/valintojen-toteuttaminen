@@ -297,7 +297,7 @@ type PistesyottoMachineParams = {
   hakuOid: string;
   hakukohdeOid: string;
   pistetiedot: Array<HakemuksenPistetiedot>;
-  valintakokeet: Array<ValintakoeAvaimet>;
+  valintakokeet: Array<ValintakoeAvaimet> | ValintakoeAvaimet;
   addToast: (toast: Toast) => void;
 };
 
@@ -313,7 +313,7 @@ export const usePistesyottoState = ({
       hakuOid,
       hakukohdeOid,
       pistetiedot,
-      valintakokeet,
+      Array.isArray(valintakokeet) ? valintakokeet : [valintakokeet],
       addToast,
     );
   }, [hakuOid, hakukohdeOid, pistetiedot, valintakokeet, addToast]);
