@@ -171,7 +171,9 @@ export const useSijoittelunTulosSearch = (
       return filtered.sort(byProp(orderBy, direction, translateEntity));
     };
 
-    return orderBy && direction ? sortHakijat(orderBy, direction) : filtered;
+    return orderBy && direction
+      ? sortHakijat(orderBy, direction)
+      : sortBySijoittelunTila(direction ?? 'asc', filtered);
   }, [
     hakemukset,
     searchPhrase,
