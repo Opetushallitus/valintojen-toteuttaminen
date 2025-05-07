@@ -9,6 +9,7 @@ import {
   OptionalFunctionProps,
 } from 'cdk-nextjs-standalone';
 import { CachePolicy, PriceClass } from 'aws-cdk-lib/aws-cloudfront';
+import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 
 type EnvironmentName = 'untuva' | 'hahtuva' | 'pallero';
 
@@ -71,6 +72,13 @@ export class SovellusStack extends cdk.Stack {
   ) {
     super(scope, id, props);
 
+    const OPEN_NEXT_SERVER_CACHE_POLICY_ID =
+      StringParameter.fromStringParameterAttributes(
+        this,
+        'serverCachePolicyId',
+        { parameterName: '/dev/NextJs/serverCachePolicyId' },
+      ).stringValue;
+
     const hostedZone = route53.HostedZone.fromHostedZoneAttributes(
       this,
       'PublicHostedZone',
@@ -106,6 +114,9 @@ export class SovellusStack extends cdk.Stack {
       },
       overrides: {
         nextjsDistribution: {
+          serverBehaviorOptions: {
+            cachePolicy: { cachePolicyId: OPEN_NEXT_SERVER_CACHE_POLICY_ID },
+          },
           imageBehaviorOptions: {
             // We don't need image optimization, so doesn't matter what cache policy we use
             // Using a managed policy so we don't add useless cache policies.
