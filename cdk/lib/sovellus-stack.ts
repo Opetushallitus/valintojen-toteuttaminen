@@ -72,12 +72,10 @@ export class SovellusStack extends cdk.Stack {
   ) {
     super(scope, id, props);
 
-    const OPEN_NEXT_SERVER_CACHE_POLICY_ID =
-      StringParameter.fromStringParameterAttributes(
-        this,
-        'serverCachePolicyId',
-        { parameterName: '/dev/NextJs/serverCachePolicyId' },
-      ).stringValue;
+    const OPEN_NEXT_SERVER_CACHE_POLICY_ID = StringParameter.valueFromLookup(
+      this,
+      '/dev/NextJs/serverCachePolicyId',
+    );
 
     const hostedZone = route53.HostedZone.fromHostedZoneAttributes(
       this,
