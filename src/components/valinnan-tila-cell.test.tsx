@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { EhdollisestiHyvaksyttavissaCheckbox } from './valinnan-tila-cell';
+import { ValinnanTilaCell } from './valinnan-tila-cell';
 import { Haku, Tila } from '@/lib/kouta/kouta-types';
 
 const ORG_OID = '1.2.3.4.5';
@@ -23,9 +23,9 @@ const ORGS_WITH_UPDATE = [ORG_OID];
 
 const mockUpdateForm = vi.fn();
 
-const renderEhdollinenCheckbox = ({
-  kohdejoukko,
+const renderValinnanTilaCell = ({
   organisaatioOid,
+  kohdejoukko,
 }: {
   organisaatioOid: string;
   kohdejoukko: string;
@@ -36,65 +36,92 @@ const renderEhdollinenCheckbox = ({
     },
   }));
 
+  vi.mock('@/lib/koodisto/useHyvaksynnanEhdot', () => ({
+    useHyvaksynnanEhdot: () => {
+      return {
+        data: [
+          {
+            koodiUri: 'hyvaksynnanehto_muu#1',
+            nimi: { fi: 'muu fi' },
+            koodiArvo: 'muu',
+          },
+          {
+            koodiUri: 'hyvaksynnanehto_sora#1',
+            nimi: { fi: 'sora fi' },
+            koodiArvo: 'sora',
+          },
+          {
+            koodiUri: 'hyvaksynnanehto_ltt#1',
+            nimi: { fi: 'ltt fi' },
+            koodiArvo: 'ltt',
+          },
+        ],
+      };
+    },
+  }));
+
   return render(
-    <EhdollisestiHyvaksyttavissaCheckbox
+    <ValinnanTilaCell
       haku={{
         ...HAKU_BASE,
         organisaatioOid,
         kohdejoukkoKoodiUri: kohdejoukko,
       }}
       hakemus={{
+        hakijanNimi: 'Testi Hakija',
+        hakijaOid: 'mock-hakija-oid',
         hakemusOid: 'mock-hakemus-oid',
         ehdollisestiHyvaksyttavissa: true,
       }}
       disabled={false}
       updateForm={mockUpdateForm}
+      mode="valinta"
     />,
   );
 };
 
-const getCheckbox = () =>
+const getEhdollinenCheckbox = () =>
   screen.queryByRole('checkbox', { name: 'sijoittelun-tulokset.ehdollinen' });
 
-describe('EhdollisestiHyvaksyttavissaCheckbox', () => {
-  test('Show the checkbox when korkeakoulutus', () => {
-    renderEhdollinenCheckbox({
+describe('Ehdollisesti hyväksyttävissä checkbox', () => {
+  test('Show when korkeakoulutus', () => {
+    renderValinnanTilaCell({
       organisaatioOid: ORG_OID,
       kohdejoukko: 'haunkohdejoukko_12',
     });
 
-    const checkbox = getCheckbox();
+    const checkbox = getEhdollinenCheckbox();
     expect(checkbox).toBeInTheDocument();
   });
 
-  test('Hide the checkbox when not korkeakoulutus', () => {
-    renderEhdollinenCheckbox({
+  test('Hide when not korkeakoulutus', () => {
+    renderValinnanTilaCell({
       organisaatioOid: ORG_OID,
       kohdejoukko: 'haunkohdejoukko_01',
     });
 
-    const checkbox = getCheckbox();
+    const checkbox = getEhdollinenCheckbox();
 
     expect(checkbox).not.toBeInTheDocument();
   });
 
   test('Enable when update permissions to haku organization', () => {
-    renderEhdollinenCheckbox({
+    renderValinnanTilaCell({
       organisaatioOid: ORG_OID,
       kohdejoukko: 'haunkohdejoukko_12',
     });
 
-    const checkbox = getCheckbox();
+    const checkbox = getEhdollinenCheckbox();
     expect(checkbox).toBeEnabled();
   });
 
   test('Disable when no update permissions to haku organization', () => {
-    renderEhdollinenCheckbox({
+    renderValinnanTilaCell({
       organisaatioOid: 'oid-with-no-permissions',
       kohdejoukko: 'haunkohdejoukko_12',
     });
 
-    const checkbox = getCheckbox();
+    const checkbox = getEhdollinenCheckbox();
     expect(checkbox).toBeDisabled();
   });
 });

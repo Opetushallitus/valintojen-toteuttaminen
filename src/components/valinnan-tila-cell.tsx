@@ -83,14 +83,12 @@ export const EhdollisestiHyvaksyttavissaCheckbox = ({
   );
 
   return (
-    isKorkeakouluHaku(haku) && (
-      <OphCheckbox
-        checked={Boolean(ehdollisestiHyvaksyttavissa)}
-        onChange={updateEhdollinen}
-        label={t('sijoittelun-tulokset.ehdollinen')}
-        disabled={disabled || !canUpdate}
-      />
-    )
+    <OphCheckbox
+      checked={Boolean(ehdollisestiHyvaksyttavissa)}
+      onChange={updateEhdollinen}
+      label={t('sijoittelun-tulokset.ehdollinen')}
+      disabled={disabled || !canUpdate}
+    />
   );
 };
 
@@ -217,7 +215,7 @@ const EhdollinenFields = ({
         updateForm={updateForm}
         disabled={disabled}
       />
-      {isKorkeakouluHaku(haku) && ehdollisestiHyvaksyttavissa && (
+      {ehdollisestiHyvaksyttavissa && (
         <>
           <LocalizedSelect
             sx={{ maxWidth: '300px' }}
@@ -371,7 +369,7 @@ export const ValinnanTilaCell = ({
           updateForm={updateForm}
         />
       )}
-      {valinnanTila !== SijoittelunTila.HYLATTY && (
+      {valinnanTila !== SijoittelunTila.HYLATTY && isKorkeakouluHaku(haku) && (
         <EhdollinenFields
           haku={haku}
           hakemus={hakemus}
