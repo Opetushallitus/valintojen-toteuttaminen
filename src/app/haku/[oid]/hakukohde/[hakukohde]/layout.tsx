@@ -1,5 +1,5 @@
 import { Stack } from '@mui/material';
-import HakukohdeTabs from '../components/hakukohde-tabs';
+import { HakukohdeTabs } from '../components/hakukohde-tabs';
 
 export default async function HakuLayout(props: {
   children: React.ReactNode;

@@ -67,7 +67,7 @@ export const ValinnanTuloksetOtherActionsCell = ({
       },
     });
   };
-  const { data: userPermissions } = useUserPermissions();
+  const userPermissions = useUserPermissions();
 
   // Jos hakemuksen valintatapajonoOid puuttuu, hakemukselle ei ole tallennettu valinnan tulosta
   const hakemuksentulosTallennettu = Boolean(hakemus.valintatapajonoOid);

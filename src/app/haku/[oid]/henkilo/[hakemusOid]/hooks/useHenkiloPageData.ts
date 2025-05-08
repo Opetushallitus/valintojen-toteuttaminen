@@ -106,7 +106,7 @@ export const useHenkiloPageData = ({
     [hakemus.hakutoiveet],
   );
 
-  const { data: userPermissions } = useUserPermissions();
+  const userPermissions = useUserPermissions();
 
   const [
     { data: koutaHakukohteet },
