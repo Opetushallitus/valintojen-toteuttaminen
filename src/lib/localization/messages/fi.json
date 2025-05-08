@@ -399,6 +399,8 @@
       "ilmoittautumisen-tila": "Ilmoittautumisen tila",
       "toiminnot": "Toiminnot"
     },
+    "muuta-valinnan-tila": "Muuta valinnan tila",
+    "mass-status-change-done": "Muutettiin tila {amount}:lle hakemukselle",
     "toiminnot": {
       "laheta-vastaanottoposti-hakukohteelle": "Lähetä vastaanottoposti hakukohteelle"
     }

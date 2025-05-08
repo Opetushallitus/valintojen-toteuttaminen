@@ -8,7 +8,11 @@ import { OphModal } from '@/components/modals/oph-modal';
 import { buildLinkToPerson } from '@/components/table/table-columns';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { buildLinkToApplication } from '@/lib/ataru/ataru-service';
-import { OphApiError } from '@/lib/common';
+import {
+  OphApiError,
+  OphProcessError,
+  OphProcessErrorData,
+} from '@/lib/common';
 import { ValinnanTulosUpdateErrorResult } from '@/lib/valinta-tulos-service/valinta-tulos-types';
 import {
   TableContainer,
@@ -17,11 +21,15 @@ import {
   TableRow,
   TableCell,
   TableBody,
+  Box,
+  Typography,
 } from '@mui/material';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { MinimalHakemusInfo } from '@/lib/state/valinnan-tulos-machine';
+import { isEmpty } from 'remeda';
+import { ErrorTable } from '@/components/error-table';
 
-export const SijoittelunTulosErrorModalDialog = createModal(
+export const ValinnanTulosErrorGlobalModal = createModal(
   ({
     error,
     hakemukset,
@@ -49,13 +57,13 @@ export const SijoittelunTulosErrorModalDialog = createModal(
           </OphButton>
         }
       >
-        <SijoittelunTulosTallennusError error={error} hakemukset={hakemukset} />
+        <ValinnanTulosTallennusError error={error} hakemukset={hakemukset} />
       </OphModal>
     );
   },
 );
 
-const SijoittelunTulosTallennusError = ({
+const ValinnanTulosTallennusError = ({
   error,
   hakemukset,
 }: {
@@ -114,6 +122,35 @@ const SijoittelunTulosTallennusError = ({
           </TableBody>
         </Table>
       </TableContainer>
+    );
+  } else if (
+    error instanceof OphProcessError &&
+    !isEmpty(error.processObject)
+  ) {
+    const errorData: Array<OphProcessErrorData> =
+      error instanceof OphProcessError ? error.processObject : [];
+    const serviceErrors = errorData.filter((e) => e.isService);
+    const normalErrors = errorData.filter((e) => !e.isService);
+
+    return (
+      <Box sx={{ display: 'flex', rowGap: 1, flexDirection: 'column' }}>
+        {!isEmpty(serviceErrors) && (
+          <>
+            {serviceErrors.map((e) => (
+              <Box key={e.id}>
+                <Typography variant="h3">{e.id}</Typography>
+                <Typography>{t(e.message)}</Typography>
+              </Box>
+            ))}
+          </>
+        )}
+        {!isEmpty(normalErrors) && (
+          <Box>
+            <Typography variant="h3">{t('virhe.varoitukset')}</Typography>
+            <ErrorTable error={error} />
+          </Box>
+        )}
+      </Box>
     );
   } else {
     return <ErrorWithIcon>{error.message ?? error}</ErrorWithIcon>;

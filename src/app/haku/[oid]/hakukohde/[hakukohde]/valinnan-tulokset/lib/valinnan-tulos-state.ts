@@ -16,6 +16,9 @@ import {
   getHakukohteenValinnanTulokset,
   hyvaksyValintaEsitys,
 } from '@/lib/valinta-tulos-service/valinta-tulos-service';
+import { inspect } from '@/lib/xstate-utils';
+import { ValinnanTulosErrorGlobalModal } from '@/components/modals/valinnan-tulos-error-global-modal';
+import { showModal } from '@/components/modals/global-modal';
 
 export const valinnanTuloksetMachine =
   createValinnanTulosMachine<HakemuksenValinnanTulos>().provide({
@@ -61,7 +64,12 @@ export const valinnanTuloksetMachine =
           }
         }
       },
-      errorModal: () => {},
+      errorModal: ({ context }, params) => {
+        showModal(ValinnanTulosErrorGlobalModal, {
+          error: params.error,
+          hakemukset: context.hakemukset,
+        });
+      },
     },
   });
 
@@ -127,6 +135,9 @@ export const useValinnanTulosActorRef = ({
         }),
       },
     }),
+    {
+      inspect: inspect,
+    },
   );
 
   const { addToast } = useToaster();

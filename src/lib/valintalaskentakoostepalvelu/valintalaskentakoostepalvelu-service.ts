@@ -303,8 +303,9 @@ type ProcessResponse = {
   };
   poikkeukset: Array<{
     tunnisteet: Array<{
-      oid: string;
+      oid?: string;
       tunniste: string;
+      tyyppi?: string;
     }>;
     palvelu: string;
     viesti: string;
@@ -328,7 +329,11 @@ function mapProcessResponseToErrorData(
         { id: p.palvelu, message: p.viesti, isService: true },
       ];
       return serviceError.concat(
-        p.tunnisteet.map((t) => ({ id: t.oid, message: t.tunniste })),
+        p.tunnisteet.map((t) => {
+          return t.oid
+            ? { id: t.oid, message: t.tunniste }
+            : { id: t.tunniste, message: p.viesti };
+        }),
       );
     })
     .concat(warnings);
@@ -1009,5 +1014,5 @@ export async function saveErillishakuValinnanTulokset({
   );
 
   const processId = data.id;
-  await pollDocumentProcess(processId, true);
+  await processDocumentAndReturnDocumentId(processId, true);
 }

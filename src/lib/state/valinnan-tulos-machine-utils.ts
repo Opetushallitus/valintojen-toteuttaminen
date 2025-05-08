@@ -16,7 +16,6 @@ import {
 import { clone } from 'remeda';
 import { useSelector } from '@xstate/react';
 import { HakemuksenValinnanTulos } from '../valinta-tulos-service/valinta-tulos-types';
-import { TranslatedName } from '../localization/localization-types';
 
 type ValinnanTulosEditableFieldNames =
   | 'julkaistavissa'
@@ -85,16 +84,15 @@ function applyEditsToChangedHakemukset<T extends HakemuksenValinnanTulos>({
   originalHakemus: T;
   event: ValinnanTulosEditableFields;
 }) {
-  const changedHakenut = changedHakemukset.find(
+  const changedHakemus = changedHakemukset.find(
     (h) => h.hakemusOid === originalHakemus?.hakemusOid,
   );
 
-  const tulos = clone(changedHakenut ?? originalHakemus);
+  const tulos = clone(changedHakemus ?? originalHakemus);
 
   for (const fieldName of SIJOITTELUN_TULOS_EDITABLE_FIELDS) {
     if (event?.[fieldName] !== undefined) {
-      (tulos[fieldName] as string | boolean | TranslatedName) =
-        event?.[fieldName];
+      (tulos[fieldName] as string | boolean) = event?.[fieldName];
     }
   }
   if (
@@ -106,11 +104,11 @@ function applyEditsToChangedHakemukset<T extends HakemuksenValinnanTulos>({
     tulos.ilmoittautumisTila = IlmoittautumisTila.EI_TEHTY;
   }
 
-  if (changedHakenut) {
+  if (changedHakemus) {
     return isUnchanged(originalHakemus, tulos)
       ? changedHakemukset.filter((h) => h.hakemusOid !== tulos.hakemusOid)
       : changedHakemukset.map((h) =>
-          h.hakemusOid === h.hakemusOid ? tulos : h,
+          h.hakemusOid === tulos.hakemusOid ? tulos : h,
         );
   } else {
     return [...changedHakemukset, tulos];
@@ -139,10 +137,13 @@ export function applyMassHakemusChanges<T extends HakemuksenValinnanTulos>(
   context: ValinnanTulosContext<T>,
   event: ValinnanTulosMassChangeEvent,
 ) {
-  let changed: Array<T> = context.changedHakemukset;
+  let changedHakemukset: Array<T> = clone(context.changedHakemukset);
   let changedAmount = 0;
+
   event.hakemusOids.forEach((hakemusOid) => {
-    const changedHakemus = changed.find((h) => h.hakemusOid === hakemusOid);
+    const changedHakemus = changedHakemukset.find(
+      (h) => h.hakemusOid === hakemusOid,
+    );
     const originalHakemus = context.hakemukset.find(
       (h) => h.hakemusOid === hakemusOid,
     );
@@ -150,23 +151,25 @@ export function applyMassHakemusChanges<T extends HakemuksenValinnanTulos>(
 
     if (
       tulos &&
-      ((event.ilmoittautumisTila &&
-        event.ilmoittautumisTila !== tulos.ilmoittautumisTila &&
-        isIlmoittautuminenPossible(tulos)) ||
+      ((event.valinnanTila && event.valinnanTila !== tulos.valinnanTila) ||
         (event.vastaanottoTila &&
           event.vastaanottoTila !== tulos.vastaanottoTila &&
-          isVastaanottoPossible(tulos)))
+          isVastaanottoPossible(tulos)) ||
+        (event.ilmoittautumisTila &&
+          event.ilmoittautumisTila !== tulos.ilmoittautumisTila &&
+          isIlmoittautuminenPossible(tulos)))
     ) {
       changedAmount++;
-      changed = applyEditsToChangedHakemukset({
-        changedHakemukset: changed,
+      changedHakemukset = applyEditsToChangedHakemukset({
+        changedHakemukset,
         originalHakemus: originalHakemus!,
         event,
       });
     }
   });
+
   return {
-    changedHakemukset: changed,
+    changedHakemukset: changedHakemukset,
     massChangeAmount: changedAmount,
   };
 }

@@ -205,7 +205,7 @@ const ValinnanTilaSelect = ({
   return (
     <LocalizedSelect
       sx={{ width: '300px' }}
-      value={value}
+      value={value ?? ''}
       onChange={onChange}
       disabled={disabled}
       options={options}
