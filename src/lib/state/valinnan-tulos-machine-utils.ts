@@ -189,6 +189,11 @@ export function prepareChangedHakemuksetForSave<
       result.ehdollisenHyvaksymisenEhtoEN = '';
       result.ehdollisenHyvaksymisenEhtoEN = '';
     }
+    if (valinnanTila !== SijoittelunTila.HYLATTY) {
+      result.valinnanTilanKuvausFI = '';
+      result.valinnanTilanKuvausSV = '';
+      result.valinnanTilanKuvausEN = '';
+    }
     return result;
   });
 }
