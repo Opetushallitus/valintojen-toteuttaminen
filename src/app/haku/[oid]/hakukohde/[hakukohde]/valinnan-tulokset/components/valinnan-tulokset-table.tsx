@@ -5,7 +5,7 @@ import {
   makeColumnWithCustomRender,
 } from '@/components/table/table-columns';
 import { ListTable } from '@/components/table/list-table';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { KeysMatching, ListTableColumn } from '@/components/table/table-types';
 import { useSelection } from '@/hooks/useSelection';
 import { IlmoittautumisTilaSelect } from '@/components/ilmoittautumistila-select';
@@ -13,6 +13,14 @@ import { VastaanOttoCell } from '@/components/vastaanotto-cell';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import { useValinnanTuloksetSearch } from '../hooks/useValinnanTuloksetSearch';
 import { HakemusValinnanTuloksilla } from '@/lib/valinta-tulos-service/valinta-tulos-types';
+import { useValinnanTulosActorRef } from '../lib/valinnan-tulos-state';
+import { useSelector } from '@xstate/react';
+import {
+  ValinnanTulosActorRef,
+  ValinnanTulosChangeParams,
+  ValinnanTulosEventType,
+  ValinnanTulosState,
+} from '@/lib/state/valinnan-tulos-machine';
 
 export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
   title,
@@ -34,11 +42,29 @@ const TRANSLATIONS_PREFIX = 'valinnan-tulokset.taulukko';
 const useColumns = ({
   haku,
   hakukohde,
+  actorRef,
 }: {
   haku: Haku;
   hakukohde: Hakukohde;
+  actorRef: ValinnanTulosActorRef;
 }) => {
   const { t } = useTranslations();
+
+  const state = useSelector(actorRef, (s) => s);
+  const { send } = actorRef;
+
+  const disabled = !state.matches(ValinnanTulosState.IDLE);
+
+  const updateForm = useCallback(
+    (changeParams: ValinnanTulosChangeParams) => {
+      send({
+        type: ValinnanTulosEventType.CHANGE,
+        ...changeParams,
+      });
+    },
+    [send],
+  );
+
   return useMemo(() => {
     const stickyHakijaColumn = createStickyHakijaColumn(t);
     return [
@@ -63,7 +89,8 @@ const useColumns = ({
                 vastaanottoTila: valinnanTulos.vastaanottoTila,
                 julkaistavissa: valinnanTulos.julkaistavissa,
               }}
-              updateForm={() => {}}
+              updateForm={updateForm}
+              disabled={disabled}
             />
           ),
       }),
@@ -81,7 +108,8 @@ const useColumns = ({
                   vastaanottoTila: valinnanTulos.vastaanottoTila,
                   julkaistavissa: valinnanTulos.julkaistavissa,
                 }}
-                updateForm={() => {}}
+                updateForm={updateForm}
+                disabled={disabled}
               />
             )
           );
@@ -94,33 +122,76 @@ const useColumns = ({
         sortable: false,
       }),
     ];
-  }, [t, haku, hakukohde]);
+  }, [t, haku, hakukohde, updateForm, disabled]);
 };
 
 export const ValinnanTuloksetTable = ({
   haku,
   hakukohde,
+  lastModified,
   hakemukset,
 }: {
   haku: Haku;
   hakukohde: Hakukohde;
+  lastModified?: string;
   hakemukset: Array<HakemusValinnanTuloksilla>;
 }) => {
   const { t } = useTranslations();
 
-  const columns = useColumns({ haku, hakukohde });
+  const onUpdated = useCallback(() => {}, []);
+
+  const valinnanTulosActorRef = useValinnanTulosActorRef({
+    hakukohdeOid: hakukohde.oid,
+    hakemukset,
+    lastModified,
+    onUpdated,
+  });
+
+  const columns = useColumns({
+    haku,
+    hakukohde,
+    actorRef: valinnanTulosActorRef,
+  });
 
   const { results, sort, setSort, pageSize, setPage, page } =
     useValinnanTuloksetSearch(hakemukset);
 
   const { selection, setSelection } = useSelection(hakemukset);
 
+  const changedTulokset = useSelector(
+    valinnanTulosActorRef,
+    (state) => state.context.changedTulokset,
+  );
+
+  const rows = useMemo(() => {
+    return results.map((hakemus) => {
+      const changedTulos = changedTulokset.find(
+        (changedTulos) => changedTulos.hakemusOid === hakemus.hakemusOid,
+      );
+
+      const valinnanTulos = hakemus.valinnanTulos;
+
+      return {
+        ...hakemus,
+        valinnanTulos:
+          changedTulos || valinnanTulos
+            ? {
+                hakemusOid: hakemus.hakemusOid,
+                hakijanNimi: hakemus.hakijanNimi,
+                ...valinnanTulos,
+                ...changedTulos,
+              }
+            : undefined,
+      };
+    });
+  }, [results, changedTulokset]);
+
   return (
     <>
       <ListTable
         rowKeyProp="hakemusOid"
         columns={columns}
-        rows={results}
+        rows={rows}
         selection={selection}
         onSelectionChange={setSelection}
         checkboxSelection={true}

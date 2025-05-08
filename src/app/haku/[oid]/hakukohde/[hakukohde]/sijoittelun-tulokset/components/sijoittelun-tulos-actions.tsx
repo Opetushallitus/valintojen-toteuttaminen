@@ -13,7 +13,7 @@ import useToaster from '@/hooks/useToaster';
 import { Haku, Hakukohde, KoutaOidParams } from '@/lib/kouta/kouta-types';
 import { SijoittelunTila, VastaanottoTila } from '@/lib/types/sijoittelu-types';
 import { sendVastaanottopostiValintatapaJonolle } from '@/lib/valinta-tulos-service/valinta-tulos-service';
-import { filter, isEmpty, pipe, prop } from 'remeda';
+import { isEmpty, prop } from 'remeda';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getMyohastyneetHakemukset } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { showModal } from '@/components/modals/global-modal';
@@ -100,18 +100,15 @@ const useEraantyneetHakemukset = ({
 }: KoutaOidParams & {
   hakemukset: Array<ValinnanTulosFields>;
 }) => {
-  const hakemuksetJotkaTarvitsevatAikarajaMennytTiedon = pipe(
-    hakemukset,
-    filter(
-      (hakemus) =>
-        hakemus.vastaanottoTila === VastaanottoTila.KESKEN &&
-        hakemus.julkaistavissa &&
-        [
-          SijoittelunTila.HYVAKSYTTY,
-          SijoittelunTila.VARASIJALTA_HYVAKSYTTY,
-          SijoittelunTila.PERUNUT,
-        ].includes(hakemus.valinnanTila),
-    ),
+  const hakemuksetJotkaTarvitsevatAikarajaMennytTiedon = hakemukset.filter(
+    (hakemus) =>
+      hakemus?.vastaanottoTila === VastaanottoTila.KESKEN &&
+      hakemus?.julkaistavissa &&
+      [
+        SijoittelunTila.HYVAKSYTTY,
+        SijoittelunTila.VARASIJALTA_HYVAKSYTTY,
+        SijoittelunTila.PERUNUT,
+      ].includes(hakemus.valinnanTila as SijoittelunTila),
   );
 
   const hakemusOids = hakemuksetJotkaTarvitsevatAikarajaMennytTiedon.map(

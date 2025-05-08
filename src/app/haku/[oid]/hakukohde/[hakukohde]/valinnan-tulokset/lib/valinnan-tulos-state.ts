@@ -70,7 +70,7 @@ export const valinnanTuloksetMachine =
 type SijoittelunTulosStateParams = {
   hakukohdeOid: string;
   hakemukset: Array<HakemusValinnanTuloksilla>;
-  lastModified: string;
+  lastModified?: string;
   onUpdated?: () => void;
 };
 

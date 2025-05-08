@@ -963,3 +963,7 @@ export async function sendLetters(
   };
   await client.post(configuration.lahetaEPostiUrl, reqBody);
 }
+
+export async function saveErillishakuValinnanTulokset({}) {
+  await client.post();
+}
