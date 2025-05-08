@@ -11,7 +11,7 @@ import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
 import { useId } from 'react';
 import { useTranslations } from '@/lib/localization/useTranslations';
 
-export type OphModalDialogProps = Pick<
+export type OphModalProps = Pick<
   DialogProps,
   'slotProps' | 'open' | 'children' | 'maxWidth' | 'fullWidth'
 > & {
@@ -37,7 +37,7 @@ export const OphModal = ({
   fullWidth = true,
   onClose,
   slotProps,
-}: OphModalDialogProps) => {
+}: OphModalProps) => {
   const modalId = useId();
   const modalTitleId = `${modalId}-title`;
   const { t } = useTranslations();

@@ -404,10 +404,16 @@
     "muuta-valinnan-tila": "Muuta valinnan tila",
     "mass-status-change-done": "Muutettiin tila {amount}:lle hakemukselle",
     "toiminnot": {
-      "laheta-vastaanottoposti-hakukohteelle": "Lähetä vastaanottoposti hakukohteelle"
+      "laheta-vastaanottoposti-hakukohteelle": "Lähetä vastaanottoposti hakukohteelle",
+      "poista-valinnan-tulokset": "Poista valinnan tulokset",
+      "poista-valinnan-tulokset-vahvistus-otsikko": "Poistetaanko valinnan tulokset?",
+      "poista-valinnan-tulokset-vahvistus-teksti": "Olet poistamassa valinnan tuloksia hakijalta: <strong>{hakijanNimi}</strong>"
     },
     "tunniste-tai-tyyppi": "Tunniste tai tyyppi",
-    "hakijalle-nakyva-syy": "Hakijalle näkyvä syy"
+    "hakijalle-nakyva-syy": "Hakijalle näkyvä syy",
+    "poistaminen-epaonnistui": "Valinnan tulosten poistaminen epäonnistui",
+    "tallennetaan-tuloksia": "Tallennetaan valinnan tuloksia...",
+    "poistetaan-tuloksia": "Poistetaan valinnan tuloksia..."
   },
   "sijoittelu": {
     "tasasijasaanto": {

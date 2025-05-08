@@ -1,5 +1,5 @@
 import { FullClientSpinner } from '@/components/client-spinner';
-import { OphModal, OphModalDialogProps } from '@/components/modals/oph-modal';
+import { OphModal, OphModalProps } from '@/components/modals/oph-modal';
 import { withDefaultProps } from '@/lib/mui-utils';
 import { Box, FormLabel } from '@mui/material';
 import { useId } from 'react';
@@ -47,7 +47,7 @@ export const EditModal = ({
   isPending,
   onClose,
   ...props
-}: OphModalDialogProps & {
+}: OphModalProps & {
   pendingTitle: string;
   isPending: boolean;
 }) => {

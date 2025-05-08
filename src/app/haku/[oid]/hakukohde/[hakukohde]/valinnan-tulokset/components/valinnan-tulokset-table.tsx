@@ -57,11 +57,26 @@ const useColumns = ({
 
   const disabled = !state.matches(ValinnanTulosState.IDLE);
 
+  const valintatapajonoOid = useSelector(
+    actorRef,
+    (s) => s.context.valintatapajonoOid,
+  );
+
   const updateForm = useCallback(
     (changeParams: ValinnanTulosChangeParams) => {
       send({
         type: ValinnanTulosEventType.CHANGE,
         ...changeParams,
+      });
+    },
+    [send],
+  );
+
+  const removeValinnanTulos = useCallback(
+    (hakemusOid: string) => {
+      send({
+        type: ValinnanTulosEventType.REMOVE,
+        hakemusOid,
       });
     },
     [send],
@@ -113,25 +128,37 @@ const useColumns = ({
       makeColumnWithCustomRender<HakemuksenValinnanTulos>({
         title: t(`${TRANSLATIONS_PREFIX}.toiminnot`),
         key: 'toiminnot',
-        renderFn: (hakemus) => (
-          <OtherActionsCell hakemus={hakemus} disabled={disabled} />
-        ),
+        renderFn: (hakemus) =>
+          valintatapajonoOid && (
+            <OtherActionsCell
+              hakemus={hakemus}
+              disabled={disabled}
+              removeValinnanTulos={removeValinnanTulos}
+              valintatapajonoOid={valintatapajonoOid}
+            />
+          ),
         sortable: false,
       }),
     ];
-  }, [t, haku, hakukohde, updateForm, disabled]);
+  }, [
+    t,
+    haku,
+    hakukohde,
+    updateForm,
+    disabled,
+    valintatapajonoOid,
+    removeValinnanTulos,
+  ]);
 };
 
 export const ValinnanTuloksetTable = ({
   haku,
   hakukohde,
   actorRef,
-  hakemukset,
 }: {
   haku: Haku;
   hakukohde: Hakukohde;
   actorRef: ValinnanTulosActorRef;
-  hakemukset: Array<HakemuksenValinnanTulos>;
 }) => {
   const { t } = useTranslations();
 
@@ -140,6 +167,8 @@ export const ValinnanTuloksetTable = ({
     hakukohde,
     actorRef,
   });
+
+  const hakemukset = useSelector(actorRef, (state) => state.context.hakemukset);
 
   const { results, sort, setSort, pageSize, setPage, page } =
     useValinnanTuloksetSearch(hakemukset);

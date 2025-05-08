@@ -47,8 +47,8 @@ import {
 } from './valintalaskentakoostepalvelu-types';
 import { HarkinnanvaraisuudenSyy } from '../types/harkinnanvaraiset-types';
 import { ValintakoeAvaimet } from '../valintaperusteet/valintaperusteet-types';
-import { Hakukohde, KoutaOidParams } from '../kouta/kouta-types';
-import { getOpetuskieliCode } from '../kouta/kouta-service';
+import { Haku, Hakukohde, KoutaOidParams } from '../kouta/kouta-types';
+import { getOpetuskieliCode, isKorkeakouluHaku } from '../kouta/kouta-service';
 import {
   INPUT_DATE_FORMAT,
   INPUT_TIME_FORMAT,
@@ -975,16 +975,18 @@ export async function sendLetters(
 }
 
 export async function saveErillishakuValinnanTulokset({
-  hakuOid,
+  haku,
   hakukohdeOid,
   hakemukset,
-  hakutyyppi,
   lastModified,
 }: {
-  hakuOid: string;
+  haku: Haku;
   hakukohdeOid: string;
-  hakutyyppi: 'TOISEN_ASTEEN_OPPILAITOS' | 'KORKEAKOULU';
-  hakemukset: Array<HakemuksenValinnanTulos>;
+  hakemukset: Array<
+    HakemuksenValinnanTulos & {
+      poistetaankoRivi?: boolean;
+    }
+  >;
   lastModified?: string;
 }) {
   const erillishakuHakemukset = hakemukset.map((hakemus) => ({
@@ -998,14 +1000,19 @@ export async function saveErillishakuValinnanTulokset({
     valinnantilanKuvauksenTekstiFI: hakemus.valinnanTilanKuvausFI,
     valinnantilanKuvauksenTekstiSV: hakemus.valinnanTilanKuvausSV,
     valinnantilanKuvauksenTekstiEN: hakemus.valinnanTilanKuvausEN,
+    poistetaankoRivi: hakemus.poistetaankoRivi,
   }));
 
   const urlWithQuery = new URL(
     configuration.startErillishakuValinnanTulosImportUrl,
   );
-  urlWithQuery.searchParams.set('hakuOid', hakuOid);
+
+  urlWithQuery.searchParams.set('hakuOid', haku.oid);
   urlWithQuery.searchParams.set('hakukohdeOid', hakukohdeOid);
-  urlWithQuery.searchParams.set('hakutyyppi', hakutyyppi);
+  urlWithQuery.searchParams.set(
+    'hakutyyppi',
+    isKorkeakouluHaku(haku) ? 'KORKEAKOULU' : 'TOISEN_ASTEEN_OPPILAITOS',
+  );
 
   const { data } = await client.post<{ id: string }>(
     urlWithQuery,

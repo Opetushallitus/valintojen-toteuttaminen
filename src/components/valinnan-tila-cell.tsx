@@ -87,7 +87,7 @@ export const EhdollisestiHyvaksyttavissaCheckbox = ({
   return (
     !isToinenAsteKohdejoukko(haku) && (
       <OphCheckbox
-        checked={ehdollisestiHyvaksyttavissa}
+        checked={Boolean(ehdollisestiHyvaksyttavissa)}
         onChange={updateEhdollinen}
         label={t('sijoittelun-tulokset.ehdollinen')}
         disabled={disabled || !canUpdate}
@@ -282,6 +282,7 @@ const ValinnanTilaSelect = ({
       onChange={onChange}
       disabled={disabled}
       options={options}
+      clearable={true}
     />
   );
 };
@@ -307,6 +308,8 @@ export const ValinnanTilaCell = ({
     siirtynytToisestaValintatapajonosta,
     valinnanTila,
   } = hakemus;
+
+  console.log({ valinnanTila });
 
   const hakemuksenTila = getReadableHakemuksenTila(hakemus, t);
 
