@@ -13,7 +13,7 @@ import {
 import { useCallback, useMemo } from 'react';
 import { KeysMatching, ListTableColumn } from '@/components/table/table-types';
 import { MaksuCell } from './maksu-cell';
-import { IlmoittautumisCell } from './ilmoittautumis-cell';
+import { IlmoittautumisTilaSelect } from '@/components/ilmoittautumistila-select';
 import { VastaanOttoCell } from './vastaanotto-cell';
 import { SijoittelunTilaCell } from './sijoittelun-tila-cell';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
@@ -136,7 +136,7 @@ const useColumns = ({
         title: t(`${TRANSLATIONS_PREFIX}.ilmoittautumistieto`),
         key: 'ilmoittautumisTila',
         renderFn: (props) => (
-          <IlmoittautumisCell
+          <IlmoittautumisTilaSelect
             hakemus={props}
             updateForm={updateForm}
             disabled={disabled}

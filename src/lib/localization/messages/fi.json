@@ -308,6 +308,7 @@
     "hakemus-oid": "Hakemuksen tekninen tunniste (OID)",
     "ei-tuloksia": "Ei sijoittelun tuloksia hakukohteelle",
     "muuta-vastaanottotieto": "Muuta vastaanottotieto",
+    "muuta-ilmoittautumistieto": "Muuta ilmoittautumistieto",
     "virhe-vie-taulukkolaskentaan": "Sijoittelun tulosten vieminen taulukkolaskentaan epäonnistui!",
     "merkitse-myohastyneeksi": "Merkitse myöhästyneeksi",
     "merkitse-myohastyneeksi-modal-title": "Vahvista myöhästyneeksi merkitseminen",

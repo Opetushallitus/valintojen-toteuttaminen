@@ -7,10 +7,9 @@ import {
 import { ListTable } from '@/components/table/list-table';
 import { useMemo } from 'react';
 import { KeysMatching, ListTableColumn } from '@/components/table/table-types';
-import { isNonNull } from 'remeda';
-import { ValinnanTulosModel } from '@/lib/valinta-tulos-service/valinta-tulos-types';
-import { Hakemus } from '@/lib/ataru/ataru-types';
 import { useSelection } from '@/hooks/useSelection';
+import { IlmoittautumisTilaSelect } from '@/components/ilmoittautumistila-select';
+import { HakemusValinnanTuloksilla } from '../lib/valinnan-tulos-types';
 
 export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
   title,
@@ -38,17 +37,35 @@ const useColumns = () => {
       makeColumnWithCustomRender<HakemusValinnanTuloksilla>({
         title: t(`${TRANSLATIONS_PREFIX}.valinnan-tila`),
         key: 'valinnantila',
-        renderFn: (props) => <div>{props.valinnantila}</div>,
+        renderFn: ({ valinnanTulos }) =>
+          valinnanTulos && <div>{valinnanTulos.valinnantila}</div>,
       }),
       makeColumnWithCustomRender<HakemusValinnanTuloksilla>({
         title: t(`${TRANSLATIONS_PREFIX}.vastaanoton-tila`),
         key: 'vastaanottotila',
-        renderFn: (props) => <div>{props.vastaanottotila}</div>,
+        renderFn: ({ valinnanTulos }) =>
+          valinnanTulos && <div>{valinnanTulos.vastaanottotila}</div>,
       }),
       makeColumnWithCustomRender<HakemusValinnanTuloksilla>({
         title: t(`${TRANSLATIONS_PREFIX}.ilmoittautumisen-tila`),
         key: 'ilmoittautumisTila',
-        renderFn: (props) => <div>{props.ilmoittautumistila}</div>,
+        renderFn: ({ hakijanNimi, hakemusOid, valinnanTulos }) => {
+          console.log({ hakijanNimi, valinnanTulos });
+          return (
+            valinnanTulos && (
+              <IlmoittautumisTilaSelect
+                hakemus={{
+                  hakemusOid,
+                  ilmoittautumisTila: valinnanTulos.ilmoittautumisTila,
+                  tila: valinnanTulos.valinnantila,
+                  vastaanottotila: valinnanTulos.vastaanottotila,
+                  julkaistavissa: valinnanTulos.julkaistavissa,
+                }}
+                updateForm={() => {}}
+              />
+            )
+          );
+        },
       }),
       makeColumnWithCustomRender<HakemusValinnanTuloksilla>({
         title: t(`${TRANSLATIONS_PREFIX}.toiminnot`),
@@ -56,11 +73,9 @@ const useColumns = () => {
         renderFn: () => <div></div>,
         sortable: false,
       }),
-    ].filter(isNonNull);
+    ];
   }, [t]);
 };
-
-type HakemusValinnanTuloksilla = Hakemus & Partial<ValinnanTulosModel>;
 
 export const ValinnanTuloksetTable = ({
   hakemukset,

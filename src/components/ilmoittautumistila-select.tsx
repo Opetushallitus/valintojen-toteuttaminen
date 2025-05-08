@@ -6,16 +6,23 @@ import {
 } from '@/lib/types/sijoittelu-types';
 import { SelectChangeEvent } from '@mui/material';
 import { isIlmoittautuminenPossible } from '@/lib/sijoittelun-tulokset-utils';
-import { SijoittelunTulosChangeParams } from '../lib/sijoittelun-tulokset-state';
 import { useIlmoittautumisTilaOptions } from '@/hooks/useIlmoittautumisTilaOptions';
+import { SijoittelunTulosChangeParams } from '@/app/haku/[oid]/hakukohde/[hakukohde]/sijoittelun-tulokset/lib/sijoittelun-tulokset-state';
 
-export const IlmoittautumisCell = ({
+export const IlmoittautumisTilaSelect = ({
   hakemus,
   disabled,
-  updateForm,
+  updateForm
 }: {
-  hakemus: SijoittelunHakemusValintatiedoilla;
-  disabled: boolean;
+  hakemus: Pick<
+    SijoittelunHakemusValintatiedoilla,
+    | 'hakemusOid'
+    | 'ilmoittautumisTila'
+    | 'tila'
+    | 'vastaanottotila'
+    | 'julkaistavissa'
+  >;
+  disabled?: boolean;
   updateForm: (params: SijoittelunTulosChangeParams) => void;
 }) => {
   const { t } = useTranslations();
@@ -24,7 +31,7 @@ export const IlmoittautumisCell = ({
 
   const ilmoittautumistilaOptions = useIlmoittautumisTilaOptions();
 
-  const showSelect = isIlmoittautuminenPossible(hakemus);
+  const isVisible = isIlmoittautuminenPossible(hakemus);
 
   const updateIlmoittautumisTila = (event: SelectChangeEvent<string>) => {
     updateForm({
@@ -35,7 +42,7 @@ export const IlmoittautumisCell = ({
 
   return (
     <>
-      {showSelect && (
+      {isVisible && (
         <LocalizedSelect
           ariaLabel={t('sijoittelun-tulokset.taulukko.ilmoittautumistieto')}
           value={ilmoittautumisTila}

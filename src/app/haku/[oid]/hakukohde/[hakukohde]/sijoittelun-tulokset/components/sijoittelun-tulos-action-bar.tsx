@@ -25,6 +25,8 @@ const IlmoittautumisSelect = ({
   selection: Set<string>;
   massStatusChangeForm: (changeParams: MassChangeParams) => void;
 }) => {
+  const { t } = useTranslations();
+
   const ilmoittautumistilaOptions = useIlmoittautumisTilaOptions();
 
   const massUpdateIlmoittautuminen = (event: SelectChangeEvent<string>) => {
@@ -41,7 +43,7 @@ const IlmoittautumisSelect = ({
 
   return (
     <LocalizedSelect
-      placeholder="Muuta ilmoittautumistieto"
+      placeholder={t('sijoittelun-tulokset.muuta-ilmoittautumistieto')}
       onChange={massUpdateIlmoittautuminen}
       options={ilmoittautumistilaOptions}
       disabled={disabled}
