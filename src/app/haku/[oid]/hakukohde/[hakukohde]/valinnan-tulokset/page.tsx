@@ -161,7 +161,7 @@ const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
           hakukohde={hakukohde}
           valintatapajonoOid={valintatapajonoOid}
           valinnanTulosActorRef={valinnanTulosActorRef}
-          isExcelButtonVisible={true}
+          type="valinnan-tulos"
         />
         <ValinnanTuloksetTable
           haku={haku}

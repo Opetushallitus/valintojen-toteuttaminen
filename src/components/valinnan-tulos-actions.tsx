@@ -21,7 +21,7 @@ import {
   sendVastaanottopostiValintatapaJonolle,
 } from '@/lib/valinta-tulos-service/valinta-tulos-service';
 import { isEmpty, prop } from 'remeda';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import {
   getErillishakuValinnanTulosExcel,
   getMyohastyneetHakemukset,
@@ -55,22 +55,35 @@ const SendVastaanottopostiButton = ({
   disabled,
   hakukohdeOid,
   valintatapajonoOid,
+  type,
 }: {
   disabled: boolean;
   hakukohdeOid: string;
   valintatapajonoOid?: string;
+  type: 'sijoittelun-tulos' | 'valinnan-tulos';
 }) => {
   const { addToast } = useToaster();
   const { t } = useTranslations();
 
-  const sendVastaanottoposti = async () => {
-    try {
-      const data = valintatapajonoOid
-        ? await sendVastaanottopostiValintatapaJonolle(
+  const { isPending, mutate } = useMutation({
+    mutationFn: () => {
+      return type === 'sijoittelun-tulos' && valintatapajonoOid
+        ? sendVastaanottopostiValintatapaJonolle(
             hakukohdeOid,
             valintatapajonoOid,
           )
-        : await sendVastaanottopostiHakukohteelle(hakukohdeOid);
+        : sendVastaanottopostiHakukohteelle(hakukohdeOid);
+    },
+    onError: (e) => {
+      addToast({
+        key: 'vastaanottoposti-valintatapajono-virhe',
+        message:
+          'sijoittelun-tulokset.toiminnot.vastaanottoposti-jonolle-virhe',
+        type: 'error',
+      });
+      console.error(e);
+    },
+    onSuccess: (data) => {
       if (!data || data.length < 1) {
         addToast({
           key: 'vastaanottoposti-valintatapajono-empty',
@@ -86,24 +99,17 @@ const SendVastaanottopostiButton = ({
           type: 'success',
         });
       }
-    } catch (e) {
-      addToast({
-        key: 'vastaanottoposti-valintatapajono-virhe',
-        message:
-          'sijoittelun-tulokset.toiminnot.vastaanottoposti-jonolle-virhe',
-        type: 'error',
-      });
-      console.error(e);
-    }
-  };
+    },
+  });
 
   return (
     <OphButton
       variant="contained"
       disabled={disabled}
-      onClick={sendVastaanottoposti}
+      onClick={() => mutate()}
+      loading={isPending}
     >
-      {valintatapajonoOid
+      {type === 'sijoittelun-tulos'
         ? t('sijoittelun-tulokset.toiminnot.laheta-vastaanottoposti-jonolle')
         : t(
             'valinnan-tulokset.toiminnot.laheta-vastaanottoposti-hakukohteelle',
@@ -279,13 +285,13 @@ export const ValinnanTulosActions = ({
   hakukohde,
   valinnanTulosActorRef,
   valintatapajonoOid,
-  isExcelButtonVisible,
+  type,
 }: {
   haku: Haku;
   hakukohde: Hakukohde;
   valinnanTulosActorRef: ValinnanTulosActorRef | SijoittelunTulosActorRef;
   valintatapajonoOid?: string;
-  isExcelButtonVisible?: boolean;
+  type: 'sijoittelun-tulos' | 'valinnan-tulos';
 }) => {
   const { t } = useTranslations();
 
@@ -313,7 +319,7 @@ export const ValinnanTulosActions = ({
       >
         {t('yleinen.tallenna')}
       </OphButton>
-      {isExcelButtonVisible && (
+      {type === 'valinnan-tulos' && (
         <ValinnanTuloksetExcelDownloadButton
           haku={haku}
           hakukohdeOid={hakukohde.oid}
@@ -351,6 +357,7 @@ export const ValinnanTulosActions = ({
       <SendVastaanottopostiButton
         disabled={!state.matches(ValinnanTulosState.IDLE)}
         hakukohdeOid={hakukohde.oid}
+        type={type}
         valintatapajonoOid={valintatapajonoOid}
       />
     </ActionsContainer>
