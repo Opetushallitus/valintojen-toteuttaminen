@@ -21,8 +21,12 @@ test('Näyttää pistesyotön', async ({ page }) => {
   await checkRow(rows.nth(3), ['Purukumi Puru', 'Valitse...Merkitsemättä']);
 });
 
-async function selectTila(page: Page, expectedOption: string) {
-  await selectOption(page, 'Tila', expectedOption);
+async function selectTila(page: Page, option: string) {
+  await selectOption({
+    page,
+    name: 'Tila',
+    option,
+  });
 }
 
 async function goToPisteSyotto(page: Page) {
@@ -97,8 +101,18 @@ test('Näyttää ilmoituksen kun tallennus onnistuu', async ({ page }) => {
       }),
   );
   const huiRow = page.getByRole('row', { name: 'Hui Haamu' });
-  await selectOption(page, 'Arvo', 'Kyllä', huiRow);
-  await selectOption(page, 'Osallistumisen tila', 'Osallistui', huiRow);
+  await selectOption({
+    page,
+    locator: huiRow,
+    name: 'Arvo',
+    option: 'Kyllä',
+  });
+  await selectOption({
+    page,
+    locator: huiRow,
+    name: 'Osallistumisen tila',
+    option: 'Osallistui',
+  });
   await page.getByRole('button', { name: 'Tallenna' }).click();
   await expect(page.getByText('Tiedot tallennettu.')).toBeVisible();
   await getMuiCloseButton(page).click();
@@ -116,7 +130,12 @@ test('Näyttää ilmoituksen kun tallennus epäonnistuu', async ({ page }) => {
       }),
   );
   const huiRow = page.getByRole('row', { name: 'Hui Haamu' });
-  await selectOption(page, 'Arvo', 'Kyllä', huiRow);
+  await selectOption({
+    page,
+    locator: huiRow,
+    name: 'Arvo',
+    option: 'Kyllä',
+  });
   await page.getByRole('button', { name: 'Tallenna' }).click();
   await expect(
     page.getByText('Tietojen tallentamisessa tapahtui virhe.'),
@@ -131,7 +150,12 @@ test('Ilmoittaa tallentamattomista muutoksista kun käyttäjä yrittää navigoi
   page,
 }) => {
   const huiRow = page.getByRole('row', { name: 'Hui Haamu' });
-  await selectOption(page, 'Arvo', 'Kyllä', huiRow);
+  await selectOption({
+    page,
+    locator: huiRow,
+    name: 'Arvo',
+    option: 'Kyllä',
+  });
   await page.getByText('Hakijaryhmät').click();
   const confirmationQuestion = () =>
     page.getByText(

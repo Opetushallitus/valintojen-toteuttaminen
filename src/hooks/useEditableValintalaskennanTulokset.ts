@@ -25,6 +25,7 @@ import { Hakemus } from '@/lib/ataru/ataru-types';
 import { hakukohteenValinnanvaiheetQueryOptions } from '@/lib/valintaperusteet/valintaperusteet-service';
 import { Valinnanvaihe } from '@/lib/valintaperusteet/valintaperusteet-types';
 import { selectLaskennattomatValinnanvaiheet } from '@/lib/valintaperusteet/valintaperusteet-utils';
+import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 
 export type LaskennanJonosijaTulos<
   A extends Record<string, unknown> = Record<string, unknown>,
@@ -233,10 +234,7 @@ export const selectEditableValintalaskennanTulokset = <
 export const useEditableValintalaskennanTulokset = ({
   hakuOid,
   hakukohdeOid,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
-}): LaskennanValinnanvaiheet<AdditionalHakemusFields> => {
+}: KoutaOidParams): LaskennanValinnanvaiheet<AdditionalHakemusFields> => {
   const [
     { data: hakemukset },
     { data: hakukohteenLaskennanTulokset },

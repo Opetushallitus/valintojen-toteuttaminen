@@ -13,14 +13,12 @@ import { HarkinnanvaraisetSearchInput } from './components/harkinnanvaraiset-sea
 import { NoResults } from '@/components/no-results';
 import { isEmpty } from 'remeda';
 import { useTranslations } from '@/lib/localization/useTranslations';
+import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 
 const HarkinnanvaraisetContent = ({
   hakuOid,
   hakukohdeOid,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
-}) => {
+}: KoutaOidParams) => {
   const harkinnanvaraisetHakemukset = useHarkinnanvaraisetHakemukset({
     hakuOid,
     hakukohdeOid,

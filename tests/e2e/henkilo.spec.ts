@@ -15,7 +15,7 @@ import { configuration } from '@/lib/configuration';
 import { hakemusValinnanTulosFixture } from './fixtures/hakemus-valinnan-tulos';
 import {
   IlmoittautumisTila,
-  SijoittelunTila,
+  ValinnanTila,
   VastaanottoTila,
 } from '@/lib/types/sijoittelu-types';
 import {
@@ -32,7 +32,7 @@ const VALINNAN_TULOS_RESULT = hakemusValinnanTulosFixture({
   hakemusOid: NUKETTAJA_HAKEMUS_OID,
   valintatapajonoOid: '17093042998533736417074016063604',
   henkiloOid: '1.2.246.562.24.69259807406',
-  valinnantila: SijoittelunTila.HYVAKSYTTY,
+  valinnantila: ValinnanTila.HYVAKSYTTY,
   vastaanottotila: VastaanottoTila.VASTAANOTTANUT_SITOVASTI,
   ilmoittautumistila: IlmoittautumisTila.EI_ILMOITTAUTUNUT,
   julkaistavissa: true,
@@ -474,7 +474,11 @@ test.describe('Muokkausmodaalit', () => {
 
     await valintalaskentaMuokkausModal.getByLabel('Pisteet').fill('12');
 
-    await selectOption(page, 'Tila', 'Hylätty');
+    await selectOption({
+      page,
+      name: 'Tila',
+      option: 'Hylätty',
+    });
 
     await valintalaskentaMuokkausModal
       .getByLabel('Muokkauksen syy')
@@ -485,7 +489,7 @@ test.describe('Muokkausmodaalit', () => {
     });
 
     const [request] = await Promise.all([
-      page.waitForRequest((request) => request.url() === muokkausUrl),
+      page.waitForRequest((req) => req.url() === muokkausUrl),
       saveButton.click(),
     ]);
 
@@ -584,8 +588,16 @@ test.describe('Muokkausmodaalit', () => {
       name: 'Muokkaa valintaa',
     });
 
-    await selectOption(page, 'Vastaanoton tila', 'Ehdollisesti vastaanottanut');
-    await selectOption(page, 'Ilmoittautumisen tila', 'Läsnä (koko lukuvuosi)');
+    await selectOption({
+      page,
+      name: 'Vastaanoton tila',
+      option: 'Ehdollisesti vastaanottanut',
+    });
+    await selectOption({
+      page,
+      name: 'Ilmoittautumisen tila',
+      option: 'Läsnä (koko lukuvuosi)',
+    });
 
     const saveButton = valintaMuokkausModal.getByRole('button', {
       name: 'Tallenna',
@@ -628,7 +640,11 @@ test.describe('Muokkausmodaalit', () => {
       name: 'Muokkaa valintaa',
     });
 
-    await selectOption(page, 'Vastaanoton tila', 'Kesken');
+    await selectOption({
+      page,
+      name: 'Vastaanoton tila',
+      option: 'Kesken',
+    });
 
     await valintaMuokkausModal
       .getByRole('checkbox', { name: 'Julkaistavissa' })
@@ -775,12 +791,12 @@ test.describe('Pistesyöttö', () => {
       name: 'Nakkikoe, oletko nakkisuojassa?',
     });
 
-    await selectOption(
+    await selectOption({
       page,
-      'Osallistumisen tila',
-      'Ei osallistunut',
-      nakkikoe,
-    );
+      locator: nakkikoe,
+      name: 'Osallistumisen tila',
+      option: 'Ei osallistunut',
+    });
 
     const nakkiTallennaButton = nakkikoe.getByRole('button', {
       name: 'Tallenna',
@@ -833,12 +849,12 @@ test.describe('Pistesyöttö', () => {
       name: 'Nakkikoe, oletko nakkisuojassa?',
     });
 
-    await selectOption(
+    await selectOption({
       page,
-      'Osallistumisen tila',
-      'Ei osallistunut',
-      nakkikoe,
-    );
+      locator: nakkikoe,
+      name: 'Osallistumisen tila',
+      option: 'Ei osallistunut',
+    });
 
     const nakkiTallennaButton = nakkikoe.getByRole('button', {
       name: 'Tallenna',

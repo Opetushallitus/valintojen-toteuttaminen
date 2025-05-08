@@ -22,7 +22,7 @@ export const PisteSyottoTable = ({
 }: {
   pistetiedot: Array<HakemuksenPistetiedot>;
   sort: string;
-  setSort: (sort: string) => void;
+  setSort: (newSort: string) => void;
   kokeet: Array<ValintakoeAvaimet>;
   pistesyottoActorRef: PistesyottoActorRef;
 }) => {

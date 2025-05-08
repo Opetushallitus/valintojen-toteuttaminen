@@ -7,14 +7,13 @@ import { saveValintatapajonoTulosExcel } from '@/lib/valintalaskentakoostepalvel
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { isEmpty } from 'remeda';
 import { refetchLaskennanTulokset } from '../lib/refetchLaskennanTulokset';
+import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 
 const useJonoExcelUploadMutation = ({
   hakuOid,
   hakukohdeOid,
   valintatapajonoOid,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
+}: KoutaOidParams & {
   valintatapajonoOid: string;
 }) => {
   const { addToast } = useToaster();
@@ -63,9 +62,7 @@ export const LaskennatonJonoExcelUploadButton = ({
   hakuOid,
   hakukohdeOid,
   valintatapajonoOid,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
+}: KoutaOidParams & {
   valintatapajonoOid: string;
 }) => {
   const { t } = useTranslations();

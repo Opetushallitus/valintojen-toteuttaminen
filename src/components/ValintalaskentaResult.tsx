@@ -60,7 +60,6 @@ export const ValintalaskentaResult = ({
           <SuorittamattomatHakukohteet
             actorRef={actorRef}
             hakukohteet={hakukohteet}
-            onlyErrors={true}
           />
         </>
       )}

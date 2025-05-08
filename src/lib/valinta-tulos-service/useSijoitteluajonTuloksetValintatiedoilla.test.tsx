@@ -3,7 +3,7 @@ import {
   IlmoittautumisTila,
   SijoitteluajonTuloksetValintatiedoilla,
   SijoittelunHakemusValintatiedoilla,
-  SijoittelunTila,
+  ValinnanTila,
   VastaanottoTila,
 } from '../types/sijoittelu-types';
 import { selectSijoitteluajonTuloksetValintatiedoilla } from './useSijoitteluajonTuloksetValintatiedoilla';
@@ -37,7 +37,7 @@ describe('selectSijoitteluajonTuloksetValintatiedoilla', () => {
       2,
       'Dacula Kreivi',
       15,
-      SijoittelunTila.HYVAKSYTTY,
+      ValinnanTila.HYVAKSYTTY,
       VastaanottoTila.KESKEN,
       IlmoittautumisTila.EI_TEHTY,
     );
@@ -46,7 +46,7 @@ describe('selectSijoitteluajonTuloksetValintatiedoilla', () => {
       1,
       'Nukettaja Ruhtinas',
       15,
-      SijoittelunTila.HYVAKSYTTY,
+      ValinnanTila.HYVAKSYTTY,
       VastaanottoTila.VASTAANOTTANUT_SITOVASTI,
       IlmoittautumisTila.LASNA,
     );
@@ -55,7 +55,7 @@ describe('selectSijoitteluajonTuloksetValintatiedoilla', () => {
       3,
       'Purukumi Puru',
       12,
-      SijoittelunTila.VARALLA,
+      ValinnanTila.VARALLA,
       VastaanottoTila.KESKEN,
       IlmoittautumisTila.EI_TEHTY,
     );
@@ -80,7 +80,7 @@ function assertHakemus(
   oidNumber: number,
   nimi: string,
   pisteet: number,
-  tila: SijoittelunTila,
+  tila: ValinnanTila,
   vastaanottoTila: VastaanottoTila,
   ilmoTila: IlmoittautumisTila,
 ) {
@@ -89,8 +89,8 @@ function assertHakemus(
   expect(hakemus.hakijaOid).toEqual('hakija' + oidNumber);
   expect(hakemus.pisteet).toEqual(pisteet);
   expect(hakemus.valintatapajonoOid).toEqual('jono1');
-  expect(hakemus.tila).toEqual(tila);
-  expect(hakemus.vastaanottotila).toEqual(vastaanottoTila);
+  expect(hakemus.valinnanTila).toEqual(tila);
+  expect(hakemus.vastaanottoTila).toEqual(vastaanottoTila);
   expect(hakemus.ilmoittautumisTila).toEqual(ilmoTila);
   expect(hakemus.maksunTila).not.toBeDefined();
 }
@@ -229,7 +229,7 @@ function buildDummyValinnanTulosResponse() {
               hakijaOid: 'hakija1',
               hakemusOid: 'hakemus1',
               pisteet: 15,
-              tila: SijoittelunTila.HYVAKSYTTY,
+              tila: ValinnanTila.HYVAKSYTTY,
               valintatapajonoOid: 'jono1',
               hyvaksyttyHakijaryhmista: [],
               varasijanNumero: 0,
@@ -243,7 +243,7 @@ function buildDummyValinnanTulosResponse() {
               hakijaOid: 'hakija2',
               hakemusOid: 'hakemus2',
               pisteet: 15,
-              tila: SijoittelunTila.HYVAKSYTTY,
+              tila: ValinnanTila.HYVAKSYTTY,
               valintatapajonoOid: 'jono1',
               hyvaksyttyHakijaryhmista: [],
               varasijanNumero: 0,
@@ -257,7 +257,7 @@ function buildDummyValinnanTulosResponse() {
               hakijaOid: 'hakija3',
               hakemusOid: 'hakemus3',
               pisteet: 12,
-              tila: SijoittelunTila.VARALLA,
+              tila: ValinnanTila.VARALLA,
               valintatapajonoOid: 'jono1',
               hyvaksyttyHakijaryhmista: [],
               varasijanNumero: 0,

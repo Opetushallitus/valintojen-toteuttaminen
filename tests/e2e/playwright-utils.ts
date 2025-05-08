@@ -10,6 +10,8 @@ import { readFile } from 'fs/promises';
 import path from 'path';
 import { isFunction, isNonNull } from 'remeda';
 import regexpEscape from 'regexp.escape';
+import { styleText } from 'node:util';
+import { ProcessResponse } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 
 export const expectPageAccessibilityOk = async (page: Page) => {
   const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
@@ -85,45 +87,63 @@ export const fixtureFromFile = (fileName: string) => {
   };
 };
 
-export async function selectOption(
-  page: Page,
-  name: string,
-  expectedOption: string,
-  within?: Locator,
-) {
-  const combobox = (within ?? page).getByRole('combobox', {
-    name: new RegExp(`^${name}`),
-  });
+export async function selectOption({
+  page,
+  locator,
+  name,
+  option,
+}: {
+  page: Page;
+  name?: string;
+  option: string;
+  locator?: Locator;
+}) {
+  const combobox = (locator ?? page).getByRole(
+    'combobox',
+    name
+      ? {
+          name: new RegExp(`^${name}`),
+        }
+      : {},
+  );
 
   await combobox.click();
 
   // Selectin listbox rendataan juuritasolle
   const listbox = page.locator('#select-menu').getByRole('listbox');
 
-  await listbox
-    .getByRole('option', { name: expectedOption, exact: true })
-    .click();
-  await expect(combobox).toContainText(expectedOption);
+  await listbox.getByRole('option', { name: option, exact: true }).click();
 }
 
-export async function mockDocumentProcess(
-  page: Page,
-  urlMatcher: (url: URL) => boolean,
-  docId: string = 'doc_id',
-) {
+export async function mockDocumentProcess({
+  page,
+  urlMatcher,
+  documentId: docId = 'doc_id',
+  processResponse,
+}: {
+  page: Page;
+  urlMatcher: string | ((url: URL) => boolean);
+  documentId?: string;
+  processResponse?: MockResponse<ProcessResponse>;
+}) {
+  const processId = 'proc_id';
   await page.route(urlMatcher, async (route) => {
     await route.fulfill({
-      json: { id: 'proc_id' },
+      json: { id: processId },
     });
   });
   await page.route(
     (url) =>
       url.pathname.includes(
-        '/valintalaskentakoostepalvelu/resources/dokumenttiprosessi/proc_id',
+        `/valintalaskentakoostepalvelu/resources/dokumenttiprosessi/${processId}`,
       ),
     async (route) => {
       await route.fulfill({
-        json: { dokumenttiId: docId, kokonaistyo: { valmis: true } },
+        status: processResponse?.status ?? 200,
+        json: processResponse?.json ?? {
+          dokumenttiId: docId,
+          kokonaistyo: { valmis: true },
+        },
       });
     },
   );
@@ -161,7 +181,7 @@ export async function mockDocumentExport(
   page: Page,
   urlMatcher: (url: URL) => boolean,
 ) {
-  await mockDocumentProcess(page, urlMatcher);
+  await mockDocumentProcess({ page, urlMatcher: urlMatcher });
   await page.route(
     (url) =>
       url.pathname.includes(
@@ -290,3 +310,20 @@ export const mockValintalaskentaRun = async (
     },
   );
 };
+
+/**
+ * Funktio testien debuggausta varten. Tulostaa testien aikana selaimen konsoliin logitetut viestit.
+ * Aja funktio kerran ennen testien testikoodin suorittamista, esim beforeEach-hookissa.
+ */
+export function logBrowserConsole(page: Page) {
+  page.on('console', (msg) => {
+    const messagePrefix = styleText('grey', 'Browser:');
+    if (msg.type() === 'error') {
+      console.log(messagePrefix, styleText('red', msg.text()));
+    } else if (msg.type() === 'warning') {
+      console.log(messagePrefix, styleText('yellow', msg.text()));
+    } else {
+      console.log(messagePrefix, msg.text());
+    }
+  });
+}

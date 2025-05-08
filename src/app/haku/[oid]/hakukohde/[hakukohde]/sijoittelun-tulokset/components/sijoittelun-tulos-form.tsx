@@ -1,17 +1,16 @@
 'use client';
 
 import { useCallback } from 'react';
-import useToaster from '@/hooks/useToaster';
 import { Box } from '@mui/material';
-import { SijoittelunTuloksetActions } from './sijoittelun-tulos-actions';
+import { ValinnanTuloksetActions } from '@/components/ValinnanTuloksetActions';
 import { useSijoittelunTulosActorRef } from '../lib/sijoittelun-tulokset-state';
 import { SijoitteluajonValintatapajonoValintatiedoilla } from '@/lib/types/sijoittelu-types';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import { SijoittelunTulosTable } from './sijoittelun-tulos-table';
 import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBeforeNavigation';
-import { useIsDirtySijoittelunTulos } from '../lib/sijoittelun-tulokset-state-utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { refetchSijoittelunTulokset } from '../lib/refetch-sijoittelun-tulokset';
+import { useIsDirtyValinnanTulos } from '@/lib/state/valinnanTuloksetMachineUtils';
 
 type SijoittelunTuloksetFormParams = {
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
@@ -32,8 +31,6 @@ export const SijoittelunTulosForm = ({
   kaikkiJonotHyvaksytty,
   kayttaaLaskentaa,
 }: SijoittelunTuloksetFormParams) => {
-  const { addToast } = useToaster();
-
   const queryClient = useQueryClient();
 
   const onUpdated = useCallback(() => {
@@ -45,11 +42,10 @@ export const SijoittelunTulosForm = ({
     valintatapajonoOid: valintatapajono.oid,
     hakemukset: valintatapajono.hakemukset,
     lastModified,
-    addToast,
     onUpdated: onUpdated,
   });
 
-  const isDirty = useIsDirtySijoittelunTulos(sijoittelunTulosActorRef);
+  const isDirty = useIsDirtyValinnanTulos(sijoittelunTulosActorRef);
 
   useConfirmChangesBeforeNavigation(isDirty);
 
@@ -58,11 +54,11 @@ export const SijoittelunTulosForm = ({
       sx={{ width: '100%' }}
       data-test-id={`sijoittelun-tulokset-form-${valintatapajono.oid}`}
     >
-      <SijoittelunTuloksetActions
+      <ValinnanTuloksetActions
         haku={haku}
         hakukohde={hakukohde}
-        valintatapajonoOid={valintatapajono.oid}
-        sijoittelunTulosActorRef={sijoittelunTulosActorRef}
+        valinnanTulosActorRef={sijoittelunTulosActorRef}
+        mode="sijoittelu"
       />
       <SijoittelunTulosTable
         haku={haku}

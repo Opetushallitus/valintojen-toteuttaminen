@@ -3,19 +3,22 @@ import { EMPTY_STRING_SET } from '@/lib/common';
 import { styled } from '@/lib/theme';
 import { Checkbox } from '@mui/material';
 import { map, pipe } from 'remeda';
+import { memo } from 'react';
 
 const ListCheckbox = styled(Checkbox)({
   padding: 0,
 });
 
-type SelectionProps = {
+export type SelectionProps = {
   selection: Set<string>;
-  onSelectionChange?: (selection: Set<string>) => void;
+  setSelection?: (
+    newSelection: Set<string> | ((oldSelection: Set<string>) => Set<string>),
+  ) => void;
 };
 
 export const TableHeaderCheckbox = function <R>({
   selection = EMPTY_STRING_SET,
-  onSelectionChange,
+  setSelection,
   rows,
   rowKeyProp,
 }: SelectionProps & {
@@ -32,13 +35,17 @@ export const TableHeaderCheckbox = function <R>({
         selection.size !== rows.length &&
         selection.size !== 0
       }
-      inputProps={{ 'aria-label': t('yleinen.valitse-kaikki') }}
+      slotProps={{
+        input: {
+          'aria-label': t('yleinen.valitse-kaikki'),
+        },
+      }}
       onChange={(
-        event: React.ChangeEvent<HTMLInputElement>,
+        _event: React.ChangeEvent<HTMLInputElement>,
         checked: boolean,
       ) => {
         if (checked) {
-          onSelectionChange?.(
+          setSelection?.(
             pipe(
               rows,
               map((item) => item[rowKeyProp] as string),
@@ -46,44 +53,47 @@ export const TableHeaderCheckbox = function <R>({
             ),
           );
         } else {
-          onSelectionChange?.(EMPTY_STRING_SET);
+          setSelection?.(EMPTY_STRING_SET);
         }
       }}
     />
   );
 };
 
-export const TableRowCheckbox = function <R>({
-  selection,
-  onSelectionChange,
+export const TableRowCheckbox = memo(function TableRowCheckbox({
+  checked,
+  setSelection,
   rowId,
-  rowProps,
-  getRowCheckboxLabel,
-}: SelectionProps & {
+  label,
+}: {
   rowId: string;
-  rowProps: R;
-  getRowCheckboxLabel?: (row: R) => string;
+  checked: boolean;
+  setSelection?: SelectionProps['setSelection'];
+  label?: string;
 }) {
   return (
     <ListCheckbox
-      checked={selection.has(rowId)}
-      inputProps={{
-        'aria-label': getRowCheckboxLabel?.(rowProps),
+      checked={checked}
+      slotProps={{
+        input: {
+          'aria-label': label,
+        },
       }}
       value={rowId}
       onChange={(
-        event: React.ChangeEvent<HTMLInputElement>,
-        checked: boolean,
+        _event: React.ChangeEvent<HTMLInputElement>,
+        newChecked: boolean,
       ) => {
-        const newSelection = new Set(selection);
-        if (checked) {
-          newSelection.add(rowId);
-          onSelectionChange?.(newSelection);
-        } else {
-          newSelection.delete(rowId);
-          onSelectionChange?.(newSelection);
-        }
+        setSelection?.((oldSelection) => {
+          const newSelection = new Set(oldSelection);
+          if (newChecked) {
+            newSelection.add(rowId);
+          } else {
+            newSelection.delete(rowId);
+          }
+          return newSelection;
+        });
       }}
     />
   );
-};
+});

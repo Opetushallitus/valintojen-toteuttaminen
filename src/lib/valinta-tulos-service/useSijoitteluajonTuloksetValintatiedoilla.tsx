@@ -41,7 +41,7 @@ export const selectSijoitteluajonTuloksetValintatiedoilla = ({
 
       let hasNegativePisteet: boolean = false;
 
-      const hakemukset: Array<SijoittelunHakemusValintatiedoilla> =
+      const hakemuksetTuloksilla: Array<SijoittelunHakemusValintatiedoilla> =
         jono.hakemukset.map((h) => {
           const hakemus = hakemuksetIndexed[h.hakemusOid];
           const valintatulos = valintatuloksetIndexed[h.hakemusOid];
@@ -58,7 +58,7 @@ export const selectSijoitteluajonTuloksetValintatiedoilla = ({
             hakemusOid: h.hakemusOid,
             hakijanNimi: hakemus?.hakijanNimi,
             pisteet: h.pisteet,
-            tila: h.tila,
+            valinnanTila: h.tila,
             valintatapajonoOid: h.valintatapajonoOid,
             hyvaksyttyHakijaryhmista: h.hyvaksyttyHakijaryhmista,
             varasijanNumero: h.varasijanNumero,
@@ -67,7 +67,7 @@ export const selectSijoitteluajonTuloksetValintatiedoilla = ({
             hakutoive: h.prioriteetti,
             ilmoittautumisTila: valintatulos.ilmoittautumistila,
             julkaistavissa: valintatulos.julkaistavissa,
-            vastaanottotila: valintatulos.vastaanottotila,
+            vastaanottoTila: valintatulos.vastaanottotila,
             maksunTila: maksunTila || undefined,
             ehdollisestiHyvaksyttavissa:
               valintatulos.ehdollisestiHyvaksyttavissa,
@@ -92,17 +92,17 @@ export const selectSijoitteluajonTuloksetValintatiedoilla = ({
               h.siirtynytToisestaValintatapajonosta,
           };
         });
-      hakemukset.sort((a, b) =>
+      hakemuksetTuloksilla.sort((a, b) =>
         a.jonosija === b.jonosija
           ? a.tasasijaJonosija - b.tasasijaJonosija
           : a.jonosija - b.jonosija,
       );
-      hakemukset
+      hakemuksetTuloksilla
         .filter(function (hakemus) {
           return (
-            hakemus.tila === 'HYVAKSYTTY' ||
-            hakemus.tila === 'VARASIJALTA_HYVAKSYTTY' ||
-            hakemus.tila === 'VARALLA'
+            hakemus.valinnanTila === 'HYVAKSYTTY' ||
+            hakemus.valinnanTila === 'VARASIJALTA_HYVAKSYTTY' ||
+            hakemus.valinnanTila === 'VARALLA'
           );
         })
         .forEach((hakemus, i) => (hakemus.sija = i + 1));
@@ -110,7 +110,7 @@ export const selectSijoitteluajonTuloksetValintatiedoilla = ({
       return {
         oid: jono.oid,
         nimi: jono.nimi,
-        hakemukset,
+        hakemukset: hakemuksetTuloksilla,
         hasNegativePisteet,
         prioriteetti: jono.prioriteetti,
         accepted: sijoittelunTulokset.valintaesitys?.find(

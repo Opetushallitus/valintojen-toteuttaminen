@@ -9,7 +9,7 @@ import {
   HarkinnanvaraisestiHyvaksytty,
   HarkinnanvaraisetTilatByHakemusOids,
 } from '@/lib/types/harkinnanvaraiset-types';
-import { setHarkinnanvaraisetTilat } from '@/lib/valintalaskenta/valintalaskenta-service';
+import { saveHarkinnanvaraisetTilat } from '@/lib/valintalaskenta/valintalaskenta-service';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useState } from 'react';
@@ -19,14 +19,9 @@ import { HarkinnanvaraisetActionBar } from './harkinnanvaraiset-action-bar';
 import { HarkinnanvaraisetTable } from './harkinnanvaraiset-table';
 import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBeforeNavigation';
 import { useSelection } from '@/hooks/useSelection';
+import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 
-const useTallennaMutation = ({
-  hakuOid,
-  hakukohdeOid,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
-}) => {
+const useTallennaMutation = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const { addToast } = useToaster();
 
   const queryClient = useQueryClient();
@@ -43,7 +38,7 @@ const useTallennaMutation = ({
         hakemusOid,
         harkinnanvaraisuusTila: tila === '' ? undefined : tila,
       }));
-      await setHarkinnanvaraisetTilat(harkinnanvaraisetValues);
+      await saveHarkinnanvaraisetTilat(harkinnanvaraisetValues);
       queryClient.setQueryData(
         harkinnanvaraisetTilatOptions({ hakuOid, hakukohdeOid }).queryKey,
         (oldData) => {
@@ -83,9 +78,7 @@ export const HarkinnanvaraisetForm = ({
   hakuOid,
   hakukohdeOid,
   harkinnanvaraisetHakemukset,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
+}: KoutaOidParams & {
   harkinnanvaraisetHakemukset: Array<HakemuksenHarkinnanvaraisuus>;
 }) => {
   const { t } = useTranslations();

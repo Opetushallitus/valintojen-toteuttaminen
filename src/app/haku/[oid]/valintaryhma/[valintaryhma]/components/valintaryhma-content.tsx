@@ -110,7 +110,7 @@ export const ValintaryhmaContent = ({
 
   const { translateEntity } = useTranslations();
 
-  const { data: ryhmat } = useSuspenseQuery({
+  const { data: valintaryhmat } = useSuspenseQuery({
     queryKey: ['getValintaryhmat', hakuOid],
     queryFn: () => getValintaryhmat(hakuOid),
   });
@@ -138,21 +138,21 @@ export const ValintaryhmaContent = ({
           .filter(isDefined)[0]
       );
     }
-    return ryhmat?.hakuRyhma?.oid === valintaryhmaOid
-      ? ryhmat.hakuRyhma
-      : findRecursively(ryhmat?.muutRyhmat);
-  }, [ryhmat, valintaryhmaOid]);
+    return valintaryhmat?.hakuRyhma?.oid === valintaryhmaOid
+      ? valintaryhmat.hakuRyhma
+      : findRecursively(valintaryhmat?.muutRyhmat);
+  }, [valintaryhmat, valintaryhmaOid]);
 
   const parentName = useMemo(() => {
     if (
       !valittuRyhma ||
-      valittuRyhma === ryhmat.hakuRyhma ||
-      ryhmat.muutRyhmat.find((r) => r === valittuRyhma)
+      valittuRyhma === valintaryhmat.hakuRyhma ||
+      valintaryhmat.muutRyhmat.find((r) => r === valittuRyhma)
     ) {
       return null;
     }
-    return findParent(valittuRyhma, ryhmat.muutRyhmat)?.nimi ?? null;
-  }, [valittuRyhma, ryhmat]);
+    return findParent(valittuRyhma, valintaryhmat.muutRyhmat)?.nimi ?? null;
+  }, [valittuRyhma, valintaryhmat]);
 
   const mappedHakukohteet = useMemo(() => {
     function getHakukohdeFullName(hakukohde: Hakukohde) {

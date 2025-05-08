@@ -1,4 +1,5 @@
-import { MaksunTila } from '../ataru/ataru-types';
+import { ValinnanTulosActorRef } from '../state/createValinnanTuloksetMachine';
+import { HakemuksenValinnanTulos } from '../valinta-tulos-service/valinta-tulos-types';
 
 export type SijoittelunValintatapajonoTulos = {
   nimi: string;
@@ -13,7 +14,7 @@ export type SijoittelunValintatapajonoTulos = {
   pisteraja: number;
 };
 
-export enum SijoittelunTila {
+export enum ValinnanTila {
   HYVAKSYTTY = 'HYVAKSYTTY',
   VARASIJALTA_HYVAKSYTTY = 'VARASIJALTA_HYVAKSYTTY',
   HARKINNANVARAISESTI_HYVAKSYTTY = 'HARKINNANVARAISESTI_HYVAKSYTTY',
@@ -24,8 +25,8 @@ export enum SijoittelunTila {
   PERUUTETTU = 'PERUUTETTU',
 }
 
-export const SijoittelunTilaOrdinals: Record<string, number> = Object.keys(
-  SijoittelunTila,
+export const ValinnanTilaOrdinals: Record<string, number> = Object.keys(
+  ValinnanTila,
 )
   .map((key, index) => ({ [key]: index }))
   .reduce((a, b) => ({ ...a, ...b }));
@@ -55,7 +56,7 @@ export type SijoittelunHakemus = {
   hakijaOid: string;
   hakemusOid: string;
   pisteet: number;
-  tila: SijoittelunTila;
+  tila: ValinnanTila;
   valintatapajonoOid: string;
   hyvaksyttyHakijaryhmista: Array<string>;
   varasijanNumero: number;
@@ -63,10 +64,9 @@ export type SijoittelunHakemus = {
 };
 
 export type SijoittelunHakemusValintatiedoilla = {
-  hakijaOid: string;
   hakemusOid: string;
+  hakijaOid: string;
   pisteet: number;
-  tila: SijoittelunTila;
   valintatapajonoOid: string;
   hyvaksyttyHakijaryhmista: Array<string>;
   varasijanNumero: number;
@@ -75,35 +75,14 @@ export type SijoittelunHakemusValintatiedoilla = {
   tasasijaJonosija: number;
   hakutoive: number;
   sija?: number;
-  julkaistavissa: boolean;
-  ilmoittautumisTila: IlmoittautumisTila;
-  vastaanottotila: VastaanottoTila;
-  maksunTila?: MaksunTila;
-  ehdollisestiHyvaksyttavissa: boolean;
   hyvaksyttyVarasijalta: boolean;
   onkoMuuttunutViimeSijoittelussa: boolean;
-  ehdollisenHyvaksymisenEhtoKoodi?: string;
-  ehdollisenHyvaksymisenEhtoFI?: string;
-  ehdollisenHyvaksymisenEhtoSV?: string;
-  ehdollisenHyvaksymisenEhtoEN?: string;
   vastaanottoDeadlineMennyt?: boolean;
   vastaanottoDeadline?: string;
   hyvaksyttyHarkinnanvaraisesti?: boolean;
   hyvaksyPeruuntunut: boolean;
   hyvaksymiskirjeLahetetty?: string;
-  siirtynytToisestaValintatapajonosta?: boolean;
-};
-
-export const isHyvaksyttyHarkinnanvaraisesti = (
-  hakemus: Pick<
-    SijoittelunHakemusValintatiedoilla,
-    'tila' | 'hyvaksyttyHarkinnanvaraisesti'
-  >,
-): boolean =>
-  Boolean(hakemus?.hyvaksyttyHarkinnanvaraisesti) &&
-  [SijoittelunTila.HYVAKSYTTY, SijoittelunTila.VARASIJALTA_HYVAKSYTTY].includes(
-    hakemus.tila,
-  );
+} & HakemuksenValinnanTulos;
 
 export type SijoitteluajonValintatapajono = {
   oid: string;
@@ -153,3 +132,6 @@ export type AjastettuSijoittelu = {
   startTime: Date;
   frequency: string;
 };
+
+export type SijoittelunTulosActorRef =
+  ValinnanTulosActorRef<SijoittelunHakemusValintatiedoilla>;

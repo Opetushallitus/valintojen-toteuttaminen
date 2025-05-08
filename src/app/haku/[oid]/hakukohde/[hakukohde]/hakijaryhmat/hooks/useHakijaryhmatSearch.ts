@@ -122,8 +122,6 @@ export const useHakijaryhmatSearch = (
   } = useHakijaryhmatSearchParams(hakijaryhmaOid);
 
   const results = useMemo(() => {
-    const { orderBy, direction } = getSortParts(sort);
-
     const parsedKuuluuRyhmaan: boolean | null =
       kuuluuRyhmaan.length > 0 ? JSON.parse(kuuluuRyhmaan) : null;
     const parsedHyvaksytty: boolean | null =
@@ -146,6 +144,8 @@ export const useHakijaryhmatSearch = (
       }
       return filtered.sort(byProp(orderBy, direction, translateEntity));
     };
+
+    const { orderBy, direction } = getSortParts(sort);
 
     return orderBy && direction ? sortHakijat(orderBy, direction) : filtered;
   }, [

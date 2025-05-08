@@ -15,3 +15,6 @@ export const isInRange = (
 
 export const toFinnishDate = (date: Date) =>
   new TZDate(date, 'Europe/Helsinki');
+
+export const isTimestamp = (x?: string) =>
+  x && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(x);

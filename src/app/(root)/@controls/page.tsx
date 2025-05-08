@@ -132,10 +132,10 @@ export default function HakuControls() {
             labelId={labelId}
             value={tila ?? ''}
             onChange={changeTila}
-            options={Object.values(Tila).map((tila) => {
+            options={Object.values(Tila).map((julkaisutila) => {
               return {
-                value: tila,
-                label: t(tila),
+                value: julkaisutila,
+                label: t(julkaisutila),
               };
             })}
             clearable

@@ -21,16 +21,9 @@ import { documentIdForHakukohdeQueryOptions } from '@/lib/valintalaskentakoostep
 import { checkIsValintalaskentaUsed } from '@/lib/valintaperusteet/valintaperusteet-utils';
 import { getHakemuksetQueryOptions } from '@/lib/ataru/ataru-service';
 import { useSijoitteluajonTuloksetValintatiedoilla } from '@/lib/valinta-tulos-service/useSijoitteluajonTuloksetValintatiedoilla';
+import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 
-type SijoitteluContentParams = {
-  hakuOid: string;
-  hakukohdeOid: string;
-};
-
-const SijoitteluContent = ({
-  hakuOid,
-  hakukohdeOid,
-}: SijoitteluContentParams) => {
+const SijoitteluContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const { t } = useTranslations();
 
   const { pageSize, setPageSize } = useSijoittelunTulosSearchParams();

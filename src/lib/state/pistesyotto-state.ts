@@ -9,6 +9,7 @@ import { useMemo } from 'react';
 import { clone, indexBy, isEmpty, isNonNullish, isNumber, prop } from 'remeda';
 import { ActorRefFrom, assign, createMachine, fromPromise } from 'xstate';
 import { ValintakoeAvaimet } from '../valintaperusteet/valintaperusteet-types';
+import { KoutaOidParams } from '../kouta/kouta-types';
 
 export type PisteSyottoContext = {
   pistetiedot: Array<HakemuksenPistetiedot>;
@@ -293,9 +294,7 @@ export const createPisteSyottoMachine = (
   });
 };
 
-type PistesyottoMachineParams = {
-  hakuOid: string;
-  hakukohdeOid: string;
+type PistesyottoMachineParams = KoutaOidParams & {
   pistetiedot: Array<HakemuksenPistetiedot>;
   valintakokeet: Array<ValintakoeAvaimet> | ValintakoeAvaimet;
   addToast: (toast: Toast) => void;

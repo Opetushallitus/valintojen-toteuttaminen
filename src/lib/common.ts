@@ -90,6 +90,9 @@ export const isServer = typeof window === 'undefined';
 export const isHakukohdeOid = (value: string) =>
   /^1\.2\.246\.562\.20\.\d{20}$/.test(value);
 
+export const isHakemusOid = (value: string) =>
+  /^1\.2\.246\.562\.11\./.test(value);
+
 export type GenericEvent = {
   key: string;
   message: string;
@@ -108,4 +111,16 @@ export const nullWhen404 = async <T>(
     }
     throw e;
   }
+};
+
+export const isOphOid = (x?: string) => x?.startsWith('1.2.246.562.');
+
+/**
+ * Assertioiden tekemiseen xstate-tilakoneiden fromPromise-aktoreiden kanssa.
+ * Oletuksena ei virhettä ei logiteta, vaikka palautetaan rejektoitu promise.
+ * Siksi logitetaan viesti myös konsoliin, jotta debuggaaminen ei hankaloidu.
+ */
+export const rejectAndLog = (message: string) => {
+  console.error(message);
+  return Promise.reject(new Error(message));
 };

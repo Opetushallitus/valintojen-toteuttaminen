@@ -29,6 +29,7 @@ import {
   OphProcessError,
   OphProcessErrorData,
   nullWhen404,
+  isOphOid,
 } from '../common';
 import { getHakemukset, getHakijat } from '../ataru/ataru-service';
 import {
@@ -46,8 +47,8 @@ import {
 } from './valintalaskentakoostepalvelu-types';
 import { HarkinnanvaraisuudenSyy } from '../types/harkinnanvaraiset-types';
 import { ValintakoeAvaimet } from '../valintaperusteet/valintaperusteet-types';
-import { Hakukohde } from '../kouta/kouta-types';
-import { getOpetuskieliCode } from '../kouta/kouta-service';
+import { Haku, Hakukohde, KoutaOidParams } from '../kouta/kouta-types';
+import { getOpetuskieliCode, isKorkeakouluHaku } from '../kouta/kouta-service';
 import {
   INPUT_DATE_FORMAT,
   INPUT_TIME_FORMAT,
@@ -57,6 +58,7 @@ import {
 import { AssertionError } from 'assert';
 import { queryOptions } from '@tanstack/react-query';
 import { Language } from '../localization/localization-types';
+import { HakemuksenValinnanTulos } from '../valinta-tulos-service/valinta-tulos-types';
 
 export const getHakukohteenValintatuloksetIlmanHakijanTilaa = async (
   hakuOid: string,
@@ -240,10 +242,7 @@ const VALINTAKOKEET_EMPTY_RESPONSE = {
 async function getAndCombineValintakoekutsutData({
   hakuOid,
   hakukohdeOid,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
-}): Promise<ValintakoekutsutData> {
+}: KoutaOidParams): Promise<ValintakoekutsutData> {
   const valintakokeet = await getValintakokeet(hakukohdeOid);
 
   if (isEmpty(valintakokeet)) {
@@ -284,24 +283,19 @@ async function getAndCombineValintakoekutsutData({
 export async function getValintakoekutsutData({
   hakuOid,
   hakukohdeOid,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
-}): Promise<ValintakoekutsutData> {
+}: KoutaOidParams): Promise<ValintakoekutsutData> {
   const response = await nullWhen404(
     getAndCombineValintakoekutsutData({ hakuOid, hakukohdeOid }),
   );
   return response ?? VALINTAKOKEET_EMPTY_RESPONSE;
 }
 
-export type GetValintakoeExcelParams = {
-  hakuOid: string;
-  hakukohdeOid: string;
+export type GetValintakoeExcelParams = KoutaOidParams & {
   hakemusOids?: Array<string>;
   valintakoeTunniste: Array<string>;
 };
 
-type ProcessResponse = {
+export type ProcessResponse = {
   dokumenttiId: string;
   kasittelyssa: boolean;
   keskeytetty: boolean;
@@ -310,8 +304,9 @@ type ProcessResponse = {
   };
   poikkeukset: Array<{
     tunnisteet: Array<{
-      oid: string;
+      oid?: string;
       tunniste: string;
+      tyyppi: string;
     }>;
     palvelu: string;
     viesti: string;
@@ -335,7 +330,14 @@ function mapProcessResponseToErrorData(
         { id: p.palvelu, message: p.viesti, isService: true },
       ];
       return serviceError.concat(
-        p.tunnisteet.map((t) => ({ id: t.oid, message: t.tunniste })),
+        p.tunnisteet.map((t) => {
+          if (t.oid) {
+            return { id: t.oid, message: t.tunniste };
+          } else if (isOphOid(t.tunniste)) {
+            return { id: t.tunniste, message: p.viesti };
+          }
+          return { id: t.tyyppi, message: t.tunniste ?? p.viesti };
+        }),
       );
     })
     .concat(warnings);
@@ -428,9 +430,7 @@ export const getValintakoeExcel = async ({
   return downloadProcessDocument(excelProcessId);
 };
 
-type GetValintakoeOsoitetarratParams = {
-  hakuOid: string;
-  hakukohdeOid: string;
+type GetValintakoeOsoitetarratParams = KoutaOidParams & {
   hakemusOids?: Array<string>;
   valintakoeTunniste: string;
 };
@@ -500,9 +500,7 @@ export const getValintalaskennanTulosExcel = async ({
   return createFileResult(excelRes);
 };
 
-type ValintatapaJonoTulosExcelProps = {
-  hakuOid: string;
-  hakukohdeOid: string;
+type ValintatapaJonoTulosExcelProps = KoutaOidParams & {
   valintatapajonoOid: string;
 };
 
@@ -589,10 +587,7 @@ export const saveValintatapajonoTulosExcel = async ({
 export const getPistesyottoExcel = async ({
   hakuOid,
   hakukohdeOid,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
-}) => {
+}: KoutaOidParams) => {
   const urlWithQuery = new URL(configuration.startExportPistesyottoExcelUrl);
   urlWithQuery.searchParams.append('hakuOid', hakuOid);
   urlWithQuery.searchParams.append('hakukohdeOid', hakukohdeOid);
@@ -609,9 +604,7 @@ export const getSijoittelunTulosExcel = async ({
   hakuOid,
   hakukohdeOid,
   sijoitteluajoId,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
+}: KoutaOidParams & {
   sijoitteluajoId: string;
 }) => {
   const urlWithQuery = new URL(configuration.sijoittelunTulosExcelUrl);
@@ -645,9 +638,7 @@ export const savePistesyottoExcel = async ({
   hakuOid,
   hakukohdeOid,
   excelFile,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
+}: KoutaOidParams & {
   excelFile: File;
 }) => {
   const urlWithQuery = new URL(configuration.startImportPistesyottoUrl);
@@ -702,7 +693,7 @@ export const luoHyvaksymiskirjeetPDF = async ({
   onlyForbidden,
 }: {
   hakemusOids?: Array<string>;
-  sijoitteluajoId: string;
+  sijoitteluajoId?: string;
   hakukohde: Hakukohde;
   letterBody: string;
   deadline?: Date | null;
@@ -719,7 +710,9 @@ export const luoHyvaksymiskirjeetPDF = async ({
   const urlWithQuery = new URL(configuration.hyvaksymiskirjeetUrl);
   urlWithQuery.searchParams.append('hakuOid', hakukohde.hakuOid);
   urlWithQuery.searchParams.append('hakukohdeOid', hakukohde.oid);
-  urlWithQuery.searchParams.append('sijoitteluajoId', sijoitteluajoId);
+  if (sijoitteluajoId) {
+    urlWithQuery.searchParams.append('sijoitteluajoId', sijoitteluajoId);
+  }
   urlWithQuery.searchParams.append('tarjoajaOid', hakukohde.tarjoajaOid);
   urlWithQuery.searchParams.append('hakukohdeNimi', hakukohdeNimi);
   urlWithQuery.searchParams.append('lang', opetuskieliCode);
@@ -893,19 +886,17 @@ export const getDocumentIdForHakukohde = async (
   hakukohdeOid: string,
   documentType: DokumenttiTyyppi,
 ): Promise<string | null> => {
-  const res = await client.get<[{ documentId: string }]>(
+  const res = await client.get<[{ documentId: string }] | undefined>(
     configuration.dokumentitUrl({ tyyppi: documentType, hakukohdeOid }),
   );
-  return res.data?.length > 0 ? res.data[0]?.documentId : null;
+  return res?.data && res.data?.length > 0 ? res.data[0]?.documentId : null;
 };
 
 export const getMyohastyneetHakemukset = async ({
   hakuOid,
   hakukohdeOid,
   hakemusOids,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
+}: KoutaOidParams & {
   hakemusOids: Array<string>;
 }) => {
   // Ei kannata tehdä kyselyä ilman hakemusOideja, koska palauttaa silloin kuitenkin aina tyhjän.
@@ -983,4 +974,89 @@ export async function sendLetters(
     kirjeenTyyppi: templateName,
   };
   await client.post(configuration.lahetaEPostiUrl, reqBody);
+}
+
+export async function saveErillishakuValinnanTulokset({
+  haku,
+  hakukohdeOid,
+  hakemukset,
+  lastModified,
+}: {
+  haku: Haku;
+  hakukohdeOid: string;
+  hakemukset: Array<
+    HakemuksenValinnanTulos & {
+      poistetaankoRivi?: boolean;
+    }
+  >;
+  lastModified?: string;
+}) {
+  const erillishakuHakemukset = hakemukset.map((hakemus) => ({
+    hakemusOid: hakemus.hakemusOid,
+    personOid: hakemus.hakijaOid,
+    hakemuksenTila: hakemus.valinnanTila,
+    vastaanottoTila: hakemus.vastaanottoTila,
+    ilmoittautumisTila: hakemus.ilmoittautumisTila,
+    julkaistaankoTiedot: Boolean(hakemus.julkaistavissa),
+    ehdollisestiHyvaksyttavissa: hakemus.ehdollisestiHyvaksyttavissa,
+    valinnantilanKuvauksenTekstiFI: hakemus.valinnanTilanKuvausFI,
+    valinnantilanKuvauksenTekstiSV: hakemus.valinnanTilanKuvausSV,
+    valinnantilanKuvauksenTekstiEN: hakemus.valinnanTilanKuvausEN,
+    poistetaankoRivi: hakemus.poistetaankoRivi,
+  }));
+
+  const urlWithQuery = new URL(
+    configuration.startImportErillishakuValinnanTulosUrl,
+  );
+
+  urlWithQuery.searchParams.set('hakuOid', haku.oid);
+  urlWithQuery.searchParams.set('hakukohdeOid', hakukohdeOid);
+  urlWithQuery.searchParams.set(
+    'hakutyyppi',
+    isKorkeakouluHaku(haku) ? 'KORKEAKOULU' : 'TOISEN_ASTEEN_OPPILAITOS',
+  );
+
+  const { data } = await client.post<{ id: string }>(
+    urlWithQuery,
+    { rivit: erillishakuHakemukset },
+    {
+      headers: {
+        'If-Unmodified-Since': (lastModified
+          ? new Date(lastModified)
+          : new Date()
+        ).toUTCString(),
+      },
+    },
+  );
+
+  const processId = data.id;
+  await processDocumentAndReturnDocumentId(processId, true);
+}
+
+export async function getErillishakuValinnanTulosExcel({
+  haku,
+  hakukohdeOid,
+  valintatapajonoOid,
+}: {
+  haku: Haku;
+  hakukohdeOid: string;
+  valintatapajonoOid?: string;
+}) {
+  const urlWithQuery = new URL(
+    configuration.startExportErillishakuValinnanTulosExcelUrl,
+  );
+  urlWithQuery.searchParams.set('hakuOid', haku.oid);
+  urlWithQuery.searchParams.set('hakukohdeOid', hakukohdeOid);
+  if (valintatapajonoOid) {
+    urlWithQuery.searchParams.set('valintatapajonoOid', valintatapajonoOid);
+  }
+  urlWithQuery.searchParams.set(
+    'hakutyyppi',
+    isKorkeakouluHaku(haku) ? 'KORKEAKOULU' : 'TOISEN_ASTEEN_OPPILAITOS',
+  );
+
+  const { data } = await client.post<{ id: string }>(urlWithQuery, '');
+
+  const processId = data.id;
+  return downloadProcessDocument(processId, true);
 }

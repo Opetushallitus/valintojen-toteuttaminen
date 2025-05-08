@@ -1,7 +1,7 @@
 import {
   isHarkinnanvarainenHakukohde,
   isKorkeakouluHaku,
-  sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
+  usesLaskentaOrSijoittelu,
 } from '@/lib/kouta/kouta-service';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { UserPermissions } from '@/lib/permissions';
@@ -75,7 +75,7 @@ export const TABS: Array<BasicTab> = [
     route: 'hakijaryhmat',
     visibleFn: ({ haku, haunAsetukset, usesValintalaskenta, permissions }) =>
       isKorkeakouluHaku(haku) &&
-      (!sijoitellaankoHaunHakukohteetLaskennanYhteydessa({
+      (usesLaskentaOrSijoittelu({
         haku,
         haunAsetukset,
       }) ||
@@ -86,7 +86,7 @@ export const TABS: Array<BasicTab> = [
     title: 'valintalaskennan-tulokset.otsikko',
     route: 'valintalaskennan-tulokset',
     visibleFn: ({ haku, haunAsetukset, usesValintalaskenta, permissions }) =>
-      (!sijoitellaankoHaunHakukohteetLaskennanYhteydessa({
+      (usesLaskentaOrSijoittelu({
         haku,
         haunAsetukset,
       }) ||
@@ -97,7 +97,7 @@ export const TABS: Array<BasicTab> = [
     title: 'sijoittelun-tulokset.otsikko',
     route: 'sijoittelun-tulokset',
     visibleFn: ({ haku, haunAsetukset, usesValintalaskenta, permissions }) =>
-      (!sijoitellaankoHaunHakukohteetLaskennanYhteydessa({
+      (usesLaskentaOrSijoittelu({
         haku,
         haunAsetukset,
       }) ||
@@ -108,7 +108,7 @@ export const TABS: Array<BasicTab> = [
     title: 'valinnan-tulokset.otsikko',
     route: 'valinnan-tulokset',
     visibleFn: ({ haku, haunAsetukset, usesValintalaskenta, permissions }) =>
-      sijoitellaankoHaunHakukohteetLaskennanYhteydessa({
+      !usesLaskentaOrSijoittelu({
         haku,
         haunAsetukset,
       }) &&

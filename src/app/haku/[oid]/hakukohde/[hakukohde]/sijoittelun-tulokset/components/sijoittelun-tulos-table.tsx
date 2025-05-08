@@ -9,28 +9,27 @@ import { ListTable } from '@/components/table/list-table';
 import {
   SijoitteluajonValintatapajonoValintatiedoilla,
   SijoittelunHakemusValintatiedoilla,
+  SijoittelunTulosActorRef,
 } from '@/lib/types/sijoittelu-types';
 import { useCallback, useMemo } from 'react';
 import { KeysMatching, ListTableColumn } from '@/components/table/table-types';
 import { MaksuCell } from './maksu-cell';
-import { IlmoittautumisCell } from './ilmoittautumis-cell';
-import { VastaanOttoCell } from './vastaanotto-cell';
-import { SijoittelunTilaCell } from './sijoittelun-tila-cell';
+import { IlmoittautumisTilaSelect } from '@/components/IlmoittautumisTilaSelect';
+import { VastaanottoTilaCell } from '@/components/VastaanottoTilaCell';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
 import { SijoittelunTuloksetActionBar } from './sijoittelun-tulos-action-bar';
-import { OtherActionsCell } from './other-actions-cell';
+import { ValinnanTuloksetOtherActionsCell } from '@/components/ValinnanTuloksetOtherActionsCell';
 import { useSelector } from '@xstate/react';
 import { isNonNull } from 'remeda';
-import {
-  MassChangeParams,
-  SijoittelunTuloksetEventType,
-  SijoittelunTuloksetState,
-  SijoittelunTulosActorRef,
-  SijoittelunTulosChangeParams,
-} from '../lib/sijoittelun-tulokset-state';
 import { useSijoittelunTulosSearch } from '../hooks/useSijoittelunTulosSearch';
 import { useSelection } from '@/hooks/useSelection';
+import { ValinnanTilaCell } from '@/components/ValinnanTilaCell';
+import {
+  ValinnanTulosChangeParams,
+  ValinnanTulosEventType,
+  ValinnanTulosState,
+} from '@/lib/state/valinnanTuloksetMachineTypes';
 
 export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
   title,
@@ -71,14 +70,14 @@ const useColumns = ({
   const state = useSelector(actorRef, (s) => s);
   const { send } = actorRef;
 
-  const { t } = useTranslations();
+  const { t, translateEntity } = useTranslations();
 
-  const disabled = !state.matches(SijoittelunTuloksetState.IDLE);
+  const disabled = !state.matches(ValinnanTulosState.IDLE);
 
   const updateForm = useCallback(
-    (changeParams: SijoittelunTulosChangeParams) => {
+    (changeParams: ValinnanTulosChangeParams) => {
       send({
-        type: SijoittelunTuloksetEventType.CHANGE,
+        type: ValinnanTulosEventType.CHANGE,
         ...changeParams,
       });
     },
@@ -110,11 +109,14 @@ const useColumns = ({
         title: t(`${TRANSLATIONS_PREFIX}.tila`),
         key: 'sijoittelunTila',
         renderFn: (props) => (
-          <SijoittelunTilaCell
+          <ValinnanTilaCell
             hakemus={props}
             haku={haku}
             updateForm={updateForm}
             disabled={disabled}
+            mode="sijoittelu"
+            t={t}
+            translateEntity={translateEntity}
           />
         ),
       }),
@@ -122,13 +124,15 @@ const useColumns = ({
         title: t(`${TRANSLATIONS_PREFIX}.vastaanottotieto`),
         key: 'vastaanottotila',
         renderFn: (props) => (
-          <VastaanOttoCell
+          <VastaanottoTilaCell
             haku={haku}
             hakukohde={hakukohde}
             valintatapajono={valintatapajono}
             hakemus={props}
             updateForm={updateForm}
             disabled={disabled}
+            mode="sijoittelu"
+            t={t}
           />
         ),
       }),
@@ -136,7 +140,7 @@ const useColumns = ({
         title: t(`${TRANSLATIONS_PREFIX}.ilmoittautumistieto`),
         key: 'ilmoittautumisTila',
         renderFn: (props) => (
-          <IlmoittautumisCell
+          <IlmoittautumisTilaSelect
             hakemus={props}
             updateForm={updateForm}
             disabled={disabled}
@@ -160,7 +164,7 @@ const useColumns = ({
         title: t(`${TRANSLATIONS_PREFIX}.toiminnot`),
         key: 'toiminnot',
         renderFn: (props) => (
-          <OtherActionsCell
+          <ValinnanTuloksetOtherActionsCell
             haku={haku}
             hakemus={props}
             hakukohde={hakukohde}
@@ -183,6 +187,7 @@ const useColumns = ({
     valintatapajono,
     kayttaaLaskentaa,
     hasNegativePisteet,
+    translateEntity,
   ]);
 };
 
@@ -239,10 +244,8 @@ export const SijoittelunTulosTable = ({
     () =>
       hakemukset.map((hakemus) => {
         const changedHakemus =
-          changedHakemukset.find(
-            (changedHakemus) =>
-              changedHakemus.hakemusOid === hakemus.hakemusOid,
-          ) ?? {};
+          changedHakemukset.find((h) => h.hakemusOid === hakemus.hakemusOid) ??
+          {};
         return {
           ...hakemus,
           ...changedHakemus,
@@ -259,12 +262,7 @@ export const SijoittelunTulosTable = ({
         hakemukset={contextHakemukset}
         selection={selection}
         resetSelection={resetSelection}
-        massStatusChangeForm={(changeParams: MassChangeParams) => {
-          sijoittelunTulosActorRef.send({
-            type: SijoittelunTuloksetEventType.MASS_CHANGE,
-            ...changeParams,
-          });
-        }}
+        actorRef={sijoittelunTulosActorRef}
       />
       <ListTable
         rowKeyProp="hakemusOid"
@@ -280,7 +278,7 @@ export const SijoittelunTulosTable = ({
           pageSize,
           label: `${t('yleinen.sivutus')} ${valintatapajono.nimi}`,
         }}
-        onSelectionChange={setSelection}
+        setSelection={setSelection}
         translateHeader={false}
         getRowCheckboxLabel={({ hakijanNimi }) =>
           t(`${TRANSLATIONS_PREFIX}.valitse-hakemus`, {

@@ -3,6 +3,7 @@ import {
   checkRow,
   expectAllSpinnersHidden,
   findTableColumnIndexByTitle,
+  mockDocumentProcess,
   selectOption,
 } from './playwright-utils';
 import { configuration } from '@/lib/configuration';
@@ -39,8 +40,12 @@ async function goToSijoittelunTulokset(page: Page) {
   );
 }
 
-async function selectTila(page: Page, expectedOption: string) {
-  await selectOption(page, 'Sijoittelun tila', expectedOption);
+async function selectTila(page: Page, option: string) {
+  await selectOption({
+    page,
+    name: 'Sijoittelun tila',
+    option,
+  });
 }
 
 test.beforeEach(async ({ page }) => await goToSijoittelunTulokset(page));
@@ -234,20 +239,22 @@ test('Ehdollista hyväksyntää ja maksusaraketta ei näytetä toisen asteen yht
 });
 
 test('Näyttää muut valinnat ehdollisuuden syylle', async ({ page }) => {
-  const ammSection = getAmmValintatapajonoContent(page);
-  await ammSection.getByLabel('Ehdollinen valinta').click();
-  await expect(ammSection.getByText('Valitse...')).toBeVisible();
-  await ammSection.getByText('Valitse...').click();
+  const nukettajaRow = getYoValintatapajonoContent(page)
+    .getByRole('row')
+    .nth(1);
+  await nukettajaRow.getByLabel('Ehdollinen valinta').click();
+  await expect(nukettajaRow.getByText('Valitse...')).toBeVisible();
+  await nukettajaRow.getByText('Valitse...').click();
   await expect(page.getByRole('option', { name: 'Muu' })).toBeVisible();
   await page.getByRole('option', { name: 'Muu' }).click();
   await expect(
-    ammSection.getByLabel('Ehdollisuuden syy suomeksi'),
+    nukettajaRow.getByLabel('Ehdollisuuden syy suomeksi'),
   ).toBeVisible();
   await expect(
-    ammSection.getByLabel('Ehdollisuuden syy ruotsiksi'),
+    nukettajaRow.getByLabel('Ehdollisuuden syy ruotsiksi'),
   ).toBeVisible();
   await expect(
-    ammSection.getByLabel('Ehdollisuuden syy englanniksi'),
+    nukettajaRow.getByLabel('Ehdollisuuden syy englanniksi'),
   ).toBeVisible();
 });
 
@@ -443,7 +450,11 @@ test.describe('Valintaesityksen hyväksyminen', () => {
   });
 
   test('Tee muutos ja hyväksy', async ({ page }) => {
-    await selectOption(page, 'Ilmoittautumistieto', 'Ei ilmoittautunut');
+    await selectOption({
+      page,
+      name: 'Ilmoittautumistieto',
+      option: 'Ei ilmoittautunut',
+    });
     await getYoValintatapajonoContent(page)
       .getByRole('button', { name: 'Hyväksy ja tallenna' })
       .click();
@@ -560,28 +571,11 @@ test.describe('Hakemuksen muut toiminnot', () => {
   });
 
   test('Muodosta hyväksymiskirje', async ({ page }) => {
-    await page.route(
-      '*/**/valintalaskentakoostepalvelu/resources/viestintapalvelu/hyvaksymiskirjeet/aktivoi*',
-      async (route) => {
-        await route.fulfill({
-          status: 200,
-          json: { id: 'dokumentti_id' },
-        });
-      },
-    );
-    await page.route(
-      '*/**/valintalaskentakoostepalvelu/resources/dokumenttiprosessi/dokumentti_id',
-      async (route) => {
-        const readyProcess = {
-          kokonaistyo: { valmis: true },
-          dokumenttiId: 'dokumentti_id',
-        };
-        await route.fulfill({
-          status: 200,
-          json: readyProcess,
-        });
-      },
-    );
+    await mockDocumentProcess({
+      page,
+      urlMatcher:
+        '*/**/valintalaskentakoostepalvelu/resources/viestintapalvelu/hyvaksymiskirjeet/aktivoi*',
+    });
     await page
       .getByRole('row', { name: 'Nukettaja Ruhtinas' })
       .getByRole('button', { name: 'Muut toiminnot' })
@@ -649,7 +643,12 @@ test.describe('Hakemuksen muut toiminnot', () => {
     const daculaRow = yoAccordionContent.getByRole('row', {
       name: 'Dacula Kreivi',
     });
-    await selectOption(page, 'Ilmoittautumistieto', 'Ei tehty', daculaRow);
+    await selectOption({
+      page,
+      locator: daculaRow,
+      name: 'Ilmoittautumistieto',
+      option: 'Ei tehty',
+    });
     await expect(yoMerkitseMyohastyneeksiButton).toBeEnabled();
     await yoMerkitseMyohastyneeksiButton.click();
     const confirmModal = page.getByRole('dialog', {
@@ -666,11 +665,9 @@ test.describe('Hakemuksen muut toiminnot', () => {
 
     const [request] = await Promise.all([
       page.waitForRequest(
-        (request) =>
-          request
-            .url()
-            .includes('/valinta-tulos-service/auth/valinnan-tulos') &&
-          request.method() === 'PATCH',
+        (req) =>
+          req.url().includes('/valinta-tulos-service/auth/valinnan-tulos') &&
+          req.method() === 'PATCH',
       ),
       confirmModal
         .getByRole('button', { name: 'Merkitse myöhästyneeksi' })
@@ -699,10 +696,18 @@ test.describe('Hakukohteen muut toiminnot', () => {
   test('Tiedostojen latausvaihtoehdot eivät ole sallittuja', async ({
     page,
   }) => {
-    await page.getByLabel('Muut toiminnot hakukohteelle').click();
-    await expect(page.getByText('Lataa hyväksymiskirjeet')).toBeDisabled();
-    await expect(page.getByText('Lataa osoitetarrat')).toBeDisabled();
-    await expect(page.getByText('Lataa tulokset')).toBeDisabled();
+    await page
+      .getByRole('button', { name: 'Muut toiminnot hakukohteelle' })
+      .click();
+    await expect(
+      page.getByRole('menuitem', { name: 'Lataa hyväksymiskirjeet' }),
+    ).toBeDisabled();
+    await expect(
+      page.getByRole('menuitem', { name: 'Lataa osoitetarrat' }),
+    ).toBeDisabled();
+    await expect(
+      page.getByRole('menuitem', { name: 'Lataa tulokset' }),
+    ).toBeDisabled();
   });
 
   test('Lähetä vastaanottoposti', async ({ page }) => {
@@ -715,38 +720,25 @@ test.describe('Hakukohteen muut toiminnot', () => {
         });
       },
     );
-    await page.getByLabel('Muut toiminnot hakukohteelle').click();
+    await page
+      .getByRole('button', { name: 'Muut toiminnot hakukohteelle' })
+      .click();
     await expect(
       page.getByText('Lähetä vastaanottoposti hakukohteelle'),
     ).toBeVisible();
     await page.getByText('Lähetä vastaanottoposti hakukohteelle').click();
-    await expect(page.getByText('Sähköpostien lähetys onnistui')).toBeVisible();
+    await expect(page.getByText('Sähköpostin lähetys onnistui')).toBeVisible();
   });
 
   test('Muodosta hyväksymiskirjeet', async ({ page }) => {
-    await page.route(
-      '*/**/valintalaskentakoostepalvelu/resources/viestintapalvelu/hyvaksymiskirjeet/aktivoi*',
-      async (route) => {
-        await route.fulfill({
-          status: 200,
-          json: { id: 'dokumentti_id' },
-        });
-      },
-    );
-    await page.route(
-      '*/**/valintalaskentakoostepalvelu/resources/dokumenttiprosessi/dokumentti_id',
-      async (route) => {
-        const readyProcess = {
-          kokonaistyo: { valmis: true },
-          dokumenttiId: 'dokumentti_id',
-        };
-        await route.fulfill({
-          status: 200,
-          json: readyProcess,
-        });
-      },
-    );
-    await page.getByLabel('Muut toiminnot hakukohteelle').click();
+    await mockDocumentProcess({
+      page,
+      urlMatcher:
+        '*/**/valintalaskentakoostepalvelu/resources/viestintapalvelu/hyvaksymiskirjeet/aktivoi*',
+    });
+    await page
+      .getByRole('button', { name: 'Muut toiminnot hakukohteelle' })
+      .click();
     await expect(page.getByText('Muodosta hyväksymiskirjeet')).toBeVisible();
     await page.getByText('Muodosta hyväksymiskirjeet').click();
     await page.getByLabel('Vain ne hyväksytyt, jotka eiv').click();
@@ -759,34 +751,21 @@ test.describe('Hakukohteen muut toiminnot', () => {
     await expect(
       page.getByText('Hyväksymiskirjeiden muodostaminen'),
     ).toBeHidden();
-    await page.getByLabel('Muut toiminnot hakukohteelle').click();
+    await page
+      .getByRole('button', { name: 'Muut toiminnot hakukohteelle' })
+      .click();
     await expect(page.getByText('Lataa hyväksymiskirjeet')).toBeEnabled();
   });
 
   test('Muodosta kirjeet ei-hyväksytyille', async ({ page }) => {
-    await page.route(
-      '*/**/valintalaskentakoostepalvelu/resources/viestintapalvelu/hakukohteessahylatyt/aktivoi*',
-      async (route) => {
-        await route.fulfill({
-          status: 200,
-          json: { id: 'dokumentti_id' },
-        });
-      },
-    );
-    await page.route(
-      '*/**/valintalaskentakoostepalvelu/resources/dokumenttiprosessi/dokumentti_id',
-      async (route) => {
-        const readyProcess = {
-          kokonaistyo: { valmis: true },
-          dokumenttiId: 'dokumentti_id',
-        };
-        await route.fulfill({
-          status: 200,
-          json: readyProcess,
-        });
-      },
-    );
-    await page.getByLabel('Muut toiminnot hakukohteelle').click();
+    await mockDocumentProcess({
+      page,
+      urlMatcher:
+        '*/**/valintalaskentakoostepalvelu/resources/viestintapalvelu/hakukohteessahylatyt/aktivoi*',
+    });
+    await page
+      .getByRole('button', { name: 'Muut toiminnot hakukohteelle' })
+      .click();
     await expect(
       page.getByText('Muodosta kirjeet ei-hyväksytyille'),
     ).toBeVisible();
@@ -800,29 +779,15 @@ test.describe('Hakukohteen muut toiminnot', () => {
   });
 
   test('Muodosta osoitetarrat', async ({ page }) => {
-    await page.route(
-      '*/**/valintalaskentakoostepalvelu/resources/viestintapalvelu/osoitetarrat/sijoittelussahyvaksytyille/aktivoi*',
-      async (route) => {
-        await route.fulfill({
-          status: 200,
-          json: { id: 'dokumentti_id_tarrat' },
-        });
-      },
-    );
-    await page.route(
-      '*/**/valintalaskentakoostepalvelu/resources/dokumenttiprosessi/dokumentti_id_tarrat',
-      async (route) => {
-        const readyProcess = {
-          kokonaistyo: { valmis: true },
-          dokumenttiId: 'dokumentti_id_tarrat',
-        };
-        await route.fulfill({
-          status: 200,
-          json: readyProcess,
-        });
-      },
-    );
-    await page.getByLabel('Muut toiminnot hakukohteelle').click();
+    await mockDocumentProcess({
+      page,
+      urlMatcher:
+        '*/**/valintalaskentakoostepalvelu/resources/viestintapalvelu/osoitetarrat/sijoittelussahyvaksytyille/aktivoi*',
+      documentId: 'documentti_id_tarrat',
+    });
+    await page
+      .getByRole('button', { name: 'Muut toiminnot hakukohteelle' })
+      .click();
     await expect(
       page.getByText('Muodosta hyväksytyille osoitetarrat'),
     ).toBeVisible();
@@ -831,7 +796,9 @@ test.describe('Hakukohteen muut toiminnot', () => {
     await expect(page.getByRole('button', { name: 'Lataa' })).toBeVisible();
     await page.getByLabel('Sulje').click();
     await expect(page.getByText('Osoitetarrojen muodostaminen')).toBeHidden();
-    await page.getByLabel('Muut toiminnot hakukohteelle').click();
+    await page
+      .getByRole('button', { name: 'Muut toiminnot hakukohteelle' })
+      .click();
     await expect(page.getByText('Lataa osoitetarrat')).toBeEnabled();
   });
 });

@@ -29,6 +29,7 @@ jobs:
     timeout-minutes: 15
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: true # Lopetetaan, jos testit epäonnistuu yhdellä selaimella
       matrix:
         browser: [chromium, firefox, webkit]
     steps:

@@ -1,6 +1,7 @@
 'use client';
 
 import { getHakemuksetQueryOptions } from '@/lib/ataru/ataru-service';
+import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 import { HakemuksenHarkinnanvaraisuus } from '@/lib/types/harkinnanvaraiset-types';
 import { getHarkinnanvaraisetTilat } from '@/lib/valintalaskenta/valintalaskenta-service';
 import { getHarkinnanvaraisuudetHakemuksille } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
@@ -12,15 +13,10 @@ import {
 import { useMemo } from 'react';
 import { indexBy, prop } from 'remeda';
 
-type UsePisteTuloksetProps = {
-  hakuOid: string;
-  hakukohdeOid: string;
-};
-
 export const harkinnanvaraisetTilatOptions = ({
   hakuOid,
   hakukohdeOid,
-}: UsePisteTuloksetProps) =>
+}: KoutaOidParams) =>
   queryOptions({
     queryKey: ['getHarkinnanvaraisetTilat', hakuOid, hakukohdeOid],
     queryFn: () => getHarkinnanvaraisetTilat({ hakuOid, hakukohdeOid }),
@@ -29,10 +25,7 @@ export const harkinnanvaraisetTilatOptions = ({
 export const useHarkinnanvaraisetHakemukset = ({
   hakuOid,
   hakukohdeOid,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
-}): Array<HakemuksenHarkinnanvaraisuus> => {
+}: KoutaOidParams): Array<HakemuksenHarkinnanvaraisuus> => {
   const { data: hakemukset } = useSuspenseQuery(
     getHakemuksetQueryOptions({ hakuOid, hakukohdeOid }),
   );

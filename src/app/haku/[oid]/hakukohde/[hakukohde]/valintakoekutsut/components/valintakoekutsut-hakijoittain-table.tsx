@@ -24,9 +24,9 @@ export const ValintakoekutsutHakijoittainTable = ({
   kokeet: Array<Valintakoe>;
   data: Array<ValintakoekutsuHakijoittain>;
   sort: string;
-  setSort: (sort: string) => void;
+  setSort: (newSort: string) => void;
   page: number;
-  setPage: (page: number) => void;
+  setPage: (newPage: number) => void;
   pageSize: number;
 }) => {
   const { t } = useTranslations();

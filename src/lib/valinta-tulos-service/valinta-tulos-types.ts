@@ -1,7 +1,7 @@
 import { MaksunTila } from '../ataru/ataru-types';
 import {
   IlmoittautumisTila,
-  SijoittelunTila,
+  ValinnanTila,
   VastaanottoTila,
 } from '../types/sijoittelu-types';
 
@@ -17,22 +17,27 @@ export type ValinnanTulosModel = {
   valintatapajonoOid: string;
   hakemusOid: string;
   henkiloOid: string;
+  valinnantila: ValinnanTila;
   vastaanottotila: VastaanottoTila;
-  valinnantila: SijoittelunTila;
   ilmoittautumistila: IlmoittautumisTila;
   julkaistavissa: boolean;
   ehdollisestiHyvaksyttavissa: boolean;
-  ehdollisenHyvaksymisenEhtoKoodi?: string | null;
-  ehdollisenHyvaksymisenEhtoFI?: string | null;
-  ehdollisenHyvaksymisenEhtoSV?: string | null;
-  ehdollisenHyvaksymisenEhtoEN?: string | null;
+  ehdollisenHyvaksymisenEhtoKoodi?: string;
+  ehdollisenHyvaksymisenEhtoFI?: string;
+  ehdollisenHyvaksymisenEhtoSV?: string;
+  ehdollisenHyvaksymisenEhtoEN?: string;
+  valinnantilanKuvauksenTekstiFI?: string;
+  valinnantilanKuvauksenTekstiSV?: string;
+  valinnantilanKuvauksenTekstiEN?: string;
   hyvaksyttyVarasijalta: boolean;
   hyvaksyPeruuntunut: boolean;
+  vastaanottoDeadline?: string;
+  vastaanottoDeadlineMennyt?: boolean;
 };
 
 export type HakemusChangeDetail = {
   field: string;
-  from: string | boolean;
+  from?: string | boolean;
   to: string | boolean;
 };
 
@@ -62,7 +67,7 @@ export type SijoitteluajonTuloksetResponseData = {
       hakijaOid: string;
       hakemusOid: string;
       pisteet: number;
-      tila: SijoittelunTila;
+      tila: ValinnanTila;
       valintatapajonoOid: string;
       hyvaksyttyHakijaryhmista: Array<string>;
       varasijanNumero: number;
@@ -99,6 +104,9 @@ export type SijoitteluajonTuloksetWithValintaEsitysResponseData = {
     ehdollisenHyvaksymisenEhtoFI?: string;
     ehdollisenHyvaksymisenEhtoSV?: string;
     ehdollisenHyvaksymisenEhtoEN?: string;
+    valinnantilanKuvauksenTekstiFI?: string;
+    valinnantilanKuvauksenTekstiSV?: string;
+    valinnantilanKuvauksenTekstiEN?: string;
     vastaanottoDeadlineMennyt?: boolean;
     vastaanottoDeadline?: string;
     hyvaksyttyHarkinnanvaraisesti: boolean;
@@ -120,4 +128,29 @@ export type SijoitteluajonTuloksetWithValintaEsitysResponseData = {
 export type SijoittelunTulosBasicInfo = {
   startDate: Date;
   endDate: Date;
+};
+
+export type HakemuksenValinnanTulos = {
+  hakemusOid: string;
+  hakijaOid: string;
+  hakijanNimi: string;
+  valintatapajonoOid?: string;
+  valinnanTila?: ValinnanTila;
+  valinnanTilanKuvausFI?: string;
+  valinnanTilanKuvausSV?: string;
+  valinnanTilanKuvausEN?: string;
+  ehdollisestiHyvaksyttavissa?: boolean;
+  hyvaksyttyVarasijalta?: boolean;
+  ehdollisenHyvaksymisenEhtoKoodi?: string;
+  ehdollisenHyvaksymisenEhtoFI?: string;
+  ehdollisenHyvaksymisenEhtoSV?: string;
+  ehdollisenHyvaksymisenEhtoEN?: string;
+  vastaanottoTila?: VastaanottoTila;
+  ilmoittautumisTila?: IlmoittautumisTila;
+  julkaistavissa?: boolean;
+  hyvaksyPeruuntunut?: boolean;
+  maksunTila?: string;
+  siirtynytToisestaValintatapajonosta?: boolean;
+  vastaanottoDeadline?: string;
+  vastaanottoDeadlineMennyt?: boolean;
 };

@@ -34,11 +34,7 @@ import { OphCheckbox } from '@opetushallitus/oph-design-system';
 import { ValintakoekutsutHakijoittainTable } from './components/valintakoekutsut-hakijoittain-table';
 import { FormBox } from '@/components/form-box';
 import { ValintakoekutsutExcelDownloadButton } from './components/valintakoekutsut-excel-download-button';
-
-type ValintakoekutsutContentProps = {
-  hakuOid: string;
-  hakukohdeOid: string;
-};
+import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 
 const PaginatedValintakoekutsut = ({
   hakuOid,
@@ -46,9 +42,7 @@ const PaginatedValintakoekutsut = ({
   valintakoeTunniste,
   valintakoeNimi,
   valintakoeKutsut,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
+}: KoutaOidParams & {
   valintakoeTunniste: string;
   valintakoeNimi: string;
   valintakoeKutsut: Array<ValintakoeKutsuItem>;
@@ -79,10 +73,8 @@ const ValintakoekutsutHakijoittain = ({
   hakuOid,
   hakukohdeOid,
   vainKutsuttavat,
-}: {
+}: KoutaOidParams & {
   vainKutsuttavat: boolean;
-  hakuOid: string;
-  hakukohdeOid: string;
 }) => {
   const valintakoekutsutHakijoittain = useValintakoekutsutHakijoittain({
     hakuOid,
@@ -127,10 +119,8 @@ const ValintakoekutsutKokeittain = ({
   hakuOid,
   hakukohdeOid,
   vainKutsuttavat,
-}: {
+}: KoutaOidParams & {
   vainKutsuttavat: boolean;
-  hakuOid: string;
-  hakukohdeOid: string;
 }) => {
   const valintakoekutsutKokeittain = useValintakoekutsutKokeittain({
     hakuOid,
@@ -174,10 +164,7 @@ const ValintakoekutsutKokeittain = ({
 const parseRyhmittely = (ryhmittelyStr: string) =>
   ryhmittelyParser.parse(ryhmittelyStr);
 
-function ValintakoekutsutContent({
-  hakuOid,
-  hakukohdeOid,
-}: ValintakoekutsutContentProps) {
+function ValintakoekutsutContent({ hakuOid, hakukohdeOid }: KoutaOidParams) {
   const { t } = useTranslations();
 
   const {

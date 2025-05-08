@@ -7,7 +7,7 @@ import {
   SijoitteluajonTulokset,
   SijoittelunHakemus,
   SijoittelunHakemusValintatiedoilla,
-  SijoittelunTila,
+  ValinnanTila,
   SijoittelunValintatapajonoTulos,
   VastaanottoTila,
 } from '../types/sijoittelu-types';
@@ -23,6 +23,7 @@ import {
 } from './valinta-tulos-types';
 import { toFormattedDateTimeString } from '../localization/translation-utils';
 import { queryOptions } from '@tanstack/react-query';
+import { KoutaOidParams } from '../kouta/kouta-types';
 
 type SijoittelunTulosResponseData = {
   valintatapajonoNimi: string;
@@ -67,10 +68,7 @@ export const getSijoittelunTulokset = async (
 export const getLatestSijoitteluajonTuloksetWithValintaEsitysQueryOptions = ({
   hakuOid,
   hakukohdeOid,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
-}) =>
+}: KoutaOidParams) =>
   queryOptions({
     queryKey: [
       'getLatestSijoitteluajonTuloksetWithValintaEsitys',
@@ -127,7 +125,7 @@ export const getLatestSijoitteluAjonTuloksetForHakukohde = async (
 };
 
 type SijoittelunHakutoiveenValintatapajonoModel = {
-  tila: SijoittelunTila;
+  tila: ValinnanTila;
   pisteet: number;
   valintatapajonoOid: string;
   varasijanNumero: number;
@@ -191,7 +189,7 @@ export const saveMaksunTilanMuutokset = async (
   }
 };
 
-const pickValinnanTulosProps = (value: ValinnanTulosModel) =>
+const pickValinnanTulosProps = (value: Partial<ValinnanTulosModel>) =>
   pick(value, [
     'hakukohdeOid',
     'valintatapajonoOid',
@@ -217,7 +215,7 @@ export const saveValinnanTulokset = async ({
 }: {
   valintatapajonoOid: string;
   lastModified: Date | string | null;
-  tulokset: Array<ValinnanTulosModel>;
+  tulokset: Array<Partial<ValinnanTulosModel>>;
 }) => {
   const ifUnmodifiedSince = (
     lastModified ? new Date(lastModified) : new Date()
@@ -243,21 +241,26 @@ export const saveValinnanTulokset = async ({
   return data;
 };
 
-export const saveSijoitteluAjonTulokset = async (
-  valintatapajonoOid: string,
-  hakukohdeOid: string,
-  lastModified: string,
-  hakemukset: Array<SijoittelunHakemusValintatiedoilla>,
-) => {
+export const saveSijoitteluAjonTulokset = async ({
+  valintatapajonoOid,
+  hakukohdeOid,
+  lastModified,
+  hakemukset,
+}: {
+  valintatapajonoOid: string;
+  hakukohdeOid: string;
+  lastModified?: string | null;
+  hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
+}) => {
   const valintaTulokset = hakemukset.map((h) => {
     return {
       hakukohdeOid,
       valintatapajonoOid,
       hakemusOid: h.hakemusOid,
       henkiloOid: h.hakijaOid,
-      vastaanottotila: h.vastaanottotila,
+      vastaanottotila: h.vastaanottoTila,
       ilmoittautumistila: h.ilmoittautumisTila,
-      valinnantila: h.tila,
+      valinnantila: h.valinnanTila,
       julkaistavissa: h.julkaistavissa,
       ehdollisestiHyvaksyttavissa: h.ehdollisestiHyvaksyttavissa,
       ehdollisenHyvaksymisenEhtoKoodi: h.ehdollisenHyvaksymisenEhtoKoodi,
@@ -271,7 +274,7 @@ export const saveSijoitteluAjonTulokset = async (
 
   await saveValinnanTulokset({
     valintatapajonoOid,
-    lastModified: lastModified,
+    lastModified: lastModified ?? null,
     tulokset: valintaTulokset,
   });
 
@@ -295,7 +298,36 @@ export const hyvaksyValintaEsitys = async (valintatapajonoOid: string) => {
   );
 };
 
-export const getValinnanTulokset = async ({
+export type HakukohteenValinnanTuloksetData = {
+  lastModified?: string;
+  data: Record<string, ValinnanTulosModel>;
+};
+
+export const getHakukohteenValinnanTuloksetQueryOptions = (
+  params: KoutaOidParams,
+) =>
+  queryOptions({
+    queryKey: [
+      'getHakukohteenValinnanTulokset',
+      params.hakuOid,
+      params.hakukohdeOid,
+    ],
+    queryFn: () => getHakukohteenValinnanTulokset(params),
+  });
+
+export const getHakukohteenValinnanTulokset = async (
+  params: KoutaOidParams,
+): Promise<HakukohteenValinnanTuloksetData> => {
+  const { data, headers } = await client.get<Array<ValinnanTulosModel>>(
+    configuration.hakukohteenValinnanTulosUrl(params),
+  );
+  return {
+    lastModified: headers.get('X-Last-Modified') ?? undefined,
+    data: indexBy(data ?? [], prop('hakemusOid')),
+  };
+};
+
+export const getHakemuksenValinnanTulokset = async ({
   hakemusOid,
 }: {
   hakemusOid: string;
@@ -354,7 +386,21 @@ type ChangeHistoryEventResponse = {
   ];
 };
 
-export const changeHistoryForHakemus = async (
+export const getChangeHistoryForHakemusQueryOptions = (params: {
+  hakemusOid: string;
+  valintatapajonoOid: string;
+}) =>
+  queryOptions({
+    queryKey: [
+      'getChangeHistoryForHakemus',
+      params.hakemusOid,
+      params.valintatapajonoOid,
+    ],
+    queryFn: () =>
+      getChangeHistoryForHakemus(params.hakemusOid, params.valintatapajonoOid),
+  });
+
+export const getChangeHistoryForHakemus = async (
   hakemusOid: string,
   valintatapajonoOid: string,
 ): Promise<Array<HakemusChangeEvent>> => {

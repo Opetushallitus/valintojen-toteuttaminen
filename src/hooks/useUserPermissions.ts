@@ -22,12 +22,12 @@ const getUserPermissions = async (): Promise<UserPermissions> => {
   }>(configuration.kayttoikeusUrl);
   const organizations: Array<OrganizationPermissions> =
     response.data.organisaatiot
-      .map((o) => {
-        const permissions: Array<Permission> = o.kayttooikeudet
+      .map((org) => {
+        const permissions: Array<Permission> = org.kayttooikeudet
           .filter((o) => o.palvelu === SERVICE_KEY)
           .map((o) => o.oikeus);
         return permissions.length > 0
-          ? { organizationOid: o.organisaatioOid, permissions }
+          ? { organizationOid: org.organisaatioOid, permissions }
           : null;
       })
       .filter(isNonNull);

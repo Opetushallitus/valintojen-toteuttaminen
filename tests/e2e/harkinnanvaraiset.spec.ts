@@ -149,7 +149,11 @@ test('Näyttää ilmoituksen kun harkinnanvaraisen tilan päivitys onnistuu', as
       }
     },
   );
-  await selectOption(page, HARKINNANVARAINEN_INPUT_NAME, 'Hyväksytty');
+  await selectOption({
+    page,
+    name: HARKINNANVARAINEN_INPUT_NAME,
+    option: 'Hyväksytty',
+  });
   await page.getByRole('button', { name: 'Tallenna' }).click();
   await expectAlertTextVisible(
     page,
@@ -169,7 +173,11 @@ test('Näyttää ilmoituksen kun harkinnanvaraisen tilan päivitys epäonnistuu'
     },
   );
 
-  await selectOption(page, HARKINNANVARAINEN_INPUT_NAME, 'Hyväksytty');
+  await selectOption({
+    page,
+    name: HARKINNANVARAINEN_INPUT_NAME,
+    option: 'Hyväksytty',
+  });
   await page.getByRole('button', { name: 'Tallenna' }).click();
 
   await expectAlertTextVisible(
@@ -181,10 +189,22 @@ test('Näyttää ilmoituksen kun harkinnanvaraisen tilan päivitys epäonnistuu'
 test('Pyytää käyttäjältä vahvistusta navigointiin kun on tallentamattomia muutoksia', async ({
   page,
 }) => {
-  await selectOption(page, HARKINNANVARAINEN_INPUT_NAME, 'Hyväksytty');
+  await selectOption({
+    page,
+    name: HARKINNANVARAINEN_INPUT_NAME,
+    option: 'Hyväksytty',
+  });
   // Tyhjennetään, ja valitaan uudelleen, jotta useConfirmChangesBeforeNavigation-hook ajetaan toisen kerran
-  await selectOption(page, HARKINNANVARAINEN_INPUT_NAME, NDASH);
-  await selectOption(page, HARKINNANVARAINEN_INPUT_NAME, 'Hyväksytty');
+  await selectOption({
+    page,
+    name: HARKINNANVARAINEN_INPUT_NAME,
+    option: NDASH,
+  });
+  await selectOption({
+    page,
+    name: HARKINNANVARAINEN_INPUT_NAME,
+    option: 'Hyväksytty',
+  });
 
   const confirmationDialog = page.getByRole('dialog').filter({
     hasText:

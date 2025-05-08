@@ -1,3 +1,4 @@
+import { KoutaOidParams } from './kouta/kouta-types';
 import { DokumenttiTyyppi } from './valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-types';
 
 export const DOMAIN =
@@ -99,13 +100,7 @@ export const configuration = {
     status,
   }: ValintatapajonoStatusParams) =>
     `${DOMAIN}/valintalaskenta-laskenta-service/resources/valintatapajono/${valintatapajonoOid}/valmissijoiteltavaksi?status=${status}`,
-  getHarkinnanvaraisetTilatUrl: ({
-    hakuOid,
-    hakukohdeOid,
-  }: {
-    hakuOid: string;
-    hakukohdeOid: string;
-  }) =>
+  getHarkinnanvaraisetTilatUrl: ({ hakuOid, hakukohdeOid }: KoutaOidParams) =>
     `${DOMAIN}/valintalaskenta-laskenta-service/resources/harkinnanvarainenhyvaksynta/haku/${hakuOid}/hakukohde/${hakukohdeOid}`,
   setHarkinnanvaraisetTilatUrl: `${DOMAIN}/valintalaskenta-laskenta-service/resources/harkinnanvarainenhyvaksynta`,
   jarjestyskriteeriMuokkausUrl: ({
@@ -126,10 +121,7 @@ export const configuration = {
   koostetutPistetiedotHakukohteelleUrl: ({
     hakuOid,
     hakukohdeOid,
-  }: {
-    hakuOid: string;
-    hakukohdeOid: string;
-  }) =>
+  }: KoutaOidParams) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/haku/${hakuOid}/hakukohde/${hakukohdeOid}`,
   koostetutPistetiedotHakemukselleUrl: ({
     hakemusOid,
@@ -151,6 +143,7 @@ export const configuration = {
   startExportOsoitetarratSijoittelussaHyvaksytyilleUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/osoitetarrat/sijoittelussahyvaksytyille/aktivoi`,
   startExportOsoitetarratHaulleUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/sijoitteluntuloshaulle/osoitetarrat`,
   startExportPistesyottoExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/pistesyotto/vienti`,
+  startImportErillishakuValinnanTulosUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/erillishaku/tuonti/ui`,
   kirjepohjat: ({
     templateName,
     language,
@@ -169,6 +162,7 @@ export const configuration = {
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/proxy/viestintapalvelu/count/haku/${hakuOid}`,
   julkaiseTuloskirjeetUrl: ({ hakuOid }: { hakuOid: string }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/proxy/viestintapalvelu/publish/haku/${hakuOid}`,
+  startExportErillishakuValinnanTulosExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/erillishaku/vienti`,
   hyvaksymiskirjeetUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/hyvaksymiskirjeet/aktivoi`,
   dokumenttiSeurantaUrl: ({ uuid }: { uuid: string }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/dokumentinseuranta/${uuid}`,
@@ -189,21 +183,13 @@ export const configuration = {
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/dokumentit/lataa/${dokumenttiId}`,
   startImportPistesyottoUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/pistesyotto/tuonti`,
   harkinnanvaraisuudetHakemuksilleUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/harkinnanvaraisuus/hakemuksille`,
-  myohastyneetHakemuksetUrl: ({
-    hakuOid,
-    hakukohdeOid,
-  }: {
-    hakuOid: string;
-    hakukohdeOid: string;
-  }) =>
+  myohastyneetHakemuksetUrl: ({ hakuOid, hakukohdeOid }: KoutaOidParams) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/proxy/valintatulosservice/myohastyneet/haku/${hakuOid}/hakukohde/${hakukohdeOid}`,
   hakijanTilatValintatapajonolleUrl: ({
     hakuOid,
     hakukohdeOid,
     valintatapajonoOid,
-  }: {
-    hakuOid: string;
-    hakukohdeOid: string;
+  }: KoutaOidParams & {
     valintatapajonoOid: string;
   }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/proxy/valintatulosservice/tilahakijalle/haku/${hakuOid}/hakukohde/${hakukohdeOid}/valintatapajono/${valintatapajonoOid}`,
@@ -225,6 +211,8 @@ export const configuration = {
     valintatapajonoOid: string;
   }) =>
     `${DOMAIN}/valinta-tulos-service/auth/valinnan-tulos/${valintatapajonoOid}`,
+  hakukohteenValinnanTulosUrl: ({ hakuOid, hakukohdeOid }: KoutaOidParams) =>
+    `${DOMAIN}/valinta-tulos-service/auth/valinnan-tulos?hakuOid=${hakuOid}&hakukohdeOid=${hakukohdeOid}`,
   hakemuksenValinnanTulosUrl: ({ hakemusOid }: { hakemusOid: string }) =>
     `${DOMAIN}/valinta-tulos-service/auth/valinnan-tulos/hakemus/?hakemusOid=${hakemusOid}`,
   vastaanottopostiHakemukselleUrl: ({ hakemusOid }: { hakemusOid: string }) =>

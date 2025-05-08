@@ -9,16 +9,9 @@ import { hakuQueryOptions } from '@/lib/kouta/useHaku';
 import { hakukohdeQueryOptions } from '@/lib/kouta/useHakukohde';
 import { haunAsetuksetQueryOptions } from '@/lib/ohjausparametrit/useHaunAsetukset';
 import { FullClientSpinner } from '@/components/client-spinner';
+import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 
-type ValinnanHallintaContentParams = {
-  hakuOid: string;
-  hakukohdeOid: string;
-};
-
-const ValinnanHallintaContent = ({
-  hakuOid,
-  hakukohdeOid,
-}: ValinnanHallintaContentParams) => {
+const ValinnanHallintaContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const [hakuQuery, hakukohdeQuery, haunAsetuksetQuery] = useSuspenseQueries({
     queries: [
       hakuQueryOptions({ hakuOid }),

@@ -22,7 +22,7 @@ import {
   SijoitteluajonTulokset,
   SijoitteluajonValintatapajono,
   SijoittelunHakemus,
-  SijoittelunTila,
+  ValinnanTila,
 } from '../types/sijoittelu-types';
 import {
   filter,
@@ -41,7 +41,12 @@ import {
   HarkinnanvaraisestiHyvaksytty,
 } from '../types/harkinnanvaraiset-types';
 import { queryOptions } from '@tanstack/react-query';
-import { getFullnameOfHakukohde, Haku, Hakukohde } from '../kouta/kouta-types';
+import {
+  getFullnameOfHakukohde,
+  Haku,
+  Hakukohde,
+  KoutaOidParams,
+} from '../kouta/kouta-types';
 import {
   ValinnanvaiheTyyppi,
   ValintaryhmaHakukohteilla,
@@ -55,7 +60,6 @@ const createLaskentaURL = ({
   laskentaTyyppi,
   haku,
   hakukohteet,
-  sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
   valinnanvaiheTyyppi,
   valinnanvaiheNumero,
   valintaryhma,
@@ -63,7 +67,6 @@ const createLaskentaURL = ({
   laskentaTyyppi: LaskentaTyyppi;
   haku: Haku;
   hakukohteet: Array<Hakukohde> | null;
-  sijoitellaankoHaunHakukohteetLaskennanYhteydessa: boolean;
   valinnanvaiheTyyppi?: ValinnanvaiheTyyppi;
   valinnanvaiheNumero?: number;
   valintaryhma?: ValintaryhmaHakukohteilla;
@@ -75,10 +78,6 @@ const createLaskentaURL = ({
 
   const laskentaUrl = new URL(
     `${configuration.valintalaskentakerrallaUrl}/haku/${haku.oid}/tyyppi/${laskentaTyyppi}${urlWhitelistPart}`,
-  );
-  laskentaUrl.searchParams.set(
-    'erillishaku',
-    '' + sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
   );
   laskentaUrl.searchParams.set('haunnimi', translateName(haku.nimi));
   laskentaUrl.searchParams.set(
@@ -118,14 +117,12 @@ export const kaynnistaLaskenta = async ({
   hakukohteet,
   valintaryhma,
   valinnanvaiheTyyppi,
-  sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
   valinnanvaiheNumero,
 }: {
   haku: Haku;
   hakukohteet: Array<Hakukohde> | null;
   valintaryhma?: ValintaryhmaHakukohteilla;
   valinnanvaiheTyyppi?: ValinnanvaiheTyyppi;
-  sijoitellaankoHaunHakukohteetLaskennanYhteydessa: boolean;
   valinnanvaiheNumero?: number;
 }): Promise<StartedLaskentaInfo> => {
   let laskentaTyyppi: LaskentaTyyppi = 'HAKU';
@@ -140,7 +137,6 @@ export const kaynnistaLaskenta = async ({
     haku,
     hakukohteet,
     valinnanvaiheTyyppi,
-    sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
     valinnanvaiheNumero,
     valintaryhma,
   });
@@ -404,7 +400,7 @@ const findVastaanottotila = (
   }
 };
 
-const sijoittelunTilaOrdinalForHakemus = (tila: SijoittelunTila): number => {
+const sijoittelunTilaOrdinalForHakemus = (tila: ValinnanTila): number => {
   return [
     'VARALLA',
     'HYVAKSYTTY',
@@ -458,17 +454,14 @@ const getKiintio = (
 export const getHarkinnanvaraisetTilat = async ({
   hakuOid,
   hakukohdeOid,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
-}) => {
+}: KoutaOidParams) => {
   const { data } = await client.get<Array<HarkinnanvaraisestiHyvaksytty>>(
     configuration.getHarkinnanvaraisetTilatUrl({ hakuOid, hakukohdeOid }),
   );
   return data;
 };
 
-export const setHarkinnanvaraisetTilat = async (
+export const saveHarkinnanvaraisetTilat = async (
   harkinnanvaraisetTilat: Array<
     Omit<HarkinnanvaraisestiHyvaksytty, 'harkinnanvaraisuusTila'> & {
       harkinnanvaraisuusTila: HarkinnanvarainenTila | undefined;
@@ -493,15 +486,13 @@ export type SaveJarjestyskriteeriParams = JarjestyskriteeriKeyParams & {
   selite: string;
 };
 
-type JarjestyskriteeriChangeResult = {
-  hakukohdeOid: string;
-  hakuOid: string;
+type JarjestyskriteeriChangeResult = KoutaOidParams & {
   valintatapajonoOid: string;
   hakemusOid: string;
   harkinnanvarainen: boolean | null;
   jarjestyskriteerit: Array<{
     arvo: number;
-    tila: SijoittelunTila;
+    tila: ValinnanTila;
     kuvaus: {
       FI?: string;
     };

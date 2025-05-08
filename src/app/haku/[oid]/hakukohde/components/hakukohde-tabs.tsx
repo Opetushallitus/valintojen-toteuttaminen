@@ -14,6 +14,7 @@ import { useHakukohdeTab } from '@/hooks/useHakukohdeTab';
 import { getVisibleTabs, isTabVisible } from '@/lib/hakukohde-tab-utils';
 import { hakukohteenValinnanvaiheetQueryOptions } from '@/lib/valintaperusteet/valintaperusteet-service';
 import { checkIsValintalaskentaUsed } from '@/lib/valintaperusteet/valintaperusteet-utils';
+import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 
 const StyledContainer = styled('div')(({ theme }) => ({
   padding: theme.spacing(2, 3, 0),
@@ -52,13 +53,7 @@ const StyledTab = styled(HakukohdeTabLink)<{ $active: boolean }>(
   }),
 );
 
-const HakukohdeTabs = ({
-  hakuOid,
-  hakukohdeOid,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
-}) => {
+const HakukohdeTabs = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const activeTab = useHakukohdeTab();
   const { t, translateEntity } = useTranslations();
 

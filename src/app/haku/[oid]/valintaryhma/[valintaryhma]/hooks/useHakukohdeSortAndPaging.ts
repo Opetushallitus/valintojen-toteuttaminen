@@ -48,11 +48,10 @@ export const useHakukohdeSortAndPaging = (
   const [pageResults, setPageResults] = useState<Array<HakukohdeWithLink>>([]);
 
   const results = useMemo(() => {
-    const { orderBy, direction } = getSortParts(sort);
-
     const sortHakukohteet = (orderBy: string, direction: SortDirection) => {
       return hakukohteet.sort(byProp(orderBy, direction, translateEntity));
     };
+    const { orderBy, direction } = getSortParts(sort);
 
     const sorted =
       orderBy && direction ? sortHakukohteet(orderBy, direction) : hakukohteet;

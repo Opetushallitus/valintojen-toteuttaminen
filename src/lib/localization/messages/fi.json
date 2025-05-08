@@ -83,6 +83,23 @@
       "EI_VAADITA": "Ei vaadita"
     }
   },
+  "vastaanottoposti": {
+    "otsikko": "Vastaanottoposti",
+    "laheta": "Lähetä vastaanottoposti",
+    "lahetetaan": "Lähetetään vastaanottopostia...",
+    "hakemus-laheta": "Lähetä vastaanottoposti hakemukselle",
+    "hakemus-ei-lahetettavia": "Lähetys epäonnistui, tarkasta hakemuksen tiedot",
+    "hakemus-lahetetty": "Sähköpostin lähetys onnistui",
+    "hakemus-virhe": "Sähköpostin lähetys epäonnistui",
+    "valintatapajono-laheta": "Lähetä vastaanottoposti jonolle",
+    "valintatapajono-ei-lahetettavia": "Lähetys epäonnistui, tarkasta valintatapajonon tiedot",
+    "valintatapajono-lahetetty": "Sähköpostin lähetys onnistui",
+    "valintatapajono-virhe": "Sähköpostin lähetys epäonnistui",
+    "hakukohde-laheta": "Lähetä vastaanottoposti hakukohteelle",
+    "hakukohde-ei-lahetettavia": "Lähetys epäonnistui, tarkasta hakukohteen tiedot",
+    "hakukohde-lahetetty": "Sähköpostin lähetys onnistui",
+    "hakukohde-virhe": "Sähköpostin lähetys epäonnistui"
+  },
   "virhe": {
     "varoitukset": "Varoitukset",
     "palvelin": "Palvelinpyyntö epäonnistui!",
@@ -308,6 +325,7 @@
     "hakemus-oid": "Hakemuksen tekninen tunniste (OID)",
     "ei-tuloksia": "Ei sijoittelun tuloksia hakukohteelle",
     "muuta-vastaanottotieto": "Muuta vastaanottotieto",
+    "muuta-ilmoittautumistieto": "Muuta ilmoittautumistieto",
     "virhe-vie-taulukkolaskentaan": "Sijoittelun tulosten vieminen taulukkolaskentaan epäonnistui!",
     "merkitse-myohastyneeksi": "Merkitse myöhästyneeksi",
     "merkitse-myohastyneeksi-modal-title": "Vahvista myöhästyneeksi merkitseminen",
@@ -339,24 +357,13 @@
       "hyvaksymiskirje-hakukohde-ei": "Muodosta kirjeet ei-hyväksytyille",
       "hyvaksymiskirje-hakukohde-lataa": "Lataa hyväksymiskirjeet",
       "jalkiohjauskirje": "Muodosta jälkiohjauskirjeet",
-      "laheta-vastaanottoposti": "Lähetä vastaanottoposti",
-      "laheta-vastaanottoposti-jonolle": "Lähetä vastaanottoposti jonolle",
-      "laheta-vastaanottoposti-hakukohde": "Lähetä vastaanottoposti hakukohteelle",
       "osoitetarrat": "Muodosta hyväksytyille osoitetarrat",
       "osoitetarrat-lataa": "Lataa osoitetarrat",
+      "osoitetarrat-suoritetaan-otsikko": "Osoitetarrojen muodostaminen",
       "osoitetarrat-suoritetaan": "Osoitetarroja muodostetaan...",
       "tulokset-lataa": "Lataa tulokset",
       "hyvaksymiskirje-hakemukselle-luotu": "Muodostettu hyväksymiskirje hakemukselle",
       "hyvaksymiskirje-hakemukselle-luotu-epaonnistui": "Hyväksymiskirjeen muodostaminen hakemukselle epäonnistui",
-      "vastaanottoposti-hakemukselle-ei-lahetettavia": "Lähetys epäonnistui, tarkasta hakemuksen tiedot",
-      "vastaanottoposti-hakemukselle-lahetetty": "Sähköpostin lähetys onnistui",
-      "vastaanottoposti-hakemukselle-virhe": "Sähköpostin lähetys epäonnistui",
-      "vastaanottoposti-hakukohteelle-ei-lahetettavia": "Lähetykset epäonnistui, tarkasta hakukohteen tiedot",
-      "vastaanottoposti-hakukohteelle-lahetetty": "Sähköpostien lähetys onnistui",
-      "vastaanottoposti-hakukohteelle-virhe": "Sähköpostien lähetys epäonnistui",
-      "vastaanottoposti-jonolle-ei-lahetettavia": "Lähetykset epäonnistui, tarkasta valintatapajonon tiedot",
-      "vastaanottoposti-jonolle-lahetetty": "Sähköpostien lähetys onnistui",
-      "vastaanottoposti-jonolle-virhe": "Sähköpostien lähetys epäonnistui",
       "muutoshistoria-virhe": "Muutoshistorian lataus epäonnistui",
       "palautuksen-erapaiva": "Palautuksen eräpäivä vastaanottajalle"
     },
@@ -380,7 +387,9 @@
         "LASNA": "Läsnä",
         "EI_TEHTY": "Ei tehty",
         "VASTAANOTTANUT_SITOVASTI": "Vastaanottanut sitovasti",
+        "VARASIJALTA_HYVAKSYTTY": "Varasijalta hyväksytty",
         "EI_VASTAANOTETTU_MAARA_AIKANA": "Ei vastaanotettu määräaikana",
+        "VASTAANOTTOILMOITUS": "Vastaanottoilmoitus",
         "ehdollisenHyvaksymisenEhtoEN": "Ehdollisen hyväksymisen ehto (EN)",
         "ehdollisenHyvaksymisenEhtoFI": "Ehdollisen hyväksymisen ehto (FI)",
         "ehdollisenHyvaksymisenEhtoSV": "Ehdollisen hyväksymisen ehto (SV)",
@@ -390,7 +399,32 @@
     }
   },
   "valinnan-tulokset": {
-    "otsikko": "Valinnan tulokset"
+    "otsikko": "Valinnan tulokset",
+    "taulukko": {
+      "hakija": "Hakija",
+      "valinnan-tila": "Valinnan tila",
+      "vastaanoton-tila": "Vastaanoton tila",
+      "ilmoittautumisen-tila": "Ilmoittautumisen tila",
+      "toiminnot": "Toiminnot"
+    },
+    "muuta-valinnan-tila": "Muuta valinnan tila",
+    "mass-status-change-done": "Muutettiin tila {amount}:lle hakemukselle",
+    "toiminnot": {
+      "poista-valinnan-tulokset": "Poista valinnan tulokset",
+      "poista-valinnan-tulokset-vahvistus-otsikko": "Poistetaanko valinnan tulokset?",
+      "poista-valinnan-tulokset-vahvistus-teksti": "Olet poistamassa valinnan tuloksia hakijalta: <strong>{hakijanNimi}</strong>"
+    },
+    "tunniste-tai-tyyppi": "Tunniste tai tyyppi",
+    "hakijalle-nakyva-syy": "Hakijalle näkyvä syy",
+    "poistaminen-epaonnistui": "Valinnan tulosten poistaminen epäonnistui",
+    "tallennetaan-tuloksia": "Tallennetaan valinnan tuloksia...",
+    "poistetaan-tuloksia": "Poistetaan valinnan tuloksia...",
+    "valinnan-tilan-kuvaus-aria-fi": "Hylkäyksen syy suomeksi",
+    "valinnan-tilan-kuvaus-aria-sv": "Hylkäyksen syy ruotsiksi",
+    "valinnan-tilan-kuvaus-aria-en": "Hylkäyksen syy englanniksi",
+    "poistettu": "Valinnan tulokset poistettu",
+    "hyvaksytaan-valintaesitysta": "Hyväksytään valintaesitystä...",
+    "varasijalta": "Hyväksytään varasijalta"
   },
   "sijoittelu": {
     "tasasijasaanto": {

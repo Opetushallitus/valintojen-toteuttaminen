@@ -161,7 +161,7 @@ export const LaskennatonValintatapajonoTable = ({
   jonosijat: Array<LaskennanJonosijaTulosWithHakijaInfo>;
   valintatapajonoOid: string;
   sort: string;
-  setSort: (sort: string) => void;
+  setSort: (newSort: string) => void;
   pagination: ListTablePaginationProps;
   jonoTulosActorRef: JonoTulosActorRef;
 }) => {

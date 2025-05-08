@@ -1,4 +1,5 @@
 import { FileDownloadButton } from '@/components/file-download-button';
+import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { getValintakoeExcel } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { OphButton } from '@opetushallitus/oph-design-system';
@@ -9,9 +10,7 @@ export const ValintakoekutsutExcelDownloadButton = ({
   valintakoeTunniste,
   selection,
   component = OphButton,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
+}: KoutaOidParams & {
   valintakoeTunniste: Array<string>;
   selection?: Set<string>;
   component?: typeof OphButton;

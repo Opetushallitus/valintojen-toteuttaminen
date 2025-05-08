@@ -2,6 +2,7 @@ import { Language, TranslatedName } from '../localization/localization-types';
 import { HakijaInfo } from '../ataru/ataru-types';
 import { HakutoiveValintakoeOsallistumiset } from '../valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-types';
 import { Valintakoe } from '../valintaperusteet/valintaperusteet-types';
+import { KoutaOidParams } from '../kouta/kouta-types';
 
 export type Ryhmittely = 'kokeittain' | 'hakijoittain';
 
@@ -11,9 +12,7 @@ export type ValintakoeOsallistuminen =
   | 'EI_VAADITA'
   | 'VIRHE';
 
-export type GetValintakoekutsutParams = {
-  hakuOid: string;
-  hakukohdeOid: string;
+export type GetValintakoekutsutParams = KoutaOidParams & {
   ryhmittely: Ryhmittely;
   vainKutsuttavat: boolean;
 };
@@ -40,9 +39,7 @@ export type ValintakoekutsutData = {
   valintakoeOsallistumiset: Array<HakutoiveValintakoeOsallistumiset>;
 };
 
-export type ValintakoekutsutDownloadProps = {
-  hakuOid: string;
-  hakukohdeOid: string;
+export type ValintakoekutsutDownloadProps = KoutaOidParams & {
   valintakoeTunniste: Array<string>;
   selection?: Set<string>;
 };

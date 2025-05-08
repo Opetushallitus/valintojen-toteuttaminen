@@ -6,7 +6,7 @@ import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { Haku } from '@/lib/kouta/kouta-types';
 import {
   SijoittelunHakemusValintatiedoilla,
-  SijoittelunTila,
+  ValinnanTila,
   VastaanottoTila,
 } from '@/lib/types/sijoittelu-types';
 import { isAfter } from 'date-fns';
@@ -22,23 +22,26 @@ export const VASTAANOTTOTILAT_JOISSA_VOI_ILMOITTAUTUA = [
 
 type SijoittelunTilaKentat = Pick<
   SijoittelunHakemusValintatiedoilla,
-  'julkaistavissa' | 'tila' | 'vastaanottotila'
+  'julkaistavissa' | 'valinnanTila' | 'vastaanottoTila'
 >;
 
-const isSijoittelunTilaVastaanotettavissa = (hakemuksenTila: SijoittelunTila) =>
+const isSijoittelunTilaVastaanotettavissa = (hakemuksenTila?: ValinnanTila) =>
   [
-    SijoittelunTila.HYVAKSYTTY,
-    SijoittelunTila.VARASIJALTA_HYVAKSYTTY,
-    SijoittelunTila.PERUNUT,
-    SijoittelunTila.PERUUTETTU,
-  ].includes(hakemuksenTila);
+    ValinnanTila.HYVAKSYTTY,
+    ValinnanTila.VARASIJALTA_HYVAKSYTTY,
+    ValinnanTila.PERUNUT,
+    ValinnanTila.PERUUTETTU,
+  ].includes(hakemuksenTila as ValinnanTila);
 
 export const isVastaanottoPossible = (h: SijoittelunTilaKentat): boolean =>
-  isSijoittelunTilaVastaanotettavissa(h.tila) && h.julkaistavissa;
+  isSijoittelunTilaVastaanotettavissa(h?.valinnanTila) &&
+  Boolean(h?.julkaistavissa);
 
 export const isIlmoittautuminenPossible = (h: SijoittelunTilaKentat): boolean =>
-  isSijoittelunTilaVastaanotettavissa(h.tila) &&
-  VASTAANOTTOTILAT_JOISSA_VOI_ILMOITTAUTUA.includes(h.vastaanottotila);
+  isSijoittelunTilaVastaanotettavissa(h.valinnanTila) &&
+  VASTAANOTTOTILAT_JOISSA_VOI_ILMOITTAUTUA.includes(
+    h.vastaanottoTila as VastaanottoTila,
+  );
 
 export const isValintaesitysJulkaistavissa = (
   haku: Haku,
@@ -56,25 +59,26 @@ export const isValintaesitysJulkaistavissa = (
   );
 
 export const isVastaanottotilaJulkaistavissa = (h: {
-  vastaanottotila: VastaanottoTila;
+  vastaanottoTila?: VastaanottoTila;
 }): boolean =>
-  h.vastaanottotila === VastaanottoTila.KESKEN ||
-  h.vastaanottotila === VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA;
+  h.vastaanottoTila === undefined ||
+  h.vastaanottoTila === VastaanottoTila.KESKEN ||
+  h.vastaanottoTila === VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA;
 
 export const isHyvaksyttyHarkinnanvaraisesti = (
   hakemus: Pick<
     SijoittelunHakemusValintatiedoilla,
-    'tila' | 'hyvaksyttyHarkinnanvaraisesti'
+    'valinnanTila' | 'hyvaksyttyHarkinnanvaraisesti'
   >,
 ): boolean =>
   Boolean(hakemus?.hyvaksyttyHarkinnanvaraisesti) &&
-  [SijoittelunTila.HYVAKSYTTY, SijoittelunTila.VARASIJALTA_HYVAKSYTTY].includes(
-    hakemus.tila,
+  [ValinnanTila.HYVAKSYTTY, ValinnanTila.VARASIJALTA_HYVAKSYTTY].includes(
+    hakemus.valinnanTila as ValinnanTila,
   );
 
 export const getReadableHakemuksenTila = (
   hakemus: {
-    tila: SijoittelunTila;
+    valinnanTila?: ValinnanTila;
     hyvaksyttyHarkinnanvaraisesti?: boolean;
     varasijanNumero?: number | null;
   },
@@ -83,11 +87,11 @@ export const getReadableHakemuksenTila = (
   switch (true) {
     case isHyvaksyttyHarkinnanvaraisesti(hakemus):
       return t('sijoitteluntila.HARKINNANVARAISESTI_HYVAKSYTTY');
-    case hakemus.tila === SijoittelunTila.VARALLA &&
+    case hakemus.valinnanTila === ValinnanTila.VARALLA &&
       isNonNullish(hakemus.varasijanNumero):
-      return `${t(`sijoitteluntila.${hakemus.tila}`)} (${hakemus.varasijanNumero})`;
+      return `${t(`sijoitteluntila.${hakemus.valinnanTila}`)} (${hakemus.varasijanNumero})`;
     default:
-      return t(`sijoitteluntila.${hakemus.tila}`);
+      return t(`sijoitteluntila.${hakemus.valinnanTila}`);
   }
 };
 

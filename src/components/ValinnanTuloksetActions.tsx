@@ -9,90 +9,105 @@ import {
   TableRow,
 } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
-import useToaster from '@/hooks/useToaster';
-import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
+import { Haku, Hakukohde, KoutaOidParams } from '@/lib/kouta/kouta-types';
 import {
-  SijoittelunHakemusValintatiedoilla,
-  SijoittelunTila,
+  ValinnanTila,
+  SijoittelunTulosActorRef,
   VastaanottoTila,
 } from '@/lib/types/sijoittelu-types';
-import { sendVastaanottopostiValintatapaJonolle } from '@/lib/valinta-tulos-service/valinta-tulos-service';
-import { filter, isEmpty, pipe, prop } from 'remeda';
+import { isEmpty, prop } from 'remeda';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { getMyohastyneetHakemukset } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
+import {
+  getErillishakuValinnanTulosExcel,
+  getMyohastyneetHakemukset,
+} from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { showModal } from '@/components/modals/global-modal';
 import { ConfirmationGlobalModal } from '@/components/modals/confirmation-global-modal';
 import { buildLinkToApplication } from '@/lib/ataru/ataru-service';
 import { ExternalLink } from '@/components/external-link';
 import { useSelector } from '@xstate/react';
-import {
-  MassChangeParams,
-  SijoittelunTuloksetEventType,
-  SijoittelunTuloksetState,
-  SijoittelunTulosActorRef,
-} from '../lib/sijoittelun-tulokset-state';
 import { styled } from '@/lib/theme';
 import { useIsValintaesitysJulkaistavissa } from '@/hooks/useIsValintaesitysJulkaistavissa';
+import { ValinnanTulosActorRef } from '@/lib/state/createValinnanTuloksetMachine';
+import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
+import { FileDownloadButton } from './file-download-button';
+import { useSendVastaanottoPostiMutation } from '@/hooks/useSendVastaanottoPostiMutation';
+import {
+  ValinnanTulosEventType,
+  ValinnanTulosMassChangeParams,
+  ValinnanTulosState,
+} from '@/lib/state/valinnanTuloksetMachineTypes';
 
 const ActionsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'row',
-  columnGap: theme.spacing(2),
+  gap: theme.spacing(2),
   marginBottom: theme.spacing(2),
+  width: '100%',
+  flexWrap: 'wrap',
 }));
 
 const SendVastaanottopostiButton = ({
   disabled,
   hakukohdeOid,
   valintatapajonoOid,
+  mode,
 }: {
   disabled: boolean;
   hakukohdeOid: string;
-  valintatapajonoOid: string;
+  valintatapajonoOid?: string;
+  mode: 'sijoittelu' | 'valinta';
 }) => {
-  const { addToast } = useToaster();
   const { t } = useTranslations();
 
-  const sendVastaanottoposti = async () => {
-    try {
-      const data = await sendVastaanottopostiValintatapaJonolle(
-        hakukohdeOid,
-        valintatapajonoOid,
-      );
-      if (!data || data.length < 1) {
-        addToast({
-          key: 'vastaanottoposti-valintatapajono-empty',
-          message:
-            'sijoittelun-tulokset.toiminnot.vastaanottoposti-jonolle-ei-lahetettavia',
-          type: 'error',
-        });
-      } else {
-        addToast({
-          key: 'vastaanottoposti-valintatapajonos',
-          message:
-            'sijoittelun-tulokset.toiminnot.vastaanottoposti-jonolle-lahetetty',
-          type: 'success',
-        });
-      }
-    } catch (e) {
-      addToast({
-        key: 'vastaanottoposti-valintatapajono-virhe',
-        message:
-          'sijoittelun-tulokset.toiminnot.vastaanottoposti-jonolle-virhe',
-        type: 'error',
-      });
-      console.error(e);
-    }
-  };
+  const { isPending, mutate } = useSendVastaanottoPostiMutation({
+    target: mode === 'sijoittelu' ? 'valintatapajono' : 'hakukohde',
+    hakukohdeOid,
+    valintatapajonoOid,
+  });
 
   return (
     <OphButton
       variant="contained"
       disabled={disabled}
-      onClick={sendVastaanottoposti}
+      onClick={() => mutate()}
+      loading={isPending}
     >
-      {t('sijoittelun-tulokset.toiminnot.laheta-vastaanottoposti-jonolle')}
+      {mode === 'sijoittelu'
+        ? t('vastaanottoposti.valintatapajono-laheta')
+        : t('vastaanottoposti.hakukohde-laheta')}
     </OphButton>
+  );
+};
+
+export const ValinnanTuloksetExcelDownloadButton = ({
+  haku,
+  hakukohdeOid,
+  valintatapajonoOid,
+}: {
+  haku: Haku;
+  hakukohdeOid: string;
+  valintatapajonoOid?: string;
+}) => {
+  const { t } = useTranslations();
+
+  return (
+    <FileDownloadButton
+      variant="contained"
+      defaultFileName={`valinnantulos-${hakukohdeOid}.xlsx`}
+      errorKey="get-erillishaku-valinnan-tulos-excel"
+      errorMessage="valinnan-tulokset.virhe-vie-taulukkolaskentaan"
+      disabled={!valintatapajonoOid}
+      getFile={() =>
+        getErillishakuValinnanTulosExcel({
+          haku,
+          hakukohdeOid,
+          valintatapajonoOid,
+        })
+      }
+    >
+      {t('yleinen.vie-taulukkolaskentaan')}
+    </FileDownloadButton>
   );
 };
 
@@ -100,23 +115,18 @@ const useEraantyneetHakemukset = ({
   hakuOid,
   hakukohdeOid,
   hakemukset,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
-  hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
+}: KoutaOidParams & {
+  hakemukset: Array<HakemuksenValinnanTulos>;
 }) => {
-  const hakemuksetJotkaTarvitsevatAikarajaMennytTiedon = pipe(
-    hakemukset,
-    filter(
-      (hakemus) =>
-        hakemus.vastaanottotila === VastaanottoTila.KESKEN &&
-        hakemus.julkaistavissa &&
-        [
-          SijoittelunTila.HYVAKSYTTY,
-          SijoittelunTila.VARASIJALTA_HYVAKSYTTY,
-          SijoittelunTila.PERUNUT,
-        ].includes(hakemus.tila),
-    ),
+  const hakemuksetJotkaTarvitsevatAikarajaMennytTiedon = hakemukset.filter(
+    (hakemus) =>
+      hakemus?.vastaanottoTila === VastaanottoTila.KESKEN &&
+      hakemus?.julkaistavissa &&
+      [
+        ValinnanTila.HYVAKSYTTY,
+        ValinnanTila.VARASIJALTA_HYVAKSYTTY,
+        ValinnanTila.PERUNUT,
+      ].includes(hakemus.valinnanTila as ValinnanTila),
   );
 
   const hakemusOids = hakemuksetJotkaTarvitsevatAikarajaMennytTiedon.map(
@@ -139,13 +149,13 @@ const useEraantyneetHakemukset = ({
     );
 
     return hakemus && eraantynytHakemus?.mennyt ? [...result, hakemus] : result;
-  }, [] as Array<SijoittelunHakemusValintatiedoilla>);
+  }, [] as Array<HakemuksenValinnanTulos>);
 };
 
 const EraantyneetInfoTable = ({
   eraantyneetHakemukset,
 }: {
-  eraantyneetHakemukset: Array<SijoittelunHakemusValintatiedoilla>;
+  eraantyneetHakemukset: Array<HakemuksenValinnanTulos>;
 }) => {
   const { t } = useTranslations();
   return (
@@ -183,12 +193,10 @@ const MerkitseMyohastyneeksiButton = ({
   disabled,
   massUpdateForm,
   hakemukset,
-}: {
+}: KoutaOidParams & {
   disabled: boolean;
-  hakuOid: string;
-  hakukohdeOid: string;
-  massUpdateForm: (params: MassChangeParams) => void;
-  hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
+  massUpdateForm: (params: ValinnanTulosMassChangeParams) => void;
+  hakemukset: Array<HakemuksenValinnanTulos>;
 }) => {
   const { t } = useTranslations();
 
@@ -220,7 +228,7 @@ const MerkitseMyohastyneeksiButton = ({
           cancelLabel: t('yleinen.peruuta'),
           onConfirm: () => {
             massUpdateForm({
-              vastaanottotila: VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA,
+              vastaanottoTila: VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA,
               hakemusOids: new Set(
                 eraantyneetHakemukset.map(prop('hakemusOid')),
               ),
@@ -234,26 +242,28 @@ const MerkitseMyohastyneeksiButton = ({
   );
 };
 
-export const SijoittelunTuloksetActions = ({
+export const ValinnanTuloksetActions = ({
   haku,
   hakukohde,
-  valintatapajonoOid,
-  sijoittelunTulosActorRef,
+  valinnanTulosActorRef,
+  mode,
 }: {
   haku: Haku;
   hakukohde: Hakukohde;
-  valintatapajonoOid: string;
-  sijoittelunTulosActorRef: SijoittelunTulosActorRef;
+  valinnanTulosActorRef: ValinnanTulosActorRef | SijoittelunTulosActorRef;
+  mode: 'sijoittelu' | 'valinta';
 }) => {
   const { t } = useTranslations();
 
-  const { send } = sijoittelunTulosActorRef;
+  const { send } = valinnanTulosActorRef;
 
-  const state = useSelector(sijoittelunTulosActorRef, (s) => s);
-
-  const hakemukset = useSelector(
-    sijoittelunTulosActorRef,
-    (s) => s.context.hakemukset,
+  const { state, hakemukset, valintatapajonoOid } = useSelector(
+    valinnanTulosActorRef,
+    (s) => ({
+      state: s,
+      hakemukset: s.context.hakemukset,
+      valintatapajonoOid: s.context.valintatapajonoOid,
+    }),
   );
 
   const isValintaesitysJulkaistavissa = useIsValintaesitysJulkaistavissa({
@@ -264,25 +274,32 @@ export const SijoittelunTuloksetActions = ({
     <ActionsContainer>
       <OphButton
         onClick={() => {
-          send({ type: SijoittelunTuloksetEventType.UPDATE });
+          send({ type: ValinnanTulosEventType.UPDATE });
         }}
         variant="contained"
-        loading={state.matches(SijoittelunTuloksetState.UPDATING)}
-        disabled={!state.matches(SijoittelunTuloksetState.IDLE)}
+        loading={state.matches(ValinnanTulosState.UPDATING)}
+        disabled={!state.matches(ValinnanTulosState.IDLE)}
       >
         {t('yleinen.tallenna')}
       </OphButton>
+      {mode === 'valinta' && (
+        <ValinnanTuloksetExcelDownloadButton
+          haku={haku}
+          hakukohdeOid={hakukohde.oid}
+          valintatapajonoOid={valintatapajonoOid}
+        />
+      )}
       <MerkitseMyohastyneeksiButton
         hakuOid={haku.oid}
         hakukohdeOid={hakukohde.oid}
         hakemukset={hakemukset}
         disabled={
           !isValintaesitysJulkaistavissa ||
-          !state.matches(SijoittelunTuloksetState.IDLE)
+          !state.matches(ValinnanTulosState.IDLE)
         }
-        massUpdateForm={(changeParams: MassChangeParams) => {
+        massUpdateForm={(changeParams: ValinnanTulosMassChangeParams) => {
           send({
-            type: SijoittelunTuloksetEventType.MASS_UPDATE,
+            type: ValinnanTulosEventType.MASS_UPDATE,
             ...changeParams,
           });
         }}
@@ -291,18 +308,19 @@ export const SijoittelunTuloksetActions = ({
         variant="contained"
         disabled={
           !isValintaesitysJulkaistavissa ||
-          !state.matches(SijoittelunTuloksetState.IDLE)
+          !state.matches(ValinnanTulosState.IDLE)
         }
         onClick={() => {
-          send({ type: SijoittelunTuloksetEventType.PUBLISH });
+          send({ type: ValinnanTulosEventType.PUBLISH });
         }}
-        loading={state.matches(SijoittelunTuloksetState.PUBLISHING)}
+        loading={state.matches(ValinnanTulosState.PUBLISHING)}
       >
         {t('sijoittelun-tulokset.hyvaksy')}
       </OphButton>
       <SendVastaanottopostiButton
-        disabled={!state.matches(SijoittelunTuloksetState.IDLE)}
+        disabled={!state.matches(ValinnanTulosState.IDLE)}
         hakukohdeOid={hakukohde.oid}
+        mode={mode}
         valintatapajonoOid={valintatapajonoOid}
       />
     </ActionsContainer>

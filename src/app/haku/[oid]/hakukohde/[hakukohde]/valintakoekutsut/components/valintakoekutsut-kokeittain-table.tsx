@@ -12,6 +12,7 @@ import {
 } from '@/components/table/table-columns';
 import { ListTable } from '@/components/table/list-table';
 import { useSelection } from '@/hooks/useSelection';
+import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 
 const TRANSLATIONS_PREFIX = 'valintakoekutsut.taulukko';
 
@@ -25,15 +26,13 @@ export const ValintakoekutsutKokeittainTable = ({
   page,
   setPage,
   pageSize,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
+}: KoutaOidParams & {
   valintakoeTunniste: string;
   data: Array<ValintakoeKutsuItem>;
   sort: string;
-  setSort: (sort: string) => void;
+  setSort: (newSort: string) => void;
   page: number;
-  setPage: (page: number) => void;
+  setPage: (newPage: number) => void;
   pageSize: number;
 }) => {
   const { t, translateEntity } = useTranslations();
@@ -86,7 +85,7 @@ export const ValintakoekutsutKokeittainTable = ({
         setSort={setSort}
         checkboxSelection={true}
         selection={selection}
-        onSelectionChange={setSelection}
+        setSelection={setSelection}
         getRowCheckboxLabel={({ hakijanNimi }) =>
           t(`${TRANSLATIONS_PREFIX}.valitse-koekutsu-hakijalle`, {
             hakijanNimi,
