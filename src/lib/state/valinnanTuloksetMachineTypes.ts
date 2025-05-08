@@ -27,12 +27,35 @@ export type ValinnanTulosContext<T extends HakemuksenValinnanTulos> = {
   hakukohdeOid?: string;
   valintatapajonoOid?: string;
   lastModified?: string;
+  /**
+   * Alkuperäiset hakemusten tulokset, jotka on ladattu palvelimelta.
+   */
   hakemukset: Array<T>;
+  /**
+   * Hakemukset, joiden tuloksia käyttäjä on muokannut ja joita ei ole tallennettu
+   */
   changedHakemukset: Array<T>;
+  /**
+   * Hakemukset massapäivitystä (myöhästyneeksi merkintä) varten. Erillään muokatuista hakemuksista, koska
+   * massapäivityksessä halutaan suoraan päivittää tietyt hakemukset, eikä käyttäjän muokkaamia.
+   * Täytyy tallentaa kontekstiin, jotta voidaan lukea eri tilassa kuin asetetaan.
+   */
   hakemuksetForMassUpdate?: Array<T>;
+  /**
+   * Massapäivityksessä muuttuneiden hakemusten määrä. Asetetaan onnistuneen massapäivityksen jälkeen.
+   */
   massChangeAmount?: number;
+  /**
+   * Hyväksytäänkö valintaesitys myös tallennuksen lisäksi? Asetetaan PUBLISH-eventin seurauksena.
+   */
   publishAfterUpdate?: boolean;
+  /**
+   * Hakemuksen oid, joka poistetaan. Asetetaan REMOVE-eventin seurauksena.
+   */
   hakemusOidForRemoval?: string;
+  /**
+   *
+   */
   mode: 'sijoittelu' | 'valinta';
 };
 
@@ -44,12 +67,33 @@ export enum ValinnanTulosState {
 }
 
 export enum ValinnanTulosEventType {
+  /**
+   * Tallenna tulokset palvelimelle.
+   */
   UPDATE = 'UPDATE',
+  /**
+   * Massapäivitys (myöhästyneeksi merkintä) tuloksille.
+   */
   MASS_UPDATE = 'MASS_UPDATE',
+  /**
+   * Massamuutos (esim. vastaanottotilan muuttaminen) tuloksille. Muuttaa kontekstia, mutta ei tallenna.
+   */
   MASS_CHANGE = 'MASS_CHANGE',
+  /**
+   * Muuta yhden hakemuksen tulosta.
+   */
   CHANGE = 'CHANGE',
+  /**
+   * Tallenna tulokset ja hyväksy valintaesitys.
+   */
   PUBLISH = 'PUBLISH',
+  /**
+   * Nollaa tilakoneen tila. Kutsutaan kun ladataan hakemukset uudelleen palvelimelta.
+   */
   RESET = 'RESET',
+  /**
+   * Poista tallennettu tulos hakemukselta.
+   */
   REMOVE = 'REMOVE',
 }
 
