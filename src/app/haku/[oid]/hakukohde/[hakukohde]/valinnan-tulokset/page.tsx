@@ -29,6 +29,8 @@ import { useSelector } from '@xstate/react';
 import { ValinnanTulosState } from '@/lib/state/valinnan-tulos-machine';
 import { PageSizeSelector } from '@/components/table/page-size-selector';
 import { useValinnanTuloksetSearchParams } from './hooks/useValinnanTuloksetSearch';
+import { useIsDirtyValinnanTulos } from '@/lib/state/valinnan-tulos-machine-utils';
+import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBeforeNavigation';
 
 const useHakemuksetValinnanTuloksilla = ({
   hakemukset,
@@ -107,6 +109,9 @@ const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
     lastModified: valinnanTulokset.lastModified,
   });
 
+  const isDirty = useIsDirtyValinnanTulos(valinnanTulosActorRef);
+  useConfirmChangesBeforeNavigation(isDirty);
+
   const { pageSize, setPageSize } = useValinnanTuloksetSearchParams();
 
   const state = useSelector(valinnanTulosActorRef, (state) => state);
@@ -115,9 +120,9 @@ const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   if (state.matches(ValinnanTulosState.REMOVING)) {
     spinnerTitle = t('valinnan-tulokset.poistetaan-tuloksia');
   } else if (state.matches(ValinnanTulosState.PUBLISHING)) {
-    spinnerTitle = t('valinnan-tulokset.julkaistaan-valintaesitystä');
+    spinnerTitle = t('valinnan-tulokset.julkaistaan-valintaesitysta');
   } else if (state.matches(ValinnanTulosState.UPDATING)) {
-    spinnerTitle = t('valinnan-tulokset.tallennetaan-valinnan-tuloksia');
+    spinnerTitle = t('valinnan-tulokset.tallennetaan-tuloksia');
   }
 
   return isEmpty(hakemuksetTuloksilla) ? (
