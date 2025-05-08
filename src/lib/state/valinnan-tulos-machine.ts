@@ -39,7 +39,6 @@ export type ValinnanTulosContext<T extends HakemuksenValinnanTulos> = {
 export enum ValinnanTulosState {
   IDLE = 'IDLE',
   UPDATING = 'UPDATING',
-  UPDATE_COMPLETED = 'UPDATE_COMPLETED',
   PUBLISHING = 'PUBLISHING',
 }
 
@@ -253,9 +252,23 @@ export function createValinnanTulosMachine<
             valintatapajonoOid: context.valintatapajonoOid,
             lastModified: context.lastModified,
           }),
-          onDone: {
-            target: ValinnanTulosState.UPDATE_COMPLETED,
-          },
+          onDone: [
+            {
+              guard: 'shouldPublishAfterUpdate',
+              target: ValinnanTulosState.PUBLISHING,
+              actions: assign({ publishAfterUpdate: false }),
+            },
+            {
+              target: ValinnanTulosState.IDLE,
+              actions: [
+                'updated',
+                {
+                  type: 'successNotify',
+                  params: { message: 'sijoittelun-tulokset.valmis' },
+                },
+              ],
+            },
+          ],
           onError: {
             target: ValinnanTulosState.IDLE,
             actions: [
@@ -274,25 +287,6 @@ export function createValinnanTulosMachine<
             ],
           },
         },
-      },
-      [ValinnanTulosState.UPDATE_COMPLETED]: {
-        always: [
-          {
-            guard: 'shouldPublishAfterUpdate',
-            target: ValinnanTulosState.PUBLISHING,
-            actions: assign({ publishAfterUpdate: false }),
-          },
-          {
-            target: ValinnanTulosState.IDLE,
-            actions: [
-              'updated',
-              {
-                type: 'successNotify',
-                params: { message: 'sijoittelun-tulokset.valmis' },
-              },
-            ],
-          },
-        ],
       },
       [ValinnanTulosState.PUBLISHING]: {
         invoke: {
