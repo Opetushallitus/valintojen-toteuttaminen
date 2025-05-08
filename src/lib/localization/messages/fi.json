@@ -423,7 +423,8 @@
     "valinnan-tilan-kuvaus-aria-sv": "Hylkäyksen syy ruotsiksi",
     "valinnan-tilan-kuvaus-aria-en": "Hylkäyksen syy englanniksi",
     "poistettu": "Valinnan tulokset poistettu",
-    "hyvaksytaan-valintaesitysta": "Hyväksytään valintaesitystä..."
+    "hyvaksytaan-valintaesitysta": "Hyväksytään valintaesitystä...",
+    "varasijalta": "Hyväksytään varasijalta"
   },
   "sijoittelu": {
     "tasasijasaanto": {
