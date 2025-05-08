@@ -7,21 +7,21 @@ import {
 import { ListTable } from '@/components/table/list-table';
 import { useCallback, useMemo } from 'react';
 import { useSelection } from '@/hooks/useSelection';
-import { IlmoittautumisTilaSelect } from '@/components/ilmoittautumistila-select';
-import { VastaanOttoCell } from '@/components/vastaanotto-cell';
+import { IlmoittautumisTilaSelect } from '@/components/IlmoittautumisTilaSelect';
+import { VastaanottoTilaCell } from '@/components/VastaanottoTilaCell';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import { useValinnanTuloksetSearch } from '../hooks/useValinnanTuloksetSearch';
 import { useSelector } from '@xstate/react';
+import { ValinnanTulosActorRef } from '@/lib/state/createValinnanTuloksetMachine';
+import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
+import { ValinnanTilaCell } from '@/components/ValinnanTilaCell';
+import { ValinnanTuloksetActionBar } from './ValinnanTuloksetActionBar';
+import { ValinnanTuloksetOtherActionsCell } from '@/components/ValinnanTuloksetOtherActionsCell';
 import {
-  ValinnanTulosActorRef,
   ValinnanTulosChangeParams,
   ValinnanTulosEventType,
   ValinnanTulosState,
-} from '@/lib/state/valinnan-tulos-machine';
-import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
-import { ValinnanTilaCell } from '@/components/valinnan-tila-cell';
-import { ValinnanTulosActionBar } from './valinnan-tulos-action-bar';
-import { ValinnanTulosOtherActionsCell } from '@/components/valinnan-tulos-other-actions-cell';
+} from '@/lib/state/valinnanTuloksetMachineTypes';
 
 const TRANSLATIONS_PREFIX = 'valinnan-tulokset.taulukko';
 
@@ -89,7 +89,7 @@ const useColumns = ({
         title: t(`${TRANSLATIONS_PREFIX}.vastaanoton-tila`),
         key: 'vastaanottotila',
         renderFn: (hakemus) => (
-          <VastaanOttoCell
+          <VastaanottoTilaCell
             haku={haku}
             hakukohde={hakukohde}
             hakemus={hakemus}
@@ -118,7 +118,7 @@ const useColumns = ({
         key: 'toiminnot',
         renderFn: (hakemus) =>
           valintatapajonoOid && (
-            <ValinnanTulosOtherActionsCell
+            <ValinnanTuloksetOtherActionsCell
               haku={haku}
               hakukohde={hakukohde}
               hakemus={hakemus}
@@ -191,7 +191,7 @@ export const ValinnanTuloksetTable = ({
 
   return (
     <>
-      <ValinnanTulosActionBar
+      <ValinnanTuloksetActionBar
         selection={selection}
         hakemukset={rows}
         actorRef={actorRef}

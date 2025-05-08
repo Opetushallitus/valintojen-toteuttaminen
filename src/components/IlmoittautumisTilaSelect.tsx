@@ -7,7 +7,7 @@ import {
 import { SelectChangeEvent } from '@mui/material';
 import { isIlmoittautuminenPossible } from '@/lib/sijoittelun-tulokset-utils';
 import { useIlmoittautumisTilaOptions } from '@/hooks/useIlmoittautumisTilaOptions';
-import { ValinnanTulosChangeParams } from '@/lib/state/valinnan-tulos-machine';
+import { ValinnanTulosChangeParams } from '@/lib/state/valinnanTuloksetMachineTypes';
 
 export const IlmoittautumisTilaSelect = ({
   hakemus,

@@ -14,22 +14,22 @@ import {
 import { useCallback, useMemo } from 'react';
 import { KeysMatching, ListTableColumn } from '@/components/table/table-types';
 import { MaksuCell } from './maksu-cell';
-import { IlmoittautumisTilaSelect } from '@/components/ilmoittautumistila-select';
-import { VastaanOttoCell } from '@/components/vastaanotto-cell';
+import { IlmoittautumisTilaSelect } from '@/components/IlmoittautumisTilaSelect';
+import { VastaanottoTilaCell } from '@/components/VastaanottoTilaCell';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
 import { SijoittelunTuloksetActionBar } from './sijoittelun-tulos-action-bar';
-import { ValinnanTulosOtherActionsCell } from '@/components/valinnan-tulos-other-actions-cell';
+import { ValinnanTuloksetOtherActionsCell } from '@/components/ValinnanTuloksetOtherActionsCell';
 import { useSelector } from '@xstate/react';
 import { isNonNull } from 'remeda';
 import { useSijoittelunTulosSearch } from '../hooks/useSijoittelunTulosSearch';
 import { useSelection } from '@/hooks/useSelection';
+import { ValinnanTilaCell } from '@/components/ValinnanTilaCell';
 import {
   ValinnanTulosChangeParams,
   ValinnanTulosEventType,
   ValinnanTulosState,
-} from '@/lib/state/valinnan-tulos-machine';
-import { ValinnanTilaCell } from '@/components/valinnan-tila-cell';
+} from '@/lib/state/valinnanTuloksetMachineTypes';
 
 export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
   title,
@@ -124,7 +124,7 @@ const useColumns = ({
         title: t(`${TRANSLATIONS_PREFIX}.vastaanottotieto`),
         key: 'vastaanottotila',
         renderFn: (props) => (
-          <VastaanOttoCell
+          <VastaanottoTilaCell
             haku={haku}
             hakukohde={hakukohde}
             valintatapajono={valintatapajono}
@@ -164,7 +164,7 @@ const useColumns = ({
         title: t(`${TRANSLATIONS_PREFIX}.toiminnot`),
         key: 'toiminnot',
         renderFn: (props) => (
-          <ValinnanTulosOtherActionsCell
+          <ValinnanTuloksetOtherActionsCell
             haku={haku}
             hakemus={props}
             hakukohde={hakukohde}

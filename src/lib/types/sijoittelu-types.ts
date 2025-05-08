@@ -1,4 +1,4 @@
-import { ValinnanTulosActorRef } from '../state/valinnan-tulos-machine';
+import { ValinnanTulosActorRef } from '../state/createValinnanTuloksetMachine';
 import { HakemuksenValinnanTulos } from '../valinta-tulos-service/valinta-tulos-types';
 
 export type SijoittelunValintatapajonoTulos = {

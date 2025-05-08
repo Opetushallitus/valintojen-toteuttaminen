@@ -1,4 +1,3 @@
-import { Toast } from '@/hooks/useToaster';
 import {
   ActorRefFrom,
   assertEvent,
@@ -13,125 +12,24 @@ import {
   applySingleHakemusChange,
   hasChangedHakemukset,
   prepareChangedHakemuksetForSave,
-  ValinnanTulosEditableFields,
-} from './valinnan-tulos-machine-utils';
+} from './valinnanTuloksetMachineUtils';
 import { HakemuksenValinnanTulos } from '../valinta-tulos-service/valinta-tulos-types';
-import { Hakemus } from '../ataru/ataru-types';
 import { hyvaksyValintaEsitys } from '../valinta-tulos-service/valinta-tulos-service';
-import { rejectAndLog } from '../common';
-
-export type MinimalHakemusInfo = Pick<
-  Hakemus,
-  'hakijaOid' | 'hakemusOid' | 'hakijanNimi'
->;
-
-export type ValinnanTulosContext<T extends HakemuksenValinnanTulos> = {
-  addToast?: (toast: Toast) => void;
-  onUpdated?: () => void;
-  hakukohdeOid?: string;
-  valintatapajonoOid?: string;
-  lastModified?: string;
-  hakemukset: Array<T>;
-  changedHakemukset: Array<T>;
-  hakemuksetForMassUpdate?: Array<T>;
-  massChangeAmount?: number;
-  publishAfterUpdate?: boolean;
-  hakemusOidForRemoval?: string;
-  mode: 'sijoittelu' | 'valinta';
-};
-
-export enum ValinnanTulosState {
-  IDLE = 'IDLE',
-  UPDATING = 'UPDATING',
-  PUBLISHING = 'PUBLISHING',
-  REMOVING = 'REMOVING',
-}
-
-export enum ValinnanTulosEventType {
-  UPDATE = 'UPDATE',
-  MASS_UPDATE = 'MASS_UPDATE',
-  MASS_CHANGE = 'MASS_CHANGE',
-  CHANGE = 'CHANGE',
-  PUBLISH = 'PUBLISH',
-  RESET = 'RESET',
-  REMOVE = 'REMOVE',
-}
-
-export type ValinnanTulosUpdateEvent = {
-  type: ValinnanTulosEventType.UPDATE;
-};
-
-export type ValinnanTulosMachineParams<T extends HakemuksenValinnanTulos> = {
-  hakukohdeOid: string;
-  valintatapajonoOid?: string;
-  hakemukset: Array<T>;
-  lastModified?: string;
-  addToast: (toast: Toast) => void;
-  /**
-   * Kutsutaan, jos ainakin osa hakemuksista saatiin päivitettyä onnistuneesti.
-   */
-  onUpdated?: () => void;
-};
-
-export type ValinnanTulosResetEvent<T extends HakemuksenValinnanTulos> = {
-  type: ValinnanTulosEventType.RESET;
-  params: ValinnanTulosMachineParams<T>;
-};
-
-/**
- * Massatallennus parametrina annetuilla tiedoilla. Ei käytetä tallennuksessa changedHakemukset-arvoja.
- * */
-export type ValinnanTulosMassUpdateEvent = {
-  type: ValinnanTulosEventType.MASS_UPDATE;
-} & ValinnanTulosMassChangeParams;
-
-/**
- * Massamuutos parametrina annetuilla tiedoilla. Ei tallenna tietoja, vaan muuttaa context.changedHakemukset-arvoja.
- */
-export type ValinnanTulosMassChangeEvent = {
-  type: ValinnanTulosEventType.MASS_CHANGE;
-} & ValinnanTulosMassChangeParams;
-
-export type ValinnanTulosMassChangeParams = Pick<
-  ValinnanTulosEditableFields,
-  'valinnanTila' | 'vastaanottoTila' | 'ilmoittautumisTila'
-> & {
-  hakemusOids: Set<string>;
-};
-
-export type ValinnanTulosChangeParams = ValinnanTulosEditableFields & {
-  hakemusOid: string;
-};
-
-export type ValinnanTulosChangeEvent = {
-  type: ValinnanTulosEventType.CHANGE;
-} & ValinnanTulosChangeParams;
-
-export type ValinnanTulosPublishEvent = {
-  type: ValinnanTulosEventType.PUBLISH;
-};
-
-export type ValinnanTulosRemoveEvent = {
-  type: ValinnanTulosEventType.REMOVE;
-  hakemusOid: string;
-};
-
-export type ValinnanTuloksetEvents<T extends HakemuksenValinnanTulos> =
-  | ValinnanTulosUpdateEvent
-  | ValinnanTulosChangeEvent
-  | ValinnanTulosMassChangeEvent
-  | ValinnanTulosPublishEvent
-  | ValinnanTulosMassUpdateEvent
-  | ValinnanTulosResetEvent<T>
-  | ValinnanTulosRemoveEvent;
+import { rejectAndLog } from '@/lib/common';
+import {
+  ValinnanTuloksetEvents,
+  ValinnanTulosContext,
+  ValinnanTulosEventType,
+  ValinnanTulosState,
+} from './valinnanTuloksetMachineTypes';
 
 export type ValinnanTulosActorRef<
   T extends HakemuksenValinnanTulos = HakemuksenValinnanTulos,
-> = ActorRefFrom<ReturnType<typeof createValinnanTulosMachine<T>>>;
+> = ActorRefFrom<ReturnType<typeof createValinnanTuloksetMachine<T>>>;
 
-export function createValinnanTulosMachine<T extends HakemuksenValinnanTulos>(
-  mode: 'sijoittelu' | 'valinta',
-) {
+export function createValinnanTuloksetMachine<
+  T extends HakemuksenValinnanTulos,
+>(mode: 'sijoittelu' | 'valinta') {
   return createMachine({
     /** @xstate-layout N4IgpgJg5mDOIC5QDUCGAbAlgO267AKgK7oD2A1rGAC4CyqAxgBY5gDEASgKIDKXBAbQAMAXUSgADqViZqmUtnEgAHogAcAdgBsAOgAsavQGZjATiNqhAJgCsegDQgAnogCMVgL4fHaLLnzEZJQ09MysOgCSACIAMlxsAMIAEgCCAHIA4lzCYkggUjJyCkqqCK5CrjpGQnpaahYaQkauGq6OLgimWno6VlYaeu6WVnp62l4+GDh4hCQUVHSMLNhgkbHxtCk8PAD6yelZOUoFsvKKeaU2VjquRlZqI6Y2jaZqNjbt6oM6D66uWn1TKZXHp7hMQL5pgE5sFFmEVms4mxNtsdgBVAAKURSBGyomO0lOxQuiCMFiqxgGTT+Jn+Wk+CG0ulamlcalMrRaajU4Mh-lmQQWoWWq2iSMx2NxRzyJyK51ApTJagpRipzVugy09Oc6gBOi0LKMWmsqrUAN5U35gXmISW4TF8QlOOyrlykkJcpKiFqOiBfv9-rNDIGNh+dSatTsRnMRgtfhm1thwvt6zYGLRACEYhEeElpe7CmcvQglSq1TTNdqOsCjDcWc93gMtXo41CBTa4SLEfF01mc3nXQTC8SFaTySZVXpqRq6QyTKGtDYAVpqpZulYja2rTChXaEU6CBFMmwIApVjgAG4UVZ8hM723w1YHo8ZBCX0gMVBynL5-Ieoskp0Vi6K8xhkiCrjmMBDJvBoNxWGydg2NUoy1Fud6Cg+XbPseYAAE54aQeE6BI6BfgAZkRAC2Oi3tCmGduEOGvu+n7fqIv6ygBo4IMYyoIZooLmBoG73EYDIAkIPw2MJphWBUtiDOh9Edsm+5Ys6ewAPK0BicS4lEbCcf+I4qG4RqmPoyFCAaqrWMYVgwQhOgiWaRh2IuG4rsp7ZJnuT4abi2m6fpXCGQIg4yiZ8pmZ05g6DZIwaE80ZCNYDK1LoU4AlcWrNK8tg+Ymu6PjovbZrmL4nmeOjvuQN6Whhqn+WVmYVUkL5vtgV5sWcP74lFw4xaUIIri5ehAjYtxvEIuUMuUNjKiChg2dG5gPLG3gQo1Kl+aV5X9lV+GEcRpEUdRtE7b5JVdgdlWZF1PVfn1HEDQWRLDW4Yw9BuxhCBohiyfNDxWc0k7AeUJpeFt2CkBAcBKHR11YawQ4fcWAC0lRpTjuO4yCjk6p0PQpbcVimFODw1BoRX3oxCIOmjnqAeUlQGmyrQ2YYqrIfNNmhmys2QcB5PuKYtMMWpAWSi+TPcbFBqhnJbKTv9ri80T9TXACiGNHY2hAhLzWlQeXDBXp-BhXLpkjerujTuy7gaLlGgwZBvRC1B0aKS2W1I8VKMIndHWZNbn1lCuzJslqQgcu5GgiTBsc3O8kETRNFMTdDHhAA */
     id: 'ValinnanTulosMachine',

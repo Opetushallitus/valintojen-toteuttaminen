@@ -22,7 +22,7 @@ import { ConfirmationGlobalModal } from '@/components/modals/confirmation-global
 import { T } from '@tolgee/react';
 import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
 
-export const ValinnanTulosOtherActionsCell = ({
+export const ValinnanTuloksetOtherActionsCell = ({
   hakemus,
   haku,
   hakukohde,

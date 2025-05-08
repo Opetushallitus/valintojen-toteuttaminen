@@ -25,9 +25,14 @@ import {
   Typography,
 } from '@mui/material';
 import { OphButton } from '@opetushallitus/oph-design-system';
-import { MinimalHakemusInfo } from '@/lib/state/valinnan-tulos-machine';
 import { isEmpty } from 'remeda';
 import { ErrorTable } from '@/components/error-table';
+import { Hakemus } from '@/lib/ataru/ataru-types';
+
+type MinimalHakemusInfo = Pick<
+  Hakemus,
+  'hakijaOid' | 'hakemusOid' | 'hakijanNimi'
+>;
 
 export const ValinnanTulosErrorGlobalModal = createModal(
   ({

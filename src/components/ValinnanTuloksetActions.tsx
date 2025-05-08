@@ -28,15 +28,15 @@ import { ExternalLink } from '@/components/external-link';
 import { useSelector } from '@xstate/react';
 import { styled } from '@/lib/theme';
 import { useIsValintaesitysJulkaistavissa } from '@/hooks/useIsValintaesitysJulkaistavissa';
-import {
-  ValinnanTulosMassChangeParams,
-  ValinnanTulosEventType,
-  ValinnanTulosState,
-  ValinnanTulosActorRef,
-} from '@/lib/state/valinnan-tulos-machine';
+import { ValinnanTulosActorRef } from '@/lib/state/createValinnanTuloksetMachine';
 import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
 import { FileDownloadButton } from './file-download-button';
 import { useSendVastaanottoPostiMutation } from '@/hooks/useSendVastaanottoPostiMutation';
+import {
+  ValinnanTulosEventType,
+  ValinnanTulosMassChangeParams,
+  ValinnanTulosState,
+} from '@/lib/state/valinnanTuloksetMachineTypes';
 
 const ActionsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -242,7 +242,7 @@ const MerkitseMyohastyneeksiButton = ({
   );
 };
 
-export const ValinnanTulosActions = ({
+export const ValinnanTuloksetActions = ({
   haku,
   hakukohde,
   valinnanTulosActorRef,

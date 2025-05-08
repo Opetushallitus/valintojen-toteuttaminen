@@ -11,15 +11,13 @@ import { showModal } from '@/components/modals/global-modal';
 import { rejectAndLog, OphApiError } from '@/lib/common';
 import { useEffect } from 'react';
 import { useActorRef } from '@xstate/react';
-import {
-  createValinnanTulosMachine,
-  ValinnanTulosEventType,
-} from '@/lib/state/valinnan-tulos-machine';
+import { createValinnanTuloksetMachine } from '@/lib/state/createValinnanTuloksetMachine';
 import useToaster from '@/hooks/useToaster';
 import { useHasChanged } from '@/hooks/useHasChanged';
+import { ValinnanTulosEventType } from '@/lib/state/valinnanTuloksetMachineTypes';
 
 export const sijoittelunTuloksetMachine =
-  createValinnanTulosMachine<SijoittelunHakemusValintatiedoilla>(
+  createValinnanTuloksetMachine<SijoittelunHakemusValintatiedoilla>(
     'sijoittelu',
   ).provide({
     actions: {

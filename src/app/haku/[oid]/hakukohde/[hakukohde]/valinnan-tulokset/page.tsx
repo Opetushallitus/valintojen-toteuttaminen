@@ -1,108 +1,30 @@
 'use client';
-import { use, useMemo } from 'react';
+import { use } from 'react';
 
 import { TabContainer } from '../components/tab-container';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { Box, Stack } from '@mui/material';
 import { useSuspenseQueries } from '@tanstack/react-query';
-import {
-  getHakukohteenValinnanTuloksetQueryOptions,
-  HakukohteenValinnanTuloksetData,
-} from '@/lib/valinta-tulos-service/valinta-tulos-service';
+import { getHakukohteenValinnanTuloksetQueryOptions } from '@/lib/valinta-tulos-service/valinta-tulos-service';
 import { isEmpty } from '@/lib/common';
 import { NoResults } from '@/components/no-results';
 import { FullClientSpinner } from '@/components/client-spinner';
 import { getHakemuksetQueryOptions } from '@/lib/ataru/ataru-service';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
-import { Hakemus } from '@/lib/ataru/ataru-types';
 import { FormBox } from '@/components/form-box';
-import { ValinnanTuloksetTable } from './components/valinnan-tulokset-table';
+import { ValinnanTuloksetTable } from './components/ValinnanTuloksetTable';
 import { hakuQueryOptions } from '@/lib/kouta/useHaku';
 import { hakukohdeQueryOptions } from '@/lib/kouta/useHakukohde';
-import { ValinnanTuloksetSearchControls } from './components/valinnan-tulokset-search-controls';
-import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
-import { useValinnanTulosActorRef } from './lib/valinnan-tulos-state';
-import { ValinnanTulosActions } from '@/components/valinnan-tulos-actions';
-import { SpinnerModal } from '@/components/modals/spinner-modal';
-import { useSelector } from '@xstate/react';
-import {
-  ValinnanTulosActorRef,
-  ValinnanTulosState,
-} from '@/lib/state/valinnan-tulos-machine';
+import { ValinnanTuloksetSearchControls } from './components/ValinnanTuloksetSearchControls';
+import { useValinnanTulosActorRef } from './lib/valinnanTuloksetState';
+import { ValinnanTuloksetActions } from '@/components/ValinnanTuloksetActions';
 import { PageSizeSelector } from '@/components/table/page-size-selector';
 import { useValinnanTuloksetSearchParams } from './hooks/useValinnanTuloksetSearch';
-import { useIsDirtyValinnanTulos } from '@/lib/state/valinnan-tulos-machine-utils';
+import { useIsDirtyValinnanTulos } from '@/lib/state/valinnanTuloksetMachineUtils';
 import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBeforeNavigation';
-
-const useHakemuksetValinnanTuloksilla = ({
-  hakemukset,
-  valinnanTulokset,
-}: {
-  hakemukset: Array<Hakemus>;
-  valinnanTulokset: HakukohteenValinnanTuloksetData;
-}): Array<HakemuksenValinnanTulos> => {
-  return useMemo(
-    () =>
-      hakemukset.map((hakemus) => {
-        const valinnanTulos = valinnanTulokset.data[hakemus.hakemusOid] ?? {};
-        return {
-          hakijaOid: hakemus.hakijaOid,
-          hakemusOid: hakemus.hakemusOid,
-          hakijanNimi: hakemus.hakijanNimi,
-          hakukohdeOid: valinnanTulos.hakukohdeOid,
-          valintatapajonoOid: valinnanTulos.valintatapajonoOid,
-          valinnanTila: valinnanTulos.valinnantila,
-          vastaanottoTila: valinnanTulos.vastaanottotila,
-          ilmoittautumisTila: valinnanTulos.ilmoittautumistila,
-          ehdollisestiHyvaksyttavissa:
-            valinnanTulos.ehdollisestiHyvaksyttavissa,
-          ehdollisenHyvaksymisenEhtoKoodi:
-            valinnanTulos.ehdollisenHyvaksymisenEhtoKoodi,
-          ehdollisenHyvaksymisenEhtoFI:
-            valinnanTulos.ehdollisenHyvaksymisenEhtoFI,
-          ehdollisenHyvaksymisenEhtoSV:
-            valinnanTulos.ehdollisenHyvaksymisenEhtoSV,
-          ehdollisenHyvaksymisenEhtoEN:
-            valinnanTulos.ehdollisenHyvaksymisenEhtoEN,
-          valinnanTilanKuvausFI: valinnanTulos.valinnantilanKuvauksenTekstiFI,
-          valinnanTilanKuvausSV: valinnanTulos.valinnantilanKuvauksenTekstiSV,
-          valinnanTilanKuvausEN: valinnanTulos.valinnantilanKuvauksenTekstiEN,
-          julkaistavissa: valinnanTulos.julkaistavissa,
-          hyvaksyttyVarasijalta: valinnanTulos.hyvaksyttyVarasijalta,
-          hyvaksyPeruuntunut: valinnanTulos.hyvaksyPeruuntunut,
-          vastaanottoDeadline: valinnanTulos.vastaanottoDeadline,
-          vastaanottoDeadlineMennyt: valinnanTulos.vastaanottoDeadlineMennyt,
-        };
-      }),
-    [hakemukset, valinnanTulokset],
-  );
-};
-
-const ValinnanTulosSpinnerModal = ({
-  actorRef,
-}: {
-  actorRef: ValinnanTulosActorRef;
-}) => {
-  const state = useSelector(actorRef, (state) => state);
-  const { t } = useTranslations();
-
-  let spinnerTitle;
-  if (state.matches(ValinnanTulosState.REMOVING)) {
-    spinnerTitle = t('valinnan-tulokset.poistetaan-tuloksia');
-  } else if (state.matches(ValinnanTulosState.PUBLISHING)) {
-    spinnerTitle = t('valinnan-tulokset.hyvaksytaan-valintaesitysta');
-  } else if (state.matches(ValinnanTulosState.UPDATING)) {
-    spinnerTitle = t('valinnan-tulokset.tallennetaan-tuloksia');
-  }
-
-  return (
-    <SpinnerModal
-      title={spinnerTitle ?? ''}
-      open={Boolean(spinnerTitle && state.hasTag('saving'))}
-    />
-  );
-};
+import { useHakemuksetValinnanTuloksilla } from './hooks/useHakemuksetValinnanTuloksilla';
+import { ValinnanTuloksetSpinnerModal } from './components/ValinnanTuloksetSpinnerModal';
 
 const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const { t } = useTranslations();
@@ -155,7 +77,7 @@ const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
         alignItems: 'flex-start',
       }}
     >
-      <ValinnanTulosSpinnerModal actorRef={valinnanTulosActorRef} />
+      <ValinnanTuloksetSpinnerModal actorRef={valinnanTulosActorRef} />
       <Stack
         flexDirection="row"
         gap={2}
@@ -170,7 +92,7 @@ const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
         <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
       </Stack>
       <FormBox sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <ValinnanTulosActions
+        <ValinnanTuloksetActions
           haku={haku}
           hakukohde={hakukohde}
           valinnanTulosActorRef={valinnanTulosActorRef}

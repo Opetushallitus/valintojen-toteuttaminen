@@ -18,10 +18,10 @@ import { useIsValintaesitysJulkaistavissa } from '@/hooks/useIsValintaesitysJulk
 import { useHakijanVastaanottotila } from '@/hooks/useHakijanVastaanottotila';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { ClientSpinner } from '@/components/client-spinner';
-import { ValinnanTulosChangeParams } from '@/lib/state/valinnan-tulos-machine';
 import { isValidValinnanTila } from '@/lib/valinnan-tulokset-utils';
 import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
 import { memo } from 'react';
+import { ValinnanTulosChangeParams } from '@/lib/state/valinnanTuloksetMachineTypes';
 
 const HakijanVastaanottoTilaSection = ({
   haku,
@@ -189,7 +189,7 @@ const SijoittelunVastaanottoTila = ({
   );
 };
 
-export const VastaanOttoCell = memo(function VastaanottoCell({
+export const VastaanottoTilaCell = memo(function VastaanottoCell({
   haku,
   hakukohde,
   valintatapajono,

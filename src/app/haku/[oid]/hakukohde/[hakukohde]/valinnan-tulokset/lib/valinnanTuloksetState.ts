@@ -1,10 +1,7 @@
 import { fromPromise } from 'xstate';
 import { useCallback, useEffect } from 'react';
 import { useActorRef } from '@xstate/react';
-import {
-  createValinnanTulosMachine,
-  ValinnanTulosEventType,
-} from '@/lib/state/valinnan-tulos-machine';
+import { createValinnanTuloksetMachine } from '@/lib/state/createValinnanTuloksetMachine';
 import useToaster from '@/hooks/useToaster';
 import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
 import { saveErillishakuValinnanTulokset } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
@@ -19,9 +16,10 @@ import { showModal } from '@/components/modals/global-modal';
 import { QueryClient, useQueryClient } from '@tanstack/react-query';
 import { isNullish } from 'remeda';
 import { isHakemusOid, rejectAndLog, OphProcessError } from '@/lib/common';
+import { ValinnanTulosEventType } from '@/lib/state/valinnanTuloksetMachineTypes';
 
 export const valinnanTuloksetMachine =
-  createValinnanTulosMachine<HakemuksenValinnanTulos>('valinta').provide({
+  createValinnanTuloksetMachine<HakemuksenValinnanTulos>('valinta').provide({
     actions: {
       alert: ({ context }, params) =>
         context.addToast?.({

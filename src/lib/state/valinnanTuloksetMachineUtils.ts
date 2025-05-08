@@ -3,12 +3,7 @@ import {
   ValinnanTila,
   VastaanottoTila,
 } from '@/lib/types/sijoittelu-types';
-import {
-  type ValinnanTulosContext,
-  type ValinnanTulosChangeEvent,
-  type ValinnanTulosMassChangeEvent,
-  type ValinnanTulosActorRef,
-} from './valinnan-tulos-machine';
+import { type ValinnanTulosActorRef } from './createValinnanTuloksetMachine';
 import {
   isIlmoittautuminenPossible,
   isVastaanottoPossible,
@@ -17,26 +12,13 @@ import {
 import { clone } from 'remeda';
 import { useSelector } from '@xstate/react';
 import { HakemuksenValinnanTulos } from '../valinta-tulos-service/valinta-tulos-types';
-
-type ValinnanTulosEditableFieldNames =
-  | 'julkaistavissa'
-  | 'valinnanTila'
-  | 'valinnanTilanKuvausFI'
-  | 'valinnanTilanKuvausSV'
-  | 'valinnanTilanKuvausEN'
-  | 'vastaanottoTila'
-  | 'ilmoittautumisTila'
-  | 'ehdollisestiHyvaksyttavissa'
-  | 'ehdollisenHyvaksymisenEhtoKoodi'
-  | 'ehdollisenHyvaksymisenEhtoFI'
-  | 'ehdollisenHyvaksymisenEhtoSV'
-  | 'ehdollisenHyvaksymisenEhtoEN'
-  | 'hyvaksyttyVarasijalta'
-  | 'maksunTila';
-
-export type ValinnanTulosEditableFields = Partial<
-  Pick<HakemuksenValinnanTulos, ValinnanTulosEditableFieldNames>
->;
+import {
+  ValinnanTulosChangeEvent,
+  ValinnanTulosContext,
+  ValinnanTulosEditableFieldNames,
+  ValinnanTulosEditableFields,
+  ValinnanTulosMassChangeEvent,
+} from './valinnanTuloksetMachineTypes';
 
 const SIJOITTELUN_TULOS_EDITABLE_FIELDS: Array<ValinnanTulosEditableFieldNames> =
   [

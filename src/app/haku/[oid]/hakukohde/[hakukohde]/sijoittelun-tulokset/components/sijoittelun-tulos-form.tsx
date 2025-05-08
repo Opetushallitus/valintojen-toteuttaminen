@@ -2,7 +2,7 @@
 
 import { useCallback } from 'react';
 import { Box } from '@mui/material';
-import { ValinnanTulosActions } from '@/components/valinnan-tulos-actions';
+import { ValinnanTuloksetActions } from '@/components/ValinnanTuloksetActions';
 import { useSijoittelunTulosActorRef } from '../lib/sijoittelun-tulokset-state';
 import { SijoitteluajonValintatapajonoValintatiedoilla } from '@/lib/types/sijoittelu-types';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
@@ -10,7 +10,7 @@ import { SijoittelunTulosTable } from './sijoittelun-tulos-table';
 import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBeforeNavigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { refetchSijoittelunTulokset } from '../lib/refetch-sijoittelun-tulokset';
-import { useIsDirtyValinnanTulos } from '@/lib/state/valinnan-tulos-machine-utils';
+import { useIsDirtyValinnanTulos } from '@/lib/state/valinnanTuloksetMachineUtils';
 
 type SijoittelunTuloksetFormParams = {
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
@@ -54,7 +54,7 @@ export const SijoittelunTulosForm = ({
       sx={{ width: '100%' }}
       data-test-id={`sijoittelun-tulokset-form-${valintatapajono.oid}`}
     >
-      <ValinnanTulosActions
+      <ValinnanTuloksetActions
         haku={haku}
         hakukohde={hakukohde}
         valinnanTulosActorRef={sijoittelunTulosActorRef}

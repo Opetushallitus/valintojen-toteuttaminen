@@ -26,10 +26,10 @@ import { entries, map, pipe } from 'remeda';
 import { styled } from '@/lib/theme';
 import { useHasOrganizationPermissions } from '@/hooks/useUserPermissions';
 import { InfoTooltipButton } from '@/components/info-tooltip-button';
-import { ValinnanTulosChangeParams } from '@/lib/state/valinnan-tulos-machine';
 import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
 import { useValinnanTilaOptions } from '@/hooks/useValinnanTilaOptions';
 import { isValidValinnanTila } from '@/lib/valinnan-tulokset-utils';
+import { ValinnanTulosChangeParams } from '@/lib/state/valinnanTuloksetMachineTypes';
 
 const LanguageAdornment = styled(InputAdornment)(() => ({
   backgroundColor: ophColors.grey200,

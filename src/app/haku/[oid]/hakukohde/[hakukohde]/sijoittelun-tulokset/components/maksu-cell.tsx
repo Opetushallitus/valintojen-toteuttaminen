@@ -3,7 +3,7 @@ import { useTranslations } from '@/lib/localization/useTranslations';
 import { MaksunTila } from '@/lib/ataru/ataru-types';
 import { SijoittelunHakemusValintatiedoilla } from '@/lib/types/sijoittelu-types';
 import { SelectChangeEvent } from '@mui/material';
-import { ValinnanTulosChangeParams } from '@/lib/state/valinnan-tulos-machine';
+import { ValinnanTulosChangeParams } from '@/lib/state/valinnanTuloksetMachineTypes';
 
 export const MaksuCell = ({
   hakemus,

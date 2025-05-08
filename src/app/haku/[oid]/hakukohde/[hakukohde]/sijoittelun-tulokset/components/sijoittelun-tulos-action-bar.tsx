@@ -14,13 +14,13 @@ import {
 } from '@/lib/sijoittelun-tulokset-utils';
 import { useVastaanottoTilaOptions } from '@/hooks/useVastaanottoTilaOptions';
 import { useIlmoittautumisTilaOptions } from '@/hooks/useIlmoittautumisTilaOptions';
-import {
-  ValinnanTulosActorRef,
-  ValinnanTulosEventType,
-  ValinnanTulosMassChangeParams,
-} from '@/lib/state/valinnan-tulos-machine';
+import { ValinnanTulosActorRef } from '@/lib/state/createValinnanTuloksetMachine';
 import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
 import { useCallback, useState } from 'react';
+import {
+  ValinnanTulosEventType,
+  ValinnanTulosMassChangeParams,
+} from '@/lib/state/valinnanTuloksetMachineTypes';
 
 const IlmoittautumisSelect = ({
   hakemukset,

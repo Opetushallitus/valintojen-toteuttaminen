@@ -14,17 +14,17 @@ import {
 } from '@/lib/sijoittelun-tulokset-utils';
 import { useVastaanottoTilaOptions } from '@/hooks/useVastaanottoTilaOptions';
 import { useIlmoittautumisTilaOptions } from '@/hooks/useIlmoittautumisTilaOptions';
-import {
-  ValinnanTulosActorRef,
-  ValinnanTulosEventType,
-  ValinnanTulosMassChangeParams,
-} from '@/lib/state/valinnan-tulos-machine';
+import { ValinnanTulosActorRef } from '@/lib/state/createValinnanTuloksetMachine';
 import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
 import { useCallback } from 'react';
 import { Dropdown } from '@/components/dropdown';
 import { useValinnanTilaOptions } from '@/hooks/useValinnanTilaOptions';
+import {
+  ValinnanTulosEventType,
+  ValinnanTulosMassChangeParams,
+} from '@/lib/state/valinnanTuloksetMachineTypes';
 
-const ValinnanTilaSelect = ({
+const ValinnanTilaDropdown = ({
   hakemukset,
   selection,
   massStatusChangeForm,
@@ -61,7 +61,7 @@ const ValinnanTilaSelect = ({
   );
 };
 
-const IlmoittautumisTilaSelect = ({
+const IlmoittautumisTilaDropdown = ({
   hakemukset,
   selection,
   massStatusChangeForm,
@@ -100,7 +100,7 @@ const IlmoittautumisTilaSelect = ({
   );
 };
 
-const VastaanottoTilaSelect = ({
+const VastaanottoTilaDropdown = ({
   hakemukset,
   selection,
   massStatusChangeForm,
@@ -139,7 +139,7 @@ const VastaanottoTilaSelect = ({
   );
 };
 
-export const ValinnanTulosActionBar = ({
+export const ValinnanTuloksetActionBar = ({
   hakemukset,
   selection,
   resetSelection,
@@ -172,7 +172,7 @@ export const ValinnanTulosActionBar = ({
       </Box>
       <ActionBar.Divider />
       <Stack direction="row" sx={{ alignItems: 'center', gap: 1 }}>
-        <ValinnanTilaSelect
+        <ValinnanTilaDropdown
           hakemukset={hakemukset}
           selection={selection}
           massStatusChangeForm={massStatusChangeForm}
@@ -180,7 +180,7 @@ export const ValinnanTulosActionBar = ({
         <ActionBar.Divider />
       </Stack>
       <Stack direction="row" sx={{ alignItems: 'center', gap: 1 }}>
-        <VastaanottoTilaSelect
+        <VastaanottoTilaDropdown
           hakemukset={hakemukset}
           selection={selection}
           massStatusChangeForm={massStatusChangeForm}
@@ -188,7 +188,7 @@ export const ValinnanTulosActionBar = ({
         <ActionBar.Divider />
       </Stack>
       <Stack direction="row" sx={{ alignItems: 'center', gap: 1 }}>
-        <IlmoittautumisTilaSelect
+        <IlmoittautumisTilaDropdown
           hakemukset={hakemukset}
           selection={selection}
           massStatusChangeForm={massStatusChangeForm}

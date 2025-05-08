@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { ValinnanTilaCell } from './valinnan-tila-cell';
+import { ValinnanTilaCell } from './ValinnanTilaCell';
 import { Haku, Tila } from '@/lib/kouta/kouta-types';
 import { TranslatedName } from '@/lib/localization/localization-types';
 

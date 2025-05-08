@@ -12,7 +12,7 @@ import {
 import {
   ValinnanTulosEventType,
   ValinnanTulosState,
-} from '@/lib/state/valinnan-tulos-machine';
+} from '@/lib/state/valinnanTuloksetMachineTypes';
 
 vi.mock('@/components/modals/global-modal', () => ({
   showModal: vi.fn(),
