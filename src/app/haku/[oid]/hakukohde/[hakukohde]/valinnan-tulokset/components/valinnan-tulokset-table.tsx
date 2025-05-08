@@ -34,7 +34,7 @@ const useColumns = ({
   hakukohde: Hakukohde;
   actorRef: ValinnanTulosActorRef;
 }) => {
-  const { t } = useTranslations();
+  const { t, translateEntity } = useTranslations();
 
   const disabled = useSelector(
     actorRef,
@@ -80,6 +80,8 @@ const useColumns = ({
             disabled={disabled}
             updateForm={updateForm}
             mode="valinta"
+            t={t}
+            translateEntity={translateEntity}
           />
         ),
       }),
@@ -94,6 +96,7 @@ const useColumns = ({
             updateForm={updateForm}
             disabled={disabled}
             mode="valinta"
+            t={t}
           />
         ),
       }),
@@ -136,6 +139,7 @@ const useColumns = ({
     disabled,
     valintatapajonoOid,
     removeValinnanTulos,
+    translateEntity,
   ]);
 };
 

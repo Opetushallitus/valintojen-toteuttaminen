@@ -1,7 +1,7 @@
-import { useTranslations } from '@/lib/localization/useTranslations';
+import { TFunction } from '@/lib/localization/useTranslations';
 import { ValinnanTila, VastaanottoTila } from '@/lib/types/sijoittelu-types';
 import { useHyvaksynnanEhdot } from '@/lib/koodisto/useHyvaksynnanEhdot';
-import { ChangeEvent } from 'react';
+import { ChangeEvent, memo } from 'react';
 import {
   Box,
   InputAdornment,
@@ -17,7 +17,10 @@ import {
   OphCheckbox,
   OphInput,
 } from '@opetushallitus/oph-design-system';
-import { Language } from '@/lib/localization/localization-types';
+import {
+  Language,
+  TranslatedName,
+} from '@/lib/localization/localization-types';
 import { getReadableHakemuksenTila } from '@/lib/sijoittelun-tulokset-utils';
 import { entries, map, pipe } from 'remeda';
 import { styled } from '@/lib/theme';
@@ -58,6 +61,7 @@ export const EhdollisestiHyvaksyttavissaCheckbox = ({
   hakemus,
   disabled,
   updateForm,
+  t,
 }: {
   haku: Haku;
   hakemus: Pick<
@@ -66,8 +70,8 @@ export const EhdollisestiHyvaksyttavissaCheckbox = ({
   >;
   disabled: boolean;
   updateForm: (params: ValinnanTulosChangeParams) => void;
+  t: TFunction;
 }) => {
-  const { t } = useTranslations();
   const { hakemusOid, ehdollisestiHyvaksyttavissa } = hakemus;
 
   const updateEhdollinen = () => {
@@ -96,13 +100,13 @@ const HylkayksenSyyFields = ({
   hakemus,
   disabled,
   updateForm,
+  t,
 }: {
   hakemus: HakemuksenValinnanTulos;
   disabled: boolean;
   updateForm: (params: ValinnanTulosChangeParams) => void;
+  t: TFunction;
 }) => {
-  const { t } = useTranslations();
-
   const updateValinnanTilanKuvaus = (
     event: ChangeEvent<HTMLInputElement>,
     kieli: Language,
@@ -164,14 +168,16 @@ const EhdollinenFields = ({
   hakemus,
   disabled,
   updateForm,
+  t,
+  translateEntity,
 }: {
   haku: Haku;
   hakemus: HakemuksenValinnanTulos;
   disabled: boolean;
   updateForm: (params: ValinnanTulosChangeParams) => void;
+  t: TFunction;
+  translateEntity: (entity: TranslatedName) => string;
 }) => {
-  const { t, translateEntity } = useTranslations();
-
   const { data: hyvaksynnanEhdot } = useHyvaksynnanEhdot();
 
   const ehtoOptions = hyvaksynnanEhdot.map((ehto) => {
@@ -214,6 +220,7 @@ const EhdollinenFields = ({
         hakemus={hakemus}
         updateForm={updateForm}
         disabled={disabled}
+        t={t}
       />
       {ehdollisestiHyvaksyttavissa && (
         <>
@@ -291,21 +298,23 @@ const ValinnanTilaSelect = ({
   );
 };
 
-export const ValinnanTilaCell = ({
+export const ValinnanTilaCell = memo(function ValinnanTilaCell({
   hakemus,
   haku,
   disabled,
   updateForm,
   mode,
+  t,
+  translateEntity,
 }: {
   hakemus: HakemuksenValinnanTulos;
   haku: Haku;
   disabled: boolean;
   updateForm: (params: ValinnanTulosChangeParams) => void;
   mode: 'valinta' | 'sijoittelu';
-}) => {
-  const { t } = useTranslations();
-
+  t: TFunction;
+  translateEntity: (entity: TranslatedName) => string;
+}) {
   const {
     hakemusOid,
     hyvaksyttyVarasijalta,
@@ -367,6 +376,7 @@ export const ValinnanTilaCell = ({
           hakemus={hakemus}
           disabled={disabled}
           updateForm={updateForm}
+          t={t}
         />
       )}
       {valinnanTila !== ValinnanTila.HYLATTY && isKorkeakouluHaku(haku) && (
@@ -375,8 +385,10 @@ export const ValinnanTilaCell = ({
           hakemus={hakemus}
           disabled={disabled}
           updateForm={updateForm}
+          t={t}
+          translateEntity={translateEntity}
         />
       )}
     </Stack>
   );
-};
+});

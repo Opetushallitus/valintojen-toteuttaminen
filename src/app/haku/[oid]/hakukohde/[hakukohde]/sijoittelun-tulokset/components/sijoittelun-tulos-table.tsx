@@ -70,7 +70,7 @@ const useColumns = ({
   const state = useSelector(actorRef, (s) => s);
   const { send } = actorRef;
 
-  const { t } = useTranslations();
+  const { t, translateEntity } = useTranslations();
 
   const disabled = !state.matches(ValinnanTulosState.IDLE);
 
@@ -115,6 +115,8 @@ const useColumns = ({
             updateForm={updateForm}
             disabled={disabled}
             mode="sijoittelu"
+            t={t}
+            translateEntity={translateEntity}
           />
         ),
       }),
@@ -130,6 +132,7 @@ const useColumns = ({
             updateForm={updateForm}
             disabled={disabled}
             mode="sijoittelu"
+            t={t}
           />
         ),
       }),
@@ -184,6 +187,7 @@ const useColumns = ({
     valintatapajono,
     kayttaaLaskentaa,
     hasNegativePisteet,
+    translateEntity,
   ]);
 };
 

@@ -1,5 +1,5 @@
 import { LocalizedSelect } from '@/components/localized-select';
-import { useTranslations } from '@/lib/localization/useTranslations';
+import { TFunction } from '@/lib/localization/useTranslations';
 import { toFormattedDateTimeString } from '@/lib/localization/translation-utils';
 import {
   SijoitteluajonValintatapajonoValintatiedoilla,
@@ -21,21 +21,22 @@ import { ClientSpinner } from '@/components/client-spinner';
 import { ValinnanTulosChangeParams } from '@/lib/state/valinnan-tulos-machine';
 import { isValidValinnanTila } from '@/lib/valinnan-tulokset-utils';
 import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
+import { memo } from 'react';
 
 const HakijanVastaanottoTilaSection = ({
   haku,
   hakukohde,
   valintatapajono,
   vastaanottoTila,
+  t,
 }: {
   haku: Haku;
   hakukohde: Hakukohde;
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
   hakijanVastaanottoTila?: VastaanottoTila;
   vastaanottoTila?: VastaanottoTila;
+  t: TFunction;
 }) => {
-  const { t } = useTranslations();
-
   const { data: hakijoidenVastaanottoTila } = useHakijanVastaanottotila({
     hakuOid: haku.oid,
     hakukohdeOid: hakukohde.oid,
@@ -76,6 +77,7 @@ export type VastaanOttoCellProps = {
   disabled?: boolean;
   updateForm: (params: ValinnanTulosChangeParams) => void;
   mode: 'valinta' | 'sijoittelu';
+  t: TFunction;
 };
 
 const ValinnanVastaanottoTila = ({
@@ -85,8 +87,8 @@ const ValinnanVastaanottoTila = ({
   valintatapajono,
   updateForm,
   disabled,
+  t,
 }: Omit<VastaanOttoCellProps, 'mode'>) => {
-  const { t } = useTranslations();
   const { vastaanottoTila } = hakemus;
 
   const vastaanottotilaOptions = useVastaanottoTilaOptions((tila) => {
@@ -125,6 +127,7 @@ const ValinnanVastaanottoTila = ({
             hakukohde={hakukohde}
             valintatapajono={valintatapajono}
             vastaanottoTila={vastaanottoTila}
+            t={t}
           />
         )}
       </QuerySuspenseBoundary>
@@ -147,8 +150,8 @@ const SijoittelunVastaanottoTila = ({
   valintatapajono,
   updateForm,
   disabled,
+  t,
 }: Omit<VastaanOttoCellProps, 'mode'>) => {
-  const { t } = useTranslations();
   const { vastaanottoTila } = hakemus;
 
   const vastaanottotilaOptions = useVastaanottoTilaOptions();
@@ -170,6 +173,7 @@ const SijoittelunVastaanottoTila = ({
               hakukohde={hakukohde}
               valintatapajono={valintatapajono}
               vastaanottoTila={vastaanottoTila}
+              t={t}
             />
           )}
         </QuerySuspenseBoundary>
@@ -185,7 +189,7 @@ const SijoittelunVastaanottoTila = ({
   );
 };
 
-export const VastaanOttoCell = ({
+export const VastaanOttoCell = memo(function VastaanottoCell({
   haku,
   hakukohde,
   valintatapajono,
@@ -193,9 +197,8 @@ export const VastaanOttoCell = ({
   disabled,
   updateForm,
   mode,
-}: VastaanOttoCellProps) => {
-  const { t } = useTranslations();
-
+  t,
+}: VastaanOttoCellProps) {
   const isValintaesitysJulkaistavissa = useIsValintaesitysJulkaistavissa({
     haku,
   });
@@ -236,6 +239,7 @@ export const VastaanOttoCell = ({
           valintatapajono={valintatapajono}
           updateForm={updateForm}
           disabled={disabled}
+          t={t}
         />
       ) : (
         <ValinnanVastaanottoTila
@@ -245,8 +249,9 @@ export const VastaanOttoCell = ({
           valintatapajono={valintatapajono}
           updateForm={updateForm}
           disabled={disabled}
+          t={t}
         />
       )}
     </Stack>
   );
-};
+});

@@ -2,6 +2,7 @@ import { describe, expect, test, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { ValinnanTilaCell } from './valinnan-tila-cell';
 import { Haku, Tila } from '@/lib/kouta/kouta-types';
+import { TranslatedName } from '@/lib/localization/localization-types';
 
 const ORG_OID = '1.2.3.4.5';
 
@@ -76,6 +77,8 @@ const renderValinnanTilaCell = ({
       disabled={false}
       updateForm={mockUpdateForm}
       mode="valinta"
+      t={(x) => x as string}
+      translateEntity={(x: TranslatedName) => x.fi ?? ''}
     />,
   );
 };
