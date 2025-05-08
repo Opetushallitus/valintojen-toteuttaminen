@@ -12,6 +12,7 @@ import { IlmoittautumisTilaSelect } from '@/components/ilmoittautumistila-select
 import { HakemusValinnanTuloksilla } from '../lib/valinnan-tulos-types';
 import { VastaanOttoCell } from '@/components/vastaanotto-cell';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
+import { useValinnanTuloksetSearch } from '../hooks/useValinnanTuloksetSearch';
 
 export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
   title,
@@ -109,6 +110,9 @@ export const ValinnanTuloksetTable = ({
 
   const columns = useColumns({ haku, hakukohde });
 
+  const { results, sort, setSort, pageSize, setPage, page } =
+    useValinnanTuloksetSearch(hakemukset);
+
   const { selection, setSelection } = useSelection(hakemukset);
 
   return (
@@ -116,11 +120,19 @@ export const ValinnanTuloksetTable = ({
       <ListTable
         rowKeyProp="hakemusOid"
         columns={columns}
-        rows={hakemukset}
+        rows={results}
         selection={selection}
         onSelectionChange={setSelection}
         checkboxSelection={true}
         translateHeader={false}
+        sort={sort}
+        setSort={setSort}
+        pagination={{
+          page,
+          setPage,
+          pageSize,
+          label: `${t('yleinen.sivutus')} ${hakukohde.nimi}`,
+        }}
         getRowCheckboxLabel={({ hakijanNimi }) =>
           t(`${TRANSLATIONS_PREFIX}.valitse-hakemus`, {
             hakijanNimi,
