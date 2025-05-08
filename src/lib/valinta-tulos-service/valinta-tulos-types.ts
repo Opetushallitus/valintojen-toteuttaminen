@@ -1,4 +1,4 @@
-import { Hakemus, MaksunTila } from '../ataru/ataru-types';
+import { MaksunTila } from '../ataru/ataru-types';
 import { TranslatedName } from '../localization/localization-types';
 import {
   IlmoittautumisTila,
@@ -129,9 +129,10 @@ export type SijoittelunTulosBasicInfo = {
   endDate: Date;
 };
 
-export type ValinnanTulosFields = {
+export type HakemuksenValinnanTulos = {
   hakemusOid: string;
-  hakijanNimi?: string;
+  hakijaOid: string;
+  hakijanNimi: string;
   valintatapajonoOid?: string;
   valinnanTila?: SijoittelunTila;
   valinnanTilanKuvaus?: TranslatedName;
@@ -149,9 +150,5 @@ export type ValinnanTulosFields = {
   julkaistavissa?: boolean;
   hyvaksyPeruuntunut?: boolean;
   maksunTila?: string;
-};
-
-// Jos ei tuloksia, vain hakemuksen tiedot
-export type HakemusValinnanTuloksilla = Hakemus & {
-  valinnanTulos?: ValinnanTulosFields;
+  siirtynytToisestaValintatapajonosta?: boolean;
 };

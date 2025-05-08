@@ -1,8 +1,5 @@
 import { useTranslations } from '@/lib/localization/useTranslations';
-import {
-  SijoittelunHakemusValintatiedoilla,
-  SijoittelunTila,
-} from '@/lib/types/sijoittelu-types';
+import { SijoittelunTila } from '@/lib/types/sijoittelu-types';
 import { useHyvaksynnanEhdot } from '../hooks/useHyvaksynnanEhdot';
 import { ChangeEvent } from 'react';
 import { SijoittelunTulosStyledCell } from './sijoittelun-tulos-styled-cell';
@@ -25,6 +22,7 @@ import { styled } from '@/lib/theme';
 import { useHasOrganizationPermissions } from '@/hooks/useUserPermissions';
 import { InfoTooltipButton } from '@/components/info-tooltip-button';
 import { ValinnanTulosChangeParams } from '@/lib/state/valinnan-tulos-machine';
+import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
 
 const LanguageAdornment = styled(InputAdornment)(() => ({
   backgroundColor: ophColors.grey200,
@@ -41,9 +39,7 @@ const StyledInput = styled(OphInput)(() => ({
   paddingLeft: 0,
 }));
 
-const isHyvaksyttyVarasijaltaVisible = (
-  hakemus: SijoittelunHakemusValintatiedoilla,
-) =>
+const isHyvaksyttyVarasijaltaVisible = (hakemus: HakemuksenValinnanTulos) =>
   hakemus.valinnanTila === SijoittelunTila.VARALLA ||
   (hakemus.hyvaksyttyVarasijalta &&
     [
@@ -61,7 +57,7 @@ export const EhdollisestiHyvaksyttavissaCheckbox = ({
 }: {
   haku: Haku;
   hakemus: Pick<
-    SijoittelunHakemusValintatiedoilla,
+    HakemuksenValinnanTulos,
     'hakemusOid' | 'ehdollisestiHyvaksyttavissa'
   >;
   disabled: boolean;
@@ -101,7 +97,7 @@ const EhdollinenFields = ({
   updateForm,
 }: {
   haku: Haku;
-  hakemus: SijoittelunHakemusValintatiedoilla;
+  hakemus: HakemuksenValinnanTulos;
   disabled: boolean;
   updateForm: (params: ValinnanTulosChangeParams) => void;
 }) => {
@@ -199,7 +195,7 @@ export const SijoittelunTilaCell = ({
   disabled,
   updateForm,
 }: {
-  hakemus: SijoittelunHakemusValintatiedoilla;
+  hakemus: HakemuksenValinnanTulos;
   haku: Haku;
   disabled: boolean;
   updateForm: (params: ValinnanTulosChangeParams) => void;

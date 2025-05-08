@@ -15,7 +15,7 @@ import {
 } from '@/lib/sijoittelun-tulokset-utils';
 import { clone } from 'remeda';
 import { useSelector } from '@xstate/react';
-import { ValinnanTulosFields } from '../valinta-tulos-service/valinta-tulos-types';
+import { HakemuksenValinnanTulos } from '../valinta-tulos-service/valinta-tulos-types';
 import { TranslatedName } from '../localization/localization-types';
 
 type ValinnanTulosEditableFieldNames =
@@ -35,7 +35,7 @@ type ValinnanTulosEditableFieldNames =
   | 'maksunTila';
 
 export type ValinnanTulosEditableFields = Partial<
-  Pick<ValinnanTulosFields, ValinnanTulosEditableFieldNames>
+  Pick<HakemuksenValinnanTulos, ValinnanTulosEditableFieldNames>
 >;
 
 const SIJOITTELUN_TULOS_EDITABLE_FIELDS: Array<ValinnanTulosEditableFieldNames> =
@@ -57,39 +57,39 @@ const SIJOITTELUN_TULOS_EDITABLE_FIELDS: Array<ValinnanTulosEditableFieldNames> 
   ] as const;
 
 export const isUnchanged = (
-  original: ValinnanTulosFields,
-  changed: ValinnanTulosFields,
+  original: HakemuksenValinnanTulos,
+  changed: HakemuksenValinnanTulos,
 ): boolean => {
   return SIJOITTELUN_TULOS_EDITABLE_FIELDS.every((fieldName) => {
     return original?.[fieldName] === changed?.[fieldName];
   });
 };
 
-export function hasChangedHakemukset<T extends ValinnanTulosFields>({
+export function hasChangedHakemukset<T extends HakemuksenValinnanTulos>({
   context,
 }: {
   context: ValinnanTulosContext<T>;
 }) {
-  return context.changedTulokset.length > 0;
+  return context.changedHakemukset.length > 0;
 }
 
 /**
  * Tekee eventin mukaiset muokkaukset changedHakemukset-taulukkoon ja palauttaa muokatun taulukon.
  */
-function applyEditsToChangedHakemukset<T extends ValinnanTulosFields>({
-  changedTulokset: changedHakemukset,
-  originalTulos: originalHakenut,
+function applyEditsToChangedHakemukset<T extends HakemuksenValinnanTulos>({
+  changedHakemukset,
+  originalHakemus,
   event,
 }: {
-  changedTulokset: Array<T>;
-  originalTulos: T;
+  changedHakemukset: Array<T>;
+  originalHakemus: T;
   event: ValinnanTulosEditableFields;
 }) {
   const changedHakenut = changedHakemukset.find(
-    (h) => h.hakemusOid === originalHakenut?.hakemusOid,
+    (h) => h.hakemusOid === originalHakemus?.hakemusOid,
   );
 
-  const tulos = clone(changedHakenut ?? originalHakenut);
+  const tulos = clone(changedHakenut ?? originalHakemus);
 
   for (const fieldName of SIJOITTELUN_TULOS_EDITABLE_FIELDS) {
     if (event?.[fieldName] !== undefined) {
@@ -107,7 +107,7 @@ function applyEditsToChangedHakemukset<T extends ValinnanTulosFields>({
   }
 
   if (changedHakenut) {
-    return isUnchanged(originalHakenut, tulos)
+    return isUnchanged(originalHakemus, tulos)
       ? changedHakemukset.filter((h) => h.hakemusOid !== tulos.hakemusOid)
       : changedHakemukset.map((h) =>
           h.hakemusOid === h.hakemusOid ? tulos : h,
@@ -117,36 +117,36 @@ function applyEditsToChangedHakemukset<T extends ValinnanTulosFields>({
   }
 }
 
-export function applySingleHakemusChange<T extends ValinnanTulosFields>(
+export function applySingleHakemusChange<T extends HakemuksenValinnanTulos>(
   context: ValinnanTulosContext<T>,
   event: ValinnanTulosChangeEvent,
 ): Array<T> {
-  const originalTulos = context.tulokset.find(
+  const originalHakemus = context.hakemukset.find(
     (h) => h.hakemusOid === event.hakemusOid,
   );
 
-  if (originalTulos) {
+  if (originalHakemus) {
     return applyEditsToChangedHakemukset({
-      changedTulokset: context.changedTulokset,
-      originalTulos: originalTulos!,
+      changedHakemukset: context.changedHakemukset,
+      originalHakemus: originalHakemus!,
       event,
     });
   }
-  return context.changedTulokset;
+  return context.changedHakemukset;
 }
 
-export function applyMassHakemusChanges<T extends ValinnanTulosFields>(
+export function applyMassHakemusChanges<T extends HakemuksenValinnanTulos>(
   context: ValinnanTulosContext<T>,
   event: ValinnanTulosMassChangeEvent,
 ) {
-  let changed: Array<T> = context.changedTulokset;
+  let changed: Array<T> = context.changedHakemukset;
   let changedAmount = 0;
   event.hakemusOids.forEach((hakemusOid) => {
-    const changedTulos = changed.find((h) => h.hakemusOid === hakemusOid);
-    const originalTulos = context.tulokset.find(
+    const changedHakemus = changed.find((h) => h.hakemusOid === hakemusOid);
+    const originalHakemus = context.hakemukset.find(
       (h) => h.hakemusOid === hakemusOid,
     );
-    const tulos = changedTulos ?? originalTulos;
+    const tulos = changedHakemus ?? originalHakemus;
 
     if (
       tulos &&
@@ -159,8 +159,8 @@ export function applyMassHakemusChanges<T extends ValinnanTulosFields>(
     ) {
       changedAmount++;
       changed = applyEditsToChangedHakemukset({
-        changedTulokset: changed,
-        originalTulos: originalTulos!,
+        changedHakemukset: changed,
+        originalHakemus: originalHakemus!,
         event,
       });
     }
@@ -171,7 +171,7 @@ export function applyMassHakemusChanges<T extends ValinnanTulosFields>(
   };
 }
 
-export const useIsDirtyValinnanTulos = <T extends ValinnanTulosFields>(
+export const useIsDirtyValinnanTulos = <T extends HakemuksenValinnanTulos>(
   sijoittelunTulosActorRef: ValinnanTulosActorRef<T>,
 ) => {
   return useSelector(sijoittelunTulosActorRef, hasChangedHakemukset);

@@ -7,12 +7,12 @@ import {
 import { SelectChangeEvent } from '@mui/material';
 import { isIlmoittautuminenPossible } from '@/lib/sijoittelun-tulokset-utils';
 import { useIlmoittautumisTilaOptions } from '@/hooks/useIlmoittautumisTilaOptions';
-import { SijoittelunTulosChangeParams } from '@/app/haku/[oid]/hakukohde/[hakukohde]/sijoittelun-tulokset/lib/sijoittelun-tulokset-state';
+import { ValinnanTulosChangeParams } from '@/lib/state/valinnan-tulos-machine';
 
 export const IlmoittautumisTilaSelect = ({
   hakemus,
   disabled,
-  updateForm
+  updateForm,
 }: {
   hakemus: Pick<
     SijoittelunHakemusValintatiedoilla,
@@ -23,7 +23,7 @@ export const IlmoittautumisTilaSelect = ({
     | 'julkaistavissa'
   >;
   disabled?: boolean;
-  updateForm: (params: SijoittelunTulosChangeParams) => void;
+  updateForm: (params: ValinnanTulosChangeParams) => void;
 }) => {
   const { t } = useTranslations();
 

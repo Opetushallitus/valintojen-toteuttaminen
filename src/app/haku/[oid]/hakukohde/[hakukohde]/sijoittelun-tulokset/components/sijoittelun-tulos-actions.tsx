@@ -28,7 +28,7 @@ import {
   ValinnanTulosEventType,
   ValinnanTulosState,
 } from '@/lib/state/valinnan-tulos-machine';
-import { ValinnanTulosFields } from '@/lib/valinta-tulos-service/valinta-tulos-types';
+import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
 import { SijoittelunTulosActorRef } from '../lib/sijoittelun-tulokset-state';
 
 const ActionsContainer = styled(Box)(({ theme }) => ({
@@ -98,7 +98,7 @@ const useEraantyneetHakemukset = ({
   hakukohdeOid,
   hakemukset,
 }: KoutaOidParams & {
-  hakemukset: Array<ValinnanTulosFields>;
+  hakemukset: Array<HakemuksenValinnanTulos>;
 }) => {
   const hakemuksetJotkaTarvitsevatAikarajaMennytTiedon = hakemukset.filter(
     (hakemus) =>
@@ -131,13 +131,13 @@ const useEraantyneetHakemukset = ({
     );
 
     return hakemus && eraantynytHakemus?.mennyt ? [...result, hakemus] : result;
-  }, [] as Array<ValinnanTulosFields>);
+  }, [] as Array<HakemuksenValinnanTulos>);
 };
 
 const EraantyneetInfoTable = ({
   eraantyneetHakemukset,
 }: {
-  eraantyneetHakemukset: Array<ValinnanTulosFields>;
+  eraantyneetHakemukset: Array<HakemuksenValinnanTulos>;
 }) => {
   const { t } = useTranslations();
   return (
@@ -178,7 +178,7 @@ const MerkitseMyohastyneeksiButton = ({
 }: KoutaOidParams & {
   disabled: boolean;
   massUpdateForm: (params: ValinnanTulosMassChangeParams) => void;
-  hakemukset: Array<ValinnanTulosFields>;
+  hakemukset: Array<HakemuksenValinnanTulos>;
 }) => {
   const { t } = useTranslations();
 
@@ -243,7 +243,7 @@ export const SijoittelunTuloksetActions = ({
 
   const hakemukset = useSelector(
     sijoittelunTulosActorRef,
-    (s) => s.context.tulokset,
+    (s) => s.context.hakemukset,
   );
 
   const isValintaesitysJulkaistavissa = useIsValintaesitysJulkaistavissa({

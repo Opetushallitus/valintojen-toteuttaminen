@@ -21,7 +21,7 @@ import { ValinnanTuloksetTable } from './components/valinnan-tulokset-table';
 import { hakuQueryOptions } from '@/lib/kouta/useHaku';
 import { hakukohdeQueryOptions } from '@/lib/kouta/useHakukohde';
 import { ValinnanTuloksetSearchControls } from './components/valinnan-tulokset-search-controls';
-import { HakemusValinnanTuloksilla } from '@/lib/valinta-tulos-service/valinta-tulos-types';
+import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
 
 const useHakemuksetValinnanTuloksilla = ({
   hakemukset,
@@ -29,38 +29,30 @@ const useHakemuksetValinnanTuloksilla = ({
 }: {
   hakemukset: Array<Hakemus>;
   valinnanTulokset: HakukohteenValinnanTuloksetData;
-}): Array<HakemusValinnanTuloksilla> => {
+}): Array<HakemuksenValinnanTulos> => {
   return hakemukset.map((hakemus) => {
-    const valinnanTulos = valinnanTulokset.data[hakemus.hakemusOid];
+    const valinnanTulos = valinnanTulokset.data[hakemus.hakemusOid] ?? {};
     return {
-      ...hakemus,
-      valinnanTulos: valinnanTulos
-        ? {
-            hakijanNimi: hakemus.hakijanNimi,
-            hakemusOid: valinnanTulos.hakemusOid,
-            hakukohdeOid: valinnanTulos.hakukohdeOid,
-            valintatapajonoOid: valinnanTulos.valintatapajonoOid,
-            valinnanTila: valinnanTulos.valinnantila,
-            vastaanottoTila: valinnanTulos.vastaanottotila,
-            ilmoittautumisTila: valinnanTulos.ilmoittautumistila,
-            ehdollisestiHyvaksyttavissa:
-              valinnanTulos.ehdollisestiHyvaksyttavissa,
-            ehdollisenHyvaksymisenEhtoKoodi:
-              valinnanTulos.ehdollisenHyvaksymisenEhtoKoodi,
-            ehcollisenHyvaksymisenEhtoFI:
-              valinnanTulos.ehdollisenHyvaksymisenEhtoFI,
-            ehdollisenHyvaksymisenEhtoSV:
-              valinnanTulos.ehdollisenHyvaksymisenEhtoSV,
-            ehdollisenHyvaksymisenEhtoEN:
-              valinnanTulos.ehdollisenHyvaksymisenEhtoEN,
-            valinnanTilanKuvausFI: valinnanTulos.valinnantilanKuvauksenTekstiFI,
-            valinnanTilanKuvausSV: valinnanTulos.valinnantilanKuvauksenTekstiSV,
-            valinnanTilanKuvausEN: valinnanTulos.valinnantilanKuvauksenTekstiEN,
-            julkaistavissa: valinnanTulos.julkaistavissa,
-            hyvaksyttyVarasijalta: valinnanTulos.hyvaksyttyVarasijalta,
-            hyvaksyPeruuntunut: valinnanTulos.hyvaksyPeruuntunut,
-          }
-        : undefined,
+      hakijaOid: hakemus.hakijaOid,
+      hakemusOid: hakemus.hakemusOid,
+      hakijanNimi: hakemus.hakijanNimi,
+      hakukohdeOid: valinnanTulos.hakukohdeOid,
+      valintatapajonoOid: valinnanTulos.valintatapajonoOid,
+      valinnanTila: valinnanTulos.valinnantila,
+      vastaanottoTila: valinnanTulos.vastaanottotila,
+      ilmoittautumisTila: valinnanTulos.ilmoittautumistila,
+      ehdollisestiHyvaksyttavissa: valinnanTulos.ehdollisestiHyvaksyttavissa,
+      ehdollisenHyvaksymisenEhtoKoodi:
+        valinnanTulos.ehdollisenHyvaksymisenEhtoKoodi,
+      ehcollisenHyvaksymisenEhtoFI: valinnanTulos.ehdollisenHyvaksymisenEhtoFI,
+      ehdollisenHyvaksymisenEhtoSV: valinnanTulos.ehdollisenHyvaksymisenEhtoSV,
+      ehdollisenHyvaksymisenEhtoEN: valinnanTulos.ehdollisenHyvaksymisenEhtoEN,
+      valinnanTilanKuvausFI: valinnanTulos.valinnantilanKuvauksenTekstiFI,
+      valinnanTilanKuvausSV: valinnanTulos.valinnantilanKuvauksenTekstiSV,
+      valinnanTilanKuvausEN: valinnanTulos.valinnantilanKuvauksenTekstiEN,
+      julkaistavissa: valinnanTulos.julkaistavissa,
+      hyvaksyttyVarasijalta: valinnanTulos.hyvaksyttyVarasijalta,
+      hyvaksyPeruuntunut: valinnanTulos.hyvaksyPeruuntunut,
     };
   });
 };

@@ -6,7 +6,7 @@ import {
   applySingleHakemusChange,
   ValinnanTulosEditableFields,
 } from './valinnan-tulos-machine-utils';
-import { ValinnanTulosFields } from '../valinta-tulos-service/valinta-tulos-types';
+import { HakemuksenValinnanTulos } from '../valinta-tulos-service/valinta-tulos-types';
 import { Hakemus } from '../ataru/ataru-types';
 
 export type MinimalHakemusInfo = Pick<
@@ -14,16 +14,15 @@ export type MinimalHakemusInfo = Pick<
   'hakijaOid' | 'hakemusOid' | 'hakijanNimi'
 >;
 
-export type ValinnanTulosContext<T extends ValinnanTulosFields> = {
+export type ValinnanTulosContext<T extends HakemuksenValinnanTulos> = {
   addToast?: (toast: Toast) => void;
   onUpdated?: () => void;
   hakukohdeOid?: string;
   valintatapajonoOid?: string;
   lastModified?: string;
-  hakemukset: Array<MinimalHakemusInfo>;
-  tulokset: Array<T>;
-  changedTulokset: Array<T>;
-  tuloksetForMassUpdate?: Array<T>;
+  hakemukset: Array<T>;
+  changedHakemukset: Array<T>;
+  hakemuksetForMassUpdate?: Array<T>;
   massChangeAmount?: number;
   publishAfterUpdate?: boolean;
 };
@@ -48,11 +47,10 @@ export type ValinnanTulosUpdateEvent = {
   type: ValinnanTulosEventType.UPDATE;
 };
 
-export type ValinnanTulosMachineParams<T extends ValinnanTulosFields> = {
+export type ValinnanTulosMachineParams<T extends HakemuksenValinnanTulos> = {
   hakukohdeOid: string;
   valintatapajonoOid?: string;
-  hakemukset: Array<MinimalHakemusInfo>;
-  tulokset: Array<T>;
+  hakemukset: Array<T>;
   lastModified?: string;
   addToast: (toast: Toast) => void;
   /**
@@ -61,7 +59,7 @@ export type ValinnanTulosMachineParams<T extends ValinnanTulosFields> = {
   onUpdated?: () => void;
 };
 
-export type ValinnanTulosResetEvent<T extends ValinnanTulosFields> = {
+export type ValinnanTulosResetEvent<T extends HakemuksenValinnanTulos> = {
   type: ValinnanTulosEventType.RESET;
   params: ValinnanTulosMachineParams<T>;
 };
@@ -99,7 +97,7 @@ export type ValinnanTulosPublishEvent = {
   type: ValinnanTulosEventType.PUBLISH;
 };
 
-export type ValinnanTuloksetEvents<T extends ValinnanTulosFields> =
+export type ValinnanTuloksetEvents<T extends HakemuksenValinnanTulos> =
   | ValinnanTulosUpdateEvent
   | ValinnanTulosChangeEvent
   | ValinnanTulosMassChangeEvent
@@ -108,10 +106,12 @@ export type ValinnanTuloksetEvents<T extends ValinnanTulosFields> =
   | ValinnanTulosResetEvent<T>;
 
 export type ValinnanTulosActorRef<
-  T extends ValinnanTulosFields = ValinnanTulosFields,
+  T extends HakemuksenValinnanTulos = HakemuksenValinnanTulos,
 > = ActorRefFrom<ReturnType<typeof createValinnanTulosMachine<T>>>;
 
-export function createValinnanTulosMachine<T extends ValinnanTulosFields>() {
+export function createValinnanTulosMachine<
+  T extends HakemuksenValinnanTulos,
+>() {
   return createMachine({
     /** @xstate-layout N4IgpgJg5mDOIC5QDUCGAbAlgO267AKgK7oD2A1rGAC4CyqAxgBY5gDEASgKIDKXBAbQAMAXUSgADqViZqmUtnEgAHogAcAdgBsAOgAsavQGZjATiNqhAJgCsegDQgAnogCMVgL4fHaLLnzEZJQ09MysOgCSACIAMlxsAMIAEgCCAHIA4lzCYkggUjJyCkqqCK5CrjpGQnpaahYaQkauGq6OLgimWno6VlYaeu6WVnp62l4+GDh4hCQUVHSMLNhgkbHxtCk8PAD6yelZOUoFsvKKeaU2VjquRlZqI6Y2jaZqNjbt6oM6D66uWn1TKZXHp7hMQL5pgE5sFFmEVms4mxNtsdgBVAAKURSBGyomO0lOxQuiCMFiqxgGTT+Jn+Wk+CG0ulamlcalMrRaajU4Mh-lmQQWoWWq2iSMx2NxRzyJyK51ApTJagpRipzVugy09Oc6gBOi0LKMWmsqrUAN5U35gXmISW4TF8QlOOyrlykkJcpKiFqOiBfv9-rNDIGNh+dSatTsRnMRgtfhm1thwvt6zYGLRACEYhEeElpe7CmcvQglSq1TTNdqOsCjDcWc93gMtXo41CBTa4SLEfF01mc3nXQTC8SFaTySZVXpqRq6QyTKGtDYAVpqpZulYja2rTChXaEU6CBFMmwIApVjgAG4UVZ8hM723w1YHo8ZBCX0gMVBynL5-Ieoskp0Vi6K8xhkiCrjmMBDJvBoNxWGydg2NUoy1Fud6Cg+XbPseYAAE54aQeE6BI6BfgAZkRAC2Oi3tCmGduEOGvu+n7fqIv6ygBo4IMYyoIZooLmBoG73EYDIAkIPw2MJphWBUtiDOh9Edsm+5Ys6ewAPK0BicS4lEbCcf+I4qG4RqmPoyFCAaqrWMYVgwQhOgiWaRh2IuG4rsp7ZJnuT4abi2m6fpXCGQIg4yiZ8pmZ05g6DZIwaE80ZCNYDK1LoU4AlcWrNK8tg+Ymu6PjovbZrmL4nmeOjvuQN6Whhqn+WVmYVUkL5vtgV5sWcP74lFw4xaUIIri5ehAjYtxvEIuUMuUNjKiChg2dG5gPLG3gQo1Kl+aV5X9lV+GEcRpEUdRtE7b5JVdgdlWZF1PVfn1HEDQWRLDW4Yw9BuxhCBohiyfNDxWc0k7AeUJpeFt2CkBAcBKHR11YawQ4fcWAC0lRpTjuO4yCjk6p0PQpbcVimFODw1BoRX3oxCIOmjnqAeUlQGmyrQ2YYqrIfNNmhmys2QcB5PuKYtMMWpAWSi+TPcbFBqhnJbKTv9ri80T9TXACiGNHY2hAhLzWlQeXDBXp-BhXLpkjerujTuy7gaLlGgwZBvRC1B0aKS2W1I8VKMIndHWZNbn1lCuzJslqQgcu5GgiTBsc3O8kETRNFMTdDHhAA */
     id: 'ValinnanTuloksetMachine',
@@ -146,8 +146,7 @@ export function createValinnanTulosMachine<T extends ValinnanTulosFields>() {
     },
     context: {
       hakemukset: [],
-      tulokset: [],
-      changedTulokset: [],
+      changedHakemukset: [],
     },
     on: {
       [ValinnanTulosEventType.RESET]: {
@@ -158,9 +157,8 @@ export function createValinnanTulosMachine<T extends ValinnanTulosFields>() {
             hakukohdeOid: event.params.hakukohdeOid,
             lastModified: event.params.lastModified,
             hakemukset: clone(event.params.hakemukset),
-            tulokset: clone(event.params.tulokset),
-            changedTulokset: [],
-            tuloksetForMassUpdate: undefined,
+            changedHakemukset: [],
+            hakemuksetForMassUpdate: undefined,
             addToast: event.params.addToast,
             onUpdated: event.params.onUpdated,
           };
@@ -172,7 +170,7 @@ export function createValinnanTulosMachine<T extends ValinnanTulosFields>() {
         on: {
           [ValinnanTulosEventType.CHANGE]: {
             actions: assign({
-              changedTulokset: ({ context, event }) => {
+              changedHakemukset: ({ context, event }) => {
                 return applySingleHakemusChange(context, event);
               },
             }),
@@ -188,8 +186,8 @@ export function createValinnanTulosMachine<T extends ValinnanTulosFields>() {
           [ValinnanTulosEventType.MASS_UPDATE]: {
             target: ValinnanTulosState.UPDATING,
             actions: assign({
-              tuloksetForMassUpdate: ({ context, event }) => {
-                return context.tulokset.reduce((result, tulos) => {
+              hakemuksetForMassUpdate: ({ context, event }) => {
+                return context.hakemukset.reduce((result, tulos) => {
                   return event.hakemusOids.has(tulos.hakemusOid)
                     ? [
                         ...result,
@@ -235,8 +233,9 @@ export function createValinnanTulosMachine<T extends ValinnanTulosFields>() {
         invoke: {
           src: 'updateHakemukset',
           input: ({ context }) => ({
-            changed: context.tuloksetForMassUpdate ?? context.changedTulokset,
-            original: context.tulokset,
+            changed:
+              context.hakemuksetForMassUpdate ?? context.changedHakemukset,
+            original: context.hakemukset,
             hakukohdeOid: context.hakukohdeOid,
             valintatapajonoOid: context.valintatapajonoOid,
             lastModified: context.lastModified,
@@ -260,7 +259,7 @@ export function createValinnanTulosMachine<T extends ValinnanTulosFields>() {
                 }),
               },
               assign({
-                tuloksetForMassUpdate: undefined,
+                hakemuksetForMassUpdate: undefined,
               }),
             ],
           },
@@ -269,7 +268,7 @@ export function createValinnanTulosMachine<T extends ValinnanTulosFields>() {
       [ValinnanTulosState.UPDATE_COMPLETED]: {
         entry: [
           assign({
-            tuloksetForMassUpdate: undefined,
+            hakemuksetForMassUpdate: undefined,
           }),
         ],
         always: [

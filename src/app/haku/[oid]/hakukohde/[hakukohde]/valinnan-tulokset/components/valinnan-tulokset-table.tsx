@@ -12,7 +12,6 @@ import { IlmoittautumisTilaSelect } from '@/components/ilmoittautumistila-select
 import { VastaanOttoCell } from '@/components/vastaanotto-cell';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import { useValinnanTuloksetSearch } from '../hooks/useValinnanTuloksetSearch';
-import { HakemusValinnanTuloksilla } from '@/lib/valinta-tulos-service/valinta-tulos-types';
 import { useValinnanTulosActorRef } from '../lib/valinnan-tulos-state';
 import { useSelector } from '@xstate/react';
 import {
@@ -21,6 +20,7 @@ import {
   ValinnanTulosEventType,
   ValinnanTulosState,
 } from '@/lib/state/valinnan-tulos-machine';
+import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
 
 export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
   title,
@@ -69,53 +69,38 @@ const useColumns = ({
     const stickyHakijaColumn = createStickyHakijaColumn(t);
     return [
       stickyHakijaColumn,
-      makeColumnWithCustomRender<HakemusValinnanTuloksilla>({
+      makeColumnWithCustomRender<HakemuksenValinnanTulos>({
         title: t(`${TRANSLATIONS_PREFIX}.valinnan-tila`),
         key: 'valinnantila',
-        renderFn: ({ valinnanTulos }) =>
-          valinnanTulos && <div>{valinnanTulos.valinnanTila}</div>,
+        renderFn: () => <div></div>,
       }),
-      makeColumnWithCustomRender<HakemusValinnanTuloksilla>({
+      makeColumnWithCustomRender<HakemuksenValinnanTulos>({
         title: t(`${TRANSLATIONS_PREFIX}.vastaanoton-tila`),
         key: 'vastaanottotila',
-        renderFn: ({ hakemusOid, valinnanTulos }) =>
-          valinnanTulos && (
-            <VastaanOttoCell
-              haku={haku}
-              hakukohde={hakukohde}
-              hakemus={{
-                hakemusOid,
-                valinnanTila: valinnanTulos.valinnanTila,
-                vastaanottoTila: valinnanTulos.vastaanottoTila,
-                julkaistavissa: valinnanTulos.julkaistavissa,
-              }}
+        renderFn: (hakemus) => (
+          <VastaanOttoCell
+            haku={haku}
+            hakukohde={hakukohde}
+            hakemus={hakemus}
+            updateForm={updateForm}
+            disabled={disabled}
+          />
+        ),
+      }),
+      makeColumnWithCustomRender<HakemuksenValinnanTulos>({
+        title: t(`${TRANSLATIONS_PREFIX}.ilmoittautumisen-tila`),
+        key: 'ilmoittautumisTila',
+        renderFn: (hakemus) => {
+          return (
+            <IlmoittautumisTilaSelect
+              hakemus={hakemus}
               updateForm={updateForm}
               disabled={disabled}
             />
-          ),
-      }),
-      makeColumnWithCustomRender<HakemusValinnanTuloksilla>({
-        title: t(`${TRANSLATIONS_PREFIX}.ilmoittautumisen-tila`),
-        key: 'ilmoittautumisTila',
-        renderFn: ({ hakemusOid, valinnanTulos }) => {
-          return (
-            valinnanTulos && (
-              <IlmoittautumisTilaSelect
-                hakemus={{
-                  hakemusOid,
-                  ilmoittautumisTila: valinnanTulos.ilmoittautumisTila,
-                  valinnanTila: valinnanTulos.valinnanTila,
-                  vastaanottoTila: valinnanTulos.vastaanottoTila,
-                  julkaistavissa: valinnanTulos.julkaistavissa,
-                }}
-                updateForm={updateForm}
-                disabled={disabled}
-              />
-            )
           );
         },
       }),
-      makeColumnWithCustomRender<HakemusValinnanTuloksilla>({
+      makeColumnWithCustomRender<HakemuksenValinnanTulos>({
         title: t(`${TRANSLATIONS_PREFIX}.toiminnot`),
         key: 'toiminnot',
         renderFn: () => <div></div>,
@@ -134,7 +119,7 @@ export const ValinnanTuloksetTable = ({
   haku: Haku;
   hakukohde: Hakukohde;
   lastModified?: string;
-  hakemukset: Array<HakemusValinnanTuloksilla>;
+  hakemukset: Array<HakemuksenValinnanTulos>;
 }) => {
   const { t } = useTranslations();
 
@@ -158,33 +143,23 @@ export const ValinnanTuloksetTable = ({
 
   const { selection, setSelection } = useSelection(hakemukset);
 
-  const changedTulokset = useSelector(
+  const changedHakemukset = useSelector(
     valinnanTulosActorRef,
-    (state) => state.context.changedTulokset,
+    (state) => state.context.changedHakemukset,
   );
 
   const rows = useMemo(() => {
     return results.map((hakemus) => {
-      const changedTulos = changedTulokset.find(
+      const changedTulos = changedHakemukset.find(
         (changedTulos) => changedTulos.hakemusOid === hakemus.hakemusOid,
       );
 
-      const valinnanTulos = hakemus.valinnanTulos;
-
       return {
         ...hakemus,
-        valinnanTulos:
-          changedTulos || valinnanTulos
-            ? {
-                hakemusOid: hakemus.hakemusOid,
-                hakijanNimi: hakemus.hakijanNimi,
-                ...valinnanTulos,
-                ...changedTulos,
-              }
-            : undefined,
+        ...changedTulos,
       };
     });
-  }, [results, changedTulokset]);
+  }, [results, changedHakemukset]);
 
   return (
     <>

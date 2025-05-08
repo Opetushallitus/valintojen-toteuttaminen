@@ -8,13 +8,10 @@ import {
   ValinnanTulosEventType,
 } from '@/lib/state/valinnan-tulos-machine';
 import useToaster from '@/hooks/useToaster';
-import {
-  HakemusValinnanTuloksilla,
-  ValinnanTulosFields,
-} from '@/lib/valinta-tulos-service/valinta-tulos-types';
+import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
 
 export const valinnanTuloksetMachine =
-  createValinnanTulosMachine<ValinnanTulosFields>().provide({
+  createValinnanTulosMachine<HakemuksenValinnanTulos>().provide({
     actions: {
       alert: ({ context }, params) =>
         context.addToast?.({
@@ -49,7 +46,7 @@ export const valinnanTuloksetMachine =
           const erroredHakemusOids = params.error?.response.data?.map(
             (error) => error.hakemusOid as string,
           );
-          const someTulosUpdated = context.changedTulokset.some(
+          const someTulosUpdated = context.changedHakemukset.some(
             (h) => !erroredHakemusOids.includes(h.hakemusOid),
           );
           if (someTulosUpdated) {
@@ -69,7 +66,7 @@ export const valinnanTuloksetMachine =
 
 type SijoittelunTulosStateParams = {
   hakukohdeOid: string;
-  hakemukset: Array<HakemusValinnanTuloksilla>;
+  hakemukset: Array<HakemuksenValinnanTulos>;
   lastModified?: string;
   onUpdated?: () => void;
 };
@@ -89,11 +86,6 @@ export const useValinnanTulosActorRef = ({
       params: {
         hakukohdeOid,
         hakemukset,
-        tulokset: hakemukset?.reduce(
-          (result, hakemus) =>
-            hakemus.valinnanTulos ? [...result, hakemus.valinnanTulos] : result,
-          [] as Array<ValinnanTulosFields>,
-        ),
         lastModified,
         onUpdated,
         addToast,

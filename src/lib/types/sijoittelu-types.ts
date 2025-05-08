@@ -1,4 +1,4 @@
-import { ValinnanTulosFields } from '../valinta-tulos-service/valinta-tulos-types';
+import { HakemuksenValinnanTulos } from '../valinta-tulos-service/valinta-tulos-types';
 
 export type SijoittelunValintatapajonoTulos = {
   nimi: string;
@@ -81,8 +81,7 @@ export type SijoittelunHakemusValintatiedoilla = {
   hyvaksyttyHarkinnanvaraisesti?: boolean;
   hyvaksyPeruuntunut: boolean;
   hyvaksymiskirjeLahetetty?: string;
-  siirtynytToisestaValintatapajonosta?: boolean;
-} & ValinnanTulosFields;
+} & HakemuksenValinnanTulos;
 
 export type SijoitteluajonValintatapajono = {
   oid: string;
