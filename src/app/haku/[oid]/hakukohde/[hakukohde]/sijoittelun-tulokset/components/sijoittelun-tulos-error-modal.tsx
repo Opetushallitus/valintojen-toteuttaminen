@@ -9,7 +9,6 @@ import { buildLinkToPerson } from '@/components/table/table-columns';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { buildLinkToApplication } from '@/lib/ataru/ataru-service';
 import { OphApiError } from '@/lib/common';
-import { SijoittelunHakemusValintatiedoilla } from '@/lib/types/sijoittelu-types';
 import { ValinnanTulosUpdateErrorResult } from '@/lib/valinta-tulos-service/valinta-tulos-types';
 import {
   TableContainer,
@@ -20,6 +19,7 @@ import {
   TableBody,
 } from '@mui/material';
 import { OphButton } from '@opetushallitus/oph-design-system';
+import { MinimalHakemusInfo } from '@/lib/state/valinnan-tulos-machine';
 
 export const SijoittelunTulosErrorModalDialog = createModal(
   ({
@@ -27,7 +27,7 @@ export const SijoittelunTulosErrorModalDialog = createModal(
     hakemukset,
   }: {
     error: Error;
-    hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
+    hakemukset: Array<MinimalHakemusInfo>;
   }) => {
     const modalProps = useOphModalProps();
     const { t } = useTranslations();
@@ -60,7 +60,7 @@ const SijoittelunTulosTallennusError = ({
   hakemukset,
 }: {
   error: Error;
-  hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
+  hakemukset: Array<MinimalHakemusInfo>;
 }) => {
   const { t } = useTranslations();
 

@@ -34,8 +34,6 @@ export type ValinnanTulosModel = {
   hyvaksyPeruuntunut: boolean;
 };
 
-export type ValinnanTulos = ValinnanTulosModel;
-
 export type HakemusChangeDetail = {
   field: string;
   from: string | boolean;
@@ -131,18 +129,29 @@ export type SijoittelunTulosBasicInfo = {
   endDate: Date;
 };
 
+export type ValinnanTulosFields = {
+  hakemusOid: string;
+  hakijanNimi?: string;
+  valintatapajonoOid: string;
+  valinnanTila: SijoittelunTila;
+  valinnanTilanKuvaus?: TranslatedName;
+  valinnanTilanKuvausFI?: string;
+  valinnanTilanKuvausSV?: string;
+  valinnanTilanKuvausEN?: string;
+  ehdollisestiHyvaksyttavissa: boolean;
+  hyvaksyttyVarasijalta: boolean;
+  ehdollisenHyvaksymisenEhtoKoodi?: string;
+  ehdollisenHyvaksymisenEhtoFI?: string;
+  ehdollisenHyvaksymisenEhtoSV?: string;
+  ehdollisenHyvaksymisenEhtoEN?: string;
+  vastaanottoTila: VastaanottoTila;
+  ilmoittautumisTila: IlmoittautumisTila;
+  julkaistavissa: boolean;
+  hyvaksyPeruuntunut: boolean;
+  maksunTila?: string;
+};
+
 // Jos ei tuloksia, vain hakemuksen tiedot
 export type HakemusValinnanTuloksilla = Hakemus & {
-  valinnanTulos?: {
-    hakukohdeOid: string;
-    valintatapajonoOid?: string;
-    valinnanTila: SijoittelunTila;
-    valinnanTilanKuvaus?: TranslatedName;
-    ehdollisenHyvaksymisenEhtoKoodi?: string;
-    ehdollisenHyvaksymisenEhto?: TranslatedName;
-    vastaanottoTila: VastaanottoTila;
-    ilmoittautumisTila: IlmoittautumisTila;
-    julkaistavissa: boolean;
-    maksunTila?: string;
-  };
+  valinnanTulos?: ValinnanTulosFields;
 };

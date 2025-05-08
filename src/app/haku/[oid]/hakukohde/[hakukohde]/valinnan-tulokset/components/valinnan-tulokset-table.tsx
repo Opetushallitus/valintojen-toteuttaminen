@@ -59,8 +59,8 @@ const useColumns = ({
               hakukohde={hakukohde}
               hakemus={{
                 hakemusOid,
-                tila: valinnanTulos.valinnanTila,
-                vastaanottotila: valinnanTulos.vastaanottoTila,
+                valinnanTila: valinnanTulos.valinnanTila,
+                vastaanottoTila: valinnanTulos.vastaanottoTila,
                 julkaistavissa: valinnanTulos.julkaistavissa,
               }}
               updateForm={() => {}}
@@ -77,8 +77,8 @@ const useColumns = ({
                 hakemus={{
                   hakemusOid,
                   ilmoittautumisTila: valinnanTulos.ilmoittautumisTila,
-                  tila: valinnanTulos.valinnanTila,
-                  vastaanottotila: valinnanTulos.vastaanottoTila,
+                  valinnanTila: valinnanTulos.valinnanTila,
+                  vastaanottoTila: valinnanTulos.vastaanottoTila,
                   julkaistavissa: valinnanTulos.julkaistavissa,
                 }}
                 updateForm={() => {}}

@@ -37,7 +37,7 @@ const makeSijoittelunTilaColumn = (
         {props.sijoittelunTila
           ? getReadableHakemuksenTila(
               {
-                tila: props.sijoittelunTila,
+                valinnanTila: props.sijoittelunTila,
                 varasijanNumero: props.varasijanNumero,
                 hyvaksyttyHarkinnanvaraisesti: false,
               },

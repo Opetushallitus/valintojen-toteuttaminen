@@ -44,14 +44,14 @@ const StyledInput = styled(OphInput)(() => ({
 const isHyvaksyttyVarasijaltaVisible = (
   hakemus: SijoittelunHakemusValintatiedoilla,
 ) =>
-  hakemus.tila === SijoittelunTila.VARALLA ||
+  hakemus.valinnanTila === SijoittelunTila.VARALLA ||
   (hakemus.hyvaksyttyVarasijalta &&
     [
       SijoittelunTila.HYVAKSYTTY,
       SijoittelunTila.PERUUNTUNUT,
       SijoittelunTila.VARALLA,
       SijoittelunTila.VARASIJALTA_HYVAKSYTTY,
-    ].includes(hakemus.tila));
+    ].includes(hakemus.valinnanTila));
 
 export const EhdollisestiHyvaksyttavissaCheckbox = ({
   haku,

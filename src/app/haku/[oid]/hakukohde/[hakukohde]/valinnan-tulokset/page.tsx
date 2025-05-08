@@ -40,11 +40,15 @@ const useHakemuksetValinnanTuloksilla = ({
       ...hakemus,
       valinnanTulos: valinnanTulos
         ? {
+            hakijanNimi: hakemus.hakijanNimi,
+            hakemusOid: valinnanTulos.hakemusOid,
             hakukohdeOid: valinnanTulos.hakukohdeOid,
             valintatapajonoOid: valinnanTulos.valintatapajonoOid,
             valinnanTila: valinnanTulos.valinnantila,
             vastaanottoTila: valinnanTulos.vastaanottotila,
             ilmoittautumisTila: valinnanTulos.ilmoittautumistila,
+            ehdollisestiHyvaksyttavissa:
+              valinnanTulos.ehdollisestiHyvaksyttavissa,
             ehdollisenHyvaksymisenEhtoKoodi:
               valinnanTulos.ehdollisenHyvaksymisenEhtoKoodi,
             ehdollisenHyvaksymisenEhto: nonEmptyTranslatedName({
@@ -58,6 +62,8 @@ const useHakemuksetValinnanTuloksilla = ({
               en: valinnanTulos.valinnantilanKuvauksenTekstiEN,
             }),
             julkaistavissa: valinnanTulos.julkaistavissa,
+            hyvaksyttyVarasijalta: valinnanTulos.hyvaksyttyVarasijalta,
+            hyvaksyPeruuntunut: valinnanTulos.hyvaksyPeruuntunut,
           }
         : undefined,
     };

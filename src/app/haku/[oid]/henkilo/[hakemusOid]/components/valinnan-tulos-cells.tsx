@@ -52,7 +52,7 @@ export const ValinnanTulosCells = ({
       <ValintaTableCell>
         {getReadableHakemuksenTila(
           {
-            tila: valinnanTulos.valinnantila,
+            valinnanTila: valinnanTulos.valinnantila,
             hyvaksyttyHarkinnanvaraisesti:
               valinnanTulos?.hyvaksyttyHarkinnanvaraisesti,
             varasijanNumero: valinnanTulos?.varasijanNumero,
@@ -71,8 +71,8 @@ export const ValinnanTulosCells = ({
       </ValintaTableCell>
       <ValintaTableCell>
         {isIlmoittautuminenPossible({
-          tila: valinnanTulos.valinnantila,
-          vastaanottotila: valinnanTulos.vastaanottotila,
+          valinnanTila: valinnanTulos.valinnantila,
+          vastaanottoTila: valinnanTulos.vastaanottotila,
           julkaistavissa: Boolean(valinnanTulos.julkaistavissa),
         }) && t(`ilmoittautumistila.${valinnanTulos?.ilmoittautumistila}`)}
       </ValintaTableCell>
