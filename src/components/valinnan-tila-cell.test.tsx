@@ -57,17 +57,17 @@ const getCheckbox = () =>
   screen.queryByRole('checkbox', { name: 'sijoittelun-tulokset.ehdollinen' });
 
 describe('EhdollisestiHyvaksyttavissaCheckbox', () => {
-  test('Hide The checkbox when toinen aste', () => {
+  test('Show the checkbox when korkeakoulutus', () => {
     renderEhdollinenCheckbox({
       organisaatioOid: ORG_OID,
-      kohdejoukko: 'haunkohdejoukko_11',
+      kohdejoukko: 'haunkohdejoukko_12',
     });
 
     const checkbox = getCheckbox();
-    expect(checkbox).not.toBeInTheDocument();
+    expect(checkbox).toBeInTheDocument();
   });
 
-  test('Show The checkbox when not toinen aste', () => {
+  test('Hide the checkbox when not korkeakoulutus', () => {
     renderEhdollinenCheckbox({
       organisaatioOid: ORG_OID,
       kohdejoukko: 'haunkohdejoukko_01',
@@ -75,13 +75,13 @@ describe('EhdollisestiHyvaksyttavissaCheckbox', () => {
 
     const checkbox = getCheckbox();
 
-    expect(checkbox).toBeInTheDocument();
+    expect(checkbox).not.toBeInTheDocument();
   });
 
   test('Enable when update permissions to haku organization', () => {
     renderEhdollinenCheckbox({
       organisaatioOid: ORG_OID,
-      kohdejoukko: 'haunkohdejoukko_01',
+      kohdejoukko: 'haunkohdejoukko_12',
     });
 
     const checkbox = getCheckbox();
@@ -91,7 +91,7 @@ describe('EhdollisestiHyvaksyttavissaCheckbox', () => {
   test('Disable when no update permissions to haku organization', () => {
     renderEhdollinenCheckbox({
       organisaatioOid: 'oid-with-no-permissions',
-      kohdejoukko: 'haunkohdejoukko_01',
+      kohdejoukko: 'haunkohdejoukko_12',
     });
 
     const checkbox = getCheckbox();

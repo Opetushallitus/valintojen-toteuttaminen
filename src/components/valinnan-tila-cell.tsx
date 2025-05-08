@@ -10,10 +10,7 @@ import {
   Typography,
 } from '@mui/material';
 import { LocalizedSelect } from '@/components/localized-select';
-import {
-  isKorkeakouluHaku,
-  isToinenAsteKohdejoukko,
-} from '@/lib/kouta/kouta-service';
+import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
 import { Haku } from '@/lib/kouta/kouta-types';
 import {
   ophColors,
@@ -85,7 +82,7 @@ export const EhdollisestiHyvaksyttavissaCheckbox = ({
   );
 
   return (
-    !isToinenAsteKohdejoukko(haku) && (
+    isKorkeakouluHaku(haku) && (
       <OphCheckbox
         checked={Boolean(ehdollisestiHyvaksyttavissa)}
         onChange={updateEhdollinen}
@@ -308,8 +305,6 @@ export const ValinnanTilaCell = ({
     siirtynytToisestaValintatapajonosta,
     valinnanTila,
   } = hakemus;
-
-  console.log({ valinnanTila });
 
   const hakemuksenTila = getReadableHakemuksenTila(hakemus, t);
 
