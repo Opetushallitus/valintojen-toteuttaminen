@@ -19,7 +19,9 @@ import useToaster from '@/hooks/useToaster';
 import { useHasChanged } from '@/hooks/useHasChanged';
 
 export const sijoittelunTuloksetMachine =
-  createValinnanTulosMachine<SijoittelunHakemusValintatiedoilla>().provide({
+  createValinnanTulosMachine<SijoittelunHakemusValintatiedoilla>(
+    'sijoittelu',
+  ).provide({
     actions: {
       alert: ({ context }, params) =>
         context.addToast?.({

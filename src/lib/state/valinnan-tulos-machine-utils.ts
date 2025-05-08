@@ -73,6 +73,14 @@ export function hasChangedHakemukset<T extends HakemuksenValinnanTulos>({
   return context.changedHakemukset.length > 0;
 }
 
+const VASTAANOTTOTILA_TO_VALINNAN_TILA = Object.freeze({
+  [VastaanottoTila.VASTAANOTTANUT_SITOVASTI]: SijoittelunTila.HYVAKSYTTY,
+  [VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA]: SijoittelunTila.PERUNUT,
+  [VastaanottoTila.PERUNUT]: SijoittelunTila.PERUNUT,
+  [VastaanottoTila.PERUUTETTU]: SijoittelunTila.PERUUTETTU,
+  [VastaanottoTila.OTTANUT_VASTAAN_TOISEN_PAIKAN]: SijoittelunTila.PERUUNTUNUT,
+});
+
 /**
  * Tekee eventin mukaiset muokkaukset changedHakemukset-taulukkoon ja palauttaa muokatun taulukon.
  */
@@ -80,10 +88,12 @@ function applyEditsToChangedHakemukset<T extends HakemuksenValinnanTulos>({
   changedHakemukset,
   originalHakemus,
   event,
+  mode,
 }: {
   changedHakemukset: Array<T>;
   originalHakemus: T;
   event: ValinnanTulosEditableFields;
+  mode: 'sijoittelu' | 'valinta';
 }) {
   const changedHakemus = changedHakemukset.find(
     (h) => h.hakemusOid === originalHakemus?.hakemusOid,
@@ -96,6 +106,7 @@ function applyEditsToChangedHakemukset<T extends HakemuksenValinnanTulos>({
       (tulos[fieldName] as string | boolean) = event?.[fieldName];
     }
   }
+
   if (
     event.vastaanottoTila &&
     !VASTAANOTTOTILAT_JOISSA_VOI_ILMOITTAUTUA.includes(
@@ -103,6 +114,19 @@ function applyEditsToChangedHakemukset<T extends HakemuksenValinnanTulos>({
     )
   ) {
     tulos.ilmoittautumisTila = IlmoittautumisTila.EI_TEHTY;
+  }
+
+  if (mode === 'valinta') {
+    if (event.vastaanottoTila) {
+      const newValinnanTila =
+        VASTAANOTTOTILA_TO_VALINNAN_TILA[
+          event.vastaanottoTila as keyof typeof VASTAANOTTOTILA_TO_VALINNAN_TILA
+        ];
+
+      if (newValinnanTila) {
+        tulos.valinnanTila = newValinnanTila;
+      }
+    }
   }
 
   if (changedHakemus) {
@@ -129,6 +153,7 @@ export function applySingleHakemusChange<T extends HakemuksenValinnanTulos>(
       changedHakemukset: context.changedHakemukset,
       originalHakemus: originalHakemus!,
       event,
+      mode: context.mode,
     });
   }
   return context.changedHakemukset;
@@ -165,6 +190,7 @@ export function applyMassHakemusChanges<T extends HakemuksenValinnanTulos>(
         changedHakemukset,
         originalHakemus: originalHakemus!,
         event,
+        mode: context.mode,
       });
     }
   });

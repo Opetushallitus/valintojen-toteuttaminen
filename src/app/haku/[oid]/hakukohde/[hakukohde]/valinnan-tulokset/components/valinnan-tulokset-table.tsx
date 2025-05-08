@@ -95,7 +95,7 @@ const useColumns = ({
             hakemus={hakemus}
             disabled={disabled}
             updateForm={updateForm}
-            isValinnanTilaEditable={true}
+            mode="valinta"
           />
         ),
       }),
@@ -109,6 +109,7 @@ const useColumns = ({
             hakemus={hakemus}
             updateForm={updateForm}
             disabled={disabled}
+            mode="valinta"
           />
         ),
       }),

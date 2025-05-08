@@ -19,6 +19,8 @@ import { useHakijanVastaanottotila } from '@/hooks/useHakijanVastaanottotila';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { ClientSpinner } from '@/components/client-spinner';
 import { ValinnanTulosChangeParams } from '@/lib/state/valinnan-tulos-machine';
+import { isValidValinnanTila } from '@/lib/valinnan-tulokset-utils';
+import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
 
 const HakijanVastaanottoTilaSection = ({
   haku,
@@ -73,23 +75,81 @@ export type VastaanOttoCellProps = {
   >;
   disabled?: boolean;
   updateForm: (params: ValinnanTulosChangeParams) => void;
+  mode: 'valinta' | 'sijoittelu';
 };
 
-export const VastaanOttoCell = ({
+const ValinnanVastaanottoTila = ({
   haku,
   hakukohde,
-  valintatapajono,
   hakemus,
-  disabled,
+  valintatapajono,
   updateForm,
-}: VastaanOttoCellProps) => {
+  disabled,
+}: Omit<VastaanOttoCellProps, 'mode'>) => {
   const { t } = useTranslations();
+  const { vastaanottoTila } = hakemus;
 
-  const isValintaesitysJulkaistavissa = useIsValintaesitysJulkaistavissa({
-    haku,
+  const vastaanottotilaOptions = useVastaanottoTilaOptions((tila) => {
+    return isKorkeakouluHaku(haku)
+      ? [
+          VastaanottoTila.KESKEN,
+          VastaanottoTila.EHDOLLISESTI_VASTAANOTTANUT,
+          VastaanottoTila.VASTAANOTTANUT_SITOVASTI,
+          VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA,
+          VastaanottoTila.PERUNUT,
+          VastaanottoTila.PERUUTETTU,
+          VastaanottoTila.OTTANUT_VASTAAN_TOISEN_PAIKAN,
+        ].includes(tila)
+      : [
+          VastaanottoTila.KESKEN,
+          VastaanottoTila.VASTAANOTTANUT_SITOVASTI,
+          VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA,
+          VastaanottoTila.PERUNUT,
+          VastaanottoTila.PERUUTETTU,
+        ].includes(tila);
   });
 
-  const { julkaistavissa, vastaanottoTila } = hakemus;
+  const updateVastaanottoTila = (event: SelectChangeEvent<string>) => {
+    updateForm({
+      hakemusOid: hakemus.hakemusOid,
+      vastaanottoTila: event.target.value as VastaanottoTila,
+    });
+  };
+
+  return (
+    <>
+      <QuerySuspenseBoundary suspenseFallback={<ClientSpinner size={16} />}>
+        {valintatapajono && (
+          <HakijanVastaanottoTilaSection
+            haku={haku}
+            hakukohde={hakukohde}
+            valintatapajono={valintatapajono}
+            vastaanottoTila={vastaanottoTila}
+          />
+        )}
+      </QuerySuspenseBoundary>
+      <LocalizedSelect
+        ariaLabel={t('sijoittelun-tulokset.taulukko.vastaanottotieto')}
+        value={vastaanottoTila ?? ''}
+        onChange={updateVastaanottoTila}
+        options={vastaanottotilaOptions}
+        disabled={disabled || !isVastaanottoPossible(hakemus)}
+        error={!isValidValinnanTila(hakemus)}
+      />
+    </>
+  );
+};
+
+const SijoittelunVastaanottoTila = ({
+  haku,
+  hakukohde,
+  hakemus,
+  valintatapajono,
+  updateForm,
+  disabled,
+}: Omit<VastaanOttoCellProps, 'mode'>) => {
+  const { t } = useTranslations();
+  const { vastaanottoTila } = hakemus;
 
   const vastaanottotilaOptions = useVastaanottoTilaOptions();
 
@@ -99,6 +159,48 @@ export const VastaanOttoCell = ({
       vastaanottoTila: event.target.value as VastaanottoTila,
     });
   };
+
+  return (
+    isVastaanottoPossible(hakemus) && (
+      <>
+        <QuerySuspenseBoundary suspenseFallback={<ClientSpinner size={16} />}>
+          {valintatapajono && (
+            <HakijanVastaanottoTilaSection
+              haku={haku}
+              hakukohde={hakukohde}
+              valintatapajono={valintatapajono}
+              vastaanottoTila={vastaanottoTila}
+            />
+          )}
+        </QuerySuspenseBoundary>
+        <LocalizedSelect
+          ariaLabel={t('sijoittelun-tulokset.taulukko.vastaanottotieto')}
+          value={vastaanottoTila ?? ''}
+          onChange={updateVastaanottoTila}
+          options={vastaanottotilaOptions}
+          disabled={disabled}
+        />
+      </>
+    )
+  );
+};
+
+export const VastaanOttoCell = ({
+  haku,
+  hakukohde,
+  valintatapajono,
+  hakemus,
+  disabled,
+  updateForm,
+  mode,
+}: VastaanOttoCellProps) => {
+  const { t } = useTranslations();
+
+  const isValintaesitysJulkaistavissa = useIsValintaesitysJulkaistavissa({
+    haku,
+  });
+
+  const { julkaistavissa } = hakemus;
 
   const updateJulkaistu = () => {
     updateForm({
@@ -113,6 +215,7 @@ export const VastaanOttoCell = ({
         checked={Boolean(julkaistavissa)}
         onChange={updateJulkaistu}
         label={t('sijoittelun-tulokset.julkaistavissa')}
+        error={!isValidValinnanTila(hakemus) && !julkaistavissa}
         disabled={
           disabled ||
           !isVastaanottotilaJulkaistavissa(hakemus) ||
@@ -125,26 +228,24 @@ export const VastaanOttoCell = ({
           {toFormattedDateTimeString(hakemus.vastaanottoDeadline)}
         </Typography>
       )}
-      {isVastaanottoPossible(hakemus) && (
-        <>
-          <QuerySuspenseBoundary suspenseFallback={<ClientSpinner size={16} />}>
-            {valintatapajono && (
-              <HakijanVastaanottoTilaSection
-                haku={haku}
-                hakukohde={hakukohde}
-                valintatapajono={valintatapajono}
-                vastaanottoTila={vastaanottoTila}
-              />
-            )}
-          </QuerySuspenseBoundary>
-          <LocalizedSelect
-            ariaLabel={t('sijoittelun-tulokset.taulukko.vastaanottotieto')}
-            value={vastaanottoTila ?? ''}
-            onChange={updateVastaanottoTila}
-            options={vastaanottotilaOptions}
-            disabled={disabled}
-          />
-        </>
+      {mode === 'sijoittelu' ? (
+        <SijoittelunVastaanottoTila
+          haku={haku}
+          hakukohde={hakukohde}
+          hakemus={hakemus}
+          valintatapajono={valintatapajono}
+          updateForm={updateForm}
+          disabled={disabled}
+        />
+      ) : (
+        <ValinnanVastaanottoTila
+          haku={haku}
+          hakukohde={hakukohde}
+          hakemus={hakemus}
+          valintatapajono={valintatapajono}
+          updateForm={updateForm}
+          disabled={disabled}
+        />
       )}
     </Stack>
   );

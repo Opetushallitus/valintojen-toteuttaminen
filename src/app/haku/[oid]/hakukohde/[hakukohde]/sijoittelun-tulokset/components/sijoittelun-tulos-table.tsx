@@ -114,6 +114,7 @@ const useColumns = ({
             haku={haku}
             updateForm={updateForm}
             disabled={disabled}
+            mode="sijoittelu"
           />
         ),
       }),
@@ -128,6 +129,7 @@ const useColumns = ({
             hakemus={props}
             updateForm={updateForm}
             disabled={disabled}
+            mode="sijoittelu"
           />
         ),
       }),

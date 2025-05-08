@@ -14,7 +14,6 @@ import {
   getHakukohteenValinnanTuloksetQueryOptions,
   hyvaksyValintaEsitys,
 } from '@/lib/valinta-tulos-service/valinta-tulos-service';
-import { inspect } from '@/lib/xstate-utils';
 import { ValinnanTulosErrorGlobalModal } from '@/components/modals/valinnan-tulos-error-global-modal';
 import { showModal } from '@/components/modals/global-modal';
 import { QueryClient, useQueryClient } from '@tanstack/react-query';
@@ -22,7 +21,7 @@ import { isNullish } from 'remeda';
 import { isHakemusOid, rejectAndLog, OphProcessError } from '@/lib/common';
 
 export const valinnanTuloksetMachine =
-  createValinnanTulosMachine<HakemuksenValinnanTulos>().provide({
+  createValinnanTulosMachine<HakemuksenValinnanTulos>('valinta').provide({
     actions: {
       alert: ({ context }, params) =>
         context.addToast?.({
@@ -177,9 +176,6 @@ export const useValinnanTulosActorRef = ({
         }),
       },
     }),
-    {
-      inspect: inspect,
-    },
   );
 
   const { addToast } = useToaster();

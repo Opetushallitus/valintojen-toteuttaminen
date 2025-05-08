@@ -1,5 +1,5 @@
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { SijoittelunTila } from '@/lib/types/sijoittelu-types';
+import { SijoittelunTila, VastaanottoTila } from '@/lib/types/sijoittelu-types';
 import { useHyvaksynnanEhdot } from '@/lib/koodisto/useHyvaksynnanEhdot';
 import { ChangeEvent } from 'react';
 import {
@@ -26,6 +26,7 @@ import { InfoTooltipButton } from '@/components/info-tooltip-button';
 import { ValinnanTulosChangeParams } from '@/lib/state/valinnan-tulos-machine';
 import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
 import { useValinnanTilaOptions } from '@/hooks/useValinnanTilaOptions';
+import { isValidValinnanTila } from '@/lib/valinnan-tulokset-utils';
 
 const LanguageAdornment = styled(InputAdornment)(() => ({
   backgroundColor: ophColors.grey200,
@@ -261,13 +262,20 @@ const EhdollinenFields = ({
 };
 
 const ValinnanTilaSelect = ({
-  value,
+  hakemus,
   onChange,
   disabled,
-}: Pick<
+  error,
+}: { hakemus: HakemuksenValinnanTulos } & Pick<
   React.ComponentProps<typeof LocalizedSelect>,
-  'value' | 'onChange' | 'disabled'
+  'onChange' | 'disabled' | 'error'
 >) => {
+  const valinnanTila =
+    hakemus.valinnanTila === SijoittelunTila.PERUNUT &&
+    hakemus.vastaanottoTila === VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA
+      ? SijoittelunTila.PERUUNTUNUT
+      : hakemus.valinnanTila;
+
   const options = useValinnanTilaOptions(
     (tila) => tila !== SijoittelunTila.HARKINNANVARAISESTI_HYVAKSYTTY,
   );
@@ -275,11 +283,12 @@ const ValinnanTilaSelect = ({
   return (
     <LocalizedSelect
       sx={{ width: '300px' }}
-      value={value ?? ''}
+      value={valinnanTila ?? ''}
       onChange={onChange}
       disabled={disabled}
       options={options}
       clearable={true}
+      error={error}
     />
   );
 };
@@ -289,13 +298,13 @@ export const ValinnanTilaCell = ({
   haku,
   disabled,
   updateForm,
-  isValinnanTilaEditable,
+  mode,
 }: {
   hakemus: HakemuksenValinnanTulos;
-  isValinnanTilaEditable?: boolean;
   haku: Haku;
   disabled: boolean;
   updateForm: (params: ValinnanTulosChangeParams) => void;
+  mode: 'valinta' | 'sijoittelu';
 }) => {
   const { t } = useTranslations();
 
@@ -304,6 +313,7 @@ export const ValinnanTilaCell = ({
     hyvaksyttyVarasijalta,
     siirtynytToisestaValintatapajonosta,
     valinnanTila,
+    vastaanottoTila,
   } = hakemus;
 
   const hakemuksenTila = getReadableHakemuksenTila(hakemus, t);
@@ -325,11 +335,15 @@ export const ValinnanTilaCell = ({
   return (
     <Stack gap={1} sx={{ minWidth: '240px' }}>
       <span>
-        {isValinnanTilaEditable ? (
+        {mode === 'valinta' ? (
           <ValinnanTilaSelect
-            value={valinnanTila}
+            hakemus={hakemus}
             onChange={updateValinnanTila}
-            disabled={disabled}
+            disabled={
+              disabled ||
+              (vastaanottoTila && vastaanottoTila !== VastaanottoTila.KESKEN)
+            }
+            error={!isValidValinnanTila(hakemus)}
           />
         ) : (
           hakemuksenTila
@@ -350,7 +364,7 @@ export const ValinnanTilaCell = ({
           disabled={disabled}
         />
       )}
-      {isValinnanTilaEditable && valinnanTila === SijoittelunTila.HYLATTY && (
+      {mode === 'valinta' && valinnanTila === SijoittelunTila.HYLATTY && (
         <HylkayksenSyyFields
           hakemus={hakemus}
           disabled={disabled}
