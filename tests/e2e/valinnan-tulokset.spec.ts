@@ -1,5 +1,10 @@
 import { test, expect, Page } from '@playwright/test';
-import { checkRow, expectAllSpinnersHidden } from './playwright-utils';
+import {
+  checkRow,
+  expectAllSpinnersHidden,
+  expectPageAccessibilityOk,
+  selectOption,
+} from './playwright-utils';
 import { configuration } from '@/lib/configuration';
 import HAUT from './fixtures/haut.json';
 
@@ -114,9 +119,22 @@ async function goToValinnanTulokset(page: Page) {
   );
 }
 
+async function selectValinnanTila(page: Page, option: string) {
+  await selectOption({
+    page,
+    name: 'Valinnan tila',
+    option,
+  });
+}
+
 test.beforeEach(({ page }) => goToValinnanTulokset(page));
 
 test.describe('Valinnan tulokset', () => {
+  test('Saavutettavuus', async ({ page }) => {
+    await expectAllSpinnersHidden(page);
+    await expectPageAccessibilityOk(page);
+  });
+
   test('Näytä hakemusten tulokset', async ({ page }) => {
     const headRow = page.locator('thead tr');
     await checkRow(
@@ -205,5 +223,236 @@ test.describe('Valinnan tulokset', () => {
     );
 
     await checkRow(rows.nth(3), getEmptyRowColumns('Hui Haamu'), 'td', false);
+  });
+
+  test.describe('Suodattimet', () => {
+    test('Nimellä', async ({ page }) => {
+      const hakuInput = page.getByRole('textbox', {
+        name: 'Hae hakijan nimellä tai tunnisteilla',
+      });
+      await hakuInput.fill('Ruht');
+      const rows = page.locator('tbody tr');
+      await expect(rows).toHaveCount(1);
+      await expect(rows.filter({ hasText: 'Nukettaja Ruhtinas' })).toHaveCount(
+        1,
+      );
+      await hakuInput.fill('Dac');
+      await expect(rows).toHaveCount(1);
+      await expect(rows.filter({ hasText: 'Dacula Kreivi' })).toHaveCount(1);
+    });
+
+    test('Hakemusoidilla', async ({ page }) => {
+      const hakuInput = page.getByRole('textbox', {
+        name: 'Hae hakijan nimellä tai tunnisteilla',
+      });
+      await hakuInput.fill('1.2.246.562.11.00000000000001543832');
+      const rows = page.locator('tbody tr');
+      await expect(rows).toHaveCount(1);
+      await expect(rows.filter({ hasText: 'Hui Haamu' })).toHaveCount(1);
+    });
+
+    test('Henkilöoidilla', async ({ page }) => {
+      const hakuInput = page.getByRole('textbox', {
+        name: 'Hae hakijan nimellä tai tunnisteilla',
+      });
+      await hakuInput.fill('1.2.246.562.24.14598775927');
+      const rows = page.locator('tbody tr');
+      await expect(rows).toHaveCount(1);
+      await expect(rows.filter({ hasText: 'Purukumi Puru' })).toHaveCount(1);
+    });
+
+    test('Valinnan tilalla', async ({ page }) => {
+      await selectValinnanTila(page, 'HYLÄTTY');
+      const rows = page.locator('tbody tr');
+      await expect(rows).toHaveCount(1);
+      await expect(rows.filter({ hasText: 'Nukettaja Ruhtinas' })).toHaveCount(
+        1,
+      );
+    });
+
+    test('Vastaanoton tilalla', async ({ page }) => {
+      await selectOption({
+        page,
+        name: 'Vastaanoton tila',
+        option: 'Vastaanottanut sitovasti',
+      });
+      const rows = page.locator('tbody tr');
+      await expect(rows).toHaveCount(1);
+      await expect(rows.filter({ hasText: 'Dacula Kreivi' })).toHaveCount(1);
+    });
+  });
+
+  test.describe('Monivalinta ja massamuutos', () => {
+    test('Valitsee kaikki hakemukset', async ({ page }) => {
+      await expect(page.getByText('Ei hakijoita valittu')).toBeVisible();
+      await page.getByLabel('Valitse kaikki').click();
+      await expect(page.getByText('4 hakijaa valittu')).toBeVisible();
+    });
+
+    test('Valitsee hakemuksia yksitellen', async ({ page }) => {
+      await page.getByLabel('Valitse hakijan Dacula Kreivi hakemus').click();
+      await expect(page.getByText('1 hakija valittu')).toBeVisible();
+      await page.getByLabel('Valitse hakijan Purukumi Puru hakemus').click();
+      await expect(page.getByText('2 hakijaa valittu')).toBeVisible();
+    });
+
+    test('Massamuutos Valinnan tilalla', async ({ page }) => {
+      await page.getByLabel('Valitse kaikki').click();
+      await page.getByRole('button', { name: 'Muuta valinnan tila' }).click();
+      await page
+        .getByRole('menuitem', { name: 'HYVÄKSYTTY', exact: true })
+        .click();
+      await expect(
+        page.getByText('Muutettiin tila 3:lle hakemukselle'),
+      ).toBeVisible();
+      await expect(page.getByRole('row').getByText('HYVÄKSYTTY')).toHaveCount(
+        4,
+      );
+    });
+
+    test('Massamuutos Vastaanottotilalla', async ({ page }) => {
+      await page.getByLabel('Valitse kaikki').click();
+      await page
+        .getByRole('button', { name: 'Muuta vastaanottotieto' })
+        .click();
+      await page.getByRole('menuitem', { name: 'Perunut' }).click();
+      await expect(
+        page.getByText('Muutettiin tila 1:lle hakemukselle'),
+      ).toBeVisible();
+      await expect(page.getByRole('row').getByText('Perunut')).toHaveCount(2);
+    });
+
+    test('Massamuutos Ilmoittautumistilalla', async ({ page }) => {
+      await page.getByLabel('Valitse kaikki').click();
+      await page
+        .getByRole('button', { name: 'Muuta ilmoittautumistieto' })
+        .click();
+      await page.getByRole('menuitem', { name: 'Ei ilmoittautunut' }).click();
+      await expect(
+        page.getByText('Muutettiin tila 1:lle hakemukselle'),
+      ).toBeVisible();
+      await expect(
+        page.getByRole('row').getByText('Ei ilmoittautunut'),
+      ).toHaveCount(1);
+    });
+  });
+
+  test.describe('Tilojen kentät', () => {
+    test('Vastaanottotila disabloitu valinnan tiloilla', async ({ page }) => {
+      await page.addStyleTag({
+        content: '.MuiMenu-paper { transition-duration: 0s !important}',
+      });
+      const row = page.locator('tbody tr').nth(3);
+      const valinnanTilaCell = row.locator('td').nth(2);
+      const vastaanottoTilaCell = row.locator('td').nth(3);
+      await vastaanottoTilaCell.getByLabel('Julkaistavissa').click();
+      await expect(valinnanTilaCell.getByRole('combobox')).toHaveText(
+        'Valitse...',
+      );
+      await expect(vastaanottoTilaCell.getByRole('combobox')).toBeDisabled();
+      await selectOption({
+        page,
+        locator: valinnanTilaCell,
+        option: 'HYVÄKSYTTY',
+      });
+      await expect(vastaanottoTilaCell.getByRole('combobox')).toBeEnabled();
+      await selectOption({
+        page,
+        locator: valinnanTilaCell,
+        option: 'VARASIJALTA HYVÄKSYTTY',
+      });
+      await expect(vastaanottoTilaCell.getByRole('combobox')).toBeEnabled();
+      await selectOption({
+        page,
+        locator: valinnanTilaCell,
+        option: 'VARALLA',
+      });
+      await expect(vastaanottoTilaCell.getByRole('combobox')).toBeDisabled();
+      await selectOption({
+        page,
+        locator: valinnanTilaCell,
+        option: 'HYLÄTTY',
+      });
+      await expect(vastaanottoTilaCell.getByRole('combobox')).toBeDisabled();
+      await selectOption({
+        page,
+        locator: valinnanTilaCell,
+        option: 'PERUUNTUNUT',
+      });
+      await expect(vastaanottoTilaCell.getByRole('combobox')).toBeDisabled();
+      await selectOption({
+        page,
+        locator: valinnanTilaCell,
+        option: 'PERUNUT',
+      });
+      await expect(vastaanottoTilaCell.getByRole('combobox')).toBeEnabled();
+      await selectOption({
+        page,
+        locator: valinnanTilaCell,
+        option: 'PERUUTETTU',
+      });
+      await expect(vastaanottoTilaCell.getByRole('combobox')).toBeEnabled();
+    });
+
+    test('Vastaanottotilan muutosten vaikutukset valinnan tilaan', async ({
+      page,
+    }) => {
+      await page.addStyleTag({
+        content: '.MuiMenu-paper { transition-duration: 0s !important}',
+      });
+      const row = page.locator('tbody tr').nth(3);
+      const valinnanTilaCell = row.locator('td').nth(2);
+      const vastaanottoTilaCell = row.locator('td').nth(3);
+      await vastaanottoTilaCell.getByLabel('Julkaistavissa').click();
+      await selectOption({
+        page,
+        locator: valinnanTilaCell,
+        option: 'HYVÄKSYTTY',
+      });
+
+      await selectOption({
+        page,
+        locator: vastaanottoTilaCell,
+        option: 'Vastaanottanut sitovasti',
+      });
+
+      await expect(valinnanTilaCell.getByRole('combobox')).toHaveText(
+        'HYVÄKSYTTY',
+      );
+      await expect(valinnanTilaCell.getByRole('combobox')).toBeDisabled();
+
+      await selectOption({
+        page,
+        locator: vastaanottoTilaCell,
+        option: 'Ei vastaanotettu määräaikana',
+      });
+
+      await expect(valinnanTilaCell.getByRole('combobox')).toHaveText(
+        'PERUUNTUNUT',
+      );
+      await expect(valinnanTilaCell.getByRole('combobox')).toBeDisabled();
+
+      await selectOption({
+        page,
+        locator: vastaanottoTilaCell,
+        option: 'Perunut',
+      });
+
+      await expect(valinnanTilaCell.getByRole('combobox')).toHaveText(
+        'PERUNUT',
+      );
+      await expect(valinnanTilaCell.getByRole('combobox')).toBeDisabled();
+
+      await selectOption({
+        page,
+        locator: vastaanottoTilaCell,
+        option: 'Peruutettu',
+      });
+
+      await expect(valinnanTilaCell.getByRole('combobox')).toHaveText(
+        'PERUUTETTU',
+      );
+      await expect(valinnanTilaCell.getByRole('combobox')).toBeDisabled();
+    });
   });
 });
