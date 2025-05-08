@@ -4,9 +4,6 @@ import { FormatIcu } from '@tolgee/format-icu';
 
 const REVALIDATE_TIME_SECONDS = 10 * 60;
 
-const apiKey = process.env.NEXT_PUBLIC_TOLGEE_API_KEY;
-const apiUrl = process.env.NEXT_PUBLIC_TOLGEE_API_URL;
-
 const NAMESPACE = 'valintojen-toteuttaminen';
 
 export function TolgeeBase() {
@@ -37,8 +34,6 @@ export function TolgeeBase() {
       )
       .use(DevTools())
       .updateDefaults({
-        apiKey,
-        apiUrl,
         defaultNs: NAMESPACE,
         ns: [NAMESPACE],
         projectId: 11100,
