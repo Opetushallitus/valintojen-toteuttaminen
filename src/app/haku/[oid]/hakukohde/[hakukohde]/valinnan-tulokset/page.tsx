@@ -1,11 +1,15 @@
 'use client';
-import { use } from 'react';
+import { use, useCallback } from 'react';
 
 import { TabContainer } from '../components/tab-container';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
-import { Box } from '@mui/material';
-import { useSuspenseQueries } from '@tanstack/react-query';
+import { Box, Stack } from '@mui/material';
+import {
+  QueryClient,
+  useQueryClient,
+  useSuspenseQueries,
+} from '@tanstack/react-query';
 import {
   getHakukohteenValinnanTuloksetQueryOptions,
   HakukohteenValinnanTuloksetData,
@@ -22,6 +26,13 @@ import { hakuQueryOptions } from '@/lib/kouta/useHaku';
 import { hakukohdeQueryOptions } from '@/lib/kouta/useHakukohde';
 import { ValinnanTuloksetSearchControls } from './components/valinnan-tulokset-search-controls';
 import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
+import { OphButton } from '@opetushallitus/oph-design-system';
+import {
+  ValinnanTulosEventType,
+  ValinnanTulosState,
+} from '@/lib/state/valinnan-tulos-machine';
+import { useSelector } from '@xstate/react';
+import { useValinnanTulosActorRef } from './lib/valinnan-tulos-state';
 
 const useHakemuksetValinnanTuloksilla = ({
   hakemukset,
@@ -57,6 +68,21 @@ const useHakemuksetValinnanTuloksilla = ({
   });
 };
 
+const refetchHakukohteenValinnanTulokset = ({
+  queryClient,
+  hakuOid,
+  hakukohdeOid,
+}: KoutaOidParams & {
+  queryClient: QueryClient;
+}) => {
+  const valintaQueryOptions = getHakukohteenValinnanTuloksetQueryOptions({
+    hakuOid,
+    hakukohdeOid,
+  });
+  queryClient.resetQueries(valintaQueryOptions);
+  queryClient.invalidateQueries(valintaQueryOptions);
+};
+
 const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const { t } = useTranslations();
 
@@ -79,12 +105,33 @@ const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
       }),
     ],
   });
-  const { lastModified } = valinnanTulokset;
 
   const hakemuksetTuloksilla = useHakemuksetValinnanTuloksilla({
     hakemukset,
     valinnanTulokset: valinnanTulokset,
   });
+
+  const queryClient = useQueryClient();
+
+  const onUpdated = useCallback(() => {
+    refetchHakukohteenValinnanTulokset({
+      queryClient,
+      hakuOid,
+      hakukohdeOid,
+    });
+  }, [queryClient, hakukohdeOid, hakuOid]);
+
+  const valinnanTulosActorRef = useValinnanTulosActorRef({
+    haku,
+    hakukohde,
+    hakemukset,
+    lastModified: valinnanTulokset.lastModified,
+    onUpdated,
+  });
+
+  const send = valinnanTulosActorRef.send;
+
+  const state = useSelector(valinnanTulosActorRef, (s) => s);
 
   return isEmpty(hakemuksetTuloksilla) ? (
     <NoResults text={t('valinnan-tulokset.ei-hakemuksia')} />
@@ -99,11 +146,23 @@ const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
     >
       <ValinnanTuloksetSearchControls />
       <FormBox sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Stack direction="row" gap={2} sx={{ flexWrap: 'wrap' }}>
+          <OphButton
+            onClick={() => {
+              send({ type: ValinnanTulosEventType.UPDATE });
+            }}
+            variant="contained"
+            loading={state.matches(ValinnanTulosState.UPDATING)}
+            disabled={!state.matches(ValinnanTulosState.IDLE)}
+          >
+            {t('yleinen.tallenna')}
+          </OphButton>
+        </Stack>
         <ValinnanTuloksetTable
           haku={haku}
           hakukohde={hakukohde}
-          lastModified={lastModified}
           hakemukset={hakemuksetTuloksilla}
+          actorRef={valinnanTulosActorRef}
         />
       </FormBox>
     </Box>

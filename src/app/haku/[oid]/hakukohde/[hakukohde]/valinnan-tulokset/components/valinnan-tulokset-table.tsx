@@ -12,7 +12,6 @@ import { IlmoittautumisTilaSelect } from '@/components/ilmoittautumistila-select
 import { VastaanOttoCell } from '@/components/vastaanotto-cell';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import { useValinnanTuloksetSearch } from '../hooks/useValinnanTuloksetSearch';
-import { useValinnanTulosActorRef } from '../lib/valinnan-tulos-state';
 import { useSelector } from '@xstate/react';
 import {
   ValinnanTulosActorRef,
@@ -21,6 +20,7 @@ import {
   ValinnanTulosState,
 } from '@/lib/state/valinnan-tulos-machine';
 import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
+import { ValinnanTilaCell } from '@/components/valinnan-tila-cell';
 
 export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
   title,
@@ -72,7 +72,14 @@ const useColumns = ({
       makeColumnWithCustomRender<HakemuksenValinnanTulos>({
         title: t(`${TRANSLATIONS_PREFIX}.valinnan-tila`),
         key: 'valinnantila',
-        renderFn: () => <div></div>,
+        renderFn: (hakemus) => (
+          <ValinnanTilaCell
+            haku={haku}
+            hakemus={hakemus}
+            disabled={disabled}
+            updateForm={updateForm}
+          />
+        ),
       }),
       makeColumnWithCustomRender<HakemuksenValinnanTulos>({
         title: t(`${TRANSLATIONS_PREFIX}.vastaanoton-tila`),
@@ -113,29 +120,20 @@ const useColumns = ({
 export const ValinnanTuloksetTable = ({
   haku,
   hakukohde,
-  lastModified,
+  actorRef,
   hakemukset,
 }: {
   haku: Haku;
   hakukohde: Hakukohde;
-  lastModified?: string;
+  actorRef: ValinnanTulosActorRef;
   hakemukset: Array<HakemuksenValinnanTulos>;
 }) => {
   const { t } = useTranslations();
 
-  const onUpdated = useCallback(() => {}, []);
-
-  const valinnanTulosActorRef = useValinnanTulosActorRef({
-    hakukohdeOid: hakukohde.oid,
-    hakemukset,
-    lastModified,
-    onUpdated,
-  });
-
   const columns = useColumns({
     haku,
     hakukohde,
-    actorRef: valinnanTulosActorRef,
+    actorRef,
   });
 
   const { results, sort, setSort, pageSize, setPage, page } =
@@ -144,7 +142,7 @@ export const ValinnanTuloksetTable = ({
   const { selection, setSelection } = useSelection(hakemukset);
 
   const changedHakemukset = useSelector(
-    valinnanTulosActorRef,
+    actorRef,
     (state) => state.context.changedHakemukset,
   );
 

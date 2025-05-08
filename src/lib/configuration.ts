@@ -143,6 +143,7 @@ export const configuration = {
   startExportOsoitetarratSijoittelussaHyvaksytyilleUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/osoitetarrat/sijoittelussahyvaksytyille/aktivoi`,
   startExportOsoitetarratHaulleUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/sijoitteluntuloshaulle/osoitetarrat`,
   startExportPistesyottoExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/pistesyotto/vienti`,
+  startErillishakuValinnanTulosImportUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/erillishaku/tuonti/ui`,
   kirjepohjat: ({
     templateName,
     language,

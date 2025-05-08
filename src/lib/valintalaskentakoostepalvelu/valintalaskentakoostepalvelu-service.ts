@@ -57,6 +57,7 @@ import {
 import { AssertionError } from 'assert';
 import { queryOptions } from '@tanstack/react-query';
 import { Language } from '../localization/localization-types';
+import { HakemuksenValinnanTulos } from '../valinta-tulos-service/valinta-tulos-types';
 
 export const getHakukohteenValintatuloksetIlmanHakijanTilaa = async (
   hakuOid: string,
@@ -964,4 +965,52 @@ export async function sendLetters(
   await client.post(configuration.lahetaEPostiUrl, reqBody);
 }
 
-export async function saveErillishakuValinnanTulokset({}) {}
+export async function saveErillishakuValinnanTulokset({
+  hakuOid,
+  hakukohdeOid,
+  tarjoajaOid,
+  hakemukset,
+  hakutyyppi,
+  lastModified,
+}: {
+  hakuOid: string;
+  hakukohdeOid: string;
+  tarjoajaOid: string;
+  hakutyyppi: 'TOISEN_ASTEEN_OPPILAITOS' | 'KORKEAKOULU';
+  hakemukset: Array<HakemuksenValinnanTulos>;
+  lastModified?: string;
+}) {
+  const erillishakuHakemukset = hakemukset.map((hakemus) => ({
+    hakemusOid: hakemus.hakemusOid,
+    personOid: hakemus.hakijaOid,
+    hakemuksenTila: hakemus.valinnanTila,
+    vastaanottoTila: hakemus.vastaanottoTila,
+    ilmoittautumisTila: hakemus.ilmoittautumisTila,
+    julkaistaankoTiedot: hakemus.julkaistavissa,
+    ehdollisestiHyvaksyttavissa: hakemus.ehdollisestiHyvaksyttavissa,
+  }));
+
+  const urlWithQuery = new URL(
+    configuration.startErillishakuValinnanTulosImportUrl,
+  );
+  urlWithQuery.searchParams.set('hakuOid', hakuOid);
+  urlWithQuery.searchParams.set('hakukohdeOid', hakukohdeOid);
+  urlWithQuery.searchParams.set('tarjoajaOid', tarjoajaOid);
+  urlWithQuery.searchParams.set('hakutyyppi', hakutyyppi);
+
+  const { data } = await client.post<{ id: string }>(
+    urlWithQuery,
+    { rivit: erillishakuHakemukset },
+    {
+      headers: {
+        'If-Unmodified-Since': (lastModified
+          ? new Date(lastModified)
+          : new Date()
+        ).toUTCString(),
+      },
+    },
+  );
+
+  const processId = data.id;
+  await pollDocumentProcess(processId, true);
+}

@@ -60,7 +60,7 @@ const ModalActions = ({
   );
 };
 
-const refetchValinnanTulokset = ({
+const refetchHakemuksenValinnanTulokset = ({
   queryClient,
   hakemusOid,
 }: {
@@ -117,7 +117,7 @@ const useValinnanTilatMutation = ({
         type: 'success',
       });
 
-      refetchValinnanTulokset({
+      refetchHakemuksenValinnanTulokset({
         hakemusOid: valinnanTulos.hakemusOid,
         queryClient,
       });
