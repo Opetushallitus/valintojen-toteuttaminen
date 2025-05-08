@@ -832,6 +832,49 @@ test.describe('Tallennus', () => {
         ehdollisestiHyvaksyttavissa: false,
       });
     });
+
+    test('Poista hakemus', async ({ page }) => {
+      await mockDocumentProcess({
+        page,
+        urlMatcher: (url) =>
+          url.pathname.includes(
+            '/valintalaskentakoostepalvelu/resources/erillishaku/tuonti/ui',
+          ),
+      });
+      await page
+        .getByRole('row', { name: 'Nukettaja Ruhtinas' })
+        .getByRole('button', { name: 'Muut toiminnot' })
+        .click();
+      await page
+        .getByRole('menuitem', { name: 'Poista valinnan tulokset' })
+        .click();
+      const confirmModal = page.getByRole('dialog', {
+        name: 'Poistetaanko valinnan tulokset?',
+      });
+
+      const [request] = await Promise.all([
+        page.waitForRequest(
+          (req) =>
+            req
+              .url()
+              .includes(
+                '/valintalaskentakoostepalvelu/resources/erillishaku/tuonti/ui',
+              ) && req.method() === 'POST',
+        ),
+        confirmModal
+          .getByRole('button', { name: 'Poista valinnan tulokset' })
+          .click(),
+      ]);
+
+      const postDataRivit = request.postDataJSON()?.rivit;
+      expect(postDataRivit).toHaveLength(1);
+      expect(postDataRivit[0]).toMatchObject({
+        hakemusOid: '1.2.246.562.11.00000000000001796027',
+        personOid: '1.2.246.562.24.69259807406',
+        poistetaankoRivi: true,
+      });
+      await expect(page.getByText('Valinnan tulokset poistettu')).toBeVisible();
+    });
   });
 
   test('Lähetä vastaanottoposti', async ({ page }) => {
