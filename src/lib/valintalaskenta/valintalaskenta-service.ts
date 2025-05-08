@@ -22,7 +22,7 @@ import {
   SijoitteluajonTulokset,
   SijoitteluajonValintatapajono,
   SijoittelunHakemus,
-  SijoittelunTila,
+  ValinnanTila,
 } from '../types/sijoittelu-types';
 import {
   filter,
@@ -400,7 +400,7 @@ const findVastaanottotila = (
   }
 };
 
-const sijoittelunTilaOrdinalForHakemus = (tila: SijoittelunTila): number => {
+const sijoittelunTilaOrdinalForHakemus = (tila: ValinnanTila): number => {
   return [
     'VARALLA',
     'HYVAKSYTTY',
@@ -492,7 +492,7 @@ type JarjestyskriteeriChangeResult = KoutaOidParams & {
   harkinnanvarainen: boolean | null;
   jarjestyskriteerit: Array<{
     arvo: number;
-    tila: SijoittelunTila;
+    tila: ValinnanTila;
     kuvaus: {
       FI?: string;
     };

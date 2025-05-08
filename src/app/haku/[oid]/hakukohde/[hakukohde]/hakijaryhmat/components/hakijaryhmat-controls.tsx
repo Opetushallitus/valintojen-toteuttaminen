@@ -1,7 +1,7 @@
 import { useHakijaryhmatSearchParams } from '../hooks/useHakijaryhmatSearch';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { Box, SelectChangeEvent } from '@mui/material';
-import { SijoittelunTila } from '@/lib/types/sijoittelu-types';
+import { ValinnanTila } from '@/lib/types/sijoittelu-types';
 import { LocalizedSelect } from '@/components/localized-select';
 import { SearchInput } from '@/components/search-input';
 import { OphFormFieldWrapper } from '@opetushallitus/oph-design-system';
@@ -31,8 +31,8 @@ export const HakijaryhmatControls = () => {
     setSijoittelunTila(e.target.value);
   };
 
-  const sijoitteluntilaOptions = Object.values(SijoittelunTila)
-    .filter((tila) => tila !== SijoittelunTila.HARKINNANVARAISESTI_HYVAKSYTTY)
+  const sijoitteluntilaOptions = Object.values(ValinnanTila)
+    .filter((tila) => tila !== ValinnanTila.HARKINNANVARAISESTI_HYVAKSYTTY)
     .map((tila) => {
       return { value: tila as string, label: t(`sijoitteluntila.${tila}`) };
     });

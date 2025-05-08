@@ -1,13 +1,11 @@
 import { expect, test, vi, describe, afterEach } from 'vitest';
 import { client } from '@/lib/http-client';
 import { createActor, waitFor } from 'xstate';
-import {
-  sijoittelunTuloksetMachine,
-} from './sijoittelun-tulokset-state';
+import { sijoittelunTuloksetMachine } from './sijoittelun-tulokset-state';
 import {
   IlmoittautumisTila,
   SijoittelunHakemusValintatiedoilla,
-  SijoittelunTila,
+  ValinnanTila,
   SijoittelunTulosActorRef,
   VastaanottoTila,
 } from '@/lib/types/sijoittelu-types';
@@ -43,7 +41,7 @@ describe('Sijoittelun tulokset states', async () => {
       julkaistavissa: true,
       onkoMuuttunutViimeSijoittelussa: false,
       tasasijaJonosija: 1,
-      valinnanTila: SijoittelunTila.HYVAKSYTTY,
+      valinnanTila: ValinnanTila.HYVAKSYTTY,
       valintatapajonoOid: 'jono-oid',
       varasijanNumero: 0,
     },
@@ -64,7 +62,7 @@ describe('Sijoittelun tulokset states', async () => {
       julkaistavissa: true,
       onkoMuuttunutViimeSijoittelussa: false,
       tasasijaJonosija: 1,
-      valinnanTila: SijoittelunTila.VARALLA,
+      valinnanTila: ValinnanTila.VARALLA,
       valintatapajonoOid: 'jono-oid',
       varasijanNumero: 1,
     },

@@ -15,7 +15,7 @@ import { configuration } from '@/lib/configuration';
 import { hakemusValinnanTulosFixture } from './fixtures/hakemus-valinnan-tulos';
 import {
   IlmoittautumisTila,
-  SijoittelunTila,
+  ValinnanTila,
   VastaanottoTila,
 } from '@/lib/types/sijoittelu-types';
 import {
@@ -32,7 +32,7 @@ const VALINNAN_TULOS_RESULT = hakemusValinnanTulosFixture({
   hakemusOid: NUKETTAJA_HAKEMUS_OID,
   valintatapajonoOid: '17093042998533736417074016063604',
   henkiloOid: '1.2.246.562.24.69259807406',
-  valinnantila: SijoittelunTila.HYVAKSYTTY,
+  valinnantila: ValinnanTila.HYVAKSYTTY,
   vastaanottotila: VastaanottoTila.VASTAANOTTANUT_SITOVASTI,
   ilmoittautumistila: IlmoittautumisTila.EI_ILMOITTAUTUNUT,
   julkaistavissa: true,

@@ -1,6 +1,6 @@
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { Stack, SelectChangeEvent } from '@mui/material';
-import { SijoittelunTila } from '@/lib/types/sijoittelu-types';
+import { ValinnanTila } from '@/lib/types/sijoittelu-types';
 import { LocalizedSelect } from '@/components/localized-select';
 import { OphFormFieldWrapper } from '@opetushallitus/oph-design-system';
 import { SearchInput } from '@/components/search-input';
@@ -27,7 +27,7 @@ export const ValinnanTuloksetSearchControls = () => {
     setVastaanottoTila(e.target.value);
   };
 
-  const sijoitteluntilaOptions = Object.values(SijoittelunTila).map((tila) => {
+  const sijoitteluntilaOptions = Object.values(ValinnanTila).map((tila) => {
     return { value: tila as string, label: t(`sijoitteluntila.${tila}`) };
   });
 

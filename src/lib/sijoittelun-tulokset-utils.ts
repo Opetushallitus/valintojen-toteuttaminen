@@ -6,7 +6,7 @@ import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { Haku } from '@/lib/kouta/kouta-types';
 import {
   SijoittelunHakemusValintatiedoilla,
-  SijoittelunTila,
+  ValinnanTila,
   VastaanottoTila,
 } from '@/lib/types/sijoittelu-types';
 import { isAfter } from 'date-fns';
@@ -25,15 +25,13 @@ type SijoittelunTilaKentat = Pick<
   'julkaistavissa' | 'valinnanTila' | 'vastaanottoTila'
 >;
 
-const isSijoittelunTilaVastaanotettavissa = (
-  hakemuksenTila?: SijoittelunTila,
-) =>
+const isSijoittelunTilaVastaanotettavissa = (hakemuksenTila?: ValinnanTila) =>
   [
-    SijoittelunTila.HYVAKSYTTY,
-    SijoittelunTila.VARASIJALTA_HYVAKSYTTY,
-    SijoittelunTila.PERUNUT,
-    SijoittelunTila.PERUUTETTU,
-  ].includes(hakemuksenTila as SijoittelunTila);
+    ValinnanTila.HYVAKSYTTY,
+    ValinnanTila.VARASIJALTA_HYVAKSYTTY,
+    ValinnanTila.PERUNUT,
+    ValinnanTila.PERUUTETTU,
+  ].includes(hakemuksenTila as ValinnanTila);
 
 export const isVastaanottoPossible = (h: SijoittelunTilaKentat): boolean =>
   isSijoittelunTilaVastaanotettavissa(h?.valinnanTila) &&
@@ -74,13 +72,13 @@ export const isHyvaksyttyHarkinnanvaraisesti = (
   >,
 ): boolean =>
   Boolean(hakemus?.hyvaksyttyHarkinnanvaraisesti) &&
-  [SijoittelunTila.HYVAKSYTTY, SijoittelunTila.VARASIJALTA_HYVAKSYTTY].includes(
-    hakemus.valinnanTila as SijoittelunTila,
+  [ValinnanTila.HYVAKSYTTY, ValinnanTila.VARASIJALTA_HYVAKSYTTY].includes(
+    hakemus.valinnanTila as ValinnanTila,
   );
 
 export const getReadableHakemuksenTila = (
   hakemus: {
-    valinnanTila?: SijoittelunTila;
+    valinnanTila?: ValinnanTila;
     hyvaksyttyHarkinnanvaraisesti?: boolean;
     varasijanNumero?: number | null;
   },
@@ -89,7 +87,7 @@ export const getReadableHakemuksenTila = (
   switch (true) {
     case isHyvaksyttyHarkinnanvaraisesti(hakemus):
       return t('sijoitteluntila.HARKINNANVARAISESTI_HYVAKSYTTY');
-    case hakemus.valinnanTila === SijoittelunTila.VARALLA &&
+    case hakemus.valinnanTila === ValinnanTila.VARALLA &&
       isNonNullish(hakemus.varasijanNumero):
       return `${t(`sijoitteluntila.${hakemus.valinnanTila}`)} (${hakemus.varasijanNumero})`;
     default:

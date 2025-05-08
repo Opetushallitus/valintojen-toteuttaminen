@@ -14,7 +14,7 @@ export type SijoittelunValintatapajonoTulos = {
   pisteraja: number;
 };
 
-export enum SijoittelunTila {
+export enum ValinnanTila {
   HYVAKSYTTY = 'HYVAKSYTTY',
   VARASIJALTA_HYVAKSYTTY = 'VARASIJALTA_HYVAKSYTTY',
   HARKINNANVARAISESTI_HYVAKSYTTY = 'HARKINNANVARAISESTI_HYVAKSYTTY',
@@ -25,8 +25,8 @@ export enum SijoittelunTila {
   PERUUTETTU = 'PERUUTETTU',
 }
 
-export const SijoittelunTilaOrdinals: Record<string, number> = Object.keys(
-  SijoittelunTila,
+export const ValinnanTilaOrdinals: Record<string, number> = Object.keys(
+  ValinnanTila,
 )
   .map((key, index) => ({ [key]: index }))
   .reduce((a, b) => ({ ...a, ...b }));
@@ -56,7 +56,7 @@ export type SijoittelunHakemus = {
   hakijaOid: string;
   hakemusOid: string;
   pisteet: number;
-  tila: SijoittelunTila;
+  tila: ValinnanTila;
   valintatapajonoOid: string;
   hyvaksyttyHakijaryhmista: Array<string>;
   varasijanNumero: number;

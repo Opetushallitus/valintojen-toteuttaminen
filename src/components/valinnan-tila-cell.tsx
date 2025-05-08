@@ -1,5 +1,5 @@
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { SijoittelunTila, VastaanottoTila } from '@/lib/types/sijoittelu-types';
+import { ValinnanTila, VastaanottoTila } from '@/lib/types/sijoittelu-types';
 import { useHyvaksynnanEhdot } from '@/lib/koodisto/useHyvaksynnanEhdot';
 import { ChangeEvent } from 'react';
 import {
@@ -44,14 +44,14 @@ const StyledInput = styled(OphInput)(() => ({
 }));
 
 const isHyvaksyttyVarasijaltaVisible = (hakemus: HakemuksenValinnanTulos) =>
-  hakemus.valinnanTila === SijoittelunTila.VARALLA ||
+  hakemus.valinnanTila === ValinnanTila.VARALLA ||
   (hakemus.hyvaksyttyVarasijalta &&
     [
-      SijoittelunTila.HYVAKSYTTY,
-      SijoittelunTila.PERUUNTUNUT,
-      SijoittelunTila.VARALLA,
-      SijoittelunTila.VARASIJALTA_HYVAKSYTTY,
-    ].includes(hakemus?.valinnanTila as SijoittelunTila));
+      ValinnanTila.HYVAKSYTTY,
+      ValinnanTila.PERUUNTUNUT,
+      ValinnanTila.VARALLA,
+      ValinnanTila.VARASIJALTA_HYVAKSYTTY,
+    ].includes(hakemus?.valinnanTila as ValinnanTila));
 
 export const EhdollisestiHyvaksyttavissaCheckbox = ({
   haku,
@@ -269,13 +269,13 @@ const ValinnanTilaSelect = ({
   'onChange' | 'disabled' | 'error'
 >) => {
   const valinnanTila =
-    hakemus.valinnanTila === SijoittelunTila.PERUNUT &&
+    hakemus.valinnanTila === ValinnanTila.PERUNUT &&
     hakemus.vastaanottoTila === VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA
-      ? SijoittelunTila.PERUUNTUNUT
+      ? ValinnanTila.PERUUNTUNUT
       : hakemus.valinnanTila;
 
   const options = useValinnanTilaOptions(
-    (tila) => tila !== SijoittelunTila.HARKINNANVARAISESTI_HYVAKSYTTY,
+    (tila) => tila !== ValinnanTila.HARKINNANVARAISESTI_HYVAKSYTTY,
   );
 
   return (
@@ -326,7 +326,7 @@ export const ValinnanTilaCell = ({
   const updateValinnanTila = (event: SelectChangeEvent<string>) => {
     updateForm({
       hakemusOid,
-      valinnanTila: event.target.value as SijoittelunTila,
+      valinnanTila: event.target.value as ValinnanTila,
     });
   };
 
@@ -362,14 +362,14 @@ export const ValinnanTilaCell = ({
           disabled={disabled}
         />
       )}
-      {mode === 'valinta' && valinnanTila === SijoittelunTila.HYLATTY && (
+      {mode === 'valinta' && valinnanTila === ValinnanTila.HYLATTY && (
         <HylkayksenSyyFields
           hakemus={hakemus}
           disabled={disabled}
           updateForm={updateForm}
         />
       )}
-      {valinnanTila !== SijoittelunTila.HYLATTY && isKorkeakouluHaku(haku) && (
+      {valinnanTila !== ValinnanTila.HYLATTY && isKorkeakouluHaku(haku) && (
         <EhdollinenFields
           haku={haku}
           hakemus={hakemus}

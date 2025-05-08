@@ -1,6 +1,6 @@
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { Box, SelectChangeEvent } from '@mui/material';
-import { SijoittelunTila } from '@/lib/types/sijoittelu-types';
+import { ValinnanTila } from '@/lib/types/sijoittelu-types';
 import { LocalizedSelect } from '@/components/localized-select';
 import { useSijoittelunTulosSearchParams } from '../hooks/useSijoittelunTulosSearch';
 import {
@@ -72,7 +72,7 @@ export const SijoittelunTulosControls = ({
     );
   };
 
-  const sijoitteluntilaOptions = Object.values(SijoittelunTila).map((tila) => {
+  const sijoitteluntilaOptions = Object.values(ValinnanTila).map((tila) => {
     return { value: tila as string, label: t(`sijoitteluntila.${tila}`) };
   });
 

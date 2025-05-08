@@ -1,4 +1,4 @@
-import { SijoittelunTila, VastaanottoTila } from './types/sijoittelu-types';
+import { ValinnanTila, VastaanottoTila } from './types/sijoittelu-types';
 import { HakemuksenValinnanTulos } from './valinta-tulos-service/valinta-tulos-types';
 
 export const isValidValinnanTila = (
@@ -7,33 +7,33 @@ export const isValidValinnanTila = (
   const { valinnanTila, vastaanottoTila = VastaanottoTila.KESKEN } = hakemus;
   return (
     (!valinnanTila && vastaanottoTila === VastaanottoTila.KESKEN) ||
-    (valinnanTila === SijoittelunTila.PERUNUT &&
+    (valinnanTila === ValinnanTila.PERUNUT &&
       vastaanottoTila === VastaanottoTila.PERUNUT) ||
-    (valinnanTila === SijoittelunTila.HYLATTY &&
+    (valinnanTila === ValinnanTila.HYLATTY &&
       vastaanottoTila === VastaanottoTila.KESKEN) ||
-    (valinnanTila === SijoittelunTila.VARALLA &&
+    (valinnanTila === ValinnanTila.VARALLA &&
       vastaanottoTila === VastaanottoTila.KESKEN) ||
-    (valinnanTila === SijoittelunTila.PERUUNTUNUT &&
+    (valinnanTila === ValinnanTila.PERUUNTUNUT &&
       vastaanottoTila === VastaanottoTila.KESKEN) ||
-    (valinnanTila === SijoittelunTila.PERUUNTUNUT &&
+    (valinnanTila === ValinnanTila.PERUUNTUNUT &&
       vastaanottoTila === VastaanottoTila.OTTANUT_VASTAAN_TOISEN_PAIKAN) ||
-    (valinnanTila === SijoittelunTila.PERUNUT &&
+    (valinnanTila === ValinnanTila.PERUNUT &&
       vastaanottoTila === VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA) ||
-    (valinnanTila === SijoittelunTila.VARASIJALTA_HYVAKSYTTY &&
+    (valinnanTila === ValinnanTila.VARASIJALTA_HYVAKSYTTY &&
       vastaanottoTila === VastaanottoTila.KESKEN) ||
-    (valinnanTila === SijoittelunTila.VARASIJALTA_HYVAKSYTTY &&
+    (valinnanTila === ValinnanTila.VARASIJALTA_HYVAKSYTTY &&
       vastaanottoTila === VastaanottoTila.EHDOLLISESTI_VASTAANOTTANUT) ||
-    (valinnanTila === SijoittelunTila.VARASIJALTA_HYVAKSYTTY &&
+    (valinnanTila === ValinnanTila.VARASIJALTA_HYVAKSYTTY &&
       vastaanottoTila === VastaanottoTila.VASTAANOTTANUT_SITOVASTI) ||
-    (valinnanTila === SijoittelunTila.HYVAKSYTTY &&
+    (valinnanTila === ValinnanTila.HYVAKSYTTY &&
       vastaanottoTila === VastaanottoTila.KESKEN) ||
-    (valinnanTila === SijoittelunTila.HYVAKSYTTY &&
+    (valinnanTila === ValinnanTila.HYVAKSYTTY &&
       vastaanottoTila === VastaanottoTila.EHDOLLISESTI_VASTAANOTTANUT) ||
-    (valinnanTila === SijoittelunTila.HYVAKSYTTY &&
+    (valinnanTila === ValinnanTila.HYVAKSYTTY &&
       vastaanottoTila === VastaanottoTila.VASTAANOTTANUT_SITOVASTI) ||
-    (valinnanTila === SijoittelunTila.PERUNUT &&
+    (valinnanTila === ValinnanTila.PERUNUT &&
       vastaanottoTila === VastaanottoTila.PERUNUT) ||
-    (valinnanTila === SijoittelunTila.PERUUTETTU &&
+    (valinnanTila === ValinnanTila.PERUUTETTU &&
       vastaanottoTila === VastaanottoTila.PERUUTETTU)
   );
 };

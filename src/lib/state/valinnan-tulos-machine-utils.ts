@@ -1,6 +1,6 @@
 import {
   IlmoittautumisTila,
-  SijoittelunTila,
+  ValinnanTila,
   VastaanottoTila,
 } from '@/lib/types/sijoittelu-types';
 import {
@@ -74,11 +74,11 @@ export function hasChangedHakemukset<T extends HakemuksenValinnanTulos>({
 }
 
 const VASTAANOTTOTILA_TO_VALINNAN_TILA = Object.freeze({
-  [VastaanottoTila.VASTAANOTTANUT_SITOVASTI]: SijoittelunTila.HYVAKSYTTY,
-  [VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA]: SijoittelunTila.PERUNUT,
-  [VastaanottoTila.PERUNUT]: SijoittelunTila.PERUNUT,
-  [VastaanottoTila.PERUUTETTU]: SijoittelunTila.PERUUTETTU,
-  [VastaanottoTila.OTTANUT_VASTAAN_TOISEN_PAIKAN]: SijoittelunTila.PERUUNTUNUT,
+  [VastaanottoTila.VASTAANOTTANUT_SITOVASTI]: ValinnanTila.HYVAKSYTTY,
+  [VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA]: ValinnanTila.PERUNUT,
+  [VastaanottoTila.PERUNUT]: ValinnanTila.PERUNUT,
+  [VastaanottoTila.PERUUTETTU]: ValinnanTila.PERUUTETTU,
+  [VastaanottoTila.OTTANUT_VASTAAN_TOISEN_PAIKAN]: ValinnanTila.PERUUNTUNUT,
 });
 
 /**
@@ -208,14 +208,14 @@ export function prepareChangedHakemuksetForSave<
     const { valinnanTila } = hakemus;
     const result = clone(hakemus);
 
-    if (valinnanTila === SijoittelunTila.HYLATTY) {
+    if (valinnanTila === ValinnanTila.HYLATTY) {
       result.ehdollisestiHyvaksyttavissa = false;
       result.ehdollisenHyvaksymisenEhtoKoodi = '';
       result.ehdollisenHyvaksymisenEhtoEN = '';
       result.ehdollisenHyvaksymisenEhtoEN = '';
       result.ehdollisenHyvaksymisenEhtoEN = '';
     }
-    if (valinnanTila !== SijoittelunTila.HYLATTY) {
+    if (valinnanTila !== ValinnanTila.HYLATTY) {
       result.valinnanTilanKuvausFI = '';
       result.valinnanTilanKuvausSV = '';
       result.valinnanTilanKuvausEN = '';

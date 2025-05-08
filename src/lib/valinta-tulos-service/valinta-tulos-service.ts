@@ -7,7 +7,7 @@ import {
   SijoitteluajonTulokset,
   SijoittelunHakemus,
   SijoittelunHakemusValintatiedoilla,
-  SijoittelunTila,
+  ValinnanTila,
   SijoittelunValintatapajonoTulos,
   VastaanottoTila,
 } from '../types/sijoittelu-types';
@@ -125,7 +125,7 @@ export const getLatestSijoitteluAjonTuloksetForHakukohde = async (
 };
 
 type SijoittelunHakutoiveenValintatapajonoModel = {
-  tila: SijoittelunTila;
+  tila: ValinnanTila;
   pisteet: number;
   valintatapajonoOid: string;
   varasijanNumero: number;

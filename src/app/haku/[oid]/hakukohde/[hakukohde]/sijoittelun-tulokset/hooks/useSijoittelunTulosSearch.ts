@@ -15,7 +15,7 @@ import {
 import { useTranslations } from '@/lib/localization/useTranslations';
 import {
   SijoittelunHakemusValintatiedoilla,
-  SijoittelunTila,
+  ValinnanTila,
 } from '@/lib/types/sijoittelu-types';
 import { hakemusFilter } from '@/lib/filters';
 import { sortBySijoittelunTila } from '@/lib/sortBySijoittelunTila';
@@ -120,7 +120,7 @@ const filterBySijoittelunTila = (
   return (
     tila.length < 1 ||
     hakemus.valinnanTila === tila ||
-    (tila === SijoittelunTila.HARKINNANVARAISESTI_HYVAKSYTTY &&
+    (tila === ValinnanTila.HARKINNANVARAISESTI_HYVAKSYTTY &&
       harkinnanvaraisestiHyvaksytty)
   );
 };

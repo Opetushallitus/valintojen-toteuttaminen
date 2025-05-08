@@ -11,7 +11,7 @@ import {
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { Haku, Hakukohde, KoutaOidParams } from '@/lib/kouta/kouta-types';
 import {
-  SijoittelunTila,
+  ValinnanTila,
   SijoittelunTulosActorRef,
   VastaanottoTila,
 } from '@/lib/types/sijoittelu-types';
@@ -123,10 +123,10 @@ const useEraantyneetHakemukset = ({
       hakemus?.vastaanottoTila === VastaanottoTila.KESKEN &&
       hakemus?.julkaistavissa &&
       [
-        SijoittelunTila.HYVAKSYTTY,
-        SijoittelunTila.VARASIJALTA_HYVAKSYTTY,
-        SijoittelunTila.PERUNUT,
-      ].includes(hakemus.valinnanTila as SijoittelunTila),
+        ValinnanTila.HYVAKSYTTY,
+        ValinnanTila.VARASIJALTA_HYVAKSYTTY,
+        ValinnanTila.PERUNUT,
+      ].includes(hakemus.valinnanTila as ValinnanTila),
   );
 
   const hakemusOids = hakemuksetJotkaTarvitsevatAikarajaMennytTiedon.map(

@@ -1,4 +1,4 @@
-import { SijoittelunTila } from './sijoittelu-types';
+import { ValinnanTila } from './sijoittelu-types';
 import { ValintakoeAvaimet } from '../valintaperusteet/valintaperusteet-types';
 
 export type JarjestyskriteeriTila = 'HYLATTY' | 'HYVAKSYTTAVISSA';
@@ -9,7 +9,7 @@ export type HakijaryhmanHakija = {
   hakemusOid: string;
   hakijaOid: string;
   hyvaksyttyHakijaryhmasta: boolean;
-  sijoittelunTila?: SijoittelunTila;
+  sijoittelunTila?: ValinnanTila;
   vastaanottoTila?: string;
   pisteet: number;
   jononNimi?: string;

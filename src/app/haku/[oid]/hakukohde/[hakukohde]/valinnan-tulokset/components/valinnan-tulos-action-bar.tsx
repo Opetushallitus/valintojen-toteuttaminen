@@ -4,7 +4,7 @@ import { ActionBar } from '@/components/action-bar';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import {
   IlmoittautumisTila,
-  SijoittelunTila,
+  ValinnanTila,
   SijoittelunTulosActorRef,
   VastaanottoTila,
 } from '@/lib/types/sijoittelu-types';
@@ -52,7 +52,7 @@ const ValinnanTilaSelect = ({
           onClick={() => {
             massStatusChangeForm({
               hakemusOids: selection,
-              valinnanTila: option.value as SijoittelunTila,
+              valinnanTila: option.value as ValinnanTila,
             });
           }}
         />

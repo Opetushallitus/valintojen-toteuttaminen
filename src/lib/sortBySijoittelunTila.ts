@@ -1,11 +1,8 @@
-import {
-  SijoittelunTila,
-  SijoittelunTilaOrdinals,
-} from './types/sijoittelu-types';
+import { ValinnanTila, ValinnanTilaOrdinals } from './types/sijoittelu-types';
 
 type SijoittelunTilaSortable = {
-  sijoittelunTila?: SijoittelunTila;
-  tila?: SijoittelunTila;
+  sijoittelunTila?: ValinnanTila;
+  tila?: ValinnanTila;
   varasijanNumero?: number;
 };
 
@@ -18,11 +15,11 @@ export function sortBySijoittelunTila<T extends SijoittelunTilaSortable>(
     const aSijoittelunTila = a.sijoittelunTila ?? a.tila;
     const bSijoittelunTila = b.sijoittelunTila ?? b.tila;
     if (aSijoittelunTila && bSijoittelunTila) {
-      const aOrdinal = SijoittelunTilaOrdinals[aSijoittelunTila];
-      const bOrdinal = SijoittelunTilaOrdinals[bSijoittelunTila];
+      const aOrdinal = ValinnanTilaOrdinals[aSijoittelunTila];
+      const bOrdinal = ValinnanTilaOrdinals[bSijoittelunTila];
       if (
         aOrdinal === bOrdinal &&
-        aOrdinal === SijoittelunTilaOrdinals[SijoittelunTila.VARALLA] &&
+        aOrdinal === ValinnanTilaOrdinals[ValinnanTila.VARALLA] &&
         a.varasijanNumero &&
         b.varasijanNumero
       ) {

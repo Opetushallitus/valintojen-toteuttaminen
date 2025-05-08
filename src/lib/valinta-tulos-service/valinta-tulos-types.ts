@@ -1,7 +1,7 @@
 import { MaksunTila } from '../ataru/ataru-types';
 import {
   IlmoittautumisTila,
-  SijoittelunTila,
+  ValinnanTila,
   VastaanottoTila,
 } from '../types/sijoittelu-types';
 
@@ -17,7 +17,7 @@ export type ValinnanTulosModel = {
   valintatapajonoOid: string;
   hakemusOid: string;
   henkiloOid: string;
-  valinnantila: SijoittelunTila;
+  valinnantila: ValinnanTila;
   vastaanottotila: VastaanottoTila;
   ilmoittautumistila: IlmoittautumisTila;
   julkaistavissa: boolean;
@@ -67,7 +67,7 @@ export type SijoitteluajonTuloksetResponseData = {
       hakijaOid: string;
       hakemusOid: string;
       pisteet: number;
-      tila: SijoittelunTila;
+      tila: ValinnanTila;
       valintatapajonoOid: string;
       hyvaksyttyHakijaryhmista: Array<string>;
       varasijanNumero: number;
@@ -135,7 +135,7 @@ export type HakemuksenValinnanTulos = {
   hakijaOid: string;
   hakijanNimi: string;
   valintatapajonoOid?: string;
-  valinnanTila?: SijoittelunTila;
+  valinnanTila?: ValinnanTila;
   valinnanTilanKuvausFI?: string;
   valinnanTilanKuvausSV?: string;
   valinnanTilanKuvausEN?: string;

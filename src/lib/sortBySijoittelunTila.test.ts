@@ -1,58 +1,58 @@
 import { expect, test } from 'vitest';
-import { SijoittelunTila } from './types/sijoittelu-types';
+import { ValinnanTila } from './types/sijoittelu-types';
 import { sortBySijoittelunTila } from './sortBySijoittelunTila';
 
 const hakemukset = [
   {
-    tila: SijoittelunTila.PERUNUT,
+    tila: ValinnanTila.PERUNUT,
   },
   {
-    tila: SijoittelunTila.HYVAKSYTTY,
+    tila: ValinnanTila.HYVAKSYTTY,
   },
   {
-    tila: SijoittelunTila.HARKINNANVARAISESTI_HYVAKSYTTY,
+    tila: ValinnanTila.HARKINNANVARAISESTI_HYVAKSYTTY,
   },
   {
-    tila: SijoittelunTila.PERUUNTUNUT,
+    tila: ValinnanTila.PERUUNTUNUT,
   },
   {
-    tila: SijoittelunTila.VARALLA,
+    tila: ValinnanTila.VARALLA,
   },
   {
-    tila: SijoittelunTila.VARASIJALTA_HYVAKSYTTY,
+    tila: ValinnanTila.VARASIJALTA_HYVAKSYTTY,
   },
   {
-    tila: SijoittelunTila.HYLATTY,
+    tila: ValinnanTila.HYLATTY,
   },
   {
-    tila: SijoittelunTila.PERUUTETTU,
+    tila: ValinnanTila.PERUUTETTU,
   },
 ];
 
 test('sorts by sijoitteluntila asc', () => {
   const sorted = sortBySijoittelunTila('asc', hakemukset).map((h) => h.tila);
   expect(sorted).toEqual([
-    SijoittelunTila.HYVAKSYTTY,
-    SijoittelunTila.VARASIJALTA_HYVAKSYTTY,
-    SijoittelunTila.HARKINNANVARAISESTI_HYVAKSYTTY,
-    SijoittelunTila.VARALLA,
-    SijoittelunTila.HYLATTY,
-    SijoittelunTila.PERUUNTUNUT,
-    SijoittelunTila.PERUNUT,
-    SijoittelunTila.PERUUTETTU,
+    ValinnanTila.HYVAKSYTTY,
+    ValinnanTila.VARASIJALTA_HYVAKSYTTY,
+    ValinnanTila.HARKINNANVARAISESTI_HYVAKSYTTY,
+    ValinnanTila.VARALLA,
+    ValinnanTila.HYLATTY,
+    ValinnanTila.PERUUNTUNUT,
+    ValinnanTila.PERUNUT,
+    ValinnanTila.PERUUTETTU,
   ]);
 });
 
 test('sorts by sijoitteluntila desc', () => {
   const sorted = sortBySijoittelunTila('desc', hakemukset).map((h) => h.tila);
   expect(sorted).toEqual([
-    SijoittelunTila.PERUUTETTU,
-    SijoittelunTila.PERUNUT,
-    SijoittelunTila.PERUUNTUNUT,
-    SijoittelunTila.HYLATTY,
-    SijoittelunTila.VARALLA,
-    SijoittelunTila.HARKINNANVARAISESTI_HYVAKSYTTY,
-    SijoittelunTila.VARASIJALTA_HYVAKSYTTY,
-    SijoittelunTila.HYVAKSYTTY,
+    ValinnanTila.PERUUTETTU,
+    ValinnanTila.PERUNUT,
+    ValinnanTila.PERUUNTUNUT,
+    ValinnanTila.HYLATTY,
+    ValinnanTila.VARALLA,
+    ValinnanTila.HARKINNANVARAISESTI_HYVAKSYTTY,
+    ValinnanTila.VARASIJALTA_HYVAKSYTTY,
+    ValinnanTila.HYVAKSYTTY,
   ]);
 });
