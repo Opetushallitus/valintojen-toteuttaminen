@@ -22,31 +22,32 @@ import { isValidValinnanTila } from '@/lib/valinnan-tulokset-utils';
 import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
 import { memo } from 'react';
 import { ValinnanTulosChangeParams } from '@/lib/state/valinnanTuloksetMachineTypes';
+import { prop } from 'remeda';
 
 const HakijanVastaanottoTilaSection = ({
   haku,
   hakukohde,
+  hakemusOid,
   valintatapajono,
   vastaanottoTila,
   t,
 }: {
   haku: Haku;
   hakukohde: Hakukohde;
+  hakemusOid: string;
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
-  hakijanVastaanottoTila?: VastaanottoTila;
   vastaanottoTila?: VastaanottoTila;
   t: TFunction;
 }) => {
-  const { data: hakijoidenVastaanottoTila } = useHakijanVastaanottotila({
+  const { data: hakijoidenVastaanottoTilat } = useHakijanVastaanottotila({
     hakuOid: haku.oid,
     hakukohdeOid: hakukohde.oid,
     valintatapajonoOid: valintatapajono.oid,
-    hakemusOids: valintatapajono.hakemukset.map((h) => h.hakemusOid),
+    hakemusOids: valintatapajono.hakemukset.map(prop('hakemusOid')),
   });
 
-  const hakijanVastaanottoTila = hakijoidenVastaanottoTila?.find(
-    (vastaanottoTila) =>
-      vastaanottoTila.hakemusOid === vastaanottoTila.hakemusOid,
+  const hakijanVastaanottoTila = hakijoidenVastaanottoTilat?.find(
+    (vt) => vt.hakemusOid === hakemusOid,
   )?.vastaanottotila;
 
   if (hakijanVastaanottoTila && hakijanVastaanottoTila !== vastaanottoTila) {
@@ -125,6 +126,7 @@ const ValinnanVastaanottoTila = ({
           <HakijanVastaanottoTilaSection
             haku={haku}
             hakukohde={hakukohde}
+            hakemusOid={hakemus.hakemusOid}
             valintatapajono={valintatapajono}
             vastaanottoTila={vastaanottoTila}
             t={t}
@@ -171,6 +173,7 @@ const SijoittelunVastaanottoTila = ({
             <HakijanVastaanottoTilaSection
               haku={haku}
               hakukohde={hakukohde}
+              hakemusOid={hakemus.hakemusOid}
               valintatapajono={valintatapajono}
               vastaanottoTila={vastaanottoTila}
               t={t}
