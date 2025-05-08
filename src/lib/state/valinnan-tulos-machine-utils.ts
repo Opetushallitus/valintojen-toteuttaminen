@@ -151,7 +151,7 @@ export function applySingleHakemusChange<T extends HakemuksenValinnanTulos>(
   if (originalHakemus) {
     return applyEditsToChangedHakemukset({
       changedHakemukset: context.changedHakemukset,
-      originalHakemus: originalHakemus!,
+      originalHakemus,
       event,
       mode: context.mode,
     });

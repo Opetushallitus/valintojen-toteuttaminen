@@ -231,14 +231,26 @@ test.describe('Suodattimet', () => {
   });
 });
 
-async function selectTila(page: Page, expectedOption: string) {
-  await selectOption(page, 'Sijoittelun tila', expectedOption);
+async function selectTila(page: Page, option: string) {
+  await selectOption({
+    page,
+    name: 'Sijoittelun tila',
+    option,
+  });
 }
 
-async function selectKuuluuRyhmaan(page: Page, expectedOption: string) {
-  await selectOption(page, 'Kuuluu hakijaryhmään', expectedOption);
+async function selectKuuluuRyhmaan(page: Page, option: string) {
+  await selectOption({
+    page,
+    name: 'Kuuluu hakijaryhmään',
+    option,
+  });
 }
 
-async function selectHyvaksytty(page: Page, expectedOption: string) {
-  await selectOption(page, 'Hyväksytty hakijaryhmästä', expectedOption);
+async function selectHyvaksytty(page: Page, option: string) {
+  await selectOption({
+    page,
+    name: 'Hyväksytty hakijaryhmästä',
+    option,
+  });
 }

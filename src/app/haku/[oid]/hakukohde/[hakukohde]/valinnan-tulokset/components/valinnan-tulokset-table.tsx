@@ -221,11 +221,11 @@ export const ValinnanTuloksetTable = ({
           pageSize,
           label: `${t('yleinen.sivutus')} ${hakukohde.nimi}`,
         }}
-        getRowCheckboxLabel={({ hakijanNimi }) =>
-          t(`${TRANSLATIONS_PREFIX}.valitse-hakemus`, {
+        getRowCheckboxLabel={({ hakijanNimi }) => {
+          return t(`sijoittelun-tulokset.taulukko.valitse-hakemus`, {
             hakijanNimi,
-          })
-        }
+          });
+        }}
       />
     </>
   );

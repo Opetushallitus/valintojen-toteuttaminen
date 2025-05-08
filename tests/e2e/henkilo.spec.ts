@@ -474,7 +474,11 @@ test.describe('Muokkausmodaalit', () => {
 
     await valintalaskentaMuokkausModal.getByLabel('Pisteet').fill('12');
 
-    await selectOption(page, 'Tila', 'Hylätty');
+    await selectOption({
+      page,
+      name: 'Tila',
+      option: 'Hylätty',
+    });
 
     await valintalaskentaMuokkausModal
       .getByLabel('Muokkauksen syy')
@@ -584,8 +588,16 @@ test.describe('Muokkausmodaalit', () => {
       name: 'Muokkaa valintaa',
     });
 
-    await selectOption(page, 'Vastaanoton tila', 'Ehdollisesti vastaanottanut');
-    await selectOption(page, 'Ilmoittautumisen tila', 'Läsnä (koko lukuvuosi)');
+    await selectOption({
+      page,
+      name: 'Vastaanoton tila',
+      option: 'Ehdollisesti vastaanottanut',
+    });
+    await selectOption({
+      page,
+      name: 'Ilmoittautumisen tila',
+      option: 'Läsnä (koko lukuvuosi)',
+    });
 
     const saveButton = valintaMuokkausModal.getByRole('button', {
       name: 'Tallenna',
@@ -628,7 +640,11 @@ test.describe('Muokkausmodaalit', () => {
       name: 'Muokkaa valintaa',
     });
 
-    await selectOption(page, 'Vastaanoton tila', 'Kesken');
+    await selectOption({
+      page,
+      name: 'Vastaanoton tila',
+      option: 'Kesken',
+    });
 
     await valintaMuokkausModal
       .getByRole('checkbox', { name: 'Julkaistavissa' })
@@ -775,12 +791,12 @@ test.describe('Pistesyöttö', () => {
       name: 'Nakkikoe, oletko nakkisuojassa?',
     });
 
-    await selectOption(
+    await selectOption({
       page,
-      'Osallistumisen tila',
-      'Ei osallistunut',
-      nakkikoe,
-    );
+      locator: nakkikoe,
+      name: 'Osallistumisen tila',
+      option: 'Ei osallistunut',
+    });
 
     const nakkiTallennaButton = nakkikoe.getByRole('button', {
       name: 'Tallenna',
@@ -833,12 +849,12 @@ test.describe('Pistesyöttö', () => {
       name: 'Nakkikoe, oletko nakkisuojassa?',
     });
 
-    await selectOption(
+    await selectOption({
       page,
-      'Osallistumisen tila',
-      'Ei osallistunut',
-      nakkikoe,
-    );
+      locator: nakkikoe,
+      name: 'Osallistumisen tila',
+      option: 'Ei osallistunut',
+    });
 
     const nakkiTallennaButton = nakkikoe.getByRole('button', {
       name: 'Tallenna',

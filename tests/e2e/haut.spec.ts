@@ -7,16 +7,28 @@ import {
   selectOption,
 } from './playwright-utils';
 
-async function selectHakutapa(page: Page, expectedOption: string) {
-  await selectOption(page, 'Hakutapa', expectedOption);
+async function selectHakutapa(page: Page, option: string) {
+  await selectOption({
+    page,
+    name: 'Hakutapa',
+    option,
+  });
 }
 
-async function selectKausi(page: Page, expectedOption: string) {
-  await selectOption(page, 'Koulutuksen alkamiskausi', expectedOption);
+async function selectKausi(page: Page, option: string) {
+  await selectOption({
+    page,
+    name: 'Koulutuksen alkamiskausi',
+    option,
+  });
 }
 
-async function selectTila(page: Page, expectedOption: string) {
-  await selectOption(page, 'Tila', expectedOption);
+async function selectTila(page: Page, option: string) {
+  await selectOption({
+    page,
+    name: 'Tila',
+    option,
+  });
 }
 
 test.beforeEach(async ({ page }) => {

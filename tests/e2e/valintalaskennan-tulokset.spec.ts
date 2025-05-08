@@ -233,7 +233,11 @@ test.describe('Valintalaskennan muokkausmodaali', () => {
 
     await valintalaskentaMuokkausModal.getByLabel('Pisteet').fill('12');
 
-    await selectOption(page, 'Tila', 'Hylätty');
+    await selectOption({
+      page,
+      name: 'Tila',
+      option: 'Hylätty',
+    });
 
     await valintalaskentaMuokkausModal
       .getByLabel('Muokkauksen syy')

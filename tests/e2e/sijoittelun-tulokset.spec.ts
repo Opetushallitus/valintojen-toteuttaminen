@@ -39,8 +39,12 @@ async function goToSijoittelunTulokset(page: Page) {
   );
 }
 
-async function selectTila(page: Page, expectedOption: string) {
-  await selectOption(page, 'Sijoittelun tila', expectedOption);
+async function selectTila(page: Page, option: string) {
+  await selectOption({
+    page,
+    name: 'Sijoittelun tila',
+    option,
+  });
 }
 
 test.beforeEach(async ({ page }) => await goToSijoittelunTulokset(page));
@@ -445,7 +449,11 @@ test.describe('Valintaesityksen hyväksyminen', () => {
   });
 
   test('Tee muutos ja hyväksy', async ({ page }) => {
-    await selectOption(page, 'Ilmoittautumistieto', 'Ei ilmoittautunut');
+    await selectOption({
+      page,
+      name: 'Ilmoittautumistieto',
+      option: 'Ei ilmoittautunut',
+    });
     await getYoValintatapajonoContent(page)
       .getByRole('button', { name: 'Hyväksy ja tallenna' })
       .click();
@@ -651,7 +659,12 @@ test.describe('Hakemuksen muut toiminnot', () => {
     const daculaRow = yoAccordionContent.getByRole('row', {
       name: 'Dacula Kreivi',
     });
-    await selectOption(page, 'Ilmoittautumistieto', 'Ei tehty', daculaRow);
+    await selectOption({
+      page,
+      locator: daculaRow,
+      name: 'Ilmoittautumistieto',
+      option: 'Ei tehty',
+    });
     await expect(yoMerkitseMyohastyneeksiButton).toBeEnabled();
     await yoMerkitseMyohastyneeksiButton.click();
     const confirmModal = page.getByRole('dialog', {
