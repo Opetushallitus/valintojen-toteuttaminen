@@ -295,7 +295,7 @@ export type GetValintakoeExcelParams = KoutaOidParams & {
   valintakoeTunniste: Array<string>;
 };
 
-type ProcessResponse = {
+export type ProcessResponse = {
   dokumenttiId: string;
   kasittelyssa: boolean;
   keskeytetty: boolean;

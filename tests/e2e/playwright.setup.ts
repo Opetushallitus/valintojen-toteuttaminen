@@ -249,7 +249,11 @@ export default async function playwrightSetup() {
     ) {
       return modifyResponse(response, []);
     } else {
-      console.log('(Backend) mock not implemented', request.url);
+      console.log(
+        '(Backend) mock not implemented',
+        request.method,
+        request.url,
+      );
       return;
     }
   });

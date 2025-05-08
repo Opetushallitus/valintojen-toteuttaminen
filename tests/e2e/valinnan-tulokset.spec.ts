@@ -3,10 +3,15 @@ import {
   checkRow,
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
+  mockDocumentProcess,
   selectOption,
 } from './playwright-utils';
 import { configuration } from '@/lib/configuration';
 import HAUT from './fixtures/haut.json';
+import {
+  IlmoittautumisTila,
+  VastaanottoTila,
+} from '@/lib/types/sijoittelu-types';
 
 const hakukohdeOid = '1.2.246.562.20.00000000000000045105';
 const valintatapajonoOid = '1224656220000000000000000123456';
@@ -56,6 +61,20 @@ async function goToValinnanTulokset(page: Page) {
             ilmoittautumistila: 'LASNA_KOKO_LUKUVUOSI',
             valinnantilanViimeisinMuutos: '2025-04-08T09:36:52.346+03:00',
           },
+          {
+            hakukohdeOid,
+            valintatapajonoOid,
+            hakemusOid: '1.2.246.562.11.00000000000001790371',
+            henkiloOid: '1.2.246.562.24.14598775927',
+            valinnantila: 'HYVAKSYTTY',
+            ehdollisestiHyvaksyttavissa: false,
+            julkaistavissa: true,
+            hyvaksyttyVarasijalta: false,
+            hyvaksyPeruuntunut: false,
+            vastaanottotila: 'KESKEN',
+            ilmoittautumistila: 'EI_TEHTY',
+            valinnantilanViimeisinMuutos: '2025-04-08T09:36:52.346+03:00',
+          },
         ],
       });
     },
@@ -101,7 +120,7 @@ async function goToValinnanTulokset(page: Page) {
       await route.fulfill({
         json: [
           {
-            hakemusOid: '1.2.246.562.11.00000000000001796027',
+            hakemusOid: '1.2.246.562.11.00000000000001790371',
             mennyt: true,
             vastaanottoDeadline: '2022-03-18T13:00:00.000Z',
           },
@@ -135,7 +154,7 @@ test.describe('Valinnan tulokset', () => {
     await expectPageAccessibilityOk(page);
   });
 
-  test('Näytä hakemusten tulokset', async ({ page }) => {
+  test('Näyttää valinnan tulokset', async ({ page }) => {
     const headRow = page.locator('thead tr');
     await checkRow(
       headRow,
@@ -151,15 +170,6 @@ test.describe('Valinnan tulokset', () => {
     );
     const rows = page.locator('tbody tr');
     await expect(rows).toHaveCount(4);
-
-    const getEmptyRowColumns = (name: string) => [
-      '',
-      name,
-      'Valitse...Ehdollinen valinta',
-      'JulkaistavissaValitse...',
-      '',
-      '',
-    ];
 
     const nukettajaRow = rows.nth(0);
     await checkRow(
@@ -217,12 +227,31 @@ test.describe('Valinnan tulokset', () => {
 
     await checkRow(
       rows.nth(2),
-      getEmptyRowColumns('Purukumi Puru'),
+      [
+        '',
+        'Purukumi Puru',
+        'HYVÄKSYTTYEhdollinen valinta',
+        'JulkaistavissaKesken',
+        '',
+        '',
+      ],
       'td',
       false,
     );
 
-    await checkRow(rows.nth(3), getEmptyRowColumns('Hui Haamu'), 'td', false);
+    await checkRow(
+      rows.nth(3),
+      [
+        '',
+        'Hui Haamu',
+        'Valitse...Ehdollinen valinta',
+        'JulkaistavissaValitse...',
+        '',
+        '',
+      ],
+      'td',
+      false,
+    );
   });
 
   test.describe('Suodattimet', () => {
@@ -303,7 +332,7 @@ test.describe('Valinnan tulokset', () => {
         .getByRole('menuitem', { name: 'HYVÄKSYTTY', exact: true })
         .click();
       await expect(
-        page.getByText('Muutettiin tila 3:lle hakemukselle'),
+        page.getByText('Muutettiin tila 2:lle hakemukselle'),
       ).toBeVisible();
       await expect(page.getByRole('row').getByText('HYVÄKSYTTY')).toHaveCount(
         4,
@@ -317,9 +346,11 @@ test.describe('Valinnan tulokset', () => {
         .click();
       await page.getByRole('menuitem', { name: 'Perunut' }).click();
       await expect(
-        page.getByText('Muutettiin tila 1:lle hakemukselle'),
+        page.getByText('Muutettiin tila 2:lle hakemukselle'),
       ).toBeVisible();
-      await expect(page.getByRole('row').getByText('Perunut')).toHaveCount(2);
+      await expect(
+        page.getByRole('row').getByText('PERUNUT', { exact: true }),
+      ).toHaveCount(2);
     });
 
     test('Massamuutos Ilmoittautumistilalla', async ({ page }) => {
@@ -454,5 +485,368 @@ test.describe('Valinnan tulokset', () => {
       );
       await expect(valinnanTilaCell.getByRole('combobox')).toBeDisabled();
     });
+  });
+});
+
+test.describe('Tallennus', () => {
+  test('Ilmoittaa ettei ole mitään tallennettavaa', async ({ page }) => {
+    await page.getByRole('button', { name: 'Tallenna', exact: true }).click();
+    await expectAllSpinnersHidden(page);
+    await expect(page.getByText('Ei muutoksia mitä tallentaa')).toBeVisible();
+  });
+
+  test('Tallentaa muutokset', async ({ page }) => {
+    await mockDocumentProcess({
+      page,
+      urlMatcher: (url) =>
+        url.pathname.includes(
+          '/valintalaskentakoostepalvelu/resources/erillishaku/tuonti/ui',
+        ),
+    });
+    const rows = page.locator('tbody tr');
+    await selectOption({
+      page,
+      locator: rows.nth(0).getByRole('cell').nth(2),
+      option: 'HYVÄKSYTTY',
+    });
+
+    await page.getByRole('button', { name: 'Tallenna', exact: true }).click();
+    await expect(
+      page.getByText('Valintaesityksen muutokset tallennettu'),
+    ).toBeVisible();
+  });
+
+  test('Tallennus epäonnistuu', async ({ page }) => {
+    await page.route(
+      (url) =>
+        url.pathname.includes(
+          '/valintalaskentakoostepalvelu/resources/erillishaku/tuonti/ui',
+        ),
+      (route) =>
+        route.fulfill({
+          status: 500,
+          body: 'Unknown error',
+        }),
+    );
+    const rows = page.locator('tbody tr');
+    await selectOption({
+      page,
+      locator: rows.nth(0).getByRole('cell').nth(2),
+      option: 'HYVÄKSYTTY',
+    });
+    await page.getByRole('button', { name: 'Tallenna', exact: true }).click();
+    await expect(
+      page.getByText('Tietojen tallentamisessa tapahtui virhe'),
+    ).toBeVisible();
+    await expect(page.getByText('Unknown error')).toBeVisible();
+  });
+
+  test('Tallennus epäonnistuu osittain', async ({ page }) => {
+    await mockDocumentProcess({
+      page,
+      urlMatcher: (url) =>
+        url.pathname.includes(
+          '/valintalaskentakoostepalvelu/resources/erillishaku/tuonti/ui',
+        ),
+      documentId: 'doc_id',
+      processResponse: {
+        json: {
+          dokumenttiId: 'doc_id',
+          kasittelyssa: false,
+          keskeytetty: true,
+          kokonaistyo: { valmis: true },
+          poikkeukset: [
+            {
+              tunnisteet: [
+                {
+                  tunniste: '1.2.246.562.11.00000000000001796027',
+                  tyyppi: 'hakemusOid',
+                },
+              ],
+              palvelu: 'testi-palvelu',
+              viesti: 'testi-virheviesti',
+              palvelukutsu: 'testi-palvelukutsu',
+            },
+          ],
+          varoitukset: [],
+        },
+      },
+    });
+    await page.getByLabel('Valitse kaikki').click();
+    await page.getByRole('button', { name: 'Muuta valinnan tila' }).click();
+    await page
+      .getByRole('menuitem', { name: 'HYVÄKSYTTY', exact: true })
+      .click();
+    await page.getByRole('button', { name: 'Tallenna', exact: true }).click();
+
+    const errorModal = page.getByRole('dialog', {
+      name: 'Tietojen tallentamisessa tapahtui virhe.',
+    });
+    await expect(errorModal).toBeVisible();
+    await expect(
+      errorModal.getByRole('cell', { name: 'testi-virheviesti' }),
+    ).toBeVisible();
+  });
+
+  test.describe('Valintaesityksen hyväksyminen', () => {
+    test.beforeEach(async ({ page }) => {
+      await page.route(
+        /\/valinta-tulos-service\/auth\/valintaesitys\/\S+\/hyvaksytty/,
+        async (route) => route.fulfill({ json: {} }),
+      );
+    });
+    test('Hyväksy', async ({ page }) => {
+      await mockDocumentProcess({
+        page,
+        urlMatcher: (url) =>
+          url.pathname.includes(
+            '/valintalaskentakoostepalvelu/resources/erillishaku/tuonti/ui',
+          ),
+      });
+      await page.getByRole('button', { name: 'Hyväksy ja tallenna' }).click();
+      await expect(page.getByText('Valintaesitys hyväksytty')).toBeVisible();
+    });
+
+    test('Tee muutos ja hyväksy', async ({ page }) => {
+      await mockDocumentProcess({
+        page,
+        urlMatcher: (url) =>
+          url.pathname.includes(
+            '/valintalaskentakoostepalvelu/resources/erillishaku/tuonti/ui',
+          ),
+      });
+      const rows = page.locator('tbody tr');
+      await selectOption({
+        page,
+        locator: rows.nth(0).getByRole('cell').nth(2),
+        option: 'HYVÄKSYTTY',
+      });
+      await page.getByRole('button', { name: 'Hyväksy ja tallenna' }).click();
+      await expect(page.getByText('Valintaesitys hyväksytty')).toBeVisible();
+    });
+
+    test('Epäonnistuu muutoksia tallentaessa', async ({ page }) => {
+      await page.route(
+        (url) =>
+          url.pathname.includes(
+            '/valintalaskentakoostepalvelu/resources/erillishaku/tuonti/ui',
+          ),
+        (route) =>
+          route.fulfill({
+            status: 500,
+            body: 'Unknown error',
+          }),
+      );
+      const rows = page.locator('tbody tr');
+      await selectOption({
+        page,
+        locator: rows.nth(0).getByRole('cell').nth(2),
+        option: 'HYVÄKSYTTY',
+      });
+      await page.getByRole('button', { name: 'Hyväksy ja tallenna' }).click();
+      await expect(
+        page.getByText('Tietojen tallentamisessa tapahtui virhe'),
+      ).toBeVisible();
+      await expect(page.getByText('Unknown error')).toBeVisible();
+    });
+
+    test('Hyväksyntä epäonnistuu', async ({ page }) => {
+      await page.route(
+        /\/valinta-tulos-service\/auth\/valintaesitys\/\S+\/hyvaksytty/,
+        async (route) => route.fulfill({ status: 500, body: 'Räjähti' }),
+      );
+      await page.getByRole('button', { name: 'Hyväksy ja tallenna' }).click();
+      await expect(
+        page.getByText('Tietojen tallentamisessa tapahtui virhe'),
+      ).toBeVisible();
+      await expect(page.getByText('Räjähti')).toBeVisible();
+    });
+  });
+
+  test.describe('Hakemuksen muut toiminnot', () => {
+    test('Näytä muutoshistoria', async ({ page }) => {
+      await page.route(
+        '*/**/valinta-tulos-service/auth/muutoshistoria*',
+        async (route) => {
+          await route.fulfill({
+            status: 200,
+            json: [
+              {
+                changes: [
+                  {
+                    field: 'valinnantilanViimeisinMuutos',
+                    from: '2024-05-14T09:52:43.341+03:00',
+                    to: '2024-10-02T14:38:11.336+03:00',
+                  },
+                  {
+                    field: 'valinnantila',
+                    from: 'HYLATTY',
+                    to: 'PERUUNTUNUT',
+                  },
+                ],
+                timestamp: '2024-10-02T14:36:00.955506+03:00',
+              },
+              {
+                changes: [
+                  {
+                    field: 'valinnantilanViimeisinMuutos',
+                    to: '2024-05-14T09:52:43.341+03:00',
+                  },
+                  {
+                    field: 'valinnantila',
+                    to: 'HYLATTY',
+                  },
+                  {
+                    field: 'hyvaksyttyVarasijalta',
+                    to: false,
+                  },
+                  {
+                    field: 'hyvaksyPeruuntunut',
+                    to: false,
+                  },
+                  {
+                    field: 'julkaistavissa',
+                    to: false,
+                  },
+                ],
+                timestamp: '2024-05-14T09:52:41.927195+03:00',
+              },
+            ],
+          });
+        },
+      );
+      await page
+        .getByRole('row', { name: 'Nukettaja Ruhtinas' })
+        .getByRole('button', { name: 'Muut toiminnot' })
+        .click();
+      await expect(page.getByText('Muutoshistoria')).toBeVisible();
+      await page.getByText('Muutoshistoria').click();
+      await expect(page.getByText('Muokkausajankohta')).toBeVisible();
+      await expect(page.getByLabel('Muutoshistoria')).toContainText(
+        'Sijoittelun tila: Peruuntunut',
+      );
+      await expect(page.getByLabel('Muutoshistoria')).toContainText(
+        'Sijoittelun tila: Hylätty',
+      );
+      await page.getByText('Sulje').click();
+      await expect(page.getByText('Muokkausajankohta')).toBeHidden();
+    });
+
+    test('Muodosta hyväksymiskirje', async ({ page }) => {
+      await mockDocumentProcess({
+        page,
+        urlMatcher:
+          '*/**/valintalaskentakoostepalvelu/resources/viestintapalvelu/hyvaksymiskirjeet/aktivoi*',
+      });
+      await page
+        .getByRole('row', { name: 'Nukettaja Ruhtinas' })
+        .getByRole('button', { name: 'Muut toiminnot' })
+        .click();
+      await page
+        .getByRole('menuitem', { name: 'Hyväksymiskirje', exact: true })
+        .click();
+      await expect(
+        page.getByText('Hyväksymiskirjeen muodostaminen'),
+      ).toBeVisible();
+      await page.getByPlaceholder('pp.kk.vvvv hh.mm').click();
+      await page.getByLabel('Choose lauantaina 15.').click();
+      await page.getByRole('option', { name: '15.30' }).click();
+      await expect(page.getByPlaceholder('pp.kk.vvvv hh.mm')).toHaveValue(
+        '15.02.2025 15:30',
+      );
+      await page.getByRole('button', { name: 'Muodosta kirje' }).click();
+      await expect(page.getByRole('button', { name: 'Lataa' })).toBeVisible();
+    });
+
+    test('Lähetä vastaanottoposti', async ({ page }) => {
+      await page.route(
+        '*/**/valinta-tulos-service/auth/emailer/run/hakemus/1.2.246.562.11.00000000000001796027',
+        async (route) => {
+          await route.fulfill({
+            status: 200,
+            json: ['1.2.246.562.11.00000000000001796027'],
+          });
+        },
+      );
+      await page
+        .getByRole('row', { name: 'Nukettaja Ruhtinas' })
+        .getByRole('button', { name: 'Muut toiminnot' })
+        .click();
+      await expect(
+        page.getByRole('menuitem', {
+          name: 'Lähetä vastaanottoposti',
+          exact: true,
+        }),
+      ).toBeVisible();
+      await page.getByText('Lähetä vastaanottoposti', { exact: true }).click();
+      await expect(
+        page.getByText('Sähköpostin lähetys onnistui'),
+      ).toBeVisible();
+    });
+
+    test('Merkitse myöhästyneeksi', async ({ page }) => {
+      const merkitseMyohastyneeksiButton = page.getByRole('button', {
+        name: 'Merkitse myöhästyneeksi',
+      });
+      await expect(merkitseMyohastyneeksiButton).toBeEnabled();
+      const myohastynytHakemusRow = page.getByRole('row', {
+        name: 'Purukumi Puru',
+      });
+      await myohastynytHakemusRow
+        .getByRole('checkbox', { name: 'Ehdollinen valinta' })
+        .click();
+      await merkitseMyohastyneeksiButton.click();
+      const confirmModal = page.getByRole('dialog', {
+        name: 'Vahvista myöhästyneeksi merkitseminen',
+      });
+      const confirmationDataRows = confirmModal
+        .getByRole('row')
+        .filter({ has: page.locator('td') });
+
+      await expect(confirmationDataRows).toHaveCount(1);
+      await expect(confirmationDataRows.nth(0)).toContainText('Purukumi Puru');
+
+      const [request] = await Promise.all([
+        page.waitForRequest(
+          (request) =>
+            request
+              .url()
+              .includes(
+                '/valintalaskentakoostepalvelu/resources/erillishaku/tuonti/ui',
+              ) && request.method() === 'POST',
+        ),
+        confirmModal
+          .getByRole('button', { name: 'Merkitse myöhästyneeksi' })
+          .click(),
+      ]);
+
+      const postDataRivit = request.postDataJSON()?.rivit;
+      expect(postDataRivit).toHaveLength(1);
+      expect(postDataRivit[0]).toMatchObject({
+        hakemusOid: '1.2.246.562.11.00000000000001790371',
+        personOid: '1.2.246.562.24.14598775927',
+        hakemuksenTila: 'HYVAKSYTTY',
+        vastaanottoTila: VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA,
+        ilmoittautumisTila: IlmoittautumisTila.EI_TEHTY,
+        julkaistaankoTiedot: true,
+        ehdollisestiHyvaksyttavissa: false,
+      });
+    });
+  });
+
+  test('Lähetä vastaanottoposti', async ({ page }) => {
+    await page.route(
+      '*/**/valinta-tulos-service/auth/emailer/run/hakukohde/1.2.246.562.20.00000000000000045105',
+      async (route) => {
+        await route.fulfill({
+          status: 200,
+          json: ['1.2.246.562.20.00000000000000045105'],
+        });
+      },
+    );
+    await page
+      .getByRole('button', { name: 'Lähetä vastaanottoposti hakukohteelle' })
+      .click();
+    await expect(page.getByText('Sähköpostin lähetys onnistui')).toBeVisible();
   });
 });

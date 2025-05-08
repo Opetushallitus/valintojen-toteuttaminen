@@ -571,10 +571,11 @@ test.describe('Hakemuksen muut toiminnot', () => {
   });
 
   test('Muodosta hyväksymiskirje', async ({ page }) => {
-    await mockDocumentProcess(
+    await mockDocumentProcess({
       page,
-      '*/**/valintalaskentakoostepalvelu/resources/viestintapalvelu/hyvaksymiskirjeet/aktivoi*',
-    );
+      urlMatcher:
+        '*/**/valintalaskentakoostepalvelu/resources/viestintapalvelu/hyvaksymiskirjeet/aktivoi*',
+    });
     await page
       .getByRole('row', { name: 'Nukettaja Ruhtinas' })
       .getByRole('button', { name: 'Muut toiminnot' })
@@ -732,10 +733,11 @@ test.describe('Hakukohteen muut toiminnot', () => {
   });
 
   test('Muodosta hyväksymiskirjeet', async ({ page }) => {
-    await mockDocumentProcess(
+    await mockDocumentProcess({
       page,
-      '*/**/valintalaskentakoostepalvelu/resources/viestintapalvelu/hyvaksymiskirjeet/aktivoi*',
-    );
+      urlMatcher:
+        '*/**/valintalaskentakoostepalvelu/resources/viestintapalvelu/hyvaksymiskirjeet/aktivoi*',
+    });
     await page
       .getByRole('button', { name: 'Muut toiminnot hakukohteelle' })
       .click();
@@ -758,10 +760,11 @@ test.describe('Hakukohteen muut toiminnot', () => {
   });
 
   test('Muodosta kirjeet ei-hyväksytyille', async ({ page }) => {
-    await mockDocumentProcess(
+    await mockDocumentProcess({
       page,
-      '*/**/valintalaskentakoostepalvelu/resources/viestintapalvelu/hakukohteessahylatyt/aktivoi*',
-    );
+      urlMatcher:
+        '*/**/valintalaskentakoostepalvelu/resources/viestintapalvelu/hakukohteessahylatyt/aktivoi*',
+    });
     await page
       .getByRole('button', { name: 'Muut toiminnot hakukohteelle' })
       .click();
@@ -778,11 +781,12 @@ test.describe('Hakukohteen muut toiminnot', () => {
   });
 
   test('Muodosta osoitetarrat', async ({ page }) => {
-    await mockDocumentProcess(
+    await mockDocumentProcess({
       page,
-      '*/**/valintalaskentakoostepalvelu/resources/viestintapalvelu/osoitetarrat/sijoittelussahyvaksytyille/aktivoi*',
-      'documentti_id_tarrat',
-    );
+      urlMatcher:
+        '*/**/valintalaskentakoostepalvelu/resources/viestintapalvelu/osoitetarrat/sijoittelussahyvaksytyille/aktivoi*',
+      documentId: 'documentti_id_tarrat',
+    });
     await page
       .getByRole('button', { name: 'Muut toiminnot hakukohteelle' })
       .click();

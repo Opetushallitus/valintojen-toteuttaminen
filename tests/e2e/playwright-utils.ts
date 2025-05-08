@@ -11,6 +11,7 @@ import path from 'path';
 import { isFunction, isNonNull } from 'remeda';
 import regexpEscape from 'regexp.escape';
 import { styleText } from 'node:util';
+import { ProcessResponse } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 
 export const expectPageAccessibilityOk = async (page: Page) => {
   const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
@@ -114,13 +115,19 @@ export async function selectOption({
   await listbox.getByRole('option', { name: option, exact: true }).click();
 }
 
-export async function mockDocumentProcess(
-  page: Page,
-  urlMatcher: string | ((url: URL) => boolean),
-  docId: string = 'doc_id',
-) {
+export async function mockDocumentProcess({
+  page,
+  urlMatcher: url,
+  documentId: docId = 'doc_id',
+  processResponse,
+}: {
+  page: Page;
+  urlMatcher: string | ((url: URL) => boolean);
+  documentId?: string;
+  processResponse?: MockResponse<ProcessResponse>;
+}) {
   const processId = 'proc_id';
-  await page.route(urlMatcher, async (route) => {
+  await page.route(url, async (route) => {
     await route.fulfill({
       json: { id: processId },
     });
@@ -132,7 +139,11 @@ export async function mockDocumentProcess(
       ),
     async (route) => {
       await route.fulfill({
-        json: { dokumenttiId: docId, kokonaistyo: { valmis: true } },
+        status: processResponse?.status ?? 200,
+        json: processResponse?.json ?? {
+          dokumenttiId: docId,
+          kokonaistyo: { valmis: true },
+        },
       });
     },
   );
@@ -170,7 +181,7 @@ export async function mockDocumentExport(
   page: Page,
   urlMatcher: (url: URL) => boolean,
 ) {
-  await mockDocumentProcess(page, urlMatcher);
+  await mockDocumentProcess({ page, urlMatcher: urlMatcher });
   await page.route(
     (url) =>
       url.pathname.includes(
