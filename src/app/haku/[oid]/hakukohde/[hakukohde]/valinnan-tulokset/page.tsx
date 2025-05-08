@@ -112,6 +112,11 @@ const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const isDirty = useIsDirtyValinnanTulos(valinnanTulosActorRef);
   useConfirmChangesBeforeNavigation(isDirty);
 
+  const valintatapajonoOid = useSelector(
+    valinnanTulosActorRef,
+    (state) => state.context.valintatapajonoOid,
+  );
+
   const { pageSize, setPageSize } = useValinnanTuloksetSearchParams();
 
   const state = useSelector(valinnanTulosActorRef, (state) => state);
@@ -154,7 +159,9 @@ const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
         <ValinnanTulosActions
           haku={haku}
           hakukohde={hakukohde}
+          valintatapajonoOid={valintatapajonoOid}
           valinnanTulosActorRef={valinnanTulosActorRef}
+          isExcelButtonVisible={true}
         />
         <ValinnanTuloksetTable
           haku={haku}

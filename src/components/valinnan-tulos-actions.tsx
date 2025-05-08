@@ -22,7 +22,10 @@ import {
 } from '@/lib/valinta-tulos-service/valinta-tulos-service';
 import { isEmpty, prop } from 'remeda';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { getMyohastyneetHakemukset } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
+import {
+  getErillishakuValinnanTulosExcel,
+  getMyohastyneetHakemukset,
+} from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { showModal } from '@/components/modals/global-modal';
 import { ConfirmationGlobalModal } from '@/components/modals/confirmation-global-modal';
 import { buildLinkToApplication } from '@/lib/ataru/ataru-service';
@@ -37,12 +40,15 @@ import {
   ValinnanTulosActorRef,
 } from '@/lib/state/valinnan-tulos-machine';
 import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
+import { FileDownloadButton } from './file-download-button';
 
 const ActionsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'row',
   gap: theme.spacing(2),
   marginBottom: theme.spacing(2),
+  width: '100%',
+  flexWrap: 'wrap',
 }));
 
 const SendVastaanottopostiButton = ({
@@ -103,6 +109,37 @@ const SendVastaanottopostiButton = ({
             'valinnan-tulokset.toiminnot.laheta-vastaanottoposti-hakukohteelle',
           )}
     </OphButton>
+  );
+};
+
+export const ValinnanTuloksetExcelDownloadButton = ({
+  haku,
+  hakukohdeOid,
+  valintatapajonoOid,
+}: {
+  haku: Haku;
+  hakukohdeOid: string;
+  valintatapajonoOid?: string;
+}) => {
+  const { t } = useTranslations();
+
+  return (
+    <FileDownloadButton
+      variant="contained"
+      defaultFileName={`valinnantulos-${hakukohdeOid}.xlsx`}
+      errorKey="get-erillishaku-valinnan-tulos-excel"
+      errorMessage="valinnan-tulokset.virhe-vie-taulukkolaskentaan"
+      disabled={!valintatapajonoOid}
+      getFile={() =>
+        getErillishakuValinnanTulosExcel({
+          haku,
+          hakukohdeOid,
+          valintatapajonoOid,
+        })
+      }
+    >
+      {t('yleinen.vie-taulukkolaskentaan')}
+    </FileDownloadButton>
   );
 };
 
@@ -242,11 +279,13 @@ export const ValinnanTulosActions = ({
   hakukohde,
   valinnanTulosActorRef,
   valintatapajonoOid,
+  isExcelButtonVisible,
 }: {
   haku: Haku;
   hakukohde: Hakukohde;
   valinnanTulosActorRef: ValinnanTulosActorRef | SijoittelunTulosActorRef;
   valintatapajonoOid?: string;
+  isExcelButtonVisible?: boolean;
 }) => {
   const { t } = useTranslations();
 
@@ -263,7 +302,7 @@ export const ValinnanTulosActions = ({
   });
 
   return (
-    <ActionsContainer sx={{ width: '100%', flexWrap: 'wrap', gap: 2 }}>
+    <ActionsContainer>
       <OphButton
         onClick={() => {
           send({ type: ValinnanTulosEventType.UPDATE });
@@ -274,6 +313,13 @@ export const ValinnanTulosActions = ({
       >
         {t('yleinen.tallenna')}
       </OphButton>
+      {isExcelButtonVisible && (
+        <ValinnanTuloksetExcelDownloadButton
+          haku={haku}
+          hakukohdeOid={hakukohde.oid}
+          valintatapajonoOid={valintatapajonoOid}
+        />
+      )}
       <MerkitseMyohastyneeksiButton
         hakuOid={haku.oid}
         hakukohdeOid={hakukohde.oid}

@@ -143,7 +143,7 @@ export const configuration = {
   startExportOsoitetarratSijoittelussaHyvaksytyilleUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/osoitetarrat/sijoittelussahyvaksytyille/aktivoi`,
   startExportOsoitetarratHaulleUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/sijoitteluntuloshaulle/osoitetarrat`,
   startExportPistesyottoExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/pistesyotto/vienti`,
-  startErillishakuValinnanTulosImportUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/erillishaku/tuonti/ui`,
+  startImportErillishakuValinnanTulosUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/erillishaku/tuonti/ui`,
   kirjepohjat: ({
     templateName,
     language,
@@ -162,6 +162,7 @@ export const configuration = {
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/proxy/viestintapalvelu/count/haku/${hakuOid}`,
   julkaiseTuloskirjeetUrl: ({ hakuOid }: { hakuOid: string }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/proxy/viestintapalvelu/publish/haku/${hakuOid}`,
+  startExportErillishakuValinnanTulosExcelUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/erillishaku/vienti`,
   hyvaksymiskirjeetUrl: `${DOMAIN}/valintalaskentakoostepalvelu/resources/viestintapalvelu/hyvaksymiskirjeet/aktivoi`,
   dokumenttiSeurantaUrl: ({ uuid }: { uuid: string }) =>
     `${DOMAIN}/valintalaskentakoostepalvelu/resources/dokumentinseuranta/${uuid}`,

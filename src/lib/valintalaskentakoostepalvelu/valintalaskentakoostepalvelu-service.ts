@@ -1004,7 +1004,7 @@ export async function saveErillishakuValinnanTulokset({
   }));
 
   const urlWithQuery = new URL(
-    configuration.startErillishakuValinnanTulosImportUrl,
+    configuration.startImportErillishakuValinnanTulosUrl,
   );
 
   urlWithQuery.searchParams.set('hakuOid', haku.oid);
@@ -1029,4 +1029,32 @@ export async function saveErillishakuValinnanTulokset({
 
   const processId = data.id;
   await processDocumentAndReturnDocumentId(processId, true);
+}
+
+export async function getErillishakuValinnanTulosExcel({
+  haku,
+  hakukohdeOid,
+  valintatapajonoOid,
+}: {
+  haku: Haku;
+  hakukohdeOid: string;
+  valintatapajonoOid?: string;
+}) {
+  const urlWithQuery = new URL(
+    configuration.startExportErillishakuValinnanTulosExcelUrl,
+  );
+  urlWithQuery.searchParams.set('hakuOid', haku.oid);
+  urlWithQuery.searchParams.set('hakukohdeOid', hakukohdeOid);
+  if (valintatapajonoOid) {
+    urlWithQuery.searchParams.set('valintatapajonoOid', valintatapajonoOid);
+  }
+  urlWithQuery.searchParams.set(
+    'hakutyyppi',
+    isKorkeakouluHaku(haku) ? 'KORKEAKOULU' : 'TOISEN_ASTEEN_OPPILAITOS',
+  );
+
+  const { data } = await client.post<{ id: string }>(urlWithQuery, '');
+
+  const processId = data.id;
+  return downloadProcessDocument(processId, true);
 }
