@@ -1,10 +1,9 @@
 import { Hakemus } from '../ataru/ataru-types';
+import { KoutaOidParams } from '../kouta/kouta-types';
 
 export type HarkinnanvarainenTila = 'HYVAKSYTTY' | 'EI_HYVAKSYTTY' | null;
 
-export type HarkinnanvaraisestiHyvaksytty = {
-  hakuOid: string;
-  hakukohdeOid: string;
+export type HarkinnanvaraisestiHyvaksytty = KoutaOidParams & {
   hakemusOid: string;
   harkinnanvaraisuusTila: HarkinnanvarainenTila;
 };

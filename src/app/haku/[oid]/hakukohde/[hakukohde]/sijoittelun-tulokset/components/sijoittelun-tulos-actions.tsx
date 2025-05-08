@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import useToaster from '@/hooks/useToaster';
-import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
+import { Haku, Hakukohde, KoutaOidParams } from '@/lib/kouta/kouta-types';
 import {
   SijoittelunHakemusValintatiedoilla,
   SijoittelunTila,
@@ -100,9 +100,7 @@ const useEraantyneetHakemukset = ({
   hakuOid,
   hakukohdeOid,
   hakemukset,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
+}: KoutaOidParams & {
   hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
 }) => {
   const hakemuksetJotkaTarvitsevatAikarajaMennytTiedon = pipe(
@@ -183,10 +181,8 @@ const MerkitseMyohastyneeksiButton = ({
   disabled,
   massUpdateForm,
   hakemukset,
-}: {
+}: KoutaOidParams & {
   disabled: boolean;
-  hakuOid: string;
-  hakukohdeOid: string;
   massUpdateForm: (params: MassChangeParams) => void;
   hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
 }) => {

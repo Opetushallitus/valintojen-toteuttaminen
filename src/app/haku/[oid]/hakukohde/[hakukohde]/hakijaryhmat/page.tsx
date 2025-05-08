@@ -14,16 +14,9 @@ import { useHakijaryhmatSearchParams } from './hooks/useHakijaryhmatSearch';
 import { HakijaryhmatControls } from './components/hakijaryhmat-controls';
 import { NoResults } from '@/components/no-results';
 import { FullClientSpinner } from '@/components/client-spinner';
+import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 
-type HakijaryhmatContentParams = {
-  hakuOid: string;
-  hakukohdeOid: string;
-};
-
-const HakijaryhmatContent = ({
-  hakuOid,
-  hakukohdeOid,
-}: HakijaryhmatContentParams) => {
+const HakijaryhmatContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const { t } = useTranslations();
 
   const { pageSize, setPageSize } = useHakijaryhmatSearchParams();

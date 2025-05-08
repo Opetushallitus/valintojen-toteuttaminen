@@ -8,6 +8,7 @@ import { configuration } from '../configuration';
 import { client } from '../http-client';
 import { Language } from '../localization/localization-types';
 import { queryOptions } from '@tanstack/react-query';
+import { KoutaOidParams } from '../kouta/kouta-types';
 
 const getMaksuvelvollisuus = (toive?: {
   hakukohdeOid: string;
@@ -76,9 +77,7 @@ type AtaruHakemus = {
   hakutoiveet: Array<AtaruHakutoive>;
 };
 
-type GetHakemuksetParams = {
-  hakuOid: string;
-  hakukohdeOid: string;
+type GetHakemuksetParams = KoutaOidParams & {
   hakemusOids?: Array<string>;
   name?: string;
   henkiloOid?: string;

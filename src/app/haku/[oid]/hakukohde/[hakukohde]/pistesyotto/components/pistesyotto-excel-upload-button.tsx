@@ -19,15 +19,14 @@ import {
 import { SpinnerGlobalModal } from '@/components/modals/spinner-global-modal';
 import { FileSelectButton } from '@/components/file-select-button';
 import { ErrorTable } from '@/components/error-table';
+import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 
 const refetchPisteTulokset = ({
   queryClient,
   hakuOid,
   hakukohdeOid,
-}: {
+}: KoutaOidParams & {
   queryClient: QueryClient;
-  hakuOid: string;
-  hakukohdeOid: string;
 }) => {
   const options = pisteTuloksetOptions({ hakuOid, hakukohdeOid });
   queryClient.resetQueries(options);
@@ -63,13 +62,7 @@ const ErrorModalDialog = createModal(({ error }: { error: Error }) => {
   );
 });
 
-const useExcelUploadMutation = ({
-  hakuOid,
-  hakukohdeOid,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
-}) => {
+const useExcelUploadMutation = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const { addToast } = useToaster();
   const { t } = useTranslations();
 
@@ -110,10 +103,7 @@ const useExcelUploadMutation = ({
 export const PistesyottoExcelUploadButton = ({
   hakuOid,
   hakukohdeOid,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
-}) => {
+}: KoutaOidParams) => {
   const { t } = useTranslations();
 
   const { mutate, isPending } = useExcelUploadMutation({

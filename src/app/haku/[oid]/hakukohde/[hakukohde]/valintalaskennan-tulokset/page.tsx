@@ -20,17 +20,12 @@ import { SearchInput } from '@/components/search-input';
 import { FileDownloadButton } from '@/components/file-download-button';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { groupBy } from 'remeda';
-import { Haku } from '@/lib/kouta/kouta-types';
+import { Haku, KoutaOidParams } from '@/lib/kouta/kouta-types';
 import { useHaku } from '@/lib/kouta/useHaku';
 import { LaskettuValintatapajonoContent } from './components/laskettu-valintatapajono-content';
 import { ValintatapajonoContentProps } from './types/valintatapajono-types';
 import { AccordionBox } from '@/components/accordion-box';
 import { ValintatapajonoAccordionTitle } from './components/valintatapajono-accordion-title';
-
-type LasketutValinnanvaiheetParams = {
-  hakuOid: string;
-  hakukohdeOid: string;
-};
 
 const LaskennanTuloksetExcelDownloadButton = ({
   hakukohdeOid,
@@ -148,7 +143,7 @@ const ValinnanvaiheetContent = ({
 const ValintalaskennanTuloksetContent = ({
   hakuOid,
   hakukohdeOid,
-}: LasketutValinnanvaiheetParams) => {
+}: KoutaOidParams) => {
   const valinnanvaiheet = useEditableValintalaskennanTulokset({
     hakuOid,
     hakukohdeOid,

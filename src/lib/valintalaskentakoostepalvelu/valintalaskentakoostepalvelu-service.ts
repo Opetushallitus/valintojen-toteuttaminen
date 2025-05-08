@@ -46,7 +46,7 @@ import {
 } from './valintalaskentakoostepalvelu-types';
 import { HarkinnanvaraisuudenSyy } from '../types/harkinnanvaraiset-types';
 import { ValintakoeAvaimet } from '../valintaperusteet/valintaperusteet-types';
-import { Hakukohde } from '../kouta/kouta-types';
+import { Hakukohde, KoutaOidParams } from '../kouta/kouta-types';
 import { getOpetuskieliCode } from '../kouta/kouta-service';
 import {
   INPUT_DATE_FORMAT,
@@ -240,10 +240,7 @@ const VALINTAKOKEET_EMPTY_RESPONSE = {
 async function getAndCombineValintakoekutsutData({
   hakuOid,
   hakukohdeOid,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
-}): Promise<ValintakoekutsutData> {
+}: KoutaOidParams): Promise<ValintakoekutsutData> {
   const valintakokeet = await getValintakokeet(hakukohdeOid);
 
   if (isEmpty(valintakokeet)) {
@@ -284,19 +281,14 @@ async function getAndCombineValintakoekutsutData({
 export async function getValintakoekutsutData({
   hakuOid,
   hakukohdeOid,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
-}): Promise<ValintakoekutsutData> {
+}: KoutaOidParams): Promise<ValintakoekutsutData> {
   const response = await nullWhen404(
     getAndCombineValintakoekutsutData({ hakuOid, hakukohdeOid }),
   );
   return response ?? VALINTAKOKEET_EMPTY_RESPONSE;
 }
 
-export type GetValintakoeExcelParams = {
-  hakuOid: string;
-  hakukohdeOid: string;
+export type GetValintakoeExcelParams = KoutaOidParams & {
   hakemusOids?: Array<string>;
   valintakoeTunniste: Array<string>;
 };
@@ -428,9 +420,7 @@ export const getValintakoeExcel = async ({
   return downloadProcessDocument(excelProcessId);
 };
 
-type GetValintakoeOsoitetarratParams = {
-  hakuOid: string;
-  hakukohdeOid: string;
+type GetValintakoeOsoitetarratParams = KoutaOidParams & {
   hakemusOids?: Array<string>;
   valintakoeTunniste: string;
 };
@@ -500,9 +490,7 @@ export const getValintalaskennanTulosExcel = async ({
   return createFileResult(excelRes);
 };
 
-type ValintatapaJonoTulosExcelProps = {
-  hakuOid: string;
-  hakukohdeOid: string;
+type ValintatapaJonoTulosExcelProps = KoutaOidParams & {
   valintatapajonoOid: string;
 };
 
@@ -589,10 +577,7 @@ export const saveValintatapajonoTulosExcel = async ({
 export const getPistesyottoExcel = async ({
   hakuOid,
   hakukohdeOid,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
-}) => {
+}: KoutaOidParams) => {
   const urlWithQuery = new URL(configuration.startExportPistesyottoExcelUrl);
   urlWithQuery.searchParams.append('hakuOid', hakuOid);
   urlWithQuery.searchParams.append('hakukohdeOid', hakukohdeOid);
@@ -609,9 +594,7 @@ export const getSijoittelunTulosExcel = async ({
   hakuOid,
   hakukohdeOid,
   sijoitteluajoId,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
+}: KoutaOidParams & {
   sijoitteluajoId: string;
 }) => {
   const urlWithQuery = new URL(configuration.sijoittelunTulosExcelUrl);
@@ -645,9 +628,7 @@ export const savePistesyottoExcel = async ({
   hakuOid,
   hakukohdeOid,
   excelFile,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
+}: KoutaOidParams & {
   excelFile: File;
 }) => {
   const urlWithQuery = new URL(configuration.startImportPistesyottoUrl);
@@ -893,19 +874,17 @@ export const getDocumentIdForHakukohde = async (
   hakukohdeOid: string,
   documentType: DokumenttiTyyppi,
 ): Promise<string | null> => {
-  const res = await client.get<[{ documentId: string }]>(
+  const res = await client.get<[{ documentId: string }] | undefined>(
     configuration.dokumentitUrl({ tyyppi: documentType, hakukohdeOid }),
   );
-  return res.data?.length > 0 ? res.data[0]?.documentId : null;
+  return res?.data && res.data?.length > 0 ? res.data[0]?.documentId : null;
 };
 
 export const getMyohastyneetHakemukset = async ({
   hakuOid,
   hakukohdeOid,
   hakemusOids,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
+}: KoutaOidParams & {
   hakemusOids: Array<string>;
 }) => {
   // Ei kannata tehdä kyselyä ilman hakemusOideja, koska palauttaa silloin kuitenkin aina tyhjän.

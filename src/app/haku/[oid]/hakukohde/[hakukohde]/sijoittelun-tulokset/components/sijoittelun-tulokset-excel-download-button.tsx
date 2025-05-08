@@ -1,4 +1,5 @@
 import { FileDownloadButton } from '@/components/file-download-button';
+import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { getSijoittelunTulosExcel } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 
@@ -6,9 +7,7 @@ export const SijoittelunTuloksetExcelDownloadButton = ({
   hakuOid,
   hakukohdeOid,
   sijoitteluajoId,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
+}: KoutaOidParams & {
   sijoitteluajoId: string;
 }) => {
   const { t } = useTranslations();

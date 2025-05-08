@@ -23,6 +23,7 @@ import {
 } from './valinta-tulos-types';
 import { toFormattedDateTimeString } from '../localization/translation-utils';
 import { queryOptions } from '@tanstack/react-query';
+import { KoutaOidParams } from '../kouta/kouta-types';
 
 type SijoittelunTulosResponseData = {
   valintatapajonoNimi: string;
@@ -67,10 +68,7 @@ export const getSijoittelunTulokset = async (
 export const getLatestSijoitteluajonTuloksetWithValintaEsitysQueryOptions = ({
   hakuOid,
   hakukohdeOid,
-}: {
-  hakuOid: string;
-  hakukohdeOid: string;
-}) =>
+}: KoutaOidParams) =>
   queryOptions({
     queryKey: [
       'getLatestSijoitteluajonTuloksetWithValintaEsitys',

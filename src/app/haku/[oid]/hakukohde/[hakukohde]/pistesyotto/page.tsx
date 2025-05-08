@@ -15,16 +15,9 @@ import {
   usePisteTulokset,
 } from './hooks/usePisteTulokset';
 import { useQueryClient } from '@tanstack/react-query';
+import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 
-type PisteSyottoContentParams = {
-  hakuOid: string;
-  hakukohdeOid: string;
-};
-
-const PisteSyottoContent = ({
-  hakuOid,
-  hakukohdeOid,
-}: PisteSyottoContentParams) => {
+const PisteSyottoContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const { t } = useTranslations();
 
   const { data: pistetulokset } = usePisteTulokset({ hakuOid, hakukohdeOid });
