@@ -116,18 +116,19 @@ export async function selectOption({
 
 export async function mockDocumentProcess(
   page: Page,
-  urlMatcher: (url: URL) => boolean,
+  urlMatcher: string | ((url: URL) => boolean),
   docId: string = 'doc_id',
 ) {
+  const processId = 'proc_id';
   await page.route(urlMatcher, async (route) => {
     await route.fulfill({
-      json: { id: 'proc_id' },
+      json: { id: processId },
     });
   });
   await page.route(
     (url) =>
       url.pathname.includes(
-        '/valintalaskentakoostepalvelu/resources/dokumenttiprosessi/proc_id',
+        `/valintalaskentakoostepalvelu/resources/dokumenttiprosessi/${processId}`,
       ),
     async (route) => {
       await route.fulfill({

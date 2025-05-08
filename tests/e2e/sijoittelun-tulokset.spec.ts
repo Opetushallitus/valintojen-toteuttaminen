@@ -3,6 +3,7 @@ import {
   checkRow,
   expectAllSpinnersHidden,
   findTableColumnIndexByTitle,
+  mockDocumentProcess,
   selectOption,
 } from './playwright-utils';
 import { configuration } from '@/lib/configuration';
@@ -570,27 +571,9 @@ test.describe('Hakemuksen muut toiminnot', () => {
   });
 
   test('Muodosta hyväksymiskirje', async ({ page }) => {
-    await page.route(
+    await mockDocumentProcess(
+      page,
       '*/**/valintalaskentakoostepalvelu/resources/viestintapalvelu/hyvaksymiskirjeet/aktivoi*',
-      async (route) => {
-        await route.fulfill({
-          status: 200,
-          json: { id: 'dokumentti_id' },
-        });
-      },
-    );
-    await page.route(
-      '*/**/valintalaskentakoostepalvelu/resources/dokumenttiprosessi/dokumentti_id',
-      async (route) => {
-        const readyProcess = {
-          kokonaistyo: { valmis: true },
-          dokumenttiId: 'dokumentti_id',
-        };
-        await route.fulfill({
-          status: 200,
-          json: readyProcess,
-        });
-      },
     );
     await page
       .getByRole('row', { name: 'Nukettaja Ruhtinas' })
@@ -749,27 +732,9 @@ test.describe('Hakukohteen muut toiminnot', () => {
   });
 
   test('Muodosta hyväksymiskirjeet', async ({ page }) => {
-    await page.route(
+    await mockDocumentProcess(
+      page,
       '*/**/valintalaskentakoostepalvelu/resources/viestintapalvelu/hyvaksymiskirjeet/aktivoi*',
-      async (route) => {
-        await route.fulfill({
-          status: 200,
-          json: { id: 'dokumentti_id' },
-        });
-      },
-    );
-    await page.route(
-      '*/**/valintalaskentakoostepalvelu/resources/dokumenttiprosessi/dokumentti_id',
-      async (route) => {
-        const readyProcess = {
-          kokonaistyo: { valmis: true },
-          dokumenttiId: 'dokumentti_id',
-        };
-        await route.fulfill({
-          status: 200,
-          json: readyProcess,
-        });
-      },
     );
     await page
       .getByRole('button', { name: 'Muut toiminnot hakukohteelle' })
@@ -793,27 +758,9 @@ test.describe('Hakukohteen muut toiminnot', () => {
   });
 
   test('Muodosta kirjeet ei-hyväksytyille', async ({ page }) => {
-    await page.route(
+    await mockDocumentProcess(
+      page,
       '*/**/valintalaskentakoostepalvelu/resources/viestintapalvelu/hakukohteessahylatyt/aktivoi*',
-      async (route) => {
-        await route.fulfill({
-          status: 200,
-          json: { id: 'dokumentti_id' },
-        });
-      },
-    );
-    await page.route(
-      '*/**/valintalaskentakoostepalvelu/resources/dokumenttiprosessi/dokumentti_id',
-      async (route) => {
-        const readyProcess = {
-          kokonaistyo: { valmis: true },
-          dokumenttiId: 'dokumentti_id',
-        };
-        await route.fulfill({
-          status: 200,
-          json: readyProcess,
-        });
-      },
     );
     await page
       .getByRole('button', { name: 'Muut toiminnot hakukohteelle' })
@@ -831,27 +778,10 @@ test.describe('Hakukohteen muut toiminnot', () => {
   });
 
   test('Muodosta osoitetarrat', async ({ page }) => {
-    await page.route(
+    await mockDocumentProcess(
+      page,
       '*/**/valintalaskentakoostepalvelu/resources/viestintapalvelu/osoitetarrat/sijoittelussahyvaksytyille/aktivoi*',
-      async (route) => {
-        await route.fulfill({
-          status: 200,
-          json: { id: 'dokumentti_id_tarrat' },
-        });
-      },
-    );
-    await page.route(
-      '*/**/valintalaskentakoostepalvelu/resources/dokumenttiprosessi/dokumentti_id_tarrat',
-      async (route) => {
-        const readyProcess = {
-          kokonaistyo: { valmis: true },
-          dokumenttiId: 'dokumentti_id_tarrat',
-        };
-        await route.fulfill({
-          status: 200,
-          json: readyProcess,
-        });
-      },
+      'documentti_id_tarrat',
     );
     await page
       .getByRole('button', { name: 'Muut toiminnot hakukohteelle' })
