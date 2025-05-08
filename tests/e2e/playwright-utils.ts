@@ -117,7 +117,7 @@ export async function selectOption({
 
 export async function mockDocumentProcess({
   page,
-  urlMatcher: url,
+  urlMatcher,
   documentId: docId = 'doc_id',
   processResponse,
 }: {
@@ -127,7 +127,7 @@ export async function mockDocumentProcess({
   processResponse?: MockResponse<ProcessResponse>;
 }) {
   const processId = 'proc_id';
-  await page.route(url, async (route) => {
+  await page.route(urlMatcher, async (route) => {
     await route.fulfill({
       json: { id: processId },
     });

@@ -26,7 +26,7 @@ export function getOrgsForPermission(
   permission: Permission,
 ): Array<string> {
   const filterByPermission = (
-    permissionFn: (permission: Permission) => boolean,
+    permissionFn: (p: Permission) => boolean,
   ): Array<string> =>
     permissions
       .filter((o) => o.permissions.some(permissionFn))

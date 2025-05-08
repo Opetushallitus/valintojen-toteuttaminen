@@ -41,7 +41,7 @@ export const selectSijoitteluajonTuloksetValintatiedoilla = ({
 
       let hasNegativePisteet: boolean = false;
 
-      const hakemukset: Array<SijoittelunHakemusValintatiedoilla> =
+      const hakemuksetTuloksilla: Array<SijoittelunHakemusValintatiedoilla> =
         jono.hakemukset.map((h) => {
           const hakemus = hakemuksetIndexed[h.hakemusOid];
           const valintatulos = valintatuloksetIndexed[h.hakemusOid];
@@ -92,12 +92,12 @@ export const selectSijoitteluajonTuloksetValintatiedoilla = ({
               h.siirtynytToisestaValintatapajonosta,
           };
         });
-      hakemukset.sort((a, b) =>
+      hakemuksetTuloksilla.sort((a, b) =>
         a.jonosija === b.jonosija
           ? a.tasasijaJonosija - b.tasasijaJonosija
           : a.jonosija - b.jonosija,
       );
-      hakemukset
+      hakemuksetTuloksilla
         .filter(function (hakemus) {
           return (
             hakemus.valinnanTila === 'HYVAKSYTTY' ||
@@ -110,7 +110,7 @@ export const selectSijoitteluajonTuloksetValintatiedoilla = ({
       return {
         oid: jono.oid,
         nimi: jono.nimi,
-        hakemukset,
+        hakemukset: hakemuksetTuloksilla,
         hasNegativePisteet,
         prioriteetti: jono.prioriteetti,
         accepted: sijoittelunTulokset.valintaesitys?.find(

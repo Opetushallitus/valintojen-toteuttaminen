@@ -30,9 +30,9 @@ export const ValintakoekutsutKokeittainTable = ({
   valintakoeTunniste: string;
   data: Array<ValintakoeKutsuItem>;
   sort: string;
-  setSort: (sort: string) => void;
+  setSort: (newSort: string) => void;
   page: number;
-  setPage: (page: number) => void;
+  setPage: (newPage: number) => void;
   pageSize: number;
 }) => {
   const { t, translateEntity } = useTranslations();

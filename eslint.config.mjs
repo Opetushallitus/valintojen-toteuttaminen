@@ -36,6 +36,7 @@ const config = ts.config(
       },
     },
     rules: {
+      'no-shadow': ['error'],
       'no-restricted-imports': [
         'error',
         {

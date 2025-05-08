@@ -94,7 +94,7 @@ const TablePagination = ({
   totalCount: number;
   pageSize: number;
   page: number;
-  setPage: (page: number) => void;
+  setPage: (newPage: number) => void;
 }) => {
   const { t } = useTranslations();
 

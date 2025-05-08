@@ -59,8 +59,8 @@ describe('Laskenta state', async () => {
     vi.spyOn(client, 'get').mockImplementation(() => buildSeurantaTiedot());
     await actor.send({ type: LaskentaEventType.START });
     actor.send({ type: LaskentaEventType.CONFIRM });
-    const state = await waitFor(actor, (state) =>
-      state.matches({
+    const state = await waitFor(actor, (s) =>
+      s.matches({
         [LaskentaState.PROCESSING]: LaskentaState.PROCESSING_WAITING,
       }),
     );
@@ -86,9 +86,7 @@ describe('Laskenta state', async () => {
     });
     actor.send({ type: LaskentaEventType.START });
     actor.send({ type: LaskentaEventType.CONFIRM });
-    const state = await waitFor(actor, (state) =>
-      state.matches(LaskentaState.IDLE),
-    );
+    const state = await waitFor(actor, (s) => s.matches(LaskentaState.IDLE));
     expect(state.context.startedLaskenta?.loadingUrl).toEqual(LASKENTA_URL);
     expect(state.context.startedLaskenta?.startedNewLaskenta).toBeTruthy();
     expect(state.context.seurantaTiedot?.tila).toEqual('VALMIS');
@@ -104,9 +102,7 @@ describe('Laskenta state', async () => {
     );
     actor.send({ type: LaskentaEventType.START });
     actor.send({ type: LaskentaEventType.CONFIRM });
-    const state = await waitFor(actor, (state) =>
-      state.matches(LaskentaState.IDLE),
-    );
+    const state = await waitFor(actor, (s) => s.matches(LaskentaState.IDLE));
     expect(state.context.error).toBeDefined();
   });
 
@@ -119,9 +115,7 @@ describe('Laskenta state', async () => {
     );
     actor.send({ type: LaskentaEventType.START });
     actor.send({ type: LaskentaEventType.CONFIRM });
-    const state = await waitFor(actor, (state) =>
-      state.matches(LaskentaState.IDLE),
-    );
+    const state = await waitFor(actor, (s) => s.matches(LaskentaState.IDLE));
     expect(state.context.startedLaskenta?.loadingUrl).toEqual(LASKENTA_URL);
     expect(state.context.startedLaskenta?.startedNewLaskenta).toBeTruthy();
     expect(state.context.seurantaTiedot?.tila).toEqual('VALMIS');

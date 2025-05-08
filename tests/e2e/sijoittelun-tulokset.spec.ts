@@ -665,11 +665,9 @@ test.describe('Hakemuksen muut toiminnot', () => {
 
     const [request] = await Promise.all([
       page.waitForRequest(
-        (request) =>
-          request
-            .url()
-            .includes('/valinta-tulos-service/auth/valinnan-tulos') &&
-          request.method() === 'PATCH',
+        (req) =>
+          req.url().includes('/valinta-tulos-service/auth/valinnan-tulos') &&
+          req.method() === 'PATCH',
       ),
       confirmModal
         .getByRole('button', { name: 'Merkitse myöhästyneeksi' })

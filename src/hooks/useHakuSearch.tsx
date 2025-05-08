@@ -158,8 +158,8 @@ export const useHakuSearchResults = () => {
   const { data: haut } = useSuspenseQuery({
     queryKey: ['getHaut'],
     queryFn: () => getHaut(userPermissions),
-    select: (haut) =>
-      haut.map((haku) => ({
+    select: (data) =>
+      data.map((haku) => ({
         ...haku,
         hakutapaNimi: hakutavat.find(
           (hakutapa) => hakutapa.koodiUri === haku.hakutapaKoodiUri,

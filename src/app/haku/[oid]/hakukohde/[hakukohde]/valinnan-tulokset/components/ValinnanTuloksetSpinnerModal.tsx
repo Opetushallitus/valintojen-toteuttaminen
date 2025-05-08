@@ -10,7 +10,7 @@ export const ValinnanTuloksetSpinnerModal = ({
 }: {
   actorRef: ValinnanTulosActorRef;
 }) => {
-  const state = useSelector(actorRef, (state) => state);
+  const state = useSelector(actorRef, (s) => s);
   const { t } = useTranslations();
 
   let spinnerTitle;

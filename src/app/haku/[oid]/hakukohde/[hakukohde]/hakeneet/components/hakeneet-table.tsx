@@ -21,7 +21,7 @@ export const HakeneetTable = ({
 }: {
   hakeneet: Array<Hakemus>;
   sort: string;
-  setSort: (sort: string) => void;
+  setSort: (newSort: string) => void;
   isKorkeakouluHaku: boolean;
 }) => {
   const { t } = useTranslations();

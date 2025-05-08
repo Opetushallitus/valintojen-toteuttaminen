@@ -145,8 +145,6 @@ export const useSijoittelunTulosSearch = (
   } = useSijoittelunTulosSearchParams(valintatapajonoOid);
 
   const results = useMemo(() => {
-    const { orderBy, direction } = getSortParts(sort);
-
     const filtered = hakemukset.filter(
       (hakemus) =>
         filterBySijoittelunTila(hakemus, sijoittelunTila) &&
@@ -170,6 +168,8 @@ export const useSijoittelunTulosSearch = (
       }
       return filtered.sort(byProp(orderBy, direction, translateEntity));
     };
+
+    const { orderBy, direction } = getSortParts(sort);
 
     return orderBy && direction
       ? sortHakijat(orderBy, direction)

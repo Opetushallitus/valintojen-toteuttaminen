@@ -244,10 +244,8 @@ export const SijoittelunTulosTable = ({
     () =>
       hakemukset.map((hakemus) => {
         const changedHakemus =
-          changedHakemukset.find(
-            (changedHakemus) =>
-              changedHakemus.hakemusOid === hakemus.hakemusOid,
-          ) ?? {};
+          changedHakemukset.find((h) => h.hakemusOid === hakemus.hakemusOid) ??
+          {};
         return {
           ...hakemus,
           ...changedHakemus,

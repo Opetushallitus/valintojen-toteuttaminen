@@ -82,11 +82,11 @@ export const TableRowCheckbox = memo(function TableRowCheckbox({
       value={rowId}
       onChange={(
         _event: React.ChangeEvent<HTMLInputElement>,
-        checked: boolean,
+        newChecked: boolean,
       ) => {
         setSelection?.((oldSelection) => {
           const newSelection = new Set(oldSelection);
-          if (checked) {
+          if (newChecked) {
             newSelection.add(rowId);
           } else {
             newSelection.delete(rowId);

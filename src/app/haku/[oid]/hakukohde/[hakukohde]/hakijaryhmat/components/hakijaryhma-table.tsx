@@ -57,7 +57,7 @@ export const HakijaryhmaTable = ({
 }: {
   hakijat: Array<HakijaryhmanHakija>;
   sort: string;
-  setSort: (sort: string) => void;
+  setSort: (newSort: string) => void;
 }) => {
   const { t } = useTranslations();
 

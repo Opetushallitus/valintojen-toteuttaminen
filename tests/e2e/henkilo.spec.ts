@@ -489,7 +489,7 @@ test.describe('Muokkausmodaalit', () => {
     });
 
     const [request] = await Promise.all([
-      page.waitForRequest((request) => request.url() === muokkausUrl),
+      page.waitForRequest((req) => req.url() === muokkausUrl),
       saveButton.click(),
     ]);
 

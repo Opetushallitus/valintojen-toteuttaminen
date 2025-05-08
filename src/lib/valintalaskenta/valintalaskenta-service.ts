@@ -461,7 +461,7 @@ export const getHarkinnanvaraisetTilat = async ({
   return data;
 };
 
-export const setHarkinnanvaraisetTilat = async (
+export const saveHarkinnanvaraisetTilat = async (
   harkinnanvaraisetTilat: Array<
     Omit<HarkinnanvaraisestiHyvaksytty, 'harkinnanvaraisuusTila'> & {
       harkinnanvaraisuusTila: HarkinnanvarainenTila | undefined;

@@ -15,7 +15,7 @@ export const HakuTable = ({
 }: {
   haut: Array<HakuListItem>;
   sort: string;
-  setSort: (sort: string) => void;
+  setSort: (newSort: string) => void;
 }) => {
   const { translateEntity } = useTranslations();
 

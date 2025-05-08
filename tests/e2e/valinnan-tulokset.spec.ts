@@ -808,12 +808,12 @@ test.describe('Tallennus', () => {
 
       const [request] = await Promise.all([
         page.waitForRequest(
-          (request) =>
-            request
+          (req) =>
+            req
               .url()
               .includes(
                 '/valintalaskentakoostepalvelu/resources/erillishaku/tuonti/ui',
-              ) && request.method() === 'POST',
+              ) && req.method() === 'POST',
         ),
         confirmModal
           .getByRole('button', { name: 'Merkitse myöhästyneeksi' })

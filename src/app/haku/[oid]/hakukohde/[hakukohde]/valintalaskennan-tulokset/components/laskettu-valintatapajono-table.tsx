@@ -54,7 +54,7 @@ export const LaskettuValintatapajonoTable = ({
   rows: Array<LaskennanJonosijaTulosWithHakijaInfo>;
   jono: LaskennanValintatapajonoTulos;
   sort: string;
-  setSort: (sort: string) => void;
+  setSort: (newSort: string) => void;
   pagination: ListTablePaginationProps;
 }) => {
   const { t, translateEntity } = useTranslations();

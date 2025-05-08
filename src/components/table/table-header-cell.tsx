@@ -45,7 +45,7 @@ export const TableHeaderCell = memo(function TableHeaderCell({
   title?: React.ReactNode;
   style?: React.CSSProperties;
   sort?: string;
-  setSort?: (sort: string) => void;
+  setSort?: (sortDef: string) => void;
   sortable?: boolean;
 }) {
   const { direction } = getSortParts(sort, colId);
