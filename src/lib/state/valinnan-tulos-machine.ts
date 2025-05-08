@@ -18,6 +18,7 @@ import {
 import { HakemuksenValinnanTulos } from '../valinta-tulos-service/valinta-tulos-types';
 import { Hakemus } from '../ataru/ataru-types';
 import { hyvaksyValintaEsitys } from '../valinta-tulos-service/valinta-tulos-service';
+import { rejectAndLog } from '../common';
 
 export type MinimalHakemusInfo = Pick<
   Hakemus,
@@ -358,6 +359,12 @@ export function createValinnanTulosMachine<
             target: ValinnanTulosState.IDLE,
             actions: [
               {
+                type: 'refetchTulokset',
+                params: ({ event }) => ({
+                  error: event.error as Error,
+                }),
+              },
+              {
                 type: 'alert',
                 params: {
                   message: 'valinnan-tulokset.poistaminen-epaonnistui',
@@ -400,7 +407,7 @@ export function createValinnanTulosMachine<
     actors: {
       publish: fromPromise(async ({ input }) => {
         if (!input.valintatapajonoOid) {
-          throw new Error(
+          return rejectAndLog(
             `ValinnanTulosMachine.publish: Missing parameters: valintatapajonoOid=${input.valintatapajonoOid}`,
           );
         }

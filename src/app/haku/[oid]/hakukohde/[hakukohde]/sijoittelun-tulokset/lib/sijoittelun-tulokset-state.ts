@@ -8,7 +8,7 @@ import {
 import { isNullish } from 'remeda';
 import { ValinnanTulosErrorGlobalModal } from '@/components/modals/valinnan-tulos-error-global-modal';
 import { showModal } from '@/components/modals/global-modal';
-import { OphApiError } from '@/lib/common';
+import { rejectAndLog, OphApiError } from '@/lib/common';
 import { useEffect } from 'react';
 import { useActorRef } from '@xstate/react';
 import {
@@ -80,7 +80,7 @@ export const sijoittelunTuloksetMachine =
           },
         }) => {
           if (!valintatapajonoOid || !hakukohdeOid) {
-            throw new Error(
+            return rejectAndLog(
               `SijoittelunTuloksetMachine.updateHakemukset: Missing required parameters valintatapajonoOid=${valintatapajonoOid}, hakukohdeOid=${hakukohdeOid}`,
             );
           }
@@ -95,7 +95,7 @@ export const sijoittelunTuloksetMachine =
       ),
       publish: fromPromise(async ({ input }) => {
         if (!input.valintatapajonoOid) {
-          throw new Error(
+          return rejectAndLog(
             'SijoittelunTuloksetMachine.publish: Missing required parameter valintatapajonoOid',
           );
         }

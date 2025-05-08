@@ -19,7 +19,7 @@ import { ValinnanTulosErrorGlobalModal } from '@/components/modals/valinnan-tulo
 import { showModal } from '@/components/modals/global-modal';
 import { QueryClient, useQueryClient } from '@tanstack/react-query';
 import { isNullish } from 'remeda';
-import { isHakemusOid, OphProcessError } from '@/lib/common';
+import { isHakemusOid, rejectAndLog, OphProcessError } from '@/lib/common';
 
 export const valinnanTuloksetMachine =
   createValinnanTulosMachine<HakemuksenValinnanTulos>().provide({
@@ -152,7 +152,7 @@ export const useValinnanTulosActorRef = ({
             );
           }
           if (!valintatapajonoOid) {
-            throw new Error(
+            return rejectAndLog(
               'ValinnanTulosMachine.publish: Missing valintatapajonoOid',
             );
           }
@@ -160,7 +160,7 @@ export const useValinnanTulosActorRef = ({
         }),
         remove: fromPromise(async ({ input }) => {
           if (!input.hakemus) {
-            throw new Error(
+            return rejectAndLog(
               'ValinnanTulosMachine.remove: Could not find hakemus',
             );
           }
