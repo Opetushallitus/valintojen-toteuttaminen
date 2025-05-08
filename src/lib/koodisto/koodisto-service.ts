@@ -1,4 +1,4 @@
-import { configuration } from '../configuration';
+import { getConfiguration } from '@/hooks/useConfiguration';
 import { client } from '../http-client';
 import { Language, TranslatedName } from '../localization/localization-types';
 import { Koodi } from './koodisto-types';
@@ -29,6 +29,7 @@ const mapToKoodi = (k: CodeElement): Koodi => {
 };
 
 async function getKoodit(koodisto: string): Promise<Array<Koodi>> {
+  const configuration = await getConfiguration();
   const response = await client.get<Array<CodeElement>>(
     configuration.kooditUrl + koodisto,
   );
@@ -46,6 +47,7 @@ export async function getHyvaksynnanEhdot(): Promise<Array<Koodi>> {
 export async function getPostitoimipaikka(
   postinumero: string,
 ): Promise<TranslatedName> {
+  const configuration = await getConfiguration();
   const { data } = await client.get<CodeElement>(
     configuration.koodiUrl(`posti_${postinumero}`),
   );

@@ -1,9 +1,10 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { client } from './http-client';
-import { configuration } from './configuration';
 import { OPH_ORGANIZATION_OID } from './constants';
+import { getConfiguration } from '@/hooks/useConfiguration';
 
 export const getOrganizationParentOids = async (oid: string) => {
+  const configuration = await getConfiguration();
   // OPH:n organisaatio-OID:n parent on aina organisaatio itse. Ei tarvetta noutaa.
   if (oid === OPH_ORGANIZATION_OID) {
     return [OPH_ORGANIZATION_OID];

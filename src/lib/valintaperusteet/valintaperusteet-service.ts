@@ -1,7 +1,6 @@
 'use client';
 
 import { queryOptions } from '@tanstack/react-query';
-import { configuration } from '../configuration';
 import { client } from '../http-client';
 import {
   Valinnanvaihe,
@@ -14,10 +13,12 @@ import {
   ValintaryhmaHakukohteilla,
 } from './valintaperusteet-types';
 import { sort } from 'remeda';
+import { getConfiguration } from '@/hooks/useConfiguration';
 
 export const getValintaryhma = async (
   hakukohdeOid: string,
 ): Promise<Valintaryhma> => {
+  const configuration = await getConfiguration();
   const response = await client.get<Valintaryhma>(
     `${configuration.valintaperusteetUrl}hakukohde/${hakukohdeOid}/valintaryhma`,
   );
@@ -87,6 +88,7 @@ export const hakukohteenValinnanvaiheetQueryOptions = (
 export const getValinnanvaiheet = async (
   hakukohdeOid: string,
 ): Promise<Array<Valinnanvaihe>> => {
+  const configuration = await getConfiguration();
   const response = await client.get<Array<ValinnanvaiheModel>>(
     `${configuration.valintaperusteetUrl}hakukohde/${hakukohdeOid}/valinnanvaihe?withValisijoitteluTieto=true`,
   );
@@ -119,6 +121,7 @@ const determineValintaKoeInputTyyppi = (
 export const getValintakoeAvaimetHakukohteelle = async (
   hakukohdeOid: string,
 ): Promise<Array<ValintakoeAvaimet>> => {
+  const configuration = await getConfiguration();
   const { data } = await client.get<
     Array<{
       tunniste: string;
@@ -169,6 +172,7 @@ export const getValintakoeAvaimetHakukohteille = async ({
 };
 
 export const getValintakokeet = async (hakukohdeOid: string) => {
+  const configuration = await getConfiguration();
   const response = await client.get<Array<Valintakoe>>(
     configuration.hakukohdeValintakokeetUrl({ hakukohdeOid }),
   );
@@ -211,6 +215,7 @@ export const getValintaryhmat = async (
   muutRyhmat: Array<ValintaryhmaHakukohteilla>;
   hakuRyhma: ValintaryhmaHakukohteilla | null;
 }> => {
+  const configuration = await getConfiguration();
   const response = await client.get<Array<ValintaryhmaHakukohteillaResponse>>(
     `${configuration.valintaryhmatHakukohteilla}?hakuOid=${hakuOid}&hakukohteet=true`,
   );
@@ -226,6 +231,7 @@ export const getValintaryhmat = async (
 export const onkoHaullaValintaryhma = async (
   hakuOid: string,
 ): Promise<boolean> => {
+  const configuration = await getConfiguration();
   return (
     await client.get<boolean>(configuration.onkoHaullaValintaryhma({ hakuOid }))
   ).data;

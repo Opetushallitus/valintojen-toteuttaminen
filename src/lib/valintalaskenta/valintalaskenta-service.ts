@@ -2,7 +2,6 @@
 
 import { LaskennanValintatapajonoTulosWithHakijaInfo } from '@/hooks/useEditableValintalaskennanTulokset';
 import { booleanToString } from '../common';
-import { configuration } from '../configuration';
 import { client } from '../http-client';
 import { getHakemukset } from '../ataru/ataru-service';
 import { getLatestSijoitteluAjonTuloksetForHakukohde } from '../valinta-tulos-service/valinta-tulos-service';
@@ -55,8 +54,9 @@ import {
   toFormattedDateTimeString,
   translateName,
 } from '../localization/translation-utils';
+import { getConfiguration } from '@/hooks/useConfiguration';
 
-const createLaskentaURL = ({
+const createLaskentaURL = async ({
   laskentaTyyppi,
   haku,
   hakukohteet,
@@ -70,7 +70,8 @@ const createLaskentaURL = ({
   valinnanvaiheTyyppi?: ValinnanvaiheTyyppi;
   valinnanvaiheNumero?: number;
   valintaryhma?: ValintaryhmaHakukohteilla;
-}): URL => {
+}): Promise<URL> => {
+  const configuration = await getConfiguration();
   const singleHakukohde = only(hakukohteet ?? []);
 
   // Jos lasketaan koko haku, ei tarvitse antaa whitelist-parametria
@@ -132,7 +133,7 @@ export const kaynnistaLaskenta = async ({
     laskentaTyyppi = 'HAKUKOHDE';
   }
 
-  const laskentaUrl = createLaskentaURL({
+  const laskentaUrl = await createLaskentaURL({
     laskentaTyyppi,
     haku,
     hakukohteet,
@@ -155,6 +156,7 @@ export const keskeytaLaskenta = async ({
 }: {
   laskentaUuid: string;
 }): Promise<void> => {
+  const configuration = await getConfiguration();
   await client.delete<void>(
     `${configuration.valintalaskentakerrallaUrl}/haku/${laskentaUuid}`,
   );
@@ -163,6 +165,7 @@ export const keskeytaLaskenta = async ({
 export const getLaskennanYhteenveto = async (
   loadingUrl: string,
 ): Promise<LaskentaSummary> => {
+  const configuration = await getConfiguration();
   const response = await client.get<LaskentaSummary>(
     `${configuration.valintalaskentakerrallaUrl}/status/${loadingUrl}/yhteenveto`,
   );
@@ -180,6 +183,7 @@ export const hakukohteenValintalaskennanTuloksetQueryOptions = (
 export const getHakukohteenValintalaskennanTulokset = async (
   hakukohdeOid: string,
 ) => {
+  const configuration = await getConfiguration();
   const response = await client.get<
     Array<ValintalaskennanTulosValinnanvaiheModel>
   >(configuration.hakukohteenValintalaskennanTuloksetUrl({ hakukohdeOid }));
@@ -223,6 +227,7 @@ export const getHakemuksenValintalaskennanTulokset = async ({
   hakuOid: string;
   hakemusOid: string;
 }) => {
+  const configuration = await getConfiguration();
   const response = await client.get<HakemuksenValintalaskennanTuloksetModel>(
     configuration.hakemuksenValintalaskennanTuloksetUrl({
       hakuOid,
@@ -237,6 +242,7 @@ export const getHakemuksenValintalaskennanTulokset = async ({
 };
 
 export const getLaskennanSeurantaTiedot = async (loadingUrl: string) => {
+  const configuration = await getConfiguration();
   const response = await client.get<SeurantaTiedot>(
     `${configuration.seurantaUrl}${loadingUrl}`,
   );
@@ -273,6 +279,7 @@ export const muutaSijoittelunStatus = async ({
   >;
   status: boolean;
 }) => {
+  const configuration = await getConfiguration();
   const valintatapajonoOid = jono.oid;
 
   const { data: updatedJono } = await client.post<{ prioriteetti: number }>(
@@ -307,6 +314,7 @@ export const getHakijaryhmat = async (
   hakuOid: string,
   hakukohdeOid: string,
 ): Promise<Array<HakukohteenHakijaryhma>> => {
+  const configuration = await getConfiguration();
   const [hakemukset, tulokset, valintaTulokset] = await Promise.all([
     getHakemukset({ hakuOid, hakukohdeOid }),
     getLatestSijoitteluAjonTuloksetForHakukohde(hakuOid, hakukohdeOid),
@@ -455,6 +463,7 @@ export const getHarkinnanvaraisetTilat = async ({
   hakuOid,
   hakukohdeOid,
 }: KoutaOidParams) => {
+  const configuration = await getConfiguration();
   const { data } = await client.get<Array<HarkinnanvaraisestiHyvaksytty>>(
     configuration.getHarkinnanvaraisetTilatUrl({ hakuOid, hakukohdeOid }),
   );
@@ -468,6 +477,7 @@ export const saveHarkinnanvaraisetTilat = async (
     }
   >,
 ) => {
+  const configuration = await getConfiguration();
   return client.post<unknown>(
     configuration.setHarkinnanvaraisetTilatUrl,
     harkinnanvaraisetTilat,
@@ -559,6 +569,7 @@ export const saveValinnanvaiheTulokset = ({
 export const getLasketutHakukohteet = async (
   hakuOid: string,
 ): Promise<Array<LaskettuHakukohde>> => {
+  const configuration = await getConfiguration();
   const { data } = await client.get<
     Array<{ hakukohdeOid: string; lastModified: string }>
   >(configuration.lasketutHakukohteet({ hakuOid }));

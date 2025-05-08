@@ -1,5 +1,8 @@
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { useState } from 'react';
+import {
+  Divider,
+} from '@mui/material';
+import { useContext, useState } from 'react';
 import {
   FileDownloadOutlined,
   MailOutline,
@@ -7,7 +10,6 @@ import {
   NoteOutlined,
 } from '@mui/icons-material';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
-import { configuration } from '@/lib/configuration';
 import {
   AcceptedLetterTemplateModal,
   NonAcceptedLetterTemplateModal,
@@ -17,8 +19,8 @@ import { ProgressModal } from './progress-modal-dialog';
 import { luoOsoitetarratHakukohteessaHyvaksytyille } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
 import { Dropdown } from '@/components/dropdown';
-import { Divider } from '@mui/material';
 import { useSendVastaanottoPostiMutation } from '@/hooks/useSendVastaanottoPostiMutation';
+import { ConfigurationContext } from '@/components/providers/configuration-provider';
 
 const SendVastaanottopostiMenuItem = ({
   hakukohde,
@@ -160,6 +162,8 @@ export const OtherActionsHakukohdeButton = ({
   tulosDocumentId: string | null;
   sijoitteluajoId: string;
 }) => {
+
+  const { configuration } = useContext(ConfigurationContext);
   const { t } = useTranslations();
 
   const [hyvaksymiskirje, setHyvaksymiskirjeDocument] = useState<string | null>(

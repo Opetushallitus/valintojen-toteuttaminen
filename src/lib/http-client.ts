@@ -1,8 +1,8 @@
 import { getCookies } from './cookie';
 import { redirect } from 'next/navigation';
-import { configuration } from './configuration';
 import { FetchError, isServer } from './common';
 import { isPlainObject } from 'remeda';
+import { getConfiguration } from '@/hooks/useConfiguration';
 
 export type HttpClientResponse<D> = {
   headers: Headers;
@@ -53,13 +53,15 @@ const noContent = (response: Response) => {
 };
 
 const redirectToLogin = () => {
-  const loginUrl = new URL(configuration.loginUrl);
-  loginUrl.searchParams.set('service', window.location.href);
-  if (isServer) {
-    redirect(loginUrl.toString());
-  } else {
-    window.location.replace(loginUrl.toString());
-  }
+  getConfiguration().then(config => {
+    const loginUrl = new URL(config.loginUrl);
+    loginUrl.searchParams.set('service', window.location.href);
+    if (isServer) {
+      redirect(loginUrl.toString());
+    } else {
+      window.location.replace(loginUrl.toString());
+    }
+  });
 };
 
 const makeBareRequest = (request: Request) => {
@@ -124,23 +126,23 @@ const responseToData = async <Result = unknown>(
 const LOGIN_MAP = [
   {
     urlIncludes: '/kouta-internal',
-    loginUrl: configuration.koutaInternalLogin,
+    loginParam: 'koutaInternalLogin',
   },
   {
     urlIncludes: '/lomake-editori',
-    loginUrl: configuration.ataruEditoriLogin,
+    loginParam: 'ataruEditoriLogin',
   },
   {
     urlIncludes: '/valinta-tulos-service',
-    loginUrl: configuration.valintaTulosServiceLogin,
+    loginParam: 'valintaTulosServiceLogin',
   },
   {
     urlIncludes: '/valintalaskenta-laskenta-service',
-    loginUrl: configuration.valintalaskentaServiceLogin,
+    loginParam: 'valintalaskentaServiceLogin',
   },
   {
     urlIncludes: '/valintalaskentakoostepalvelu',
-    loginUrl: configuration.valintalaskentaKoostePalveluLogin,
+    loginParam: 'valintalaskentaKoostePalveluLogin',
   },
 ] as const;
 
@@ -160,8 +162,10 @@ const makeRequest = async <Result>(request: Request) => {
     if (error instanceof FetchError) {
       if (isUnauthenticated(error.response)) {
         try {
-          for (const { urlIncludes, loginUrl } of LOGIN_MAP) {
+          for (const { urlIncludes, loginParam } of LOGIN_MAP) {
             if (request?.url?.includes(urlIncludes)) {
+              const config = await getConfiguration();
+              const loginUrl = config[loginParam] as string;
               const resp = await retryWithLogin(request, loginUrl);
               return responseToData<Result>(resp);
             }

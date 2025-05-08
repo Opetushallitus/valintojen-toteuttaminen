@@ -17,14 +17,14 @@ import {
   LaskennanValintatapajonoTulos,
 } from '@/hooks/useEditableValintalaskennanTulokset';
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { configuration } from '@/lib/configuration';
 import { getHenkiloTitle } from '@/lib/henkilo-utils';
 import { Hakukohde } from '@/lib/kouta/kouta-types';
 import { TuloksenTila } from '@/lib/types/laskenta-types';
 import { OphLink } from '@opetushallitus/oph-design-system';
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import { refetchLaskennanTulokset } from '../lib/refetchLaskennanTulokset';
 import { useQueryClient } from '@tanstack/react-query';
+import { ConfigurationContext } from '@/components/providers/configuration-provider';
 
 const TRANSLATIONS_PREFIX = 'valintalaskennan-tulokset.taulukko';
 
@@ -58,6 +58,8 @@ export const LaskettuValintatapajonoTable = ({
   pagination: ListTablePaginationProps;
 }) => {
   const { t, translateEntity } = useTranslations();
+
+  const { configuration } = useContext(ConfigurationContext);
 
   const queryClient = useQueryClient();
 

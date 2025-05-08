@@ -4,7 +4,7 @@ import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import { checkAccessibility } from '../lib/checkAccessibility';
 import { Toaster } from '../components/toaster';
 import Script from 'next/script';
-import { configuration, isDev } from '../lib/configuration';
+import { isDev } from '../lib/configuration';
 import { LocalizedThemeProvider } from '../components/providers/localized-theme-provider';
 import { OphNextJsThemeProvider } from '@opetushallitus/oph-design-system/next/theme';
 import { THEME_OVERRIDES } from '../lib/theme';
@@ -30,7 +30,7 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="fi">
-      <Script src={configuration.raamitUrl} />
+      {/* <Script src={await getConfiguration().raamitUrl} /> */}
       <body>
         {isDev && <NextTopLoader />}
         <AppRouterCacheProvider>

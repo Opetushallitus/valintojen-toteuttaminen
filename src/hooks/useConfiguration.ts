@@ -6,11 +6,11 @@ import { isNullish } from "remeda";
 
 declare global {
   interface Window {
-    configuration?: Record<string, string>;
+    configuration?: Record<string, any>;
   }
 }
 
-export const getConfiguration = async (): Promise<Record<string, string>> => {
+export const getConfiguration = async (): Promise<Record<string, any>> => {
   if (isNullish(window?.configuration)) {
     const response = await client.get<Record<string, string>>("valintojen-toteuttaminen/configuration");
     console.log('fetched configuration data', );

@@ -1,12 +1,12 @@
 'use client';
 
-import { configuration } from '../configuration';
 import { Haku, Hakukohde, Tila } from './kouta-types';
 import { client } from '../http-client';
 import { Language, TranslatedName } from '../localization/localization-types';
 import { UserPermissions } from '../permissions';
 import { addProp, pick, pipe } from 'remeda';
 import { HaunAsetukset } from '../ohjausparametrit/ohjausparametrit-types';
+import { getConfiguration } from '@/hooks/useConfiguration';
 
 type HakuResponseData = {
   oid: string;
@@ -45,6 +45,7 @@ const permissionsToTarjoajat = (userPermissions: UserPermissions): string =>
       );
 
 export async function getHaut(userPermissions: UserPermissions) {
+  const configuration = await getConfiguration();
   const tarjoajaOids = permissionsToTarjoajat(userPermissions);
   const response = await client.get<Array<HakuResponseData>>(
     `${configuration.hautUrl}${tarjoajaOids}`,
@@ -98,6 +99,7 @@ export function getOpetuskieliCode(hakukohde: Hakukohde): Language | null {
 }
 
 export async function getHaku(oid: string): Promise<Haku> {
+  const configuration = await getConfiguration();
   const response = await client.get<HakuResponseData>(
     `${configuration.hakuUrl}/${oid}`,
   );
@@ -151,6 +153,7 @@ export async function getHakukohteet(
   hakuOid: string,
   userPermissions: UserPermissions,
 ): Promise<Array<Hakukohde>> {
+  const configuration = await getConfiguration();
   const tarjoajaOids = permissionsToTarjoajat(userPermissions);
   const response = await client.get<Array<HakukohdeResponseData>>(
     `${configuration.hakukohteetUrl}&haku=${hakuOid}${tarjoajaOids}`,
@@ -167,6 +170,7 @@ export const getHakukohteetQueryOptions = (
 });
 
 export async function getHakukohde(hakukohdeOid: string): Promise<Hakukohde> {
+  const configuration = await getConfiguration();
   const response = await client.get<HakukohdeResponseData>(
     `${configuration.hakukohdeUrl}/${hakukohdeOid}`,
   );
