@@ -10,6 +10,7 @@ import { readFile } from 'fs/promises';
 import path from 'path';
 import { isFunction, isNonNull } from 'remeda';
 import regexpEscape from 'regexp.escape';
+import { styleText } from 'node:util';
 
 export const expectPageAccessibilityOk = async (page: Page) => {
   const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
@@ -290,3 +291,20 @@ export const mockValintalaskentaRun = async (
     },
   );
 };
+
+/**
+ * Funktio testien debuggausta varten. Tulostaa testien aikana selaimen konsoliin logitetut viestit.
+ * Aja funktio kerran ennen testien testikoodin suorittamista, esim beforeEach-hookissa.
+ */
+export function logBrowserConsole(page: Page) {
+  page.on('console', (msg) => {
+    const messagePrefix = styleText('grey', 'Browser:');
+    if (msg.type() === 'error') {
+      console.log(messagePrefix, styleText('red', msg.text()));
+    } else if (msg.type() === 'warning') {
+      console.log(messagePrefix, styleText('yellow', msg.text()));
+    } else {
+      console.log(messagePrefix, msg.text());
+    }
+  });
+}
