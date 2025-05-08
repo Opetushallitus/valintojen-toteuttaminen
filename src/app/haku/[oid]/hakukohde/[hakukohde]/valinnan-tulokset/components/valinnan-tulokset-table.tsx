@@ -21,6 +21,7 @@ import {
 } from '@/lib/state/valinnan-tulos-machine';
 import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
 import { ValinnanTilaCell } from '@/components/valinnan-tila-cell';
+import { SijoittelunTuloksetActionBar } from '@/app/haku/[oid]/hakukohde/[hakukohde]/sijoittelun-tulokset/components/sijoittelun-tulos-action-bar';
 
 export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
   title,
@@ -139,7 +140,7 @@ export const ValinnanTuloksetTable = ({
   const { results, sort, setSort, pageSize, setPage, page } =
     useValinnanTuloksetSearch(hakemukset);
 
-  const { selection, setSelection } = useSelection(hakemukset);
+  const { selection, setSelection, resetSelection } = useSelection(hakemukset);
 
   const changedHakemukset = useSelector(
     actorRef,
@@ -161,6 +162,12 @@ export const ValinnanTuloksetTable = ({
 
   return (
     <>
+      <SijoittelunTuloksetActionBar
+        selection={selection}
+        hakemukset={rows}
+        actorRef={actorRef}
+        resetSelection={resetSelection}
+      />
       <ListTable
         rowKeyProp="hakemusOid"
         columns={columns}

@@ -9,13 +9,13 @@ import { ListTable } from '@/components/table/list-table';
 import {
   SijoitteluajonValintatapajonoValintatiedoilla,
   SijoittelunHakemusValintatiedoilla,
+  SijoittelunTulosActorRef,
 } from '@/lib/types/sijoittelu-types';
 import { useCallback, useMemo } from 'react';
 import { KeysMatching, ListTableColumn } from '@/components/table/table-types';
 import { MaksuCell } from './maksu-cell';
 import { IlmoittautumisTilaSelect } from '@/components/ilmoittautumistila-select';
 import { VastaanOttoCell } from '@/components/vastaanotto-cell';
-import { ValinnanTilaCell } from '@/components/valinnan-tila-cell';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
 import { SijoittelunTuloksetActionBar } from './sijoittelun-tulos-action-bar';
@@ -25,12 +25,11 @@ import { isNonNull } from 'remeda';
 import { useSijoittelunTulosSearch } from '../hooks/useSijoittelunTulosSearch';
 import { useSelection } from '@/hooks/useSelection';
 import {
-  ValinnanTulosMassChangeParams,
   ValinnanTulosChangeParams,
   ValinnanTulosEventType,
   ValinnanTulosState,
 } from '@/lib/state/valinnan-tulos-machine';
-import { SijoittelunTulosActorRef } from '../lib/sijoittelun-tulokset-state';
+import { ValinnanTilaCell } from '@/components/valinnan-tila-cell';
 
 export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
   title,
@@ -259,12 +258,7 @@ export const SijoittelunTulosTable = ({
         hakemukset={contextHakemukset}
         selection={selection}
         resetSelection={resetSelection}
-        massStatusChangeForm={(changeParams: ValinnanTulosMassChangeParams) => {
-          sijoittelunTulosActorRef.send({
-            type: ValinnanTulosEventType.MASS_CHANGE,
-            ...changeParams,
-          });
-        }}
+        actorRef={sijoittelunTulosActorRef}
       />
       <ListTable
         rowKeyProp="hakemusOid"
