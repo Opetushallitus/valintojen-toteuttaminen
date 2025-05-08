@@ -997,7 +997,7 @@ export async function saveErillishakuValinnanTulokset({
     hakemuksenTila: hakemus.valinnanTila,
     vastaanottoTila: hakemus.vastaanottoTila,
     ilmoittautumisTila: hakemus.ilmoittautumisTila,
-    julkaistaankoTiedot: hakemus.julkaistavissa,
+    julkaistaankoTiedot: Boolean(hakemus.julkaistavissa),
     ehdollisestiHyvaksyttavissa: hakemus.ehdollisestiHyvaksyttavissa,
     valinnantilanKuvauksenTekstiFI: hakemus.valinnanTilanKuvausFI,
     valinnantilanKuvauksenTekstiSV: hakemus.valinnanTilanKuvausSV,
