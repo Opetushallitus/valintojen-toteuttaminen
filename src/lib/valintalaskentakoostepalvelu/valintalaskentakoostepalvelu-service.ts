@@ -968,14 +968,12 @@ export async function sendLetters(
 export async function saveErillishakuValinnanTulokset({
   hakuOid,
   hakukohdeOid,
-  tarjoajaOid,
   hakemukset,
   hakutyyppi,
   lastModified,
 }: {
   hakuOid: string;
   hakukohdeOid: string;
-  tarjoajaOid: string;
   hakutyyppi: 'TOISEN_ASTEEN_OPPILAITOS' | 'KORKEAKOULU';
   hakemukset: Array<HakemuksenValinnanTulos>;
   lastModified?: string;
@@ -995,7 +993,6 @@ export async function saveErillishakuValinnanTulokset({
   );
   urlWithQuery.searchParams.set('hakuOid', hakuOid);
   urlWithQuery.searchParams.set('hakukohdeOid', hakukohdeOid);
-  urlWithQuery.searchParams.set('tarjoajaOid', tarjoajaOid);
   urlWithQuery.searchParams.set('hakutyyppi', hakutyyppi);
 
   const { data } = await client.post<{ id: string }>(

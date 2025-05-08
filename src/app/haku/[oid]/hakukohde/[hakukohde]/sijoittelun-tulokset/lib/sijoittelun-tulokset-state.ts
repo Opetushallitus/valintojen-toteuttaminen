@@ -13,14 +13,10 @@ import { useEffect } from 'react';
 import { useActorRef } from '@xstate/react';
 import {
   createValinnanTulosMachine,
-  ValinnanTulosActorRef,
   ValinnanTulosEventType,
 } from '@/lib/state/valinnan-tulos-machine';
 import useToaster from '@/hooks/useToaster';
 import { useHasChanged } from '@/hooks/useHasChanged';
-
-export type SijoittelunTulosActorRef =
-  ValinnanTulosActorRef<SijoittelunHakemusValintatiedoilla>;
 
 export const sijoittelunTuloksetMachine =
   createValinnanTulosMachine<SijoittelunHakemusValintatiedoilla>().provide({

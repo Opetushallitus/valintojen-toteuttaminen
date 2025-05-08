@@ -398,6 +398,9 @@
       "vastaanoton-tila": "Vastaanoton tila",
       "ilmoittautumisen-tila": "Ilmoittautumisen tila",
       "toiminnot": "Toiminnot"
+    },
+    "toiminnot": {
+      "laheta-vastaanottoposti-hakukohteelle": "Lähetä vastaanottoposti hakukohteelle"
     }
   },
   "sijoittelu": {

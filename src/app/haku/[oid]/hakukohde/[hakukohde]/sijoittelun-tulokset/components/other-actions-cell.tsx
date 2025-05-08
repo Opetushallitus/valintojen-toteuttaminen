@@ -9,7 +9,7 @@ import {
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import useToaster from '@/hooks/useToaster';
 import {
-  changeHistoryForHakemus,
+  getChangeHistoryForHakemus,
   sendVastaanottopostiHakemukselle,
 } from '@/lib/valinta-tulos-service/valinta-tulos-service';
 import { showModal } from '@/components/modals/global-modal';
@@ -107,7 +107,7 @@ export const OtherActionsCell = ({
 
   const showChangeHistoryForHakemus = async () => {
     try {
-      const history = await changeHistoryForHakemus(
+      const history = await getChangeHistoryForHakemus(
         hakemus.hakemusOid,
         hakemus.valintatapajonoOid,
       );

@@ -1,5 +1,11 @@
 import { Toast } from '@/hooks/useToaster';
-import { ActorRefFrom, assign, createMachine, PromiseActorLogic } from 'xstate';
+import {
+  ActorRefFrom,
+  assign,
+  createMachine,
+  fromPromise,
+  PromiseActorLogic,
+} from 'xstate';
 import { clone } from 'remeda';
 import {
   applyMassHakemusChanges,
@@ -9,6 +15,7 @@ import {
 } from './valinnan-tulos-machine-utils';
 import { HakemuksenValinnanTulos } from '../valinta-tulos-service/valinta-tulos-types';
 import { Hakemus } from '../ataru/ataru-types';
+import { hyvaksyValintaEsitys } from '../valinta-tulos-service/valinta-tulos-service';
 
 export type MinimalHakemusInfo = Pick<
   Hakemus,
@@ -115,7 +122,7 @@ export function createValinnanTulosMachine<
 >() {
   return createMachine({
     /** @xstate-layout N4IgpgJg5mDOIC5QDUCGAbAlgO267AKgK7oD2A1rGAC4CyqAxgBY5gDEASgKIDKXBAbQAMAXUSgADqViZqmUtnEgAHogAcAdgBsAOgAsavQGZjATiNqhAJgCsegDQgAnogCMVgL4fHaLLnzEZJQ09MysOgCSACIAMlxsAMIAEgCCAHIA4lzCYkggUjJyCkqqCK5CrjpGQnpaahYaQkauGq6OLgimWno6VlYaeu6WVnp62l4+GDh4hCQUVHSMLNhgkbHxtCk8PAD6yelZOUoFsvKKeaU2VjquRlZqI6Y2jaZqNjbt6oM6D66uWn1TKZXHp7hMQL5pgE5sFFmEVms4mxNtsdgBVAAKURSBGyomO0lOxQuiCMFiqxgGTT+Jn+Wk+CG0ulamlcalMrRaajU4Mh-lmQQWoWWq2iSMx2NxRzyJyK51ApTJagpRipzVugy09Oc6gBOi0LKMWmsqrUAN5U35gXmISW4TF8QlOOyrlykkJcpKiFqOiBfv9-rNDIGNh+dSatTsRnMRgtfhm1thwvt6zYGLRACEYhEeElpe7CmcvQglSq1TTNdqOsCjDcWc93gMtXo41CBTa4SLEfF01mc3nXQTC8SFaTySZVXpqRq6QyTKGtDYAVpqpZulYja2rTChXaEU6CBFMmwIApVjgAG4UVZ8hM723w1YHo8ZBCX0gMVBynL5-Ieoskp0Vi6K8xhkiCrjmMBDJvBoNxWGydg2NUoy1Fud6Cg+XbPseYAAE54aQeE6BI6BfgAZkRAC2Oi3tCmGduEOGvu+n7fqIv6ygBo4IMYyoIZooLmBoG73EYDIAkIPw2MJphWBUtiDOh9Edsm+5Ys6ewAPK0BicS4lEbCcf+I4qG4RqmPoyFCAaqrWMYVgwQhOgiWaRh2IuG4rsp7ZJnuT4abi2m6fpXCGQIg4yiZ8pmZ05g6DZIwaE80ZCNYDK1LoU4AlcWrNK8tg+Ymu6PjovbZrmL4nmeOjvuQN6Whhqn+WVmYVUkL5vtgV5sWcP74lFw4xaUIIri5ehAjYtxvEIuUMuUNjKiChg2dG5gPLG3gQo1Kl+aV5X9lV+GEcRpEUdRtE7b5JVdgdlWZF1PVfn1HEDQWRLDW4Yw9BuxhCBohiyfNDxWc0k7AeUJpeFt2CkBAcBKHR11YawQ4fcWAC0lRpTjuO4yCjk6p0PQpbcVimFODw1BoRX3oxCIOmjnqAeUlQGmyrQ2YYqrIfNNmhmys2QcB5PuKYtMMWpAWSi+TPcbFBqhnJbKTv9ri80T9TXACiGNHY2hAhLzWlQeXDBXp-BhXLpkjerujTuy7gaLlGgwZBvRC1B0aKS2W1I8VKMIndHWZNbn1lCuzJslqQgcu5GgiTBsc3O8kETRNFMTdDHhAA */
-    id: 'ValinnanTuloksetMachine',
+    id: 'ValinnanTulosMachine',
     initial: ValinnanTulosState.IDLE,
     types: {} as {
       context: ValinnanTulosContext<T>;
@@ -318,6 +325,16 @@ export function createValinnanTulosMachine<
       hasChangedHakemukset,
       shouldPublishAfterUpdate: ({ context }) =>
         Boolean(context.publishAfterUpdate),
+    },
+    actors: {
+      publish: fromPromise(async ({ input }) => {
+        if (!input.valintatapajonoOid) {
+          throw new Error(
+            'ValinnanTulosMachine.publish: Missing required parameters',
+          );
+        }
+        await hyvaksyValintaEsitys(input.valintatapajonoOid);
+      }),
     },
   });
 }
