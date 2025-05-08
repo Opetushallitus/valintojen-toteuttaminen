@@ -60,7 +60,6 @@ const createLaskentaURL = ({
   laskentaTyyppi,
   haku,
   hakukohteet,
-  sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
   valinnanvaiheTyyppi,
   valinnanvaiheNumero,
   valintaryhma,
@@ -68,7 +67,6 @@ const createLaskentaURL = ({
   laskentaTyyppi: LaskentaTyyppi;
   haku: Haku;
   hakukohteet: Array<Hakukohde> | null;
-  sijoitellaankoHaunHakukohteetLaskennanYhteydessa: boolean;
   valinnanvaiheTyyppi?: ValinnanvaiheTyyppi;
   valinnanvaiheNumero?: number;
   valintaryhma?: ValintaryhmaHakukohteilla;
@@ -80,10 +78,6 @@ const createLaskentaURL = ({
 
   const laskentaUrl = new URL(
     `${configuration.valintalaskentakerrallaUrl}/haku/${haku.oid}/tyyppi/${laskentaTyyppi}${urlWhitelistPart}`,
-  );
-  laskentaUrl.searchParams.set(
-    'erillishaku',
-    '' + sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
   );
   laskentaUrl.searchParams.set('haunnimi', translateName(haku.nimi));
   laskentaUrl.searchParams.set(
@@ -123,14 +117,12 @@ export const kaynnistaLaskenta = async ({
   hakukohteet,
   valintaryhma,
   valinnanvaiheTyyppi,
-  sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
   valinnanvaiheNumero,
 }: {
   haku: Haku;
   hakukohteet: Array<Hakukohde> | null;
   valintaryhma?: ValintaryhmaHakukohteilla;
   valinnanvaiheTyyppi?: ValinnanvaiheTyyppi;
-  sijoitellaankoHaunHakukohteetLaskennanYhteydessa: boolean;
   valinnanvaiheNumero?: number;
 }): Promise<StartedLaskentaInfo> => {
   let laskentaTyyppi: LaskentaTyyppi = 'HAKU';
@@ -145,7 +137,6 @@ export const kaynnistaLaskenta = async ({
     haku,
     hakukohteet,
     valinnanvaiheTyyppi,
-    sijoitellaankoHaunHakukohteetLaskennanYhteydessa,
     valinnanvaiheNumero,
     valintaryhma,
   });
