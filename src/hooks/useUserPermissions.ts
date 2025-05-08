@@ -6,10 +6,11 @@ import {
   Permission,
   selectUserPermissions,
   UserPermissionsByService,
+  UserPermissions,
 } from '@/lib/permissions';
 import { PermissionError } from '@/lib/common';
 import { intersection, isEmpty } from 'remeda';
-import { useOrganizationParentOids } from '@/lib/organisaatio-service';
+import { useOrganizationOidPath } from '@/lib/organisaatio-service';
 
 const getUserPermissions = async (): Promise<UserPermissionsByService> => {
   const response = await client.get<{
@@ -32,12 +33,15 @@ const getUserPermissions = async (): Promise<UserPermissionsByService> => {
   return userPermissions;
 };
 
-export const useHasOrganizationPermissions = (
-  oid: string | undefined,
+export const hasOrganizationPermissions = (
+  organizationOidPath: Array<string>,
   permission: Permission,
-  serviceKey?: string,
+  userPermissions: UserPermissions,
 ) => {
-  const userPermissions = useUserPermissions(serviceKey);
+  if (userPermissions.hasOphCRUD) {
+    return true;
+  }
+
   const { readOrganizations, writeOrganizations, crudOrganizations } =
     userPermissions;
 
@@ -48,12 +52,24 @@ export const useHasOrganizationPermissions = (
     permissionOrganizationOids = writeOrganizations;
   }
 
-  const { data: organizationOidWithParentOids } =
-    useOrganizationParentOids(oid);
-
   return (
-    intersection(organizationOidWithParentOids, permissionOrganizationOids)
-      .length > 0
+    intersection(organizationOidPath, permissionOrganizationOids).length > 0
+  );
+};
+
+export const useHasOrganizationPermissions = (
+  oid: string | undefined,
+  permission: Permission,
+  serviceKey?: string,
+) => {
+  const userPermissions = useUserPermissions(serviceKey);
+
+  const { data: organizationOidWithParentOids } = useOrganizationOidPath(oid);
+
+  return hasOrganizationPermissions(
+    organizationOidWithParentOids,
+    permission,
+    userPermissions,
   );
 };
 

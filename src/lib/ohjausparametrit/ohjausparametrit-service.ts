@@ -11,6 +11,7 @@ type HaunAsetuksetResponse = {
     dateStart: number;
     dateEnd: number;
   };
+  // Valintaesityksen hyväksyminen
   PH_VEH?: { date?: string };
 };
 
@@ -25,7 +26,7 @@ export const getHaunAsetukset = async (
     : undefined;
   return {
     sijoittelu: response.data.sijoittelu,
-    PH_OLVVPKE: response.data.PH_OLVVPKE,
+    valinnatEstettyOppilaitosvirkailijoilta: response.data.PH_OLVVPKE,
     valintaEsityksenHyvaksyminen,
   };
 };
