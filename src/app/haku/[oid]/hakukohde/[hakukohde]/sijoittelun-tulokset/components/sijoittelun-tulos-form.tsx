@@ -57,7 +57,6 @@ export const SijoittelunTulosForm = ({
       <ValinnanTulosActions
         haku={haku}
         hakukohde={hakukohde}
-        valintatapajonoOid={valintatapajono.oid}
         valinnanTulosActorRef={sijoittelunTulosActorRef}
         type="sijoittelun-tulos"
       />

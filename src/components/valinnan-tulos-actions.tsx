@@ -246,23 +246,24 @@ export const ValinnanTulosActions = ({
   haku,
   hakukohde,
   valinnanTulosActorRef,
-  valintatapajonoOid,
   type,
 }: {
   haku: Haku;
   hakukohde: Hakukohde;
   valinnanTulosActorRef: ValinnanTulosActorRef | SijoittelunTulosActorRef;
-  valintatapajonoOid?: string;
   type: 'sijoittelun-tulos' | 'valinnan-tulos';
 }) => {
   const { t } = useTranslations();
 
   const { send } = valinnanTulosActorRef;
-  const state = useSelector(valinnanTulosActorRef, (s) => s);
 
-  const hakemukset = useSelector(
+  const { state, hakemukset, valintatapajonoOid } = useSelector(
     valinnanTulosActorRef,
-    (s) => s.context.hakemukset,
+    (s) => ({
+      state: s,
+      hakemukset: s.context.hakemukset,
+      valintatapajonoOid: s.context.valintatapajonoOid,
+    }),
   );
 
   const isValintaesitysJulkaistavissa = useIsValintaesitysJulkaistavissa({

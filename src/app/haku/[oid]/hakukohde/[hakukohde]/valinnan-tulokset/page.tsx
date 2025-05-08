@@ -26,7 +26,10 @@ import { useValinnanTulosActorRef } from './lib/valinnan-tulos-state';
 import { ValinnanTulosActions } from '@/components/valinnan-tulos-actions';
 import { SpinnerModal } from '@/components/modals/spinner-modal';
 import { useSelector } from '@xstate/react';
-import { ValinnanTulosState } from '@/lib/state/valinnan-tulos-machine';
+import {
+  ValinnanTulosActorRef,
+  ValinnanTulosState,
+} from '@/lib/state/valinnan-tulos-machine';
 import { PageSizeSelector } from '@/components/table/page-size-selector';
 import { useValinnanTuloksetSearchParams } from './hooks/useValinnanTuloksetSearch';
 import { useIsDirtyValinnanTulos } from '@/lib/state/valinnan-tulos-machine-utils';
@@ -76,6 +79,31 @@ const useHakemuksetValinnanTuloksilla = ({
   );
 };
 
+const ValinnanTulosSpinnerModal = ({
+  actorRef,
+}: {
+  actorRef: ValinnanTulosActorRef;
+}) => {
+  const state = useSelector(actorRef, (state) => state);
+  const { t } = useTranslations();
+
+  let spinnerTitle;
+  if (state.matches(ValinnanTulosState.REMOVING)) {
+    spinnerTitle = t('valinnan-tulokset.poistetaan-tuloksia');
+  } else if (state.matches(ValinnanTulosState.PUBLISHING)) {
+    spinnerTitle = t('valinnan-tulokset.hyvaksytaan-valintaesitysta');
+  } else if (state.matches(ValinnanTulosState.UPDATING)) {
+    spinnerTitle = t('valinnan-tulokset.tallennetaan-tuloksia');
+  }
+
+  return (
+    <SpinnerModal
+      title={spinnerTitle ?? ''}
+      open={Boolean(spinnerTitle && state.hasTag('saving'))}
+    />
+  );
+};
+
 const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const { t } = useTranslations();
 
@@ -101,7 +129,7 @@ const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
 
   const hakemuksetTuloksilla = useHakemuksetValinnanTuloksilla({
     hakemukset,
-    valinnanTulokset: valinnanTulokset,
+    valinnanTulokset,
   });
 
   const valinnanTulosActorRef = useValinnanTulosActorRef({
@@ -114,23 +142,7 @@ const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const isDirty = useIsDirtyValinnanTulos(valinnanTulosActorRef);
   useConfirmChangesBeforeNavigation(isDirty);
 
-  const valintatapajonoOid = useSelector(
-    valinnanTulosActorRef,
-    (state) => state.context.valintatapajonoOid,
-  );
-
   const { pageSize, setPageSize } = useValinnanTuloksetSearchParams();
-
-  const state = useSelector(valinnanTulosActorRef, (state) => state);
-
-  let spinnerTitle;
-  if (state.matches(ValinnanTulosState.REMOVING)) {
-    spinnerTitle = t('valinnan-tulokset.poistetaan-tuloksia');
-  } else if (state.matches(ValinnanTulosState.PUBLISHING)) {
-    spinnerTitle = t('valinnan-tulokset.hyvaksytaan-valintaesitysta');
-  } else if (state.matches(ValinnanTulosState.UPDATING)) {
-    spinnerTitle = t('valinnan-tulokset.tallennetaan-tuloksia');
-  }
 
   return isEmpty(hakemuksetTuloksilla) ? (
     <NoResults text={t('valinnan-tulokset.ei-hakemuksia')} />
@@ -143,10 +155,7 @@ const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
         alignItems: 'flex-start',
       }}
     >
-      <SpinnerModal
-        title={spinnerTitle ?? ''}
-        open={Boolean(spinnerTitle && state.hasTag('saving'))}
-      />
+      <ValinnanTulosSpinnerModal actorRef={valinnanTulosActorRef} />
       <Stack
         flexDirection="row"
         gap={2}
@@ -164,7 +173,6 @@ const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
         <ValinnanTulosActions
           haku={haku}
           hakukohde={hakukohde}
-          valintatapajonoOid={valintatapajonoOid}
           valinnanTulosActorRef={valinnanTulosActorRef}
           type="valinnan-tulos"
         />
