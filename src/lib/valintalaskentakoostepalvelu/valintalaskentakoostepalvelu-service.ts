@@ -693,7 +693,7 @@ export const luoHyvaksymiskirjeetPDF = async ({
   onlyForbidden,
 }: {
   hakemusOids?: Array<string>;
-  sijoitteluajoId: string;
+  sijoitteluajoId?: string;
   hakukohde: Hakukohde;
   letterBody: string;
   deadline?: Date | null;
@@ -710,7 +710,9 @@ export const luoHyvaksymiskirjeetPDF = async ({
   const urlWithQuery = new URL(configuration.hyvaksymiskirjeetUrl);
   urlWithQuery.searchParams.append('hakuOid', hakukohde.hakuOid);
   urlWithQuery.searchParams.append('hakukohdeOid', hakukohde.oid);
-  urlWithQuery.searchParams.append('sijoitteluajoId', sijoitteluajoId);
+  if (sijoitteluajoId) {
+    urlWithQuery.searchParams.append('sijoitteluajoId', sijoitteluajoId);
+  }
   urlWithQuery.searchParams.append('tarjoajaOid', hakukohde.tarjoajaOid);
   urlWithQuery.searchParams.append('hakukohdeNimi', hakukohdeNimi);
   urlWithQuery.searchParams.append('lang', opetuskieliCode);

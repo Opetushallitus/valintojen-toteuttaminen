@@ -22,7 +22,7 @@ import {
 import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
 import { ValinnanTilaCell } from '@/components/valinnan-tila-cell';
 import { ValinnanTulosActionBar } from './valinnan-tulos-action-bar';
-import { OtherActionsCell } from './other-actions-cell';
+import { ValinnanTulosOtherActionsCell } from '@/components/valinnan-tulos-other-actions-cell';
 
 export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
   title,
@@ -131,9 +131,12 @@ const useColumns = ({
         key: 'toiminnot',
         renderFn: (hakemus) =>
           valintatapajonoOid && (
-            <OtherActionsCell
+            <ValinnanTulosOtherActionsCell
+              haku={haku}
+              hakukohde={hakukohde}
               hakemus={hakemus}
               disabled={disabled}
+              kaikkiJonotHyvaksytty={true}
               removeValinnanTulos={removeValinnanTulos}
               valintatapajonoOid={valintatapajonoOid}
             />

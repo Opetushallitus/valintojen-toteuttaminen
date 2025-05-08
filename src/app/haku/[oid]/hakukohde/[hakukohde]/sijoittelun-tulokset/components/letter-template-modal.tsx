@@ -28,11 +28,11 @@ import { ProgressModalDialog } from './progress-modal-dialog';
 import { styled } from '@/lib/theme';
 import { TemplateSection } from './letter-template-section';
 
-export type LetterTemplateModalProps = {
+type LetterTemplateModalProps = {
   title: string;
   template: KirjepohjaNimi;
   hakukohde: Hakukohde;
-  sijoitteluajoId: string;
+  sijoitteluajoId?: string;
   hakemusOids?: Array<string>;
   setDocument?: (docId: string) => void;
   korkeaKoulu?: boolean;
@@ -223,7 +223,7 @@ export const NonAcceptedLetterTemplateModal = createModal(
     template,
     sijoitteluajoId,
     korkeaKoulu = false,
-  }: LetterTemplateModalProps) => {
+  }: LetterTemplateModalProps & { sijoitteluajoId: string }) => {
     const modalProps = useOphModalProps();
 
     const { t } = useTranslations();

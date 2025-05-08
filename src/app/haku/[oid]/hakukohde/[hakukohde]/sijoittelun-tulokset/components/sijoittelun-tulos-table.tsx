@@ -19,7 +19,7 @@ import { VastaanOttoCell } from '@/components/vastaanotto-cell';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
 import { SijoittelunTuloksetActionBar } from './sijoittelun-tulos-action-bar';
-import { OtherActionsCell } from './other-actions-cell';
+import { ValinnanTulosOtherActionsCell } from '@/components/valinnan-tulos-other-actions-cell';
 import { useSelector } from '@xstate/react';
 import { isNonNull } from 'remeda';
 import { useSijoittelunTulosSearch } from '../hooks/useSijoittelunTulosSearch';
@@ -161,7 +161,7 @@ const useColumns = ({
         title: t(`${TRANSLATIONS_PREFIX}.toiminnot`),
         key: 'toiminnot',
         renderFn: (props) => (
-          <OtherActionsCell
+          <ValinnanTulosOtherActionsCell
             haku={haku}
             hakemus={props}
             hakukohde={hakukohde}
