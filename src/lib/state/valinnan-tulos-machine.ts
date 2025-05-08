@@ -229,7 +229,7 @@ export function createValinnanTulosMachine<T extends HakemuksenValinnanTulos>(
                           ilmoittautumisTila:
                             event.ilmoittautumisTila ??
                             tulos.ilmoittautumisTila,
-                          vastaanottotila:
+                          vastaanottoTila:
                             event.vastaanottoTila ?? tulos.vastaanottoTila,
                         },
                       ]
