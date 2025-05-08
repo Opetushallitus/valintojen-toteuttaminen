@@ -15,7 +15,11 @@ import { OphPagination } from './oph-pagination';
 import { ophColors } from '@opetushallitus/oph-design-system';
 import { TableHeaderCell } from './table-header-cell';
 import { EMPTY_ARRAY, EMPTY_STRING_SET } from '@/lib/common';
-import { TableHeaderCheckbox, TableRowCheckbox } from './table-checkboxes';
+import {
+  SelectionProps,
+  TableHeaderCheckbox,
+  TableRowCheckbox,
+} from './table-checkboxes';
 import { ListTableColumn, Row } from './table-types';
 import { DEFAULT_BOX_BORDER, styled } from '@/lib/theme';
 
@@ -68,8 +72,8 @@ interface ListTableProps<T extends Row>
   pagination?: ListTablePaginationProps;
   getRowCheckboxLabel?: (row: T) => string;
   checkboxSelection?: boolean;
-  selection?: Set<string>;
-  onSelectionChange?: (selection: Set<string>) => void;
+  selection?: SelectionProps['selection'];
+  setSelection?: SelectionProps['setSelection'];
 }
 
 const TableWrapper = styled(Box)(({ theme }) => ({
@@ -118,7 +122,7 @@ export const ListTable = <T extends Row>({
   pagination,
   checkboxSelection,
   selection = EMPTY_STRING_SET,
-  onSelectionChange,
+  setSelection,
   getRowCheckboxLabel,
   ...props
 }: ListTableProps<T>) => {
@@ -144,7 +148,7 @@ export const ListTable = <T extends Row>({
                   title={
                     <TableHeaderCheckbox
                       selection={selection}
-                      onSelectionChange={onSelectionChange}
+                      setSelection={setSelection}
                       rows={rows}
                       rowKeyProp={rowKeyProp}
                     />
@@ -175,11 +179,10 @@ export const ListTable = <T extends Row>({
                   {checkboxSelection && (
                     <StyledCell>
                       <TableRowCheckbox
-                        selection={selection}
-                        onSelectionChange={onSelectionChange}
+                        checked={selection.has(rowId)}
+                        setSelection={setSelection}
                         rowId={rowId}
-                        rowProps={rowProps}
-                        getRowCheckboxLabel={getRowCheckboxLabel}
+                        label={getRowCheckboxLabel?.(rowProps)}
                       />
                     </StyledCell>
                   )}

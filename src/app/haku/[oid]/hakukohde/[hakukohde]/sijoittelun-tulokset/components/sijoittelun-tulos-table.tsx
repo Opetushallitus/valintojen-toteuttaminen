@@ -276,7 +276,7 @@ export const SijoittelunTulosTable = ({
           pageSize,
           label: `${t('yleinen.sivutus')} ${valintatapajono.nimi}`,
         }}
-        onSelectionChange={setSelection}
+        setSelection={setSelection}
         translateHeader={false}
         getRowCheckboxLabel={({ hakijanNimi }) =>
           t(`${TRANSLATIONS_PREFIX}.valitse-hakemus`, {

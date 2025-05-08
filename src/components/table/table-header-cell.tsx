@@ -3,6 +3,7 @@ import { getSortParts } from './table-utils';
 import { ophColors } from '@opetushallitus/oph-design-system';
 import { styled } from '@/lib/theme';
 import { Button, TableCell } from '@mui/material';
+import { memo } from 'react';
 
 const SortIcon = ({
   sortValue,
@@ -32,7 +33,7 @@ const StyledHeaderCell = styled(TableCell)(({ theme }) => ({
   },
 }));
 
-export const TableHeaderCell = ({
+export const TableHeaderCell = memo(function TableHeaderCell({
   colId,
   title,
   style,
@@ -46,7 +47,7 @@ export const TableHeaderCell = ({
   sort?: string;
   setSort?: (sort: string) => void;
   sortable?: boolean;
-}) => {
+}) {
   const { direction } = getSortParts(sort, colId);
 
   return (
@@ -80,4 +81,4 @@ export const TableHeaderCell = ({
       )}
     </StyledHeaderCell>
   );
-};
+});

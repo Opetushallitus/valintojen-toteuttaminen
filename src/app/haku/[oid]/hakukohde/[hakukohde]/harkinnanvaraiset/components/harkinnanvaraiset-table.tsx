@@ -19,6 +19,7 @@ import {
   HarkinnanvarainenTilaValue,
   HarkinnanvaraisetTilatByHakemusOids,
 } from '@/lib/types/harkinnanvaraiset-types';
+import { SelectionProps } from '@/components/table/table-checkboxes';
 
 export const HarkinnanvaraisetTable = ({
   data,
@@ -28,8 +29,8 @@ export const HarkinnanvaraisetTable = ({
   harkinnanvaraisetTilat,
 }: {
   data: Array<HakemuksenHarkinnanvaraisuus>;
-  selection: Set<string>;
-  setSelection: (selection: Set<string>) => void;
+  selection: SelectionProps['selection'];
+  setSelection: SelectionProps['setSelection'];
   onHarkinnanvaraisetTilatChange?: (
     harkinnanvaraisetTilaChanges: HarkinnanvaraisetTilatByHakemusOids,
   ) => void;
@@ -79,7 +80,7 @@ export const HarkinnanvaraisetTable = ({
         setSort={setSort}
         checkboxSelection={true}
         selection={selection}
-        onSelectionChange={setSelection}
+        setSelection={setSelection}
         getRowCheckboxLabel={({ hakijanNimi }) =>
           t(`${TRANSLATIONS_PREFIX}.valitse-harkinnanvarainen-hakemus`, {
             hakijanNimi,

@@ -85,7 +85,7 @@ export const ValintakoekutsutKokeittainTable = ({
         setSort={setSort}
         checkboxSelection={true}
         selection={selection}
-        onSelectionChange={setSelection}
+        setSelection={setSelection}
         getRowCheckboxLabel={({ hakijanNimi }) =>
           t(`${TRANSLATIONS_PREFIX}.valitse-koekutsu-hakijalle`, {
             hakijanNimi,
