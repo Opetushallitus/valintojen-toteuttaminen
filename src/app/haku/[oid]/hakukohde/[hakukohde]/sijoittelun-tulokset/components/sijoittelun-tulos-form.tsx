@@ -58,7 +58,7 @@ export const SijoittelunTulosForm = ({
         haku={haku}
         hakukohde={hakukohde}
         valinnanTulosActorRef={sijoittelunTulosActorRef}
-        type="sijoittelun-tulos"
+        mode="sijoittelu"
       />
       <SijoittelunTulosTable
         haku={haku}

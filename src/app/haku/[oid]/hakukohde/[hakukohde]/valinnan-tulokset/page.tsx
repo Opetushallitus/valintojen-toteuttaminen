@@ -174,7 +174,7 @@ const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
           haku={haku}
           hakukohde={hakukohde}
           valinnanTulosActorRef={valinnanTulosActorRef}
-          type="valinnan-tulos"
+          mode="valinta"
         />
         <ValinnanTuloksetTable
           haku={haku}

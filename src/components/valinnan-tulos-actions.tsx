@@ -51,17 +51,17 @@ const SendVastaanottopostiButton = ({
   disabled,
   hakukohdeOid,
   valintatapajonoOid,
-  type,
+  mode,
 }: {
   disabled: boolean;
   hakukohdeOid: string;
   valintatapajonoOid?: string;
-  type: 'sijoittelun-tulos' | 'valinnan-tulos';
+  mode: 'sijoittelu' | 'valinta';
 }) => {
   const { t } = useTranslations();
 
   const { isPending, mutate } = useSendVastaanottoPostiMutation({
-    target: type === 'sijoittelun-tulos' ? 'valintatapajono' : 'hakukohde',
+    target: mode === 'sijoittelu' ? 'valintatapajono' : 'hakukohde',
     hakukohdeOid,
     valintatapajonoOid,
   });
@@ -73,7 +73,7 @@ const SendVastaanottopostiButton = ({
       onClick={() => mutate()}
       loading={isPending}
     >
-      {type === 'sijoittelun-tulos'
+      {mode === 'sijoittelu'
         ? t('vastaanottoposti.valintatapajono-laheta')
         : t('vastaanottoposti.hakukohde-laheta')}
     </OphButton>
@@ -246,12 +246,12 @@ export const ValinnanTulosActions = ({
   haku,
   hakukohde,
   valinnanTulosActorRef,
-  type,
+  mode,
 }: {
   haku: Haku;
   hakukohde: Hakukohde;
   valinnanTulosActorRef: ValinnanTulosActorRef | SijoittelunTulosActorRef;
-  type: 'sijoittelun-tulos' | 'valinnan-tulos';
+  mode: 'sijoittelu' | 'valinta';
 }) => {
   const { t } = useTranslations();
 
@@ -282,7 +282,7 @@ export const ValinnanTulosActions = ({
       >
         {t('yleinen.tallenna')}
       </OphButton>
-      {type === 'valinnan-tulos' && (
+      {mode === 'valinta' && (
         <ValinnanTuloksetExcelDownloadButton
           haku={haku}
           hakukohdeOid={hakukohde.oid}
@@ -320,7 +320,7 @@ export const ValinnanTulosActions = ({
       <SendVastaanottopostiButton
         disabled={!state.matches(ValinnanTulosState.IDLE)}
         hakukohdeOid={hakukohde.oid}
-        type={type}
+        mode={mode}
         valintatapajonoOid={valintatapajonoOid}
       />
     </ActionsContainer>
