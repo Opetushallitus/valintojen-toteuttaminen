@@ -9,9 +9,9 @@ import { SijoitteluajonValintatapajonoValintatiedoilla } from '@/lib/types/sijoi
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import { SijoittelunTulosTable } from './sijoittelun-tulos-table';
 import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBeforeNavigation';
-import { useIsDirtySijoittelunTulos } from '../lib/sijoittelun-tulokset-state-utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { refetchSijoittelunTulokset } from '../lib/refetch-sijoittelun-tulokset';
+import { useIsDirtyValinnanTulos } from '@/lib/state/valinnan-tulos-machine-utils';
 
 type SijoittelunTuloksetFormParams = {
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
@@ -49,7 +49,7 @@ export const SijoittelunTulosForm = ({
     onUpdated: onUpdated,
   });
 
-  const isDirty = useIsDirtySijoittelunTulos(sijoittelunTulosActorRef);
+  const isDirty = useIsDirtyValinnanTulos(sijoittelunTulosActorRef);
 
   useConfirmChangesBeforeNavigation(isDirty);
 

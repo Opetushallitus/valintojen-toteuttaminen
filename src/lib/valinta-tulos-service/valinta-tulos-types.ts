@@ -1,4 +1,5 @@
-import { MaksunTila } from '../ataru/ataru-types';
+import { Hakemus, MaksunTila } from '../ataru/ataru-types';
+import { TranslatedName } from '../localization/localization-types';
 import {
   IlmoittautumisTila,
   SijoittelunTila,
@@ -17,22 +18,23 @@ export type ValinnanTulosModel = {
   valintatapajonoOid: string;
   hakemusOid: string;
   henkiloOid: string;
-  vastaanottotila: VastaanottoTila;
   valinnantila: SijoittelunTila;
+  vastaanottotila: VastaanottoTila;
   ilmoittautumistila: IlmoittautumisTila;
   julkaistavissa: boolean;
   ehdollisestiHyvaksyttavissa: boolean;
-  ehdollisenHyvaksymisenEhtoKoodi?: string | null;
-  ehdollisenHyvaksymisenEhtoFI?: string | null;
-  ehdollisenHyvaksymisenEhtoSV?: string | null;
-  ehdollisenHyvaksymisenEhtoEN?: string | null;
+  ehdollisenHyvaksymisenEhtoKoodi?: string;
+  ehdollisenHyvaksymisenEhtoFI?: string;
+  ehdollisenHyvaksymisenEhtoSV?: string;
+  ehdollisenHyvaksymisenEhtoEN?: string;
+  valinnantilanKuvauksenTekstiFI?: string;
+  valinnantilanKuvauksenTekstiSV?: string;
+  valinnantilanKuvauksenTekstiEN?: string;
   hyvaksyttyVarasijalta: boolean;
   hyvaksyPeruuntunut: boolean;
 };
 
-export type ValinnanTulos = Omit<ValinnanTulosModel, 'ilmoittautumistila'> & {
-  ilmoittautumisTila: IlmoittautumisTila;
-};
+export type ValinnanTulos = ValinnanTulosModel;
 
 export type HakemusChangeDetail = {
   field: string;
@@ -103,6 +105,9 @@ export type SijoitteluajonTuloksetWithValintaEsitysResponseData = {
     ehdollisenHyvaksymisenEhtoFI?: string;
     ehdollisenHyvaksymisenEhtoSV?: string;
     ehdollisenHyvaksymisenEhtoEN?: string;
+    valinnantilanKuvauksenTekstiFI?: string;
+    valinnantilanKuvauksenTekstiSV?: string;
+    valinnantilanKuvauksenTekstiEN?: string;
     vastaanottoDeadlineMennyt?: boolean;
     vastaanottoDeadline?: string;
     hyvaksyttyHarkinnanvaraisesti: boolean;
@@ -124,4 +129,20 @@ export type SijoitteluajonTuloksetWithValintaEsitysResponseData = {
 export type SijoittelunTulosBasicInfo = {
   startDate: Date;
   endDate: Date;
+};
+
+// Jos ei tuloksia, vain hakemuksen tiedot
+export type HakemusValinnanTuloksilla = Hakemus & {
+  valinnanTulos?: {
+    hakukohdeOid: string;
+    valintatapajonoOid?: string;
+    valinnanTila: SijoittelunTila;
+    valinnanTilanKuvaus?: TranslatedName;
+    ehdollisenHyvaksymisenEhtoKoodi?: string;
+    ehdollisenHyvaksymisenEhto?: TranslatedName;
+    vastaanottoTila: VastaanottoTila;
+    ilmoittautumisTila: IlmoittautumisTila;
+    julkaistavissa: boolean;
+    maksunTila?: string;
+  };
 };

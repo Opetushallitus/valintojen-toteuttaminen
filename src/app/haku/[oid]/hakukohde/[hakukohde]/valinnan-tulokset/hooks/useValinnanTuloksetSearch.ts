@@ -10,8 +10,8 @@ import {
 } from '@/lib/constants';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { hakemusFilter } from '@/lib/filters';
-import { HakemusValinnanTuloksilla } from '../lib/valinnan-tulos-types';
 import { isEmpty } from 'remeda';
+import { HakemusValinnanTuloksilla } from '@/lib/valinta-tulos-service/valinta-tulos-types';
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -104,9 +104,9 @@ export const useValinnanTuloksetSearch = (
     const filtered = hakemukset.filter(
       (hakemus) =>
         (isEmpty(valinnanTila) ||
-          valinnanTila === hakemus.valinnanTulos?.valinnantila) &&
+          valinnanTila === hakemus.valinnanTulos?.valinnanTila) &&
         (isEmpty(vastaanottoTila) ||
-          vastaanottoTila === hakemus.valinnanTulos?.vastaanottotila) &&
+          vastaanottoTila === hakemus.valinnanTulos?.vastaanottoTila) &&
         hakemusFilter(hakemus, searchPhrase),
     );
 

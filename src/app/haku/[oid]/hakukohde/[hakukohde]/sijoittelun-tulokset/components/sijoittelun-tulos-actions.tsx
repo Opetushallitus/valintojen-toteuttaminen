@@ -25,14 +25,14 @@ import { ConfirmationGlobalModal } from '@/components/modals/confirmation-global
 import { buildLinkToApplication } from '@/lib/ataru/ataru-service';
 import { ExternalLink } from '@/components/external-link';
 import { useSelector } from '@xstate/react';
-import {
-  MassChangeParams,
-  SijoittelunTuloksetEventType,
-  SijoittelunTuloksetState,
-  SijoittelunTulosActorRef,
-} from '../lib/sijoittelun-tulokset-state';
 import { styled } from '@/lib/theme';
 import { useIsValintaesitysJulkaistavissa } from '@/hooks/useIsValintaesitysJulkaistavissa';
+import {
+  MassChangeParams,
+  ValinnanTulosActorRef,
+  ValinnanTulosEventType,
+  ValinnanTulosState,
+} from '@/lib/state/valinnan-tulos-machine';
 
 const ActionsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -239,7 +239,7 @@ export const SijoittelunTuloksetActions = ({
   haku: Haku;
   hakukohde: Hakukohde;
   valintatapajonoOid: string;
-  sijoittelunTulosActorRef: SijoittelunTulosActorRef;
+  sijoittelunTulosActorRef: ValinnanTulosActorRef;
 }) => {
   const { t } = useTranslations();
 
@@ -260,11 +260,11 @@ export const SijoittelunTuloksetActions = ({
     <ActionsContainer>
       <OphButton
         onClick={() => {
-          send({ type: SijoittelunTuloksetEventType.UPDATE });
+          send({ type: ValinnanTulosEventType.UPDATE });
         }}
         variant="contained"
-        loading={state.matches(SijoittelunTuloksetState.UPDATING)}
-        disabled={!state.matches(SijoittelunTuloksetState.IDLE)}
+        loading={state.matches(ValinnanTulosState.UPDATING)}
+        disabled={!state.matches(ValinnanTulosState.IDLE)}
       >
         {t('yleinen.tallenna')}
       </OphButton>
@@ -274,11 +274,11 @@ export const SijoittelunTuloksetActions = ({
         hakemukset={hakemukset}
         disabled={
           !isValintaesitysJulkaistavissa ||
-          !state.matches(SijoittelunTuloksetState.IDLE)
+          !state.matches(ValinnanTulosState.IDLE)
         }
         massUpdateForm={(changeParams: MassChangeParams) => {
           send({
-            type: SijoittelunTuloksetEventType.MASS_UPDATE,
+            type: ValinnanTulosEventType.MASS_UPDATE,
             ...changeParams,
           });
         }}
@@ -287,17 +287,17 @@ export const SijoittelunTuloksetActions = ({
         variant="contained"
         disabled={
           !isValintaesitysJulkaistavissa ||
-          !state.matches(SijoittelunTuloksetState.IDLE)
+          !state.matches(ValinnanTulosState.IDLE)
         }
         onClick={() => {
-          send({ type: SijoittelunTuloksetEventType.PUBLISH });
+          send({ type: ValinnanTulosEventType.PUBLISH });
         }}
-        loading={state.matches(SijoittelunTuloksetState.PUBLISHING)}
+        loading={state.matches(ValinnanTulosState.PUBLISHING)}
       >
         {t('sijoittelun-tulokset.hyvaksy')}
       </OphButton>
       <SendVastaanottopostiButton
-        disabled={!state.matches(SijoittelunTuloksetState.IDLE)}
+        disabled={!state.matches(ValinnanTulosState.IDLE)}
         hakukohdeOid={hakukohde.oid}
         valintatapajonoOid={valintatapajonoOid}
       />

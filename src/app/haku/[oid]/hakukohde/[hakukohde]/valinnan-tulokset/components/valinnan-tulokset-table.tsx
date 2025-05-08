@@ -9,10 +9,10 @@ import { useMemo } from 'react';
 import { KeysMatching, ListTableColumn } from '@/components/table/table-types';
 import { useSelection } from '@/hooks/useSelection';
 import { IlmoittautumisTilaSelect } from '@/components/ilmoittautumistila-select';
-import { HakemusValinnanTuloksilla } from '../lib/valinnan-tulos-types';
 import { VastaanOttoCell } from '@/components/vastaanotto-cell';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import { useValinnanTuloksetSearch } from '../hooks/useValinnanTuloksetSearch';
+import { HakemusValinnanTuloksilla } from '@/lib/valinta-tulos-service/valinta-tulos-types';
 
 export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
   title,
@@ -47,20 +47,20 @@ const useColumns = ({
         title: t(`${TRANSLATIONS_PREFIX}.valinnan-tila`),
         key: 'valinnantila',
         renderFn: ({ valinnanTulos }) =>
-          valinnanTulos && <div>{valinnanTulos.valinnantila}</div>,
+          valinnanTulos && <div>{valinnanTulos.valinnanTila}</div>,
       }),
       makeColumnWithCustomRender<HakemusValinnanTuloksilla>({
         title: t(`${TRANSLATIONS_PREFIX}.vastaanoton-tila`),
         key: 'vastaanottotila',
-        renderFn: ({ valinnanTulos }) =>
+        renderFn: ({ hakemusOid, valinnanTulos }) =>
           valinnanTulos && (
             <VastaanOttoCell
               haku={haku}
               hakukohde={hakukohde}
               hakemus={{
-                hakemusOid: valinnanTulos.hakemusOid,
-                tila: valinnanTulos.valinnantila,
-                vastaanottotila: valinnanTulos.vastaanottotila,
+                hakemusOid,
+                tila: valinnanTulos.valinnanTila,
+                vastaanottotila: valinnanTulos.vastaanottoTila,
                 julkaistavissa: valinnanTulos.julkaistavissa,
               }}
               updateForm={() => {}}
@@ -77,8 +77,8 @@ const useColumns = ({
                 hakemus={{
                   hakemusOid,
                   ilmoittautumisTila: valinnanTulos.ilmoittautumisTila,
-                  tila: valinnanTulos.valinnantila,
-                  vastaanottotila: valinnanTulos.vastaanottotila,
+                  tila: valinnanTulos.valinnanTila,
+                  vastaanottotila: valinnanTulos.vastaanottoTila,
                   julkaistavissa: valinnanTulos.julkaistavissa,
                 }}
                 updateForm={() => {}}

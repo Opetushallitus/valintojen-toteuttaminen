@@ -22,15 +22,15 @@ import { SijoittelunTuloksetActionBar } from './sijoittelun-tulos-action-bar';
 import { OtherActionsCell } from './other-actions-cell';
 import { useSelector } from '@xstate/react';
 import { isNonNull } from 'remeda';
-import {
-  MassChangeParams,
-  SijoittelunTuloksetEventType,
-  SijoittelunTuloksetState,
-  SijoittelunTulosActorRef,
-  SijoittelunTulosChangeParams,
-} from '../lib/sijoittelun-tulokset-state';
 import { useSijoittelunTulosSearch } from '../hooks/useSijoittelunTulosSearch';
 import { useSelection } from '@/hooks/useSelection';
+import {
+  MassChangeParams,
+  ValinnanTulosActorRef,
+  ValinnanTulosChangeParams,
+  ValinnanTulosEventType,
+  ValinnanTulosState,
+} from '@/lib/state/valinnan-tulos-machine';
 
 export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
   title,
@@ -62,7 +62,7 @@ const useColumns = ({
   haku: Haku;
   hakukohde: Hakukohde;
   sijoitteluajoId: string;
-  actorRef: SijoittelunTulosActorRef;
+  actorRef: ValinnanTulosActorRef;
   kaikkiJonotHyvaksytty: boolean;
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
   kayttaaLaskentaa: boolean;
@@ -73,12 +73,12 @@ const useColumns = ({
 
   const { t } = useTranslations();
 
-  const disabled = !state.matches(SijoittelunTuloksetState.IDLE);
+  const disabled = !state.matches(ValinnanTulosState.IDLE);
 
   const updateForm = useCallback(
-    (changeParams: SijoittelunTulosChangeParams) => {
+    (changeParams: ValinnanTulosChangeParams) => {
       send({
-        type: SijoittelunTuloksetEventType.CHANGE,
+        type: ValinnanTulosEventType.CHANGE,
         ...changeParams,
       });
     },
@@ -198,7 +198,7 @@ export const SijoittelunTulosTable = ({
   haku: Haku;
   hakukohde: Hakukohde;
   sijoitteluajoId: string;
-  sijoittelunTulosActorRef: SijoittelunTulosActorRef;
+  sijoittelunTulosActorRef: ValinnanTulosActorRef;
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
   kaikkiJonotHyvaksytty: boolean;
   kayttaaLaskentaa: boolean;
@@ -261,7 +261,7 @@ export const SijoittelunTulosTable = ({
         resetSelection={resetSelection}
         massStatusChangeForm={(changeParams: MassChangeParams) => {
           sijoittelunTulosActorRef.send({
-            type: SijoittelunTuloksetEventType.MASS_CHANGE,
+            type: ValinnanTulosEventType.MASS_CHANGE,
             ...changeParams,
           });
         }}

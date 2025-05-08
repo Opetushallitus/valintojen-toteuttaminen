@@ -12,9 +12,9 @@ import {
   isIlmoittautuminenPossible,
   isVastaanottoPossible,
 } from '@/lib/sijoittelun-tulokset-utils';
-import { MassChangeParams } from '../lib/sijoittelun-tulokset-state';
 import { useVastaanottoTilaOptions } from '@/hooks/useVastaanottoTilaOptions';
 import { useIlmoittautumisTilaOptions } from '@/hooks/useIlmoittautumisTilaOptions';
+import { MassChangeParams } from '@/lib/state/valinnan-tulos-machine';
 
 const IlmoittautumisSelect = ({
   hakemukset,

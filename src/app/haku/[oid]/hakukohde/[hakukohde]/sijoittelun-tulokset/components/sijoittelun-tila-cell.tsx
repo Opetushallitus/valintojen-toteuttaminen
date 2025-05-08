@@ -21,10 +21,10 @@ import {
 import { Language } from '@/lib/localization/localization-types';
 import { getReadableHakemuksenTila } from '@/lib/sijoittelun-tulokset-utils';
 import { entries, map, pipe } from 'remeda';
-import { SijoittelunTulosChangeParams } from '../lib/sijoittelun-tulokset-state';
 import { styled } from '@/lib/theme';
 import { useHasOrganizationPermissions } from '@/hooks/useUserPermissions';
 import { InfoTooltipButton } from '@/components/info-tooltip-button';
+import { ValinnanTulosChangeParams } from '@/lib/state/valinnan-tulos-machine';
 
 const LanguageAdornment = styled(InputAdornment)(() => ({
   backgroundColor: ophColors.grey200,
@@ -65,7 +65,7 @@ export const EhdollisestiHyvaksyttavissaCheckbox = ({
     'hakemusOid' | 'ehdollisestiHyvaksyttavissa'
   >;
   disabled: boolean;
-  updateForm: (params: SijoittelunTulosChangeParams) => void;
+  updateForm: (params: ValinnanTulosChangeParams) => void;
 }) => {
   const { t } = useTranslations();
   const { hakemusOid, ehdollisestiHyvaksyttavissa } = hakemus;
@@ -103,7 +103,7 @@ const EhdollinenFields = ({
   haku: Haku;
   hakemus: SijoittelunHakemusValintatiedoilla;
   disabled: boolean;
-  updateForm: (params: SijoittelunTulosChangeParams) => void;
+  updateForm: (params: ValinnanTulosChangeParams) => void;
 }) => {
   const { t, translateEntity } = useTranslations();
 
@@ -202,7 +202,7 @@ export const SijoittelunTilaCell = ({
   hakemus: SijoittelunHakemusValintatiedoilla;
   haku: Haku;
   disabled: boolean;
-  updateForm: (params: SijoittelunTulosChangeParams) => void;
+  updateForm: (params: ValinnanTulosChangeParams) => void;
 }) => {
   const { t } = useTranslations();
 

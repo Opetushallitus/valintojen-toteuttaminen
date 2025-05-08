@@ -9,18 +9,18 @@ import {
   VastaanottoTila,
 } from '@/lib/types/sijoittelu-types';
 import {
-  SijoittelunTuloksetEventType,
-  SijoittelunTuloksetState,
-  SijoittelunTulosActorRef,
-} from './sijoittelun-tulokset-state';
+  ValinnanTulosActorRef,
+  ValinnanTulosEventType,
+  ValinnanTulosState,
+} from '@/lib/state/valinnan-tulos-machine';
 
 vi.mock('@/components/modals/global-modal', () => ({
   showModal: vi.fn(),
   createModal: vi.fn(),
 }));
 
-const waitIdle = (actor: SijoittelunTulosActorRef) =>
-  waitFor(actor, (state) => state.matches(SijoittelunTuloksetState.IDLE));
+const waitIdle = (actor: ValinnanTulosActorRef) =>
+  waitFor(actor, (state) => state.matches(ValinnanTulosState.IDLE));
 
 describe('Sijoittelun tulokset states', async () => {
   const hakemukset: Array<SijoittelunHakemusValintatiedoilla> = [
@@ -75,7 +75,7 @@ describe('Sijoittelun tulokset states', async () => {
     const actor = createActor(sijoittelunTuloksetMachine);
     actor.start();
     actor.send({
-      type: SijoittelunTuloksetEventType.RESET,
+      type: ValinnanTulosEventType.RESET,
       params: {
         hakukohdeOid: 'hakukohde-oid',
         valintatapajonoOid: 'jono-oid',
@@ -95,7 +95,7 @@ describe('Sijoittelun tulokset states', async () => {
   test('saving without changes creates error toast', async () => {
     const actor = createActorLogic();
     expect(toastFn).not.toHaveBeenCalled();
-    actor.send({ type: SijoittelunTuloksetEventType.UPDATE });
+    actor.send({ type: ValinnanTulosEventType.UPDATE });
     expect(toastFn).toHaveBeenCalledWith({
       key: 'sijoittelun-tulokset-update-failed-for-hakukohde-oid-jono-oid',
       message: 'virhe.eimuutoksia',
@@ -112,13 +112,13 @@ describe('Sijoittelun tulokset states', async () => {
       Promise.resolve({ headers: new Headers(), data: [] }),
     );
     actor.send({
-      type: SijoittelunTuloksetEventType.CHANGE,
+      type: ValinnanTulosEventType.CHANGE,
       hakemusOid: 'hakemus-2',
       vastaanottotila: VastaanottoTila.EHDOLLISESTI_VASTAANOTTANUT,
     });
     let state = await waitIdle(actor);
     expect(state.context.changedHakemukset.length).toEqual(1);
-    actor.send({ type: SijoittelunTuloksetEventType.UPDATE });
+    actor.send({ type: ValinnanTulosEventType.UPDATE });
     state = await waitIdle(actor);
     expect(toastFn).toHaveBeenCalledWith({
       key: 'sijoittelun-tulokset-updated-for-hakukohde-oid-jono-oid',
@@ -131,7 +131,7 @@ describe('Sijoittelun tulokset states', async () => {
   test('removes item from changedhakemukset when changing values back to original', async () => {
     const actor = createActorLogic();
     actor.send({
-      type: SijoittelunTuloksetEventType.CHANGE,
+      type: ValinnanTulosEventType.CHANGE,
       hakemusOid: 'hakemus-2',
       vastaanottotila: VastaanottoTila.EHDOLLISESTI_VASTAANOTTANUT,
     });
@@ -140,7 +140,7 @@ describe('Sijoittelun tulokset states', async () => {
     expect(state.context.changedHakemukset.length).toEqual(1);
 
     actor.send({
-      type: SijoittelunTuloksetEventType.CHANGE,
+      type: ValinnanTulosEventType.CHANGE,
       hakemusOid: 'hakemus-2',
       vastaanottotila: VastaanottoTila.KESKEN,
     });
@@ -158,7 +158,7 @@ describe('Sijoittelun tulokset states', async () => {
       Promise.resolve({ headers: new Headers(), data: [] }),
     );
     actor.send({
-      type: SijoittelunTuloksetEventType.CHANGE,
+      type: ValinnanTulosEventType.CHANGE,
       hakemusOid: 'hakemus-2',
       ehdollisestiHyvaksyttavissa: true,
     });
@@ -167,7 +167,7 @@ describe('Sijoittelun tulokset states', async () => {
     expect(state.context.changedHakemukset.length).toEqual(1);
 
     actor.send({
-      type: SijoittelunTuloksetEventType.MASS_UPDATE,
+      type: ValinnanTulosEventType.MASS_UPDATE,
       hakemusOids: new Set(['hakemus-1', 'hakemus-2']),
       vastaanottotila: VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA,
     });
@@ -193,13 +193,13 @@ describe('Sijoittelun tulokset states', async () => {
       }),
     );
     actor.send({
-      type: SijoittelunTuloksetEventType.CHANGE,
+      type: ValinnanTulosEventType.CHANGE,
       hakemusOid: 'hakemus-1',
       vastaanottotila: VastaanottoTila.EHDOLLISESTI_VASTAANOTTANUT,
     });
     let state = await waitIdle(actor);
     expect(state.context.changedHakemukset.length).toEqual(1);
-    actor.send({ type: SijoittelunTuloksetEventType.UPDATE });
+    actor.send({ type: ValinnanTulosEventType.UPDATE });
     state = await waitIdle(actor);
     expect(onUpdatedFn).not.toHaveBeenCalled();
   });
@@ -208,7 +208,7 @@ describe('Sijoittelun tulokset states', async () => {
     const actor = createActorLogic();
 
     actor.send({
-      type: SijoittelunTuloksetEventType.CHANGE,
+      type: ValinnanTulosEventType.CHANGE,
       hakemusOid: 'hakemus-1',
       vastaanottotila: VastaanottoTila.KESKEN,
     });
@@ -242,13 +242,13 @@ describe('Sijoittelun tulokset states', async () => {
     );
 
     actor.send({
-      type: SijoittelunTuloksetEventType.CHANGE,
+      type: ValinnanTulosEventType.CHANGE,
       hakemusOid: 'hakemus-1',
       vastaanottotila: VastaanottoTila.EHDOLLISESTI_VASTAANOTTANUT,
     });
 
     actor.send({
-      type: SijoittelunTuloksetEventType.CHANGE,
+      type: ValinnanTulosEventType.CHANGE,
       hakemusOid: 'hakemus-2',
       vastaanottotila: VastaanottoTila.VASTAANOTTANUT_SITOVASTI,
     });
@@ -256,7 +256,7 @@ describe('Sijoittelun tulokset states', async () => {
     let state = await waitIdle(actor);
     expect(state.context.changedHakemukset.length).toEqual(2);
 
-    actor.send({ type: SijoittelunTuloksetEventType.UPDATE });
+    actor.send({ type: ValinnanTulosEventType.UPDATE });
     state = await waitIdle(actor);
     expect(onUpdatedFn).toHaveBeenCalled();
   });
