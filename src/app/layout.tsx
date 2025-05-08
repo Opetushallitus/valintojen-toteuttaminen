@@ -16,6 +16,7 @@ import {
   MyTolgeeProvider,
 } from '@/components/providers/localization-provider';
 import { PermissionProvider } from '@/components/providers/permission-provider';
+import { ConfigurationProvider } from '@/components/providers/configuration-provider';
 
 export const metadata: Metadata = {
   title: 'Valintojen Toteuttaminen',
@@ -36,18 +37,20 @@ export default async function RootLayout({
           {/* Initialisoidaan ensin lokalisoimaton teema, jotta ensimmäisten spinnereiden tyylit tulee oikein. */}
           <OphNextJsThemeProvider variant="oph" overrides={THEME_OVERRIDES}>
             <ReactQueryClientProvider>
-              <MyTolgeeProvider>
-                <PermissionProvider>
-                  <LocalizationProvider>
-                    <LocalizedThemeProvider>
-                      <NuqsAdapter>
-                        <Toaster />
-                        <GlobalModalProvider>{children}</GlobalModalProvider>
-                      </NuqsAdapter>
-                    </LocalizedThemeProvider>
-                  </LocalizationProvider>
-                </PermissionProvider>
-              </MyTolgeeProvider>
+              <ConfigurationProvider>
+                <MyTolgeeProvider>
+                  <PermissionProvider>
+                    <LocalizationProvider>
+                      <LocalizedThemeProvider>
+                        <NuqsAdapter>
+                          <Toaster />
+                          <GlobalModalProvider>{children}</GlobalModalProvider>
+                        </NuqsAdapter>
+                      </LocalizedThemeProvider>
+                    </LocalizationProvider>
+                  </PermissionProvider>
+                </MyTolgeeProvider>
+              </ConfigurationProvider>
             </ReactQueryClientProvider>
           </OphNextJsThemeProvider>
         </AppRouterCacheProvider>
