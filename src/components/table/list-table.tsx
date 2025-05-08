@@ -27,15 +27,14 @@ const StyledTable = styled(Table)({
   width: '100%',
 });
 
-const StyledCell = styled(TableCell)(({ theme }) => ({
-  padding: theme.spacing(1, 0, 1, 2),
-  textAlign: 'left',
-  whiteSpace: 'pre-wrap',
-  height: '64px',
-  borderWidth: 0,
-}));
-
-const StyledTableBody = styled(TableBody)({
+const StyledTableBody = styled(TableBody)(({ theme }) => ({
+  '& .MuiTableCell-root': {
+    padding: theme.spacing(1, 0, 1, 2),
+    textAlign: 'left',
+    whiteSpace: 'pre-wrap',
+    height: '64px',
+    borderWidth: 0,
+  },
   '& .MuiTableRow-root': {
     '&:nth-of-type(even)': {
       '.MuiTableCell-root': {
@@ -53,7 +52,7 @@ const StyledTableBody = styled(TableBody)({
       },
     },
   },
-});
+}));
 export type ListTablePaginationProps = {
   page: number;
   setPage: (page: number) => void;
@@ -177,20 +176,20 @@ export const ListTable = <T extends Row>({
               return (
                 <TableRow key={rowId}>
                   {checkboxSelection && (
-                    <StyledCell>
+                    <TableCell>
                       <TableRowCheckbox
                         checked={selection.has(rowId)}
                         setSelection={setSelection}
                         rowId={rowId}
                         label={getRowCheckboxLabel?.(rowProps)}
                       />
-                    </StyledCell>
+                    </TableCell>
                   )}
                   {columns.map(({ key: columnKey, render, style }) => {
                     return (
-                      <StyledCell key={columnKey.toString()} sx={style}>
-                        {render({ ...rowProps })}
-                      </StyledCell>
+                      <TableCell key={columnKey.toString()} sx={style}>
+                        {render(rowProps)}
+                      </TableCell>
                     );
                   })}
                 </TableRow>
