@@ -1,10 +1,7 @@
-import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
-import { useState } from 'react';
 import {
   History,
   MailOutline,
   InsertDriveFileOutlined,
-  MoreHoriz,
 } from '@mui/icons-material';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import useToaster from '@/hooks/useToaster';
@@ -14,24 +11,13 @@ import { ChangeHistoryGlobalModal } from '@/components/modals/change-history-glo
 import { AcceptedLetterTemplateModal } from './letter-template-modal';
 import { useUserPermissions } from '@/hooks/useUserPermissions';
 
-import { styled } from '@/lib/theme';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { SijoittelunHakemusValintatiedoilla } from '@/lib/types/sijoittelu-types';
-import { ListItemIcon, ListItemText, Menu, MenuItem } from '@mui/material';
 import {
   isKirjeidenMuodostaminenAllowed,
   isSendVastaanottoPostiVisible,
 } from '@/lib/sijoittelun-tulokset-utils';
-
-const StyledListItemText = styled(ListItemText)(() => ({
-  span: {
-    color: ophColors.blue2,
-  },
-}));
-
-const StyledListItemIcon = styled(ListItemIcon)(() => ({
-  color: ophColors.blue2,
-}));
+import { Dropdown } from '@/components/dropdown';
 
 export const OtherActionsCell = ({
   hakemus,
@@ -49,17 +35,7 @@ export const OtherActionsCell = ({
   kaikkiJonotHyvaksytty: boolean;
 }) => {
   const { t } = useTranslations();
-
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-  const buttonId = `other-actions-menu-${hakemus.hakemusOid}`;
   const { addToast } = useToaster();
-
-  const showMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const closeMenu = () => setAnchorEl(null);
 
   const createHyvaksymiskirjePDFs = async () => {
     showModal(AcceptedLetterTemplateModal, {
@@ -69,7 +45,6 @@ export const OtherActionsCell = ({
       sijoitteluajoId,
       hakemusOids: [hakemus.hakemusOid],
     });
-    closeMenu();
   };
 
   const sendVastaanottoposti = async () => {
@@ -99,7 +74,6 @@ export const OtherActionsCell = ({
       });
       console.error(e);
     }
-    closeMenu();
   };
 
   const showChangeHistoryForHakemus = async () => {
@@ -113,65 +87,39 @@ export const OtherActionsCell = ({
       });
       console.error(e);
     }
-    closeMenu();
   };
   const { data: userPermissions } = useUserPermissions();
 
   return (
-    <>
-      <OphButton
-        id={buttonId}
-        disabled={disabled}
-        aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
-        aria-label={t('sijoittelun-tulokset.toiminnot.menu')}
-        onClick={showMenu}
-        startIcon={<MoreHoriz />}
+    <Dropdown.MenuButton
+      type="icon-only"
+      label={t('sijoittelun-tulokset.toiminnot.menu')}
+      disabled={disabled}
+    >
+      <Dropdown.MenuItem
+        label={t('sijoittelun-tulokset.toiminnot.muutoshistoria')}
+        icon={<History />}
+        onClick={showChangeHistoryForHakemus}
       />
-      <Menu
-        anchorEl={anchorEl}
-        open={open}
-        onClose={closeMenu}
-        MenuListProps={{
-          'aria-labelledby': buttonId,
-        }}
-      >
-        <MenuItem onClick={showChangeHistoryForHakemus}>
-          <StyledListItemIcon>
-            <History />
-          </StyledListItemIcon>
-          <StyledListItemText>
-            {t('sijoittelun-tulokset.toiminnot.muutoshistoria')}
-          </StyledListItemText>
-        </MenuItem>
-        <MenuItem
-          onClick={createHyvaksymiskirjePDFs}
-          disabled={
-            !isKirjeidenMuodostaminenAllowed(
-              haku,
-              userPermissions,
-              kaikkiJonotHyvaksytty,
-            )
-          }
-        >
-          <StyledListItemIcon>
-            <InsertDriveFileOutlined />
-          </StyledListItemIcon>
-          <StyledListItemText>
-            {t('sijoittelun-tulokset.toiminnot.hyvaksymiskirje')}
-          </StyledListItemText>
-        </MenuItem>
-        {isSendVastaanottoPostiVisible(haku, userPermissions) && (
-          <MenuItem onClick={sendVastaanottoposti}>
-            <StyledListItemIcon>
-              <MailOutline />
-            </StyledListItemIcon>
-            <StyledListItemText>
-              {t('sijoittelun-tulokset.toiminnot.laheta-vastaanottoposti')}
-            </StyledListItemText>
-          </MenuItem>
-        )}
-      </Menu>
-    </>
+      <Dropdown.MenuItem
+        label={t('sijoittelun-tulokset.toiminnot.hyvaksymiskirje')}
+        icon={<InsertDriveFileOutlined />}
+        onClick={createHyvaksymiskirjePDFs}
+        disabled={
+          !isKirjeidenMuodostaminenAllowed(
+            haku,
+            userPermissions,
+            kaikkiJonotHyvaksytty,
+          )
+        }
+      />
+      {isSendVastaanottoPostiVisible(haku, userPermissions) && (
+        <Dropdown.MenuItem
+          label={t('sijoittelun-tulokset.toiminnot.laheta-vastaanottoposti')}
+          icon={<MailOutline />}
+          onClick={sendVastaanottoposti}
+        />
+      )}
+    </Dropdown.MenuButton>
   );
 };
