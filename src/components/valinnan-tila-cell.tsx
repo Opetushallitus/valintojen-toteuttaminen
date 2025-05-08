@@ -128,6 +128,7 @@ const EhdollinenFields = ({
 
   const {
     hakemusOid,
+    valinnanTila,
     ehdollisestiHyvaksyttavissa,
     ehdollisenHyvaksymisenEhtoKoodi,
   } = hakemus;
@@ -139,54 +140,56 @@ const EhdollinenFields = ({
   };
 
   return (
-    <>
-      <EhdollisestiHyvaksyttavissaCheckbox
-        haku={haku}
-        hakemus={hakemus}
-        updateForm={updateForm}
-        disabled={disabled}
-      />
-      {isKorkeakouluHaku(haku) && ehdollisestiHyvaksyttavissa && (
-        <>
-          <LocalizedSelect
-            sx={{ maxWidth: '300px' }}
-            value={ehdollisenHyvaksymisenEhtoKoodi}
-            onChange={updateEhdollisuudenSyy}
-            options={ehtoOptions}
-            disabled={disabled}
-            required={true}
-          />
-          {ehdollisenHyvaksymisenEhtoKoodi === 'muu' && (
-            <Box sx={{ display: 'flex', flexDirection: 'column', rowGap: 1 }}>
-              {pipe(
-                entries(ehdollisenHyvaksymisenSyyt),
-                map(([kieli, syy]) => (
-                  <StyledInput
-                    key={kieli}
-                    value={syy ?? ''}
-                    onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                      updateEhdollisuudenMuuSyy(event, kieli)
-                    }
-                    startAdornment={
-                      <LanguageAdornment position="start">
-                        {kieli.toUpperCase()}
-                      </LanguageAdornment>
-                    }
-                    inputProps={{
-                      'aria-label': t(
-                        `sijoittelun-tulokset.muu-syy-aria-${kieli}`,
-                      ),
-                    }}
-                    disabled={disabled}
-                    required={true}
-                  />
-                )),
-              )}
-            </Box>
-          )}
-        </>
-      )}
-    </>
+    valinnanTila !== SijoittelunTila.HYLATTY && (
+      <>
+        <EhdollisestiHyvaksyttavissaCheckbox
+          haku={haku}
+          hakemus={hakemus}
+          updateForm={updateForm}
+          disabled={disabled}
+        />
+        {isKorkeakouluHaku(haku) && ehdollisestiHyvaksyttavissa && (
+          <>
+            <LocalizedSelect
+              sx={{ maxWidth: '300px' }}
+              value={ehdollisenHyvaksymisenEhtoKoodi}
+              onChange={updateEhdollisuudenSyy}
+              options={ehtoOptions}
+              disabled={disabled}
+              required={true}
+            />
+            {ehdollisenHyvaksymisenEhtoKoodi === 'muu' && (
+              <Box sx={{ display: 'flex', flexDirection: 'column', rowGap: 1 }}>
+                {pipe(
+                  entries(ehdollisenHyvaksymisenSyyt),
+                  map(([kieli, syy]) => (
+                    <StyledInput
+                      key={kieli}
+                      value={syy ?? ''}
+                      onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                        updateEhdollisuudenMuuSyy(event, kieli)
+                      }
+                      startAdornment={
+                        <LanguageAdornment position="start">
+                          {kieli.toUpperCase()}
+                        </LanguageAdornment>
+                      }
+                      inputProps={{
+                        'aria-label': t(
+                          `sijoittelun-tulokset.muu-syy-aria-${kieli}`,
+                        ),
+                      }}
+                      disabled={disabled}
+                      required={true}
+                    />
+                  )),
+                )}
+              </Box>
+            )}
+          </>
+        )}
+      </>
+    )
   );
 };
 

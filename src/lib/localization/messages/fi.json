@@ -403,7 +403,8 @@
     "mass-status-change-done": "Muutettiin tila {amount}:lle hakemukselle",
     "toiminnot": {
       "laheta-vastaanottoposti-hakukohteelle": "Lähetä vastaanottoposti hakukohteelle"
-    }
+    },
+    "tunniste-tai-tyyppi": "Tunniste tai tyyppi"
   },
   "sijoittelu": {
     "tasasijasaanto": {

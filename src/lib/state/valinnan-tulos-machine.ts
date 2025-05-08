@@ -11,6 +11,7 @@ import {
   applyMassHakemusChanges,
   applySingleHakemusChange,
   hasChangedHakemukset,
+  prepareChangedHakemuksetForSave,
   ValinnanTulosEditableFields,
 } from './valinnan-tulos-machine-utils';
 import { HakemuksenValinnanTulos } from '../valinta-tulos-service/valinta-tulos-types';
@@ -238,11 +239,15 @@ export function createValinnanTulosMachine<
         },
       },
       [ValinnanTulosState.UPDATING]: {
+        exit: assign({
+          hakemuksetForMassUpdate: undefined,
+        }),
         invoke: {
           src: 'updateHakemukset',
           input: ({ context }) => ({
-            changed:
+            changed: prepareChangedHakemuksetForSave(
               context.hakemuksetForMassUpdate ?? context.changedHakemukset,
+            ),
             original: context.hakemukset,
             hakukohdeOid: context.hakukohdeOid,
             valintatapajonoOid: context.valintatapajonoOid,
@@ -266,19 +271,11 @@ export function createValinnanTulosMachine<
                   error: event.error as Error,
                 }),
               },
-              assign({
-                hakemuksetForMassUpdate: undefined,
-              }),
             ],
           },
         },
       },
       [ValinnanTulosState.UPDATE_COMPLETED]: {
-        entry: [
-          assign({
-            hakemuksetForMassUpdate: undefined,
-          }),
-        ],
         always: [
           {
             guard: 'shouldPublishAfterUpdate',
