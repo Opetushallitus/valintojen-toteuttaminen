@@ -6,7 +6,6 @@ import {
 } from '@/components/table/table-columns';
 import { ListTable } from '@/components/table/list-table';
 import { useCallback, useMemo } from 'react';
-import { KeysMatching, ListTableColumn } from '@/components/table/table-types';
 import { useSelection } from '@/hooks/useSelection';
 import { IlmoittautumisTilaSelect } from '@/components/ilmoittautumistila-select';
 import { VastaanOttoCell } from '@/components/vastaanotto-cell';
@@ -24,21 +23,6 @@ import { ValinnanTilaCell } from '@/components/valinnan-tila-cell';
 import { ValinnanTulosActionBar } from './valinnan-tulos-action-bar';
 import { ValinnanTulosOtherActionsCell } from '@/components/valinnan-tulos-other-actions-cell';
 
-export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
-  title,
-  key,
-  amountProp,
-}: {
-  title: string;
-  key: string;
-  amountProp: KeysMatching<T, number | undefined>;
-}): ListTableColumn<T> => ({
-  title,
-  key,
-  render: (props) => <span>{props[amountProp] as number}</span>,
-  style: { width: 0, paddingRight: '1rem' },
-});
-
 const TRANSLATIONS_PREFIX = 'valinnan-tulokset.taulukko';
 
 const useColumns = ({
@@ -52,10 +36,11 @@ const useColumns = ({
 }) => {
   const { t } = useTranslations();
 
-  const state = useSelector(actorRef, (s) => s);
+  const disabled = useSelector(
+    actorRef,
+    (s) => !s.matches(ValinnanTulosState.IDLE),
+  );
   const { send } = actorRef;
-
-  const disabled = !state.matches(ValinnanTulosState.IDLE);
 
   const valintatapajonoOid = useSelector(
     actorRef,
@@ -83,9 +68,8 @@ const useColumns = ({
   );
 
   return useMemo(() => {
-    const stickyHakijaColumn = createStickyHakijaColumn(t);
     return [
-      stickyHakijaColumn,
+      createStickyHakijaColumn(t),
       makeColumnWithCustomRender<HakemuksenValinnanTulos>({
         title: t(`${TRANSLATIONS_PREFIX}.valinnan-tila`),
         key: 'valinnantila',
@@ -172,30 +156,34 @@ export const ValinnanTuloksetTable = ({
     actorRef,
   });
 
-  const hakemukset = useSelector(actorRef, (state) => state.context.hakemukset);
+  const { hakemukset, changedHakemukset } = useSelector(actorRef, (state) => ({
+    hakemukset: state.context.hakemukset,
+    changedHakemukset: state.context.changedHakemukset,
+  }));
 
   const { results, sort, setSort, pageSize, setPage, page } =
     useValinnanTuloksetSearch(hakemukset);
 
   const { selection, setSelection, resetSelection } = useSelection(hakemukset);
 
-  const changedHakemukset = useSelector(
-    actorRef,
-    (state) => state.context.changedHakemukset,
-  );
-
   const rows = useMemo(() => {
     return results.map((hakemus) => {
-      const changedTulos = changedHakemukset.find(
-        (changedTulos) => changedTulos.hakemusOid === hakemus.hakemusOid,
+      const changedHakemus = changedHakemukset.find(
+        (h) => h.hakemusOid === hakemus.hakemusOid,
       );
 
-      return {
-        ...hakemus,
-        ...(changedTulos ?? {}),
-      };
+      return changedHakemus ?? hakemus;
     });
   }, [results, changedHakemukset]);
+
+  const getRowCheckboxLabel = useCallback(
+    ({ hakijanNimi }: HakemuksenValinnanTulos) => {
+      return t(`sijoittelun-tulokset.taulukko.valitse-hakemus`, {
+        hakijanNimi,
+      });
+    },
+    [t],
+  );
 
   return (
     <>
@@ -221,11 +209,7 @@ export const ValinnanTuloksetTable = ({
           pageSize,
           label: `${t('yleinen.sivutus')} ${hakukohde.nimi}`,
         }}
-        getRowCheckboxLabel={({ hakijanNimi }) => {
-          return t(`sijoittelun-tulokset.taulukko.valitse-hakemus`, {
-            hakijanNimi,
-          });
-        }}
+        getRowCheckboxLabel={getRowCheckboxLabel}
       />
     </>
   );
