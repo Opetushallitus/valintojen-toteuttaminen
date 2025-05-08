@@ -9,19 +9,14 @@ import {
   TableRow,
 } from '@mui/material';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
-import useToaster from '@/hooks/useToaster';
 import { Haku, Hakukohde, KoutaOidParams } from '@/lib/kouta/kouta-types';
 import {
   SijoittelunTila,
   SijoittelunTulosActorRef,
   VastaanottoTila,
 } from '@/lib/types/sijoittelu-types';
-import {
-  sendVastaanottopostiHakukohteelle,
-  sendVastaanottopostiValintatapaJonolle,
-} from '@/lib/valinta-tulos-service/valinta-tulos-service';
 import { isEmpty, prop } from 'remeda';
-import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import {
   getErillishakuValinnanTulosExcel,
   getMyohastyneetHakemukset,
@@ -41,6 +36,7 @@ import {
 } from '@/lib/state/valinnan-tulos-machine';
 import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
 import { FileDownloadButton } from './file-download-button';
+import { useSendVastaanottoPostiMutation } from '@/hooks/useSendVastaanottoPostiMutation';
 
 const ActionsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -62,44 +58,12 @@ const SendVastaanottopostiButton = ({
   valintatapajonoOid?: string;
   type: 'sijoittelun-tulos' | 'valinnan-tulos';
 }) => {
-  const { addToast } = useToaster();
   const { t } = useTranslations();
 
-  const { isPending, mutate } = useMutation({
-    mutationFn: () => {
-      return type === 'sijoittelun-tulos' && valintatapajonoOid
-        ? sendVastaanottopostiValintatapaJonolle(
-            hakukohdeOid,
-            valintatapajonoOid,
-          )
-        : sendVastaanottopostiHakukohteelle(hakukohdeOid);
-    },
-    onError: (e) => {
-      addToast({
-        key: 'vastaanottoposti-valintatapajono-virhe',
-        message:
-          'sijoittelun-tulokset.toiminnot.vastaanottoposti-jonolle-virhe',
-        type: 'error',
-      });
-      console.error(e);
-    },
-    onSuccess: (data) => {
-      if (!data || data.length < 1) {
-        addToast({
-          key: 'vastaanottoposti-valintatapajono-empty',
-          message:
-            'sijoittelun-tulokset.toiminnot.vastaanottoposti-jonolle-ei-lahetettavia',
-          type: 'error',
-        });
-      } else {
-        addToast({
-          key: 'vastaanottoposti-valintatapajonos',
-          message:
-            'sijoittelun-tulokset.toiminnot.vastaanottoposti-jonolle-lahetetty',
-          type: 'success',
-        });
-      }
-    },
+  const { isPending, mutate } = useSendVastaanottoPostiMutation({
+    target: type === 'sijoittelun-tulos' ? 'valintatapajono' : 'hakukohde',
+    hakukohdeOid,
+    valintatapajonoOid,
   });
 
   return (
