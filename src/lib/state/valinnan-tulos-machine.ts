@@ -401,7 +401,7 @@ export function createValinnanTulosMachine<
       publish: fromPromise(async ({ input }) => {
         if (!input.valintatapajonoOid) {
           throw new Error(
-            'ValinnanTulosMachine.publish: Missing required parameters',
+            `ValinnanTulosMachine.publish: Missing parameters: valintatapajonoOid=${input.valintatapajonoOid}`,
           );
         }
         await hyvaksyValintaEsitys(input.valintatapajonoOid);

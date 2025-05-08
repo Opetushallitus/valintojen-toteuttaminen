@@ -241,12 +241,17 @@ export const saveValinnanTulokset = async ({
   return data;
 };
 
-export const saveSijoitteluAjonTulokset = async (
-  valintatapajonoOid: string,
-  hakukohdeOid: string,
-  lastModified: string,
-  hakemukset: Array<SijoittelunHakemusValintatiedoilla>,
-) => {
+export const saveSijoitteluAjonTulokset = async ({
+  valintatapajonoOid,
+  hakukohdeOid,
+  lastModified,
+  hakemukset,
+}: {
+  valintatapajonoOid: string;
+  hakukohdeOid: string;
+  lastModified?: string | null;
+  hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
+}) => {
   const valintaTulokset = hakemukset.map((h) => {
     return {
       hakukohdeOid,
@@ -269,7 +274,7 @@ export const saveSijoitteluAjonTulokset = async (
 
   await saveValinnanTulokset({
     valintatapajonoOid,
-    lastModified: lastModified,
+    lastModified: lastModified ?? null,
     tulokset: valintaTulokset,
   });
 

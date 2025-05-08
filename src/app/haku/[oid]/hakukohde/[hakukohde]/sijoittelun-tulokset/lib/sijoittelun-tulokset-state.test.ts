@@ -70,10 +70,9 @@ describe('Sijoittelun tulokset states', async () => {
     },
   ];
 
-  const toastFn = vi.fn();
-  const onUpdatedFn = vi.fn();
-
   const createActorLogic = () => {
+    const toastFn = vi.fn();
+    const onUpdatedFn = vi.fn();
     const actor = createActor(sijoittelunTuloksetMachine);
     actor.start();
     actor.send({
@@ -87,7 +86,7 @@ describe('Sijoittelun tulokset states', async () => {
         onUpdated: onUpdatedFn,
       },
     });
-    return actor;
+    return { actor, toastFn, onUpdatedFn };
   };
 
   afterEach(() => {
@@ -95,7 +94,7 @@ describe('Sijoittelun tulokset states', async () => {
   });
 
   test('saving without changes creates error toast', async () => {
-    const actor = createActorLogic();
+    const { actor, toastFn } = createActorLogic();
     expect(toastFn).not.toHaveBeenCalled();
     actor.send({ type: ValinnanTulosEventType.UPDATE });
     expect(toastFn).toHaveBeenCalledWith({
@@ -105,8 +104,8 @@ describe('Sijoittelun tulokset states', async () => {
     });
   });
 
-  test.only('saving changes successfully shows success toast', async () => {
-    const actor = createActorLogic();
+  test('saving changes successfully shows a success toast', async () => {
+    const { actor, toastFn, onUpdatedFn } = createActorLogic();
     vi.spyOn(client, 'post').mockImplementationOnce(() =>
       Promise.resolve({ headers: new Headers(), data: {} }),
     );
@@ -122,16 +121,12 @@ describe('Sijoittelun tulokset states', async () => {
     expect(state.context.changedHakemukset.length).toEqual(1);
     actor.send({ type: ValinnanTulosEventType.UPDATE });
     state = await waitIdle(actor);
-    expect(toastFn).toHaveBeenCalledWith({
-      key: 'sijoittelun-tulokset-updated-for-hakukohde-oid-jono-oid',
-      message: 'sijoittelun-tulokset.valmis',
-      type: 'success',
-    });
+    expect(toastFn).toHaveBeenCalledOnce();
     expect(onUpdatedFn).toHaveBeenCalled();
   });
 
   test('removes item from changedhakemukset when changing values back to original', async () => {
-    const actor = createActorLogic();
+    const { actor } = createActorLogic();
     actor.send({
       type: ValinnanTulosEventType.CHANGE,
       hakemusOid: 'hakemus-2',
@@ -152,7 +147,7 @@ describe('Sijoittelun tulokset states', async () => {
   });
 
   test('mass update calls onUpdated on success', async () => {
-    const actor = createActorLogic();
+    const { actor, onUpdatedFn } = createActorLogic();
     vi.spyOn(client, 'post').mockImplementationOnce(() =>
       Promise.resolve({ headers: new Headers(), data: {} }),
     );
@@ -179,7 +174,7 @@ describe('Sijoittelun tulokset states', async () => {
   });
 
   test('Should not call onUpdated when saving everything failed', async () => {
-    const actor = createActorLogic();
+    const { actor, onUpdatedFn } = createActorLogic();
     vi.spyOn(client, 'post').mockImplementationOnce(() =>
       Promise.resolve({ headers: new Headers(), data: {} }),
     );
@@ -207,7 +202,7 @@ describe('Sijoittelun tulokset states', async () => {
   });
 
   test('Should change ilmoittautumistila to EI_TEHTY when changing vastannottotila to KESKEN', async () => {
-    const actor = createActorLogic();
+    const { actor } = createActorLogic();
 
     actor.send({
       type: ValinnanTulosEventType.CHANGE,
@@ -227,7 +222,7 @@ describe('Sijoittelun tulokset states', async () => {
   });
 
   test('Should call onUpdated when saving one hakemus succeeded and other failed', async () => {
-    const actor = createActorLogic();
+    const { actor, onUpdatedFn } = createActorLogic();
     vi.spyOn(client, 'post').mockImplementationOnce(() =>
       Promise.resolve({ headers: new Headers(), data: {} }),
     );

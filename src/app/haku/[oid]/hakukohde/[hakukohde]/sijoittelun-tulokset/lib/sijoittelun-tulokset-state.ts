@@ -79,24 +79,24 @@ export const sijoittelunTuloksetMachine =
             original,
           },
         }) => {
-          if (!valintatapajonoOid || !hakukohdeOid || !lastModified) {
+          if (!valintatapajonoOid || !hakukohdeOid) {
             throw new Error(
-              'SijoittelunTuloksetMachine.updateHakemukset: Missing required parameters',
+              `SijoittelunTuloksetMachine.updateHakemukset: Missing required parameters valintatapajonoOid=${valintatapajonoOid}, hakukohdeOid=${hakukohdeOid}`,
             );
           }
           await saveMaksunTilanMuutokset(hakukohdeOid, changed, original);
-          return saveSijoitteluAjonTulokset(
+          return saveSijoitteluAjonTulokset({
             valintatapajonoOid,
             hakukohdeOid,
             lastModified,
-            changed,
-          );
+            hakemukset: changed,
+          });
         },
       ),
       publish: fromPromise(async ({ input }) => {
         if (!input.valintatapajonoOid) {
           throw new Error(
-            'SijoittelunTuloksetMachine.publish: Missing required parameters',
+            'SijoittelunTuloksetMachine.publish: Missing required parameter valintatapajonoOid',
           );
         }
         await hyvaksyValintaEsitys(input.valintatapajonoOid);
