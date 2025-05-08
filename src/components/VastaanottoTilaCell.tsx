@@ -83,13 +83,11 @@ export type VastaanOttoCellProps = {
 
 const ValinnanVastaanottoTila = ({
   haku,
-  hakukohde,
   hakemus,
-  valintatapajono,
   updateForm,
   disabled,
   t,
-}: Omit<VastaanOttoCellProps, 'mode'>) => {
+}: Omit<VastaanOttoCellProps, 'mode' | 'valintatapajono'>) => {
   const { vastaanottoTila } = hakemus;
 
   const vastaanottotilaOptions = useVastaanottoTilaOptions((tila) => {
@@ -121,18 +119,6 @@ const ValinnanVastaanottoTila = ({
 
   return (
     <>
-      <QuerySuspenseBoundary suspenseFallback={<ClientSpinner size={16} />}>
-        {valintatapajono && (
-          <HakijanVastaanottoTilaSection
-            haku={haku}
-            hakukohde={hakukohde}
-            hakemusOid={hakemus.hakemusOid}
-            valintatapajono={valintatapajono}
-            vastaanottoTila={vastaanottoTila}
-            t={t}
-          />
-        )}
-      </QuerySuspenseBoundary>
       <LocalizedSelect
         ariaLabel={t('sijoittelun-tulokset.taulukko.vastaanottotieto')}
         value={vastaanottoTila ?? ''}
@@ -249,7 +235,6 @@ export const VastaanottoTilaCell = memo(function VastaanottoCell({
           haku={haku}
           hakukohde={hakukohde}
           hakemus={hakemus}
-          valintatapajono={valintatapajono}
           updateForm={updateForm}
           disabled={disabled}
           t={t}
