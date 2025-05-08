@@ -31,6 +31,8 @@ export type ValinnanTulosModel = {
   valinnantilanKuvauksenTekstiEN?: string;
   hyvaksyttyVarasijalta: boolean;
   hyvaksyPeruuntunut: boolean;
+  vastaanottoDeadline?: string;
+  vastaanottoDeadlineMennyt?: boolean;
 };
 
 export type HakemusChangeDetail = {
@@ -149,4 +151,6 @@ export type HakemuksenValinnanTulos = {
   hyvaksyPeruuntunut?: boolean;
   maksunTila?: string;
   siirtynytToisestaValintatapajonosta?: boolean;
+  vastaanottoDeadline?: string;
+  vastaanottoDeadlineMennyt?: boolean;
 };

@@ -68,6 +68,8 @@ const useHakemuksetValinnanTuloksilla = ({
           julkaistavissa: valinnanTulos.julkaistavissa,
           hyvaksyttyVarasijalta: valinnanTulos.hyvaksyttyVarasijalta,
           hyvaksyPeruuntunut: valinnanTulos.hyvaksyPeruuntunut,
+          vastaanottoDeadline: valinnanTulos.vastaanottoDeadline,
+          vastaanottoDeadlineMennyt: valinnanTulos.vastaanottoDeadlineMennyt,
         };
       }),
     [hakemukset, valinnanTulokset],
