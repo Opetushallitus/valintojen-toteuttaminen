@@ -234,20 +234,22 @@ test('Ehdollista hyväksyntää ja maksusaraketta ei näytetä toisen asteen yht
 });
 
 test('Näyttää muut valinnat ehdollisuuden syylle', async ({ page }) => {
-  const ammSection = getAmmValintatapajonoContent(page);
-  await ammSection.getByLabel('Ehdollinen valinta').click();
-  await expect(ammSection.getByText('Valitse...')).toBeVisible();
-  await ammSection.getByText('Valitse...').click();
+  const nukettajaRow = getYoValintatapajonoContent(page)
+    .getByRole('row')
+    .nth(1);
+  await nukettajaRow.getByLabel('Ehdollinen valinta').click();
+  await expect(nukettajaRow.getByText('Valitse...')).toBeVisible();
+  await nukettajaRow.getByText('Valitse...').click();
   await expect(page.getByRole('option', { name: 'Muu' })).toBeVisible();
   await page.getByRole('option', { name: 'Muu' }).click();
   await expect(
-    ammSection.getByLabel('Ehdollisuuden syy suomeksi'),
+    nukettajaRow.getByLabel('Ehdollisuuden syy suomeksi'),
   ).toBeVisible();
   await expect(
-    ammSection.getByLabel('Ehdollisuuden syy ruotsiksi'),
+    nukettajaRow.getByLabel('Ehdollisuuden syy ruotsiksi'),
   ).toBeVisible();
   await expect(
-    ammSection.getByLabel('Ehdollisuuden syy englanniksi'),
+    nukettajaRow.getByLabel('Ehdollisuuden syy englanniksi'),
   ).toBeVisible();
 });
 
@@ -699,10 +701,18 @@ test.describe('Hakukohteen muut toiminnot', () => {
   test('Tiedostojen latausvaihtoehdot eivät ole sallittuja', async ({
     page,
   }) => {
-    await page.getByLabel('Muut toiminnot hakukohteelle').click();
-    await expect(page.getByText('Lataa hyväksymiskirjeet')).toBeDisabled();
-    await expect(page.getByText('Lataa osoitetarrat')).toBeDisabled();
-    await expect(page.getByText('Lataa tulokset')).toBeDisabled();
+    await page
+      .getByRole('button', { name: 'Muut toiminnot hakukohteelle' })
+      .click();
+    await expect(
+      page.getByRole('menuitem', { name: 'Lataa hyväksymiskirjeet' }),
+    ).toBeDisabled();
+    await expect(
+      page.getByRole('menuitem', { name: 'Lataa osoitetarrat' }),
+    ).toBeDisabled();
+    await expect(
+      page.getByRole('menuitem', { name: 'Lataa tulokset' }),
+    ).toBeDisabled();
   });
 
   test('Lähetä vastaanottoposti', async ({ page }) => {
@@ -715,12 +725,14 @@ test.describe('Hakukohteen muut toiminnot', () => {
         });
       },
     );
-    await page.getByLabel('Muut toiminnot hakukohteelle').click();
+    await page
+      .getByRole('button', { name: 'Muut toiminnot hakukohteelle' })
+      .click();
     await expect(
       page.getByText('Lähetä vastaanottoposti hakukohteelle'),
     ).toBeVisible();
     await page.getByText('Lähetä vastaanottoposti hakukohteelle').click();
-    await expect(page.getByText('Sähköpostien lähetys onnistui')).toBeVisible();
+    await expect(page.getByText('Sähköpostin lähetys onnistui')).toBeVisible();
   });
 
   test('Muodosta hyväksymiskirjeet', async ({ page }) => {
@@ -746,7 +758,9 @@ test.describe('Hakukohteen muut toiminnot', () => {
         });
       },
     );
-    await page.getByLabel('Muut toiminnot hakukohteelle').click();
+    await page
+      .getByRole('button', { name: 'Muut toiminnot hakukohteelle' })
+      .click();
     await expect(page.getByText('Muodosta hyväksymiskirjeet')).toBeVisible();
     await page.getByText('Muodosta hyväksymiskirjeet').click();
     await page.getByLabel('Vain ne hyväksytyt, jotka eiv').click();
@@ -759,7 +773,9 @@ test.describe('Hakukohteen muut toiminnot', () => {
     await expect(
       page.getByText('Hyväksymiskirjeiden muodostaminen'),
     ).toBeHidden();
-    await page.getByLabel('Muut toiminnot hakukohteelle').click();
+    await page
+      .getByRole('button', { name: 'Muut toiminnot hakukohteelle' })
+      .click();
     await expect(page.getByText('Lataa hyväksymiskirjeet')).toBeEnabled();
   });
 
@@ -786,7 +802,9 @@ test.describe('Hakukohteen muut toiminnot', () => {
         });
       },
     );
-    await page.getByLabel('Muut toiminnot hakukohteelle').click();
+    await page
+      .getByRole('button', { name: 'Muut toiminnot hakukohteelle' })
+      .click();
     await expect(
       page.getByText('Muodosta kirjeet ei-hyväksytyille'),
     ).toBeVisible();
@@ -822,7 +840,9 @@ test.describe('Hakukohteen muut toiminnot', () => {
         });
       },
     );
-    await page.getByLabel('Muut toiminnot hakukohteelle').click();
+    await page
+      .getByRole('button', { name: 'Muut toiminnot hakukohteelle' })
+      .click();
     await expect(
       page.getByText('Muodosta hyväksytyille osoitetarrat'),
     ).toBeVisible();
@@ -831,7 +851,9 @@ test.describe('Hakukohteen muut toiminnot', () => {
     await expect(page.getByRole('button', { name: 'Lataa' })).toBeVisible();
     await page.getByLabel('Sulje').click();
     await expect(page.getByText('Osoitetarrojen muodostaminen')).toBeHidden();
-    await page.getByLabel('Muut toiminnot hakukohteelle').click();
+    await page
+      .getByRole('button', { name: 'Muut toiminnot hakukohteelle' })
+      .click();
     await expect(page.getByText('Lataa osoitetarrat')).toBeEnabled();
   });
 });
