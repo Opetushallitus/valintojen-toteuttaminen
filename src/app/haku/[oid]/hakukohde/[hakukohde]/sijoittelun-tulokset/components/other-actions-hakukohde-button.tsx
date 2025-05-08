@@ -121,7 +121,7 @@ const FormOsoiteTarratMenuItem = ({
 
   const openOsoitetarratModal = async () => {
     showModal(ProgressModal, {
-      title: 'Osoitetarrojen muodostaminen',
+      title: 'sijoittelun-tulokset.toiminnot.osoitetarrat-suoritetaan-otsikko',
       defaultFileName: 'osoitetarrat.pdf',
       progressMessage:
         'sijoittelun-tulokset.toiminnot.osoitetarrat-suoritetaan',
