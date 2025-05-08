@@ -421,7 +421,9 @@
     "poistetaan-tuloksia": "Poistetaan valinnan tuloksia...",
     "valinnan-tilan-kuvaus-aria-fi": "Hylkäyksen syy suomeksi",
     "valinnan-tilan-kuvaus-aria-sv": "Hylkäyksen syy ruotsiksi",
-    "valinnan-tilan-kuvaus-aria-en": "Hylkäyksen syy englanniksi"
+    "valinnan-tilan-kuvaus-aria-en": "Hylkäyksen syy englanniksi",
+    "poistettu": "Valinnan tulokset poistettu",
+    "hyvaksytaan-valintaesitysta": "Hyväksytään valintaesitystä..."
   },
   "sijoittelu": {
     "tasasijasaanto": {

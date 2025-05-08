@@ -123,11 +123,11 @@ const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
 
   const state = useSelector(valinnanTulosActorRef, (state) => state);
 
-  let spinnerTitle = '';
+  let spinnerTitle;
   if (state.matches(ValinnanTulosState.REMOVING)) {
     spinnerTitle = t('valinnan-tulokset.poistetaan-tuloksia');
   } else if (state.matches(ValinnanTulosState.PUBLISHING)) {
-    spinnerTitle = t('valinnan-tulokset.julkaistaan-valintaesitysta');
+    spinnerTitle = t('valinnan-tulokset.hyvaksytaan-valintaesitysta');
   } else if (state.matches(ValinnanTulosState.UPDATING)) {
     spinnerTitle = t('valinnan-tulokset.tallennetaan-tuloksia');
   }
@@ -143,7 +143,10 @@ const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
         alignItems: 'flex-start',
       }}
     >
-      <SpinnerModal title={spinnerTitle} open={state.hasTag('saving')} />
+      <SpinnerModal
+        title={spinnerTitle ?? ''}
+        open={Boolean(spinnerTitle && state.hasTag('saving'))}
+      />
       <Stack
         flexDirection="row"
         gap={2}
