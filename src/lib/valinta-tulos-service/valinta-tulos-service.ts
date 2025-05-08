@@ -381,6 +381,20 @@ type ChangeHistoryEventResponse = {
   ];
 };
 
+export const getChangeHistoryForHakemusQueryOptions = (params: {
+  hakemusOid: string;
+  valintatapajonoOid: string;
+}) =>
+  queryOptions({
+    queryKey: [
+      'getChangeHistoryForHakemus',
+      params.hakemusOid,
+      params.valintatapajonoOid,
+    ],
+    queryFn: () =>
+      getChangeHistoryForHakemus(params.hakemusOid, params.valintatapajonoOid),
+  });
+
 export const getChangeHistoryForHakemus = async (
   hakemusOid: string,
   valintatapajonoOid: string,

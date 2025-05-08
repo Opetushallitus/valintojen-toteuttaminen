@@ -3,12 +3,12 @@ import { client } from '@/lib/http-client';
 import { createActor, waitFor } from 'xstate';
 import {
   sijoittelunTuloksetMachine,
-  SijoittelunTulosActorRef,
 } from './sijoittelun-tulokset-state';
 import {
   IlmoittautumisTila,
   SijoittelunHakemusValintatiedoilla,
   SijoittelunTila,
+  SijoittelunTulosActorRef,
   VastaanottoTila,
 } from '@/lib/types/sijoittelu-types';
 import {

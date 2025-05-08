@@ -8,12 +8,9 @@ import {
 } from '@mui/icons-material';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import useToaster from '@/hooks/useToaster';
-import {
-  getChangeHistoryForHakemus,
-  sendVastaanottopostiHakemukselle,
-} from '@/lib/valinta-tulos-service/valinta-tulos-service';
+import { sendVastaanottopostiHakemukselle } from '@/lib/valinta-tulos-service/valinta-tulos-service';
 import { showModal } from '@/components/modals/global-modal';
-import { ChangeHistoryModal } from './change-history-modal';
+import { ChangeHistoryGlobalModal } from '@/components/modals/change-history-global-modal';
 import { AcceptedLetterTemplateModal } from './letter-template-modal';
 import { useUserPermissions } from '@/hooks/useUserPermissions';
 
@@ -107,11 +104,7 @@ export const OtherActionsCell = ({
 
   const showChangeHistoryForHakemus = async () => {
     try {
-      const history = await getChangeHistoryForHakemus(
-        hakemus.hakemusOid,
-        hakemus.valintatapajonoOid,
-      );
-      showModal(ChangeHistoryModal, { changeHistory: history, hakemus });
+      showModal(ChangeHistoryGlobalModal, { hakemus });
     } catch (e) {
       addToast({
         key: 'muutoshistoria-hakemukselle-virhe',
