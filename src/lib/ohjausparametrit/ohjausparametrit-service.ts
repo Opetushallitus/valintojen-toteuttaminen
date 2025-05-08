@@ -1,6 +1,6 @@
 'use client';
 
-import { configuration } from '../configuration';
+import { getConfiguration } from '@/hooks/useConfiguration';
 import { client } from '../http-client';
 import { HaunAsetukset } from './ohjausparametrit-types';
 
@@ -17,6 +17,7 @@ type HaunAsetuksetResponse = {
 export const getHaunAsetukset = async (
   hakuOid: string,
 ): Promise<HaunAsetukset> => {
+  const configuration = await getConfiguration();
   const response = await client.get<HaunAsetuksetResponse>(
     `${configuration.ohjausparametritUrl}/${hakuOid}`,
   );

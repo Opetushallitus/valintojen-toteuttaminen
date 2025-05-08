@@ -1,10 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { client } from '../lib/http-client';
-import { configuration } from '../lib/configuration';
 import { Language } from '../lib/localization/localization-types';
+import { getConfiguration } from './useConfiguration';
 
 export const getAsiointiKieli = async (): Promise<Language> => {
-  const response = await client.get<Language>(configuration.asiointiKieliUrl);
+  const config = await getConfiguration();
+  const response = await client.get<Language>(config.asiointiKieliUrl);
   return response.data ?? 'fi';
 };
 

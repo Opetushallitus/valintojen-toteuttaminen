@@ -8,7 +8,7 @@
     "dev-test": "TEST=true APP_URL=https://localhost:3404 VIRKAILIJA_URL=http://localhost:3104 npm run dev",
     "build": "STANDALONE=true next build",
     "build-test": "TEST=true APP_URL=https://localhost:3404 VIRKAILIJA_URL=http://localhost:3104 next build",
-    "start": "NODE_ENV=production npm run dev",
+    "start": "VIRKAILIJA_URL=http://hahahh:3104 NODE_ENV=production npm run dev",
     "start-test": "TEST=true NODE_ENV=production npm run dev-test",
     "lint": "eslint --max-warnings=0",
     "lint:fix": "npm run lint -- --fix",

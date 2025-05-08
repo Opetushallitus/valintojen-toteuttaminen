@@ -1,15 +1,17 @@
 import { isNullish } from 'remeda';
-import { configuration } from '../configuration';
 import { client } from '../http-client';
 import { AjastettuSijoittelu } from '../types/sijoittelu-types';
+import { getConfiguration } from '@/hooks/useConfiguration';
 
 export async function kaynnistaSijoittelu(hakuOid: string) {
+  const configuration = await getConfiguration();
   await client.post(configuration.kaynnistaSijoittelu({ hakuOid }), {});
 }
 
 export async function sijoittelunStatus(
   hakuOid: string,
 ): Promise<{ valmis: boolean; ohitettu: boolean; tekeillaan: boolean }> {
+  const configuration = await getConfiguration();
   const response = await client.get<{
     valmis: boolean;
     ohitettu: boolean;
@@ -21,6 +23,7 @@ export async function sijoittelunStatus(
 export async function getAjastettuSijoittelu(
   hakuOid: string,
 ): Promise<AjastettuSijoittelu | null> {
+  const configuration = await getConfiguration();
   const response = await client.get<{
     hakuOid: string;
     ajossa: boolean;
@@ -44,6 +47,7 @@ export async function createAjastettuSijoittelu(
   frequency: string,
 ) {
   const startTimeMillis = startDate.getTime();
+  const configuration = await getConfiguration();
   await client.post(configuration.createAjastettuSijoittelu, {
     hakuOid,
     aloitusajankohta: startTimeMillis,
@@ -52,6 +56,7 @@ export async function createAjastettuSijoittelu(
 }
 
 export async function deleteAjastettuSijoittelu(hakuOid: string) {
+  const configuration = await getConfiguration();
   await client.get(configuration.deleteAjastettuSijoittelu({ hakuOid }));
 }
 
@@ -60,6 +65,7 @@ export async function updateAjastettuSijoittelu(
   startDate: Date,
   frequency: string,
 ) {
+  const configuration = await getConfiguration();
   const updateUrl = new URL(configuration.updateAjastettuSijoittelu);
   updateUrl.searchParams.append('hakuOid', hakuOid);
   updateUrl.searchParams.append('aloitusajankohta', '' + startDate.getTime());

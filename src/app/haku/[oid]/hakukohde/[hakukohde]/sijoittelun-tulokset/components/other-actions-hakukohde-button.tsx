@@ -7,7 +7,7 @@ import {
   MenuItem,
 } from '@mui/material';
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import {
   FileDownloadOutlined,
   MailOutline,
@@ -17,7 +17,6 @@ import {
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import { sendVastaanottopostiHakukohteelle } from '@/lib/valinta-tulos-service/valinta-tulos-service';
 import useToaster from '@/hooks/useToaster';
-import { configuration } from '@/lib/configuration';
 import {
   AcceptedLetterTemplateModal,
   NonAcceptedLetterTemplateModal,
@@ -27,6 +26,7 @@ import { ProgressModal } from './progress-modal-dialog';
 import { luoOsoitetarratHakukohteessaHyvaksytyille } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
 import { styled } from '@/lib/theme';
+import { ConfigurationContext } from '@/components/providers/configuration-provider';
 
 const StyledListItemText = styled(ListItemText)(() => ({
   span: {
@@ -225,6 +225,8 @@ export const OtherActionsHakukohdeButton = ({
   tulosDocumentId: string | null;
   sijoitteluajoId: string;
 }) => {
+
+  const { configuration } = useContext(ConfigurationContext);
   const { t } = useTranslations();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);

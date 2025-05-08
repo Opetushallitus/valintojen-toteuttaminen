@@ -6,19 +6,21 @@ import { ExternalLink } from '@/components/external-link';
 import { LabeledInfoItem } from '@/components/labeled-info-item';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { buildLinkToHaku } from '@/lib/ataru/ataru-service';
-import { configuration } from '@/lib/configuration';
 import { useHaku } from '@/lib/kouta/useHaku';
 import { useTranslations } from '@/lib/localization/useTranslations';
 
 import { Stack } from '@mui/material';
 import { OphLink } from '@opetushallitus/oph-design-system';
-import { use } from 'react';
+import { use, useContext } from 'react';
 import { YhteisvalinnanValintalaskenta } from './components/yhteisvalinnan-valintalaskenta';
 import { SijoitteluContainer } from './components/sijoittelu-container';
 import { LettersContainer } from './components/letters-container';
+import { ConfigurationContext } from '@/components/providers/configuration-provider';
 
 const YhteisvalinnanHallintaContent = ({ hakuOid }: { hakuOid: string }) => {
   const { data: haku } = useHaku({ hakuOid });
+
+  const { configuration } = useContext(ConfigurationContext);
 
   const { t, translateEntity } = useTranslations();
 

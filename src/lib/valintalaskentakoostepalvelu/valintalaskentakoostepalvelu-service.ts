@@ -1,4 +1,3 @@
-import { configuration } from '../configuration';
 import {
   abortableClient,
   client,
@@ -57,11 +56,13 @@ import {
 import { AssertionError } from 'assert';
 import { queryOptions } from '@tanstack/react-query';
 import { Language } from '../localization/localization-types';
+import { getConfiguration } from '@/hooks/useConfiguration';
 
 export const getHakukohteenValintatuloksetIlmanHakijanTilaa = async (
   hakuOid: string,
   hakukohdeOid: string,
 ): Promise<Array<HenkilonValintaTulos>> => {
+  const configuration = await getConfiguration();
   const { data } = await client.get<Array<{ tila: string; hakijaOid: string }>>(
     `${configuration.valintalaskentaKoostePalveluUrl}proxy/valintatulosservice/ilmanhakijantilaa/haku/${hakuOid}/hakukohde/${hakukohdeOid}`,
   );
@@ -90,6 +91,7 @@ export type PisteetForHakemus = {
 };
 
 const getPisteetForHakemus = async ({ hakemusOid }: { hakemusOid: string }) => {
+  const configuration = await getConfiguration();
   const res = await client.get<PisteetForHakemus>(
     configuration.koostetutPistetiedotHakemukselleUrl({ hakemusOid }),
   );
@@ -136,6 +138,7 @@ export const getPisteetForHakukohde = async (
   hakuOid: string,
   hakukohdeOid: string,
 ): Promise<HakukohteenPistetiedot> => {
+  const configuration = await getConfiguration();
   const kokeetPromise = getValintakoeAvaimetHakukohteelle(hakukohdeOid);
   const hakemuksetPromise = getHakemukset({ hakuOid, hakukohdeOid });
   const pisteTiedotFetch = abortableClient.get<{
@@ -193,6 +196,7 @@ export const updatePisteetForHakukohde = async (
   hakukohdeOid: string,
   pistetiedot: Array<HakemuksenPistetiedot>,
 ) => {
+  const configuration = await getConfiguration();
   const mappedPistetiedot = pistetiedot.map((p) => {
     const additionalData = pipe(
       p.valintakokeenPisteet,
@@ -225,6 +229,7 @@ const getValintakoeOsallistumiset = async ({
 }: {
   hakukohdeOid: string;
 }) => {
+  const configuration = await getConfiguration();
   const response = await client.get<Array<HakutoiveValintakoeOsallistumiset>>(
     configuration.valintakoeOsallistumisetUrl({ hakukohdeOid }),
   );
@@ -346,6 +351,7 @@ const pollDocumentProcess = async (
   processId: string,
   infiniteWait: boolean,
 ) => {
+  const configuration = await getConfiguration();
   let pollTimes = 10;
 
   while (pollTimes || infiniteWait) {
@@ -393,6 +399,7 @@ const processDocumentAndReturnDocumentId = async (
 };
 
 export const downloadReadyProcessDocument = async (dokumenttiId: string) => {
+  const configuration = await getConfiguration();
   const documentRes = await client.get<Blob>(
     configuration.lataaDokumenttiUrl({ dokumenttiId }),
   );
@@ -416,6 +423,7 @@ export const getValintakoeExcel = async ({
   hakemusOids,
   valintakoeTunniste,
 }: GetValintakoeExcelParams & { valintakoeTunniste: Array<string> }) => {
+  const configuration = await getConfiguration();
   const urlWithQuery = new URL(configuration.startExportValintakoeExcelUrl);
   urlWithQuery.searchParams.append('hakuOid', hakuOid);
   urlWithQuery.searchParams.append('hakukohdeOid', hakukohdeOid);
@@ -441,6 +449,7 @@ export const getValintakoeOsoitetarrat = async ({
   hakemusOids,
   valintakoeTunniste,
 }: GetValintakoeOsoitetarratParams) => {
+  const configuration = await getConfiguration();
   const urlWithQuery = new URL(
     configuration.startExportValintakoeOsoitetarratUrl,
   );
@@ -465,6 +474,7 @@ export const getOsoitetarratHakemuksille = async ({
   tag: string;
   hakemusOids: Array<string>;
 }) => {
+  const configuration = await getConfiguration();
   const startProcessResponse = await client.post<{ id: string }>(
     configuration.startExportOsoitetarratHakemuksilleUrl,
     {
@@ -481,6 +491,7 @@ export const getOsoitetarratHaulle = async ({
 }: {
   hakuOid: string;
 }) => {
+  const configuration = await getConfiguration();
   const startProcessResponse = await client.post<{ id: string }>(
     `${configuration.startExportOsoitetarratHaulleUrl}?hakuOid=${hakuOid}`,
     '',
@@ -494,6 +505,7 @@ export const getValintalaskennanTulosExcel = async ({
 }: {
   hakukohdeOid: string;
 }) => {
+  const configuration = await getConfiguration();
   const excelRes = await client.get<Blob>(
     configuration.valintalaskennanTulosExcelUrl({ hakukohdeOid }),
   );
@@ -511,6 +523,7 @@ export const getValintatapajonoTulosExcel = async ({
   hakukohdeOid,
   valintatapajonoOid,
 }: ValintatapaJonoTulosExcelProps) => {
+  const configuration = await getConfiguration();
   const urlWithQuery = new URL(
     configuration.startExportValintatapajonoTulosExcelUrl,
   );
@@ -526,6 +539,7 @@ export const getValintatapajonoTulosExcel = async ({
 };
 
 const pollDocumentSeuranta = async (uuid: string) => {
+  const configuration = await getConfiguration();
   let pollTimes = 10;
 
   while (pollTimes) {
@@ -566,6 +580,7 @@ export const saveValintatapajonoTulosExcel = async ({
   valintatapajonoOid,
   file,
 }: ValintatapaJonoTulosExcelProps & { file: File }) => {
+  const configuration = await getConfiguration();
   const urlWithQuery = new URL(
     configuration.startImportValintatapajonoTulosExcelUrl,
   );
@@ -593,6 +608,7 @@ export const getPistesyottoExcel = async ({
   hakuOid: string;
   hakukohdeOid: string;
 }) => {
+  const configuration = await getConfiguration();
   const urlWithQuery = new URL(configuration.startExportPistesyottoExcelUrl);
   urlWithQuery.searchParams.append('hakuOid', hakuOid);
   urlWithQuery.searchParams.append('hakukohdeOid', hakukohdeOid);
@@ -614,6 +630,7 @@ export const getSijoittelunTulosExcel = async ({
   hakukohdeOid: string;
   sijoitteluajoId: string;
 }) => {
+  const configuration = await getConfiguration();
   const urlWithQuery = new URL(configuration.sijoittelunTulosExcelUrl);
   urlWithQuery.searchParams.append('hakuOid', hakuOid);
   urlWithQuery.searchParams.append('hakukohdeOid', hakukohdeOid);
@@ -630,6 +647,7 @@ export const getSijoittelunTulosExcel = async ({
 export const getSijoittelunTulosHaulleExcel = async (
   hakuOid: string,
 ): Promise<FileResult> => {
+  const configuration = await getConfiguration();
   const urlWithQuery = new URL(configuration.sijoittelunTulosHaulleExcelUrl);
   urlWithQuery.searchParams.append('hakuOid', hakuOid);
   const createResponse = await client.post<{ id: string }>(
@@ -650,6 +668,7 @@ export const savePistesyottoExcel = async ({
   hakukohdeOid: string;
   excelFile: File;
 }) => {
+  const configuration = await getConfiguration();
   const urlWithQuery = new URL(configuration.startImportPistesyottoUrl);
   urlWithQuery.searchParams.append('hakuOid', hakuOid);
   urlWithQuery.searchParams.append('hakukohdeOid', hakukohdeOid);
@@ -686,6 +705,7 @@ export const getHarkinnanvaraisuudetHakemuksille = async ({
 }: {
   hakemusOids: Array<string>;
 }) => {
+  const configuration = await getConfiguration();
   const res = await client.post<Array<HakemuksenHarkinnanvaraisuustiedot>>(
     configuration.harkinnanvaraisuudetHakemuksilleUrl,
     hakemusOids,
@@ -708,6 +728,7 @@ export const luoHyvaksymiskirjeetPDF = async ({
   deadline?: Date | null;
   onlyForbidden: boolean;
 }): Promise<string> => {
+  const configuration = await getConfiguration();
   const hakukohdeNimi = translateName(hakukohde.nimi);
   const opetuskieliCode = (getOpetuskieliCode(hakukohde) || 'fi').toUpperCase();
   const pvm = deadline
@@ -752,6 +773,7 @@ export const luoHyvaksymiskirjeetHaullePDF = async ({
   lang?: Language;
   templateName?: string;
 }): Promise<FileResult> => {
+  const configuration = await getConfiguration();
   const urlWithQuery = new URL(configuration.hyvaksymiskirjeetUrl);
   urlWithQuery.searchParams.append('hakuOid', hakuOid);
   urlWithQuery.searchParams.append('vainTulosEmailinKieltaneet', 'false');
@@ -779,6 +801,7 @@ export const luoEiHyvaksymiskirjeetPDF = async ({
   hakukohde: Hakukohde;
   letterBody: string;
 }): Promise<string> => {
+  const configuration = await getConfiguration();
   const opetuskieliCode = (getOpetuskieliCode(hakukohde) || 'fi').toUpperCase();
   const urlWithQuery = new URL(configuration.eihyvaksymiskirjeetUrl);
   urlWithQuery.searchParams.append('hakuOid', hakukohde.hakuOid);
@@ -809,6 +832,7 @@ export const luoEiHyvaksymiskirjeetPDFHaulle = async ({
   templateName: string;
   lang: Language;
 }): Promise<FileResult> => {
+  const configuration = await getConfiguration();
   const urlWithQuery = new URL(configuration.jalkiohjauskirjeetUrl);
   urlWithQuery.searchParams.append('hakuOid', hakuOid);
   urlWithQuery.searchParams.append('tag', hakuOid);
@@ -833,6 +857,7 @@ export const luoOsoitetarratHakukohteessaHyvaksytyille = async ({
   sijoitteluajoId: string;
   hakukohde: Hakukohde;
 }): Promise<string> => {
+  const configuration = await getConfiguration();
   const urlWithQuery = new URL(
     configuration.startExportOsoitetarratSijoittelussaHyvaksytyilleUrl,
   );
@@ -859,6 +884,7 @@ export const getKirjepohjatHakukohteelle = async (
   kirjepohjanNimi: KirjepohjaNimi,
   hakukohde: Hakukohde,
 ): Promise<Array<Kirjepohja>> => {
+  const configuration = await getConfiguration();
   const opetuskieliCode = (getOpetuskieliCode(hakukohde) || 'fi').toUpperCase();
   const res = await client.get<Array<TemplateResponse>>(
     configuration.kirjepohjat({
@@ -893,6 +919,7 @@ export const getDocumentIdForHakukohde = async (
   hakukohdeOid: string,
   documentType: DokumenttiTyyppi,
 ): Promise<string | null> => {
+  const configuration = await getConfiguration();
   const res = await client.get<[{ documentId: string }]>(
     configuration.dokumentitUrl({ tyyppi: documentType, hakukohdeOid }),
   );
@@ -912,7 +939,7 @@ export const getMyohastyneetHakemukset = async ({
   if (hakemusOids.length === 0) {
     return [];
   }
-
+  const configuration = await getConfiguration();
   const response = await client.post<
     Array<{ hakemusOid: string; mennyt: boolean; vastaanottoDeadline: string }>
   >(
@@ -929,6 +956,7 @@ export const getMyohastyneetHakemukset = async ({
 export const tuloskirjeidenMuodostuksenTilanne = async (
   hakuOid: string,
 ): Promise<Array<LetterCounts>> => {
+  const configuration = await getConfiguration();
   const res = await client.get<{
     [key: string]: {
       [key: string]: {
@@ -962,6 +990,7 @@ export async function publishLetters(
   templateName: string,
   lang: Language,
 ) {
+  const configuration = await getConfiguration();
   const urlWithQuery = new URL(
     configuration.julkaiseTuloskirjeetUrl({ hakuOid }),
   );
@@ -976,6 +1005,7 @@ export async function sendLetters(
   lang: Language,
   letterId: number,
 ) {
+  const configuration = await getConfiguration();
   const reqBody = {
     hakuOid,
     letterId,
