@@ -390,7 +390,14 @@
     }
   },
   "valinnan-tulokset": {
-    "otsikko": "Valinnan tulokset"
+    "otsikko": "Valinnan tulokset",
+    "taulukko": {
+      "hakija": "Hakija",
+      "valinnan-tila": "Valinnan tila",
+      "vastaanoton-tila": "Vastaanoton tila",
+      "ilmoittautumisen-tila": "Ilmoittautumisen tila",
+      "toiminnot": "Toiminnot"
+    }
   },
   "sijoittelu": {
     "tasasijasaanto": {
