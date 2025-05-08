@@ -56,7 +56,7 @@ const useHakemuksetValinnanTuloksilla = ({
             valinnanTulos.ehdollisestiHyvaksyttavissa,
           ehdollisenHyvaksymisenEhtoKoodi:
             valinnanTulos.ehdollisenHyvaksymisenEhtoKoodi,
-          ehcollisenHyvaksymisenEhtoFI:
+          ehdollisenHyvaksymisenEhtoFI:
             valinnanTulos.ehdollisenHyvaksymisenEhtoFI,
           ehdollisenHyvaksymisenEhtoSV:
             valinnanTulos.ehdollisenHyvaksymisenEhtoSV,
