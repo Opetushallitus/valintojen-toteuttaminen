@@ -14,7 +14,7 @@ import { useCallback, useMemo } from 'react';
 import { KeysMatching, ListTableColumn } from '@/components/table/table-types';
 import { MaksuCell } from './maksu-cell';
 import { IlmoittautumisTilaSelect } from '@/components/ilmoittautumistila-select';
-import { VastaanOttoCell } from './vastaanotto-cell';
+import { VastaanOttoCell } from '@/components/vastaanotto-cell';
 import { SijoittelunTilaCell } from './sijoittelun-tila-cell';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';

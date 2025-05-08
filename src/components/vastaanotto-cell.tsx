@@ -6,18 +6,16 @@ import {
   SijoittelunHakemusValintatiedoilla,
   VastaanottoTila,
 } from '@/lib/types/sijoittelu-types';
-import { SelectChangeEvent, Typography } from '@mui/material';
+import { SelectChangeEvent, Stack, Typography } from '@mui/material';
 import { OphCheckbox } from '@opetushallitus/oph-design-system';
-import { SijoittelunTulosStyledCell } from './sijoittelun-tulos-styled-cell';
 import {
   isVastaanottotilaJulkaistavissa,
   isVastaanottoPossible,
 } from '@/lib/sijoittelun-tulokset-utils';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
-import { SijoittelunTulosChangeParams } from '../lib/sijoittelun-tulokset-state';
 import { useVastaanottoTilaOptions } from '@/hooks/useVastaanottoTilaOptions';
 import { useIsValintaesitysJulkaistavissa } from '@/hooks/useIsValintaesitysJulkaistavissa';
-import { useHakijanVastaanottotila } from '../hooks/useHakijanVastaanottotila';
+import { useHakijanVastaanottotila } from '@/hooks/useHakijanVastaanottotila';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { ClientSpinner } from '@/components/client-spinner';
 
@@ -63,10 +61,21 @@ const HakijanVastaanottoTilaSection = ({
 export type VastaanOttoCellProps = {
   haku: Haku;
   hakukohde: Hakukohde;
-  valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
-  hakemus: SijoittelunHakemusValintatiedoilla;
-  disabled: boolean;
-  updateForm: (params: SijoittelunTulosChangeParams) => void;
+  valintatapajono?: SijoitteluajonValintatapajonoValintatiedoilla;
+  hakemus: Pick<
+    SijoittelunHakemusValintatiedoilla,
+    | 'hakemusOid'
+    | 'vastaanottotila'
+    | 'julkaistavissa'
+    | 'vastaanottoDeadline'
+    | 'tila'
+  >;
+  disabled?: boolean;
+  updateForm: (params: {
+    hakemusOid: string;
+    vastaanottotila?: VastaanottoTila;
+    julkaistavissa?: boolean;
+  }) => void;
 };
 
 export const VastaanOttoCell = ({
@@ -100,7 +109,7 @@ export const VastaanOttoCell = ({
   };
 
   return (
-    <SijoittelunTulosStyledCell>
+    <Stack gap={1} sx={{ minWidth: '180px' }}>
       <OphCheckbox
         checked={julkaistavissa}
         onChange={updateJulkaistu}
@@ -120,12 +129,14 @@ export const VastaanOttoCell = ({
       {isVastaanottoPossible(hakemus) && (
         <>
           <QuerySuspenseBoundary suspenseFallback={<ClientSpinner size={16} />}>
-            <HakijanVastaanottoTilaSection
-              haku={haku}
-              hakukohde={hakukohde}
-              valintatapajono={valintatapajono}
-              vastaanottotila={vastaanottotila}
-            />
+            {valintatapajono && (
+              <HakijanVastaanottoTilaSection
+                haku={haku}
+                hakukohde={hakukohde}
+                valintatapajono={valintatapajono}
+                vastaanottotila={vastaanottotila}
+              />
+            )}
           </QuerySuspenseBoundary>
           <LocalizedSelect
             ariaLabel={t('sijoittelun-tulokset.taulukko.vastaanottotieto')}
@@ -136,6 +147,6 @@ export const VastaanOttoCell = ({
           />
         </>
       )}
-    </SijoittelunTulosStyledCell>
+    </Stack>
   );
 };
