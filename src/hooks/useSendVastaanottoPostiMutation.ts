@@ -49,8 +49,7 @@ export const useSendVastaanottoPostiMutation = ({
     onError: (e) => {
       addToast({
         key: `send-vastaanottoposti-${target}-error`,
-        message:
-          'sijoittelun-tulokset.toiminnot.vastaanottoposti-jonolle-virhe',
+        message: `vastaanottoposti.${target}-virhe`,
         type: 'error',
       });
       console.error(e);
@@ -59,15 +58,13 @@ export const useSendVastaanottoPostiMutation = ({
       if (!data || data.length === 0) {
         addToast({
           key: `send-vastaanottoposti-${target}-empty`,
-          message:
-            'sijoittelun-tulokset.toiminnot.vastaanottoposti-jonolle-ei-lahetettavia',
+          message: `vastaanottoposti.${target}-ei-lahetettavia`,
           type: 'error',
         });
       } else {
         addToast({
           key: `send-vastaanottoposti-${target}-success`,
-          message:
-            'sijoittelun-tulokset.toiminnot.vastaanottoposti-jonolle-lahetetty',
+          message: `vastaanottoposti.${target}-lahetetty`,
           type: 'success',
         });
       }

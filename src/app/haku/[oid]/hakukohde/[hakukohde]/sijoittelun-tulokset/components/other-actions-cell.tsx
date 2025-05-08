@@ -4,8 +4,6 @@ import {
   InsertDriveFileOutlined,
 } from '@mui/icons-material';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
-import useToaster from '@/hooks/useToaster';
-import { sendVastaanottopostiHakemukselle } from '@/lib/valinta-tulos-service/valinta-tulos-service';
 import { showModal } from '@/components/modals/global-modal';
 import { ChangeHistoryGlobalModal } from '@/components/modals/change-history-global-modal';
 import { AcceptedLetterTemplateModal } from './letter-template-modal';
@@ -18,6 +16,8 @@ import {
   isSendVastaanottoPostiVisible,
 } from '@/lib/sijoittelun-tulokset-utils';
 import { Dropdown } from '@/components/dropdown';
+import { useSendVastaanottoPostiMutation } from '@/hooks/useSendVastaanottoPostiMutation';
+import { SpinnerModal } from '@/components/modals/spinner-modal';
 
 export const OtherActionsCell = ({
   hakemus,
@@ -35,7 +35,6 @@ export const OtherActionsCell = ({
   kaikkiJonotHyvaksytty: boolean;
 }) => {
   const { t } = useTranslations();
-  const { addToast } = useToaster();
 
   const createHyvaksymiskirjePDFs = async () => {
     showModal(AcceptedLetterTemplateModal, {
@@ -47,46 +46,14 @@ export const OtherActionsCell = ({
     });
   };
 
-  const sendVastaanottoposti = async () => {
-    try {
-      const data = await sendVastaanottopostiHakemukselle(hakemus.hakemusOid);
-      if (!data || data.length < 1) {
-        addToast({
-          key: 'vastaanottoposti-hakemus-empty',
-          message:
-            'sijoittelun-tulokset.toiminnot.vastaanottoposti-hakemukselle-ei-lahetettavia',
-          type: 'error',
-        });
-      } else {
-        addToast({
-          key: 'vastaanottoposti-hakemus',
-          message:
-            'sijoittelun-tulokset.toiminnot.vastaanottoposti-hakemukselle-lahetetty',
-          type: 'success',
-        });
-      }
-    } catch (e) {
-      addToast({
-        key: 'vastaanottoposti-hakemus-virhe',
-        message:
-          'sijoittelun-tulokset.toiminnot.vastaanottoposti-hakemukselle-virhe',
-        type: 'error',
-      });
-      console.error(e);
-    }
-  };
+  const { isPending: isSendingVastaanottoPosti, mutate: sendVastaanottoposti } =
+    useSendVastaanottoPostiMutation({
+      target: 'hakemus',
+      hakemusOid: hakemus.hakemusOid,
+    });
 
   const showChangeHistoryForHakemus = async () => {
-    try {
-      showModal(ChangeHistoryGlobalModal, { hakemus });
-    } catch (e) {
-      addToast({
-        key: 'muutoshistoria-hakemukselle-virhe',
-        message: 'sijoittelun-tulokset.toiminnot.muutoshistoria-virhe',
-        type: 'error',
-      });
-      console.error(e);
-    }
+    showModal(ChangeHistoryGlobalModal, { hakemus });
   };
   const { data: userPermissions } = useUserPermissions();
 
@@ -96,6 +63,10 @@ export const OtherActionsCell = ({
       label={t('sijoittelun-tulokset.toiminnot.menu')}
       disabled={disabled}
     >
+      <SpinnerModal
+        title={t('vastaanottoposti.lahetetaan')}
+        open={isSendingVastaanottoPosti}
+      />
       <Dropdown.MenuItem
         label={t('sijoittelun-tulokset.toiminnot.muutoshistoria')}
         icon={<History />}
@@ -115,9 +86,9 @@ export const OtherActionsCell = ({
       />
       {isSendVastaanottoPostiVisible(haku, userPermissions) && (
         <Dropdown.MenuItem
-          label={t('sijoittelun-tulokset.toiminnot.laheta-vastaanottoposti')}
+          label={t('vastaanottoposti.laheta')}
           icon={<MailOutline />}
-          onClick={sendVastaanottoposti}
+          onClick={() => sendVastaanottoposti()}
         />
       )}
     </Dropdown.MenuButton>

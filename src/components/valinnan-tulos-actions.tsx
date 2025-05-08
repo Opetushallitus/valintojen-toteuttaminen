@@ -74,10 +74,8 @@ const SendVastaanottopostiButton = ({
       loading={isPending}
     >
       {type === 'sijoittelun-tulos'
-        ? t('sijoittelun-tulokset.toiminnot.laheta-vastaanottoposti-jonolle')
-        : t(
-            'valinnan-tulokset.toiminnot.laheta-vastaanottoposti-hakukohteelle',
-          )}
+        ? t('vastaanottoposti.valintatapajono-laheta')
+        : t('vastaanottoposti.hakukohde-laheta')}
     </OphButton>
   );
 };

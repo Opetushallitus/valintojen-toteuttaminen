@@ -7,8 +7,6 @@ import {
   NoteOutlined,
 } from '@mui/icons-material';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
-import { sendVastaanottopostiHakukohteelle } from '@/lib/valinta-tulos-service/valinta-tulos-service';
-import useToaster from '@/hooks/useToaster';
 import { configuration } from '@/lib/configuration';
 import {
   AcceptedLetterTemplateModal,
@@ -20,6 +18,7 @@ import { luoOsoitetarratHakukohteessaHyvaksytyille } from '@/lib/valintalaskenta
 import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
 import { Dropdown } from '@/components/dropdown';
 import { Divider } from '@mui/material';
+import { useSendVastaanottoPostiMutation } from '@/hooks/useSendVastaanottoPostiMutation';
 
 const SendVastaanottopostiMenuItem = ({
   hakukohde,
@@ -27,39 +26,18 @@ const SendVastaanottopostiMenuItem = ({
   hakukohde: Hakukohde;
 }) => {
   const { t } = useTranslations();
-  const { addToast } = useToaster();
 
-  const sendVastaanottoposti = async () => {
-    try {
-      const data = await sendVastaanottopostiHakukohteelle(hakukohde.oid);
-      if (!data || data.length < 1) {
-        addToast({
-          key: 'vastaanottoposti-hakemus-empty',
-          message:
-            'sijoittelun-tulokset.toiminnot.vastaanottoposti-hakukohteelle-ei-lahetettavia',
-          type: 'error',
-        });
-      } else {
-        addToast({
-          key: 'vastaanottoposti-hakemus',
-          message:
-            'sijoittelun-tulokset.toiminnot.vastaanottoposti-hakukohteelle-lahetetty',
-          type: 'success',
-        });
-      }
-    } catch (e) {
-      addToast({
-        key: 'vastaanottoposti-hakemus-virhe',
-        message:
-          'sijoittelun-tulokset.toiminnot.vastaanottoposti-hakukohteelle-virhe',
-        type: 'error',
-      });
-      console.error(e);
-    }
-  };
+  const { mutate: sendVastaanottoposti } = useSendVastaanottoPostiMutation({
+    target: 'hakukohde',
+    hakukohdeOid: hakukohde.oid,
+  });
 
   return (
-    <Dropdown.MenuItem onClick={sendVastaanottoposti} icon={<MailOutline />} label={t('sijoittelun-tulokset.toiminnot.laheta-vastaanottoposti-hakukohde')} />
+    <Dropdown.MenuItem
+      onClick={() => sendVastaanottoposti()}
+      icon={<MailOutline />}
+      label={t('vastaanottoposti.hakukohde-laheta')}
+    />
   );
 };
 
@@ -122,12 +100,11 @@ const FormEiHyvaksymisKirjeMenuItem = ({
   };
 
   return (
-    <Dropdown.MenuItem onClick={openNonAcceptedLetterTemplateModal}
-      icon={<InsertDriveFileOutlined />
-
-      }
+    <Dropdown.MenuItem
+      onClick={openNonAcceptedLetterTemplateModal}
+      icon={<InsertDriveFileOutlined />}
       label={t(itemText)}
-    />  
+    />
   );
 };
 
@@ -158,8 +135,11 @@ const FormOsoiteTarratMenuItem = ({
   };
 
   return (
-    <Dropdown.MenuItem onClick={openOsoitetarratModal} label={t('sijoittelun-tulokset.toiminnot.osoitetarrat')}
-      icon={<NoteOutlined />} />
+    <Dropdown.MenuItem
+      onClick={openOsoitetarratModal}
+      label={t('sijoittelun-tulokset.toiminnot.osoitetarrat')}
+      icon={<NoteOutlined />}
+    />
   );
 };
 
@@ -198,47 +178,49 @@ export const OtherActionsHakukohdeButton = ({
   };
 
   return (
-      <Dropdown.MenuButton
-        label={t('sijoittelun-tulokset.toiminnot.menu-hakukohde')}
-        disabled={disabled}
-      >
-        <SendVastaanottopostiMenuItem hakukohde={hakukohde} />
-        <Divider />
-        <FormHyvaksymisKirjeMenuItem
-          hakukohde={hakukohde}
-          sijoitteluajoId={sijoitteluajoId}
-          setDocument={setHyvaksymiskirjeDocument}
-        />
-        <FormEiHyvaksymisKirjeMenuItem
-          hakukohde={hakukohde}
-          sijoitteluajoId={sijoitteluajoId}
-          korkeakouluHaku={isKorkeakouluHaku(haku)}
-        />
-        <Dropdown.MenuItem
-          onClick={() => openDocument(hyvaksymiskirje)}
-          icon={<FileDownloadOutlined />}
-          label={t('sijoittelun-tulokset.toiminnot.hyvaksymiskirje-hakukohde-lataa')}
-          disabled={!hyvaksymiskirje}
-        />
-        <Divider />
-        <FormOsoiteTarratMenuItem
-          hakukohde={hakukohde}
-          sijoitteluajoId={sijoitteluajoId}
-          setDocument={setOsoitetarraDocument}
-        />
-        <Dropdown.MenuItem
-          onClick={() => openDocument(osoitetarraDocument)}
-          icon={<FileDownloadOutlined />}
-          label={t('sijoittelun-tulokset.toiminnot.osoitetarrat-lataa')}
-          disabled={!osoitetarraDocument}
-        />
-        <Divider />
-        <Dropdown.MenuItem
-          onClick={() => openDocument(tulosDocumentId)}
-          icon={<FileDownloadOutlined />}
-          label={t('sijoittelun-tulokset.toiminnot.tulokset-lataa')}
-          disabled={!tulosDocumentId}
-        />
+    <Dropdown.MenuButton
+      label={t('sijoittelun-tulokset.toiminnot.menu-hakukohde')}
+      disabled={disabled}
+    >
+      <SendVastaanottopostiMenuItem hakukohde={hakukohde} />
+      <Divider />
+      <FormHyvaksymisKirjeMenuItem
+        hakukohde={hakukohde}
+        sijoitteluajoId={sijoitteluajoId}
+        setDocument={setHyvaksymiskirjeDocument}
+      />
+      <FormEiHyvaksymisKirjeMenuItem
+        hakukohde={hakukohde}
+        sijoitteluajoId={sijoitteluajoId}
+        korkeakouluHaku={isKorkeakouluHaku(haku)}
+      />
+      <Dropdown.MenuItem
+        onClick={() => openDocument(hyvaksymiskirje)}
+        icon={<FileDownloadOutlined />}
+        label={t(
+          'sijoittelun-tulokset.toiminnot.hyvaksymiskirje-hakukohde-lataa',
+        )}
+        disabled={!hyvaksymiskirje}
+      />
+      <Divider />
+      <FormOsoiteTarratMenuItem
+        hakukohde={hakukohde}
+        sijoitteluajoId={sijoitteluajoId}
+        setDocument={setOsoitetarraDocument}
+      />
+      <Dropdown.MenuItem
+        onClick={() => openDocument(osoitetarraDocument)}
+        icon={<FileDownloadOutlined />}
+        label={t('sijoittelun-tulokset.toiminnot.osoitetarrat-lataa')}
+        disabled={!osoitetarraDocument}
+      />
+      <Divider />
+      <Dropdown.MenuItem
+        onClick={() => openDocument(tulosDocumentId)}
+        icon={<FileDownloadOutlined />}
+        label={t('sijoittelun-tulokset.toiminnot.tulokset-lataa')}
+        disabled={!tulosDocumentId}
+      />
     </Dropdown.MenuButton>
   );
 };
