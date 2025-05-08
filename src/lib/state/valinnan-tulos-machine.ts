@@ -1,5 +1,5 @@
 import { Toast } from '@/hooks/useToaster';
-import { ActorRefFrom, assign, createMachine } from 'xstate';
+import { ActorRefFrom, assign, createMachine, PromiseActorLogic } from 'xstate';
 import { clone } from 'remeda';
 import {
   hasChangedHakemukset,
@@ -51,7 +51,7 @@ export type ValinnanTulosUpdateEvent = {
 
 export type ValinnanTulosMachineParams<T extends ValinnanTulosFields> = {
   hakukohdeOid: string;
-  valintatapajonoOid: string;
+  valintatapajonoOid?: string;
   hakemukset: Array<MinimalHakemusInfo>;
   tulokset: Array<T>;
   lastModified: string;
@@ -108,9 +108,9 @@ export type ValinnanTuloksetEvents<T extends ValinnanTulosFields> =
   | ValinnanTulosMassUpdateEvent
   | ValinnanTulosResetEvent<T>;
 
-export type ValinnanTulosActorRef<T extends ValinnanTulosFields> = ActorRefFrom<
-  ReturnType<typeof createValinnanTulosMachine<T>>
->;
+export type ValinnanTulosActorRef<
+  T extends ValinnanTulosFields = ValinnanTulosFields,
+> = ActorRefFrom<ReturnType<typeof createValinnanTulosMachine<T>>>;
 
 export function createValinnanTulosMachine<T extends ValinnanTulosFields>() {
   return createMachine({
@@ -126,6 +126,24 @@ export function createValinnanTulosMachine<T extends ValinnanTulosFields>() {
         | { type: 'errorModal'; params: { error: Error } }
         | { type: 'notifyMassStatusChange' }
         | { type: 'updated'; params?: { error?: Error } };
+      actors:
+        | {
+            src: 'updateHakemukset';
+            logic: PromiseActorLogic<
+              void,
+              {
+                hakukohdeOid?: string;
+                valintatapajonoOid?: string;
+                lastModified?: string;
+                changed: Array<T>;
+                original: Array<T>;
+              }
+            >;
+          }
+        | {
+            src: 'publish';
+            logic: PromiseActorLogic<void, { valintatapajonoOid?: string }>;
+          };
     },
     context: {
       hakemukset: [],
