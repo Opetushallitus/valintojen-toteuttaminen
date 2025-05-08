@@ -34,54 +34,54 @@ export const ValinnanTuloksetSearchControls = () => {
   const vastaanottoTilaOptions = useVastaanottoTilaOptions();
 
   return (
-    <Stack gap={1} sx={{ width: '100%' }}>
-      <Stack
-        direction="row"
-        gap={2}
+    <Stack
+      direction="row"
+      gap={2}
+      sx={{
+        alignItems: 'flex-end',
+        flexGrow: 1,
+        flexWrap: 'wrap',
+      }}
+    >
+      <SearchInput
+        searchPhrase={searchPhrase}
+        setSearchPhrase={setSearchPhrase}
+        name="valinnan-tulos-search"
+      />
+      <OphFormFieldWrapper
         sx={{
-          alignItems: 'flex-end',
+          flexBasis: '320px',
+          textAlign: 'left',
         }}
-      >
-        <SearchInput
-          searchPhrase={searchPhrase}
-          setSearchPhrase={setSearchPhrase}
-          name="valinnan-tulos-search"
-        />
-        <OphFormFieldWrapper
-          sx={{
-            flexBasis: '320px',
-            textAlign: 'left',
-          }}
-          label={t('valinnan-tulokset.taulukko.valinnan-tila')}
-          renderInput={({ labelId }) => (
-            <LocalizedSelect
-              id="valinnan-tila-select"
-              labelId={labelId}
-              value={valinnanTila}
-              onChange={changeValinnanTila}
-              options={sijoitteluntilaOptions}
-              clearable
-            />
-          )}
-        />
-        <OphFormFieldWrapper
-          sx={{
-            flexBasis: '300px',
-            textAlign: 'left',
-          }}
-          label={t('valinnan-tulokset.taulukko.vastaanoton-tila')}
-          renderInput={({ labelId }) => (
-            <LocalizedSelect
-              id="vastaanoton-tila-select"
-              labelId={labelId}
-              value={vastaanottoTila}
-              onChange={changeVastaanottoTila}
-              options={vastaanottoTilaOptions}
-              clearable
-            />
-          )}
-        />
-      </Stack>
+        label={t('valinnan-tulokset.taulukko.valinnan-tila')}
+        renderInput={({ labelId }) => (
+          <LocalizedSelect
+            id="valinnan-tila-select"
+            labelId={labelId}
+            value={valinnanTila}
+            onChange={changeValinnanTila}
+            options={sijoitteluntilaOptions}
+            clearable
+          />
+        )}
+      />
+      <OphFormFieldWrapper
+        sx={{
+          flexBasis: '300px',
+          textAlign: 'left',
+        }}
+        label={t('valinnan-tulokset.taulukko.vastaanoton-tila')}
+        renderInput={({ labelId }) => (
+          <LocalizedSelect
+            id="vastaanoton-tila-select"
+            labelId={labelId}
+            value={vastaanottoTila}
+            onChange={changeVastaanottoTila}
+            options={vastaanottoTilaOptions}
+            clearable
+          />
+        )}
+      />
     </Stack>
   );
 };
