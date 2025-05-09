@@ -122,6 +122,7 @@ export class SovellusStack extends cdk.Stack {
           },
           distributionProps: {
             priceClass: PriceClass.PRICE_CLASS_100,
+            enableIpv6: false,
           },
         },
         ...nameOverrides(

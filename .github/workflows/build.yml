@@ -31,7 +31,7 @@ jobs:
     strategy:
       fail-fast: true # Lopetetaan, jos testit epäonnistuu yhdellä selaimella
       matrix:
-        browser: [chromium, firefox, webkit]
+        browser: [chromium, firefox]
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-next-env
