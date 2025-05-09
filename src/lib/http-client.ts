@@ -94,6 +94,7 @@ const RESPONSE_BODY_PARSERS: Record<string, BodyParser<unknown>> = {
   'application/vnd.ms-excel': BLOB_PARSER,
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
     BLOB_PARSER,
+  'binary/octet-stream': BLOB_PARSER,
   'text/plain': TEXT_PARSER,
 };
 
