@@ -1,6 +1,7 @@
 import { isTesting, localTranslations } from '../configuration';
 import { BackendFetch, DevTools, Tolgee } from '@tolgee/react';
 import { FormatIcu } from '@tolgee/format-icu';
+import { getConfiguration } from '@/hooks/useConfiguration';
 
 const REVALIDATE_TIME_SECONDS = 10 * 60;
 
@@ -26,7 +27,7 @@ export function TolgeeBase() {
       },
     });
   } else {
-    return tg
+    /* return tg
       .use(
         BackendFetch({
           prefix: 'https://localhost:3404/lokalisointi/tolgee',
@@ -42,25 +43,25 @@ export function TolgeeBase() {
         defaultNs: NAMESPACE,
         ns: [NAMESPACE],
         projectId: 11100,
-      });
-    /* return getConfiguration().then(configuration => {
+      }); */
+    return getConfiguration().then((configuration) => {
       return tg
-      .use(
-        BackendFetch({
-          prefix: configuration.lokalisointiUrl,
-          next: {
-            revalidate: REVALIDATE_TIME_SECONDS,
-          },
-        }),
-      )
-      .use(DevTools())
-      .updateDefaults({
-        apiKey,
-        apiUrl,
-        defaultNs: NAMESPACE,
-        ns: [NAMESPACE],
-        projectId: 11100,
-      });
-    }); */
+        .use(
+          BackendFetch({
+            prefix: configuration.lokalisointiUrl,
+            next: {
+              revalidate: REVALIDATE_TIME_SECONDS,
+            },
+          }),
+        )
+        .use(DevTools())
+        .updateDefaults({
+          apiKey,
+          apiUrl,
+          defaultNs: NAMESPACE,
+          ns: [NAMESPACE],
+          projectId: 11100,
+        });
+    });
   }
 }
