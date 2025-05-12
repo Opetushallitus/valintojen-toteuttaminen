@@ -1,27 +1,32 @@
 'use client';
-
-import { client } from "@/lib/http-client";
-import { useQuery } from "@tanstack/react-query";
-import { isNullish } from "remeda";
-
 declare global {
   interface Window {
-    configuration?: Record<string, any>;
+    configuration: Record<string, (params: Record<string, string | boolean | number>) => string>;
   }
 }
 
-export const getConfiguration = async (): Promise<Record<string, any>> => {
-  if (isNullish(window?.configuration)) {
-    const response = await client.get<Record<string, string>>("valintojen-toteuttaminen/configuration");
-    console.log('fetched configuration data', );
-    window.configuration = response.data;
-  }
-  return window.configuration;
+function constructRoute(routeString: string, params: Record<string, string | boolean | number>): string {
+  let route = routeString;
+  Object.entries(params).forEach((entry: [string, string | number | boolean]) => {
+    const value = '' + entry[1];
+    route = route.replace(`{${entry[0]}}`, value);
+  });
+  return route;
 };
 
-export const useConfiguration = () =>
-  useQuery({
-    queryKey: ['getConfiguration'],
-    queryFn: getConfiguration,
-    staleTime: Infinity,
+export function convertConfiguration(configuration: Record<string, string>): Record<string, (params: Record<string, string | boolean | number>) => string> {
+  const adjustedConfiguration = new Map<string, ((params: Record<string, string | boolean | number>) => string)>();
+  Object.entries(configuration).map((entry: [string, string]) => {
+    const constructFn = (params: Record<string, string | boolean | number>) => constructRoute(entry[1], params);
+    adjustedConfiguration.set(entry[0], constructFn)
   });
+  return Object.fromEntries(adjustedConfiguration);
+}
+
+export function setConfiguration(configuration: Record<string, (params: Record<string, string | boolean | number>) => string>) {
+  window.configuration = configuration;
+}
+
+export function getConfiguration(): Record<string, (params: Record<string, string | boolean | number>) => string> {
+  return window.configuration;
+}

@@ -10,7 +10,7 @@ export const getOrganizationParentOids = async (oid: string) => {
     return [OPH_ORGANIZATION_OID];
   }
   const response = await client.get<Array<string>>(
-    configuration.organisaatioParentOidsUrl(oid),
+    configuration.organisaatioParentOidsUrl({oid}),
   );
   return response.data;
 };

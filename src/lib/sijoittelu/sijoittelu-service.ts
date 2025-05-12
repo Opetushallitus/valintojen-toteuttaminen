@@ -48,7 +48,7 @@ export async function createAjastettuSijoittelu(
 ) {
   const startTimeMillis = startDate.getTime();
   const configuration = await getConfiguration();
-  await client.post(configuration.createAjastettuSijoittelu, {
+  await client.post(configuration.createAjastettuSijoittelu({}), {
     hakuOid,
     aloitusajankohta: startTimeMillis,
     ajotiheys: frequency,
@@ -66,7 +66,7 @@ export async function updateAjastettuSijoittelu(
   frequency: string,
 ) {
   const configuration = await getConfiguration();
-  const updateUrl = new URL(configuration.updateAjastettuSijoittelu);
+  const updateUrl = new URL(configuration.updateAjastettuSijoittelu({}));
   updateUrl.searchParams.append('hakuOid', hakuOid);
   updateUrl.searchParams.append('aloitusajankohta', '' + startDate.getTime());
   updateUrl.searchParams.append('ajotiheys', frequency);

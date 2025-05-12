@@ -48,7 +48,7 @@ export async function getHaut(userPermissions: UserPermissions) {
   const configuration = await getConfiguration();
   const tarjoajaOids = permissionsToTarjoajat(userPermissions);
   const response = await client.get<Array<HakuResponseData>>(
-    `${configuration.hautUrl}${tarjoajaOids}`,
+    `${configuration.hautUrl({})}${tarjoajaOids}`,
   );
   const haut: Array<Haku> = response.data.map(mapToHaku);
   return haut;
@@ -101,7 +101,7 @@ export function getOpetuskieliCode(hakukohde: Hakukohde): Language | null {
 export async function getHaku(oid: string): Promise<Haku> {
   const configuration = await getConfiguration();
   const response = await client.get<HakuResponseData>(
-    `${configuration.hakuUrl}/${oid}`,
+    `${configuration.hakuUrl({})}/${oid}`,
   );
   return mapToHaku(response.data);
 }
@@ -156,7 +156,7 @@ export async function getHakukohteet(
   const configuration = await getConfiguration();
   const tarjoajaOids = permissionsToTarjoajat(userPermissions);
   const response = await client.get<Array<HakukohdeResponseData>>(
-    `${configuration.hakukohteetUrl}&haku=${hakuOid}${tarjoajaOids}`,
+    `${configuration.hakukohteetUrl({})}&haku=${hakuOid}${tarjoajaOids}`,
   );
   return response.data.map(mapToHakukohde);
 }
@@ -172,7 +172,7 @@ export const getHakukohteetQueryOptions = (
 export async function getHakukohde(hakukohdeOid: string): Promise<Hakukohde> {
   const configuration = await getConfiguration();
   const response = await client.get<HakukohdeResponseData>(
-    `${configuration.hakukohdeUrl}/${hakukohdeOid}`,
+    `${configuration.hakukohdeUrl({})}/${hakukohdeOid}`,
   );
 
   return mapToHakukohde(response.data);

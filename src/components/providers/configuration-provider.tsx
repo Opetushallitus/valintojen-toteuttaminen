@@ -1,24 +1,27 @@
 'use client';
-import { FullSpinner } from '@/components/full-spinner';
-import { ErrorView } from '../error-view';
-import { useConfiguration } from '@/hooks/useConfiguration';
-import { createContext } from 'react';
+import { convertConfiguration, setConfiguration } from '@/hooks/useConfiguration';
+import { createContext, useEffect, useState } from 'react';
+import { isNullish } from 'remeda';
 
-export const ConfigurationContext = createContext<Record<string, any>>({configuration: {}});
+export const ConfigurationContext = createContext<{configuration: Record<string, (params: Record<string, string | boolean | number>) => string>}>({configuration: {}});
 
 export function ConfigurationProvider({
+  configuration,
   children,
 }: {
+  configuration: Record<string, string>
   children: React.ReactNode;
 }) {
-  const { isLoading, isError, error, refetch, data } = useConfiguration();
 
-  switch (true) {
-    case isLoading:
-      return <FullSpinner />;
-    case isError:
-      return <ErrorView error={error} reset={refetch} />;
-    default:
-      return <ConfigurationContext.Provider value={{configuration: data}}>{children}</ConfigurationContext.Provider>;
-  }
+  const [convertedConfiguration, setConvertedConfiguration] = useState<null | Record<string, (params: Record<string, string | boolean | number>) => string>>(null);
+
+  useEffect(() => {
+    const convertedConfiguration = convertConfiguration(configuration);
+    setConfiguration(convertedConfiguration);
+    setConvertedConfiguration(convertedConfiguration);
+  }, [configuration]);
+
+  return isNullish(convertedConfiguration)
+    ? null
+    : <ConfigurationContext.Provider value={{configuration: convertedConfiguration}}>{children}</ConfigurationContext.Provider>;
 }

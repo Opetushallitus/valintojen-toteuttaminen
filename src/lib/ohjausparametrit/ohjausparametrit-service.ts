@@ -19,7 +19,7 @@ export const getHaunAsetukset = async (
 ): Promise<HaunAsetukset> => {
   const configuration = await getConfiguration();
   const response = await client.get<HaunAsetuksetResponse>(
-    `${configuration.ohjausparametritUrl}/${hakuOid}`,
+    `${configuration.ohjausparametritUrl({})}/${hakuOid}`,
   );
   const valintaEsityksenHyvaksyminen = response.data.PH_VEH?.date
     ? new Date(response.data.PH_VEH?.date)

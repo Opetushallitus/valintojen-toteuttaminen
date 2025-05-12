@@ -17,7 +17,7 @@ import {
 } from '@/components/providers/localization-provider';
 import { PermissionProvider } from '@/components/providers/permission-provider';
 import { ConfigurationProvider } from '@/components/providers/configuration-provider';
-
+import { buildConfiguration } from './configuration/route-configuration';
 export const metadata: Metadata = {
   title: 'Valintojen Toteuttaminen',
   description: 'Valintojen toteuttamisen käyttöliittymä',
@@ -28,17 +28,20 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+  const configuration = buildConfiguration(process.env.APP_URL ?? process.env.VIRKAILIJA_URL ?? 'https://localhost:3404');
+
   return (
     <html lang="fi">
-      {/* <Script src={await getConfiguration().raamitUrl} /> */}
+      <Script src={configuration.raamitUrl} />
       <body>
         {isDev && <NextTopLoader />}
         <AppRouterCacheProvider>
           {/* Initialisoidaan ensin lokalisoimaton teema, jotta ensimmäisten spinnereiden tyylit tulee oikein. */}
           <OphNextJsThemeProvider variant="oph" overrides={THEME_OVERRIDES}>
             <ReactQueryClientProvider>
-              <ConfigurationProvider>
-                <MyTolgeeProvider>
+              <ConfigurationProvider configuration={configuration}>
+                 <MyTolgeeProvider>
                   <PermissionProvider>
                     <LocalizationProvider>
                       <LocalizedThemeProvider>
@@ -49,7 +52,7 @@ export default async function RootLayout({
                       </LocalizedThemeProvider>
                     </LocalizationProvider>
                   </PermissionProvider>
-                </MyTolgeeProvider>
+                </MyTolgeeProvider> 
               </ConfigurationProvider>
             </ReactQueryClientProvider>
           </OphNextJsThemeProvider>

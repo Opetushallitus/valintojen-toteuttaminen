@@ -46,7 +46,7 @@ export const getSijoittelunTulokset = async (
 ): Promise<Array<SijoittelunValintatapajonoTulos>> => {
   const configuration = await getConfiguration();
   const response = await client.get<Array<SijoittelunTulosResponseData>>(
-    `${configuration.valintaTulosServiceUrl}sijoitteluntulos/yhteenveto/${hakuOid}/hakukohde/${hakukohdeOid}`,
+    `${configuration.valintaTulosServiceUrl({})}sijoitteluntulos/yhteenveto/${hakuOid}/hakukohde/${hakukohdeOid}`,
   );
   const jsonTulokset: Array<SijoittelunValintatapajonoTulos> =
     response.data?.map((tulos) => {
@@ -87,7 +87,7 @@ export const getLatestSijoitteluajonTuloksetWithValintaEsitys = async (
   const configuration = await getConfiguration();
   const response = await nullWhen404(
     client.get<SijoitteluajonTuloksetWithValintaEsitysResponseData>(
-      `${configuration.valintaTulosServiceUrl}sijoitteluntulos/${hakuOid}/sijoitteluajo/latest/hakukohde/${hakukohdeOid}`,
+      `${configuration.valintaTulosServiceUrl({})}sijoitteluntulos/${hakuOid}/sijoitteluajo/latest/hakukohde/${hakukohdeOid}`,
     ),
   );
   return response ? response.data : null;
@@ -99,7 +99,7 @@ export const getLatestSijoitteluAjonTuloksetForHakukohde = async (
 ): Promise<SijoitteluajonTulokset> => {
   const configuration = await getConfiguration();
   const { data } = await client.get<SijoitteluajonTuloksetResponseData>(
-    `${configuration.valintaTulosServiceUrl}sijoittelu/${hakuOid}/sijoitteluajo/latest/hakukohde/${hakukohdeOid}`,
+    `${configuration.valintaTulosServiceUrl({})}sijoittelu/${hakuOid}/sijoitteluajo/latest/hakukohde/${hakukohdeOid}`,
   );
 
   const sijoitteluajonTulokset = data.valintatapajonot.map((jono) => {
@@ -188,7 +188,7 @@ export const saveMaksunTilanMuutokset = async (
 
   if (hakemuksetWithChangedMaksunTila.length > 0) {
     await client.post(
-      `${configuration.valintaTulosServiceUrl}lukuvuosimaksu/${hakukohdeOid}`,
+      `${configuration.valintaTulosServiceUrl({})}lukuvuosimaksu/${hakukohdeOid}`,
       hakemuksetWithChangedMaksunTila,
     );
   }
@@ -301,7 +301,7 @@ export const saveSijoitteluAjonTulokset = async ({
 export const hyvaksyValintaEsitys = async (valintatapajonoOid: string) => {
   const configuration = await getConfiguration();
   await client.post(
-    `${configuration.valintaTulosServiceUrl}valintaesitys/${valintatapajonoOid}/hyvaksytty`,
+    `${configuration.valintaTulosServiceUrl({})}valintaesitys/${valintatapajonoOid}/hyvaksytty`,
     {},
   );
 };

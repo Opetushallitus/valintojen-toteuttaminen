@@ -20,7 +20,7 @@ export const getValintaryhma = async (
 ): Promise<Valintaryhma> => {
   const configuration = await getConfiguration();
   const response = await client.get<Valintaryhma>(
-    `${configuration.valintaperusteetUrl}hakukohde/${hakukohdeOid}/valintaryhma`,
+    `${configuration.valintaperusteetUrl({})}hakukohde/${hakukohdeOid}/valintaryhma`,
   );
   return { nimi: response.data.nimi, oid: response.data.oid };
 };
@@ -90,7 +90,7 @@ export const getValinnanvaiheet = async (
 ): Promise<Array<Valinnanvaihe>> => {
   const configuration = await getConfiguration();
   const response = await client.get<Array<ValinnanvaiheModel>>(
-    `${configuration.valintaperusteetUrl}hakukohde/${hakukohdeOid}/valinnanvaihe?withValisijoitteluTieto=true`,
+    `${configuration.valintaperusteetUrl({})}hakukohde/${hakukohdeOid}/valinnanvaihe?withValisijoitteluTieto=true`,
   );
   return response.data.map(convertValinnanvaihe);
 };
@@ -133,7 +133,7 @@ export const getValintakoeAvaimetHakukohteelle = async (
       vaatiiOsallistumisen: boolean;
       funktiotyyppi: string;
     }>
-  >(`${configuration.valintaperusteetUrl}hakukohde/avaimet/${hakukohdeOid}`);
+  >(`${configuration.valintaperusteetUrl({})}hakukohde/avaimet/${hakukohdeOid}`);
   return data.map((koe) => {
     const inputTyyppi = determineValintaKoeInputTyyppi(
       koe.tunniste,
@@ -217,7 +217,7 @@ export const getValintaryhmat = async (
 }> => {
   const configuration = await getConfiguration();
   const response = await client.get<Array<ValintaryhmaHakukohteillaResponse>>(
-    `${configuration.valintaryhmatHakukohteilla}?hakuOid=${hakuOid}&hakukohteet=true`,
+    `${configuration.valintaryhmatHakukohteilla({})}?hakuOid=${hakuOid}&hakukohteet=true`,
   );
   const hakuRyhma = response.data.find((r) => r.hakuOid === hakuOid);
   const muutRyhmat =
@@ -233,6 +233,6 @@ export const onkoHaullaValintaryhma = async (
 ): Promise<boolean> => {
   const configuration = await getConfiguration();
   return (
-    await client.get<boolean>(configuration.onkoHaullaValintaryhma({ hakuOid }))
+    await client.get<boolean>(configuration.onkoHaullaValintaryhma({hakuOid}))
   ).data;
 };

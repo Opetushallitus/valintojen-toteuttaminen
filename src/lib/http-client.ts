@@ -53,15 +53,13 @@ const noContent = (response: Response) => {
 };
 
 const redirectToLogin = () => {
-  getConfiguration().then(config => {
-    const loginUrl = new URL(config.loginUrl);
-    loginUrl.searchParams.set('service', window.location.href);
-    if (isServer) {
-      redirect(loginUrl.toString());
-    } else {
-      window.location.replace(loginUrl.toString());
-    }
-  });
+  const loginUrl = new URL(getConfiguration().loginUrl({}));
+  loginUrl.searchParams.set('service', window.location.href);
+  if (isServer) {
+    redirect(loginUrl.toString());
+  } else {
+    window.location.replace(loginUrl.toString());
+  }
 };
 
 const makeBareRequest = (request: Request) => {
@@ -164,8 +162,8 @@ const makeRequest = async <Result>(request: Request) => {
         try {
           for (const { urlIncludes, loginParam } of LOGIN_MAP) {
             if (request?.url?.includes(urlIncludes)) {
-              const config = await getConfiguration();
-              const loginUrl = config[loginParam] as string;
+              const config = getConfiguration();
+              const loginUrl = config[loginParam]({});
               const resp = await retryWithLogin(request, loginUrl);
               return responseToData<Result>(resp);
             }

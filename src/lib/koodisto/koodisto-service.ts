@@ -31,7 +31,7 @@ const mapToKoodi = (k: CodeElement): Koodi => {
 async function getKoodit(koodisto: string): Promise<Array<Koodi>> {
   const configuration = await getConfiguration();
   const response = await client.get<Array<CodeElement>>(
-    configuration.kooditUrl + koodisto,
+    configuration.kooditUrl({}) + koodisto,
   );
   return response.data.map(mapToKoodi);
 }
@@ -49,7 +49,7 @@ export async function getPostitoimipaikka(
 ): Promise<TranslatedName> {
   const configuration = await getConfiguration();
   const { data } = await client.get<CodeElement>(
-    configuration.koodiUrl(`posti_${postinumero}`),
+    configuration.koodiUrl({codeElementUri: `posti_${postinumero}`}),
   );
   return mapToKoodi(data).nimi;
 }

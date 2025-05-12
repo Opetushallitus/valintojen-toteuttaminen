@@ -93,7 +93,7 @@ export async function getAtaruHakemukset({
   henkilotunnus,
 }: GetHakijatParams) {
   const configuration = await getConfiguration();
-  const url = new URL(configuration.hakemuksetUrl);
+  const url = new URL(configuration.hakemuksetUrl({}));
   if (hakuOid) {
     url.searchParams.append('hakuOid', hakuOid);
   }
