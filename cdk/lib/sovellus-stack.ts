@@ -124,6 +124,13 @@ export class SovellusStack extends cdk.Stack {
             priceClass: PriceClass.PRICE_CLASS_100,
           },
         },
+        nextjs: {
+          nextjsServerProps: {
+            environment: {
+              DEPLOY_VIRKAILIJA_URL: `https://virkailija.${publicHostedZones[props.environmentName]}`,
+            },
+          },
+        },
         ...nameOverrides(
           this,
           props.environmentName,
