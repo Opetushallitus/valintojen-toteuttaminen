@@ -129,7 +129,7 @@ export const LaskettuValintatapajonoTable = ({
           sortable: false,
         },
       ],
-      [t, jono, translateEntity, hakukohde, queryClient],
+      [t, jono, translateEntity, hakukohde, queryClient, configuration],
     );
 
   return (

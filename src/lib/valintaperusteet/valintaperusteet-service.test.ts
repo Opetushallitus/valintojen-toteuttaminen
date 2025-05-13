@@ -12,6 +12,13 @@ import {
   ValintakoeInputTyyppi,
   ValintaryhmaHakukohteilla,
 } from './valintaperusteet-types';
+import {
+  convertConfiguration,
+  setConfiguration,
+} from '@/hooks/useConfiguration';
+import { buildConfiguration } from '@/app/configuration/route-configuration';
+
+setConfiguration(convertConfiguration(buildConfiguration('https://locahost')));
 
 describe('Valintaperusteet: getValinnanvaiheet', () => {
   afterEach(() => {

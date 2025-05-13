@@ -13,11 +13,18 @@ import {
   ValinnanTulosEventType,
   ValinnanTulosState,
 } from '@/lib/state/valinnanTuloksetMachineTypes';
+import {
+  convertConfiguration,
+  setConfiguration,
+} from '@/hooks/useConfiguration';
+import { buildConfiguration } from '@/app/configuration/route-configuration';
 
 vi.mock('@/components/modals/global-modal', () => ({
   showModal: vi.fn(),
   createModal: vi.fn(),
 }));
+
+setConfiguration(convertConfiguration(buildConfiguration('https://locahost')));
 
 const waitIdle = (actor: SijoittelunTulosActorRef) =>
   waitFor(actor, (state) => state.matches(ValinnanTulosState.IDLE));

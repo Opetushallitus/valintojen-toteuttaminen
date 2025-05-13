@@ -293,7 +293,7 @@ export const saveSijoitteluAjonTulokset = async ({
     };
   });
   await client.post<unknown>(
-    `${configuration.valintaTulosServiceUrl}hyvaksymiskirje`,
+    `${configuration.valintaTulosServiceUrl({})}hyvaksymiskirje`,
     muuttuneetKirjeet,
   );
 };

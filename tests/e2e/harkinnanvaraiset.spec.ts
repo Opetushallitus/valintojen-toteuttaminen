@@ -7,7 +7,6 @@ import {
   fixtureFromFile,
   selectOption,
 } from './playwright-utils';
-import { configuration } from '@/lib/configuration';
 import { NDASH } from '@/lib/constants';
 
 async function goToHarkinnanvaraiset(page: Page) {
@@ -18,23 +17,19 @@ async function goToHarkinnanvaraiset(page: Page) {
 
 test.beforeEach(async ({ page }) => {
   await page.route(
-    configuration.hakemuksetUrl +
-      '?hakuOid=1.2.246.562.29.00000000000000021303&hakukohdeOid=1.2.246.562.20.00000000000000024094',
+    '**/lomake-editori/api/external/valinta-ui?hakuOid=1.2.246.562.29.00000000000000021303&hakukohdeOid=1.2.246.562.20.00000000000000024094',
     fixtureFromFile('toisen-asteen-yhteishaku/hakeneet.json'),
   );
 
   await page.route(
-    configuration.harkinnanvaraisuudetHakemuksilleUrl,
+    '**/valintalaskentakoostepalvelu/resources/harkinnanvaraisuus/hakemuksille',
     fixtureFromFile(
       'toisen-asteen-yhteishaku/harkinnanvaraisuudet-hakemuksille.json',
     ),
   );
 
   await page.route(
-    configuration.getHarkinnanvaraisetTilatUrl({
-      hakuOid: '1.2.246.562.29.00000000000000021303',
-      hakukohdeOid: '1.2.246.562.20.00000000000000024094',
-    }),
+    '**/valintalaskenta-laskenta-service/resources/harkinnanvarainenhyvaksynta/haku/1.2.246.562.29.00000000000000021303/hakukohde/1.2.246.562.20.00000000000000024094',
     (route) => {
       if (route.request().method() === 'GET') {
         return fixtureFromFile(
@@ -142,7 +137,7 @@ test('Näyttää ilmoituksen kun harkinnanvaraisen tilan päivitys onnistuu', as
   page,
 }) => {
   await page.route(
-    configuration.setHarkinnanvaraisetTilatUrl,
+    '**/valintalaskenta-laskenta-service/resources/harkinnanvarainenhyvaksynta',
     async (route) => {
       if (route.request().method() === 'POST') {
         return route.fulfill({ status: 500 });
@@ -165,7 +160,7 @@ test('Näyttää ilmoituksen kun harkinnanvaraisen tilan päivitys epäonnistuu'
   page,
 }) => {
   await page.route(
-    configuration.setHarkinnanvaraisetTilatUrl,
+    '**/valintalaskenta-laskenta-service/resources/harkinnanvarainenhyvaksynta',
     async (route) => {
       if (route.request().method() === 'POST') {
         return route.fulfill({ status: 200 });

@@ -24,28 +24,10 @@ export function TolgeeBase() {
       },
     });
   } else {
-    /* return tg
+    return tg
       .use(
         BackendFetch({
-          prefix: 'https://localhost:3404/lokalisointi/tolgee',
-          next: {
-            revalidate: REVALIDATE_TIME_SECONDS,
-          },
-        }),
-      )
-      .use(DevTools())
-      .updateDefaults({
-        apiKey,
-        apiUrl,
-        defaultNs: NAMESPACE,
-        ns: [NAMESPACE],
-        projectId: 11100,
-      }); */
-    return getConfiguration().then((configuration) => {
-      return tg
-      .use(
-        BackendFetch({
-          prefix: configuration.lokalisointiUrl,
+          prefix: getConfiguration().lokalisointiUrl({}),
           next: {
             revalidate: REVALIDATE_TIME_SECONDS,
           },
@@ -57,6 +39,5 @@ export function TolgeeBase() {
         ns: [NAMESPACE],
         projectId: 11100,
       });
-    });
   }
 }

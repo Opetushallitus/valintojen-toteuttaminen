@@ -12,6 +12,11 @@ import {
 import { Language } from '../localization/localization-types';
 import { Hakukohde } from '../kouta/kouta-types';
 import { FetchError } from '../common';
+import {
+  convertConfiguration,
+  setConfiguration,
+} from '@/hooks/useConfiguration';
+import { buildConfiguration } from '@/app/configuration/route-configuration';
 
 const HAKEMUKSET_BY_OID = {
   '1.2.246.562.11.00000000000001796027': {
@@ -71,6 +76,8 @@ const HAKUKOHDE: Hakukohde = {
   jarjestyspaikkaHierarkiaNimi: { fi: 'Saippuakauppa' },
   voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita: false,
 };
+
+setConfiguration(convertConfiguration(buildConfiguration('https://locahost')));
 
 describe('getValintakoekutsutData', () => {
   afterEach(() => {

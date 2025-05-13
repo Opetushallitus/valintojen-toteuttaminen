@@ -11,7 +11,6 @@ import {
 } from './playwright-utils';
 import VALINNANVAIHE_TULOKSET_ILMAN_LASKENTAA from './fixtures/valinnanvaihe-tulokset-ilman-laskentaa.json';
 import VALINNANVAIHEET_ILMAN_LASKENTAA from './fixtures/valinnanvaiheet-ilman-laskentaa.json';
-import { configuration } from '@/lib/configuration';
 
 const JONOSIJA_TABLE_HEADINGS = [
   'Jonosija',
@@ -246,11 +245,11 @@ test('Lähettää muokatun datan tallentaessa', async ({ page }) => {
   const [request] = await Promise.all([
     page.waitForRequest(
       (req) =>
-        req.url().includes(
-          configuration.hakukohteenValintalaskennanTuloksetUrl({
-            hakukohdeOid: '1.2.246.562.20.00000000000000045105',
-          }),
-        ) && req.method() === 'POST',
+        req
+          .url()
+          .includes(
+            'valintalaskenta-laskenta-service/resources/hakukohde/1.2.246.562.20.00000000000000045105/valinnanvaihe',
+          ) && req.method() === 'POST',
     ),
     jonoContent.getByRole('button', { name: 'Tallenna' }).click(),
   ]);

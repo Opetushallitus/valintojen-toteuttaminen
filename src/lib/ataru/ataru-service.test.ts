@@ -2,8 +2,16 @@ import { expect, test, vi } from 'vitest';
 import { client } from '../http-client';
 import { Hakemus } from './ataru-types';
 import { getHakemukset } from './ataru-service';
+import {
+  convertConfiguration,
+  setConfiguration,
+} from '@/hooks/useConfiguration';
+import { buildConfiguration } from '@/app/configuration/route-configuration';
 
 test('returns hakemukset', async () => {
+  setConfiguration(
+    convertConfiguration(buildConfiguration('https://locahost')),
+  );
   const clientSpy = vi.spyOn(client, 'get');
   clientSpy.mockImplementationOnce(() => buildDummyHakemukset());
   const hakemukset: Array<Hakemus> = await getHakemukset({

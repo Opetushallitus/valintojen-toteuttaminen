@@ -6,7 +6,6 @@ import {
   mockDocumentProcess,
   selectOption,
 } from './playwright-utils';
-import { configuration } from '@/lib/configuration';
 import {
   IlmoittautumisTila,
   VastaanottoTila,
@@ -15,10 +14,7 @@ import {
 async function goToSijoittelunTulokset(page: Page) {
   await page.clock.setFixedTime(new Date('2025-02-05T12:00:00'));
   await page.route(
-    configuration.myohastyneetHakemuksetUrl({
-      hakuOid: '1.2.246.562.29.00000000000000045102',
-      hakukohdeOid: '1.2.246.562.20.00000000000000045105',
-    }),
+    '**/valintalaskentakoostepalvelu/resources/proxy/valintatulosservice/myohastyneet/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105',
     async (route) => {
       await route.fulfill({
         json: [

@@ -8,7 +8,6 @@ import {
 } from './playwright-utils';
 import LASKETUT_VALINNANVAIHEET from './fixtures/lasketut-valinnanvaiheet.json';
 import { TuloksenTila } from '@/lib/types/laskenta-types';
-import { configuration } from '@/lib/configuration';
 import { NDASH } from '@/lib/constants';
 
 const JONO_TABLE_HEADINGS = [
@@ -215,11 +214,7 @@ test.describe('Valintalaskennan muokkausmodaali', () => {
   test('Lähetetään laskennan tulosten tallennuspyyntö oikeilla arvoilla ja näytetään ilmoitus', async ({
     page,
   }) => {
-    const muokkausUrl = configuration.jarjestyskriteeriMuokkausUrl({
-      hakemusOid: DACULA_HAKEMUS_OID,
-      valintatapajonoOid: '1679913592869-3133925962577840128',
-      jarjestyskriteeriPrioriteetti: 0,
-    });
+    const muokkausUrl = `**/valintalaskenta-laskenta-service/resources/valintatapajono/1679913592869-3133925962577840128/${DACULA_HAKEMUS_OID}/0/jonosija`;
     await page.route(muokkausUrl, (route) => {
       return route.fulfill({
         status: 200,
@@ -268,11 +263,7 @@ test.describe('Valintalaskennan muokkausmodaali', () => {
     page,
   }) => {
     await page.route(
-      configuration.jarjestyskriteeriMuokkausUrl({
-        hakemusOid: DACULA_HAKEMUS_OID,
-        valintatapajonoOid: '1679913592869-3133925962577840128',
-        jarjestyskriteeriPrioriteetti: 0,
-      }),
+      `**/valintalaskenta-laskenta-service/resources/valintatapajono/1679913592869-3133925962577840128/${DACULA_HAKEMUS_OID}/0/jonosija`,
       (route) => {
         return route.fulfill({
           status: 400,
