@@ -6,24 +6,28 @@ import {
   mockDocumentProcess,
   selectOption,
 } from './playwright-utils';
-import { configuration } from '@/lib/configuration';
+import { buildConfiguration } from '@/lib/configuration/server-configuration';
 import HAUT from './fixtures/haut.json';
 import {
   IlmoittautumisTila,
   VastaanottoTila,
 } from '@/lib/types/sijoittelu-types';
+import { getConfigUrl } from '@/lib/configuration/configuration-utils';
 
 const hakukohdeOid = '1.2.246.562.20.00000000000000045105';
 const valintatapajonoOid = '1224656220000000000000000123456';
 
 async function goToValinnanTulokset(page: Page) {
   await page.clock.setFixedTime(new Date('2025-02-05T12:00:00'));
-
+  const configuration = await buildConfiguration();
   await page.route(
-    configuration.hakukohteenValinnanTulosUrl({
-      hakuOid: '1.2.246.562.29.00000000000000045102',
-      hakukohdeOid,
-    }),
+    getConfigUrl(
+      configuration.routes.valintaTulosService.hakukohteenValinnanTulosUrl,
+      {
+        hakuOid: '1.2.246.562.29.00000000000000045102',
+        hakukohdeOid,
+      },
+    ),
     async (route) => {
       await route.fulfill({
         json: [
@@ -112,10 +116,14 @@ async function goToValinnanTulokset(page: Page) {
   );
 
   await page.route(
-    configuration.myohastyneetHakemuksetUrl({
-      hakuOid: '1.2.246.562.29.00000000000000045102',
-      hakukohdeOid: '1.2.246.562.20.00000000000000045105',
-    }),
+    getConfigUrl(
+      configuration.routes.valintalaskentakoostepalvelu
+        .myohastyneetHakemuksetUrl,
+      {
+        hakuOid: '1.2.246.562.29.00000000000000045102',
+        hakukohdeOid: '1.2.246.562.20.00000000000000045105',
+      },
+    ),
     async (route) => {
       await route.fulfill({
         json: [
