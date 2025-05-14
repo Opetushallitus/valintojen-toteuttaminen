@@ -46,7 +46,7 @@ const permissionsToTarjoajat = (userPermissions: UserPermissions): string =>
       );
 
 export async function getHaut(userPermissions: UserPermissions) {
-  const configuration = await getConfiguration();
+  const configuration = getConfiguration();
   const tarjoajaOids = permissionsToTarjoajat(userPermissions);
   const response = await client.get<Array<HakuResponseData>>(
     `${configuration.routes.koutaInternal.hautUrl}${tarjoajaOids}`,

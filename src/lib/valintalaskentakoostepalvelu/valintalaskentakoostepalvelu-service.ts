@@ -619,7 +619,7 @@ export const saveValintatapajonoTulosExcel = async ({
   valintatapajonoOid,
   file,
 }: ValintatapaJonoTulosExcelProps & { file: File }) => {
-  const configuration = await getConfiguration();
+  const configuration = getConfiguration();
   const urlWithQuery = new URL(
     configuration.routes.valintalaskentakoostepalvelu.startImportValintatapajonoTulosExcelUrl,
   );

@@ -18,7 +18,7 @@ type HaunAsetuksetResponse = {
 export const getHaunAsetukset = async (
   hakuOid: string,
 ): Promise<HaunAsetukset> => {
-  const configuration = await getConfiguration();
+  const configuration = getConfiguration();
   const response = await client.get<HaunAsetuksetResponse>(
     getConfigUrl(configuration.routes.yleiset.ohjausparametritUrl, { hakuOid }),
   );

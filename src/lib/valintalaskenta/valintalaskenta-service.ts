@@ -617,7 +617,7 @@ export const saveValinnanvaiheTulokset = ({
 export const getLasketutHakukohteet = async (
   hakuOid: string,
 ): Promise<Array<LaskettuHakukohde>> => {
-  const configuration = await getConfiguration();
+  const configuration = getConfiguration();
   const { data } = await client.get<
     Array<{ hakukohdeOid: string; lastModified: string }>
   >(
