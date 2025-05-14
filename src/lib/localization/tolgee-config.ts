@@ -27,7 +27,7 @@ export function TolgeeBase() {
     return tg
       .use(
         BackendFetch({
-          prefix: getConfiguration().routes.yleiset.lokalisointiUrl({}),
+          prefix: getConfiguration().routes.yleiset.lokalisointiUrl,
           next: {
             revalidate: REVALIDATE_TIME_SECONDS,
           },

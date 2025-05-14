@@ -20,7 +20,7 @@ const getUserPermissions = async (): Promise<UserPermissions> => {
       organisaatioOid: string;
       kayttooikeudet: [{ palvelu: string; oikeus: Permission }];
     }>;
-  }>(config.routes.yleiset.kayttoikeusUrl({}));
+  }>(config.routes.yleiset.kayttoikeusUrl);
   const organizations: Array<OrganizationPermissions> =
     response.data.organisaatiot
       .map((org) => {

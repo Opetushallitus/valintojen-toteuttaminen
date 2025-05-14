@@ -9,10 +9,7 @@ import { client } from '@/lib/http-client';
 import { Tila } from '@/lib/kouta/kouta-types';
 import { createActor, waitFor } from 'xstate';
 import { range } from 'remeda';
-import {
-  convertConfiguration,
-  setConfiguration,
-} from '@/lib/configuration/client-configuration';
+import { setConfiguration } from '@/lib/configuration/client-configuration';
 import { buildConfiguration } from '@/lib/configuration/server-configuration';
 
 const LASKENTA_URL = 'urlmistatulosladataan';
@@ -47,8 +44,9 @@ describe('Laskenta state', async () => {
 
   let actor = createActor(createLaskentaMachine(vi.fn()));
 
-  beforeEach(() => {
-    setConfiguration(convertConfiguration(buildConfiguration()));
+  beforeEach(async () => {
+    const conf = await buildConfiguration();
+    setConfiguration(conf);
     actor.start();
     actor.send({ type: LaskentaEventType.SET_PARAMS, params: LASKENTAPARAMS });
   });

@@ -1,7 +1,7 @@
 import { getCookies } from './cookie';
 import { redirect } from 'next/navigation';
 import { FetchError, isServer } from './common';
-import { isPlainObject, pathOr } from 'remeda';
+import { isEmpty, isPlainObject, pathOr } from 'remeda';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
 
 export type HttpClientResponse<D> = {
@@ -53,7 +53,7 @@ const noContent = (response: Response) => {
 };
 
 const redirectToLogin = () => {
-  const loginUrl = new URL(getConfiguration().routes.yleiset.loginUrl({}));
+  const loginUrl = new URL(getConfiguration().routes.yleiset.loginUrl);
   loginUrl.searchParams.set('service', window.location.href);
   if (isServer) {
     redirect(loginUrl.toString());
@@ -169,9 +169,10 @@ const makeRequest = async <Result>(request: Request) => {
           for (const { urlIncludes, loginParam } of LOGIN_MAP) {
             if (request?.url?.includes(urlIncludes)) {
               const config = getConfiguration();
-              const loginUrl = pathOr(config.routes, loginParam, () => {
+              const loginUrl: string = pathOr(config.routes, loginParam, '');
+              if (isEmpty(loginUrl)) {
                 throw Error(`Login configuration not found for ${urlIncludes}`);
-              })({});
+              }
               const resp = await retryWithLogin(request, loginUrl);
               return responseToData<Result>(resp);
             }

@@ -6,7 +6,7 @@ import { getConfiguration } from '../lib/configuration/client-configuration';
 export const getAsiointiKieli = async (): Promise<Language> => {
   const config = getConfiguration();
   const response = await client.get<Language>(
-    config.routes.yleiset.asiointiKieliUrl({}),
+    config.routes.yleiset.asiointiKieliUrl,
   );
   return response.data ?? 'fi';
 };

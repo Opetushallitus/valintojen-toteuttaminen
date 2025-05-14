@@ -12,13 +12,10 @@ import {
   ValintakoeInputTyyppi,
   ValintaryhmaHakukohteilla,
 } from './valintaperusteet-types';
-import {
-  convertConfiguration,
-  setConfiguration,
-} from '@/lib/configuration/client-configuration';
+import { setConfiguration } from '@/lib/configuration/client-configuration';
 import { buildConfiguration } from '@/lib/configuration/server-configuration';
 
-setConfiguration(convertConfiguration(buildConfiguration()));
+buildConfiguration().then(setConfiguration);
 
 describe('Valintaperusteet: getValinnanvaiheet', () => {
   afterEach(() => {

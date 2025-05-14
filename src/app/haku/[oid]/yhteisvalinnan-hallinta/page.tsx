@@ -15,12 +15,12 @@ import { use } from 'react';
 import { YhteisvalinnanValintalaskenta } from './components/yhteisvalinnan-valintalaskenta';
 import { SijoitteluContainer } from './components/sijoittelu-container';
 import { LettersContainer } from './components/letters-container';
-import { ConfigurationContext } from '@/components/providers/configuration-provider';
+import { useConfiguration } from '@/hooks/useConfiguration';
 
 const YhteisvalinnanHallintaContent = ({ hakuOid }: { hakuOid: string }) => {
   const { data: haku } = useHaku({ hakuOid });
 
-  const { configuration } = use(ConfigurationContext);
+  const { configuration, getConfigUrl } = useConfiguration();
 
   const { t, translateEntity } = useTranslations();
 
@@ -36,13 +36,17 @@ const YhteisvalinnanHallintaContent = ({ hakuOid }: { hakuOid: string }) => {
           label={t('yleinen.lisatiedot')}
           value={
             <Stack direction="row" spacing={3}>
-              <OphLink
-                href={configuration?.routes.hakukohderyhmapalvelu.haunAsetuksetLinkUrl(
-                  { hakuOid: haku.oid },
-                )}
-              >
-                {t('yleinen.haun-asetukset')}
-              </OphLink>
+              {configuration && (
+                <OphLink
+                  href={getConfigUrl(
+                    configuration?.routes.hakukohderyhmapalvelu
+                      .haunAsetuksetLinkUrl,
+                    { hakuOid: haku.oid },
+                  )}
+                >
+                  {t('yleinen.haun-asetukset')}
+                </OphLink>
+              )}
               <ExternalLink
                 name={t('yleinen.tarjonta')}
                 href={buildLinkToHaku(haku.oid)}

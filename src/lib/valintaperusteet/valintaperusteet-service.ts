@@ -14,13 +14,14 @@ import {
 } from './valintaperusteet-types';
 import { sort } from 'remeda';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
+import { getConfigUrl } from '../configuration/configuration-utils';
 
 export const getValintaryhma = async (
   hakukohdeOid: string,
 ): Promise<Valintaryhma> => {
   const configuration = getConfiguration();
   const response = await client.get<Valintaryhma>(
-    `${configuration.routes.valintaperusteetService.valintaperusteetUrl({})}hakukohde/${hakukohdeOid}/valintaryhma`,
+    `${configuration.routes.valintaperusteetService.valintaperusteetUrl}hakukohde/${hakukohdeOid}/valintaryhma`,
   );
   return { nimi: response.data.nimi, oid: response.data.oid };
 };
@@ -90,7 +91,7 @@ export const getValinnanvaiheet = async (
 ): Promise<Array<Valinnanvaihe>> => {
   const configuration = await getConfiguration();
   const response = await client.get<Array<ValinnanvaiheModel>>(
-    `${configuration.routes.valintaperusteetService.valintaperusteetUrl({})}hakukohde/${hakukohdeOid}/valinnanvaihe?withValisijoitteluTieto=true`,
+    `${configuration.routes.valintaperusteetService.valintaperusteetUrl}hakukohde/${hakukohdeOid}/valinnanvaihe?withValisijoitteluTieto=true`,
   );
   return response.data.map(convertValinnanvaihe);
 };
@@ -134,7 +135,7 @@ export const getValintakoeAvaimetHakukohteelle = async (
       funktiotyyppi: string;
     }>
   >(
-    `${configuration.routes.valintaperusteetService.valintaperusteetUrl({})}hakukohde/avaimet/${hakukohdeOid}`,
+    `${configuration.routes.valintaperusteetService.valintaperusteetUrl}hakukohde/avaimet/${hakukohdeOid}`,
   );
   return data.map((koe) => {
     const inputTyyppi = determineValintaKoeInputTyyppi(
@@ -176,9 +177,12 @@ export const getValintakoeAvaimetHakukohteille = async ({
 export const getValintakokeet = async (hakukohdeOid: string) => {
   const configuration = await getConfiguration();
   const response = await client.get<Array<Valintakoe>>(
-    configuration.routes.valintaperusteetService.hakukohdeValintakokeetUrl({
-      hakukohdeOid,
-    }),
+    getConfigUrl(
+      configuration.routes.valintaperusteetService.hakukohdeValintakokeetUrl,
+      {
+        hakukohdeOid,
+      },
+    ),
   );
   return response.data;
 };
@@ -221,7 +225,7 @@ export const getValintaryhmat = async (
 }> => {
   const configuration = await getConfiguration();
   const response = await client.get<Array<ValintaryhmaHakukohteillaResponse>>(
-    `${configuration.routes.valintaperusteetService.valintaryhmatHakukohteilla({})}?hakuOid=${hakuOid}&hakukohteet=true`,
+    `${configuration.routes.valintaperusteetService.valintaryhmatHakukohteilla}?hakuOid=${hakuOid}&hakukohteet=true`,
   );
   const hakuRyhma = response.data.find((r) => r.hakuOid === hakuOid);
   const muutRyhmat =
@@ -238,9 +242,12 @@ export const onkoHaullaValintaryhma = async (
   const configuration = await getConfiguration();
   return (
     await client.get<boolean>(
-      configuration.routes.valintaperusteetService.onkoHaullaValintaryhma({
-        hakuOid,
-      }),
+      getConfigUrl(
+        configuration.routes.valintaperusteetService.onkoHaullaValintaryhma,
+        {
+          hakuOid,
+        },
+      ),
     )
   ).data;
 };

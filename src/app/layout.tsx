@@ -29,16 +29,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const configuration = buildConfiguration(
-    process.env.DEPLOY_VIRKAILIJA_URL ??
-      process.env.APP_URL ??
-      process.env.VIRKAILIJA_URL ??
-      'https://localhost:3404',
-  );
+  const configuration = await buildConfiguration();
 
   return (
     <html lang="fi">
-      <Script src={configuration.yleiset.raamitUrl} />
+      <Script src={configuration.routes.yleiset.raamitUrl} />
       <body>
         {isDev && <NextTopLoader />}
         <AppRouterCacheProvider>

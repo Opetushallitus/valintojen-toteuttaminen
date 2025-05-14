@@ -2,7 +2,7 @@ import { useTranslations } from '@/lib/localization/useTranslations';
 import {
   Divider,
 } from '@mui/material';
-import { use, useState } from 'react';
+import { useState } from 'react';
 import {
   FileDownloadOutlined,
   MailOutline,
@@ -20,7 +20,7 @@ import { luoOsoitetarratHakukohteessaHyvaksytyille } from '@/lib/valintalaskenta
 import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
 import { Dropdown } from '@/components/dropdown';
 import { useSendVastaanottoPostiMutation } from '@/hooks/useSendVastaanottoPostiMutation';
-import { ConfigurationContext } from '@/components/providers/configuration-provider';
+import { useConfiguration } from '@/hooks/useConfiguration';
 
 const SendVastaanottopostiMenuItem = ({
   hakukohde,
@@ -162,7 +162,7 @@ export const OtherActionsHakukohdeButton = ({
   tulosDocumentId: string | null;
   sijoitteluajoId: string;
 }) => {
-  const { configuration } = use(ConfigurationContext);
+  const { configuration, getConfigUrl } = useConfiguration();
   const { t } = useTranslations();
 
   const [hyvaksymiskirje, setHyvaksymiskirjeDocument] = useState<string | null>(
@@ -173,11 +173,14 @@ export const OtherActionsHakukohdeButton = ({
   );
 
   const openDocument = async (documentId: string | null) => {
-    if (documentId) {
+    if (documentId && configuration) {
       window.open(
-        configuration?.routes.valintalaskentakoostepalvelu.lataaDokumenttiUrl({
-          dokumenttiId: documentId,
-        }),
+        getConfigUrl(
+          configuration.routes.valintalaskentakoostepalvelu.lataaDokumenttiUrl,
+          {
+            dokumenttiId: documentId,
+          },
+        ),
       );
     }
   };
