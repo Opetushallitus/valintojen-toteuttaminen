@@ -104,6 +104,7 @@ export class SovellusStack extends cdk.Stack {
       environment: {
         STANDALONE: 'true',
         VIRKAILIJA_URL: `https://virkailija.${publicHostedZones[props.environmentName]}`,
+        DEPLOY_VIRKAILIJA_URL: `https://virkailija.${publicHostedZones[props.environmentName]}`,
       },
       domainProps: {
         domainName,
@@ -122,13 +123,6 @@ export class SovellusStack extends cdk.Stack {
           },
           distributionProps: {
             priceClass: PriceClass.PRICE_CLASS_100,
-          },
-        },
-        nextjs: {
-          nextjsServerProps: {
-            environment: {
-              DEPLOY_VIRKAILIJA_URL: `https://virkailija.${publicHostedZones[props.environmentName]}`,
-            },
           },
         },
         ...nameOverrides(
