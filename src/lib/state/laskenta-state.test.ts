@@ -12,8 +12,8 @@ import { range } from 'remeda';
 import {
   convertConfiguration,
   setConfiguration,
-} from '@/hooks/useConfiguration';
-import { buildConfiguration } from '@/app/configuration/route-configuration';
+} from '@/lib/configuration/client-configuration';
+import { buildConfiguration } from '@/lib/configuration/server-configuration';
 
 const LASKENTA_URL = 'urlmistatulosladataan';
 
@@ -48,9 +48,7 @@ describe('Laskenta state', async () => {
   let actor = createActor(createLaskentaMachine(vi.fn()));
 
   beforeEach(() => {
-    setConfiguration(
-      convertConfiguration(buildConfiguration('https://locahost')),
-    );
+    setConfiguration(convertConfiguration(buildConfiguration()));
     actor.start();
     actor.send({ type: LaskentaEventType.SET_PARAMS, params: LASKENTAPARAMS });
   });

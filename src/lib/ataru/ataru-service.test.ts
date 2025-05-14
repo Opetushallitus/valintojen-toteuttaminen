@@ -5,13 +5,11 @@ import { getHakemukset } from './ataru-service';
 import {
   convertConfiguration,
   setConfiguration,
-} from '@/hooks/useConfiguration';
-import { buildConfiguration } from '@/app/configuration/route-configuration';
+} from '@/lib/configuration/client-configuration';
+import { buildConfiguration } from '@/lib/configuration/server-configuration';
 
 test('returns hakemukset', async () => {
-  setConfiguration(
-    convertConfiguration(buildConfiguration('https://locahost')),
-  );
+  setConfiguration(convertConfiguration(buildConfiguration()));
   const clientSpy = vi.spyOn(client, 'get');
   clientSpy.mockImplementationOnce(() => buildDummyHakemukset());
   const hakemukset: Array<Hakemus> = await getHakemukset({

@@ -15,8 +15,8 @@ import { FetchError } from '../common';
 import {
   convertConfiguration,
   setConfiguration,
-} from '@/hooks/useConfiguration';
-import { buildConfiguration } from '@/app/configuration/route-configuration';
+} from '@/lib/configuration/client-configuration';
+import { buildConfiguration } from '@/lib/configuration/server-configuration';
 
 const HAKEMUKSET_BY_OID = {
   '1.2.246.562.11.00000000000001796027': {
@@ -77,7 +77,7 @@ const HAKUKOHDE: Hakukohde = {
   voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita: false,
 };
 
-setConfiguration(convertConfiguration(buildConfiguration('https://locahost')));
+setConfiguration(convertConfiguration(buildConfiguration()));
 
 describe('getValintakoekutsutData', () => {
   afterEach(() => {

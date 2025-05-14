@@ -8,7 +8,7 @@ import { client } from '../http-client';
 import { Language } from '../localization/localization-types';
 import { queryOptions } from '@tanstack/react-query';
 import { KoutaOidParams } from '../kouta/kouta-types';
-import { getConfiguration } from '@/hooks/useConfiguration';
+import { getConfiguration } from '@/lib/configuration/client-configuration';
 
 const getMaksuvelvollisuus = (toive?: {
   hakukohdeOid: string;
@@ -93,7 +93,7 @@ export async function getAtaruHakemukset({
   henkilotunnus,
 }: GetHakijatParams) {
   const configuration = getConfiguration();
-  const url = new URL(configuration.hakemuksetUrl({}));
+  const url = new URL(configuration.routes.ataru.hakemuksetUrl({}));
   if (hakuOid) {
     url.searchParams.append('hakuOid', hakuOid);
   }

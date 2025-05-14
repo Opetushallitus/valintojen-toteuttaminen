@@ -15,10 +15,10 @@ import {
 import {
   convertConfiguration,
   setConfiguration,
-} from '@/hooks/useConfiguration';
-import { buildConfiguration } from '@/app/configuration/route-configuration';
+} from '@/lib/configuration/client-configuration';
+import { buildConfiguration } from '@/lib/configuration/server-configuration';
 
-setConfiguration(convertConfiguration(buildConfiguration('https://locahost')));
+setConfiguration(convertConfiguration(buildConfiguration()));
 
 describe('Valintaperusteet: getValinnanvaiheet', () => {
   afterEach(() => {

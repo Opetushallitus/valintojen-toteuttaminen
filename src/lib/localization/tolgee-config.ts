@@ -1,7 +1,7 @@
 import { isTesting, localTranslations } from '../configuration';
 import { BackendFetch, DevTools, Tolgee } from '@tolgee/react';
 import { FormatIcu } from '@tolgee/format-icu';
-import { getConfiguration } from '@/hooks/useConfiguration';
+import { getConfiguration } from '@/lib/configuration/client-configuration';
 
 const REVALIDATE_TIME_SECONDS = 10 * 60;
 
@@ -27,7 +27,7 @@ export function TolgeeBase() {
     return tg
       .use(
         BackendFetch({
-          prefix: getConfiguration().lokalisointiUrl({}),
+          prefix: getConfiguration().routes.yleiset.lokalisointiUrl({}),
           next: {
             revalidate: REVALIDATE_TIME_SECONDS,
           },

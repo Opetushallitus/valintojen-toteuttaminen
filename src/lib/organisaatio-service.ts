@@ -1,7 +1,7 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { client } from './http-client';
 import { OPH_ORGANIZATION_OID } from './constants';
-import { getConfiguration } from '@/hooks/useConfiguration';
+import { getConfiguration } from '@/lib/configuration/client-configuration';
 
 export const getOrganizationParentOids = async (oid: string) => {
   const configuration = await getConfiguration();
@@ -10,7 +10,7 @@ export const getOrganizationParentOids = async (oid: string) => {
     return [OPH_ORGANIZATION_OID];
   }
   const response = await client.get<Array<string>>(
-    configuration.organisaatioParentOidsUrl({oid}),
+    configuration.organisaatioParentOidsUrl({ oid }),
   );
   return response.data;
 };

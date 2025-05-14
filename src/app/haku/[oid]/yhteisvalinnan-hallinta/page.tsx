@@ -37,7 +37,9 @@ const YhteisvalinnanHallintaContent = ({ hakuOid }: { hakuOid: string }) => {
           value={
             <Stack direction="row" spacing={3}>
               <OphLink
-                href={configuration.haunAsetuksetLinkUrl({ hakuOid: haku.oid })}
+                href={configuration?.routes.hakukohderyhmapalvelu.haunAsetuksetLinkUrl(
+                  { hakuOid: haku.oid },
+                )}
               >
                 {t('yleinen.haun-asetukset')}
               </OphLink>

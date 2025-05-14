@@ -23,7 +23,7 @@ import {
 import { toFormattedDateTimeString } from '../localization/translation-utils';
 import { queryOptions } from '@tanstack/react-query';
 import { KoutaOidParams } from '../kouta/kouta-types';
-import { getConfiguration } from '@/hooks/useConfiguration';
+import { getConfiguration } from '@/lib/configuration/client-configuration';
 
 type SijoittelunTulosResponseData = {
   valintatapajonoNimi: string;
@@ -44,9 +44,9 @@ export const getSijoittelunTulokset = async (
   hakuOid: string,
   hakukohdeOid: string,
 ): Promise<Array<SijoittelunValintatapajonoTulos>> => {
-  const configuration = await getConfiguration();
+  const configuration = getConfiguration();
   const response = await client.get<Array<SijoittelunTulosResponseData>>(
-    `${configuration.valintaTulosServiceUrl({})}sijoitteluntulos/yhteenveto/${hakuOid}/hakukohde/${hakukohdeOid}`,
+    `${configuration.routes.valintaTulosService.valintaTulosServiceUrl({})}sijoitteluntulos/yhteenveto/${hakuOid}/hakukohde/${hakukohdeOid}`,
   );
   const jsonTulokset: Array<SijoittelunValintatapajonoTulos> =
     response.data?.map((tulos) => {
@@ -84,10 +84,10 @@ export const getLatestSijoitteluajonTuloksetWithValintaEsitys = async (
   hakuOid: string,
   hakukohdeOid: string,
 ) => {
-  const configuration = await getConfiguration();
+  const configuration = getConfiguration();
   const response = await nullWhen404(
     client.get<SijoitteluajonTuloksetWithValintaEsitysResponseData>(
-      `${configuration.valintaTulosServiceUrl({})}sijoitteluntulos/${hakuOid}/sijoitteluajo/latest/hakukohde/${hakukohdeOid}`,
+      `${configuration.routes.valintaTulosService.valintaTulosServiceUrl({})}sijoitteluntulos/${hakuOid}/sijoitteluajo/latest/hakukohde/${hakukohdeOid}`,
     ),
   );
   return response ? response.data : null;
@@ -97,9 +97,9 @@ export const getLatestSijoitteluAjonTuloksetForHakukohde = async (
   hakuOid: string,
   hakukohdeOid: string,
 ): Promise<SijoitteluajonTulokset> => {
-  const configuration = await getConfiguration();
+  const configuration = getConfiguration();
   const { data } = await client.get<SijoitteluajonTuloksetResponseData>(
-    `${configuration.valintaTulosServiceUrl({})}sijoittelu/${hakuOid}/sijoitteluajo/latest/hakukohde/${hakukohdeOid}`,
+    `${configuration.routes.valintaTulosService.valintaTulosServiceUrl({})}sijoittelu/${hakuOid}/sijoitteluajo/latest/hakukohde/${hakukohdeOid}`,
   );
 
   const sijoitteluajonTulokset = data.valintatapajonot.map((jono) => {
@@ -158,13 +158,15 @@ export const getLatestSijoitteluajonTuloksetForHakemus = async ({
   hakuOid: string;
   hakemusOid: string;
 }) => {
-  const configuration = await getConfiguration();
+  const configuration = getConfiguration();
   const res = await nullWhen404(
     client.get<SijoitteluajonTuloksetForHakemusResponseData>(
-      configuration.hakemuksenSijoitteluajonTuloksetUrl({
-        hakuOid,
-        hakemusOid,
-      }),
+      configuration.routes.valintaTulosService.hakemuksenSijoitteluajonTuloksetUrl(
+        {
+          hakuOid,
+          hakemusOid,
+        },
+      ),
     ),
   );
 
@@ -176,7 +178,7 @@ export const saveMaksunTilanMuutokset = async (
   hakemukset: Array<SijoittelunHakemusValintatiedoilla>,
   originalHakemukset: Array<SijoittelunHakemusValintatiedoilla>,
 ) => {
-  const configuration = await getConfiguration();
+  const configuration = getConfiguration();
   const hakemuksetWithChangedMaksunTila = hakemukset
     .filter((h) => {
       const original = originalHakemukset.find(
@@ -188,7 +190,7 @@ export const saveMaksunTilanMuutokset = async (
 
   if (hakemuksetWithChangedMaksunTila.length > 0) {
     await client.post(
-      `${configuration.valintaTulosServiceUrl({})}lukuvuosimaksu/${hakukohdeOid}`,
+      `${configuration.routes.valintaTulosService.valintaTulosServiceUrl({})}lukuvuosimaksu/${hakukohdeOid}`,
       hakemuksetWithChangedMaksunTila,
     );
   }
@@ -222,13 +224,15 @@ export const saveValinnanTulokset = async ({
   lastModified: Date | string | null;
   tulokset: Array<Partial<ValinnanTulosModel>>;
 }) => {
-  const configuration = await getConfiguration();
+  const configuration = getConfiguration();
   const ifUnmodifiedSince = (
     lastModified ? new Date(lastModified) : new Date()
   ).toUTCString();
 
   const results = await client.patch<Array<ValinnanTulosUpdateErrorResult>>(
-    configuration.valinnanTulosMuokkausUrl({ valintatapajonoOid }),
+    configuration.routes.valintaTulosService.valinnanTulosMuokkausUrl({
+      valintatapajonoOid,
+    }),
     tulokset.map(pickValinnanTulosProps),
     {
       headers: { 'X-If-Unmodified-Since': ifUnmodifiedSince },
@@ -247,6 +251,7 @@ export const saveValinnanTulokset = async ({
   return data;
 };
 
+<<<<<<< HEAD
 export const saveSijoitteluAjonTulokset = async ({
   valintatapajonoOid,
   hakukohdeOid,
@@ -259,6 +264,15 @@ export const saveSijoitteluAjonTulokset = async ({
   hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
 }) => {
   const configuration = await getConfiguration();
+=======
+export const saveSijoitteluAjonTulokset = async (
+  valintatapajonoOid: string,
+  hakukohdeOid: string,
+  lastModified: string,
+  hakemukset: Array<SijoittelunHakemusValintatiedoilla>,
+) => {
+  const configuration = getConfiguration();
+>>>>>>> 966fe818 (Refactoring configuration, divide routes into sections)
   const valintaTulokset = hakemukset.map((h) => {
     return {
       hakukohdeOid,
@@ -293,15 +307,15 @@ export const saveSijoitteluAjonTulokset = async ({
     };
   });
   await client.post<unknown>(
-    `${configuration.valintaTulosServiceUrl({})}hyvaksymiskirje`,
+    `${configuration.routes.valintaTulosService.valintaTulosServiceUrl({})}hyvaksymiskirje`,
     muuttuneetKirjeet,
   );
 };
 
 export const hyvaksyValintaEsitys = async (valintatapajonoOid: string) => {
-  const configuration = await getConfiguration();
+  const configuration = getConfiguration();
   await client.post(
-    `${configuration.valintaTulosServiceUrl({})}valintaesitys/${valintatapajonoOid}/hyvaksytty`,
+    `${configuration.routes.valintaTulosService.valintaTulosServiceUrl({})}valintaesitys/${valintatapajonoOid}/hyvaksytty`,
     {},
   );
 };
@@ -340,10 +354,14 @@ export const getHakemuksenValinnanTulokset = async ({
 }: {
   hakemusOid: string;
 }) => {
-  const configuration = await getConfiguration();
+  const configuration = getConfiguration();
   const { data, headers } = await client.get<
     Array<{ valinnantulos: ValinnanTulosModel }>
-  >(configuration.hakemuksenValinnanTulosUrl({ hakemusOid }));
+  >(
+    configuration.routes.valintaTulosService.hakemuksenValinnanTulosUrl({
+      hakemusOid,
+    }),
+  );
   return {
     lastModified: headers.get('X-Last-Modified'),
     data: indexBy(data.map(prop('valinnantulos')), prop('hakukohdeOid')),
@@ -353,9 +371,9 @@ export const getHakemuksenValinnanTulokset = async ({
 export const sendVastaanottopostiHakemukselle = async (
   hakemusOid: string,
 ): Promise<Array<string>> => {
-  const configuration = await getConfiguration();
+  const configuration = getConfiguration();
   const response = await client.post(
-    `${configuration.vastaanottopostiHakemukselleUrl({ hakemusOid })}`,
+    `${configuration.routes.valintaTulosService.vastaanottopostiHakemukselleUrl({ hakemusOid })}`,
     { hakemusOid },
   );
   return response.data as Array<string>;
@@ -364,9 +382,9 @@ export const sendVastaanottopostiHakemukselle = async (
 export const sendVastaanottopostiHakukohteelle = async (
   hakukohdeOid: string,
 ): Promise<Array<string>> => {
-  const configuration = await getConfiguration();
+  const configuration = getConfiguration();
   const response = await client.post(
-    `${configuration.vastaanottopostiHakukohteelleUrl({ hakukohdeOid })}`,
+    `${configuration.routes.valintaTulosService.vastaanottopostiHakukohteelleUrl({ hakukohdeOid })}`,
     { hakukohdeOid },
   );
   return response.data as Array<string>;
@@ -376,9 +394,9 @@ export const sendVastaanottopostiValintatapaJonolle = async (
   hakukohdeOid: string,
   valintatapajonoOid: string,
 ): Promise<Array<string>> => {
-  const configuration = await getConfiguration();
+  const configuration = getConfiguration();
   const response = await client.post<Array<string>>(
-    configuration.vastaanottopostiJonolleUrl({
+    configuration.routes.valintaTulosService.vastaanottopostiJonolleUrl({
       hakukohdeOid,
       valintatapajonoOid,
     }),
@@ -416,9 +434,9 @@ export const getChangeHistoryForHakemus = async (
   hakemusOid: string,
   valintatapajonoOid: string,
 ): Promise<Array<HakemusChangeEvent>> => {
-  const configuration = await getConfiguration();
+  const configuration = getConfiguration();
   const response = await client.get<Array<ChangeHistoryEventResponse>>(
-    configuration.muutoshistoriaHakemukselleUrl({
+    configuration.routes.valintaTulosService.muutoshistoriaHakemukselleUrl({
       hakemusOid,
       valintatapajonoOid,
     }),
@@ -442,7 +460,7 @@ export const hakijoidenVastaanottotilatValintatapajonolle = async (
   valintatapajonoOid: string,
   hakemusOids: Array<string>,
 ): Promise<Array<HakijanVastaanottoTila>> => {
-  const configuration = await getConfiguration();
+  const configuration = getConfiguration();
   const response = await client.post<
     Array<{
       valintatapajonoOid: string;
@@ -450,7 +468,7 @@ export const hakijoidenVastaanottotilatValintatapajonolle = async (
       tilaHakijalle: string;
     }>
   >(
-    configuration.hakijanTilatValintatapajonolleUrl({
+    configuration.routes.valintaTulosService.hakijanTilatValintatapajonolleUrl({
       hakuOid,
       hakukohdeOid,
       valintatapajonoOid,
@@ -467,10 +485,12 @@ export const hakijoidenVastaanottotilatValintatapajonolle = async (
 export async function getSijoittelunTuloksenPerustiedotHaulle(
   hakuOid: string,
 ): Promise<SijoittelunTulosBasicInfo | null> {
-  const configuration = await getConfiguration();
+  const configuration = getConfiguration();
   const response = await nullWhen404(
     client.get<{ startMils: number; endMils: number }>(
-      configuration.sijoittelunTuloksenPerustiedotHaulleUrl({ hakuOid }),
+      configuration.routes.valintaTulosService.sijoittelunTuloksenPerustiedotHaulleUrl(
+        { hakuOid },
+      ),
     ),
   );
   return isNullish(response)

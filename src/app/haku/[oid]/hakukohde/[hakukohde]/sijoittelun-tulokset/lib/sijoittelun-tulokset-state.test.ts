@@ -16,15 +16,15 @@ import {
 import {
   convertConfiguration,
   setConfiguration,
-} from '@/hooks/useConfiguration';
-import { buildConfiguration } from '@/app/configuration/route-configuration';
+} from '@/lib/configuration/client-configuration';
+import { buildConfiguration } from '@/lib/configuration/server-configuration';
 
 vi.mock('@/components/modals/global-modal', () => ({
   showModal: vi.fn(),
   createModal: vi.fn(),
 }));
 
-setConfiguration(convertConfiguration(buildConfiguration('https://locahost')));
+setConfiguration(convertConfiguration(buildConfiguration()));
 
 const waitIdle = (actor: SijoittelunTulosActorRef) =>
   waitFor(actor, (state) => state.matches(ValinnanTulosState.IDLE));

@@ -6,7 +6,7 @@ import { Language, TranslatedName } from '../localization/localization-types';
 import { UserPermissions } from '../permissions';
 import { addProp, pick, pipe } from 'remeda';
 import { HaunAsetukset } from '../ohjausparametrit/ohjausparametrit-types';
-import { getConfiguration } from '@/hooks/useConfiguration';
+import { getConfiguration } from '@/lib/configuration/client-configuration';
 
 type HakuResponseData = {
   oid: string;
@@ -48,7 +48,7 @@ export async function getHaut(userPermissions: UserPermissions) {
   const configuration = await getConfiguration();
   const tarjoajaOids = permissionsToTarjoajat(userPermissions);
   const response = await client.get<Array<HakuResponseData>>(
-    `${configuration.hautUrl({})}${tarjoajaOids}`,
+    `${configuration.routes.koutaInternal.hautUrl({})}${tarjoajaOids}`,
   );
   const haut: Array<Haku> = response.data.map(mapToHaku);
   return haut;
@@ -99,9 +99,9 @@ export function getOpetuskieliCode(hakukohde: Hakukohde): Language | null {
 }
 
 export async function getHaku(oid: string): Promise<Haku> {
-  const configuration = await getConfiguration();
+  const configuration = getConfiguration();
   const response = await client.get<HakuResponseData>(
-    `${configuration.hakuUrl({})}/${oid}`,
+    `${configuration.routes.koutaInternal.hakuUrl({})}/${oid}`,
   );
   return mapToHaku(response.data);
 }
@@ -153,10 +153,10 @@ export async function getHakukohteet(
   hakuOid: string,
   userPermissions: UserPermissions,
 ): Promise<Array<Hakukohde>> {
-  const configuration = await getConfiguration();
+  const configuration = getConfiguration();
   const tarjoajaOids = permissionsToTarjoajat(userPermissions);
   const response = await client.get<Array<HakukohdeResponseData>>(
-    `${configuration.hakukohteetUrl({})}&haku=${hakuOid}${tarjoajaOids}`,
+    `${configuration.routes.koutaInternal.hakukohteetUrl({})}&haku=${hakuOid}${tarjoajaOids}`,
   );
   return response.data.map(mapToHakukohde);
 }
@@ -170,9 +170,9 @@ export const getHakukohteetQueryOptions = (
 });
 
 export async function getHakukohde(hakukohdeOid: string): Promise<Hakukohde> {
-  const configuration = await getConfiguration();
+  const configuration = getConfiguration();
   const response = await client.get<HakukohdeResponseData>(
-    `${configuration.hakukohdeUrl({})}/${hakukohdeOid}`,
+    `${configuration.routes.koutaInternal.hakukohdeUrl({})}/${hakukohdeOid}`,
   );
 
   return mapToHakukohde(response.data);

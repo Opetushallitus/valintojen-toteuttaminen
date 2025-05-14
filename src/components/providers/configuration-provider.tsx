@@ -1,19 +1,26 @@
 'use client';
-import { convertConfiguration, setConfiguration } from '@/hooks/useConfiguration';
+import {
+  ClientConfiguration,
+  convertConfiguration,
+  setConfiguration,
+} from '@/lib/configuration/client-configuration';
+import { Configuration } from '@/lib/configuration/server-configuration';
 import { createContext, useEffect, useState } from 'react';
 import { isNullish } from 'remeda';
 
-export const ConfigurationContext = createContext<{configuration: Record<string, (params: Record<string, string | boolean | number>) => string>}>({configuration: {}});
+export const ConfigurationContext = createContext<{
+  configuration: null | ClientConfiguration;
+}>({ configuration: null });
 
 export function ConfigurationProvider({
   configuration,
   children,
 }: {
-  configuration: Record<string, string>
+  configuration: Configuration;
   children: React.ReactNode;
 }) {
-
-  const [convertedConfiguration, setConvertedConfiguration] = useState<null | Record<string, (params: Record<string, string | boolean | number>) => string>>(null);
+  const [convertedConfiguration, setConvertedConfiguration] =
+    useState<null | ClientConfiguration>(null);
 
   useEffect(() => {
     const convertedConfiguration = convertConfiguration(configuration);
@@ -21,7 +28,11 @@ export function ConfigurationProvider({
     setConvertedConfiguration(convertedConfiguration);
   }, [configuration]);
 
-  return isNullish(convertedConfiguration)
-    ? null
-    : <ConfigurationContext.Provider value={{configuration: convertedConfiguration}}>{children}</ConfigurationContext.Provider>;
+  return isNullish(convertedConfiguration) ? null : (
+    <ConfigurationContext.Provider
+      value={{ configuration: convertedConfiguration }}
+    >
+      {children}
+    </ConfigurationContext.Provider>
+  );
 }

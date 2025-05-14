@@ -17,7 +17,7 @@ import {
 } from '@/components/providers/localization-provider';
 import { PermissionProvider } from '@/components/providers/permission-provider';
 import { ConfigurationProvider } from '@/components/providers/configuration-provider';
-import { buildConfiguration } from './configuration/route-configuration';
+import { buildConfiguration } from '@/lib/configuration/server-configuration';
 
 export const metadata: Metadata = {
   title: 'Valintojen Toteuttaminen',
@@ -38,7 +38,7 @@ export default async function RootLayout({
 
   return (
     <html lang="fi">
-      <Script src={configuration.raamitUrl} />
+      <Script src={configuration.yleiset.raamitUrl} />
       <body>
         {isDev && <NextTopLoader />}
         <AppRouterCacheProvider>

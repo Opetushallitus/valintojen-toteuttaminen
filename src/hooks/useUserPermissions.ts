@@ -11,16 +11,16 @@ import { PermissionError } from '@/lib/common';
 import { intersection, isNonNull } from 'remeda';
 import { OPH_ORGANIZATION_OID } from '@/lib/constants';
 import { useOrganizationParentOids } from '@/lib/organisaatio-service';
-import { getConfiguration } from './useConfiguration';
+import { getConfiguration } from '../lib/configuration/client-configuration';
 
 const getUserPermissions = async (): Promise<UserPermissions> => {
-  const config = await getConfiguration();
+  const config = getConfiguration();
   const response = await client.get<{
     organisaatiot: Array<{
       organisaatioOid: string;
       kayttooikeudet: [{ palvelu: string; oikeus: Permission }];
     }>;
-  }>(config.kayttoikeusUrl({}));
+  }>(config.routes.yleiset.kayttoikeusUrl({}));
   const organizations: Array<OrganizationPermissions> =
     response.data.organisaatiot
       .map((org) => {

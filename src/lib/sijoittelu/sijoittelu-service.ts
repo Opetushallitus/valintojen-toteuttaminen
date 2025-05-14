@@ -1,11 +1,14 @@
 import { isNullish } from 'remeda';
 import { client } from '../http-client';
 import { AjastettuSijoittelu } from '../types/sijoittelu-types';
-import { getConfiguration } from '@/hooks/useConfiguration';
+import { getConfiguration } from '@/lib/configuration/client-configuration';
 
 export async function kaynnistaSijoittelu(hakuOid: string) {
   const configuration = await getConfiguration();
-  await client.post(configuration.kaynnistaSijoittelu({ hakuOid }), {});
+  await client.post(
+    configuration.routes.sijoittelu.kaynnistaSijoittelu({ hakuOid }),
+    {},
+  );
 }
 
 export async function sijoittelunStatus(
@@ -16,7 +19,7 @@ export async function sijoittelunStatus(
     valmis: boolean;
     ohitettu: boolean;
     tekeillaan: boolean;
-  }>(configuration.sijoittelunStatus({ hakuOid }));
+  }>(configuration.routes.sijoittelu.sijoittelunStatus({ hakuOid }));
   return response.data;
 }
 
@@ -29,7 +32,9 @@ export async function getAjastettuSijoittelu(
     ajossa: boolean;
     aloitusajankohta: string;
     ajotiheys: number;
-  } | null>(configuration.getAjastettuSijoittelu({ hakuOid }));
+  } | null>(
+    configuration.routes.sijoittelu.getAjastettuSijoittelu({ hakuOid }),
+  );
   if (isNullish(response?.data)) {
     return null;
   }
@@ -48,16 +53,21 @@ export async function createAjastettuSijoittelu(
 ) {
   const startTimeMillis = startDate.getTime();
   const configuration = await getConfiguration();
-  await client.post(configuration.createAjastettuSijoittelu({}), {
-    hakuOid,
-    aloitusajankohta: startTimeMillis,
-    ajotiheys: frequency,
-  });
+  await client.post(
+    configuration.routes.sijoittelu.createAjastettuSijoittelu({}),
+    {
+      hakuOid,
+      aloitusajankohta: startTimeMillis,
+      ajotiheys: frequency,
+    },
+  );
 }
 
 export async function deleteAjastettuSijoittelu(hakuOid: string) {
   const configuration = await getConfiguration();
-  await client.get(configuration.deleteAjastettuSijoittelu({ hakuOid }));
+  await client.get(
+    configuration.routes.sijoittelu.deleteAjastettuSijoittelu({ hakuOid }),
+  );
 }
 
 export async function updateAjastettuSijoittelu(
@@ -66,7 +76,9 @@ export async function updateAjastettuSijoittelu(
   frequency: string,
 ) {
   const configuration = await getConfiguration();
-  const updateUrl = new URL(configuration.updateAjastettuSijoittelu({}));
+  const updateUrl = new URL(
+    configuration.routes.sijoittelu.updateAjastettuSijoittelu({}),
+  );
   updateUrl.searchParams.append('hakuOid', hakuOid);
   updateUrl.searchParams.append('aloitusajankohta', '' + startDate.getTime());
   updateUrl.searchParams.append('ajotiheys', frequency);

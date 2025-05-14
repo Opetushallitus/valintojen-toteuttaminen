@@ -1,4 +1,4 @@
-import { getConfiguration } from '@/hooks/useConfiguration';
+import { getConfiguration } from '@/lib/configuration/client-configuration';
 import { client } from '../http-client';
 import { Language, TranslatedName } from '../localization/localization-types';
 import { Koodi } from './koodisto-types';
@@ -31,7 +31,7 @@ const mapToKoodi = (k: CodeElement): Koodi => {
 async function getKoodit(koodisto: string): Promise<Array<Koodi>> {
   const configuration = await getConfiguration();
   const response = await client.get<Array<CodeElement>>(
-    configuration.kooditUrl({}) + koodisto,
+    configuration.routes.koodisto.kooditUrl({}) + koodisto,
   );
   return response.data.map(mapToKoodi);
 }
@@ -49,7 +49,9 @@ export async function getPostitoimipaikka(
 ): Promise<TranslatedName> {
   const configuration = await getConfiguration();
   const { data } = await client.get<CodeElement>(
-    configuration.koodiUrl({codeElementUri: `posti_${postinumero}`}),
+    configuration.routes.koodisto.koodiUrl({
+      codeElementUri: `posti_${postinumero}`,
+    }),
   );
   return mapToKoodi(data).nimi;
 }
