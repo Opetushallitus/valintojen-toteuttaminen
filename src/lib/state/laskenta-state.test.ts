@@ -10,7 +10,7 @@ import { Tila } from '@/lib/kouta/kouta-types';
 import { createActor, waitFor } from 'xstate';
 import { range } from 'remeda';
 import { setConfiguration } from '@/lib/configuration/client-configuration';
-import { buildConfiguration } from '@/lib/configuration/configuration';
+import { buildConfiguration } from '@/lib/configuration/server-configuration';
 
 const LASKENTA_URL = 'urlmistatulosladataan';
 

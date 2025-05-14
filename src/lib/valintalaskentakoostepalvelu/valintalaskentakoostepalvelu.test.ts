@@ -13,7 +13,7 @@ import { Language } from '../localization/localization-types';
 import { Hakukohde } from '../kouta/kouta-types';
 import { FetchError } from '../common';
 import { setConfiguration } from '@/lib/configuration/client-configuration';
-import { buildConfiguration } from '@/lib/configuration/configuration';
+import { buildConfiguration } from '@/lib/configuration/server-configuration';
 
 const HAKEMUKSET_BY_OID = {
   '1.2.246.562.11.00000000000001796027': {

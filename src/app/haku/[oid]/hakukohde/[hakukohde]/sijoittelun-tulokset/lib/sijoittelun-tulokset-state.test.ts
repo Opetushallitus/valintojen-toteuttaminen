@@ -14,7 +14,7 @@ import {
   ValinnanTulosState,
 } from '@/lib/state/valinnanTuloksetMachineTypes';
 import { setConfiguration } from '@/lib/configuration/client-configuration';
-import { buildConfiguration } from '@/lib/configuration/configuration';
+import { buildConfiguration } from '@/lib/configuration/server-configuration';
 
 vi.mock('@/components/modals/global-modal', () => ({
   showModal: vi.fn(),

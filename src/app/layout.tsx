@@ -4,7 +4,7 @@ import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import { checkAccessibility } from '../lib/checkAccessibility';
 import { Toaster } from '../components/toaster';
 import Script from 'next/script';
-import { isDev } from '../lib/configuration/configuration';
+import { isDev } from '../lib/configuration/server-configuration';
 import { LocalizedThemeProvider } from '../components/providers/localized-theme-provider';
 import { OphNextJsThemeProvider } from '@opetushallitus/oph-design-system/next/theme';
 import { THEME_OVERRIDES } from '../lib/theme';
@@ -17,7 +17,7 @@ import {
 } from '@/components/providers/localization-provider';
 import { PermissionProvider } from '@/components/providers/permission-provider';
 import { ConfigurationProvider } from '@/components/providers/configuration-provider';
-import { buildConfiguration } from '@/lib/configuration/configuration';
+import { buildConfiguration } from '@/lib/configuration/server-configuration';
 
 export const metadata: Metadata = {
   title: 'Valintojen Toteuttaminen',

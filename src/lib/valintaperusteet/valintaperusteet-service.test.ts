@@ -13,7 +13,7 @@ import {
   ValintaryhmaHakukohteilla,
 } from './valintaperusteet-types';
 import { setConfiguration } from '@/lib/configuration/client-configuration';
-import { buildConfiguration } from '@/lib/configuration/configuration';
+import { buildConfiguration } from '@/lib/configuration/server-configuration';
 
 buildConfiguration().then(setConfiguration);
 
