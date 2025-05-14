@@ -11,7 +11,7 @@ import { useTranslations } from '@/lib/localization/useTranslations';
 
 import { Stack } from '@mui/material';
 import { OphLink } from '@opetushallitus/oph-design-system';
-import { use, useContext } from 'react';
+import { use } from 'react';
 import { YhteisvalinnanValintalaskenta } from './components/yhteisvalinnan-valintalaskenta';
 import { SijoitteluContainer } from './components/sijoittelu-container';
 import { LettersContainer } from './components/letters-container';
@@ -20,7 +20,7 @@ import { ConfigurationContext } from '@/components/providers/configuration-provi
 const YhteisvalinnanHallintaContent = ({ hakuOid }: { hakuOid: string }) => {
   const { data: haku } = useHaku({ hakuOid });
 
-  const { configuration } = useContext(ConfigurationContext);
+  const { configuration } = use(ConfigurationContext);
 
   const { t, translateEntity } = useTranslations();
 

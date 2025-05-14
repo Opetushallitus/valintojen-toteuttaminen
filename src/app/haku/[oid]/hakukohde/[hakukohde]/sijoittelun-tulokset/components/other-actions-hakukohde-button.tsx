@@ -2,7 +2,7 @@ import { useTranslations } from '@/lib/localization/useTranslations';
 import {
   Divider,
 } from '@mui/material';
-import { useContext, useState } from 'react';
+import { use, useState } from 'react';
 import {
   FileDownloadOutlined,
   MailOutline,
@@ -162,8 +162,7 @@ export const OtherActionsHakukohdeButton = ({
   tulosDocumentId: string | null;
   sijoitteluajoId: string;
 }) => {
-
-  const { configuration } = useContext(ConfigurationContext);
+  const { configuration } = use(ConfigurationContext);
   const { t } = useTranslations();
 
   const [hyvaksymiskirje, setHyvaksymiskirjeDocument] = useState<string | null>(
@@ -176,7 +175,9 @@ export const OtherActionsHakukohdeButton = ({
   const openDocument = async (documentId: string | null) => {
     if (documentId) {
       window.open(
-        configuration.lataaDokumenttiUrl({ dokumenttiId: documentId }),
+        configuration?.routes.valintalaskentakoostepalvelu.lataaDokumenttiUrl({
+          dokumenttiId: documentId,
+        }),
       );
     }
   };

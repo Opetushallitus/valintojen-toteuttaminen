@@ -21,7 +21,7 @@ import { getHenkiloTitle } from '@/lib/henkilo-utils';
 import { Hakukohde } from '@/lib/kouta/kouta-types';
 import { TuloksenTila } from '@/lib/types/laskenta-types';
 import { OphLink } from '@opetushallitus/oph-design-system';
-import { useContext, useMemo } from 'react';
+import { use, useMemo } from 'react';
 import { refetchLaskennanTulokset } from '../lib/refetchLaskennanTulokset';
 import { useQueryClient } from '@tanstack/react-query';
 import { ConfigurationContext } from '@/components/providers/configuration-provider';
@@ -59,7 +59,7 @@ export const LaskettuValintatapajonoTable = ({
 }) => {
   const { t, translateEntity } = useTranslations();
 
-  const { configuration } = useContext(ConfigurationContext);
+  const { configuration } = use(ConfigurationContext);
 
   const queryClient = useQueryClient();
 

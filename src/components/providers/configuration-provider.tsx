@@ -29,10 +29,8 @@ export function ConfigurationProvider({
   }, [configuration]);
 
   return isNullish(convertedConfiguration) ? null : (
-    <ConfigurationContext.Provider
-      value={{ configuration: convertedConfiguration }}
-    >
+    <ConfigurationContext value={{ configuration: convertedConfiguration }}>
       {children}
-    </ConfigurationContext.Provider>
+    </ConfigurationContext>
   );
 }
