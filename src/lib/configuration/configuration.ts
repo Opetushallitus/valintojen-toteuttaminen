@@ -1,5 +1,24 @@
 'use server';
 
+const DOMAIN =
+  process.env.DEPLOY_VIRKAILIJA_URL ??
+  process.env.APP_URL ??
+  process.env.VIRKAILIJA_URL ??
+  'https://localhost:3404';
+
+const VALINTALASKENTAKERRALLA_VANHA =
+  process.env.FEATURE_VALINTALASKENTAKERRALLA_VANHA === 'true';
+
+export const isDev = process.env.NODE_ENV === 'development';
+
+export const isProd = process.env.NODE_ENV === 'production';
+
+export const isTesting = Boolean(process.env.TEST);
+
+export const localTranslations = process.env.LOCAL_TRANSLATIONS === 'true';
+
+export const xstateInspect = process.env.XSTATE_INSPECT === 'true';
+
 export type Configuration = {
   domain: string;
   routes: {
@@ -18,15 +37,6 @@ export type Configuration = {
 };
 
 export async function buildConfiguration(): Promise<Configuration> {
-  const DOMAIN =
-    process.env.DEPLOY_VIRKAILIJA_URL ??
-    process.env.APP_URL ??
-    process.env.VIRKAILIJA_URL ??
-    'https://localhost:3404';
-
-  const VALINTALASKENTAKERRALLA_VANHA =
-    process.env.FEATURE_VALINTALASKENTAKERRALLA_VANHA === 'true';
-
   return {
     domain: DOMAIN,
     routes: {

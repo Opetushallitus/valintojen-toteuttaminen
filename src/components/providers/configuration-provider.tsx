@@ -1,6 +1,6 @@
 'use client';
 import { setConfiguration } from '@/lib/configuration/client-configuration';
-import { Configuration } from '@/lib/configuration/server-configuration';
+import { Configuration } from '@/lib/configuration/configuration';
 import { createContext, useEffect } from 'react';
 
 export const ConfigurationContext = createContext<{

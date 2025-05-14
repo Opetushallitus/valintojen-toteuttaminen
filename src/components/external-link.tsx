@@ -1,4 +1,4 @@
-import { DOMAIN } from '@/lib/configuration';
+import { useConfiguration } from '@/hooks/useConfiguration';
 import { OphLink } from '@opetushallitus/oph-design-system';
 
 export type ExternalLinkProps = {
@@ -8,10 +8,11 @@ export type ExternalLinkProps = {
 };
 
 export const ExternalLink = ({ name, href, noIcon }: ExternalLinkProps) => {
+  const { configuration } = useConfiguration();
   return (
     <OphLink
       iconVisible={noIcon == null ? true : !noIcon}
-      href={`${DOMAIN}/${href}`}
+      href={`${configuration?.domain}/${href}`}
     >
       {name}
     </OphLink>

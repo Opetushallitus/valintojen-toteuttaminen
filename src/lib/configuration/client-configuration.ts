@@ -1,6 +1,6 @@
 'use client';
 
-import { Configuration } from '@/lib/configuration/server-configuration';
+import { Configuration } from '@/lib/configuration/configuration';
 
 declare global {
   interface Window {

@@ -1,4 +1,4 @@
-import { isTesting, localTranslations } from '../configuration';
+import { isTesting, localTranslations } from '../configuration/configuration';
 import { BackendFetch, DevTools, Tolgee } from '@tolgee/react';
 import { FormatIcu } from '@tolgee/format-icu';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
