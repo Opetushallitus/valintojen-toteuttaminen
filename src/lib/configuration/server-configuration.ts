@@ -1,8 +1,5 @@
 'use server';
 
-const VALINTALASKENTAKERRALLA_VANHA =
-  process.env.NEXT_PUBLIC_VALINTALASKENTAKERRALLA_VANHA === 'true';
-
 export type Configuration = {
   domain: string;
   routes: {
@@ -26,6 +23,9 @@ export async function buildConfiguration(): Promise<Configuration> {
     process.env.APP_URL ??
     process.env.VIRKAILIJA_URL ??
     'https://localhost:3404';
+
+  const VALINTALASKENTAKERRALLA_VANHA =
+    process.env.FEATURE_VALINTALASKENTAKERRALLA_VANHA === 'true';
 
   return {
     domain: DOMAIN,

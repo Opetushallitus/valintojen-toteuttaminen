@@ -64,6 +64,16 @@ const nameOverrides = (
   };
 };
 
+const envOverrides = {
+  untuva: {},
+  hahtuva: {
+    FEATURE_VALINTALASKENTAKERRALLA_VANHA: 'true',
+  },
+  pallero: {
+    FEATURE_VALINTALASKENTAKERRALLA_VANHA: 'true',
+  },
+};
+
 export class SovellusStack extends cdk.Stack {
   constructor(
     scope: Construct,
@@ -105,6 +115,7 @@ export class SovellusStack extends cdk.Stack {
         STANDALONE: 'true',
         VIRKAILIJA_URL: `https://virkailija.${publicHostedZones[props.environmentName]}`,
         DEPLOY_VIRKAILIJA_URL: `https://virkailija.${publicHostedZones[props.environmentName]}`,
+        ...envOverrides[props.environmentName],
       },
       domainProps: {
         domainName,
