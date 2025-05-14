@@ -4,7 +4,7 @@ import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import { checkAccessibility } from '../lib/checkAccessibility';
 import { Toaster } from '../components/toaster';
 import Script from 'next/script';
-import { isDev } from '../lib/configuration/server-configuration';
+import { isDev } from '../lib/configuration/configuration';
 import { LocalizedThemeProvider } from '../components/providers/localized-theme-provider';
 import { OphNextJsThemeProvider } from '@opetushallitus/oph-design-system/next/theme';
 import { THEME_OVERRIDES } from '../lib/theme';
