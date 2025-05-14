@@ -95,6 +95,8 @@ export async function buildConfiguration(): Promise<Configuration> {
         harkinnanvaraisuudetHakemuksilleUrl: `${domain}/valintalaskentakoostepalvelu/resources/harkinnanvaraisuus/hakemuksille`,
         myohastyneetHakemuksetUrl: `${domain}/valintalaskentakoostepalvelu/resources/proxy/valintatulosservice/myohastyneet/haku/{hakuOid}/hakukohde/{hakukohdeOid}`,
         hakijanTilatValintatapajonolleUrl: `${domain}/valintalaskentakoostepalvelu/resources/proxy/valintatulosservice/tilahakijalle/haku/{hakuOid}/hakukohde/{hakukohdeOid}/valintatapajono/{valintatapajonoOid}`,
+        startImportErillishakuValinnanTulosUrl: `${domain}/valintalaskentakoostepalvelu/resources/erillishaku/tuonti/ui`,
+        startExportErillishakuValinnanTulosExcelUrl: `${domain}/valintalaskentakoostepalvelu/resources/erillishaku/vienti`,
       },
       valintaTulosService: {
         valintaTulosServiceLogin: `${domain}/valinta-tulos-service/auth/login`,
@@ -106,7 +108,7 @@ export async function buildConfiguration(): Promise<Configuration> {
         vastaanottopostiHakukohteelleUrl: `${domain}/valinta-tulos-service/auth/emailer/run/hakukohde/{hakukohdeOid}`,
         vastaanottopostiJonolleUrl: `${domain}/valinta-tulos-service/auth/emailer/run/hakukohde/{hakukohdeOid}/valintatapajono/{valintatapajonoOid}`,
         muutoshistoriaHakemukselleUrl: `${domain}/valinta-tulos-service/auth/muutoshistoria?valintatapajonoOid={valintatapajonoOid}&hakemusOid={hakemusOid}`,
-        // -------------------------------------------------------------------------------------------------
+        hakukohteenValinnanTulosUrl: `${domain}/valinta-tulos-service/auth/valinnan-tulos?hakuOid={hakuOid}&hakukohdeOid={hakukohdeOid}`,
         sijoittelunTuloksenPerustiedotHaulleUrl: `${domain}/valinta-tulos-service/auth/sijoittelu/{hakuOid}/sijoitteluajo/latest/perustiedot`,
       },
       sijoittelu: {

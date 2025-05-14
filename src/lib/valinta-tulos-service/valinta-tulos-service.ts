@@ -257,7 +257,6 @@ export const saveValinnanTulokset = async ({
   return data;
 };
 
-<<<<<<< HEAD
 export const saveSijoitteluAjonTulokset = async ({
   valintatapajonoOid,
   hakukohdeOid,
@@ -269,16 +268,7 @@ export const saveSijoitteluAjonTulokset = async ({
   lastModified?: string | null;
   hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
 }) => {
-  const configuration = await getConfiguration();
-=======
-export const saveSijoitteluAjonTulokset = async (
-  valintatapajonoOid: string,
-  hakukohdeOid: string,
-  lastModified: string,
-  hakemukset: Array<SijoittelunHakemusValintatiedoilla>,
-) => {
   const configuration = getConfiguration();
->>>>>>> 966fe818 (Refactoring configuration, divide routes into sections)
   const valintaTulokset = hakemukset.map((h) => {
     return {
       hakukohdeOid,
@@ -346,8 +336,12 @@ export const getHakukohteenValinnanTuloksetQueryOptions = (
 export const getHakukohteenValinnanTulokset = async (
   params: KoutaOidParams,
 ): Promise<HakukohteenValinnanTuloksetData> => {
+  const configuration = getConfiguration();
   const { data, headers } = await client.get<Array<ValinnanTulosModel>>(
-    configuration.hakukohteenValinnanTulosUrl(params),
+    getConfigUrl(
+      configuration.routes.valintaTulosService.hakukohteenValinnanTulosUrl,
+      params,
+    ),
   );
   return {
     lastModified: headers.get('X-Last-Modified') ?? undefined,

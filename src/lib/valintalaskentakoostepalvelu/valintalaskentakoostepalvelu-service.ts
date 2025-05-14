@@ -973,7 +973,6 @@ export const getDocumentIdForHakukohde = async (
   hakukohdeOid: string,
   documentType: DokumenttiTyyppi,
 ): Promise<string | null> => {
-
   const configuration = getConfiguration();
   const res = await client.get<[{ documentId: string }] | undefined>(
     getConfigUrl(
@@ -1107,6 +1106,7 @@ export async function saveErillishakuValinnanTulokset({
   >;
   lastModified?: string;
 }) {
+  const configuration = getConfiguration();
   const erillishakuHakemukset = hakemukset.map((hakemus) => ({
     hakemusOid: hakemus.hakemusOid,
     personOid: hakemus.hakijaOid,
@@ -1122,7 +1122,7 @@ export async function saveErillishakuValinnanTulokset({
   }));
 
   const urlWithQuery = new URL(
-    configuration.startImportErillishakuValinnanTulosUrl,
+    configuration.routes.valintalaskentakoostepalvelu.startImportErillishakuValinnanTulosUrl,
   );
 
   urlWithQuery.searchParams.set('hakuOid', haku.oid);
@@ -1158,8 +1158,9 @@ export async function getErillishakuValinnanTulosExcel({
   hakukohdeOid: string;
   valintatapajonoOid?: string;
 }) {
+  const configuration = getConfiguration();
   const urlWithQuery = new URL(
-    configuration.startExportErillishakuValinnanTulosExcelUrl,
+    configuration.routes.valintalaskentakoostepalvelu.startExportErillishakuValinnanTulosExcelUrl,
   );
   urlWithQuery.searchParams.set('hakuOid', haku.oid);
   urlWithQuery.searchParams.set('hakukohdeOid', hakukohdeOid);
