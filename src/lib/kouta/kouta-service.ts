@@ -5,9 +5,8 @@ import { client } from '../http-client';
 import { Language, TranslatedName } from '../localization/localization-types';
 import { UserPermissions } from '../permissions';
 import { addProp, pick, pipe } from 'remeda';
-import { HaunAsetukset } from '../ohjausparametrit/ohjausparametrit-types';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
-import { getConfigUrl } from '../configuration/configuration-utils';
+import { getConfigUrl } from '@/lib/configuration/configuration-utils';
 
 type HakuResponseData = {
   oid: string;
@@ -57,14 +56,6 @@ export async function getHaut(userPermissions: UserPermissions) {
 
 export const isYhteishaku = (haku: Haku): boolean =>
   haku.hakutapaKoodiUri.startsWith('hakutapa_01');
-
-export const usesLaskentaOrSijoittelu = ({
-  haku,
-  haunAsetukset,
-}: {
-  haku: Haku;
-  haunAsetukset: HaunAsetukset;
-}) => isYhteishaku(haku) || haunAsetukset.sijoittelu;
 
 export function isToisenAsteenYhteisHaku(haku: Haku): boolean {
   return (

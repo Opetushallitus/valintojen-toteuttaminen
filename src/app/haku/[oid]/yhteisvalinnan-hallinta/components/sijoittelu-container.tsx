@@ -4,25 +4,26 @@ import { SijoitteluActions } from './sijoittelu-actions';
 import { AccordionBoxTitle } from '@/components/accordion-box-title';
 import { SijoitteluSchedule } from './sijoittelu-schedule';
 import { Box } from '@mui/material';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useSuspenseQueries } from '@tanstack/react-query';
 import { sijoittelunStatus } from '@/lib/sijoittelu/sijoittelu-service';
-import { useHaku } from '@/lib/kouta/useHaku';
-import { useHaunAsetukset } from '@/lib/ohjausparametrit/useHaunAsetukset';
-import { usesLaskentaOrSijoittelu } from '@/lib/kouta/kouta-service';
+import { haunAsetuksetQueryOptions } from '@/lib/ohjausparametrit/useHaunAsetukset';
 import { SijoitteluInfo } from './sijoittelu-info';
 
 export const SijoitteluContainer = ({ hakuOid }: { hakuOid: string }) => {
   const { t } = useTranslations();
 
-  const { data: sijoitteluStatus } = useSuspenseQuery({
-    queryKey: ['sijoitteluStatus', hakuOid],
-    queryFn: async () => await sijoittelunStatus(hakuOid),
-  });
+  const [{ data: haunAsetukset }, { data: sijoitteluStatus }] =
+    useSuspenseQueries({
+      queries: [
+        haunAsetuksetQueryOptions({ hakuOid }),
+        {
+          queryKey: ['sijoitteluStatus', hakuOid],
+          queryFn: () => sijoittelunStatus(hakuOid),
+        },
+      ],
+    });
 
-  const { data: haku } = useHaku({ hakuOid });
-  const { data: haunAsetukset } = useHaunAsetukset({ hakuOid });
-
-  const sijoitteluInUse = usesLaskentaOrSijoittelu({ haku, haunAsetukset });
+  const sijoitteluInUse = haunAsetukset.sijoittelu;
 
   return (
     <AccordionBox
@@ -33,12 +34,7 @@ export const SijoitteluContainer = ({ hakuOid }: { hakuOid: string }) => {
         />
       }
     >
-      {!sijoitteluInUse && (
-        <SijoitteluInfo
-          text={t('yhteisvalinnan-hallinta.sijoittelu.ei-kaytossa')}
-        />
-      )}
-      {sijoitteluInUse && (
+      {sijoitteluInUse ? (
         <Box sx={{ display: 'flex', flexDirection: 'column', rowGap: 3 }}>
           <SijoitteluActions
             hakuOid={hakuOid}
@@ -46,6 +42,10 @@ export const SijoitteluContainer = ({ hakuOid }: { hakuOid: string }) => {
           />
           <SijoitteluSchedule hakuOid={hakuOid} />
         </Box>
+      ) : (
+        <SijoitteluInfo
+          text={t('yhteisvalinnan-hallinta.sijoittelu.ei-kaytossa')}
+        />
       )}
     </AccordionBox>
   );
