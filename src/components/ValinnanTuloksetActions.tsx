@@ -307,8 +307,9 @@ export const ValinnanTuloksetActions = ({
       <OphButton
         variant="contained"
         disabled={
-          !isValintaesitysJulkaistavissa ||
-          !state.matches(ValinnanTulosState.IDLE)
+          mode !== 'valinta' &&
+          (!isValintaesitysJulkaistavissa ||
+            !state.matches(ValinnanTulosState.IDLE))
         }
         onClick={() => {
           send({ type: ValinnanTulosEventType.PUBLISH });
