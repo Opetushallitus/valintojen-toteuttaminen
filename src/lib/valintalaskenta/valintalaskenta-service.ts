@@ -55,7 +55,7 @@ import {
 } from '../localization/translation-utils';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
 import { getConfigUrl } from '../configuration/configuration-utils';
-import { teeAutomaattinenSiirtoValintatapajonolle } from '../valintaperusteet/valintaperusteet-service';
+import { siirraTaiPoistaValintatapajonoAutomaattisestaSijoittelusta } from '../valintaperusteet/valintaperusteet-service';
 
 const createLaskentaURL = async ({
   laskentaTyyppi,
@@ -277,26 +277,27 @@ export type MuutaSijoittelunStatusProps = {
     LaskennanValintatapajonoTulosWithHakijaInfo,
     'oid' | 'prioriteetti'
   >;
-  status: boolean;
+  jonoSijoitellaan: boolean;
 };
 
 export const muutaSijoittelunStatus = async ({
   jono,
-  status,
+  jonoSijoitellaan,
 }: {
   jono: Pick<
     LaskennanValintatapajonoTulosWithHakijaInfo,
     'oid' | 'prioriteetti'
   >;
-  status: boolean;
+  jonoSijoitellaan: boolean;
 }) => {
   const configuration = getConfiguration();
   const valintatapajonoOid = jono.oid;
 
-  const updatedJono = await teeAutomaattinenSiirtoValintatapajonolle(
-    valintatapajonoOid,
-    status,
-  );
+  const updatedJono =
+    await siirraTaiPoistaValintatapajonoAutomaattisestaSijoittelusta(
+      valintatapajonoOid,
+      jonoSijoitellaan,
+    );
 
   if (updatedJono.prioriteetti === -1) {
     // A query for a single jono doesn't return a true prioriteetti value, but -1 as a placeholder, so let's re-set the value
@@ -307,7 +308,7 @@ export const muutaSijoittelunStatus = async ({
     getConfigUrl(
       configuration.routes.valintalaskentaLaskentaService
         .valmisSijoiteltavaksiUrl,
-      { valintatapajonoOid, status },
+      { valintatapajonoOid, status: jonoSijoitellaan },
     ),
     updatedJono,
     {

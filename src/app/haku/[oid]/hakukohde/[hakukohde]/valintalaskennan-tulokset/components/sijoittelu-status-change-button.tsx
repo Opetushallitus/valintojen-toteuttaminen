@@ -34,7 +34,9 @@ export const SijoitteluStatusChangeButton = ({
         <SijoitteluButton
           loading={statusMutation.isPending}
           disabled={!hasOphUpdate && !hasOrgCrud}
-          onClick={() => statusMutation.mutate({ jono, status: true })}
+          onClick={() =>
+            statusMutation.mutate({ jono, jonoSijoitellaan: true })
+          }
         >
           {t('valintalaskennan-tulokset.siirra-jono-sijoitteluun')}
         </SijoitteluButton>
@@ -44,7 +46,9 @@ export const SijoitteluStatusChangeButton = ({
         <SijoitteluButton
           loading={statusMutation.isPending}
           disabled={!hasOphUpdate}
-          onClick={() => statusMutation.mutate({ jono, status: false })}
+          onClick={() =>
+            statusMutation.mutate({ jono, jonoSijoitellaan: false })
+          }
         >
           {t('valintalaskennan-tulokset.poista-jono-sijoittelusta')}
         </SijoitteluButton>

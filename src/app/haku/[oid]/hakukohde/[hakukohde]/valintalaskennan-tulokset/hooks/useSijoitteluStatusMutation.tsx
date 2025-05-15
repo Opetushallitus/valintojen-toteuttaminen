@@ -11,8 +11,11 @@ export const useSijoitteluStatusMutation = (hakukohdeOid: string) => {
   const { addToast } = useToaster();
 
   return useMutation({
-    mutationFn: async ({ jono, status }: MuutaSijoittelunStatusProps) => {
-      await muutaSijoittelunStatus({ jono, status });
+    mutationFn: async ({
+      jono,
+      jonoSijoitellaan,
+    }: MuutaSijoittelunStatusProps) => {
+      await muutaSijoittelunStatus({ jono, jonoSijoitellaan });
       queryClient.setQueryData(
         hakukohteenValintalaskennanTuloksetQueryOptions(hakukohdeOid).queryKey,
         (vaiheet) =>
@@ -22,7 +25,7 @@ export const useSijoitteluStatusMutation = (hakukohdeOid: string) => {
               ...oldJono,
               valmisSijoiteltavaksi:
                 jono.oid === oldJono.oid
-                  ? status
+                  ? jonoSijoitellaan
                   : oldJono.valmisSijoiteltavaksi,
             })),
           })),

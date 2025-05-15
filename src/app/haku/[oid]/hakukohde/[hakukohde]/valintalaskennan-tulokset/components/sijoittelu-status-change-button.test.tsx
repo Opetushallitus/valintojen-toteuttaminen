@@ -68,7 +68,7 @@ describe('SijoitteluStatusChangeButton', () => {
     });
     expect(btn).toBeEnabled();
     fireEvent.click(btn);
-    expect(mutateFn).toBeCalledWith({ jono, status: false });
+    expect(mutateFn).toBeCalledWith({ jono, jonoSijoitellaan: false });
   });
   test('Show "poista"-button when not valmis sijoiteltavaksi and call mutate with right args on click', () => {
     const mutateFn = vi.fn();
@@ -83,7 +83,7 @@ describe('SijoitteluStatusChangeButton', () => {
     });
     expect(btn).toBeEnabled();
     fireEvent.click(btn);
-    expect(mutateFn).toBeCalledWith({ jono, status: true });
+    expect(mutateFn).toBeCalledWith({ jono, jonoSijoitellaan: true });
   });
 
   test('Disable button when permissions only to other ogranization', () => {
