@@ -13,7 +13,6 @@ import {
 import { nullWhen404, OphApiError } from '../common';
 import {
   HakemusChangeEvent,
-  HakijanVastaanottoTila,
   SijoitteluajonTuloksetResponseData,
   SijoitteluajonTuloksetWithValintaEsitysResponseData,
   SijoittelunTulosBasicInfo,
@@ -467,38 +466,6 @@ export const getChangeHistoryForHakemus = async (
       changes,
     };
   });
-};
-
-export const hakijoidenVastaanottotilatValintatapajonolle = async (
-  hakuOid: string,
-  hakukohdeOid: string,
-  valintatapajonoOid: string,
-  hakemusOids: Array<string>,
-): Promise<Array<HakijanVastaanottoTila>> => {
-  const configuration = getConfiguration();
-  const response = await client.post<
-    Array<{
-      valintatapajonoOid: string;
-      hakemusOid: string;
-      tilaHakijalle: string;
-    }>
-  >(
-    getConfigUrl(
-      configuration.routes.valintaTulosService
-        .hakijanTilatValintatapajonolleUrl,
-      {
-        hakuOid,
-        hakukohdeOid,
-        valintatapajonoOid,
-      },
-    ),
-    hakemusOids,
-  );
-  return response.data.map((hvt) => ({
-    valintatapaJonoOid: hvt.valintatapajonoOid,
-    vastaanottotila: hvt.tilaHakijalle as VastaanottoTila,
-    hakemusOid: hvt.hakemusOid,
-  }));
 };
 
 export async function getSijoittelunTuloksenPerustiedotHaulle(

@@ -4,7 +4,10 @@ import {
   createFileResult,
   FileResult,
 } from '../http-client';
-import { HenkilonValintaTulos } from '../types/sijoittelu-types';
+import {
+  HenkilonValintaTulos,
+  VastaanottoTila,
+} from '../types/sijoittelu-types';
 import {
   HakemuksenPistetiedot,
   HakukohteenPistetiedot,
@@ -57,7 +60,10 @@ import {
 import { AssertionError } from 'assert';
 import { queryOptions } from '@tanstack/react-query';
 import { Language } from '../localization/localization-types';
-import { HakemuksenValinnanTulos } from '../valinta-tulos-service/valinta-tulos-types';
+import {
+  HakemuksenValinnanTulos,
+  HakijanVastaanottoTila,
+} from '../valinta-tulos-service/valinta-tulos-types';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
 import { getConfigUrl } from '../configuration/configuration-utils';
 
@@ -1177,3 +1183,35 @@ export async function getErillishakuValinnanTulosExcel({
   const processId = data.id;
   return downloadProcessDocument(processId, true);
 }
+
+export const hakijoidenVastaanottotilatValintatapajonolle = async (
+  hakuOid: string,
+  hakukohdeOid: string,
+  valintatapajonoOid: string,
+  hakemusOids: Array<string>,
+): Promise<Array<HakijanVastaanottoTila>> => {
+  const configuration = getConfiguration();
+  const response = await client.post<
+    Array<{
+      valintatapajonoOid: string;
+      hakemusOid: string;
+      tilaHakijalle: string;
+    }>
+  >(
+    getConfigUrl(
+      configuration.routes.valintalaskentakoostepalvelu
+        .hakijanTilatValintatapajonolleUrl,
+      {
+        hakuOid,
+        hakukohdeOid,
+        valintatapajonoOid,
+      },
+    ),
+    hakemusOids,
+  );
+  return response.data.map((hvt) => ({
+    valintatapaJonoOid: hvt.valintatapajonoOid,
+    vastaanottotila: hvt.tilaHakijalle as VastaanottoTila,
+    hakemusOid: hvt.hakemusOid,
+  }));
+};
