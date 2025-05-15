@@ -78,8 +78,7 @@ export const LaskettuValintatapajonoTable = ({
                 <OphLink
                   iconVisible={false}
                   href={getConfigUrl(
-                    configuration?.routes.valintalaskentaLaskentaService
-                      .valintalaskentahistoriaLinkUrl,
+                    configuration.routes.valintalaskentahistoriaLinkUrl,
                     {
                       hakemusOid,
                       valintatapajonoOid: jono.oid,
