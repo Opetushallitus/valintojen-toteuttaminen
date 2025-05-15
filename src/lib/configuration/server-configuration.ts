@@ -1,8 +1,6 @@
 'use server';
 
-import { Configuration } from './configuration';
-
-export async function buildConfiguration(): Promise<Configuration> {
+export async function buildConfiguration() {
   const domain =
     process.env.DEPLOY_VIRKAILIJA_URL ??
     process.env.APP_URL ??

@@ -15,6 +15,7 @@ import {
 import { sort } from 'remeda';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
 import { getConfigUrl } from '../configuration/configuration-utils';
+import { booleanToString } from '../common';
 
 export const getValintaryhma = async (
   hakukohdeOid: string,
@@ -251,3 +252,28 @@ export const onkoHaullaValintaryhma = async (
     )
   ).data;
 };
+
+export async function teeAutomaattinenSiirtoValintatapajonolle(
+  valintatapajonoOid: string,
+  status: boolean,
+) {
+  const configuration = getConfiguration();
+  const { data: updatedJono } = await client.post<{ prioriteetti: number }>(
+    // Miksi samat parametrit välitetään sekä URL:ssä että bodyssa?
+    getConfigUrl(
+      configuration.routes.valintaperusteetService.automaattinenSiirtoUrl,
+      {
+        valintatapajonoOid,
+        status,
+      },
+    ),
+    {
+      valintatapajonoOid,
+      status: booleanToString(status),
+    },
+    {
+      cache: 'no-cache',
+    },
+  );
+  return updatedJono;
+}
