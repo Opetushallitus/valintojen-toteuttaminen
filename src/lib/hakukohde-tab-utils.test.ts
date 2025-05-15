@@ -134,69 +134,46 @@ describe('getVisibleTabs', () => {
     ]);
   });
 
-  test.each([
-    { hakutapa: 'hakutapa_02' },
-    { hakutapa: 'hakutapa_03' },
-    { hakutapa: 'hakutapa_04' },
-    { hakutapa: 'hakutapa_05' },
-    { hakutapa: 'hakutapa_06' },
-  ])(
-    'returns right tabs for korkeakoulutus with "$hakutapa" without sijoittelu and without valintalaskenta',
-    async ({ hakutapa }: { hakutapa: string }) => {
-      const tabs = getVisibleTabs({
-        haku: {
-          ...HAKU_BASE,
-          kohdejoukkoKoodiUri: 'haunkohdejoukko_12#1', // Korkeakoulutus
-          hakutapaKoodiUri: `${hakutapa}#1`,
-        },
-        hakukohde: HAKUKOHDE_BASE,
-        haunAsetukset: { sijoittelu: false },
-        usesValintalaskenta: false,
-        permissions: OPH_PERMISSIONS,
-      });
-      expect(tabs.map((t) => t.route)).toEqual([
-        'perustiedot',
-        'hakeneet',
-        'valinnan-hallinta',
-        'valintakoekutsut',
-        'pistesyotto',
-        'valinnan-tulokset',
-      ]);
-    },
-  );
+  test('returns right tabs for korkeakoulutus without sijoittelu and without valintalaskenta', () => {
+    const tabs = getVisibleTabs({
+      haku: {
+        ...HAKU_BASE,
+        kohdejoukkoKoodiUri: 'haunkohdejoukko_12#1', // Korkeakoulutus
+      },
+      hakukohde: HAKUKOHDE_BASE,
+      haunAsetukset: { sijoittelu: false },
+      usesValintalaskenta: false,
+      permissions: OPH_PERMISSIONS,
+    });
+    expect(tabs.map((t) => t.route)).toEqual([
+      'perustiedot',
+      'hakeneet',
+      'valinnan-tulokset',
+    ]);
+  });
 
-  test.each([
-    { hakutapa: 'hakutapa_02' },
-    { hakutapa: 'hakutapa_03' },
-    { hakutapa: 'hakutapa_04' },
-    { hakutapa: 'hakutapa_05' },
-    { hakutapa: 'hakutapa_06' },
-  ])(
-    'returns right tabs for korkeakoulutus with "$hakutapa" without sijoittelu and with valintalaskenta',
-    async ({ hakutapa }: { hakutapa: string }) => {
-      const tabs = getVisibleTabs({
-        haku: {
-          ...HAKU_BASE,
-          kohdejoukkoKoodiUri: 'haunkohdejoukko_12#1', // Korkeakoulutus
-          hakutapaKoodiUri: `${hakutapa}#1`,
-        },
-        hakukohde: HAKUKOHDE_BASE,
-        haunAsetukset: { sijoittelu: false },
-        usesValintalaskenta: true,
-        permissions: OPH_PERMISSIONS,
-      });
-      expect(tabs.map((t) => t.route)).toEqual([
-        'perustiedot',
-        'hakeneet',
-        'valinnan-hallinta',
-        'valintakoekutsut',
-        'pistesyotto',
-        'hakijaryhmat',
-        'valintalaskennan-tulokset',
-        'sijoittelun-tulokset',
-      ]);
-    },
-  );
+  test('returns right tabs for korkeakoulutus without sijoittelu and with valintalaskenta', async () => {
+    const tabs = getVisibleTabs({
+      haku: {
+        ...HAKU_BASE,
+        kohdejoukkoKoodiUri: 'haunkohdejoukko_12#1', // Korkeakoulutus
+      },
+      hakukohde: HAKUKOHDE_BASE,
+      haunAsetukset: { sijoittelu: false },
+      usesValintalaskenta: true,
+      permissions: OPH_PERMISSIONS,
+    });
+    expect(tabs.map((t) => t.route)).toEqual([
+      'perustiedot',
+      'hakeneet',
+      'valinnan-hallinta',
+      'valintakoekutsut',
+      'pistesyotto',
+      'hakijaryhmat',
+      'valintalaskennan-tulokset',
+      'sijoittelun-tulokset',
+    ]);
+  });
 
   test('only show perustiedot-tab, if no OPH permissions and use of valinnat disallowed via ohjausparametrit', async () => {
     const tabs = getVisibleTabs({
