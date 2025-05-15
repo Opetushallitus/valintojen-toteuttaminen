@@ -1,6 +1,6 @@
 'use client';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
-import { hakijoidenVastaanottotilatValintatapajonolle } from '@/lib/valinta-tulos-service/valinta-tulos-service';
+import { hakijoidenVastaanottotilatValintatapajonolle } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { useSuspenseQuery } from '@tanstack/react-query';
 
 export const useHakijanVastaanottotila = ({

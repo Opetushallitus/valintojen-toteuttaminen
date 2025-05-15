@@ -13,11 +13,15 @@ import {
   ValinnanTulosEventType,
   ValinnanTulosState,
 } from '@/lib/state/valinnanTuloksetMachineTypes';
+import { setConfiguration } from '@/lib/configuration/client-configuration';
+import { buildConfiguration } from '@/lib/configuration/server-configuration';
 
 vi.mock('@/components/modals/global-modal', () => ({
   showModal: vi.fn(),
   createModal: vi.fn(),
 }));
+
+buildConfiguration().then(setConfiguration);
 
 const waitIdle = (actor: SijoittelunTulosActorRef) =>
   waitFor(actor, (state) => state.matches(ValinnanTulosState.IDLE));

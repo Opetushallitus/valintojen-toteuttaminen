@@ -17,7 +17,6 @@ import {
   LaskennanValintatapajonoTulos,
 } from '@/hooks/useEditableValintalaskennanTulokset';
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { configuration } from '@/lib/configuration';
 import { getHenkiloTitle } from '@/lib/henkilo-utils';
 import { Hakukohde } from '@/lib/kouta/kouta-types';
 import { TuloksenTila } from '@/lib/types/laskenta-types';
@@ -25,6 +24,7 @@ import { OphLink } from '@opetushallitus/oph-design-system';
 import { useMemo } from 'react';
 import { refetchLaskennanTulokset } from '../lib/refetchLaskennanTulokset';
 import { useQueryClient } from '@tanstack/react-query';
+import { useConfiguration } from '@/hooks/useConfiguration';
 
 const TRANSLATIONS_PREFIX = 'valintalaskennan-tulokset.taulukko';
 
@@ -59,6 +59,8 @@ export const LaskettuValintatapajonoTable = ({
 }) => {
   const { t, translateEntity } = useTranslations();
 
+  const { configuration, getConfigUrl } = useConfiguration();
+
   const queryClient = useQueryClient();
 
   const columns: Array<ListTableColumn<LaskennanJonosijaTulosWithHakijaInfo>> =
@@ -72,15 +74,20 @@ export const LaskettuValintatapajonoTable = ({
           render: ({ pisteet, hakemusOid }) => (
             <span>
               {pisteet}{' '}
-              <OphLink
-                iconVisible={false}
-                href={configuration.valintalaskentahistoriaLinkUrl({
-                  hakemusOid,
-                  valintatapajonoOid: jono.oid,
-                })}
-              >
-                {t('yleinen.lisatietoja')}
-              </OphLink>
+              {configuration && (
+                <OphLink
+                  iconVisible={false}
+                  href={getConfigUrl(
+                    configuration.routes.valintalaskentahistoriaLinkUrl,
+                    {
+                      hakemusOid,
+                      valintatapajonoOid: jono.oid,
+                    },
+                  )}
+                >
+                  {t('yleinen.lisatietoja')}
+                </OphLink>
+              )}
             </span>
           ),
         },
@@ -127,7 +134,15 @@ export const LaskettuValintatapajonoTable = ({
           sortable: false,
         },
       ],
-      [t, jono, translateEntity, hakukohde, queryClient],
+      [
+        t,
+        jono,
+        translateEntity,
+        hakukohde,
+        queryClient,
+        configuration,
+        getConfigUrl,
+      ],
     );
 
   return (

@@ -11,7 +11,6 @@ import POSTI_00100 from './fixtures/posti_00100.json';
 import HAKEMUKSEN_VALINTALASKENTA_TULOKSET from './fixtures/hakemuksen-valintalaskenta-tulokset.json';
 import HAKEMUKSEN_SIJOITTELU_TULOKSET from './fixtures/hakemuksen-sijoittelu-tulokset.json';
 import PISTETIEDOT_HAKEMUKSELLE from './fixtures/pistetiedot_hakemukselle.json';
-import { configuration } from '@/lib/configuration';
 import { hakemusValinnanTulosFixture } from './fixtures/hakemus-valinnan-tulos';
 import {
   IlmoittautumisTila,
@@ -50,26 +49,20 @@ test.beforeEach(async ({ page }) => {
     });
   });
 
-  await page.route(configuration.hakemuksetUrl, (route) => {
+  await page.route('**/lomake-editori/api/external/valinta-ui', (route) => {
     return route.fulfill({
       json: HAKENEET.filter(({ oid }) => oid === NUKETTAJA_HAKEMUS_OID),
     });
   });
   await page.route(
-    configuration.hakemuksenValintalaskennanTuloksetUrl({
-      hakuOid: '1.2.246.562.29.00000000000000045102',
-      hakemusOid: NUKETTAJA_HAKEMUS_OID,
-    }),
+    `**/valintalaskenta-laskenta-service/resources/hakemus/1.2.246.562.29.00000000000000045102/${NUKETTAJA_HAKEMUS_OID}`,
     (route) =>
       route.fulfill({
         json: HAKEMUKSEN_VALINTALASKENTA_TULOKSET,
       }),
   );
   await page.route(
-    configuration.hakemuksenSijoitteluajonTuloksetUrl({
-      hakuOid: '1.2.246.562.29.00000000000000045102',
-      hakemusOid: NUKETTAJA_HAKEMUS_OID,
-    }),
+    `**/valinta-tulos-service/auth/sijoittelu/1.2.246.562.29.00000000000000045102/sijoitteluajo/latest/hakemus/${NUKETTAJA_HAKEMUS_OID}`,
     (route) => {
       return route.fulfill({
         json: HAKEMUKSEN_SIJOITTELU_TULOKSET,
@@ -78,9 +71,7 @@ test.beforeEach(async ({ page }) => {
   );
 
   await page.route(
-    configuration.hakemuksenValinnanTulosUrl({
-      hakemusOid: NUKETTAJA_HAKEMUS_OID,
-    }),
+    `**/valinta-tulos-service/auth/valinnan-tulos/hakemus/?hakemusOid=${NUKETTAJA_HAKEMUS_OID}`,
     (route) => {
       return route.fulfill({
         json: VALINNAN_TULOS_RESULT,
@@ -89,9 +80,7 @@ test.beforeEach(async ({ page }) => {
   );
 
   await page.route(
-    configuration.koostetutPistetiedotHakemukselleUrl({
-      hakemusOid: '1.2.246.562.11.00000000000001796027',
-    }),
+    `**/valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/hakemus/${NUKETTAJA_HAKEMUS_OID}`,
     (route) => {
       return route.fulfill({
         json: PISTETIEDOT_HAKEMUKSELLE,
@@ -201,10 +190,7 @@ test('Näytetään valitun henkilön tiedot ja hakutoiveet ilman valintalaskenna
   page,
 }) => {
   await page.route(
-    configuration.hakemuksenValintalaskennanTuloksetUrl({
-      hakuOid: '1.2.246.562.29.00000000000000045102',
-      hakemusOid: NUKETTAJA_HAKEMUS_OID,
-    }),
+    `**/valintalaskenta-laskenta-service/resources/hakemus/1.2.246.562.29.00000000000000045102/${NUKETTAJA_HAKEMUS_OID}`,
     (route) =>
       route.fulfill({
         json: {
@@ -214,10 +200,7 @@ test('Näytetään valitun henkilön tiedot ja hakutoiveet ilman valintalaskenna
   );
 
   await page.route(
-    configuration.hakemuksenSijoitteluajonTuloksetUrl({
-      hakuOid: '1.2.246.562.29.00000000000000045102',
-      hakemusOid: NUKETTAJA_HAKEMUS_OID,
-    }),
+    `**/valinta-tulos-service/auth/sijoittelu/1.2.246.562.29.00000000000000045102/sijoitteluajo/latest/hakemus/${NUKETTAJA_HAKEMUS_OID}`,
     (route) => {
       return route.fulfill({
         status: 404,
@@ -226,9 +209,7 @@ test('Näytetään valitun henkilön tiedot ja hakutoiveet ilman valintalaskenna
   );
 
   await page.route(
-    configuration.hakemuksenValinnanTulosUrl({
-      hakemusOid: NUKETTAJA_HAKEMUS_OID,
-    }),
+    `**/valinta-tulos-service/auth/valinnan-tulos/hakemus/?hakemusOid=${NUKETTAJA_HAKEMUS_OID}`,
     (route) => {
       return route.fulfill({
         json: [],
@@ -324,10 +305,7 @@ test('Näytetään hakutoiveet valintalaskennan tuloksilla, ilman sijoittelun tu
   page,
 }) => {
   await page.route(
-    configuration.hakemuksenSijoitteluajonTuloksetUrl({
-      hakuOid: '1.2.246.562.29.00000000000000045102',
-      hakemusOid: NUKETTAJA_HAKEMUS_OID,
-    }),
+    `**/valinta-tulos-service/auth/sijoittelu/1.2.246.562.29.00000000000000045102/sijoitteluajo/latest/hakemus/${NUKETTAJA_HAKEMUS_OID}`,
     (route) => {
       return route.fulfill({
         status: 404,
@@ -336,9 +314,7 @@ test('Näytetään hakutoiveet valintalaskennan tuloksilla, ilman sijoittelun tu
   );
 
   await page.route(
-    configuration.hakemuksenValinnanTulosUrl({
-      hakemusOid: NUKETTAJA_HAKEMUS_OID,
-    }),
+    `**/valinta-tulos-service/auth/valinnan-tulos/hakemus/?hakemusOid=${NUKETTAJA_HAKEMUS_OID}`,
     (route) => {
       return route.fulfill({
         json: [],
@@ -456,12 +432,8 @@ test.describe('Muokkausmodaalit', () => {
   test('Valintalaskennan tallennuksessa lähetetään muokatut tiedot ja näytetään ilmoitus tallennuksen onnistumisesta', async ({
     page,
   }) => {
-    const muokkausUrl = configuration.jarjestyskriteeriMuokkausUrl({
-      hakemusOid: NUKETTAJA_HAKEMUS_OID,
-      valintatapajonoOid: '17093042998533736417074016063604',
-      jarjestyskriteeriPrioriteetti: 0,
-    });
-    await page.route(muokkausUrl, (route) => {
+    const muokkausUrl = `/valintalaskenta-laskenta-service/resources/valintatapajono/17093042998533736417074016063604/${NUKETTAJA_HAKEMUS_OID}/0/jonosija`;
+    await page.route('**' + muokkausUrl, (route) => {
       return route.fulfill({
         status: 200,
       });
@@ -489,7 +461,7 @@ test.describe('Muokkausmodaalit', () => {
     });
 
     const [request] = await Promise.all([
-      page.waitForRequest((req) => req.url() === muokkausUrl),
+      page.waitForRequest((req) => req.url().includes(muokkausUrl)),
       saveButton.click(),
     ]);
 
@@ -509,11 +481,7 @@ test.describe('Muokkausmodaalit', () => {
     page,
   }) => {
     await page.route(
-      configuration.jarjestyskriteeriMuokkausUrl({
-        hakemusOid: NUKETTAJA_HAKEMUS_OID,
-        valintatapajonoOid: '17093042998533736417074016063604',
-        jarjestyskriteeriPrioriteetti: 0,
-      }),
+      `**/valintalaskenta-laskenta-service/resources/valintatapajono/17093042998533736417074016063604/${NUKETTAJA_HAKEMUS_OID}/0/jonosija`,
       (route) => {
         return route.fulfill({
           status: 400,
@@ -574,9 +542,8 @@ test.describe('Muokkausmodaalit', () => {
   test('Valinnan tallennus lähettää muuttuneet arvot kun muokataan tiloja', async ({
     page,
   }) => {
-    const muokkausUrl = configuration.valinnanTulosMuokkausUrl({
-      valintatapajonoOid: '17093042998533736417074016063604',
-    });
+    const muokkausUrl =
+      '**/valinta-tulos-service/auth/valinnan-tulos/17093042998533736417074016063604';
     await page.route(muokkausUrl, (route) => {
       return route.fulfill({
         json: [],
@@ -626,9 +593,8 @@ test.describe('Muokkausmodaalit', () => {
   test('Valinnan tallennus lähettää muuttuneet arvot, kun julkaistu=false', async ({
     page,
   }) => {
-    const muokkausUrl = configuration.valinnanTulosMuokkausUrl({
-      valintatapajonoOid: '17093042998533736417074016063604',
-    });
+    const muokkausUrl =
+      '**/valinta-tulos-service/auth/valinnan-tulos/17093042998533736417074016063604';
     await page.route(muokkausUrl, (route) => {
       return route.fulfill({
         json: [],
@@ -678,9 +644,7 @@ test.describe('Muokkausmodaalit', () => {
     page,
   }) => {
     await page.route(
-      configuration.valinnanTulosMuokkausUrl({
-        valintatapajonoOid: '17093042998533736417074016063604',
-      }),
+      '**/valinta-tulos-service/auth/valinnan-tulos/17093042998533736417074016063604',
       (route) => {
         return route.fulfill({
           json: [
@@ -763,12 +727,9 @@ test.describe('Pistesyöttö', () => {
   test('Pistesyötön tallennus lähettää muokatut arvot ja näyttää ilmoituksen tallennuksen onnistumisesta', async ({
     page,
   }) => {
-    const pisteetSaveUrl = configuration.koostetutPistetiedotHakukohteelleUrl({
-      hakuOid: '1.2.246.562.29.00000000000000045102',
-      hakukohdeOid: HAKUKOHDE_OID,
-    });
+    const pisteetSaveUrl = `/valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/haku/1.2.246.562.29.00000000000000045102/hakukohde/${HAKUKOHDE_OID}`;
 
-    await page.route(pisteetSaveUrl, (route) => {
+    await page.route('**' + pisteetSaveUrl, (route) => {
       if (route.request().method() === 'PUT') {
         return route.fulfill({
           status: 200,
@@ -805,7 +766,7 @@ test.describe('Pistesyöttö', () => {
     const [saveRes] = await Promise.all([
       page.waitForRequest(
         (request) =>
-          request.url() === pisteetSaveUrl && request.method() === 'PUT',
+          request.url().includes(pisteetSaveUrl) && request.method() === 'PUT',
       ),
       nakkiTallennaButton.click(),
     ]);
@@ -828,12 +789,9 @@ test.describe('Pistesyöttö', () => {
   test('Näytetään virhe, kun pistesyötön tallennus epäonnistuu', async ({
     page,
   }) => {
-    const pisteetSaveUrl = configuration.koostetutPistetiedotHakukohteelleUrl({
-      hakuOid: '1.2.246.562.29.00000000000000045102',
-      hakukohdeOid: HAKUKOHDE_OID,
-    });
+    const pisteetSaveUrl = `/valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/haku/1.2.246.562.29.00000000000000045102/hakukohde/${HAKUKOHDE_OID}`;
 
-    await page.route(pisteetSaveUrl, (route) => {
+    await page.route('**' + pisteetSaveUrl, (route) => {
       if (route.request().method() === 'PUT') {
         return route.fulfill({
           status: 400,
@@ -863,7 +821,7 @@ test.describe('Pistesyöttö', () => {
     await Promise.all([
       page.waitForRequest(
         (request) =>
-          request.url() === pisteetSaveUrl && request.method() === 'PUT',
+          request.url().includes(pisteetSaveUrl) && request.method() === 'PUT',
       ),
       nakkiTallennaButton.click(),
     ]);

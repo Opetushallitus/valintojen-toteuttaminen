@@ -1,8 +1,8 @@
 import { getCookies } from './cookie';
 import { redirect } from 'next/navigation';
-import { configuration } from './configuration';
 import { FetchError, isServer } from './common';
-import { isPlainObject } from 'remeda';
+import { isEmpty, isPlainObject, pathOr } from 'remeda';
+import { getConfiguration } from '@/lib/configuration/client-configuration';
 
 export type HttpClientResponse<D> = {
   headers: Headers;
@@ -53,7 +53,7 @@ const noContent = (response: Response) => {
 };
 
 const redirectToLogin = () => {
-  const loginUrl = new URL(configuration.loginUrl);
+  const loginUrl = new URL(getConfiguration().routes.yleiset.loginUrl);
   loginUrl.searchParams.set('service', window.location.href);
   if (isServer) {
     redirect(loginUrl.toString());
@@ -124,23 +124,29 @@ const responseToData = async <Result = unknown>(
 const LOGIN_MAP = [
   {
     urlIncludes: '/kouta-internal',
-    loginUrl: configuration.koutaInternalLogin,
+    loginParam: ['koutaInternal', 'koutaInternalLogin'],
   },
   {
     urlIncludes: '/lomake-editori',
-    loginUrl: configuration.ataruEditoriLogin,
+    loginParam: ['ataru', 'ataruEditoriLogin'],
   },
   {
     urlIncludes: '/valinta-tulos-service',
-    loginUrl: configuration.valintaTulosServiceLogin,
+    loginParam: ['valintaTulosService', 'valintaTulosServiceLogin'],
   },
   {
     urlIncludes: '/valintalaskenta-laskenta-service',
-    loginUrl: configuration.valintalaskentaServiceLogin,
+    loginParam: [
+      'valintalaskentaLaskentaService',
+      'valintalaskentaServiceLogin',
+    ],
   },
   {
     urlIncludes: '/valintalaskentakoostepalvelu',
-    loginUrl: configuration.valintalaskentaKoostePalveluLogin,
+    loginParam: [
+      'valintalaskentakoostepalvelu',
+      'valintalaskentaKoostePalveluLogin',
+    ],
   },
 ] as const;
 
@@ -160,8 +166,13 @@ const makeRequest = async <Result>(request: Request) => {
     if (error instanceof FetchError) {
       if (isUnauthenticated(error.response)) {
         try {
-          for (const { urlIncludes, loginUrl } of LOGIN_MAP) {
+          for (const { urlIncludes, loginParam } of LOGIN_MAP) {
             if (request?.url?.includes(urlIncludes)) {
+              const config = getConfiguration();
+              const loginUrl: string = pathOr(config.routes, loginParam, '');
+              if (isEmpty(loginUrl)) {
+                throw Error(`Login configuration not found for ${urlIncludes}`);
+              }
               const resp = await retryWithLogin(request, loginUrl);
               return responseToData<Result>(resp);
             }

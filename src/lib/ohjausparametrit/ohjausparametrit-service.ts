@@ -1,8 +1,9 @@
 'use client';
 
-import { configuration } from '../configuration';
+import { getConfiguration } from '@/lib/configuration/client-configuration';
 import { client } from '../http-client';
 import { HaunAsetukset } from './ohjausparametrit-types';
+import { getConfigUrl } from '../configuration/configuration-utils';
 
 type HaunAsetuksetResponse = {
   sijoittelu: boolean;
@@ -17,8 +18,9 @@ type HaunAsetuksetResponse = {
 export const getHaunAsetukset = async (
   hakuOid: string,
 ): Promise<HaunAsetukset> => {
+  const configuration = getConfiguration();
   const response = await client.get<HaunAsetuksetResponse>(
-    `${configuration.ohjausparametritUrl}/${hakuOid}`,
+    getConfigUrl(configuration.routes.yleiset.ohjausparametritUrl, { hakuOid }),
   );
   const valintaEsityksenHyvaksyminen = response.data.PH_VEH?.date
     ? new Date(response.data.PH_VEH?.date)

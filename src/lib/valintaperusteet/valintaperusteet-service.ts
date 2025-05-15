@@ -1,7 +1,6 @@
 'use client';
 
 import { queryOptions } from '@tanstack/react-query';
-import { configuration } from '../configuration';
 import { client } from '../http-client';
 import {
   Valinnanvaihe,
@@ -14,12 +13,15 @@ import {
   ValintaryhmaHakukohteilla,
 } from './valintaperusteet-types';
 import { sort } from 'remeda';
+import { getConfiguration } from '@/lib/configuration/client-configuration';
+import { getConfigUrl } from '../configuration/configuration-utils';
 
 export const getValintaryhma = async (
   hakukohdeOid: string,
 ): Promise<Valintaryhma> => {
+  const configuration = getConfiguration();
   const response = await client.get<Valintaryhma>(
-    `${configuration.valintaperusteetUrl}hakukohde/${hakukohdeOid}/valintaryhma`,
+    `${configuration.routes.valintaperusteetService.valintaperusteetUrl}hakukohde/${hakukohdeOid}/valintaryhma`,
   );
   return { nimi: response.data.nimi, oid: response.data.oid };
 };
@@ -87,8 +89,9 @@ export const hakukohteenValinnanvaiheetQueryOptions = (
 export const getValinnanvaiheet = async (
   hakukohdeOid: string,
 ): Promise<Array<Valinnanvaihe>> => {
+  const configuration = getConfiguration();
   const response = await client.get<Array<ValinnanvaiheModel>>(
-    `${configuration.valintaperusteetUrl}hakukohde/${hakukohdeOid}/valinnanvaihe?withValisijoitteluTieto=true`,
+    `${configuration.routes.valintaperusteetService.valintaperusteetUrl}hakukohde/${hakukohdeOid}/valinnanvaihe?withValisijoitteluTieto=true`,
   );
   return response.data.map(convertValinnanvaihe);
 };
@@ -119,6 +122,7 @@ const determineValintaKoeInputTyyppi = (
 export const getValintakoeAvaimetHakukohteelle = async (
   hakukohdeOid: string,
 ): Promise<Array<ValintakoeAvaimet>> => {
+  const configuration = getConfiguration();
   const { data } = await client.get<
     Array<{
       tunniste: string;
@@ -130,7 +134,9 @@ export const getValintakoeAvaimetHakukohteelle = async (
       vaatiiOsallistumisen: boolean;
       funktiotyyppi: string;
     }>
-  >(`${configuration.valintaperusteetUrl}hakukohde/avaimet/${hakukohdeOid}`);
+  >(
+    `${configuration.routes.valintaperusteetService.valintaperusteetUrl}hakukohde/avaimet/${hakukohdeOid}`,
+  );
   return data.map((koe) => {
     const inputTyyppi = determineValintaKoeInputTyyppi(
       koe.tunniste,
@@ -169,8 +175,14 @@ export const getValintakoeAvaimetHakukohteille = async ({
 };
 
 export const getValintakokeet = async (hakukohdeOid: string) => {
+  const configuration = getConfiguration();
   const response = await client.get<Array<Valintakoe>>(
-    configuration.hakukohdeValintakokeetUrl({ hakukohdeOid }),
+    getConfigUrl(
+      configuration.routes.valintaperusteetService.hakukohdeValintakokeetUrl,
+      {
+        hakukohdeOid,
+      },
+    ),
   );
   return response.data;
 };
@@ -211,8 +223,9 @@ export const getValintaryhmat = async (
   muutRyhmat: Array<ValintaryhmaHakukohteilla>;
   hakuRyhma: ValintaryhmaHakukohteilla | null;
 }> => {
+  const configuration = getConfiguration();
   const response = await client.get<Array<ValintaryhmaHakukohteillaResponse>>(
-    `${configuration.valintaryhmatHakukohteilla}?hakuOid=${hakuOid}&hakukohteet=true`,
+    `${configuration.routes.valintaperusteetService.valintaryhmatHakukohteilla}?hakuOid=${hakuOid}&hakukohteet=true`,
   );
   const hakuRyhma = response.data.find((r) => r.hakuOid === hakuOid);
   const muutRyhmat =
@@ -226,7 +239,15 @@ export const getValintaryhmat = async (
 export const onkoHaullaValintaryhma = async (
   hakuOid: string,
 ): Promise<boolean> => {
+  const configuration = getConfiguration();
   return (
-    await client.get<boolean>(configuration.onkoHaullaValintaryhma({ hakuOid }))
+    await client.get<boolean>(
+      getConfigUrl(
+        configuration.routes.valintaperusteetService.onkoHaullaValintaryhma,
+        {
+          hakuOid,
+        },
+      ),
+    )
   ).data;
 };

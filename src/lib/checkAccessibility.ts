@@ -1,5 +1,5 @@
 import React from 'react';
-import { isProd, isTesting } from './configuration';
+import { isProd, isTesting } from './configuration/configuration';
 import { isServer } from './common';
 
 export function checkAccessibility() {

@@ -4,11 +4,11 @@ import {
   Hakukelpoisuus,
   Maksuvelvollisuus,
 } from './ataru-types';
-import { configuration } from '../configuration';
 import { client } from '../http-client';
 import { Language } from '../localization/localization-types';
 import { queryOptions } from '@tanstack/react-query';
 import { KoutaOidParams } from '../kouta/kouta-types';
+import { getConfiguration } from '@/lib/configuration/client-configuration';
 
 const getMaksuvelvollisuus = (toive?: {
   hakukohdeOid: string;
@@ -92,7 +92,8 @@ export async function getAtaruHakemukset({
   henkiloOid,
   henkilotunnus,
 }: GetHakijatParams) {
-  const url = new URL(configuration.hakemuksetUrl);
+  const configuration = getConfiguration();
+  const url = new URL(configuration.routes.ataru.hakemuksetUrl);
   if (hakuOid) {
     url.searchParams.append('hakuOid', hakuOid);
   }

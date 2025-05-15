@@ -1,6 +1,5 @@
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import { client } from '@/lib/http-client';
-import { configuration } from '@/lib/configuration';
 import {
   OrganizationPermissions,
   UserPermissions,
@@ -12,14 +11,16 @@ import { PermissionError } from '@/lib/common';
 import { intersection, isNonNull } from 'remeda';
 import { OPH_ORGANIZATION_OID } from '@/lib/constants';
 import { useOrganizationParentOids } from '@/lib/organisaatio-service';
+import { getConfiguration } from '../lib/configuration/client-configuration';
 
 const getUserPermissions = async (): Promise<UserPermissions> => {
+  const config = getConfiguration();
   const response = await client.get<{
     organisaatiot: Array<{
       organisaatioOid: string;
       kayttooikeudet: [{ palvelu: string; oikeus: Permission }];
     }>;
-  }>(configuration.kayttoikeusUrl);
+  }>(config.routes.yleiset.kayttoikeusUrl);
   const organizations: Array<OrganizationPermissions> =
     response.data.organisaatiot
       .map((org) => {

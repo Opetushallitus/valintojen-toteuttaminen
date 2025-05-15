@@ -2,8 +2,12 @@ import { expect, test, vi } from 'vitest';
 import { client } from '../http-client';
 import { Hakemus } from './ataru-types';
 import { getHakemukset } from './ataru-service';
+import { setConfiguration } from '@/lib/configuration/client-configuration';
+import { buildConfiguration } from '@/lib/configuration/server-configuration';
 
 test('returns hakemukset', async () => {
+  const config = await buildConfiguration();
+  setConfiguration(config);
   const clientSpy = vi.spyOn(client, 'get');
   clientSpy.mockImplementationOnce(() => buildDummyHakemukset());
   const hakemukset: Array<Hakemus> = await getHakemukset({

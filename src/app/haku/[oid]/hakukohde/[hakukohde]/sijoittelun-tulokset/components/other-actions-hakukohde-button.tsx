@@ -1,4 +1,7 @@
 import { useTranslations } from '@/lib/localization/useTranslations';
+import {
+  Divider,
+} from '@mui/material';
 import { useState } from 'react';
 import {
   FileDownloadOutlined,
@@ -7,7 +10,6 @@ import {
   NoteOutlined,
 } from '@mui/icons-material';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
-import { configuration } from '@/lib/configuration';
 import {
   AcceptedLetterTemplateModal,
   NonAcceptedLetterTemplateModal,
@@ -17,8 +19,8 @@ import { ProgressModal } from './progress-modal-dialog';
 import { luoOsoitetarratHakukohteessaHyvaksytyille } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
 import { Dropdown } from '@/components/dropdown';
-import { Divider } from '@mui/material';
 import { useSendVastaanottoPostiMutation } from '@/hooks/useSendVastaanottoPostiMutation';
+import { useConfiguration } from '@/hooks/useConfiguration';
 
 const SendVastaanottopostiMenuItem = ({
   hakukohde,
@@ -160,6 +162,7 @@ export const OtherActionsHakukohdeButton = ({
   tulosDocumentId: string | null;
   sijoitteluajoId: string;
 }) => {
+  const { configuration, getConfigUrl } = useConfiguration();
   const { t } = useTranslations();
 
   const [hyvaksymiskirje, setHyvaksymiskirjeDocument] = useState<string | null>(
@@ -170,9 +173,14 @@ export const OtherActionsHakukohdeButton = ({
   );
 
   const openDocument = async (documentId: string | null) => {
-    if (documentId) {
+    if (documentId && configuration) {
       window.open(
-        configuration.lataaDokumenttiUrl({ dokumenttiId: documentId }),
+        getConfigUrl(
+          configuration.routes.valintalaskentakoostepalvelu.lataaDokumenttiUrl,
+          {
+            dokumenttiId: documentId,
+          },
+        ),
       );
     }
   };
