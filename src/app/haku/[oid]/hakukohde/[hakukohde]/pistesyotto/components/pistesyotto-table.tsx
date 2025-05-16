@@ -10,8 +10,8 @@ import {
 } from '@/components/table/table-columns';
 import { ListTable } from '@/components/table/list-table';
 import { isNotPartOfThisHakukohde } from '../lib/pistesyotto-utils';
-import { KoeInputs } from '@/components/koe-inputs';
 import { PistesyottoActorRef } from '@/lib/state/pistesyotto-state';
+import { PisteSyottoKoeInputs } from './pistesyotto-koe-inputs';
 
 export const PisteSyottoTable = ({
   pistetiedot,
@@ -39,9 +39,9 @@ export const PisteSyottoTable = ({
             (p) => p.tunniste === koe.tunniste,
           );
           return isNotPartOfThisHakukohde(matchingKoePisteet) ? (
-            <ReadOnlyKoeCell koePisteet={matchingKoePisteet} />
+            <ReadOnlyKoeCell koe={koe} koePisteet={matchingKoePisteet} />
           ) : (
-            <KoeInputs
+            <PisteSyottoKoeInputs
               hakemusOid={props.hakemusOid}
               koe={koe}
               pistesyottoActorRef={pistesyottoActorRef}

@@ -24,6 +24,7 @@ export type KoeInputsProps = {
   hakemusOid: string;
   koe: ValintakoeAvaimet;
   pistesyottoActorRef: PistesyottoActorRef;
+  naytaVainLaskentaanVaikuttavat?: boolean;
 };
 
 const getArvoOptions = (koe: ValintakoeAvaimet, t: TFunction) => {
@@ -85,6 +86,7 @@ export const KoeInputsStateless = ({
   osallistuminen,
   onChange,
   t,
+  naytaVainLaskentaanVaikuttavat,
 }: Omit<KoeInputsProps, 'pistesyottoActorRef'> & {
   arvo: string;
   osallistuminen?: ValintakoeOsallistuminenTulos;
@@ -143,16 +145,18 @@ export const KoeInputsStateless = ({
           t={t}
         />
       )}
-      <OsallistumisenTilaSelect
-        sx={KOE_SELECT_STYLE}
-        id={`koe-osallistuminen-${hakemusOid}-${koe.tunniste}`}
-        value={osallistuminen}
-        onChange={changeOsallistumisenTila}
-        disabled={disabled}
-        inputProps={{
-          'aria-label': t('pistesyotto.osallistumisen-tila'),
-        }}
-      />
+      {(!naytaVainLaskentaanVaikuttavat || koe.vaatiiOsallistumisen) && (
+        <OsallistumisenTilaSelect
+          sx={KOE_SELECT_STYLE}
+          id={`koe-osallistuminen-${hakemusOid}-${koe.tunniste}`}
+          value={osallistuminen}
+          onChange={changeOsallistumisenTila}
+          disabled={disabled}
+          inputProps={{
+            'aria-label': t('pistesyotto.osallistumisen-tila'),
+          }}
+        />
+      )}
     </Box>
   );
 };
@@ -161,6 +165,7 @@ export const KoeInputs = ({
   hakemusOid,
   koe,
   pistesyottoActorRef,
+  naytaVainLaskentaanVaikuttavat,
 }: KoeInputsProps) => {
   const { t } = useTranslations();
   const { onKoeChange, isUpdating } =
@@ -180,6 +185,7 @@ export const KoeInputs = ({
       onChange={onKoeChange}
       arvo={arvo}
       t={t}
+      naytaVainLaskentaanVaikuttavat={naytaVainLaskentaanVaikuttavat}
     />
   );
 };
