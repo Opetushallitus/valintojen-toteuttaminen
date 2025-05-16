@@ -119,6 +119,7 @@ export const usePisteSyottoSearchResults = (
     setSort,
     valittuKoe,
     osallistumisenTila,
+    naytaVainLaskentaanVaikuttavat,
   } = usePisteSyottoSearchParams();
 
   const koeResults = useMemo(() => {
@@ -136,12 +137,18 @@ export const usePisteSyottoSearchResults = (
       (h) =>
         hakemusFilter(h, searchPhrase) &&
         (osallistumisenTila.length < 1 ||
-          h.valintakokeenPisteet.some(
-            (koe) =>
-              koeResults.some((k) => k.tunniste === koe.tunniste) &&
+          h.valintakokeenPisteet.some((koe) => {
+            const matchingKoe = koeResults.find(
+              (k) => k.tunniste === koe.tunniste,
+            );
+            return (
+              matchingKoe &&
               koe.osallistuminen === osallistumisenTila &&
-              (valittuKoe.length < 1 || koe.tunniste === valittuKoe),
-          )),
+              (!naytaVainLaskentaanVaikuttavat ||
+                matchingKoe.vaatiiOsallistumisen) &&
+              (valittuKoe.length < 1 || koe.tunniste === valittuKoe)
+            );
+          })),
     );
     return orderBy && direction
       ? filtered.sort(byProp(orderBy, direction, translateEntity))
@@ -154,6 +161,7 @@ export const usePisteSyottoSearchResults = (
     osallistumisenTila,
     valittuKoe,
     koeResults,
+    naytaVainLaskentaanVaikuttavat,
   ]);
 
   const pageResults = useMemo(() => {
