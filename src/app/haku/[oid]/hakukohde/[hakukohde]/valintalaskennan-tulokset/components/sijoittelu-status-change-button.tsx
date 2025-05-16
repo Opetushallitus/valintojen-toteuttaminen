@@ -32,6 +32,7 @@ export const SijoitteluStatusChangeButton = ({
     case !jono.valmisSijoiteltavaksi && jono.siirretaanSijoitteluun:
       return (
         <SijoitteluButton
+          sx={{ marginBottom: 2 }}
           loading={statusMutation.isPending}
           disabled={!hasOphUpdate && !hasOrgCrud}
           onClick={() =>
