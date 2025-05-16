@@ -251,3 +251,25 @@ export const onkoHaullaValintaryhma = async (
     )
   ).data;
 };
+
+export async function siirraTaiPoistaValintatapajonoAutomaattisestaSijoittelusta(
+  valintatapajonoOid: string,
+  jonoSijoitellaan: boolean,
+) {
+  const configuration = getConfiguration();
+  const { data: updatedJono } = await client.post<{ prioriteetti: number }>(
+    // Miksi samat parametrit välitetään sekä URL:ssä että bodyssa?
+    getConfigUrl(
+      configuration.routes.valintaperusteetService.automaattinenSiirtoUrl,
+      {
+        valintatapajonoOid,
+        status: jonoSijoitellaan,
+      },
+    ),
+    {},
+    {
+      cache: 'no-cache',
+    },
+  );
+  return updatedJono;
+}

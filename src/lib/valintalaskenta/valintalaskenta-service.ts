@@ -1,7 +1,6 @@
 'use client';
 
 import { LaskennanValintatapajonoTulosWithHakijaInfo } from '@/hooks/useEditableValintalaskennanTulokset';
-import { booleanToString } from '../common';
 import { client } from '../http-client';
 import { getHakemukset } from '../ataru/ataru-service';
 import { getLatestSijoitteluAjonTuloksetForHakukohde } from '../valinta-tulos-service/valinta-tulos-service';
@@ -56,6 +55,7 @@ import {
 } from '../localization/translation-utils';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
 import { getConfigUrl } from '../configuration/configuration-utils';
+import { siirraTaiPoistaValintatapajonoAutomaattisestaSijoittelusta } from '../valintaperusteet/valintaperusteet-service';
 
 const createLaskentaURL = async ({
   laskentaTyyppi,
@@ -277,40 +277,27 @@ export type MuutaSijoittelunStatusProps = {
     LaskennanValintatapajonoTulosWithHakijaInfo,
     'oid' | 'prioriteetti'
   >;
-  status: boolean;
+  jonoSijoitellaan: boolean;
 };
 
 export const muutaSijoittelunStatus = async ({
   jono,
-  status,
+  jonoSijoitellaan,
 }: {
   jono: Pick<
     LaskennanValintatapajonoTulosWithHakijaInfo,
     'oid' | 'prioriteetti'
   >;
-  status: boolean;
+  jonoSijoitellaan: boolean;
 }) => {
   const configuration = getConfiguration();
   const valintatapajonoOid = jono.oid;
 
-  const { data: updatedJono } = await client.post<{ prioriteetti: number }>(
-    // Miksi samat parametrit välitetään sekä URL:ssä että bodyssa?
-    getConfigUrl(
-      configuration.routes.valintalaskentaLaskentaService
-        .automaattinenSiirtoUrl,
-      {
-        valintatapajonoOid,
-        status,
-      },
-    ),
-    {
+  const updatedJono =
+    await siirraTaiPoistaValintatapajonoAutomaattisestaSijoittelusta(
       valintatapajonoOid,
-      status: booleanToString(status),
-    },
-    {
-      cache: 'no-cache',
-    },
-  );
+      jonoSijoitellaan,
+    );
 
   if (updatedJono.prioriteetti === -1) {
     // A query for a single jono doesn't return a true prioriteetti value, but -1 as a placeholder, so let's re-set the value
@@ -321,7 +308,7 @@ export const muutaSijoittelunStatus = async ({
     getConfigUrl(
       configuration.routes.valintalaskentaLaskentaService
         .valmisSijoiteltavaksiUrl,
-      { valintatapajonoOid, status },
+      { valintatapajonoOid, status: jonoSijoitellaan },
     ),
     updatedJono,
     {
