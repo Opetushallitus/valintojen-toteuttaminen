@@ -168,12 +168,14 @@ export const getPisteetForHakukohde = async (
     ),
   );
 
-  const kokeet = await kokeetPromise;
+  let kokeet = await kokeetPromise;
 
   if (isEmpty(kokeet)) {
     pisteTiedotFetch.abort('Ei kokeita, perutaan pistetietojen haku');
     return { hakemukset: EMPTY_ARRAY, valintakokeet: EMPTY_ARRAY };
   }
+
+  kokeet = kokeet.sort((a, b) => a.kuvaus.localeCompare(b.kuvaus));
 
   const [hakemukset, { data: pistetiedot }] = await Promise.all([
     hakemuksetPromise,
