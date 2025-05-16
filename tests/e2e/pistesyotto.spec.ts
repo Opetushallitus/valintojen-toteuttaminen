@@ -46,30 +46,30 @@ test('Näyttää pistesyotöt kaikilla kokeilla', async ({ page }) => {
   const headrow = page.locator('[data-test-id="pistesyotto-form"] thead tr');
   await checkRow(
     headrow,
-    ['Hakija', 'Nakkikoe, oletko nakkisuojassa?', 'Köksäkokeen arvosana'],
+    ['Hakija', 'Köksäkokeen arvosana', 'Nakkikoe, oletko nakkisuojassa?'],
     'th',
   );
   const rows = page.locator('[data-test-id="pistesyotto-form"] tbody tr');
   await expect(rows).toHaveCount(4);
   await checkRow(rows.nth(0), [
     'Dacula Kreivi',
-    'EiOsallistui',
     'Merkitsemättä',
+    'EiOsallistui',
   ]);
   await checkRow(rows.nth(1), [
     'Hui Haamu',
-    'Valitse...Merkitsemättä',
     'Ei osallistunut',
+    'Valitse...Merkitsemättä',
   ]);
   await checkRow(rows.nth(2), [
     'Nukettaja Ruhtinas',
-    'KylläOsallistui',
     'Osallistui',
+    'KylläOsallistui',
   ]);
   await checkRow(rows.nth(3), [
     'Purukumi Puru',
-    'Valitse...Merkitsemättä',
     'Ei osallistunut',
+    'Valitse...Merkitsemättä',
   ]);
 });
 
@@ -83,7 +83,7 @@ test('Näyttää ilmoituksen virheellisestä syötteestä tallennettaessa', asyn
 }) => {
   await page.getByLabel('Näytä vain laskentaan').click();
   await page
-    .getByRole('row', { name: 'Dacula Kreivi Arvo' })
+    .getByRole('row', { name: 'Dacula Kreivi' })
     .getByLabel('Pisteet')
     .fill('3');
   await page.getByRole('button', { name: 'Tallenna' }).click();
