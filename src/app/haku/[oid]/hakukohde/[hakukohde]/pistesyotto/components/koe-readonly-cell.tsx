@@ -4,6 +4,8 @@ import { Box, Typography } from '@mui/material';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { NOT_READABLE_REASON_MAP } from '../lib/pistesyotto-utils';
 import { styled } from '@/lib/theme';
+import { usePisteSyottoSearchParams } from '../hooks/usePisteSyottoSearch';
+import { ValintakoeAvaimet } from '@/lib/valintaperusteet/valintaperusteet-types';
 
 const StyledCell = styled(Box)({
   display: 'flex',
@@ -13,11 +15,15 @@ const StyledCell = styled(Box)({
 });
 
 export const ReadOnlyKoeCell = ({
+  koe,
   koePisteet,
 }: {
+  koe: ValintakoeAvaimet;
   koePisteet?: ValintakokeenPisteet;
 }) => {
   const { t } = useTranslations();
+
+  const { naytaVainLaskentaanVaikuttavat } = usePisteSyottoSearchParams();
 
   const notReadableReason = koePisteet?.osallistuminen
     ? NOT_READABLE_REASON_MAP[koePisteet?.osallistuminen]
@@ -26,7 +32,9 @@ export const ReadOnlyKoeCell = ({
   return (
     <StyledCell>
       <Typography>{koePisteet?.arvo}</Typography>
-      <Typography>{t(notReadableReason)}</Typography>
+      {(!naytaVainLaskentaanVaikuttavat || koe.vaatiiOsallistumisen) && (
+        <Typography>{t(notReadableReason)}</Typography>
+      )}
     </StyledCell>
   );
 };

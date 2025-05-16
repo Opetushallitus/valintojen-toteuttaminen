@@ -119,18 +119,15 @@ export const usePisteSyottoSearchResults = (
     setSort,
     valittuKoe,
     osallistumisenTila,
-    naytaVainLaskentaanVaikuttavat,
   } = usePisteSyottoSearchParams();
 
   const koeResults = useMemo(() => {
-    return (
-      valittuKoe.length < 1
-        ? hakukohteenPistetiedot.valintakokeet
-        : hakukohteenPistetiedot.valintakokeet.filter(
-            (k) => k.tunniste === valittuKoe,
-          )
-    ).filter((k) => !naytaVainLaskentaanVaikuttavat || k.vaatiiOsallistumisen);
-  }, [valittuKoe, hakukohteenPistetiedot, naytaVainLaskentaanVaikuttavat]);
+    return valittuKoe.length < 1
+      ? hakukohteenPistetiedot.valintakokeet
+      : hakukohteenPistetiedot.valintakokeet.filter(
+          (k) => k.tunniste === valittuKoe,
+        );
+  }, [valittuKoe, hakukohteenPistetiedot]);
 
   const results = useMemo(() => {
     const { orderBy, direction } = getSortParts(sort);
