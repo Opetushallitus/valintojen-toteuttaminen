@@ -2,8 +2,8 @@
 import { useMemo } from 'react';
 import { Hakukohde } from '../lib/kouta/kouta-types';
 import { useDebounce } from '@/hooks/useDebounce';
-import { useQueryState } from 'nuqs';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { parseAsBoolean, useQueryState } from 'nuqs';
+import { useSuspenseQueries } from '@tanstack/react-query';
 import {
   DEFAULT_NUQS_OPTIONS,
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
@@ -13,11 +13,17 @@ import { getHakukohteetQueryOptions } from '../lib/kouta/kouta-service';
 import { useUserPermissions } from './useUserPermissions';
 import { isEmpty, sortBy, toLowerCase } from 'remeda';
 import { isHakukohdeOid } from '@/lib/common';
+import { getHakukohteidenSuodatustiedotQueryOptions } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 
 export const useHakukohdeSearchParams = () => {
   const [searchPhrase, setSearchPhrase] = useQueryState(
-    'hksearch',
+    'hakukohteet-search',
     DEFAULT_NUQS_OPTIONS,
+  );
+
+  const [withValintakoe, setWithValintakoe] = useQueryState(
+    'hakukohteet-with-valintakoe',
+    parseAsBoolean.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(false),
   );
 
   const setSearchDebounce = useDebounce(
@@ -26,6 +32,8 @@ export const useHakukohdeSearchParams = () => {
   );
 
   return {
+    withValintakoe,
+    setWithValintakoe,
     searchPhrase,
     setSearchPhrase: setSearchDebounce,
   };
@@ -35,15 +43,25 @@ export const useHakukohdeSearchResults = (hakuOid: string) => {
   const { translateEntity } = useTranslations();
   const { data: userPermissions } = useUserPermissions();
 
-  const { data: hakukohteet } = useSuspenseQuery(
-    getHakukohteetQueryOptions(hakuOid, userPermissions),
-  );
+  const [{ data: hakukohteet }, { data: suodatustiedot }] = useSuspenseQueries({
+    queries: [
+      getHakukohteetQueryOptions(hakuOid, userPermissions),
+      getHakukohteidenSuodatustiedotQueryOptions({ hakuOid }),
+    ],
+  });
+
+  const { searchPhrase, withValintakoe } = useHakukohdeSearchParams();
 
   const sortedHakukohteet = useMemo(() => {
-    return sortBy(hakukohteet, (hakukohde: Hakukohde) =>
+    const filteredHakukohteet = withValintakoe
+      ? hakukohteet.filter(
+          (hakukohde) => suodatustiedot?.[hakukohde.oid]?.hasValintakoe,
+        )
+      : hakukohteet;
+    return sortBy(filteredHakukohteet, (hakukohde: Hakukohde) =>
       translateEntity(hakukohde.nimi),
     );
-  }, [hakukohteet, translateEntity]);
+  }, [hakukohteet, translateEntity, withValintakoe, suodatustiedot]);
 
   const hakukohdeMatchTargets = useMemo(
     () =>
@@ -56,8 +74,6 @@ export const useHakukohdeSearchResults = (hakuOid: string) => {
       ),
     [sortedHakukohteet, translateEntity],
   );
-
-  const { searchPhrase } = useHakukohdeSearchParams();
 
   const searchPhraseWords = useMemo(
     () =>

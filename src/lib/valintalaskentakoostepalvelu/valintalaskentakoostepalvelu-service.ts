@@ -1217,3 +1217,31 @@ export const hakijoidenVastaanottotilatValintatapajonolle = async (
     hakemusOid: hvt.hakemusOid,
   }));
 };
+
+export const getHakukohteidenSuodatustiedotQueryOptions = ({
+  hakuOid,
+}: {
+  hakuOid: string;
+}) =>
+  queryOptions({
+    queryKey: ['getHakukohteidenSuodatustiedot', hakuOid],
+    queryFn: () => getHakukohteidenSuodatustiedot({ hakuOid }),
+  });
+
+export const getHakukohteidenSuodatustiedot = async ({
+  hakuOid,
+}: {
+  hakuOid: string;
+}) => {
+  const configuration = getConfiguration();
+  const response = await client.get<Record<string, { hasValintakoe: boolean }>>(
+    getConfigUrl(
+      configuration.routes.valintalaskentakoostepalvelu
+        .hakukohteidenSuodatustiedotUrl,
+      {
+        hakuOid,
+      },
+    ),
+  );
+  return response.data;
+};

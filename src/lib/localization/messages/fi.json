@@ -118,6 +118,8 @@
     "hakutapa": "Hakutapa",
     "alkamiskausi": "Koulutuksen alkamiskausi",
     "haehakukohde": "Hae hakukohteita",
+    "hakukohde-suodattimet-otsikko": "Näytä vain hakukohteet, joissa:",
+    "on-valintakoe": "On valintakoe",
     "hakukohteet": "Hakukohteet",
     "hakukohde-maara": "{count, plural, =0 {Hakukohteita ei löytynyt} one {1 hakukohde} other {{count} hakukohdetta}}",
     "hae": "Hae hakuja",
