@@ -10,7 +10,7 @@ import {
   useSuspenseQuery,
 } from '@tanstack/react-query';
 import { getPostitoimipaikka } from '@/lib/koodisto/koodisto-service';
-import { getAllHakukohteet, getHakukohteetQueryOptions } from '@/lib/kouta/kouta-service';
+import { getAllHakukohteet } from '@/lib/kouta/kouta-service';
 import { useUserPermissions } from '@/hooks/useUserPermissions';
 import { filter, map, pipe, prop, sortBy } from 'remeda';
 import { hakemuksenValintalaskennanTuloksetQueryOptions } from '@/lib/valintalaskenta/valintalaskenta-service';
@@ -115,8 +115,9 @@ export const useHenkiloPageData = ({
     { data: kokeetByHakukohde },
   ] = useSuspenseQueries({
     queries: [
-      { queryKey: ['getAllHakukohteet', hakuOid],
-        queryFn: () => getAllHakukohteet(hakuOid)
+      {
+        queryKey: ['getAllHakukohteet', hakuOid],
+        queryFn: () => getAllHakukohteet(hakuOid),
       },
       {
         queryKey: ['getPostitoimipaikka', hakemus.postinumero],
@@ -151,7 +152,11 @@ export const useHenkiloPageData = ({
               valinnanTulos.valintatapajonoOid,
           );
 
-        const readOnly = !(userPermissions.hasOphCRUD || userPermissions.writeOrganizations.includes(hakukohde.tarjoajaOid) || userPermissions.crudOrganizations.includes(hakukohde.tarjoajaOid));
+        const readOnly = !(
+          userPermissions.hasOphCRUD ||
+          userPermissions.writeOrganizations.includes(hakukohde.tarjoajaOid) ||
+          userPermissions.crudOrganizations.includes(hakukohde.tarjoajaOid)
+        );
 
         return {
           ...hakukohde,
@@ -190,6 +195,7 @@ export const useHenkiloPageData = ({
     pisteetByHakukohde,
     hakemusOid,
     hakija.hakijaOid,
+    userPermissions,
   ]);
 
   return { hakukohteet, hakija, postitoimipaikka };

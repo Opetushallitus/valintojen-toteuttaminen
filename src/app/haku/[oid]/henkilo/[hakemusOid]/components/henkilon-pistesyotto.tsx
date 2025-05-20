@@ -57,7 +57,7 @@ const KokeenPistesyotto = ({
 
   useConfirmChangesBeforeNavigation(isDirty);
 
-  const labelId = `${koe.tunniste}_label`;
+  const labelId = `${koe.tunniste}_label_${hakukohde.oid}`;
 
   return (
     <>
@@ -82,16 +82,19 @@ const KokeenPistesyotto = ({
           hakemusOid={hakija.hakemusOid}
           koe={koe}
           pistesyottoActorRef={pistesyottoActorRef}
+          disabled={hakukohde.readOnly}
         />
-        <OphButton
-          variant="contained"
-          loading={isUpdating}
-          onClick={() => {
-            savePistetiedot();
-          }}
-        >
-          {t('yleinen.tallenna')}
-        </OphButton>
+        {!hakukohde.readOnly && (
+          <OphButton
+            variant="contained"
+            loading={isUpdating}
+            onClick={() => {
+              savePistetiedot();
+            }}
+          >
+            {t('yleinen.tallenna')}
+          </OphButton>
+        )}
       </Box>
     </>
   );
