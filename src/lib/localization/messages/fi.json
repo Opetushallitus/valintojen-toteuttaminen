@@ -125,7 +125,9 @@
     "hae": "Hae hakuja",
     "haku-maara": "{count, plural, =0 {Hakuja ei löytynyt} one {1 haku} other {{count} hakua}}",
     "pienenna": "Pienennä hakukohteitten listaus",
-    "suurenna": "Suurenna hakukohteitten listaus"
+    "suurenna": "Suurenna hakukohteitten listaus",
+    "lisaa-hakuehtoja": "Lisää hakuehtoja",
+    "vahemman-hakuehtoja": "Vähemmän hakuehtoja"
   },
   "hakukohde": {
     "navigaatio": "Hakukohdevalitsin",
