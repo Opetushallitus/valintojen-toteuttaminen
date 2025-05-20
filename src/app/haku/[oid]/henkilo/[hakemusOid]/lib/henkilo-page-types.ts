@@ -12,6 +12,7 @@ export type ValinnanTulosLisatiedoilla = ValinnanTulosModel & {
 
 export type HenkilonHakukohdeTuloksilla = Hakukohde & {
   hakutoiveNumero: number;
+  readOnly: boolean;
   valinnanvaiheet?: LaskennanValinnanvaiheet;
   valinnanTulos?: ValinnanTulosLisatiedoilla;
   kokeet?: Array<ValintakoeAvaimet>;

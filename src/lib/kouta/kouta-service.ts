@@ -156,6 +156,19 @@ export async function getHakukohteet(
   return response.data.map(mapToHakukohde);
 }
 
+export async function getAllHakukohteet(
+  hakuOid: string,
+): Promise<Array<Hakukohde>> {
+  const hakukohteetUrl = getConfigUrl(
+    getConfiguration().routes.koutaInternal.hakukohteetUrl,
+    { hakuOid },
+  );
+  const response = await client.get<Array<HakukohdeResponseData>>(
+    hakukohteetUrl,
+  );
+  return response.data.map(mapToHakukohde);
+}
+
 export const getHakukohteetQueryOptions = (
   hakuOid: string,
   userPermissions: UserPermissions,

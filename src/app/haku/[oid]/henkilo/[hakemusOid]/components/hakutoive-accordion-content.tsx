@@ -93,7 +93,7 @@ export const HakutoiveAccordionContent = ({
             <TableCell>
               <div>{t(`tuloksenTila.${jonosija.tuloksenTila}`)}</div>
               {jonosija.tuloksenTila !==
-                TuloksenTila.HYVAKSYTTY_HARKINNANVARAISESTI && (
+                TuloksenTila.HYVAKSYTTY_HARKINNANVARAISESTI && !hakukohde.readOnly && (
                 <EditButton
                   onClick={() =>
                     showModal(ValintalaskentaEditGlobalModal, {
