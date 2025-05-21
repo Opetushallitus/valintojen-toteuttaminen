@@ -116,6 +116,11 @@ export const useHenkiloPageData = ({
   ] = useSuspenseQueries({
     queries: [
       {
+        /**
+         * Täytyy hakea tässä yhteydessä kaikki hakukohteet eikä normaalilla tavalla,
+         * jossa haetaan vain käyttäjälle näkyvät hakukohteet.
+         * Tämä siksi, että käyttäjällä voi olla lukuoikeus tiettyyn hakijan hakutoiveeseen,
+         * mutta ei kaikkiin hakijan hakutoiveisiin ja myös hakijan muut hakutoiveet pitää näyttää. */
         queryKey: ['getAllHakukohteet', hakuOid],
         queryFn: () => getAllHakukohteet(hakuOid),
       },
