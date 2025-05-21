@@ -1,20 +1,20 @@
 import { ValinnanTulosModel } from "@/lib/valinta-tulos-service/valinta-tulos-types";
 
-export const hakemusValinnanTulosFixture = ({ hakukohdeOid, valintatapajonoOid, hakemusOid, henkiloOid, julkaistavissa, vastaanottotila, ilmoittautumistila, valinnantila }: ValinnanTulosModel) => [
+export const hakemusValinnanTulosFixture = (valinnanTulokset: Array<ValinnanTulosModel>) => 
+    valinnanTulokset.map(vt => (
     {
         "valinnantulos": {
-            "hakukohdeOid": hakukohdeOid,
-            "valintatapajonoOid": valintatapajonoOid,
-            "hakemusOid": hakemusOid,
-            "henkiloOid": henkiloOid,
-            "valinnantila": valinnantila,
+            "hakukohdeOid": vt.hakukohdeOid,
+            "valintatapajonoOid": vt.valintatapajonoOid,
+            "hakemusOid": vt.hakemusOid,
+            "henkiloOid": vt.henkiloOid,
+            "valinnantila": vt.valinnantila,
             "ehdollisestiHyvaksyttavissa": false,
-            "julkaistavissa": julkaistavissa,
+            "julkaistavissa": vt.julkaistavissa,
             "hyvaksyttyVarasijalta": false,
             "hyvaksyPeruuntunut": false,
-            "vastaanottotila": vastaanottotila,
-            "ilmoittautumistila": ilmoittautumistila,
+            "vastaanottotila": vt.vastaanottotila,
+            "ilmoittautumistila": vt.ilmoittautumistila,
         },
         "tilaHistoria": []
-    }
-]
+    }));

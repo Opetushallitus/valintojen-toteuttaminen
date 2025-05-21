@@ -14,6 +14,7 @@ import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBefo
 import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
 import { HakutoiveTitle } from '@/components/hakutoive-title';
 import { Range } from '@/components/range';
+import { getHakukohdeFullName } from '@/lib/kouta/kouta-service';
 
 const KokeenPistesyotto = ({
   hakija,
@@ -24,7 +25,7 @@ const KokeenPistesyotto = ({
   koe: ValintakoeAvaimet;
   hakukohde: HenkilonHakukohdeTuloksilla;
 }) => {
-  const { t } = useTranslations();
+  const { t, translateEntity } = useTranslations();
 
   const { addToast } = useToaster();
 
@@ -57,7 +58,7 @@ const KokeenPistesyotto = ({
 
   useConfirmChangesBeforeNavigation(isDirty);
 
-  const labelId = `${koe.tunniste}_label`;
+  const labelId = `${koe.tunniste}_label_${hakukohde.oid}`;
 
   return (
     <>
@@ -76,22 +77,28 @@ const KokeenPistesyotto = ({
           marginTop: 1.5,
           alignItems: 'flex-start',
         }}
-        aria-labelledby={labelId}
+        aria-label={t('henkilo.koe-tunnus-hakukohde', {
+          koe: koe.kuvaus,
+          hakukohde: getHakukohdeFullName(hakukohde, translateEntity),
+        })}
       >
         <KoeInputs
           hakemusOid={hakija.hakemusOid}
           koe={koe}
           pistesyottoActorRef={pistesyottoActorRef}
+          disabled={hakukohde.readOnly}
         />
-        <OphButton
-          variant="contained"
-          loading={isUpdating}
-          onClick={() => {
-            savePistetiedot();
-          }}
-        >
-          {t('yleinen.tallenna')}
-        </OphButton>
+        {!hakukohde.readOnly && (
+          <OphButton
+            variant="contained"
+            loading={isUpdating}
+            onClick={() => {
+              savePistetiedot();
+            }}
+          >
+            {t('yleinen.tallenna')}
+          </OphButton>
+        )}
       </Box>
     </>
   );
@@ -114,7 +121,10 @@ export const HenkilonPistesyotto = ({
       <Typography variant="h3">{t('henkilo.pistesyotto')}</Typography>
       {hakukohteetKokeilla.map((hakukohde) => {
         return (
-          <Box key={hakukohde.oid}>
+          <Box
+            key={hakukohde.oid}
+            data-test-id={`henkilo-pistesyotto-hakukohde-${hakukohde.oid}`}
+          >
             <Typography
               variant="h4"
               component="h3"

@@ -26,19 +26,34 @@ import { NDASH } from '@/lib/constants';
 const HAKUKOHDE_OID = '1.2.246.562.20.00000000000000045105';
 const NUKETTAJA_HAKEMUS_OID = '1.2.246.562.11.00000000000001796027';
 
-const VALINNAN_TULOS_RESULT = hakemusValinnanTulosFixture({
-  hakukohdeOid: HAKUKOHDE_OID,
-  hakemusOid: NUKETTAJA_HAKEMUS_OID,
-  valintatapajonoOid: '17093042998533736417074016063604',
-  henkiloOid: '1.2.246.562.24.69259807406',
-  valinnantila: ValinnanTila.HYVAKSYTTY,
-  vastaanottotila: VastaanottoTila.VASTAANOTTANUT_SITOVASTI,
-  ilmoittautumistila: IlmoittautumisTila.EI_ILMOITTAUTUNUT,
-  julkaistavissa: true,
-  ehdollisestiHyvaksyttavissa: false,
-  hyvaksyttyVarasijalta: false,
-  hyvaksyPeruuntunut: false,
-});
+const VALINNAN_TULOS_RESULT = hakemusValinnanTulosFixture([
+  {
+    hakukohdeOid: HAKUKOHDE_OID,
+    hakemusOid: NUKETTAJA_HAKEMUS_OID,
+    valintatapajonoOid: '17093042998533736417074016063604',
+    henkiloOid: '1.2.246.562.24.69259807406',
+    valinnantila: ValinnanTila.HYVAKSYTTY,
+    vastaanottotila: VastaanottoTila.VASTAANOTTANUT_SITOVASTI,
+    ilmoittautumistila: IlmoittautumisTila.EI_ILMOITTAUTUNUT,
+    julkaistavissa: true,
+    ehdollisestiHyvaksyttavissa: false,
+    hyvaksyttyVarasijalta: false,
+    hyvaksyPeruuntunut: false,
+  },
+  {
+    hakukohdeOid: '1.2.246.562.20.00000000000000045103',
+    hakemusOid: NUKETTAJA_HAKEMUS_OID,
+    valintatapajonoOid: '17093042998533736417074016063604',
+    henkiloOid: '1.2.246.562.24.69259807406',
+    valinnantila: ValinnanTila.HYLATTY,
+    vastaanottotila: VastaanottoTila.PERUUTETTU,
+    ilmoittautumistila: IlmoittautumisTila.EI_ILMOITTAUTUNUT,
+    julkaistavissa: true,
+    ehdollisestiHyvaksyttavissa: false,
+    hyvaksyttyVarasijalta: false,
+    hyvaksyPeruuntunut: false,
+  },
+]);
 
 const VALINNAN_TULOS_BASE = VALINNAN_TULOS_RESULT[0].valinnantulos;
 
@@ -257,6 +272,115 @@ test('Näytetään valitun henkilön tiedot ja hakutoiveet ilman valintalaskenna
   ).toBeVisible();
 });
 
+test('Käyttäjä näkee muut hakutoiveet jos yksi hakukohteista on käyttäjän oikeuksissa', async ({
+  page,
+}) => {
+  await page.route(
+    '*/**/kayttooikeus-service/henkilo/current/omattiedot',
+    async (route) => {
+      const user = {
+        organisaatiot: [
+          {
+            organisaatioOid: '1.2.246.562.10.61176371294',
+            kayttooikeudet: [
+              { palvelu: 'VALINTOJENTOTEUTTAMINEN', oikeus: 'CRUD' },
+            ],
+          },
+        ],
+      };
+      await route.fulfill({ json: user });
+    },
+  );
+
+  await page.goto(
+    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo/1.2.246.562.11.00000000000001796027',
+  );
+
+  await expect(
+    page.getByRole('heading', {
+      name: 'Nukettaja Ruhtinas',
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByLabel('Hakemuksen tekninen tunniste (OID)'),
+  ).toHaveText('1.2.246.562.11.00000000000001796027');
+  await expect(page.getByLabel('Lähiosoite')).toHaveText(
+    'Kuoppamäki 905, 00100 HELSINKI',
+  );
+
+  const accordionContentEnabled = page.getByLabel(
+    '1. Finnish MAOL competition route, Natural Sciences and Mathematics, Science and Engineering, Bachelor and Master of Science (Technology) (3 + 2 yrs)',
+  );
+
+  await expect(accordionContentEnabled).toBeVisible();
+
+  let jonoRows = accordionContentEnabled.getByRole('row');
+
+  await expect(jonoRows).toHaveCount(2);
+
+  let firstRowTextContents = await jonoRows
+    .nth(0)
+    .getByRole('cell')
+    .allTextContents();
+  expect(firstRowTextContents).toEqual([
+    '',
+    'Jono 2Valintalaskenta tehty: 12.11.2024 17:53:49',
+    '15',
+    'HyväksyttävissäMuokkaa',
+    'HYLÄTTY',
+    'KylläMuokkaa',
+    'Peruutettu',
+    '',
+  ]);
+  let secondRowTextContents = await jonoRows
+    .nth(1)
+    .getByRole('cell')
+    .allTextContents();
+  expect(secondRowTextContents).toEqual([
+    '',
+    'Harkinnanvaraisten käsittelyvaiheen valintatapajonoValintalaskenta tehty: 12.11.2024 17:53:39',
+    '',
+    'HyväksyttävissäMuokkaa',
+    '',
+  ]);
+
+  const accordionContentDisabled = page.getByLabel(
+    '2. Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs)',
+  );
+
+  await expect(accordionContentDisabled).toBeVisible();
+
+  jonoRows = accordionContentDisabled.getByRole('row');
+
+  await expect(jonoRows).toHaveCount(2);
+
+  firstRowTextContents = await jonoRows
+    .nth(0)
+    .getByRole('cell')
+    .allTextContents();
+  expect(firstRowTextContents).toEqual([
+    '',
+    'Jono 2Valintalaskenta tehty: 12.11.2024 17:54:55',
+    '13',
+    'Hyväksyttävissä',
+    'HYVÄKSYTTY',
+    'Kyllä',
+    'Vastaanottanut sitovasti',
+    'Ei ilmoittautunut',
+  ]);
+  secondRowTextContents = await jonoRows
+    .nth(1)
+    .getByRole('cell')
+    .allTextContents();
+  expect(secondRowTextContents).toEqual([
+    '',
+    'Jono 1Valintalaskenta tehty: 12.11.2024 17:54:48',
+    '',
+    'Hyväksyttävissä',
+    '',
+  ]);
+});
+
 test('Näytetään henkilön hakutoiveet valintalaskennan ja sijoittelun tuloksilla', async ({
   page,
 }) => {
@@ -265,7 +389,7 @@ test('Näytetään henkilön hakutoiveet valintalaskennan ja sijoittelun tuloksi
   );
 
   const accordionContent = page.getByLabel(
-    'Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs)',
+    '2. Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs)',
   );
 
   await expect(accordionContent).toBeVisible();
@@ -367,7 +491,7 @@ test.describe('Muokkausmodaalit', () => {
     );
 
     const accordionContent = page.getByLabel(
-      'Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs)',
+      '2. Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs)',
     );
 
     await expect(accordionContent).toBeVisible();
@@ -402,7 +526,7 @@ test.describe('Muokkausmodaalit', () => {
     await expect(
       valintalaskentaMuokkausModal.getByLabel('Hakutoive'),
     ).toHaveText(
-      `1. Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs) ${NDASH} Tampereen yliopisto, Rakennetun ympäristön tiedekunta`,
+      `2. Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs) ${NDASH} Tampereen yliopisto, Rakennetun ympäristön tiedekunta`,
     );
     await expect(
       valintalaskentaMuokkausModal.getByLabel('Valintatapajono'),
@@ -521,7 +645,7 @@ test.describe('Muokkausmodaalit', () => {
     ).toHaveText('Nukettaja Ruhtinas');
 
     await expect(valintaMuokkausModal.getByLabel('Hakutoive')).toHaveText(
-      `1. Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs) ${NDASH} Tampereen yliopisto, Rakennetun ympäristön tiedekunta`,
+      `2. Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs) ${NDASH} Tampereen yliopisto, Rakennetun ympäristön tiedekunta`,
     );
 
     const julkaistavissaCheckbox = valintaMuokkausModal.getByRole('checkbox', {
@@ -674,7 +798,7 @@ test.describe('Muokkausmodaalit', () => {
 });
 
 test.describe('Pistesyöttö', () => {
-  test('Pistetyötössä näytetään oikeat arvot', async ({ page }) => {
+  test('Pistesyötössä näytetään oikeat arvot', async ({ page }) => {
     await page.goto(
       '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo/1.2.246.562.11.00000000000001796027',
     );
@@ -686,9 +810,12 @@ test.describe('Pistesyöttö', () => {
     });
     await expect(pistesyottoHeading).toBeVisible();
 
-    const nakkikoe = page.getByRole('region', {
-      name: 'Nakkikoe, oletko nakkisuojassa?',
-    });
+    const pisteSyottoHakukohde = page.locator(
+      `[data-test-id="henkilo-pistesyotto-hakukohde-${HAKUKOHDE_OID}"]`,
+    );
+    const nakkikoe = pisteSyottoHakukohde.getByLabel(
+      'Nakkikoe, oletko nakkisuojassa?',
+    );
 
     await expect(nakkikoe).toBeVisible();
 
@@ -705,9 +832,7 @@ test.describe('Pistesyöttö', () => {
 
     await expect(nakkiTallennaButton).toBeEnabled();
 
-    const koksakoe = page.getByRole('region', {
-      name: `Köksäkokeen arvosana 4${NDASH}10`,
-    });
+    const koksakoe = pisteSyottoHakukohde.getByLabel('Köksäkokeen arvosana');
 
     await expect(koksakoe).toBeVisible();
 
@@ -748,9 +873,12 @@ test.describe('Pistesyöttö', () => {
     });
     await expect(pistesyottoHeading).toBeVisible();
 
-    const nakkikoe = page.getByRole('region', {
-      name: 'Nakkikoe, oletko nakkisuojassa?',
-    });
+    const pisteSyottoHakukohde = page.locator(
+      `[data-test-id="henkilo-pistesyotto-hakukohde-${HAKUKOHDE_OID}"]`,
+    );
+    const nakkikoe = pisteSyottoHakukohde.getByLabel(
+      'Nakkikoe, oletko nakkisuojassa?',
+    );
 
     await selectOption({
       page,
@@ -803,9 +931,12 @@ test.describe('Pistesyöttö', () => {
       '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo/1.2.246.562.11.00000000000001796027',
     );
 
-    const nakkikoe = page.getByRole('region', {
-      name: 'Nakkikoe, oletko nakkisuojassa?',
-    });
+    const pisteSyottoHakukohde = page.locator(
+      `[data-test-id="henkilo-pistesyotto-hakukohde-${HAKUKOHDE_OID}"]`,
+    );
+    const nakkikoe = pisteSyottoHakukohde.getByLabel(
+      'Nakkikoe, oletko nakkisuojassa?',
+    );
 
     await selectOption({
       page,
@@ -849,6 +980,33 @@ const startLaskenta = async (page: Page) => {
 };
 
 test.describe('Valintalaskenta', () => {
+  test('valintalaskennan käynnistäminen on estetty jos käyttäjällä on vain lukuoikeudet', async ({
+    page,
+  }) => {
+    await page.route(
+      '*/**/kayttooikeus-service/henkilo/current/omattiedot',
+      async (route) => {
+        const user = {
+          organisaatiot: [
+            {
+              organisaatioOid: '1.2.246.562.10.61176371294',
+              kayttooikeudet: [
+                { palvelu: 'VALINTOJENTOTEUTTAMINEN', oikeus: 'READ' },
+              ],
+            },
+          ],
+        };
+        await route.fulfill({ json: user });
+      },
+    );
+
+    const valintalaskentaButton = page.getByRole('button', {
+      name: 'Suorita valintalaskenta',
+    });
+
+    await expect(valintalaskentaButton).toBeHidden();
+  });
+
   test('näytetään virhe, kun valintalaskennan käynnistäminen epäonnistuu', async ({
     page,
   }) => {

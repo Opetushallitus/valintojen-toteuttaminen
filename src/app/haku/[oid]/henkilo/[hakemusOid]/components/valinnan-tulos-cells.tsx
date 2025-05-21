@@ -64,7 +64,9 @@ export const ValinnanTulosCells = ({
         <div>
           {valinnanTulos.julkaistavissa ? t('yleinen.kylla') : t('yleinen.ei')}
         </div>
-        <EditButton onClick={openValinnanTilatEditModal} />
+        {!hakukohde.readOnly && (
+          <EditButton onClick={openValinnanTilatEditModal} />
+        )}
       </ValintaTableCell>
       <ValintaTableCell>
         <div>{t(`vastaanottotila.${valinnanTulos?.vastaanottotila}`)}</div>

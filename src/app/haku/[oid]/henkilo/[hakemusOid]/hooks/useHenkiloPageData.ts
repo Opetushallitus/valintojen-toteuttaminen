@@ -10,7 +10,7 @@ import {
   useSuspenseQuery,
 } from '@tanstack/react-query';
 import { getPostitoimipaikka } from '@/lib/koodisto/koodisto-service';
-import { getHakukohteetQueryOptions } from '@/lib/kouta/kouta-service';
+import { getAllHakukohteet } from '@/lib/kouta/kouta-service';
 import { useUserPermissions } from '@/hooks/useUserPermissions';
 import { filter, map, pipe, prop, sortBy } from 'remeda';
 import { hakemuksenValintalaskennanTuloksetQueryOptions } from '@/lib/valintalaskenta/valintalaskenta-service';
@@ -115,7 +115,15 @@ export const useHenkiloPageData = ({
     { data: kokeetByHakukohde },
   ] = useSuspenseQueries({
     queries: [
-      getHakukohteetQueryOptions(hakuOid, userPermissions),
+      {
+        /**
+         * Täytyy hakea tässä yhteydessä kaikki hakukohteet eikä normaalilla tavalla,
+         * jossa haetaan vain käyttäjälle näkyvät hakukohteet.
+         * Tämä siksi, että käyttäjällä voi olla lukuoikeus tiettyyn hakijan hakutoiveeseen,
+         * mutta ei kaikkiin hakijan hakutoiveisiin ja myös hakijan muut hakutoiveet pitää näyttää. */
+        queryKey: ['getAllHakukohteet', hakuOid],
+        queryFn: () => getAllHakukohteet(hakuOid),
+      },
       {
         queryKey: ['getPostitoimipaikka', hakemus.postinumero],
         queryFn: () => getPostitoimipaikka(hakemus.postinumero),
@@ -149,8 +157,15 @@ export const useHenkiloPageData = ({
               valinnanTulos.valintatapajonoOid,
           );
 
+        const readOnly = !(
+          userPermissions.hasOphCRUD ||
+          userPermissions.writeOrganizations.includes(hakukohde.tarjoajaOid) ||
+          userPermissions.crudOrganizations.includes(hakukohde.tarjoajaOid)
+        );
+
         return {
           ...hakukohde,
+          readOnly,
           hakutoiveNumero: index + 1,
           valinnanvaiheet: selectEditableValintalaskennanTulokset({
             valintalaskennanTulokset:
@@ -185,6 +200,7 @@ export const useHenkiloPageData = ({
     pisteetByHakukohde,
     hakemusOid,
     hakija.hakijaOid,
+    userPermissions,
   ]);
 
   return { hakukohteet, hakija, postitoimipaikka };

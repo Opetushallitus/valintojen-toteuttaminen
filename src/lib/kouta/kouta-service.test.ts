@@ -1,6 +1,8 @@
 import { expect, test, describe } from 'vitest';
-import { getOpetuskieliCode } from './kouta-service';
+import { getHakukohdeFullName, getOpetuskieliCode } from './kouta-service';
 import { Hakukohde } from './kouta-types';
+import { useTranslations } from '../localization/useTranslations';
+import { NDASH } from '../constants';
 
 describe('Kouta: getOpetuskieliCode hakukohteelle', () => {
   test('returns null as code if hakukohde has none', async () => {
@@ -27,5 +29,29 @@ describe('Kouta: getOpetuskieliCode hakukohteelle', () => {
     expect(
       getOpetuskieliCode({ opetuskielet: new Set(['en']) } as Hakukohde),
     ).toBe('en');
+  });
+});
+
+describe('Kouta. getHakukohdeFullName', () => {
+  test('returns full name with jarjestyspaikka', () => {
+    const { translateEntity } = useTranslations();
+    const hakukohde = {
+      nimi: { fi: 'Tekniikan tohtoritutkinto 3+2' },
+      jarjestyspaikkaHierarkiaNimi: { fi: 'Otaniemen kampus' },
+    } as Hakukohde;
+    expect(getHakukohdeFullName(hakukohde, translateEntity)).toBe(
+      `Tekniikan tohtoritutkinto 3+2 ${NDASH} Otaniemen kampus`,
+    );
+  });
+
+  test('returns full name with jarjestyspaikka after hakukohde name', () => {
+    const { translateEntity } = useTranslations();
+    const hakukohde = {
+      nimi: { fi: 'Tekniikan tohtoritutkinto 3+2' },
+      jarjestyspaikkaHierarkiaNimi: { fi: 'Otaniemen kampus' },
+    } as Hakukohde;
+    expect(getHakukohdeFullName(hakukohde, translateEntity, true)).toBe(
+      'Otaniemen kampus, Tekniikan tohtoritutkinto 3+2',
+    );
   });
 });

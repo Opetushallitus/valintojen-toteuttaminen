@@ -25,6 +25,7 @@ export type KoeInputsProps = {
   koe: ValintakoeAvaimet;
   pistesyottoActorRef: PistesyottoActorRef;
   naytaVainLaskentaanVaikuttavat?: boolean;
+  disabled?: boolean;
 };
 
 const getArvoOptions = (koe: ValintakoeAvaimet, t: TFunction) => {
@@ -166,6 +167,7 @@ export const KoeInputs = ({
   koe,
   pistesyottoActorRef,
   naytaVainLaskentaanVaikuttavat,
+  disabled,
 }: KoeInputsProps) => {
   const { t } = useTranslations();
   const { onKoeChange, isUpdating } =
@@ -180,7 +182,7 @@ export const KoeInputs = ({
     <KoeInputsStateless
       hakemusOid={hakemusOid}
       koe={koe}
-      disabled={isUpdating}
+      disabled={disabled || isUpdating}
       osallistuminen={osallistuminen}
       onChange={onKoeChange}
       arvo={arvo}

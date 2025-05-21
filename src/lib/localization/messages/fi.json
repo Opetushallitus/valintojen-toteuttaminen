@@ -551,7 +551,8 @@
     "muokkaa-valintaa": "Muokkaa valintaa",
     "valinta-save-error": "Valinnan tietojen tallentaminen epäonnistui",
     "valinta-save-success": "Valinnan tietojen tallentaminen onnistui",
-    "pistesyotto": "Pistesyöttö"
+    "pistesyotto": "Pistesyöttö",
+    "koe-tunnus-hakukohde": "{koe} hakukohteelle {hakukohde}"
   },
   "kirjetyypit": {
     "hyvaksymiskirje": "Hyväksymiskirje",
