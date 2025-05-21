@@ -1,6 +1,9 @@
 'use client';
 import { useUserPermissions } from '@/hooks/useUserPermissions';
-import { getHakukohteetQueryOptions } from '@/lib/kouta/kouta-service';
+import {
+  getHakukohdeFullName,
+  getHakukohteetQueryOptions,
+} from '@/lib/kouta/kouta-service';
 import { getValintaryhmat } from '@/lib/valintaperusteet/valintaperusteet-service';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import {
@@ -155,13 +158,6 @@ export const ValintaryhmaContent = ({
   }, [valittuRyhma, valintaryhmat]);
 
   const mappedHakukohteet = useMemo(() => {
-    function getHakukohdeFullName(hakukohde: Hakukohde) {
-      const jarjestysPaikka = hakukohde.jarjestyspaikkaHierarkiaNimi
-        ? `${translateEntity(hakukohde.jarjestyspaikkaHierarkiaNimi)}, `
-        : '';
-      return jarjestysPaikka + translateEntity(hakukohde.nimi);
-    }
-
     function mapHakukohteet(valintaryhma: ValintaryhmaHakukohteilla) {
       return findHakukohteetRecursively(valintaryhma)
         .map((oid) => {
@@ -183,7 +179,7 @@ export const ValintaryhmaContent = ({
     return sortBy(
       mapHakukohteet(valittuRyhma).map((hakukohde) => ({
         oid: hakukohde.oid,
-        name: getHakukohdeFullName(hakukohde),
+        name: getHakukohdeFullName(hakukohde, translateEntity, true),
         link: `kouta/hakukohde/${hakukohde.oid}`,
         laskentaValmistunut: findLaskentaValmistunut(hakukohde),
       })),

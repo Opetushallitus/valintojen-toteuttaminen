@@ -345,7 +345,7 @@ test('Käyttäjä näkee muut hakutoiveet jos yksi hakukohteista on käyttäjän
   ]);
 
   const accordionContentDisabled = page.getByLabel(
-    'Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs)',
+    '2. Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs)',
   );
 
   await expect(accordionContentDisabled).toBeVisible();
@@ -389,7 +389,7 @@ test('Näytetään henkilön hakutoiveet valintalaskennan ja sijoittelun tuloksi
   );
 
   const accordionContent = page.getByLabel(
-    'Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs)',
+    '2. Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs)',
   );
 
   await expect(accordionContent).toBeVisible();
@@ -491,7 +491,7 @@ test.describe('Muokkausmodaalit', () => {
     );
 
     const accordionContent = page.getByLabel(
-      'Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs)',
+      '2. Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs)',
     );
 
     await expect(accordionContent).toBeVisible();
@@ -526,7 +526,7 @@ test.describe('Muokkausmodaalit', () => {
     await expect(
       valintalaskentaMuokkausModal.getByLabel('Hakutoive'),
     ).toHaveText(
-      `1. Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs) ${NDASH} Tampereen yliopisto, Rakennetun ympäristön tiedekunta`,
+      `2. Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs) ${NDASH} Tampereen yliopisto, Rakennetun ympäristön tiedekunta`,
     );
     await expect(
       valintalaskentaMuokkausModal.getByLabel('Valintatapajono'),
@@ -645,7 +645,7 @@ test.describe('Muokkausmodaalit', () => {
     ).toHaveText('Nukettaja Ruhtinas');
 
     await expect(valintaMuokkausModal.getByLabel('Hakutoive')).toHaveText(
-      `1. Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs) ${NDASH} Tampereen yliopisto, Rakennetun ympäristön tiedekunta`,
+      `2. Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs) ${NDASH} Tampereen yliopisto, Rakennetun ympäristön tiedekunta`,
     );
 
     const julkaistavissaCheckbox = valintaMuokkausModal.getByRole('checkbox', {
@@ -798,7 +798,7 @@ test.describe('Muokkausmodaalit', () => {
 });
 
 test.describe('Pistesyöttö', () => {
-  test('Pistetyötössä näytetään oikeat arvot', async ({ page }) => {
+  test('Pistesyötössä näytetään oikeat arvot', async ({ page }) => {
     await page.goto(
       '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo/1.2.246.562.11.00000000000001796027',
     );
@@ -810,9 +810,12 @@ test.describe('Pistesyöttö', () => {
     });
     await expect(pistesyottoHeading).toBeVisible();
 
-    const nakkikoe = page.getByRole('region', {
-      name: 'Nakkikoe, oletko nakkisuojassa?',
-    });
+    const pisteSyottoHakukohde = page.locator(
+      `[data-test-id="henkilo-pistesyotto-hakukohde-${HAKUKOHDE_OID}"]`,
+    );
+    const nakkikoe = pisteSyottoHakukohde.getByLabel(
+      'Nakkikoe, oletko nakkisuojassa?',
+    );
 
     await expect(nakkikoe).toBeVisible();
 
@@ -829,9 +832,7 @@ test.describe('Pistesyöttö', () => {
 
     await expect(nakkiTallennaButton).toBeEnabled();
 
-    const koksakoe = page.getByRole('region', {
-      name: `Köksäkokeen arvosana 4${NDASH}10`,
-    });
+    const koksakoe = pisteSyottoHakukohde.getByLabel('Köksäkokeen arvosana');
 
     await expect(koksakoe).toBeVisible();
 
@@ -872,9 +873,12 @@ test.describe('Pistesyöttö', () => {
     });
     await expect(pistesyottoHeading).toBeVisible();
 
-    const nakkikoe = page.getByRole('region', {
-      name: 'Nakkikoe, oletko nakkisuojassa?',
-    });
+    const pisteSyottoHakukohde = page.locator(
+      `[data-test-id="henkilo-pistesyotto-hakukohde-${HAKUKOHDE_OID}"]`,
+    );
+    const nakkikoe = pisteSyottoHakukohde.getByLabel(
+      'Nakkikoe, oletko nakkisuojassa?',
+    );
 
     await selectOption({
       page,
@@ -927,9 +931,12 @@ test.describe('Pistesyöttö', () => {
       '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo/1.2.246.562.11.00000000000001796027',
     );
 
-    const nakkikoe = page.getByRole('region', {
-      name: 'Nakkikoe, oletko nakkisuojassa?',
-    });
+    const pisteSyottoHakukohde = page.locator(
+      `[data-test-id="henkilo-pistesyotto-hakukohde-${HAKUKOHDE_OID}"]`,
+    );
+    const nakkikoe = pisteSyottoHakukohde.getByLabel(
+      'Nakkikoe, oletko nakkisuojassa?',
+    );
 
     await selectOption({
       page,

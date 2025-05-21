@@ -7,6 +7,7 @@ import { UserPermissions } from '../permissions';
 import { addProp, pick, pipe } from 'remeda';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
 import { getConfigUrl } from '@/lib/configuration/configuration-utils';
+import { NDASH } from '../constants';
 
 type HakuResponseData = {
   oid: string;
@@ -163,9 +164,8 @@ export async function getAllHakukohteet(
     getConfiguration().routes.koutaInternal.hakukohteetUrl,
     { hakuOid },
   );
-  const response = await client.get<Array<HakukohdeResponseData>>(
-    hakukohteetUrl,
-  );
+  const response =
+    await client.get<Array<HakukohdeResponseData>>(hakukohteetUrl);
   return response.data.map(mapToHakukohde);
 }
 
@@ -184,4 +184,17 @@ export async function getHakukohde(hakukohdeOid: string): Promise<Hakukohde> {
   );
   const response = await client.get<HakukohdeResponseData>(hakukohdeUrl);
   return mapToHakukohde(response.data);
+}
+
+export function getHakukohdeFullName(
+  hakukohde: Hakukohde,
+  translateEntity: (translateable?: TranslatedName) => string,
+  organizationFirst: boolean = false,
+): string {
+  const jarjestysPaikka = hakukohde.jarjestyspaikkaHierarkiaNimi
+    ? `${translateEntity(hakukohde.jarjestyspaikkaHierarkiaNimi)}`
+    : '';
+  return organizationFirst
+    ? `${jarjestysPaikka}, ${translateEntity(hakukohde.nimi)}`
+    : `${translateEntity(hakukohde.nimi)} ${NDASH} ${jarjestysPaikka}`;
 }
