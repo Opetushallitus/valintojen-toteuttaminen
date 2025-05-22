@@ -1245,3 +1245,14 @@ export const getHakukohteidenSuodatustiedot = async ({
   );
   return response.data;
 };
+
+export async function getHaunParametrit(hakuOid: string) {
+  const configuration = getConfiguration();
+  const response = await client.get<{ koetulostentallennus: boolean }>(
+    getConfigUrl(
+      configuration.routes.valintalaskentakoostepalvelu.haunParametrit,
+      { hakuOid },
+    ),
+  );
+  return { pistesyottoEnabled: response?.data?.koetulostentallennus };
+}

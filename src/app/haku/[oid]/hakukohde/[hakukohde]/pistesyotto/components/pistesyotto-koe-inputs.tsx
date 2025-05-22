@@ -5,6 +5,7 @@ export const PisteSyottoKoeInputs = ({
   hakemusOid,
   koe,
   pistesyottoActorRef,
+  disabled,
 }: KoeInputsProps) => {
   const { naytaVainLaskentaanVaikuttavat } = usePisteSyottoSearchParams();
 
@@ -14,6 +15,7 @@ export const PisteSyottoKoeInputs = ({
       koe={koe}
       pistesyottoActorRef={pistesyottoActorRef}
       naytaVainLaskentaanVaikuttavat={naytaVainLaskentaanVaikuttavat}
+      disabled={disabled}
     />
   );
 };

@@ -19,12 +19,14 @@ export const PisteSyottoTable = ({
   sort,
   kokeet,
   pistesyottoActorRef,
+  pisteSyottoDisabled,
 }: {
   pistetiedot: Array<HakemuksenPistetiedot>;
   sort: string;
   setSort: (newSort: string) => void;
   kokeet: Array<ValintakoeAvaimet>;
   pistesyottoActorRef: PistesyottoActorRef;
+  pisteSyottoDisabled: boolean;
 }) => {
   const { t } = useTranslations();
 
@@ -45,6 +47,7 @@ export const PisteSyottoTable = ({
               hakemusOid={props.hakemusOid}
               koe={koe}
               pistesyottoActorRef={pistesyottoActorRef}
+              disabled={pisteSyottoDisabled}
             />
           );
         },
@@ -52,7 +55,7 @@ export const PisteSyottoTable = ({
       });
     });
     return [stickyHakijaColumn, ...koeColumns];
-  }, [kokeet, t, pistesyottoActorRef]);
+  }, [kokeet, t, pistesyottoActorRef, pisteSyottoDisabled]);
 
   return (
     <ListTable

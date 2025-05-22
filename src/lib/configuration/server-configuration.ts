@@ -96,6 +96,7 @@ export async function buildConfiguration() {
         startImportErillishakuValinnanTulosUrl: `${domain}/valintalaskentakoostepalvelu/resources/erillishaku/tuonti/ui`,
         startExportErillishakuValinnanTulosExcelUrl: `${domain}/valintalaskentakoostepalvelu/resources/erillishaku/vienti`,
         hakukohteidenSuodatustiedotUrl: `${domain}/valintalaskentakoostepalvelu/resources/valintojen-toteuttaminen/haku/{hakuOid}/valintatiedot-hakukohteittain`,
+        haunParametrit: `${domain}/valintalaskentakoostepalvelu/resources/parametrit/{hakuOid}`,
       },
       valintaTulosService: {
         valintaTulosServiceLogin: `${domain}/valinta-tulos-service/auth/login`,
