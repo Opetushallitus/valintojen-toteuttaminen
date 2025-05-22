@@ -132,6 +132,12 @@ export default async function playwrightSetup() {
       return modifyResponse(response, VASTAANOTTOTILAT_HAKIJOILLE);
     } else if (
       request.url?.includes(
+        'valintalaskentakoostepalvelu/resources/parametrit/',
+      )
+    ) {
+      return modifyResponse(response, { koetulostentallennus: true });
+    } else if (
+      request.url?.includes(
         'valintaperusteet-service/resources/hakukohde/avaimet',
       )
     ) {
