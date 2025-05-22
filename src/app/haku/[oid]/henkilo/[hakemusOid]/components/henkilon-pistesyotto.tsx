@@ -15,6 +15,7 @@ import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
 import { HakutoiveTitle } from '@/components/hakutoive-title';
 import { Range } from '@/components/range';
 import { getHakukohdeFullName } from '@/lib/kouta/kouta-service';
+import { useHaunParametrit } from '@/lib/valintalaskentakoostepalvelu/useHaunParametrit';
 
 const KokeenPistesyotto = ({
   hakija,
@@ -58,6 +59,10 @@ const KokeenPistesyotto = ({
 
   useConfirmChangesBeforeNavigation(isDirty);
 
+  const { data: haunParametrit } = useHaunParametrit({
+    hakuOid: hakukohde.hakuOid,
+  });
+
   const labelId = `${koe.tunniste}_label_${hakukohde.oid}`;
 
   return (
@@ -86,12 +91,13 @@ const KokeenPistesyotto = ({
           hakemusOid={hakija.hakemusOid}
           koe={koe}
           pistesyottoActorRef={pistesyottoActorRef}
-          disabled={hakukohde.readOnly}
+          disabled={hakukohde.readOnly || !haunParametrit.pistesyottoEnabled}
         />
         {!hakukohde.readOnly && (
           <OphButton
             variant="contained"
             loading={isUpdating}
+            disabled={!haunParametrit.pistesyottoEnabled}
             onClick={() => {
               savePistetiedot();
             }}

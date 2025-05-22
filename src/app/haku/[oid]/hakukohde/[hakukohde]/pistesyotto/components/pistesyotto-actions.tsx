@@ -9,8 +9,10 @@ export const PisteSyottoActions = ({
   hakuOid,
   hakukohdeOid,
   isUpdating,
+  pisteSyottoDisabled,
 }: KoutaOidParams & {
   isUpdating: boolean;
+  pisteSyottoDisabled: boolean;
 }) => {
   const { t } = useTranslations();
 
@@ -22,7 +24,11 @@ export const PisteSyottoActions = ({
         alignItems: 'flex-start',
       }}
     >
-      <OphButton type="submit" variant="contained" disabled={isUpdating}>
+      <OphButton
+        type="submit"
+        variant="contained"
+        disabled={isUpdating || pisteSyottoDisabled}
+      >
         {t('yleinen.tallenna')}
       </OphButton>
       {isUpdating && (

@@ -9,8 +9,27 @@ import {
   startExcelImport,
 } from './playwright-utils';
 
+async function goToPisteSyotto(page: Page) {
+  await page.goto(
+    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/pistesyotto',
+  );
+  await expectAllSpinnersHidden(page);
+  await expect(page.locator('h1')).toHaveText(
+    '> Tampere University Separate Admission/ Finnish MAOL Competition Route 2024',
+  );
+}
+
+test.beforeEach(async ({ page }) => await goToPisteSyotto(page));
+
+async function selectTila(page: Page, option: string) {
+  await selectOption({
+    page,
+    name: 'Tila',
+    option,
+  });
+}
+
 test('Näyttää pistesyotön', async ({ page }) => {
-  await goToPisteSyotto(page);
   const headrow = page.locator('[data-test-id="pistesyotto-form"] thead tr');
   await checkRow(
     headrow,
@@ -25,25 +44,47 @@ test('Näyttää pistesyotön', async ({ page }) => {
   await checkRow(rows.nth(3), ['Purukumi Puru', '', 'Valitse...Merkitsemättä']);
 });
 
-async function selectTila(page: Page, option: string) {
-  await selectOption({
-    page,
-    name: 'Tila',
-    option,
-  });
-}
-
-async function goToPisteSyotto(page: Page) {
-  await page.goto(
-    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/pistesyotto',
+test('Pistesyötössä muokkaus ei ole sallittu jos koetulosten tallentaminen ei ole sallittu', async ({
+  page,
+}) => {
+  await page.route(
+    '*/**/valintalaskentakoostepalvelu/resources/parametrit/1.2.246.562.29.00000000000000045102',
+    async (route) =>
+      await route.fulfill({
+        status: 200,
+        json: { koetulostentallennus: false },
+      }),
   );
-  await expectAllSpinnersHidden(page);
-  await expect(page.locator('h1')).toHaveText(
-    '> Tampere University Separate Admission/ Finnish MAOL Competition Route 2024',
+  await page.route(
+    '*/**/kayttooikeus-service/henkilo/current/omattiedot',
+    async (route) => {
+      const user = {
+        organisaatiot: [
+          {
+            organisaatioOid: '1.2.246.562.10.61176371294',
+            kayttooikeudet: [
+              { palvelu: 'VALINTOJENTOTEUTTAMINEN', oikeus: 'CRUD' },
+            ],
+          },
+        ],
+      };
+      await route.fulfill({ json: user });
+    },
   );
-}
 
-test.beforeEach(async ({ page }) => await goToPisteSyotto(page));
+  await goToPisteSyotto(page);
+
+  const rows = page.locator('[data-test-id="pistesyotto-form"] tbody tr');
+  await expect(rows).toHaveCount(4);
+  await checkRow(rows.nth(0), ['Dacula Kreivi', '', 'EiOsallistui']);
+  await checkRow(rows.nth(1), ['Hui Haamu', '', 'Valitse...Merkitsemättä']);
+  await checkRow(rows.nth(2), ['Nukettaja Ruhtinas', '', 'KylläOsallistui']);
+  await checkRow(rows.nth(3), ['Purukumi Puru', '', 'Valitse...Merkitsemättä']);
+
+  await expect(
+    page.getByRole('row', { name: 'Dacula Kreivi' }).getByLabel('Pisteet'),
+  ).toBeDisabled();
+});
 
 test('Näyttää pistesyotöt kaikilla kokeilla', async ({ page }) => {
   await page.getByLabel('Näytä vain laskentaan').click();

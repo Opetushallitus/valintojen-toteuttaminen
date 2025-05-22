@@ -11,6 +11,7 @@ import { HakukohteenPistetiedot } from '@/lib/types/laskenta-types';
 import { FormBox } from '@/components/form-box';
 import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBeforeNavigation';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
+import { useHaunParametrit } from '@/lib/valintalaskentakoostepalvelu/useHaunParametrit';
 
 export const PisteSyottoForm = ({
   hakuOid,
@@ -31,6 +32,8 @@ export const PisteSyottoForm = ({
     valintakokeet: pistetulokset.valintakokeet,
     addToast,
   });
+
+  const { data: haunParametrit } = useHaunParametrit({ hakuOid });
 
   useConfirmChangesBeforeNavigation(isDirty);
 
@@ -61,6 +64,7 @@ export const PisteSyottoForm = ({
         isUpdating={isUpdating}
         hakuOid={hakuOid}
         hakukohdeOid={hakukohdeOid}
+        pisteSyottoDisabled={!haunParametrit.pistesyottoEnabled}
       />
       <TablePaginationWrapper
         totalCount={results?.length ?? 0}
@@ -76,6 +80,7 @@ export const PisteSyottoForm = ({
           pistetiedot={pageResults}
           kokeet={koeResults}
           pistesyottoActorRef={pistesyottoActorRef}
+          pisteSyottoDisabled={!haunParametrit.pistesyottoEnabled}
         />
       </TablePaginationWrapper>
     </FormBox>
