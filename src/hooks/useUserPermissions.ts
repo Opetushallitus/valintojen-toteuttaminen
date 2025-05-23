@@ -37,9 +37,9 @@ const getUserPermissions = async (): Promise<UserPermissionsByService> => {
 export const hasOrganizationPermissions = (
   organizationOidPath: Array<string>,
   permission: Permission,
-  userPermissions: UserPermissions,
+  userPermissions?: UserPermissions,
 ) => {
-  if (userPermissions.hasOphCRUD) {
+  if (!userPermissions || userPermissions?.hasOphCRUD) {
     return true;
   }
 
