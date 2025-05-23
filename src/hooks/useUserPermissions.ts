@@ -40,7 +40,9 @@ export const hasOrganizationPermissions = (
   permission: Permission,
   userPermissions?: UserPermissions,
 ) => {
-  if (!userPermissions || userPermissions?.hasOphCRUD) {
+  if (!userPermissions) {
+    return false;
+  } else if (userPermissions?.hasOphCRUD) {
     return true;
   }
 

@@ -3,10 +3,7 @@ import {
   isKorkeakouluHaku,
 } from '@/lib/kouta/kouta-service';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
-import {
-  UserPermissionsByService,
-  VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY,
-} from '@/lib/permissions';
+import { UserPermissions } from '@/lib/permissions';
 import { isInRange, toFinnishDate } from '@/lib/time-utils';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import { hasOrganizationPermissions } from '@/hooks/useUserPermissions';
@@ -16,7 +13,7 @@ type VisibleFnProps = {
   hakukohde: Hakukohde;
   haunAsetukset: HaunAsetukset;
   usesValintalaskenta: boolean;
-  permissions: UserPermissionsByService;
+  permissions: UserPermissions;
   organizationOidPath: Array<string>;
 };
 
@@ -28,10 +25,10 @@ export type BasicTab = {
 
 const isValinnatAllowedForHaku = (
   haunAsetukset: HaunAsetukset,
-  permissions: UserPermissionsByService,
+  permissions: UserPermissions,
 ) => {
   return (
-    permissions[VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY].hasOphCRUD ||
+    permissions.hasOphCRUD ||
     isInRange(
       toFinnishDate(new Date()),
       haunAsetukset?.valinnatEstettyOppilaitosvirkailijoilta?.dateStart,
@@ -41,16 +38,18 @@ const isValinnatAllowedForHaku = (
 };
 
 export const TABS: Array<BasicTab> = [
-  { title: 'perustiedot.otsikko', route: 'perustiedot' },
+  {
+    title: 'perustiedot.otsikko',
+    route: 'perustiedot',
+    visibleFn: ({ permissions, organizationOidPath }) =>
+      hasOrganizationPermissions(organizationOidPath, 'READ', permissions),
+  },
   {
     title: 'hakeneet.otsikko',
     route: 'hakeneet',
     visibleFn: ({ haunAsetukset, permissions, organizationOidPath }) =>
-      hasOrganizationPermissions(
-        organizationOidPath,
-        'READ',
-        permissions[VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY],
-      ) && isValinnatAllowedForHaku(haunAsetukset, permissions),
+      hasOrganizationPermissions(organizationOidPath, 'READ', permissions) &&
+      isValinnatAllowedForHaku(haunAsetukset, permissions),
   },
   {
     title: 'valinnanhallinta.otsikko',
@@ -61,11 +60,7 @@ export const TABS: Array<BasicTab> = [
       usesValintalaskenta,
       organizationOidPath,
     }) =>
-      hasOrganizationPermissions(
-        organizationOidPath,
-        'CRUD',
-        permissions[VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY],
-      ) &&
+      hasOrganizationPermissions(organizationOidPath, 'CRUD', permissions) &&
       (haunAsetukset.sijoittelu || usesValintalaskenta) &&
       isValinnatAllowedForHaku(haunAsetukset, permissions),
   },
@@ -78,11 +73,7 @@ export const TABS: Array<BasicTab> = [
       usesValintalaskenta,
       organizationOidPath,
     }) =>
-      hasOrganizationPermissions(
-        organizationOidPath,
-        'READ',
-        permissions[VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY],
-      ) &&
+      hasOrganizationPermissions(organizationOidPath, 'READ', permissions) &&
       (haunAsetukset.sijoittelu || usesValintalaskenta) &&
       isValinnatAllowedForHaku(haunAsetukset, permissions),
   },
@@ -98,7 +89,7 @@ export const TABS: Array<BasicTab> = [
       hasOrganizationPermissions(
         organizationOidPath,
         'READ_UPDATE',
-        permissions[VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY],
+        permissions,
       ) &&
       (haunAsetukset.sijoittelu || usesValintalaskenta) &&
       isValinnatAllowedForHaku(haunAsetukset, permissions),
@@ -114,11 +105,7 @@ export const TABS: Array<BasicTab> = [
       usesValintalaskenta,
       organizationOidPath,
     }) =>
-      hasOrganizationPermissions(
-        organizationOidPath,
-        'READ',
-        permissions[VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY],
-      ) &&
+      hasOrganizationPermissions(organizationOidPath, 'READ', permissions) &&
       !isKorkeakouluHaku(haku) &&
       isHarkinnanvarainenHakukohde(hakukohde) &&
       (haunAsetukset.sijoittelu || usesValintalaskenta) &&
@@ -127,7 +114,14 @@ export const TABS: Array<BasicTab> = [
   {
     title: 'hakijaryhmat.otsikko',
     route: 'hakijaryhmat',
-    visibleFn: ({ haku, haunAsetukset, usesValintalaskenta, permissions }) =>
+    visibleFn: ({
+      haku,
+      haunAsetukset,
+      usesValintalaskenta,
+      permissions,
+      organizationOidPath,
+    }) =>
+      hasOrganizationPermissions(organizationOidPath, 'READ', permissions) &&
       isKorkeakouluHaku(haku) &&
       (haunAsetukset.sijoittelu || usesValintalaskenta) &&
       isValinnatAllowedForHaku(haunAsetukset, permissions),
@@ -135,21 +129,39 @@ export const TABS: Array<BasicTab> = [
   {
     title: 'valintalaskennan-tulokset.otsikko',
     route: 'valintalaskennan-tulokset',
-    visibleFn: ({ haunAsetukset, usesValintalaskenta, permissions }) =>
+    visibleFn: ({
+      haunAsetukset,
+      usesValintalaskenta,
+      permissions,
+      organizationOidPath,
+    }) =>
+      hasOrganizationPermissions(organizationOidPath, 'READ', permissions) &&
       (haunAsetukset.sijoittelu || usesValintalaskenta) &&
       isValinnatAllowedForHaku(haunAsetukset, permissions),
   },
   {
     title: 'sijoittelun-tulokset.otsikko',
     route: 'sijoittelun-tulokset',
-    visibleFn: ({ haunAsetukset, usesValintalaskenta, permissions }) =>
+    visibleFn: ({
+      haunAsetukset,
+      usesValintalaskenta,
+      permissions,
+      organizationOidPath,
+    }) =>
+      hasOrganizationPermissions(organizationOidPath, 'READ', permissions) &&
       (haunAsetukset.sijoittelu || usesValintalaskenta) &&
       isValinnatAllowedForHaku(haunAsetukset, permissions),
   },
   {
     title: 'valinnan-tulokset.otsikko',
     route: 'valinnan-tulokset',
-    visibleFn: ({ haunAsetukset, usesValintalaskenta, permissions }) =>
+    visibleFn: ({
+      haunAsetukset,
+      usesValintalaskenta,
+      permissions,
+      organizationOidPath,
+    }) =>
+      hasOrganizationPermissions(organizationOidPath, 'READ', permissions) &&
       !usesValintalaskenta &&
       !haunAsetukset.sijoittelu &&
       isValinnatAllowedForHaku(haunAsetukset, permissions),

@@ -12,7 +12,6 @@ import { useQueries, useQueryClient } from '@tanstack/react-query';
 import { usePathname } from 'next/navigation';
 import { onkoHaullaValintaryhma } from '@/lib/valintaperusteet/valintaperusteet-service';
 import { hakuQueryOptions } from '@/lib/kouta/useHaku';
-import { VALINTAPERUSTEET_SERVICE_KEY } from '@/lib/permissions';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { FullClientSpinner } from '@/components/client-spinner';
 
@@ -69,14 +68,14 @@ const HakuTabsContent = ({ hakuOid }: { hakuOid: string }) => {
     ],
   });
 
-  const hasCRUDValinnat = useHasOrganizationPermissions(
+  const hasValinnatCRUD = useHasOrganizationPermissions(
     haku?.organisaatioOid,
     'CRUD',
   );
-  const hasCRUDValintaperusteet = useHasOrganizationPermissions(
+
+  const hasValinnatRead = useHasOrganizationPermissions(
     haku?.organisaatioOid,
-    'CRUD',
-    VALINTAPERUSTEET_SERVICE_KEY,
+    'READ',
   );
 
   return (
@@ -90,13 +89,13 @@ const HakuTabsContent = ({ hakuOid }: { hakuOid: string }) => {
       }}
       aria-label={t('haku-tabs.navigaatio')}
     >
-      <TabButton tabName="hakukohde" hakuOid={hakuOid} />
-      {hasCRUDValinnat && <TabButton tabName="henkilo" hakuOid={hakuOid} />}
-      {hasValintaryhma && hasCRUDValinnat && (
+      {hasValinnatRead && <TabButton tabName="hakukohde" hakuOid={hakuOid} />}
+      {hasValinnatRead && <TabButton tabName="henkilo" hakuOid={hakuOid} />}
+      {hasValintaryhma && hasValinnatCRUD && (
         <TabButton tabName="valintaryhma" hakuOid={hakuOid} />
       )}
       <Box sx={{ flexGrow: 2 }}></Box>
-      {hasCRUDValintaperusteet && (
+      {hasValinnatCRUD && (
         <TabButton tabName="yhteisvalinnan-hallinta" hakuOid={hakuOid} />
       )}
     </Stack>

@@ -2,10 +2,7 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { getVisibleTabs } from './hakukohde-tab-utils';
 import { Haku, Hakukohde, Tila } from '@/lib/kouta/kouta-types';
 import { toFinnishDate } from '@/lib/time-utils';
-import {
-  UserPermissionsByService,
-  VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY,
-} from '@/lib/permissions';
+import { UserPermissions } from '@/lib/permissions';
 import { OPH_ORGANIZATION_OID } from './constants';
 
 const HAKU_BASE: Haku = {
@@ -40,40 +37,32 @@ const HAKUKOHDE_BASE: Hakukohde = {
   opetuskielet: new Set(['fi']),
 };
 
-const OPH_PERMISSIONS: UserPermissionsByService = {
-  [VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY]: {
-    hasOphCRUD: true,
-    readOrganizations: [OPH_ORGANIZATION_OID],
-    writeOrganizations: [OPH_ORGANIZATION_OID],
-    crudOrganizations: [OPH_ORGANIZATION_OID],
-  },
+const OPH_PERMISSIONS: UserPermissions = {
+  hasOphCRUD: true,
+  readOrganizations: [OPH_ORGANIZATION_OID],
+  writeOrganizations: [OPH_ORGANIZATION_OID],
+  crudOrganizations: [OPH_ORGANIZATION_OID],
 };
 
-const CRUD_PERMISSIONS: UserPermissionsByService = {
-  [VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY]: {
-    hasOphCRUD: false,
-    readOrganizations: [HAKUKOHDE_BASE.organisaatioOid],
-    writeOrganizations: [HAKUKOHDE_BASE.organisaatioOid],
-    crudOrganizations: [HAKUKOHDE_BASE.organisaatioOid],
-  },
+const CRUD_PERMISSIONS: UserPermissions = {
+  hasOphCRUD: false,
+  readOrganizations: [HAKUKOHDE_BASE.tarjoajaOid],
+  writeOrganizations: [HAKUKOHDE_BASE.tarjoajaOid],
+  crudOrganizations: [HAKUKOHDE_BASE.tarjoajaOid],
 };
 
-const WRITE_PERMISSIONS: UserPermissionsByService = {
-  [VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY]: {
-    hasOphCRUD: false,
-    readOrganizations: [HAKUKOHDE_BASE.organisaatioOid],
-    writeOrganizations: [HAKUKOHDE_BASE.organisaatioOid],
-    crudOrganizations: [],
-  },
+const WRITE_PERMISSIONS: UserPermissions = {
+  hasOphCRUD: false,
+  readOrganizations: [HAKUKOHDE_BASE.tarjoajaOid],
+  writeOrganizations: [HAKUKOHDE_BASE.tarjoajaOid],
+  crudOrganizations: [],
 };
 
-const READ_PERMISSIONS: UserPermissionsByService = {
-  [VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY]: {
-    hasOphCRUD: false,
-    readOrganizations: [HAKUKOHDE_BASE.organisaatioOid],
-    writeOrganizations: [],
-    crudOrganizations: [],
-  },
+const READ_PERMISSIONS: UserPermissions = {
+  hasOphCRUD: false,
+  readOrganizations: [HAKUKOHDE_BASE.tarjoajaOid],
+  writeOrganizations: [],
+  crudOrganizations: [],
 };
 
 describe('getVisibleTabs', () => {
@@ -94,7 +83,7 @@ describe('getVisibleTabs', () => {
       haunAsetukset: { sijoittelu: true },
       usesValintalaskenta: true,
       permissions: OPH_PERMISSIONS,
-      organizationOidPath: [HAKUKOHDE_BASE.organisaatioOid],
+      organizationOidPath: [HAKUKOHDE_BASE.tarjoajaOid],
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -122,7 +111,7 @@ describe('getVisibleTabs', () => {
       haunAsetukset: { sijoittelu: true },
       usesValintalaskenta: true,
       permissions: OPH_PERMISSIONS,
-      organizationOidPath: [HAKUKOHDE_BASE.organisaatioOid],
+      organizationOidPath: [HAKUKOHDE_BASE.tarjoajaOid],
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -150,7 +139,7 @@ describe('getVisibleTabs', () => {
       haunAsetukset: { sijoittelu: true },
       usesValintalaskenta: true,
       permissions: OPH_PERMISSIONS,
-      organizationOidPath: [HAKUKOHDE_BASE.organisaatioOid],
+      organizationOidPath: [HAKUKOHDE_BASE.tarjoajaOid],
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -173,7 +162,7 @@ describe('getVisibleTabs', () => {
       haunAsetukset: { sijoittelu: false },
       usesValintalaskenta: false,
       permissions: OPH_PERMISSIONS,
-      organizationOidPath: [HAKUKOHDE_BASE.organisaatioOid],
+      organizationOidPath: [HAKUKOHDE_BASE.tarjoajaOid],
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -192,7 +181,7 @@ describe('getVisibleTabs', () => {
       haunAsetukset: { sijoittelu: false },
       usesValintalaskenta: true,
       permissions: OPH_PERMISSIONS,
-      organizationOidPath: [HAKUKOHDE_BASE.organisaatioOid],
+      organizationOidPath: [HAKUKOHDE_BASE.tarjoajaOid],
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -219,7 +208,7 @@ describe('getVisibleTabs', () => {
       },
       usesValintalaskenta: true,
       permissions: OPH_PERMISSIONS,
-      organizationOidPath: [HAKUKOHDE_BASE.organisaatioOid],
+      organizationOidPath: [HAKUKOHDE_BASE.tarjoajaOid],
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -245,7 +234,7 @@ describe('getVisibleTabs', () => {
       },
       usesValintalaskenta: true,
       permissions: CRUD_PERMISSIONS,
-      organizationOidPath: [HAKUKOHDE_BASE.organisaatioOid],
+      organizationOidPath: [HAKUKOHDE_BASE.tarjoajaOid],
     });
     expect(tabs.map((t) => t.route)).toEqual(['perustiedot']);
   });
@@ -259,7 +248,7 @@ describe('getVisibleTabs', () => {
       },
       usesValintalaskenta: false,
       permissions: READ_PERMISSIONS,
-      organizationOidPath: [HAKUKOHDE_BASE.organisaatioOid],
+      organizationOidPath: [HAKUKOHDE_BASE.tarjoajaOid],
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -277,7 +266,7 @@ describe('getVisibleTabs', () => {
       },
       usesValintalaskenta: true,
       permissions: READ_PERMISSIONS,
-      organizationOidPath: [HAKUKOHDE_BASE.organisaatioOid],
+      organizationOidPath: [HAKUKOHDE_BASE.tarjoajaOid],
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -297,7 +286,7 @@ describe('getVisibleTabs', () => {
       },
       usesValintalaskenta: true,
       permissions: READ_PERMISSIONS,
-      organizationOidPath: [HAKUKOHDE_BASE.organisaatioOid],
+      organizationOidPath: [HAKUKOHDE_BASE.tarjoajaOid],
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -317,7 +306,7 @@ describe('getVisibleTabs', () => {
       },
       usesValintalaskenta: true,
       permissions: READ_PERMISSIONS,
-      organizationOidPath: [HAKUKOHDE_BASE.organisaatioOid],
+      organizationOidPath: [HAKUKOHDE_BASE.tarjoajaOid],
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -337,7 +326,7 @@ describe('getVisibleTabs', () => {
       },
       usesValintalaskenta: false,
       permissions: WRITE_PERMISSIONS,
-      organizationOidPath: [HAKUKOHDE_BASE.organisaatioOid],
+      organizationOidPath: [HAKUKOHDE_BASE.tarjoajaOid],
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -355,7 +344,7 @@ describe('getVisibleTabs', () => {
       },
       usesValintalaskenta: false,
       permissions: WRITE_PERMISSIONS,
-      organizationOidPath: [HAKUKOHDE_BASE.organisaatioOid],
+      organizationOidPath: [HAKUKOHDE_BASE.tarjoajaOid],
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
