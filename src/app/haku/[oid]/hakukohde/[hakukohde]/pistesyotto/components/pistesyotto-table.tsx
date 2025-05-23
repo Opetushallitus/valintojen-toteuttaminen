@@ -1,5 +1,8 @@
 'use client';
-import { HakemuksenPistetiedot } from '@/lib/types/laskenta-types';
+import {
+  HakemuksenPistetiedot,
+  ValintakoeOsallistuminenTulos,
+} from '@/lib/types/laskenta-types';
 import { ValintakoeAvaimet } from '@/lib/valintaperusteet/valintaperusteet-types';
 import { ReadOnlyKoeCell } from './koe-readonly-cell';
 import { useTranslations } from '@/lib/localization/useTranslations';
@@ -12,6 +15,7 @@ import { ListTable } from '@/components/table/list-table';
 import { isNotPartOfThisHakukohde } from '../lib/pistesyotto-utils';
 import { PistesyottoActorRef } from '@/lib/state/pistesyotto-state';
 import { PisteSyottoKoeInputs } from './pistesyotto-koe-inputs';
+import { isNullish } from 'remeda';
 
 export const PisteSyottoTable = ({
   pistetiedot,
@@ -40,7 +44,17 @@ export const PisteSyottoTable = ({
           const matchingKoePisteet = props.valintakokeenPisteet.find(
             (p) => p.tunniste === koe.tunniste,
           );
-          return isNotPartOfThisHakukohde(matchingKoePisteet) ? (
+          if (
+            matchingKoePisteet?.tunniste ==
+            '919dfc9e-a92f-0b8e-ea3e-0ab47ed672cb'
+          ) {
+            console.log('matchingkoepisteet', matchingKoePisteet);
+          }
+          return isNullish(matchingKoePisteet) ||
+            matchingKoePisteet.osallistuminen ===
+              ValintakoeOsallistuminenTulos.EI_KUTSUTTU ? (
+            <></>
+          ) : isNotPartOfThisHakukohde(matchingKoePisteet) ? (
             <ReadOnlyKoeCell koe={koe} koePisteet={matchingKoePisteet} />
           ) : (
             <PisteSyottoKoeInputs

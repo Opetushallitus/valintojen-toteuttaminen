@@ -20,6 +20,7 @@ import {
   indexBy,
   isEmpty,
   isNonNullish,
+  isNullish,
   mapValues,
   pipe,
   prop,
@@ -80,18 +81,20 @@ export const getHakukohteenValintatuloksetIlmanHakijanTilaa = async (
   });
 };
 
-export type ValintakokeidenOsallistumistiedot = Record<
-  string,
-  {
-    osallistumistieto: ValintakoeOsallistuminenTulos;
-  }
->;
-
 type PistetietoItem = {
   applicationAdditionalDataDTO: {
     oid: string;
     additionalData: Record<string, string>;
   };
+  hakukohteidenOsallistumistiedot: Record<
+    string,
+    {
+      valintakokeidenOsallistumistiedot: Record<
+        string,
+        { osallistumistieto: ValintakoeOsallistuminenTulos }
+      >;
+    }
+  >;
 };
 
 export type PisteetForHakemus = {
@@ -113,23 +116,32 @@ const getPisteetForHakemus = async ({ hakemusOid }: { hakemusOid: string }) => {
 };
 
 const selectKokeenPisteet = (
+  hakukohdeOid: string,
   pistetieto: PistetietoItem,
   kokeet: Array<ValintakoeAvaimet>,
 ): Array<ValintakokeenPisteet> => {
-  return kokeet.map((k) => {
-    const arvo =
-      pistetieto.applicationAdditionalDataDTO.additionalData[k.tunniste];
-    const osallistuminen = pistetieto.applicationAdditionalDataDTO
-      .additionalData[
-      k.osallistuminenTunniste
-    ] as ValintakoeOsallistuminenTulos;
-    return {
-      tunniste: k.tunniste,
-      arvo,
-      osallistuminen,
-      osallistuminenTunniste: k.osallistuminenTunniste,
-    };
-  });
+  return kokeet
+    .map((k) => {
+      const osallistumisTiedot =
+        pistetieto.hakukohteidenOsallistumistiedot[hakukohdeOid]
+          ?.valintakokeidenOsallistumistiedot[k.tunniste]?.osallistumistieto;
+      if (isNullish(osallistumisTiedot)) {
+        return null;
+      }
+      const arvo =
+        pistetieto.applicationAdditionalDataDTO.additionalData[k.tunniste];
+      const osallistuminen = pistetieto.applicationAdditionalDataDTO
+        .additionalData[
+        k.osallistuminenTunniste
+      ] as ValintakoeOsallistuminenTulos;
+      return {
+        tunniste: k.tunniste,
+        arvo,
+        osallistuminen: osallistuminen,
+        osallistuminenTunniste: k.osallistuminenTunniste,
+      };
+    })
+    .filter(isNonNullish);
 };
 
 export const getKoePisteetForHakemus = async ({
@@ -143,7 +155,7 @@ export const getKoePisteetForHakemus = async ({
   const pistetiedot = await getPisteetForHakemus({ hakemusOid });
 
   return mapValues(pistetiedot.hakukohteittain, (p, hakukohdeOid) => {
-    return selectKokeenPisteet(p, kokeet[hakukohdeOid]);
+    return selectKokeenPisteet(hakukohdeOid, p, kokeet[hakukohdeOid]);
   });
 };
 
@@ -187,6 +199,7 @@ export const getPisteetForHakukohde = async (
     pistetiedot.valintapisteet.map((p: PistetietoItem) => {
       const hakemus = hakemuksetIndexed[p.applicationAdditionalDataDTO.oid];
       const kokeenPisteet: Array<ValintakokeenPisteet> = selectKokeenPisteet(
+        hakukohdeOid,
         p,
         kokeet,
       );
