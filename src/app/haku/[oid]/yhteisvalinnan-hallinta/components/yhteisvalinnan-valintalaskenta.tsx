@@ -13,7 +13,7 @@ import { ValintalaskentaResult } from '@/components/ValintalaskentaResult';
 export const YhteisvalinnanValintalaskenta = ({ haku }: { haku: Haku }) => {
   const { t } = useTranslations();
 
-  const { data: userPermissions } = useUserPermissions();
+  const userPermissions = useUserPermissions();
 
   const [{ data: haunAsetukset }, { data: hakukohteet }] = useSuspenseQueries({
     queries: [

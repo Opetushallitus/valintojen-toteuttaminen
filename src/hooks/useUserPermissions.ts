@@ -1,57 +1,44 @@
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import { client } from '@/lib/http-client';
 import {
-  OrganizationPermissions,
-  UserPermissions,
-  SERVICE_KEY,
+  VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY,
   Permission,
-  getOrgsForPermission,
+  selectUserPermissions,
+  UserPermissionsByService,
 } from '@/lib/permissions';
 import { PermissionError } from '@/lib/common';
-import { intersection, isNonNull } from 'remeda';
-import { OPH_ORGANIZATION_OID } from '@/lib/constants';
+import { intersection, isEmpty } from 'remeda';
 import { useOrganizationParentOids } from '@/lib/organisaatio-service';
 import { getConfiguration } from '../lib/configuration/client-configuration';
 
-const getUserPermissions = async (): Promise<UserPermissions> => {
-  const config = getConfiguration();
+const getUserPermissions = async (): Promise<UserPermissionsByService> => {
+  const configuration = getConfiguration();
   const response = await client.get<{
     organisaatiot: Array<{
       organisaatioOid: string;
       kayttooikeudet: [{ palvelu: string; oikeus: Permission }];
     }>;
-  }>(config.routes.yleiset.kayttoikeusUrl);
-  const organizations: Array<OrganizationPermissions> =
-    response.data.organisaatiot
-      .map((org) => {
-        const permissions: Array<Permission> = org.kayttooikeudet
-          .filter((o) => o.palvelu === SERVICE_KEY)
-          .map((o) => o.oikeus);
-        return permissions.length > 0
-          ? { organizationOid: org.organisaatioOid, permissions }
-          : null;
-      })
-      .filter(isNonNull);
+  }>(configuration.routes.yleiset.kayttoikeusUrl);
 
-  const crudOrganizations = getOrgsForPermission(organizations, 'CRUD');
+  const userPermissions = selectUserPermissions(response.data);
 
-  const userPermissions: UserPermissions = {
-    hasOphCRUD: crudOrganizations.includes(OPH_ORGANIZATION_OID),
-    readOrganizations: getOrgsForPermission(organizations, 'READ'),
-    writeOrganizations: getOrgsForPermission(organizations, 'READ_UPDATE'),
-    crudOrganizations,
-  };
-  if (userPermissions.readOrganizations.length === 0) {
+  if (
+    isEmpty(
+      userPermissions[VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY].readOrganizations,
+    )
+  ) {
     throw new PermissionError();
   }
+
   return userPermissions;
 };
 
 export const useHasOrganizationPermissions = (
-  oid: string,
+  oid: string | undefined,
   permission: Permission,
+  serviceKey?: string,
 ) => {
-  const { data: userPermissions } = useUserPermissions();
+  const userPermissions = useUserPermissions(serviceKey);
   const { readOrganizations, writeOrganizations, crudOrganizations } =
     userPermissions;
 
@@ -80,5 +67,9 @@ export const userPermissionsQueryOptions = {
 export const useQueryUserPermissions = () =>
   useQuery({ ...userPermissionsQueryOptions, throwOnError: false });
 
-export const useUserPermissions = () =>
-  useSuspenseQuery(userPermissionsQueryOptions);
+export const useUserPermissions = (
+  serviceKey: string = VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY,
+) => {
+  const { data } = useSuspenseQuery(userPermissionsQueryOptions);
+  return data[serviceKey];
+};
