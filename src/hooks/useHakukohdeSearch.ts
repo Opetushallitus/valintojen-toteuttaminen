@@ -2,8 +2,8 @@
 import { useMemo } from 'react';
 import { Hakukohde } from '../lib/kouta/kouta-types';
 import { useDebounce } from '@/hooks/useDebounce';
-import { useQueryState } from 'nuqs';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { parseAsBoolean, useQueryState } from 'nuqs';
+import { useSuspenseQueries } from '@tanstack/react-query';
 import {
   DEFAULT_NUQS_OPTIONS,
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
@@ -13,11 +13,38 @@ import { getHakukohteetQueryOptions } from '../lib/kouta/kouta-service';
 import { useUserPermissions } from './useUserPermissions';
 import { isEmpty, sortBy, toLowerCase } from 'remeda';
 import { isHakukohdeOid } from '@/lib/common';
+import { getHakukohteidenSuodatustiedotQueryOptions } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
+import { useSearchParams } from 'next/navigation';
 
-export const useHakukohdeSearchParams = () => {
+const HAKUKOHTEET_SEARCH_TERM_PARAM_NAME = 'hksearch';
+const HAKUKOHTEET_WITH_VALINTAKOE_PARAM_NAME = 'hakukohteet-with-valintakoe';
+
+const HAKUKOHDE_SEARCH_PARAMS = [
+  HAKUKOHTEET_SEARCH_TERM_PARAM_NAME,
+  HAKUKOHTEET_WITH_VALINTAKOE_PARAM_NAME,
+] as const;
+
+export const useHakukohdeSearchUrlParams = () => {
+  const searchParams = useSearchParams();
+  const params: Record<string, string> = {};
+  HAKUKOHDE_SEARCH_PARAMS.forEach((param) => {
+    const value = searchParams.get(param);
+    if (value) {
+      params[param] = value;
+    }
+  });
+  return isEmpty(params) ? undefined : params;
+};
+
+export const useHakukohdeSearchParamsState = () => {
   const [searchPhrase, setSearchPhrase] = useQueryState(
-    'hksearch',
+    HAKUKOHTEET_SEARCH_TERM_PARAM_NAME,
     DEFAULT_NUQS_OPTIONS,
+  );
+
+  const [withValintakoe, setWithValintakoe] = useQueryState(
+    HAKUKOHTEET_WITH_VALINTAKOE_PARAM_NAME,
+    parseAsBoolean.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(false),
   );
 
   const setSearchDebounce = useDebounce(
@@ -26,6 +53,8 @@ export const useHakukohdeSearchParams = () => {
   );
 
   return {
+    withValintakoe,
+    setWithValintakoe,
     searchPhrase,
     setSearchPhrase: setSearchDebounce,
   };
@@ -35,29 +64,43 @@ export const useHakukohdeSearchResults = (hakuOid: string) => {
   const { translateEntity } = useTranslations();
   const { data: userPermissions } = useUserPermissions();
 
-  const { data: hakukohteet } = useSuspenseQuery(
-    getHakukohteetQueryOptions(hakuOid, userPermissions),
-  );
+  const [{ data: hakukohteet }, { data: suodatustiedot }] = useSuspenseQueries({
+    queries: [
+      getHakukohteetQueryOptions(hakuOid, userPermissions),
+      getHakukohteidenSuodatustiedotQueryOptions({ hakuOid }),
+    ],
+  });
+
+  const { searchPhrase, withValintakoe } = useHakukohdeSearchParamsState();
 
   const sortedHakukohteet = useMemo(() => {
-    return sortBy(hakukohteet, (hakukohde: Hakukohde) =>
+    const filteredHakukohteet = withValintakoe
+      ? hakukohteet.filter(
+          (hakukohde) => suodatustiedot?.[hakukohde.oid]?.hasValintakoe,
+        )
+      : hakukohteet;
+    return sortBy(filteredHakukohteet, (hakukohde: Hakukohde) =>
       translateEntity(hakukohde.nimi),
     );
-  }, [hakukohteet, translateEntity]);
+  }, [hakukohteet, translateEntity, withValintakoe, suodatustiedot]);
 
-  const hakukohdeMatchTargets = useMemo(
+  const hakukohdeMatchTargetsByHakukohdeOid = useMemo(
     () =>
-      sortedHakukohteet.map((hakukohde) =>
-        toLowerCase(
-          translateEntity(hakukohde.nimi) +
-            '#' +
-            translateEntity(hakukohde.jarjestyspaikkaHierarkiaNimi),
-        ),
+      hakukohteet.reduce(
+        (acc, hakukohde) => {
+          return {
+            ...acc,
+            [hakukohde.oid]: toLowerCase(
+              translateEntity(hakukohde.nimi) +
+                '#' +
+                translateEntity(hakukohde.jarjestyspaikkaHierarkiaNimi),
+            ),
+          };
+        },
+        {} as Record<string, string>,
       ),
-    [sortedHakukohteet, translateEntity],
+    [hakukohteet, translateEntity],
   );
-
-  const { searchPhrase } = useHakukohdeSearchParams();
 
   const searchPhraseWords = useMemo(
     () =>
@@ -75,8 +118,9 @@ export const useHakukohdeSearchResults = (hakuOid: string) => {
       );
       return matchingHakukohde ? [matchingHakukohde] : [];
     } else if (!isEmpty(searchPhraseWords)) {
-      return sortedHakukohteet.filter((_, index) => {
-        const hakukohdeTarget = hakukohdeMatchTargets[index];
+      return sortedHakukohteet.filter((hakukohde) => {
+        const hakukohdeTarget =
+          hakukohdeMatchTargetsByHakukohdeOid[hakukohde.oid];
         return searchPhraseWords.every((word) =>
           hakukohdeTarget.includes(word),
         );
@@ -88,7 +132,7 @@ export const useHakukohdeSearchResults = (hakuOid: string) => {
     sortedHakukohteet,
     searchPhrase,
     searchPhraseWords,
-    hakukohdeMatchTargets,
+    hakukohdeMatchTargetsByHakukohdeOid,
   ]);
 
   return {

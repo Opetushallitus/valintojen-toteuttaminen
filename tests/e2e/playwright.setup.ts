@@ -248,6 +248,12 @@ export default async function playwrightSetup() {
       )
     ) {
       return modifyResponse(response, []);
+    } else if (request.url?.includes('/valintatiedot-hakukohteittain')) {
+      return modifyResponse(response, {
+        '1.2.246.562.20.00000000000000045105': {
+          hasValintakoe: true,
+        },
+      });
     } else {
       console.log(
         '(Backend) mock not implemented',

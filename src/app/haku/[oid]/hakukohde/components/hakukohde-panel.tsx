@@ -7,8 +7,8 @@ import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { FullClientSpinner } from '@/components/client-spinner';
 import { useParams } from 'next/navigation';
 import { LeftPanel } from '@/components/left-panel';
-import { HakukohdeSearch } from './hakukohde-search';
 import { HakukohdeList } from './hakukohde-list';
+import { HakukohdeSearchControls } from './hakukohde-search-controls';
 
 export const HakukohdePanel = ({ hakuOid }: { hakuOid: string }) => {
   const theme = useTheme();
@@ -18,7 +18,7 @@ export const HakukohdePanel = ({ hakuOid }: { hakuOid: string }) => {
 
   return (
     <LeftPanel isOpen={isOpen} setIsOpen={setIsOpen}>
-      <HakukohdeSearch />
+      <HakukohdeSearchControls />
       <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
         <HakukohdeList
           hakuOid={hakuOid}

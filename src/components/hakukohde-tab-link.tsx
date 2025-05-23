@@ -1,6 +1,6 @@
+import { useHakukohdeSearchUrlParams } from '@/hooks/useHakukohdeSearch';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 import Link, { type LinkProps } from 'next/link';
-import { useSearchParams } from 'next/navigation';
 
 export const HakukohdeTabLink = ({
   hakuOid,
@@ -15,15 +15,14 @@ export const HakukohdeTabLink = ({
     tabRoute: string;
     tabIndex?: number;
   }) => {
-  const searchParams = useSearchParams();
-  const hakukohdeSearchParam = searchParams.get('hksearch');
+  const hakukohdeSearchParams = useHakukohdeSearchUrlParams();
 
   return (
     <Link
       {...props}
       href={{
         pathname: `/haku/${hakuOid}/hakukohde/${hakukohdeOid}/${tabRoute}`,
-        query: hakukohdeSearchParam && { hksearch: hakukohdeSearchParam },
+        query: hakukohdeSearchParams,
       }}
       prefetch={false}
     >
