@@ -25,7 +25,8 @@ const getUserPermissions = async (): Promise<UserPermissionsByService> => {
 
   if (
     isEmpty(
-      userPermissions[VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY].readOrganizations,
+      userPermissions[VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY]
+        ?.readOrganizations ?? [],
     )
   ) {
     throw new PermissionError();
