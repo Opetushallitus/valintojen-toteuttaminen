@@ -17,7 +17,7 @@ const LaskettuVaiheActions = ({
   hakukohde: Hakukohde;
   jono: LaskennanValintatapajonoTulosWithHakijaInfo;
 }) => {
-  const { data: permissions } = useUserPermissions();
+  const permissions = useUserPermissions();
   const statusMutation = useSijoitteluStatusMutation(hakukohde.oid);
 
   return (

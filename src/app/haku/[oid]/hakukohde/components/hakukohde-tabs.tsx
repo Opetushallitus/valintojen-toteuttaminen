@@ -15,6 +15,8 @@ import { getVisibleTabs, isTabVisible } from '@/lib/hakukohde-tab-utils';
 import { hakukohteenValinnanvaiheetQueryOptions } from '@/lib/valintaperusteet/valintaperusteet-service';
 import { checkIsValintalaskentaUsed } from '@/lib/valintaperusteet/valintaperusteet-utils';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
+import { useOrganizationOidPath } from '@/lib/organisaatio-service';
+import { VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY } from '@/lib/permissions';
 
 const StyledContainer = styled('div')(({ theme }) => ({
   padding: theme.spacing(2, 3, 0),
@@ -53,16 +55,16 @@ const StyledTab = styled(HakukohdeTabLink)<{ $active: boolean }>(
   }),
 );
 
-const HakukohdeTabs = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
+export const HakukohdeTabs = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const activeTab = useHakukohdeTab();
   const { t, translateEntity } = useTranslations();
 
   const [
-    hakuQuery,
-    hakukohdeQuery,
-    haunAsetuksetQuery,
-    valinnanvaiheetQuery,
-    permissionsQuery,
+    { data: haku },
+    { data: hakukohde },
+    { data: haunAsetukset },
+    { data: valinnanvaiheet },
+    { data: permissions },
   ] = useSuspenseQueries({
     queries: [
       hakuQueryOptions({ hakuOid }),
@@ -73,13 +75,13 @@ const HakukohdeTabs = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
     ],
   });
 
-  const { data: haku } = hakuQuery;
-  const { data: hakukohde } = hakukohdeQuery;
-  const { data: haunAsetukset } = haunAsetuksetQuery;
-  const { data: valinnanvaiheet } = valinnanvaiheetQuery;
-  const { data: permissions } = permissionsQuery;
-
   const usesValintalaskenta = checkIsValintalaskentaUsed(valinnanvaiheet);
+
+  const { data: organizationOidPath } = useOrganizationOidPath(
+    hakukohde.tarjoajaOid,
+  );
+
+  const valinnatPermissions = permissions[VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY];
 
   if (
     !isTabVisible({
@@ -87,8 +89,9 @@ const HakukohdeTabs = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
       haku,
       hakukohde,
       haunAsetukset,
-      permissions,
+      permissions: valinnatPermissions,
       usesValintalaskenta,
+      organizationOidPath,
     })
   ) {
     return notFound();
@@ -113,7 +116,8 @@ const HakukohdeTabs = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
           hakukohde,
           haunAsetukset,
           usesValintalaskenta,
-          permissions,
+          permissions: valinnatPermissions,
+          organizationOidPath,
         }).map((tab) => (
           <StyledTab
             key={'hakukohde-tab-' + tab.route}
@@ -129,5 +133,3 @@ const HakukohdeTabs = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
     </StyledContainer>
   );
 };
-
-export default HakukohdeTabs;

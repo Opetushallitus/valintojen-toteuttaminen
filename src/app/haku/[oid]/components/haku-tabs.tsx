@@ -1,13 +1,19 @@
 'use client';
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { useUserPermissions } from '@/hooks/useUserPermissions';
+import {
+  useHasOrganizationPermissions,
+  useUserPermissions,
+} from '@/hooks/useUserPermissions';
 import { getHakukohteetQueryOptions } from '@/lib/kouta/kouta-service';
 import { DEFAULT_BOX_BORDER, styled } from '@/lib/theme';
 import { Box, Stack } from '@mui/material';
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueries, useQueryClient } from '@tanstack/react-query';
 import { usePathname } from 'next/navigation';
 import { onkoHaullaValintaryhma } from '@/lib/valintaperusteet/valintaperusteet-service';
+import { hakuQueryOptions } from '@/lib/kouta/useHaku';
+import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
+import { FullClientSpinner } from '@/components/client-spinner';
 
 const StyledButton = styled(OphButton)({
   borderRadius: 0,
@@ -43,18 +49,34 @@ const TabButton = ({
   );
 };
 
-export const HakuTabs = ({ hakuOid }: { hakuOid: string }) => {
+const HakuTabsContent = ({ hakuOid }: { hakuOid: string }) => {
   const { t } = useTranslations();
   const queryClient = useQueryClient();
-  const { data: userPermissions } = useUserPermissions();
+  const userPermissions = useUserPermissions();
+
   queryClient.prefetchQuery(
     getHakukohteetQueryOptions(hakuOid, userPermissions),
   );
 
-  const { data: hasValintaryhma } = useQuery({
-    queryKey: ['onkoHaullaValintaryhma', hakuOid],
-    queryFn: () => onkoHaullaValintaryhma(hakuOid),
+  const [{ data: haku }, { data: hasValintaryhma }] = useQueries({
+    queries: [
+      hakuQueryOptions({ hakuOid }),
+      {
+        queryKey: ['onkoHaullaValintaryhma', hakuOid],
+        queryFn: () => onkoHaullaValintaryhma(hakuOid),
+      },
+    ],
   });
+
+  const hasValinnatCRUD = useHasOrganizationPermissions(
+    haku?.organisaatioOid,
+    'CRUD',
+  );
+
+  const hasValinnatRead = useHasOrganizationPermissions(
+    haku?.organisaatioOid,
+    'READ',
+  );
 
   return (
     <Stack
@@ -67,13 +89,23 @@ export const HakuTabs = ({ hakuOid }: { hakuOid: string }) => {
       }}
       aria-label={t('haku-tabs.navigaatio')}
     >
-      <TabButton tabName="hakukohde" hakuOid={hakuOid} />
-      <TabButton tabName="henkilo" hakuOid={hakuOid} />
-      {hasValintaryhma && (
+      {hasValinnatRead && <TabButton tabName="hakukohde" hakuOid={hakuOid} />}
+      {hasValinnatRead && <TabButton tabName="henkilo" hakuOid={hakuOid} />}
+      {hasValintaryhma && hasValinnatCRUD && (
         <TabButton tabName="valintaryhma" hakuOid={hakuOid} />
       )}
       <Box sx={{ flexGrow: 2 }}></Box>
-      <TabButton tabName="yhteisvalinnan-hallinta" hakuOid={hakuOid} />
+      {hasValinnatCRUD && (
+        <TabButton tabName="yhteisvalinnan-hallinta" hakuOid={hakuOid} />
+      )}
     </Stack>
+  );
+};
+
+export const HakuTabs = ({ hakuOid }: { hakuOid: string }) => {
+  return (
+    <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
+      <HakuTabsContent hakuOid={hakuOid} />
+    </QuerySuspenseBoundary>
   );
 };

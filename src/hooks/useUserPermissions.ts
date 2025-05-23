@@ -1,57 +1,51 @@
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import { client } from '@/lib/http-client';
 import {
-  OrganizationPermissions,
-  UserPermissions,
-  SERVICE_KEY,
+  VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY,
   Permission,
-  getOrgsForPermission,
+  selectUserPermissions,
+  UserPermissionsByService,
+  UserPermissions,
 } from '@/lib/permissions';
 import { PermissionError } from '@/lib/common';
-import { intersection, isNonNull } from 'remeda';
-import { OPH_ORGANIZATION_OID } from '@/lib/constants';
-import { useOrganizationParentOids } from '@/lib/organisaatio-service';
+import { intersection, isEmpty } from 'remeda';
 import { getConfiguration } from '../lib/configuration/client-configuration';
+import { useOrganizationOidPath } from '@/lib/organisaatio-service';
 
-const getUserPermissions = async (): Promise<UserPermissions> => {
-  const config = getConfiguration();
+const getUserPermissions = async (): Promise<UserPermissionsByService> => {
+  const configuration = getConfiguration();
   const response = await client.get<{
     organisaatiot: Array<{
       organisaatioOid: string;
       kayttooikeudet: [{ palvelu: string; oikeus: Permission }];
     }>;
-  }>(config.routes.yleiset.kayttoikeusUrl);
-  const organizations: Array<OrganizationPermissions> =
-    response.data.organisaatiot
-      .map((org) => {
-        const permissions: Array<Permission> = org.kayttooikeudet
-          .filter((o) => o.palvelu === SERVICE_KEY)
-          .map((o) => o.oikeus);
-        return permissions.length > 0
-          ? { organizationOid: org.organisaatioOid, permissions }
-          : null;
-      })
-      .filter(isNonNull);
+  }>(configuration.routes.yleiset.kayttoikeusUrl);
 
-  const crudOrganizations = getOrgsForPermission(organizations, 'CRUD');
+  const userPermissions = selectUserPermissions(response.data);
 
-  const userPermissions: UserPermissions = {
-    hasOphCRUD: crudOrganizations.includes(OPH_ORGANIZATION_OID),
-    readOrganizations: getOrgsForPermission(organizations, 'READ'),
-    writeOrganizations: getOrgsForPermission(organizations, 'READ_UPDATE'),
-    crudOrganizations,
-  };
-  if (userPermissions.readOrganizations.length === 0) {
+  if (
+    isEmpty(
+      userPermissions[VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY]
+        ?.readOrganizations ?? [],
+    )
+  ) {
     throw new PermissionError();
   }
+
   return userPermissions;
 };
 
-export const useHasOrganizationPermissions = (
-  oid: string,
+export const hasOrganizationPermissions = (
+  organizationOidPath: Array<string>,
   permission: Permission,
+  userPermissions?: UserPermissions,
 ) => {
-  const { data: userPermissions } = useUserPermissions();
+  if (!userPermissions) {
+    return false;
+  } else if (userPermissions?.hasOphCRUD) {
+    return true;
+  }
+
   const { readOrganizations, writeOrganizations, crudOrganizations } =
     userPermissions;
 
@@ -62,12 +56,24 @@ export const useHasOrganizationPermissions = (
     permissionOrganizationOids = writeOrganizations;
   }
 
-  const { data: organizationOidWithParentOids } =
-    useOrganizationParentOids(oid);
-
   return (
-    intersection(organizationOidWithParentOids, permissionOrganizationOids)
-      .length > 0
+    intersection(organizationOidPath, permissionOrganizationOids).length > 0
+  );
+};
+
+export const useHasOrganizationPermissions = (
+  oid: string | undefined,
+  permission: Permission,
+  serviceKey?: string,
+) => {
+  const userPermissions = useUserPermissions(serviceKey);
+
+  const { data: organizationOidWithParentOids } = useOrganizationOidPath(oid);
+
+  return hasOrganizationPermissions(
+    organizationOidWithParentOids,
+    permission,
+    userPermissions,
   );
 };
 
@@ -80,5 +86,9 @@ export const userPermissionsQueryOptions = {
 export const useQueryUserPermissions = () =>
   useQuery({ ...userPermissionsQueryOptions, throwOnError: false });
 
-export const useUserPermissions = () =>
-  useSuspenseQuery(userPermissionsQueryOptions);
+export const useUserPermissions = (
+  serviceKey: string = VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY,
+) => {
+  const { data } = useSuspenseQuery(userPermissionsQueryOptions);
+  return data[serviceKey];
+};

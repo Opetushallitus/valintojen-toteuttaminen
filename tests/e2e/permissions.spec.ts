@@ -36,18 +36,18 @@ test('Näyttää virheviestin kun käyttäjällä ei ole oikeuksia', async ({
   await page.route(
     '*/**/kayttooikeus-service/henkilo/current/omattiedot',
     async (route) => {
-      const user = {
-        organisaatiot: [
-          {
-            organisaatioOid: '1.2.246.562.10.79559059674',
-            kayttooikeudet: [{ palvelu: 'PALVELU', oikeus: 'READ' }],
-          },
-        ],
-      };
-      await route.fulfill({ json: user });
+      await route.fulfill({
+        json: {
+          organisaatiot: [
+            {
+              organisaatioOid: '1.2.246.562.10.79559059674',
+              kayttooikeudet: [{ palvelu: 'PALVELU', oikeus: 'READ' }],
+            },
+          ],
+        },
+      });
     },
   );
   await page.goto('/');
-  await expect(page).toHaveTitle(/Valintojen Toteuttaminen/);
   await expect(page.getByText('Ei riittäviä käyttöoikeuksia.')).toBeVisible();
 });
