@@ -10,12 +10,14 @@
           }
         }
       },
-      "oid": "1.2.246.562.11.00000000000001796027",
-      "additionalData": {
-        "nakki": "true",
-        "nakki-osallistuminen": "OSALLISTUI",
-        "koksa": "8",
-        "koksa-osallistuminen": "OSALLISTUI"
+      "applicationAdditionalDataDTO": {
+        "oid": "1.2.246.562.11.00000000000001796027",
+        "additionalData": {
+          "nakki": "true",
+          "nakki-osallistuminen": "OSALLISTUI",
+          "koksa": "8",
+          "koksa-osallistuminen": "OSALLISTUI"
+        }
       }
     }
   }
