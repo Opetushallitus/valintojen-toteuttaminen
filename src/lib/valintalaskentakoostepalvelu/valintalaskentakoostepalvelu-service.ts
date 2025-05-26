@@ -122,6 +122,7 @@ const selectKokeenPisteet = (
 ): Array<ValintakokeenPisteet> => {
   return kokeet
     .map((k) => {
+      //osallistumistiedot on löydyttävä myös hakukohteidenOsallistumistiedoista jotta kokeen pisteitä näytettäis
       const osallistumisTiedot =
         pistetieto.hakukohteidenOsallistumistiedot[hakukohdeOid]
           ?.valintakokeidenOsallistumistiedot[k.tunniste]?.osallistumistieto;
