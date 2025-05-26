@@ -47,6 +47,7 @@ export const PisteSyottoForm = ({
     sort,
     setSort,
     koeResults,
+    naytaVainLaskentaanVaikuttavat,
   } = usePisteSyottoSearchResults(pistetulokset);
 
   const submitChanges = (event: FormEvent) => {
@@ -81,6 +82,7 @@ export const PisteSyottoForm = ({
           kokeet={koeResults}
           pistesyottoActorRef={pistesyottoActorRef}
           pisteSyottoDisabled={!haunParametrit.pistesyottoEnabled}
+          naytaVainLaskentaanVaikuttavat={naytaVainLaskentaanVaikuttavat}
         />
       </TablePaginationWrapper>
     </FormBox>
