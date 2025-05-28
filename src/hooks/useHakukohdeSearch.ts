@@ -18,10 +18,12 @@ import { useSearchParams } from 'next/navigation';
 
 const HAKUKOHTEET_SEARCH_TERM_PARAM_NAME = 'hksearch';
 const HAKUKOHTEET_WITH_VALINTAKOE_PARAM_NAME = 'hakukohteet-with-valintakoe';
+const LASKETUT_HAKUKOHTEET_PARAM_NAME = 'lasketut';
 
 const HAKUKOHDE_SEARCH_PARAMS = [
   HAKUKOHTEET_SEARCH_TERM_PARAM_NAME,
   HAKUKOHTEET_WITH_VALINTAKOE_PARAM_NAME,
+  LASKETUT_HAKUKOHTEET_PARAM_NAME,
 ] as const;
 
 export const useHakukohdeSearchUrlParams = () => {
@@ -47,6 +49,11 @@ export const useHakukohdeSearchParamsState = () => {
     parseAsBoolean.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(false),
   );
 
+  const [withoutLaskenta, setWithoutLaskenta] = useQueryState(
+    LASKETUT_HAKUKOHTEET_PARAM_NAME,
+    parseAsBoolean.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(false),
+  );
+
   const setSearchDebounce = useDebounce(
     setSearchPhrase,
     HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
@@ -55,6 +62,8 @@ export const useHakukohdeSearchParamsState = () => {
   return {
     withValintakoe,
     setWithValintakoe,
+    withoutLaskenta,
+    setWithoutLaskenta,
     searchPhrase,
     setSearchPhrase: setSearchDebounce,
   };
@@ -71,18 +80,30 @@ export const useHakukohdeSearchResults = (hakuOid: string) => {
     ],
   });
 
-  const { searchPhrase, withValintakoe } = useHakukohdeSearchParamsState();
+  const { searchPhrase, withValintakoe, withoutLaskenta } =
+    useHakukohdeSearchParamsState();
 
   const sortedHakukohteet = useMemo(() => {
-    const filteredHakukohteet = withValintakoe
+    let filteredHakukohteet = withValintakoe
       ? hakukohteet.filter(
           (hakukohde) => suodatustiedot?.[hakukohde.oid]?.hasValintakoe,
+        )
+      : hakukohteet;
+    filteredHakukohteet = withoutLaskenta
+      ? hakukohteet.filter(
+          (hakukohde) => !suodatustiedot?.[hakukohde.oid]?.laskettu,
         )
       : hakukohteet;
     return sortBy(filteredHakukohteet, (hakukohde: Hakukohde) =>
       translateEntity(hakukohde.nimi),
     );
-  }, [hakukohteet, translateEntity, withValintakoe, suodatustiedot]);
+  }, [
+    hakukohteet,
+    translateEntity,
+    withValintakoe,
+    suodatustiedot,
+    withoutLaskenta,
+  ]);
 
   const hakukohdeMatchTargetsByHakukohdeOid = useMemo(
     () =>

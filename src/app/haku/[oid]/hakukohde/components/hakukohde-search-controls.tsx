@@ -22,7 +22,12 @@ const FilterButton = withDefaultProps(OphButton, {
 export const HakukohdeSearchControls = () => {
   const { t } = useTranslations();
 
-  const { withValintakoe, setWithValintakoe } = useHakukohdeSearchParamsState();
+  const {
+    withValintakoe,
+    setWithValintakoe,
+    withoutLaskenta,
+    setWithoutLaskenta,
+  } = useHakukohdeSearchParamsState();
 
   const [areFiltersVisible, setAreFiltersVisible] = useState(
     () => withValintakoe,
@@ -46,6 +51,11 @@ export const HakukohdeSearchControls = () => {
             label={t('haku.on-valintakoe')}
             checked={withValintakoe}
             onChange={() => setWithValintakoe((checked) => !checked)}
+          />
+          <OphCheckbox
+            label={t('haku.ilman-laskentaa')}
+            checked={withoutLaskenta}
+            onChange={() => setWithoutLaskenta((checked) => !checked)}
           />
         </FormGroup>
       </Collapsible>
