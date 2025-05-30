@@ -18,6 +18,7 @@ import VALINTARYHMA_PUU from './fixtures/valintaryhma-puu.json';
 import VASTAANOTTOTILAT_HAKIJOILLE from './fixtures/valintatapajonon-hakijoiden-vastaanottotila.json';
 import { OPH_ORGANIZATION_OID } from '@/lib/constants';
 import KIRJEIDEN_MUODOSTUKSEN_TILANNE from './fixtures/kirjeiden-muodostuksen-tilanne.json';
+import VALINTATIEDOT_HAKUKOHTEITTAIN from './fixtures/valintatiedot-hakukohteittain.json';
 
 const port = 3104;
 
@@ -255,11 +256,7 @@ export default async function playwrightSetup() {
     ) {
       return modifyResponse(response, []);
     } else if (request.url?.includes('/valintatiedot-hakukohteittain')) {
-      return modifyResponse(response, {
-        '1.2.246.562.20.00000000000000045105': {
-          hasValintakoe: true,
-        },
-      });
+      return modifyResponse(response, VALINTATIEDOT_HAKUKOHTEITTAIN);
     } else {
       console.log(
         '(Backend) mock not implemented',

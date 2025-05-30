@@ -1248,7 +1248,9 @@ export const getHakukohteidenSuodatustiedot = async ({
   hakuOid: string;
 }) => {
   const configuration = getConfiguration();
-  const response = await client.get<Record<string, { hasValintakoe: boolean }>>(
+  const response = await client.get<
+    Record<string, { hasValintakoe: boolean; laskettu: boolean }>
+  >(
     getConfigUrl(
       configuration.routes.valintalaskentakoostepalvelu
         .hakukohteidenSuodatustiedotUrl,
