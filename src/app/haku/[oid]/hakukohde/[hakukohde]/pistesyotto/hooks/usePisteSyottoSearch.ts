@@ -179,5 +179,6 @@ export const usePisteSyottoSearchResults = (
     sort,
     setSort,
     koeResults,
+    naytaVainLaskentaanVaikuttavat,
   };
 };

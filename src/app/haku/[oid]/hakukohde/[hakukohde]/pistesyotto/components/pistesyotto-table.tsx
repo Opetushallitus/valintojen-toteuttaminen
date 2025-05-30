@@ -1,5 +1,8 @@
 'use client';
-import { HakemuksenPistetiedot } from '@/lib/types/laskenta-types';
+import {
+  HakemuksenPistetiedot,
+  ValintakoeOsallistuminenTulos,
+} from '@/lib/types/laskenta-types';
 import { ValintakoeAvaimet } from '@/lib/valintaperusteet/valintaperusteet-types';
 import { ReadOnlyKoeCell } from './koe-readonly-cell';
 import { useTranslations } from '@/lib/localization/useTranslations';
@@ -11,7 +14,8 @@ import {
 import { ListTable } from '@/components/table/list-table';
 import { isNotPartOfThisHakukohde } from '../lib/pistesyotto-utils';
 import { PistesyottoActorRef } from '@/lib/state/pistesyotto-state';
-import { PisteSyottoKoeInputs } from './pistesyotto-koe-inputs';
+import { isNullish } from 'remeda';
+import { KoeInputs } from '@/components/koe-inputs';
 
 export const PisteSyottoTable = ({
   pistetiedot,
@@ -19,12 +23,16 @@ export const PisteSyottoTable = ({
   sort,
   kokeet,
   pistesyottoActorRef,
+  pisteSyottoDisabled,
+  naytaVainLaskentaanVaikuttavat,
 }: {
   pistetiedot: Array<HakemuksenPistetiedot>;
   sort: string;
   setSort: (newSort: string) => void;
   kokeet: Array<ValintakoeAvaimet>;
   pistesyottoActorRef: PistesyottoActorRef;
+  pisteSyottoDisabled: boolean;
+  naytaVainLaskentaanVaikuttavat: boolean;
 }) => {
   const { t } = useTranslations();
 
@@ -38,13 +46,19 @@ export const PisteSyottoTable = ({
           const matchingKoePisteet = props.valintakokeenPisteet.find(
             (p) => p.tunniste === koe.tunniste,
           );
-          return isNotPartOfThisHakukohde(matchingKoePisteet) ? (
+          return isNullish(matchingKoePisteet) ||
+            matchingKoePisteet.osallistuminen ===
+              ValintakoeOsallistuminenTulos.EI_KUTSUTTU ? (
+            <></>
+          ) : isNotPartOfThisHakukohde(matchingKoePisteet) ? (
             <ReadOnlyKoeCell koe={koe} koePisteet={matchingKoePisteet} />
           ) : (
-            <PisteSyottoKoeInputs
+            <KoeInputs
               hakemusOid={props.hakemusOid}
               koe={koe}
               pistesyottoActorRef={pistesyottoActorRef}
+              naytaVainLaskentaanVaikuttavat={naytaVainLaskentaanVaikuttavat}
+              disabled={pisteSyottoDisabled}
             />
           );
         },
@@ -52,7 +66,13 @@ export const PisteSyottoTable = ({
       });
     });
     return [stickyHakijaColumn, ...koeColumns];
-  }, [kokeet, t, pistesyottoActorRef]);
+  }, [
+    kokeet,
+    t,
+    pistesyottoActorRef,
+    pisteSyottoDisabled,
+    naytaVainLaskentaanVaikuttavat,
+  ]);
 
   return (
     <ListTable
