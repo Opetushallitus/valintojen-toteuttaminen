@@ -84,16 +84,15 @@ export const useHakukohdeSearchResults = (hakuOid: string) => {
     useHakukohdeSearchParamsState();
 
   const sortedHakukohteet = useMemo(() => {
-    let filteredHakukohteet = withValintakoe
-      ? hakukohteet.filter(
-          (hakukohde) => suodatustiedot?.[hakukohde.oid]?.hasValintakoe,
-        )
-      : hakukohteet;
-    filteredHakukohteet = withoutLaskenta
-      ? hakukohteet.filter(
-          (hakukohde) => !suodatustiedot?.[hakukohde.oid]?.laskettu,
-        )
-      : hakukohteet;
+    const filteredHakukohteet = hakukohteet
+      .filter(
+        (hakukohde) =>
+          !withValintakoe || suodatustiedot?.[hakukohde.oid]?.hasValintakoe,
+      )
+      .filter(
+        (hakukohde) =>
+          !withoutLaskenta || !suodatustiedot?.[hakukohde.oid]?.laskettu,
+      );
     return sortBy(filteredHakukohteet, (hakukohde: Hakukohde) =>
       translateEntity(hakukohde.nimi),
     );

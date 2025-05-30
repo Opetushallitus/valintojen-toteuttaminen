@@ -68,4 +68,20 @@ test.describe('Hakukohde suodatin', () => {
       'Finnish MAOL competition route, Technology, Sustainable Urban Development',
     );
   });
+
+  test('Suodattaa "Valintalaskenta suorittamatta" -tiedolla', async ({
+    page,
+  }) => {
+    await page.getByRole('button', { name: 'Lisää hakuehtoja' }).click();
+    await page.getByLabel('Valintalaskenta suorittamatta').click();
+
+    const hakukohdeNavItems = getHakukohdeNaviLinks(page);
+    await expect(hakukohdeNavItems).toHaveCount(2);
+    await expect(hakukohdeNavItems.first()).toContainText(
+      'Finnish MAOL competition route, Computing and Electrical Engineering',
+    );
+    await expect(hakukohdeNavItems.last()).toContainText(
+      'Finnish MAOL competition route, Technology, Sustainable Urban Development',
+    );
+  });
 });

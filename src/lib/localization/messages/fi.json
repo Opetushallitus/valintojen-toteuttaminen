@@ -127,7 +127,8 @@
     "pienenna": "Pienennä hakukohteitten listaus",
     "suurenna": "Suurenna hakukohteitten listaus",
     "lisaa-hakuehtoja": "Lisää hakuehtoja",
-    "vahemman-hakuehtoja": "Vähemmän hakuehtoja"
+    "vahemman-hakuehtoja": "Vähemmän hakuehtoja",
+    "ilman-laskentaa": "Valintalaskenta suorittamatta"
   },
   "hakukohde": {
     "navigaatio": "Hakukohdevalitsin",
