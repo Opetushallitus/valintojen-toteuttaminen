@@ -15,6 +15,7 @@ import { getVisibleTabs, isTabVisible } from '@/lib/hakukohde-tab-utils';
 import { hakukohteenValinnanvaiheetQueryOptions } from '@/lib/valintaperusteet/valintaperusteet-service';
 import { checkIsValintalaskentaUsed } from '@/lib/valintaperusteet/valintaperusteet-utils';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
+import { useOrganizationOidPath } from '@/lib/organisaatio-service';
 
 const StyledContainer = styled('div')(({ theme }) => ({
   padding: theme.spacing(2, 3, 0),
@@ -75,6 +76,10 @@ export const HakukohdeTabs = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
 
   const usesValintalaskenta = checkIsValintalaskentaUsed(valinnanvaiheet);
 
+  const { data: organizationOidPath } = useOrganizationOidPath(
+    hakukohde.organisaatioOid,
+  );
+
   if (
     !isTabVisible({
       tab: activeTab,
@@ -83,6 +88,7 @@ export const HakukohdeTabs = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
       haunAsetukset,
       permissions,
       usesValintalaskenta,
+      organizationOidPath: organizationOidPath,
     })
   ) {
     return notFound();
@@ -108,6 +114,7 @@ export const HakukohdeTabs = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
           haunAsetukset,
           usesValintalaskenta,
           permissions,
+          organizationOidPath,
         }).map((tab) => (
           <StyledTab
             key={'hakukohde-tab-' + tab.route}

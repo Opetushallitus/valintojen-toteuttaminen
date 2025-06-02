@@ -21,7 +21,7 @@ export const getOrganizationParentOids = async (oid?: string) => {
   return response.data;
 };
 
-export const useOrganizationParentOids = (oid?: string) => {
+export const useOrganizationOidPath = (oid?: string) => {
   return useSuspenseQuery({
     queryKey: ['getOrganisaatioParentOids', oid],
     queryFn: () => getOrganizationParentOids(oid),
