@@ -53,16 +53,16 @@ const StyledTab = styled(HakukohdeTabLink)<{ $active: boolean }>(
   }),
 );
 
-const HakukohdeTabs = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
+export const HakukohdeTabs = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const activeTab = useHakukohdeTab();
   const { t, translateEntity } = useTranslations();
 
   const [
-    hakuQuery,
-    hakukohdeQuery,
-    haunAsetuksetQuery,
-    valinnanvaiheetQuery,
-    permissionsQuery,
+    { data: haku },
+    { data: hakukohde },
+    { data: haunAsetukset },
+    { data: valinnanvaiheet },
+    { data: permissions },
   ] = useSuspenseQueries({
     queries: [
       hakuQueryOptions({ hakuOid }),
@@ -72,12 +72,6 @@ const HakukohdeTabs = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
       userPermissionsQueryOptions,
     ],
   });
-
-  const { data: haku } = hakuQuery;
-  const { data: hakukohde } = hakukohdeQuery;
-  const { data: haunAsetukset } = haunAsetuksetQuery;
-  const { data: valinnanvaiheet } = valinnanvaiheetQuery;
-  const { data: permissions } = permissionsQuery;
 
   const usesValintalaskenta = checkIsValintalaskentaUsed(valinnanvaiheet);
 
@@ -129,5 +123,3 @@ const HakukohdeTabs = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
     </StyledContainer>
   );
 };
-
-export default HakukohdeTabs;
