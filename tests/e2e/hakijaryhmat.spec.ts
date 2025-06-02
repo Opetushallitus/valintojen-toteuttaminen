@@ -86,7 +86,7 @@ const assertRows = async (
   }
 };
 
-test('Näyttää hakijaryhmat', async ({ page }) => {
+test('Näyttää hakijaryhmät', async ({ page }) => {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/hakijaryhmat',
   );

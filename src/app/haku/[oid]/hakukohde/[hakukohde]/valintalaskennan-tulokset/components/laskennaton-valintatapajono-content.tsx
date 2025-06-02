@@ -41,7 +41,7 @@ const LaskennatonVaiheActions = ({
   jono: LaskennanValintatapajonoTulosWithHakijaInfo;
   jonoTulosActorRef: JonoTulosActorRef;
 }) => {
-  const { data: permissions } = useUserPermissions();
+  const permissions = useUserPermissions();
   const statusMutation = useSijoitteluStatusMutation(hakukohde.oid);
 
   const { saveJonoTulos, isUpdating } = useJonoTulosActorRef(jonoTulosActorRef);

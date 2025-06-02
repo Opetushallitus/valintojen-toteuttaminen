@@ -10,7 +10,7 @@ import LASKETUT_HAKIJARYHMAT from './fixtures/lasketut_hakijaryhmat.json';
 import SIJOITTELUAJON_TULOKSET from './fixtures/sijoitteluajon-tulokset.json';
 import SIJOITTELUN_TULOS_HAKUKOHTEELLE from './fixtures/sijoittelun-tulos.json';
 import HAKUKOHTEEN_VALINTATULOKSET from './fixtures/hakukohteen_valintatulokset.json';
-import { SERVICE_KEY } from '@/lib/permissions';
+import { VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY } from '@/lib/permissions';
 import PISTETIEDOT from './fixtures/pistetiedot.json';
 import KOKEET from './fixtures/valintakoe-avaimet.json';
 import EHDOT from './fixtures/hyvaksynnan_ehdot.json';
@@ -47,7 +47,9 @@ export default async function playwrightSetup() {
         organisaatiot: [
           {
             organisaatioOid: OPH_ORGANIZATION_OID,
-            kayttooikeudet: [{ palvelu: SERVICE_KEY, oikeus: 'CRUD' }],
+            kayttooikeudet: [
+              { palvelu: VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY, oikeus: 'CRUD' },
+            ],
           },
         ],
       });

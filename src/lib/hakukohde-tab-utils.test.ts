@@ -2,7 +2,10 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { getVisibleTabs } from './hakukohde-tab-utils';
 import { Haku, Hakukohde, Tila } from '@/lib/kouta/kouta-types';
 import { toFinnishDate } from '@/lib/time-utils';
-import { UserPermissions } from '@/lib/permissions';
+import {
+  UserPermissionsByService,
+  VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY,
+} from '@/lib/permissions';
 import { OPH_ORGANIZATION_OID } from './constants';
 
 const HAKU_BASE: Haku = {
@@ -37,18 +40,22 @@ const HAKUKOHDE_BASE: Hakukohde = {
   opetuskielet: new Set(['fi']),
 };
 
-const OPH_PERMISSIONS: UserPermissions = {
-  hasOphCRUD: true,
-  readOrganizations: [],
-  writeOrganizations: [],
-  crudOrganizations: [OPH_ORGANIZATION_OID],
+const OPH_PERMISSIONS: UserPermissionsByService = {
+  [VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY]: {
+    hasOphCRUD: true,
+    readOrganizations: [],
+    writeOrganizations: [],
+    crudOrganizations: [OPH_ORGANIZATION_OID],
+  },
 };
 
-const NORMAL_PERMISSIONS: UserPermissions = {
-  hasOphCRUD: false,
-  readOrganizations: [],
-  writeOrganizations: [],
-  crudOrganizations: [HAKUKOHDE_BASE.organisaatioOid],
+const NORMAL_PERMISSIONS: UserPermissionsByService = {
+  [VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY]: {
+    hasOphCRUD: false,
+    readOrganizations: [],
+    writeOrganizations: [],
+    crudOrganizations: [HAKUKOHDE_BASE.organisaatioOid],
+  },
 };
 
 describe('getVisibleTabs', () => {

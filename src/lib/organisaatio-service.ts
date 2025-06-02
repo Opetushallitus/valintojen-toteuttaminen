@@ -4,8 +4,11 @@ import { OPH_ORGANIZATION_OID } from './constants';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
 import { getConfigUrl } from './configuration/configuration-utils';
 
-export const getOrganizationParentOids = async (oid: string) => {
+export const getOrganizationParentOids = async (oid?: string) => {
   const configuration = getConfiguration();
+  if (!oid) {
+    return [];
+  }
   // OPH:n organisaatio-OID:n parent on aina organisaatio itse. Ei tarvetta noutaa.
   if (oid === OPH_ORGANIZATION_OID) {
     return [OPH_ORGANIZATION_OID];
@@ -18,7 +21,7 @@ export const getOrganizationParentOids = async (oid: string) => {
   return response.data;
 };
 
-export const useOrganizationParentOids = (oid: string) => {
+export const useOrganizationParentOids = (oid?: string) => {
   return useSuspenseQuery({
     queryKey: ['getOrganisaatioParentOids', oid],
     queryFn: () => getOrganizationParentOids(oid),

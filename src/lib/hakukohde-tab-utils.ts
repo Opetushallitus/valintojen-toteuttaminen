@@ -3,7 +3,10 @@ import {
   isKorkeakouluHaku,
 } from '@/lib/kouta/kouta-service';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
-import { UserPermissions } from '@/lib/permissions';
+import {
+  UserPermissionsByService,
+  VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY,
+} from '@/lib/permissions';
 import { isInRange, toFinnishDate } from '@/lib/time-utils';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 
@@ -12,7 +15,7 @@ type VisibleFnProps = {
   hakukohde: Hakukohde;
   haunAsetukset: HaunAsetukset;
   usesValintalaskenta: boolean;
-  permissions: UserPermissions;
+  permissions: UserPermissionsByService;
 };
 
 export type BasicTab = {
@@ -23,10 +26,10 @@ export type BasicTab = {
 
 const isAllowedToUseValinnat = (
   haunAsetukset: HaunAsetukset,
-  permissions: UserPermissions,
+  permissions: UserPermissionsByService,
 ) => {
   return (
-    permissions.hasOphCRUD ||
+    permissions[VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY].hasOphCRUD ||
     isInRange(
       toFinnishDate(new Date()),
       haunAsetukset?.PH_OLVVPKE?.dateStart,

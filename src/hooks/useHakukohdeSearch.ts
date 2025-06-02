@@ -71,7 +71,7 @@ export const useHakukohdeSearchParamsState = () => {
 
 export const useHakukohdeSearchResults = (hakuOid: string) => {
   const { translateEntity } = useTranslations();
-  const { data: userPermissions } = useUserPermissions();
+  const userPermissions = useUserPermissions();
 
   const [{ data: hakukohteet }, { data: suodatustiedot }] = useSuspenseQueries({
     queries: [
