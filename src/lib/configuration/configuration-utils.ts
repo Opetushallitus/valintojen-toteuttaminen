@@ -8,8 +8,8 @@ export function getConfigUrl(
       const value = '' + entry[1];
       const placeholder = `{${entry[0]}}`;
       if (!route.includes(placeholder)) {
-        throw new Error(
-          `Placeholder ${placeholder} not found in route ${routeString}`,
+        console.warn(
+          `Placeholder ${placeholder} not found in route ${routeString}. Using value: ${value}`,
         );
       }
 
