@@ -2,10 +2,11 @@ import { beforeAll, describe, expect, test } from 'vitest';
 import {
   PermissionsResponseData,
   UserPermissions,
-  VALINTAPERUSTEET_SERVICE_KEY,
   VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY,
   selectUserPermissions,
 } from './permissions';
+
+const MUU_PALVELU_SERVICE_KEY = 'muu-palvelu';
 
 const permissionsResponse: PermissionsResponseData = {
   organisaatiot: [
@@ -32,9 +33,7 @@ const permissionsResponse: PermissionsResponseData = {
     },
     {
       organisaatioOid: 'read_valintaperusteet',
-      kayttooikeudet: [
-        { palvelu: VALINTAPERUSTEET_SERVICE_KEY, oikeus: 'READ' },
-      ],
+      kayttooikeudet: [{ palvelu: MUU_PALVELU_SERVICE_KEY, oikeus: 'READ' }],
     },
   ],
 };
@@ -60,7 +59,7 @@ describe('selectUserPermissions', () => {
 
   test('valintaperusteet permission', () => {
     const valintaperusteetUserPermissions =
-      selectUserPermissions(permissionsResponse)[VALINTAPERUSTEET_SERVICE_KEY];
+      selectUserPermissions(permissionsResponse)[MUU_PALVELU_SERVICE_KEY];
 
     expect(valintaperusteetUserPermissions.crudOrganizations).toEqual([]);
     expect(valintaperusteetUserPermissions.writeOrganizations).toEqual([]);

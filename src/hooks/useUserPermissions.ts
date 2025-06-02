@@ -8,9 +8,14 @@ import {
   UserPermissions,
 } from '@/lib/permissions';
 import { PermissionError } from '@/lib/common';
-import { intersection, isEmpty } from 'remeda';
+import { isEmpty, unique } from 'remeda';
 import { getConfiguration } from '../lib/configuration/client-configuration';
-import { useOrganizationOidPath } from '@/lib/organisaatio-service';
+import {
+  findBranchOidsFromOrganizationHierarchy,
+  useOrganizationHierarchy,
+} from '@/lib/organisaatio-service';
+import { OPH_ORGANIZATION_OID } from '@/lib/constants';
+import { useMemo } from 'react';
 
 const getUserPermissions = async (): Promise<UserPermissionsByService> => {
   const configuration = getConfiguration();
@@ -35,63 +40,110 @@ const getUserPermissions = async (): Promise<UserPermissionsByService> => {
   return userPermissions;
 };
 
-export const hasOrganizationPermissions = (
-  organizationOidPath: Array<string>,
-  permission: Permission,
-  userPermissions?: UserPermissions,
+/**
+ * Tarkistaa onko käyttäjällä käyttöoikeus ainakin yhteen annetuista organisaatiuoista
+ * @param organizationOids Organisaatioiden oidit, joiden käyttöoikeudet halutaan tarkistaa
+ * @param permissionOrganizationOids Kaikki organisaatioiden oidit organisaatiopuusta, joihin käyttäjällä on käyttöoikeus
+ * @returns
+ */
+
+export const checkHasSomeOrganizationPermission = (
+  organizationOids: Array<string> | string | undefined = [],
+  permissionOrganizationOids: Array<string> | undefined = [],
 ) => {
-  if (!userPermissions) {
-    return false;
-  } else if (userPermissions?.hasOphCRUD) {
+  // Jos on oikeus OPH-organisaatioon, on myös oikeus kaikkiin muihin organisaatioihin
+  if (permissionOrganizationOids.includes(OPH_ORGANIZATION_OID)) {
     return true;
   }
 
-  const { readOrganizations, writeOrganizations, crudOrganizations } =
-    userPermissions;
-
-  let permissionOrganizationOids = readOrganizations;
-  if (permission === 'CRUD') {
-    permissionOrganizationOids = crudOrganizations;
-  } else if (permission === 'READ_UPDATE') {
-    permissionOrganizationOids = writeOrganizations;
-  }
+  const organizationOidsArray =
+    organizationOids === undefined || Array.isArray(organizationOids)
+      ? organizationOids
+      : [organizationOids];
 
   return (
-    intersection(organizationOidPath, permissionOrganizationOids).length > 0
+    permissionOrganizationOids.find((oid) =>
+      organizationOidsArray?.includes(oid),
+    ) !== undefined
   );
 };
 
-export const useHasAnyOrgPermission = (
+export const selectOrganizationsOidsByPermission = (
+  userPermissions: UserPermissions,
+  permission: Permission,
+) => {
+  switch (permission) {
+    case 'READ':
+      return userPermissions.readOrganizations;
+    case 'READ_UPDATE':
+      return userPermissions.writeOrganizations;
+    case 'CRUD':
+      return userPermissions.crudOrganizations;
+    default:
+      throw new Error(`Unknown permission type: ${permission}`);
+  }
+};
+
+/**
+ * Tarkistaa onko käyttäjällä käyttöoikeus johonkin annetuista organisaatioista
+ *
+ * @param organizationOids Organisaatioiden oidit, joiden käyttöoikeudet halutaan tarkistaa
+ * @param permission Tarkistettava käyttöoikeus ('READ', 'READ_UPDATE', 'CRUD')
+ * @returns
+ */
+export const useHasSomeOrganizationPermission = (
+  organizationOids: Array<string> | string | undefined,
   permission: Permission,
   serviceKey?: string,
 ) => {
   const userPermissions = useUserPermissions(serviceKey);
 
+  const hierarchyUserPermissions = useHierarchyUserPermissions(userPermissions);
+
+  const recursiveUserPermissionOids = selectOrganizationsOidsByPermission(
+    hierarchyUserPermissions,
+    permission,
+  );
+
+  return checkHasSomeOrganizationPermission(
+    organizationOids,
+    recursiveUserPermissionOids,
+  );
+};
+
+export const useHierarchyUserPermissions = (
+  userPermissions: UserPermissions,
+) => {
   const { readOrganizations, writeOrganizations, crudOrganizations } =
     userPermissions;
 
-  let permissionOrganizationOids = readOrganizations;
-  if (permission === 'CRUD') {
-    permissionOrganizationOids = crudOrganizations;
-  } else if (permission === 'READ_UPDATE') {
-    permissionOrganizationOids = writeOrganizations;
-  }
-  return !isEmpty(permissionOrganizationOids);
-};
+  const allPermissionOrganizationOids = unique([
+    ...readOrganizations,
+    ...writeOrganizations,
+    ...crudOrganizations,
+  ]);
 
-export const useHasOrganizationPermissions = (
-  oid: string | undefined,
-  permission: Permission,
-  serviceKey?: string,
-) => {
-  const userPermissions = useUserPermissions(serviceKey);
+  const { data: organizationHierarchy } = useOrganizationHierarchy(
+    allPermissionOrganizationOids,
+  );
 
-  const { data: organizationOidWithParentOids } = useOrganizationOidPath(oid);
-
-  return hasOrganizationPermissions(
-    organizationOidWithParentOids,
-    permission,
-    userPermissions,
+  return useMemo(
+    () => ({
+      hasOphCRUD: userPermissions.hasOphCRUD,
+      crudOrganizations: findBranchOidsFromOrganizationHierarchy(
+        organizationHierarchy,
+        userPermissions.crudOrganizations,
+      ),
+      writeOrganizations: findBranchOidsFromOrganizationHierarchy(
+        organizationHierarchy,
+        userPermissions.writeOrganizations,
+      ),
+      readOrganizations: findBranchOidsFromOrganizationHierarchy(
+        organizationHierarchy,
+        userPermissions.readOrganizations,
+      ),
+    }),
+    [userPermissions, organizationHierarchy],
   );
 };
 

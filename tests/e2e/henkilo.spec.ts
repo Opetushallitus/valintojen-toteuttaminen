@@ -276,6 +276,24 @@ test('Käyttäjä näkee muut hakutoiveet jos yksi hakukohteista on käyttäjän
   page,
 }) => {
   await page.route(
+    (url) =>
+      url.pathname.includes('organisaatio-service/api/hierarkia/hae') &&
+      url.search.includes('oidRestrictionList=1.2.246.562.10.61176371294'),
+    async (route) => {
+      await route.fulfill({
+        json: {
+          organisaatiot: [
+            {
+              oid: '1.2.246.562.10.61176371294',
+              children: [],
+            },
+          ],
+        },
+      });
+    },
+  );
+
+  await page.route(
     '*/**/kayttooikeus-service/henkilo/current/omattiedot',
     async (route) => {
       const user = {

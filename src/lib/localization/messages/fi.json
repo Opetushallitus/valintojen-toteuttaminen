@@ -114,7 +114,9 @@
     "tarkistasyote": "Virheellinen syöte. Tarkista antamasi tiedot.",
     "tiedosto-lataus": "Tiedoston latauksessa tapahtui virhe.",
     "dokumentin-luonti": "Dokumentin luonti epäonnistui. Yritä uudelleen tai ota yhteyttä ylläpitoon.",
-    "osoitetarrat": "Osoitetarrojen muodostamisessa tapahtui virhe!"
+    "osoitetarrat": "Osoitetarrojen muodostamisessa tapahtui virhe!",
+    "kayttooikeudet": "Käyttöoikeusvirhe",
+    "haku-ei-oikeuksia": "Sinulla ei ole oikeuksia tämän haun tietoihin."
   },
   "haku": {
     "otsikko": "Haut",

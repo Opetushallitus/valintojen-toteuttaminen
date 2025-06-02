@@ -24,7 +24,7 @@ import {
 import { getReadableHakemuksenTila } from '@/lib/sijoittelun-tulokset-utils';
 import { entries, map, pipe } from 'remeda';
 import { styled } from '@/lib/theme';
-import { useHasOrganizationPermissions } from '@/hooks/useUserPermissions';
+import { useHasSomeOrganizationPermission } from '@/hooks/useUserPermissions';
 import { InfoTooltipButton } from '@/components/info-tooltip-button';
 import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
 import { useValinnanTilaOptions } from '@/hooks/useValinnanTilaOptions';
@@ -81,7 +81,7 @@ export const EhdollisestiHyvaksyttavissaCheckbox = ({
     });
   };
 
-  const canUpdate = useHasOrganizationPermissions(
+  const canUpdate = useHasSomeOrganizationPermission(
     haku.organisaatioOid,
     'READ_UPDATE',
   );

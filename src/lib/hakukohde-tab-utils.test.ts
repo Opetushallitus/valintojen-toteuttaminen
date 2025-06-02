@@ -82,8 +82,7 @@ describe('getVisibleHakukohdeTabs', () => {
       hakukohde: HAKUKOHDE_BASE,
       haunAsetukset: { sijoittelu: true },
       usesValintalaskenta: true,
-      permissions: OPH_PERMISSIONS,
-      organizationOidPath: [HAKUKOHDE_BASE.tarjoajaOid],
+      hierarchyPermissions: OPH_PERMISSIONS,
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -110,8 +109,7 @@ describe('getVisibleHakukohdeTabs', () => {
       },
       haunAsetukset: { sijoittelu: true },
       usesValintalaskenta: true,
-      permissions: OPH_PERMISSIONS,
-      organizationOidPath: [HAKUKOHDE_BASE.tarjoajaOid],
+      hierarchyPermissions: OPH_PERMISSIONS,
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -138,8 +136,7 @@ describe('getVisibleHakukohdeTabs', () => {
       },
       haunAsetukset: { sijoittelu: true },
       usesValintalaskenta: true,
-      permissions: OPH_PERMISSIONS,
-      organizationOidPath: [HAKUKOHDE_BASE.tarjoajaOid],
+      hierarchyPermissions: OPH_PERMISSIONS,
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -161,8 +158,7 @@ describe('getVisibleHakukohdeTabs', () => {
       hakukohde: HAKUKOHDE_BASE,
       haunAsetukset: { sijoittelu: false },
       usesValintalaskenta: false,
-      permissions: OPH_PERMISSIONS,
-      organizationOidPath: [HAKUKOHDE_BASE.tarjoajaOid],
+      hierarchyPermissions: OPH_PERMISSIONS,
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -180,8 +176,7 @@ describe('getVisibleHakukohdeTabs', () => {
       hakukohde: HAKUKOHDE_BASE,
       haunAsetukset: { sijoittelu: false },
       usesValintalaskenta: true,
-      permissions: OPH_PERMISSIONS,
-      organizationOidPath: [HAKUKOHDE_BASE.tarjoajaOid],
+      hierarchyPermissions: OPH_PERMISSIONS,
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -207,8 +202,7 @@ describe('getVisibleHakukohdeTabs', () => {
         },
       },
       usesValintalaskenta: true,
-      permissions: OPH_PERMISSIONS,
-      organizationOidPath: [HAKUKOHDE_BASE.tarjoajaOid],
+      hierarchyPermissions: OPH_PERMISSIONS,
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -233,8 +227,7 @@ describe('getVisibleHakukohdeTabs', () => {
         },
       },
       usesValintalaskenta: true,
-      permissions: CRUD_PERMISSIONS,
-      organizationOidPath: [HAKUKOHDE_BASE.tarjoajaOid],
+      hierarchyPermissions: CRUD_PERMISSIONS,
     });
     expect(tabs.map((t) => t.route)).toEqual(['perustiedot']);
   });
@@ -247,8 +240,7 @@ describe('getVisibleHakukohdeTabs', () => {
         sijoittelu: false,
       },
       usesValintalaskenta: false,
-      permissions: READ_PERMISSIONS,
-      organizationOidPath: [HAKUKOHDE_BASE.tarjoajaOid],
+      hierarchyPermissions: READ_PERMISSIONS,
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -265,8 +257,7 @@ describe('getVisibleHakukohdeTabs', () => {
         sijoittelu: true,
       },
       usesValintalaskenta: true,
-      permissions: READ_PERMISSIONS,
-      organizationOidPath: [HAKUKOHDE_BASE.tarjoajaOid],
+      hierarchyPermissions: READ_PERMISSIONS,
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -285,8 +276,7 @@ describe('getVisibleHakukohdeTabs', () => {
         sijoittelu: true,
       },
       usesValintalaskenta: true,
-      permissions: READ_PERMISSIONS,
-      organizationOidPath: [HAKUKOHDE_BASE.tarjoajaOid],
+      hierarchyPermissions: READ_PERMISSIONS,
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -305,8 +295,7 @@ describe('getVisibleHakukohdeTabs', () => {
         sijoittelu: true,
       },
       usesValintalaskenta: true,
-      permissions: READ_PERMISSIONS,
-      organizationOidPath: [HAKUKOHDE_BASE.tarjoajaOid],
+      hierarchyPermissions: READ_PERMISSIONS,
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -325,8 +314,7 @@ describe('getVisibleHakukohdeTabs', () => {
         sijoittelu: false,
       },
       usesValintalaskenta: false,
-      permissions: WRITE_PERMISSIONS,
-      organizationOidPath: [HAKUKOHDE_BASE.tarjoajaOid],
+      hierarchyPermissions: WRITE_PERMISSIONS,
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -343,8 +331,7 @@ describe('getVisibleHakukohdeTabs', () => {
         sijoittelu: false,
       },
       usesValintalaskenta: false,
-      permissions: WRITE_PERMISSIONS,
-      organizationOidPath: [HAKUKOHDE_BASE.tarjoajaOid],
+      hierarchyPermissions: WRITE_PERMISSIONS,
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',

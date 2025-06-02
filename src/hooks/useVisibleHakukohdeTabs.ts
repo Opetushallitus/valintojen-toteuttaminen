@@ -4,11 +4,13 @@ import { hakuQueryOptions } from '@/lib/kouta/useHaku';
 import { hakukohdeQueryOptions } from '@/lib/kouta/useHakukohde';
 import { haunAsetuksetQueryOptions } from '@/lib/ohjausparametrit/useHaunAsetukset';
 import { hakukohteenValinnanvaiheetQueryOptions } from '@/lib/valintaperusteet/valintaperusteet-service';
-import { userPermissionsQueryOptions } from './useUserPermissions';
+import {
+  useHierarchyUserPermissions,
+  userPermissionsQueryOptions,
+} from './useUserPermissions';
 import { checkIsValintalaskentaUsed } from '@/lib/valintaperusteet/valintaperusteet-utils';
-import { useOrganizationOidPath } from '@/lib/organisaatio-service';
-import { VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY } from '@/lib/permissions';
 import { getVisibleHakukohdeTabs } from '@/lib/hakukohde-tab-utils';
+import { VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY } from '@/lib/permissions';
 
 export const useVisibleHakukohdeTabs = ({
   hakuOid,
@@ -32,18 +34,15 @@ export const useVisibleHakukohdeTabs = ({
 
   const usesValintalaskenta = checkIsValintalaskentaUsed(valinnanvaiheet);
 
-  const { data: organizationOidPath } = useOrganizationOidPath(
-    hakukohde.tarjoajaOid ?? hakukohde.organisaatioOid,
+  const recursivePermissions = useHierarchyUserPermissions(
+    permissions[VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY],
   );
-
-  const valinnatPermissions = permissions[VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY];
 
   return getVisibleHakukohdeTabs({
     haku,
     hakukohde,
     haunAsetukset,
     usesValintalaskenta,
-    permissions: valinnatPermissions,
-    organizationOidPath,
+    hierarchyPermissions: recursivePermissions,
   });
 };

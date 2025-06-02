@@ -17,7 +17,7 @@ const ErrorComponent = ({
 }) => {
   const { t } = useTranslations();
   return (
-    <Stack spacing={1} sx={{ margin: 1 }} alignItems="flex-start">
+    <Stack spacing={1} sx={{ margin: 2 }} alignItems="flex-start">
       {title && <OphTypography variant="h1">{title}</OphTypography>}
       {message && <OphTypography component="div">{message}</OphTypography>}
       {retry && (
@@ -69,7 +69,12 @@ export function ErrorView({
   } else if (error?.digest === 'NEXT_NOT_FOUND') {
     notFound();
   } else if (error instanceof PermissionError) {
-    return <ErrorComponent message={error.message} />;
+    return (
+      <ErrorComponent
+        title={t('virhe.kayttooikeudet')}
+        message={t(error.message)}
+      />
+    );
   } else {
     return <ErrorComponent title={t('virhe.tuntematon')} retry={reset} />;
   }

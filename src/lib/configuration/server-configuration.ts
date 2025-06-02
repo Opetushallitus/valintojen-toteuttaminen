@@ -21,7 +21,7 @@ export async function buildConfiguration() {
         asiointiKieliUrl: `${domain}/oppijanumerorekisteri-service/henkilo/current/asiointiKieli`,
         lokalisointiUrl: `${domain}/lokalisointi/tolgee`,
         ohjausparametritUrl: `${domain}/ohjausparametrit-service/api/v1/rest/parametri/{hakuOid}`,
-        organisaatioParentOidsUrl: `${domain}/organisaatio-service/api/{organisaatioOid}/parentoids`,
+        organisaatioHierarkiaUrl: `${domain}/organisaatio-service/api/hierarkia/hae`,
       },
       koodisto: {
         kooditUrl: `${domain}/koodisto-service/rest/codeelement/codes/{koodisto}`,
