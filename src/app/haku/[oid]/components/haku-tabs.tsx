@@ -1,7 +1,7 @@
 'use client';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import {
-  useHasOrganizationPermissions,
+  useHasAnyOrgPermission,
   useUserPermissions,
 } from '@/hooks/useUserPermissions';
 import { getHakukohteetQueryOptions } from '@/lib/kouta/kouta-service';
@@ -11,7 +11,6 @@ import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
 import { useQueries, useQueryClient } from '@tanstack/react-query';
 import { usePathname } from 'next/navigation';
 import { onkoHaullaValintaryhma } from '@/lib/valintaperusteet/valintaperusteet-service';
-import { hakuQueryOptions } from '@/lib/kouta/useHaku';
 
 const StyledButton = styled(OphButton)({
   borderRadius: 0,
@@ -56,9 +55,8 @@ export const HakuTabs = ({ hakuOid }: { hakuOid: string }) => {
     getHakukohteetQueryOptions(hakuOid, userPermissions),
   );
 
-  const [{ data: haku }, { data: hasValintaryhma }] = useQueries({
+  const [{ data: hasValintaryhma }] = useQueries({
     queries: [
-      hakuQueryOptions({ hakuOid }),
       {
         queryKey: ['onkoHaullaValintaryhma', hakuOid],
         queryFn: () => onkoHaullaValintaryhma(hakuOid),
@@ -66,15 +64,9 @@ export const HakuTabs = ({ hakuOid }: { hakuOid: string }) => {
     ],
   });
 
-  const hasValinnatCRUD = useHasOrganizationPermissions(
-    haku?.organisaatioOid,
-    'CRUD',
-  );
+  const hasValinnatCRUD = useHasAnyOrgPermission('CRUD');
 
-  const hasValinnatRead = useHasOrganizationPermissions(
-    haku?.organisaatioOid,
-    'READ',
-  );
+  const hasValinnatRead = useHasAnyOrgPermission('READ');
 
   return (
     <Stack

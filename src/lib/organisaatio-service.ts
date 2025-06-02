@@ -4,18 +4,18 @@ import { OPH_ORGANIZATION_OID } from './constants';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
 import { getConfigUrl } from './configuration/configuration-utils';
 
-export const getOrganizationParentOids = async (oid?: string) => {
+export const getOrganizationParentOids = async (organisaatioOid?: string) => {
   const configuration = getConfiguration();
-  if (!oid) {
+  if (!organisaatioOid) {
     return [];
   }
   // OPH:n organisaatio-OID:n parent on aina organisaatio itse. Ei tarvetta noutaa.
-  if (oid === OPH_ORGANIZATION_OID) {
+  if (organisaatioOid === OPH_ORGANIZATION_OID) {
     return [OPH_ORGANIZATION_OID];
   }
   const response = await client.get<Array<string>>(
     getConfigUrl(configuration.routes.yleiset.organisaatioParentOidsUrl, {
-      organisaatioOid: oid,
+      organisaatioOid,
     }),
   );
   return response.data;

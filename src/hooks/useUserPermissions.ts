@@ -61,6 +61,24 @@ export const hasOrganizationPermissions = (
   );
 };
 
+export const useHasAnyOrgPermission = (
+  permission: Permission,
+  serviceKey?: string,
+) => {
+  const userPermissions = useUserPermissions(serviceKey);
+
+  const { readOrganizations, writeOrganizations, crudOrganizations } =
+    userPermissions;
+
+  let permissionOrganizationOids = readOrganizations;
+  if (permission === 'CRUD') {
+    permissionOrganizationOids = crudOrganizations;
+  } else if (permission === 'READ_UPDATE') {
+    permissionOrganizationOids = writeOrganizations;
+  }
+  return !isEmpty(permissionOrganizationOids);
+};
+
 export const useHasOrganizationPermissions = (
   oid: string | undefined,
   permission: Permission,
