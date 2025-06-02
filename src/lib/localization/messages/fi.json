@@ -64,6 +64,9 @@
     "valintaryhma": "Valintaryhmittäin",
     "yhteisvalinnan-hallinta": "Yhteisvalinnan hallinta"
   },
+  "hakukohde-tabs": {
+    "not-visible": "Välilehti \"{tabName}\" ei ole käytettävissä."
+  },
   "lomake": {
     "jatka": "Jatka",
     "tallentamattomia-muutoksia": "Tallentamattomia muutoksia",

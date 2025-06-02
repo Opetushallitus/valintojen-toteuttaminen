@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { getVisibleTabs } from './hakukohde-tab-utils';
+import { getVisibleHakukohdeTabs } from './hakukohde-tab-utils';
 import { Haku, Hakukohde, Tila } from '@/lib/kouta/kouta-types';
 import { toFinnishDate } from '@/lib/time-utils';
 import { UserPermissions } from '@/lib/permissions';
-import { OPH_ORGANIZATION_OID } from './constants';
+import { OPH_ORGANIZATION_OID } from '@/lib/constants';
 
 const HAKU_BASE: Haku = {
   oid: '5.4.3.2.1',
@@ -65,7 +65,7 @@ const READ_PERMISSIONS: UserPermissions = {
   crudOrganizations: [],
 };
 
-describe('getVisibleTabs', () => {
+describe('getVisibleHakukohdeTabs', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.setSystemTime(
@@ -74,7 +74,7 @@ describe('getVisibleTabs', () => {
   });
 
   test('OPH permissions - korkeakoulutus', async () => {
-    const tabs = getVisibleTabs({
+    const tabs = getVisibleHakukohdeTabs({
       haku: {
         ...HAKU_BASE,
         kohdejoukkoKoodiUri: 'haunkohdejoukko_12#1', // Korkeakoulutus
@@ -98,7 +98,7 @@ describe('getVisibleTabs', () => {
   });
 
   test('OPH permissions - "toisen asteen yhteishaku" and harkinnanvarainen hakukohde', async () => {
-    const tabs = getVisibleTabs({
+    const tabs = getVisibleHakukohdeTabs({
       haku: {
         ...HAKU_BASE,
         hakutapaKoodiUri: 'hakutapa_01#1', // Yhteishaku
@@ -126,7 +126,7 @@ describe('getVisibleTabs', () => {
   });
 
   test('OPH permissions - "toisen asteen yhteishaku" and NOT harkinnanvarainen hakukohde', async () => {
-    const tabs = getVisibleTabs({
+    const tabs = getVisibleHakukohdeTabs({
       haku: {
         ...HAKU_BASE,
         hakutapaKoodiUri: 'hakutapa_01#1', // Yhteishaku
@@ -153,7 +153,7 @@ describe('getVisibleTabs', () => {
   });
 
   test('OPH permissions - korkeakoulutus without sijoittelu and without valintalaskenta', () => {
-    const tabs = getVisibleTabs({
+    const tabs = getVisibleHakukohdeTabs({
       haku: {
         ...HAKU_BASE,
         kohdejoukkoKoodiUri: 'haunkohdejoukko_12#1', // Korkeakoulutus
@@ -172,7 +172,7 @@ describe('getVisibleTabs', () => {
   });
 
   test('OPH permissions - korkeakoulutus without sijoittelu and with valintalaskenta', async () => {
-    const tabs = getVisibleTabs({
+    const tabs = getVisibleHakukohdeTabs({
       haku: {
         ...HAKU_BASE,
         kohdejoukkoKoodiUri: 'haunkohdejoukko_12#1', // Korkeakoulutus
@@ -196,7 +196,7 @@ describe('getVisibleTabs', () => {
   });
 
   test('OPH permissions - use of valinnat disallowed via ohjausparametrit', () => {
-    const tabs = getVisibleTabs({
+    const tabs = getVisibleHakukohdeTabs({
       haku: HAKU_BASE,
       hakukohde: HAKUKOHDE_BASE,
       haunAsetukset: {
@@ -222,7 +222,7 @@ describe('getVisibleTabs', () => {
   });
 
   test('CRUD permissions - use of valinnat disallowed via ohjausparametrit', () => {
-    const tabs = getVisibleTabs({
+    const tabs = getVisibleHakukohdeTabs({
       haku: HAKU_BASE,
       hakukohde: HAKUKOHDE_BASE,
       haunAsetukset: {
@@ -240,7 +240,7 @@ describe('getVisibleTabs', () => {
   });
 
   test('Read permissions, no valintalaskenta and no sijoittelu', () => {
-    const tabs = getVisibleTabs({
+    const tabs = getVisibleHakukohdeTabs({
       haku: HAKU_BASE,
       hakukohde: HAKUKOHDE_BASE,
       haunAsetukset: {
@@ -258,7 +258,7 @@ describe('getVisibleTabs', () => {
   });
 
   test('Read permissions, using valintalaskenta and sijoittelu', () => {
-    const tabs = getVisibleTabs({
+    const tabs = getVisibleHakukohdeTabs({
       haku: HAKU_BASE,
       hakukohde: HAKUKOHDE_BASE,
       haunAsetukset: {
@@ -278,7 +278,7 @@ describe('getVisibleTabs', () => {
   });
 
   test('Write permissions, using valintalaskenta and sijoittelu', () => {
-    const tabs = getVisibleTabs({
+    const tabs = getVisibleHakukohdeTabs({
       haku: HAKU_BASE,
       hakukohde: HAKUKOHDE_BASE,
       haunAsetukset: {
@@ -298,7 +298,7 @@ describe('getVisibleTabs', () => {
   });
 
   test('CRUD permissions, using valintalaskenta and sijoittelu', () => {
-    const tabs = getVisibleTabs({
+    const tabs = getVisibleHakukohdeTabs({
       haku: HAKU_BASE,
       hakukohde: HAKUKOHDE_BASE,
       haunAsetukset: {
@@ -318,7 +318,7 @@ describe('getVisibleTabs', () => {
   });
 
   test('Write permissions - no laskenta and no sijoittelu', () => {
-    const tabs = getVisibleTabs({
+    const tabs = getVisibleHakukohdeTabs({
       haku: HAKU_BASE,
       hakukohde: HAKUKOHDE_BASE,
       haunAsetukset: {
@@ -336,7 +336,7 @@ describe('getVisibleTabs', () => {
   });
 
   test('CRUD permissions - no laskenta and no sijoittelu', () => {
-    const tabs = getVisibleTabs({
+    const tabs = getVisibleHakukohdeTabs({
       haku: HAKU_BASE,
       hakukohde: HAKUKOHDE_BASE,
       haunAsetukset: {

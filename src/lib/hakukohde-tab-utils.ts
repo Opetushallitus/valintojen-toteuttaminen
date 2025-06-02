@@ -168,13 +168,13 @@ export const TABS: Array<BasicTab> = [
   },
 ] as const;
 
-export const isTabVisible = ({
+export const isHakukohdeTabVisible = ({
   tab,
   ...visibleProps
 }: { tab: BasicTab } & VisibleFnProps) => {
   return !tab.visibleFn || tab.visibleFn(visibleProps);
 };
 
-export const getVisibleTabs = (visibleProps: VisibleFnProps) => {
-  return TABS.filter((tab) => isTabVisible({ tab, ...visibleProps }));
+export const getVisibleHakukohdeTabs = (visibleProps: VisibleFnProps) => {
+  return TABS.filter((tab) => isHakukohdeTabVisible({ tab, ...visibleProps }));
 };

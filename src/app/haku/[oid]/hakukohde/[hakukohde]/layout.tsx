@@ -1,5 +1,6 @@
 import { Stack } from '@mui/material';
 import { HakukohdeTabs } from '../components/hakukohde-tabs';
+import { HakukohdeTabWrapper } from './components/hakukohde-tab-wrapper';
 
 export default async function HakuLayout(props: {
   children: React.ReactNode;
@@ -17,7 +18,9 @@ export default async function HakuLayout(props: {
       }}
     >
       <HakukohdeTabs hakuOid={params.oid} hakukohdeOid={params.hakukohde} />
-      {children}
+      <HakukohdeTabWrapper hakuOid={params.oid} hakukohdeOid={params.hakukohde}>
+        {children}
+      </HakukohdeTabWrapper>
     </Stack>
   );
 }
