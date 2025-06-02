@@ -15,7 +15,7 @@ export const getOrganizationParentOids = async (oid?: string) => {
   }
   const response = await client.get<Array<string>>(
     getConfigUrl(configuration.routes.yleiset.organisaatioParentOidsUrl, {
-      oid,
+      organisaatioOid: oid,
     }),
   );
   return response.data;
