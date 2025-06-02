@@ -1,6 +1,7 @@
 import { PageLayout } from '@/components/page-layout';
 import { HakuTabs } from './components/haku-tabs';
 import { Stack } from '@mui/material';
+import { ClientErrorBoundary } from '@/components/client-error-boundary';
 
 export default async function HakuLayout(props: {
   children: React.ReactNode;
@@ -19,8 +20,10 @@ export default async function HakuLayout(props: {
           alignItems: 'stretch',
         }}
       >
-        <HakuTabs hakuOid={params.oid} />
-        {children}
+        <ClientErrorBoundary>
+          <HakuTabs hakuOid={params.oid} />
+          {children}
+        </ClientErrorBoundary>
       </Stack>
     </PageLayout>
   );
