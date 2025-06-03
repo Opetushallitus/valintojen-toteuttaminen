@@ -3,7 +3,9 @@ import {
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
   getHakukohdeNaviLinks,
+  mockOneOrganizationHierarchy,
 } from './playwright-utils';
+import { VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY } from '@/lib/permissions';
 
 test('Haku-sivun saavutettavuus', async ({ page }) => {
   await page.goto(
@@ -45,7 +47,7 @@ test.describe('Hakukohde suodatin', () => {
     await expect(getHakukohdeNaviLinks(page)).toHaveCount(2);
   });
 
-  test('Suodattaa hakukohteenoidilla', async ({ page }) => {
+  test('Suodattaa hakukohteen oidilla', async ({ page }) => {
     const hakuInput = page.getByRole('textbox', {
       name: 'Hae hakukohteita',
     });
@@ -84,4 +86,43 @@ test.describe('Hakukohde suodatin', () => {
       'Finnish MAOL competition route, Technology, Sustainable Urban Development',
     );
   });
+});
+
+test('Näyttää virheilmoituksen oppilaitos-virkailijalle, jos ei voida näyttää yhtään hakukohdetta', async ({
+  page,
+}) => {
+  const ORGANIZATION_OID = 'ei-oikeuksia-hakukohteisiin';
+  await mockOneOrganizationHierarchy(page, {
+    oid: ORGANIZATION_OID,
+  });
+
+  await page.route(
+    '*/**/kayttooikeus-service/henkilo/current/omattiedot',
+    async (route) => {
+      await route.fulfill({
+        json: {
+          organisaatiot: [
+            {
+              organisaatioOid: ORGANIZATION_OID,
+              kayttooikeudet: [
+                {
+                  palvelu: VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY,
+                  oikeus: 'CRUD',
+                },
+              ],
+            },
+          ],
+        },
+      });
+    },
+  );
+  await page.goto(
+    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102',
+  );
+  await expect(page.getByText('Hakukohteita ei löytynyt')).toBeVisible();
+  await expect(
+    page.getByText(
+      'Tällä haulla ei ole käyttäjätunnuksellesi kuuluvia hakukohteita.',
+    ),
+  ).toBeVisible();
 });
