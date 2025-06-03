@@ -67,26 +67,27 @@ const getOrganizationHierarchy = async (
     : organisaatiot;
 };
 
+/**
+ * Käy organisaatiohierarkian läpi, etsii parametrina annettujen organisaatioiden haarat, ja palauttaa niiden OID-solmuluokat listana.
+ *
+ * @param hierarchy - Organisaatiohierarkia, jota käydään läpi.
+ * @param organizationOids - Taulukko organisaatioiden OID-tunnisteista, joiden haaroja etsitään.
+ * @param includeTree - Sisällytetäänkö koko organisaatiopuun haara? Käytetään rekursiivisissa kutsuissa. Älä aseta tätä kutsuessasi!
+ * @returns Taulukko OIDeista, jotka löytyivät hierarkiasta annettujen sääntöjen mukaisesti.
+ */
 export const findBranchOidsFromOrganizationHierarchy = (
-  hierarchy: Array<OrganizationTree>,
+  hierarchy: Array<OrganizationTree> | undefined = [],
   organizationOids: Array<string>,
-  includeTree?: boolean,
+  includeTree: boolean = false,
 ): Array<string> => {
-  if (includeTree === false || !hierarchy || hierarchy.length === 0) {
-    return [];
-  }
-
   return hierarchy.flatMap((node) => {
-    const shouldInclude = Boolean(
-      organizationOids.includes(node.oid) || includeTree,
-    );
-    const result = shouldInclude ? [node.oid] : [];
+    const shouldInclude = includeTree || organizationOids.includes(node.oid);
     return [
-      ...result,
+      ...(shouldInclude ? [node.oid] : []),
       ...findBranchOidsFromOrganizationHierarchy(
-        node.children ?? [],
+        node.children,
         organizationOids,
-        Boolean(includeTree || organizationOids.includes(node.oid)),
+        shouldInclude,
       ),
     ];
   });
