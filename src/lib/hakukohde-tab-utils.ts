@@ -6,10 +6,7 @@ import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { Permission, UserPermissions } from '@/lib/permissions';
 import { isInRange, toFinnishDate } from '@/lib/time-utils';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
-import {
-  checkHasSomeOrganizationPermission,
-  selectOrganizationsOidsByPermission,
-} from '@/hooks/useUserPermissions';
+import { hasHierarchyPermission } from '@/hooks/useUserPermissions';
 
 type VisibleFnProps = {
   haku: Haku;
@@ -39,34 +36,30 @@ const isValinnatAllowedForHaku = (
   );
 };
 
-const hasHierarchyPermission = (
+const hasHakukohdePermission = (
   hakukohde: Hakukohde,
   hierarchyPermissions: UserPermissions,
   permission: Permission,
 ) => {
-  const permissionOrganizationOids = selectOrganizationsOidsByPermission(
+  return hasHierarchyPermission(
+    hakukohde.tarjoajaOid,
     hierarchyPermissions,
     permission,
   );
-
-  return checkHasSomeOrganizationPermission(
-    hakukohde.tarjoajaOid,
-    permissionOrganizationOids,
-  );
 };
 
-export const TABS: Array<BasicTab> = [
+export const HAKUKOHDE_TABS: Array<BasicTab> = [
   {
     title: 'perustiedot.otsikko',
     route: 'perustiedot',
     visibleFn: ({ hakukohde, hierarchyPermissions }) =>
-      hasHierarchyPermission(hakukohde, hierarchyPermissions, 'READ'),
+      hasHakukohdePermission(hakukohde, hierarchyPermissions, 'READ'),
   },
   {
     title: 'hakeneet.otsikko',
     route: 'hakeneet',
     visibleFn: ({ hakukohde, haunAsetukset, hierarchyPermissions }) =>
-      hasHierarchyPermission(hakukohde, hierarchyPermissions, 'READ') &&
+      hasHakukohdePermission(hakukohde, hierarchyPermissions, 'READ') &&
       isValinnatAllowedForHaku(haunAsetukset, hierarchyPermissions),
   },
   {
@@ -78,7 +71,7 @@ export const TABS: Array<BasicTab> = [
       hierarchyPermissions,
       usesValintalaskenta,
     }) =>
-      hasHierarchyPermission(hakukohde, hierarchyPermissions, 'CRUD') &&
+      hasHakukohdePermission(hakukohde, hierarchyPermissions, 'CRUD') &&
       (haunAsetukset.sijoittelu || usesValintalaskenta) &&
       isValinnatAllowedForHaku(haunAsetukset, hierarchyPermissions),
   },
@@ -91,7 +84,7 @@ export const TABS: Array<BasicTab> = [
       hierarchyPermissions,
       usesValintalaskenta,
     }) =>
-      hasHierarchyPermission(hakukohde, hierarchyPermissions, 'READ') &&
+      hasHakukohdePermission(hakukohde, hierarchyPermissions, 'READ') &&
       (haunAsetukset.sijoittelu || usesValintalaskenta) &&
       isValinnatAllowedForHaku(haunAsetukset, hierarchyPermissions),
   },
@@ -104,7 +97,7 @@ export const TABS: Array<BasicTab> = [
       hierarchyPermissions,
       usesValintalaskenta,
     }) =>
-      hasHierarchyPermission(hakukohde, hierarchyPermissions, 'READ_UPDATE') &&
+      hasHakukohdePermission(hakukohde, hierarchyPermissions, 'READ_UPDATE') &&
       (haunAsetukset.sijoittelu || usesValintalaskenta) &&
       isValinnatAllowedForHaku(haunAsetukset, hierarchyPermissions),
   },
@@ -118,7 +111,7 @@ export const TABS: Array<BasicTab> = [
       hierarchyPermissions,
       usesValintalaskenta,
     }) =>
-      hasHierarchyPermission(hakukohde, hierarchyPermissions, 'READ') &&
+      hasHakukohdePermission(hakukohde, hierarchyPermissions, 'READ') &&
       !isKorkeakouluHaku(haku) &&
       isHarkinnanvarainenHakukohde(hakukohde) &&
       (haunAsetukset.sijoittelu || usesValintalaskenta) &&
@@ -134,7 +127,7 @@ export const TABS: Array<BasicTab> = [
       usesValintalaskenta,
       hierarchyPermissions,
     }) =>
-      hasHierarchyPermission(hakukohde, hierarchyPermissions, 'READ') &&
+      hasHakukohdePermission(hakukohde, hierarchyPermissions, 'READ') &&
       isKorkeakouluHaku(haku) &&
       (haunAsetukset.sijoittelu || usesValintalaskenta) &&
       isValinnatAllowedForHaku(haunAsetukset, hierarchyPermissions),
@@ -148,7 +141,7 @@ export const TABS: Array<BasicTab> = [
       usesValintalaskenta,
       hierarchyPermissions,
     }) =>
-      hasHierarchyPermission(hakukohde, hierarchyPermissions, 'READ') &&
+      hasHakukohdePermission(hakukohde, hierarchyPermissions, 'READ') &&
       (haunAsetukset.sijoittelu || usesValintalaskenta) &&
       isValinnatAllowedForHaku(haunAsetukset, hierarchyPermissions),
   },
@@ -161,7 +154,7 @@ export const TABS: Array<BasicTab> = [
       usesValintalaskenta,
       hierarchyPermissions,
     }) =>
-      hasHierarchyPermission(hakukohde, hierarchyPermissions, 'READ') &&
+      hasHakukohdePermission(hakukohde, hierarchyPermissions, 'READ') &&
       (haunAsetukset.sijoittelu || usesValintalaskenta) &&
       isValinnatAllowedForHaku(haunAsetukset, hierarchyPermissions),
   },
@@ -174,7 +167,7 @@ export const TABS: Array<BasicTab> = [
       usesValintalaskenta,
       hierarchyPermissions,
     }) =>
-      hasHierarchyPermission(hakukohde, hierarchyPermissions, 'READ') &&
+      hasHakukohdePermission(hakukohde, hierarchyPermissions, 'READ') &&
       !usesValintalaskenta &&
       !haunAsetukset.sijoittelu &&
       isValinnatAllowedForHaku(haunAsetukset, hierarchyPermissions),
@@ -189,5 +182,7 @@ export const isHakukohdeTabVisible = ({
 };
 
 export const getVisibleHakukohdeTabs = (visibleProps: VisibleFnProps) => {
-  return TABS.filter((tab) => isHakukohdeTabVisible({ tab, ...visibleProps }));
+  return HAKUKOHDE_TABS.filter((tab) =>
+    isHakukohdeTabVisible({ tab, ...visibleProps }),
+  );
 };

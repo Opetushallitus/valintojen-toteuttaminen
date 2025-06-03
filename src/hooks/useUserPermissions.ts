@@ -84,6 +84,22 @@ export const selectOrganizationsOidsByPermission = (
   }
 };
 
+export const hasHierarchyPermission = (
+  organizationOids: Array<string> | string | undefined,
+  hierarchyPermissions: UserPermissions,
+  permission: Permission,
+) => {
+  const permissionOrganizationOids = selectOrganizationsOidsByPermission(
+    hierarchyPermissions,
+    permission,
+  );
+
+  return checkHasSomeOrganizationPermission(
+    organizationOids,
+    permissionOrganizationOids,
+  );
+};
+
 /**
  * Tarkistaa onko käyttäjällä käyttöoikeus johonkin annetuista organisaatioista
  *
@@ -100,14 +116,14 @@ export const useHasSomeOrganizationPermission = (
 
   const hierarchyUserPermissions = useHierarchyUserPermissions(userPermissions);
 
-  const recursiveUserPermissionOids = selectOrganizationsOidsByPermission(
+  const hierarchyUserPermissionOids = selectOrganizationsOidsByPermission(
     hierarchyUserPermissions,
     permission,
   );
 
   return checkHasSomeOrganizationPermission(
     organizationOids,
-    recursiveUserPermissionOids,
+    hierarchyUserPermissionOids,
   );
 };
 

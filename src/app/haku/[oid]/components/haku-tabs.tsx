@@ -1,7 +1,8 @@
 'use client';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import {
-  useHasSomeOrganizationPermission,
+  hasHierarchyPermission,
+  useHierarchyUserPermissions,
   useUserPermissions,
 } from '@/hooks/useUserPermissions';
 import { getHakukohteetQueryOptions } from '@/lib/kouta/kouta-service';
@@ -16,6 +17,7 @@ import { OphErrorWithTitle, PermissionError } from '@/lib/common';
 import { isEmpty, unique } from 'remeda';
 import useToaster from '@/hooks/useToaster';
 import { useEffect } from 'react';
+import { getVisibleHakuTabs } from '../lib/getVisibleHakuTabs';
 
 const TAB_BUTTON_HEIGHT = '48px';
 
@@ -28,7 +30,7 @@ const StyledButton = styled(OphButton)({
   },
 });
 
-const useHakuTabName = () => {
+const useActiveHakuTabName = () => {
   const pathName = usePathname();
   return pathName.split('/')[3];
 };
@@ -41,7 +43,7 @@ const TabButton = ({
   tabName: string;
 }) => {
   const { t } = useTranslations();
-  const activeTabName = useHakuTabName();
+  const activeTabName = useActiveHakuTabName();
 
   return (
     <StyledButton
@@ -95,13 +97,12 @@ export const HakuTabs = ({ hakuOid }: { hakuOid: string }) => {
     hakukohteet?.map((hk) => hk.tarjoajaOid) ?? [],
   );
 
-  const hasValinnatRead = useHasSomeOrganizationPermission(
+  const hierarchyPermissions = useHierarchyUserPermissions(userPermissions);
+
+  const hasValinnatRead = hasHierarchyPermission(
     hakukohdeTarjoajaOids,
+    hierarchyPermissions,
     'READ',
-  );
-  const hasValinnatCRUD = useHasSomeOrganizationPermission(
-    hakukohdeTarjoajaOids,
-    'CRUD',
   );
 
   if (!hasOphCRUD && !isHakukohteetLoading && !isHakukohteetError) {
@@ -137,19 +138,13 @@ export const HakuTabs = ({ hakuOid }: { hakuOid: string }) => {
           <ClientSpinner size={24} sx={{ margin: 1 }} />
         </Box>
       ) : (
-        <>
-          {hasValinnatRead && (
-            <TabButton tabName="hakukohde" hakuOid={hakuOid} />
-          )}
-          {hasValinnatRead && <TabButton tabName="henkilo" hakuOid={hakuOid} />}
-          {hasValintaryhma && hasValinnatCRUD && (
-            <TabButton tabName="valintaryhma" hakuOid={hakuOid} />
-          )}
-          <Box sx={{ flexGrow: 2, height: TAB_BUTTON_HEIGHT }} />
-          {hasValinnatCRUD && (
-            <TabButton tabName="yhteisvalinnan-hallinta" hakuOid={hakuOid} />
-          )}
-        </>
+        getVisibleHakuTabs({
+          hierarchyPermissions,
+          tarjoajaOids: hakukohdeTarjoajaOids,
+          hasValintaryhma: hasValintaryhma,
+        }).map((tabName) => (
+          <TabButton key={tabName} hakuOid={hakuOid} tabName={tabName} />
+        ))
       )}
     </Stack>
   );
