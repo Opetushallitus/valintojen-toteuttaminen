@@ -118,7 +118,8 @@
     "kayttooikeudet": "Käyttöoikeusvirhe",
     "haku-ei-oikeuksia": "Sinulla ei ole oikeuksia tämän haun hakukohteisiin.",
     "haku-ei-hakukohteita-otsikko": "Hakukohteita ei löytynyt",
-    "haku-ei-hakukohteita-teksti": "Tällä haulla ei ole käyttäjätunnuksellesi kuuluvia hakukohteita."
+    "haku-ei-hakukohteita-teksti": "Tällä haulla ei ole käyttäjätunnuksellesi kuuluvia hakukohteita.",
+    "hakukohteiden-lataus": "Hakukohteiden lataamisessa tapahtui virhe."
   },
   "haku": {
     "otsikko": "Haut",

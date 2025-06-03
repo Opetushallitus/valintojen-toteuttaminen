@@ -104,10 +104,6 @@ export const HakuTabs = ({ hakuOid }: { hakuOid: string }) => {
     'CRUD',
   );
 
-  if (isHakukohteetError && !hasOphCRUD) {
-    throw new PermissionError('virhe.hakukohteiden-lataus');
-  }
-
   if (!hasOphCRUD && !isHakukohteetLoading && !isHakukohteetError) {
     if (isEmpty(hakukohteet ?? [])) {
       throw new OphErrorWithTitle(

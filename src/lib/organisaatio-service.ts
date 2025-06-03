@@ -3,7 +3,6 @@ import { client } from './http-client';
 import { OPH_ORGANIZATION_OID } from './constants';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
 import { getConfigUrl } from './configuration/configuration-utils';
-import { unique } from 'remeda';
 
 type OrganizationTree = {
   oid: string;
@@ -11,23 +10,15 @@ type OrganizationTree = {
 };
 
 const getOrganizationHierarchy = async (
-  organizationOidsParam?: Array<string>,
+  organizationOidsParam: Array<string> = [],
 ) => {
-  let hasOphOid = false;
+  const organizationOids = new Set(organizationOidsParam);
+  const hasOphOid = organizationOids.has(OPH_ORGANIZATION_OID);
 
-  const organizationOids = unique(organizationOidsParam ?? []).filter(
-    // Ei haluta noutaa organisaatiopuuta OPH-organisaatiolle
-    (oid) => {
-      if (oid === OPH_ORGANIZATION_OID) {
-        hasOphOid = true;
-        return false;
-      } else {
-        return true;
-      }
-    },
-  );
+  // Ei haluta noutaa organisaatiopuuta OPH-organisaatiolle, koska se palauttaa koko organisaatiopuun
+  organizationOids.delete(OPH_ORGANIZATION_OID);
 
-  if (organizationOids.length === 0) {
+  if (organizationOids.size === 0) {
     return hasOphOid
       ? [
           {
@@ -95,7 +86,7 @@ export const findBranchOidsFromOrganizationHierarchy = (
 
 export const useOrganizationHierarchy = (organizationOids?: Array<string>) => {
   return useSuspenseQuery({
-    queryKey: ['getOrganisaatioHierarkia', organizationOids],
+    queryKey: ['getOrganizationHierarchy', organizationOids],
     queryFn: () => getOrganizationHierarchy(organizationOids),
     staleTime: Infinity,
   });

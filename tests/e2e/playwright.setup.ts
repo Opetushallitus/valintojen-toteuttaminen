@@ -19,7 +19,6 @@ import VASTAANOTTOTILAT_HAKIJOILLE from './fixtures/valintatapajonon-hakijoiden-
 import { OPH_ORGANIZATION_OID } from '@/lib/constants';
 import KIRJEIDEN_MUODOSTUKSEN_TILANNE from './fixtures/kirjeiden-muodostuksen-tilanne.json';
 import VALINTATIEDOT_HAKUKOHTEITTAIN from './fixtures/valintatiedot-hakukohteittain.json';
-import { isEmpty } from 'remeda';
 
 const port = 3104;
 
@@ -92,7 +91,7 @@ export default async function playwrightSetup() {
         HAKUKOHTEET.filter(
           (hk) =>
             hk.hakuOid === hakuId &&
-            (isEmpty(tarjoajaOids) || tarjoajaOids.includes(hk.tarjoaja)),
+            (tarjoajaOids.length === 0 || tarjoajaOids.includes(hk.tarjoaja)),
         ),
       );
     } else if (request.url?.includes('kouta-internal/hakukohde/')) {

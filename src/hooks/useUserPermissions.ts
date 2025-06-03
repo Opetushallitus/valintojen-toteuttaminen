@@ -41,7 +41,7 @@ const getUserPermissions = async (): Promise<UserPermissionsByService> => {
 };
 
 /**
- * Tarkistaa onko käyttäjällä käyttöoikeus ainakin yhteen annetuista organisaatiuoista
+ * Tarkistaa onko käyttäjällä käyttöoikeus ainakin yhteen annetuista organisaatioista
  * @param organizationOids Organisaatioiden oidit, joiden käyttöoikeudet halutaan tarkistaa
  * @param permissionOrganizationOids Kaikki organisaatioiden oidit organisaatiopuusta, joihin käyttäjällä on käyttöoikeus
  * @returns
@@ -87,7 +87,7 @@ export const selectOrganizationsOidsByPermission = (
 /**
  * Tarkistaa onko käyttäjällä käyttöoikeus johonkin annetuista organisaatioista
  *
- * @param organizationOids Organisaatioiden oidit, joiden käyttöoikeudet halutaan tarkistaa
+ * @param organizationOids Organisaatioiden oidit, joista käyttöoikeus halutaan tarkistaa
  * @param permission Tarkistettava käyttöoikeus ('READ', 'READ_UPDATE', 'CRUD')
  * @returns
  */
