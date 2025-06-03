@@ -12,7 +12,7 @@ import { useQueries } from '@tanstack/react-query';
 import { usePathname } from 'next/navigation';
 import { onkoHaullaValintaryhma } from '@/lib/valintaperusteet/valintaperusteet-service';
 import { ClientSpinner } from '@/components/client-spinner';
-import { PermissionError } from '@/lib/common';
+import { OphErrorWithTitle, PermissionError } from '@/lib/common';
 import { isEmpty, unique } from 'remeda';
 import useToaster from '@/hooks/useToaster';
 import { useEffect } from 'react';
@@ -108,14 +108,15 @@ export const HakuTabs = ({ hakuOid }: { hakuOid: string }) => {
     throw new PermissionError('virhe.hakukohteiden-lataus');
   }
 
-  if (
-    !hasOphCRUD &&
-    !isHakukohteetLoading &&
-    !isHakukohteetError &&
-    !hasValinnatRead &&
-    !isEmpty(hakukohteet ?? [])
-  ) {
-    throw new PermissionError('virhe.haku-ei-oikeuksia');
+  if (!hasOphCRUD && !isHakukohteetLoading && !isHakukohteetError) {
+    if (isEmpty(hakukohteet ?? [])) {
+      throw new OphErrorWithTitle(
+        'virhe.haku-ei-hakukohteita-otsikko',
+        'virhe.haku-ei-hakukohteita-teksti',
+      );
+    } else if (!hasValinnatRead && !isEmpty(hakukohteet ?? [])) {
+      throw new PermissionError('virhe.haku-ei-oikeuksia');
+    }
   }
 
   return (

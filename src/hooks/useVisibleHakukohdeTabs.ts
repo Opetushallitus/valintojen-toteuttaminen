@@ -34,7 +34,7 @@ export const useVisibleHakukohdeTabs = ({
 
   const usesValintalaskenta = checkIsValintalaskentaUsed(valinnanvaiheet);
 
-  const recursivePermissions = useHierarchyUserPermissions(
+  const hierarchyPermissions = useHierarchyUserPermissions(
     permissions[VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY],
   );
 
@@ -43,6 +43,6 @@ export const useVisibleHakukohdeTabs = ({
     hakukohde,
     haunAsetukset,
     usesValintalaskenta,
-    hierarchyPermissions: recursivePermissions,
+    hierarchyPermissions,
   });
 };

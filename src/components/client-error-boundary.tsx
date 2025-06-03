@@ -8,8 +8,8 @@ export const ClientErrorBoundary = ({
   children: React.ReactNode;
 }) => (
   <ErrorBoundary
-    fallbackRender={({ error, resetErrorBoundary }) => {
-      return <ErrorView error={error} reset={resetErrorBoundary} />;
+    fallbackRender={({ error }) => {
+      return <ErrorView error={error} />;
     }}
   >
     {children}
