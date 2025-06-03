@@ -3,6 +3,7 @@ import {
   expectAlertTextVisible,
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
+  mockOneOrganizationHierarchy,
   mockValintalaskentaRun,
   selectOption,
 } from './playwright-utils';
@@ -275,23 +276,9 @@ test('Näytetään valitun henkilön tiedot ja hakutoiveet ilman valintalaskenna
 test('Käyttäjä näkee muut hakutoiveet jos yksi hakukohteista on käyttäjän oikeuksissa', async ({
   page,
 }) => {
-  await page.route(
-    (url) =>
-      url.pathname.includes('organisaatio-service/api/hierarkia/hae') &&
-      url.search.includes('oidRestrictionList=1.2.246.562.10.61176371294'),
-    async (route) => {
-      await route.fulfill({
-        json: {
-          organisaatiot: [
-            {
-              oid: '1.2.246.562.10.61176371294',
-              children: [],
-            },
-          ],
-        },
-      });
-    },
-  );
+  await mockOneOrganizationHierarchy(page, {
+    oid: '1.2.246.562.10.61176371294',
+  });
 
   await page.route(
     '*/**/kayttooikeus-service/henkilo/current/omattiedot',
@@ -828,8 +815,8 @@ test.describe('Pistesyöttö', () => {
     });
     await expect(pistesyottoHeading).toBeVisible();
 
-    const pisteSyottoHakukohde = page.locator(
-      `[data-test-id="henkilo-pistesyotto-hakukohde-${HAKUKOHDE_OID}"]`,
+    const pisteSyottoHakukohde = page.getByTestId(
+      `henkilo-pistesyotto-hakukohde-${HAKUKOHDE_OID}`,
     );
     const nakkikoe = pisteSyottoHakukohde.getByLabel(
       'Nakkikoe, oletko nakkisuojassa?',
@@ -891,8 +878,8 @@ test.describe('Pistesyöttö', () => {
     });
     await expect(pistesyottoHeading).toBeVisible();
 
-    const pisteSyottoHakukohde = page.locator(
-      `[data-test-id="henkilo-pistesyotto-hakukohde-${HAKUKOHDE_OID}"]`,
+    const pisteSyottoHakukohde = page.getByTestId(
+      `henkilo-pistesyotto-hakukohde-${HAKUKOHDE_OID}`,
     );
     const nakkikoe = pisteSyottoHakukohde.getByLabel(
       'Nakkikoe, oletko nakkisuojassa?',
@@ -949,8 +936,8 @@ test.describe('Pistesyöttö', () => {
       '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo/1.2.246.562.11.00000000000001796027',
     );
 
-    const pisteSyottoHakukohde = page.locator(
-      `[data-test-id="henkilo-pistesyotto-hakukohde-${HAKUKOHDE_OID}"]`,
+    const pisteSyottoHakukohde = page.getByTestId(
+      `henkilo-pistesyotto-hakukohde-${HAKUKOHDE_OID}`,
     );
     const nakkikoe = pisteSyottoHakukohde.getByLabel(
       'Nakkikoe, oletko nakkisuojassa?',

@@ -19,6 +19,7 @@ import VASTAANOTTOTILAT_HAKIJOILLE from './fixtures/valintatapajonon-hakijoiden-
 import { OPH_ORGANIZATION_OID } from '@/lib/constants';
 import KIRJEIDEN_MUODOSTUKSEN_TILANNE from './fixtures/kirjeiden-muodostuksen-tilanne.json';
 import VALINTATIEDOT_HAKUKOHTEITTAIN from './fixtures/valintatiedot-hakukohteittain.json';
+import { isEmpty } from 'remeda';
 
 const port = 3104;
 
@@ -81,10 +82,18 @@ export default async function playwrightSetup() {
     ) {
       return modifyResponse(response, EHDOT);
     } else if (request.url?.includes('kouta-internal/hakukohde/search')) {
-      const hakuId = request.url.split('&haku=')[1];
+      const url = new URL(request.url, `http://localhost:${port}`);
+
+      const hakuId = url.searchParams.get('haku');
+      const tarjoajaOids = url.searchParams.getAll('tarjoaja');
+
       return modifyResponse(
         response,
-        HAKUKOHTEET.filter((hk) => hk.hakuOid === hakuId),
+        HAKUKOHTEET.filter(
+          (hk) =>
+            hk.hakuOid === hakuId &&
+            (isEmpty(tarjoajaOids) || tarjoajaOids.includes(hk.tarjoaja)),
+        ),
       );
     } else if (request.url?.includes('kouta-internal/hakukohde/')) {
       const hakukohdeOid = request.url.split('/').reverse()[0];
@@ -259,6 +268,9 @@ export default async function playwrightSetup() {
       return modifyResponse(response, []);
     } else if (request.url?.includes('/valintatiedot-hakukohteittain')) {
       return modifyResponse(response, VALINTATIEDOT_HAKUKOHTEITTAIN);
+    } else if (request.url?.endsWith('/sijoitteluajo/latest/perustiedot')) {
+      response.statusCode = 404;
+      return response.end();
     } else {
       console.log(
         '(Backend) mock not implemented',

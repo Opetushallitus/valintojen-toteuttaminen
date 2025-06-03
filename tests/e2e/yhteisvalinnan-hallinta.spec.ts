@@ -319,9 +319,7 @@ test.describe('Kirjeet', () => {
     await expect(
       page.getByText('Hyväksymis- ja jälkiohjauskirjeet'),
     ).toBeVisible();
-    const table = page.locator(
-      '[data-test-id="kirjeiden-muodostuksen-tilanne"]',
-    );
+    const table = page.getByTestId('kirjeiden-muodostuksen-tilanne');
     await expect(table).toBeVisible();
     await expect(table.getByRole('row')).toHaveCount(7);
     await expect(
