@@ -93,26 +93,27 @@ export const HakutoiveAccordionContent = ({
             <TableCell>
               <div>{t(`tuloksenTila.${jonosija.tuloksenTila}`)}</div>
               {jonosija.tuloksenTila !==
-                TuloksenTila.HYVAKSYTTY_HARKINNANVARAISESTI && !hakukohde.readOnly && (
-                <EditButton
-                  onClick={() =>
-                    showModal(ValintalaskentaEditGlobalModal, {
-                      hakutoiveNumero,
-                      hakijanNimi: getHenkiloTitle(hakija),
-                      hakukohde,
-                      valintatapajono: jono,
-                      jonosija: jono.jonosijat?.[0], // Yhdellä henkilöllä vain yksi jonosija
-                      onSuccess: () => {
-                        refetchValinnanvaiheet({
-                          hakuOid: hakukohde.hakuOid,
-                          hakemusOid: jonosija.hakemusOid,
-                          queryClient,
-                        });
-                      },
-                    })
-                  }
-                />
-              )}
+                TuloksenTila.HYVAKSYTTY_HARKINNANVARAISESTI &&
+                !hakukohde.readOnly && (
+                  <EditButton
+                    onClick={() =>
+                      showModal(ValintalaskentaEditGlobalModal, {
+                        hakutoiveNumero,
+                        hakijanNimi: getHenkiloTitle(hakija),
+                        hakukohde,
+                        valintatapajono: jono,
+                        jonosija: jono.jonosijat?.[0], // Yhdellä henkilöllä vain yksi jonosija
+                        onSuccess: () => {
+                          refetchValinnanvaiheet({
+                            hakuOid: hakukohde.hakuOid,
+                            hakemusOid: jonosija.hakemusOid,
+                            queryClient,
+                          });
+                        },
+                      })
+                    }
+                  />
+                )}
             </TableCell>
             {
               /* Näytetään valinnan tiedot vain taulukon ensimmäiselle jonolle, joka siis järjestyksessä viimeinen jono, jonka perusteella valinta tehdään */

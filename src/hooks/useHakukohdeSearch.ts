@@ -1,6 +1,6 @@
 'use client';
 import { useMemo } from 'react';
-import { Hakukohde } from '../lib/kouta/kouta-types';
+import { Hakukohde } from '@/lib/kouta/kouta-types';
 import { useDebounce } from '@/hooks/useDebounce';
 import { parseAsBoolean, useQueryState } from 'nuqs';
 import { useSuspenseQueries } from '@tanstack/react-query';
@@ -13,18 +13,55 @@ import { getHakukohteetQueryOptions } from '../lib/kouta/kouta-service';
 import { useUserPermissions } from './useUserPermissions';
 import { isEmpty, sortBy, toLowerCase } from 'remeda';
 import { isHakukohdeOid } from '@/lib/common';
-import { getHakukohteidenSuodatustiedotQueryOptions } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
+import {
+  getHakukohteidenSuodatustiedotQueryOptions,
+  HakukohteidenSuodatustiedot,
+} from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { useSearchParams } from 'next/navigation';
+import { isBefore } from 'date-fns';
+import { toFinnishDate } from '@/lib/time-utils';
 
-const HAKUKOHTEET_SEARCH_TERM_PARAM_NAME = 'hksearch';
-const HAKUKOHTEET_WITH_VALINTAKOE_PARAM_NAME = 'hakukohteet-with-valintakoe';
+const SEARCH_TERM_PARAM_NAME = 'hksearch';
+const WITH_VALINTAKOE_PARAM_NAME = 'hakukohteet-with-valintakoe';
+const VARASIJATAYTTO_PAATTAMATTA_PARAM_NAME = 'varasijataytto-paattamatta';
 const LASKETUT_HAKUKOHTEET_PARAM_NAME = 'lasketut';
 
 const HAKUKOHDE_SEARCH_PARAMS = [
-  HAKUKOHTEET_SEARCH_TERM_PARAM_NAME,
-  HAKUKOHTEET_WITH_VALINTAKOE_PARAM_NAME,
+  SEARCH_TERM_PARAM_NAME,
+  WITH_VALINTAKOE_PARAM_NAME,
+  VARASIJATAYTTO_PAATTAMATTA_PARAM_NAME,
   LASKETUT_HAKUKOHTEET_PARAM_NAME,
 ] as const;
+
+type SelectedFilters = {
+  withValintakoe: boolean;
+  varasijatayttoPaattamatta: boolean;
+  withoutLaskenta: boolean;
+};
+
+export const filterWithSuodatustiedot = ({
+  hakukohteet,
+  suodatustiedot,
+  selectedFilters,
+}: {
+  hakukohteet: Array<Hakukohde>;
+  suodatustiedot: HakukohteidenSuodatustiedot;
+  selectedFilters: SelectedFilters;
+}) => {
+  return hakukohteet.filter((hakukohde) => {
+    const suodatustieto = suodatustiedot?.[hakukohde.oid];
+    return (
+      (!selectedFilters.withValintakoe || suodatustieto?.hasValintakoe) &&
+      (!selectedFilters.withoutLaskenta || !suodatustieto?.laskettu) &&
+      (!selectedFilters.varasijatayttoPaattamatta ||
+        (suodatustieto?.varasijatayttoPaattyy &&
+          isBefore(
+            toFinnishDate(new Date()),
+            suodatustieto?.varasijatayttoPaattyy,
+          )))
+    );
+  });
+};
 
 export const useHakukohdeSearchUrlParams = () => {
   const searchParams = useSearchParams();
@@ -40,12 +77,12 @@ export const useHakukohdeSearchUrlParams = () => {
 
 export const useHakukohdeSearchParamsState = () => {
   const [searchPhrase, setSearchPhrase] = useQueryState(
-    HAKUKOHTEET_SEARCH_TERM_PARAM_NAME,
+    SEARCH_TERM_PARAM_NAME,
     DEFAULT_NUQS_OPTIONS,
   );
 
   const [withValintakoe, setWithValintakoe] = useQueryState(
-    HAKUKOHTEET_WITH_VALINTAKOE_PARAM_NAME,
+    WITH_VALINTAKOE_PARAM_NAME,
     parseAsBoolean.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(false),
   );
 
@@ -53,6 +90,11 @@ export const useHakukohdeSearchParamsState = () => {
     LASKETUT_HAKUKOHTEET_PARAM_NAME,
     parseAsBoolean.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(false),
   );
+  const [varasijatayttoPaattamatta, setVarasijatayttoPaattamatta] =
+    useQueryState(
+      VARASIJATAYTTO_PAATTAMATTA_PARAM_NAME,
+      parseAsBoolean.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(false),
+    );
 
   const setSearchDebounce = useDebounce(
     setSearchPhrase,
@@ -64,6 +106,8 @@ export const useHakukohdeSearchParamsState = () => {
     setWithValintakoe,
     withoutLaskenta,
     setWithoutLaskenta,
+    varasijatayttoPaattamatta,
+    setVarasijatayttoPaattamatta,
     searchPhrase,
     setSearchPhrase: setSearchDebounce,
   };
@@ -80,19 +124,24 @@ export const useHakukohdeSearchResults = (hakuOid: string) => {
     ],
   });
 
-  const { searchPhrase, withValintakoe, withoutLaskenta } =
-    useHakukohdeSearchParamsState();
+  const {
+    searchPhrase,
+    withValintakoe,
+    varasijatayttoPaattamatta,
+    withoutLaskenta,
+  } = useHakukohdeSearchParamsState();
 
   const sortedHakukohteet = useMemo(() => {
-    const filteredHakukohteet = hakukohteet
-      .filter(
-        (hakukohde) =>
-          !withValintakoe || suodatustiedot?.[hakukohde.oid]?.hasValintakoe,
-      )
-      .filter(
-        (hakukohde) =>
-          !withoutLaskenta || !suodatustiedot?.[hakukohde.oid]?.laskettu,
-      );
+    const filteredHakukohteet = filterWithSuodatustiedot({
+      hakukohteet,
+      suodatustiedot,
+      selectedFilters: {
+        withValintakoe,
+        varasijatayttoPaattamatta,
+        withoutLaskenta,
+      },
+    });
+
     return sortBy(filteredHakukohteet, (hakukohde: Hakukohde) =>
       translateEntity(hakukohde.nimi),
     );
@@ -102,6 +151,7 @@ export const useHakukohdeSearchResults = (hakuOid: string) => {
     withValintakoe,
     suodatustiedot,
     withoutLaskenta,
+    varasijatayttoPaattamatta,
   ]);
 
   const hakukohdeMatchTargetsByHakukohdeOid = useMemo(

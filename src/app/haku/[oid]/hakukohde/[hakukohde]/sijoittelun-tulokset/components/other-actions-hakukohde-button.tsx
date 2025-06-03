@@ -1,7 +1,5 @@
 import { useTranslations } from '@/lib/localization/useTranslations';
-import {
-  Divider,
-} from '@mui/material';
+import { Divider } from '@mui/material';
 import { useState } from 'react';
 import {
   FileDownloadOutlined,

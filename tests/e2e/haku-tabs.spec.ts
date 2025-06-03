@@ -1,8 +1,5 @@
 import { test, expect } from '@playwright/test';
-import {
-  expectAllSpinnersHidden,
-  getHakuNaviLinks,
-} from './playwright-utils';
+import { expectAllSpinnersHidden, getHakuNaviLinks } from './playwright-utils';
 
 type Tab = {
   title: string;

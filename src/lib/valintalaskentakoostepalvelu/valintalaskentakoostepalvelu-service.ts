@@ -1232,6 +1232,15 @@ export const hakijoidenVastaanottotilatValintatapajonolle = async (
   }));
 };
 
+export type HakukohteidenSuodatustiedot = Record<
+  string,
+  {
+    hasValintakoe: boolean;
+    varasijatayttoPaattyy: string | null;
+    laskettu: boolean;
+  }
+>;
+
 export const getHakukohteidenSuodatustiedotQueryOptions = ({
   hakuOid,
 }: {
@@ -1248,9 +1257,7 @@ export const getHakukohteidenSuodatustiedot = async ({
   hakuOid: string;
 }) => {
   const configuration = getConfiguration();
-  const response = await client.get<
-    Record<string, { hasValintakoe: boolean; laskettu: boolean }>
-  >(
+  const response = await client.get<HakukohteidenSuodatustiedot>(
     getConfigUrl(
       configuration.routes.valintalaskentakoostepalvelu
         .hakukohteidenSuodatustiedotUrl,
