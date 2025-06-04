@@ -6,6 +6,7 @@ import {
   selectUserPermissions,
   UserPermissionsByService,
   UserPermissions,
+  checkHasPermission,
 } from '@/lib/permissions';
 import { PermissionError } from '@/lib/common';
 import { isEmpty, unique } from 'remeda';
@@ -14,7 +15,6 @@ import {
   findBranchOidsFromOrganizationHierarchy,
   useOrganizationHierarchy,
 } from '@/lib/organisaatio-service';
-import { OPH_ORGANIZATION_OID } from '@/lib/constants';
 import { useMemo } from 'react';
 
 const getUserPermissions = async (): Promise<UserPermissionsByService> => {
@@ -41,67 +41,7 @@ const getUserPermissions = async (): Promise<UserPermissionsByService> => {
 };
 
 /**
- * Tarkistaa onko käyttäjällä käyttöoikeus ainakin yhteen annetuista organisaatioista
- * @param organizationOids Organisaatioiden oidit, joiden käyttöoikeudet halutaan tarkistaa
- * @param permissionOrganizationOids Kaikki organisaatioiden oidit organisaatiopuusta, joihin käyttäjällä on käyttöoikeus
- * @returns
- */
-
-export const checkHasSomeOrganizationPermission = (
-  organizationOids: Array<string> | string | undefined = [],
-  permissionOrganizationOids: Array<string> | undefined = [],
-) => {
-  // Jos on oikeus OPH-organisaatioon, on myös oikeus kaikkiin muihin organisaatioihin
-  if (permissionOrganizationOids.includes(OPH_ORGANIZATION_OID)) {
-    return true;
-  }
-
-  const organizationOidsArray =
-    organizationOids === undefined || Array.isArray(organizationOids)
-      ? organizationOids
-      : [organizationOids];
-
-  return (
-    permissionOrganizationOids.find((oid) =>
-      organizationOidsArray?.includes(oid),
-    ) !== undefined
-  );
-};
-
-export const selectOrganizationsOidsByPermission = (
-  userPermissions: UserPermissions,
-  permission: Permission,
-) => {
-  switch (permission) {
-    case 'READ':
-      return userPermissions.readOrganizations;
-    case 'READ_UPDATE':
-      return userPermissions.writeOrganizations;
-    case 'CRUD':
-      return userPermissions.crudOrganizations;
-    default:
-      throw new Error(`Unknown permission type: ${permission}`);
-  }
-};
-
-export const hasHierarchyPermission = (
-  organizationOids: Array<string> | string | undefined,
-  hierarchyPermissions: UserPermissions,
-  permission: Permission,
-) => {
-  const permissionOrganizationOids = selectOrganizationsOidsByPermission(
-    hierarchyPermissions,
-    permission,
-  );
-
-  return checkHasSomeOrganizationPermission(
-    organizationOids,
-    permissionOrganizationOids,
-  );
-};
-
-/**
- * Tarkistaa onko käyttäjällä käyttöoikeus johonkin annetuista organisaatioista
+ * Palauttta tiedon siitä onko käyttäjällä käyttöoikeus johonkin annetuista organisaatioista
  *
  * @param organizationOids Organisaatioiden oidit, joista käyttöoikeus halutaan tarkistaa
  * @param permission Tarkistettava käyttöoikeus ('READ', 'READ_UPDATE', 'CRUD')
@@ -116,27 +56,28 @@ export const useHasSomeOrganizationPermission = (
 
   const hierarchyUserPermissions = useHierarchyUserPermissions(userPermissions);
 
-  const hierarchyUserPermissionOids = selectOrganizationsOidsByPermission(
+  return checkHasPermission(
+    organizationOids,
     hierarchyUserPermissions,
     permission,
   );
-
-  return checkHasSomeOrganizationPermission(
-    organizationOids,
-    hierarchyUserPermissionOids,
-  );
 };
 
+/**
+ * Täydentää parametrina annetut käyttöoikeudet organisaatiohierarkiasta kunkin organisaatiopuun haaran jälkeläisillä.
+ * @param userPermissions Käyttöoikeudet käyttöoikeuspalvelusta.
+ * @returns Täydennetyt käyttöoikeudet.
+ */
 export const useHierarchyUserPermissions = (
   userPermissions: UserPermissions,
-) => {
+): UserPermissions => {
   const { readOrganizations, writeOrganizations, crudOrganizations } =
     userPermissions;
 
   const allPermissionOrganizationOids = unique([
-    ...readOrganizations,
-    ...writeOrganizations,
     ...crudOrganizations,
+    ...writeOrganizations,
+    ...readOrganizations,
   ]);
 
   const { data: organizationHierarchy } = useOrganizationHierarchy(

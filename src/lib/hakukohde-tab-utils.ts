@@ -3,10 +3,13 @@ import {
   isKorkeakouluHaku,
 } from '@/lib/kouta/kouta-service';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
-import { Permission, UserPermissions } from '@/lib/permissions';
+import {
+  checkHasPermission,
+  Permission,
+  UserPermissions,
+} from '@/lib/permissions';
 import { isInRange, toFinnishDate } from '@/lib/time-utils';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
-import { hasHierarchyPermission } from '@/hooks/useUserPermissions';
 
 type VisibleFnProps = {
   haku: Haku;
@@ -41,7 +44,7 @@ const hasHakukohdePermission = (
   hierarchyPermissions: UserPermissions,
   permission: Permission,
 ) => {
-  return hasHierarchyPermission(
+  return checkHasPermission(
     hakukohde.tarjoajaOid,
     hierarchyPermissions,
     permission,

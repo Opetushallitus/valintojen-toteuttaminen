@@ -64,7 +64,7 @@ const getOrganizationHierarchy = async (
  * @param hierarchy - Organisaatiohierarkia, jota käydään läpi.
  * @param organizationOids - Taulukko organisaatioiden OID-tunnisteista, joiden haaroja etsitään.
  * @param includeTree - Sisällytetäänkö koko organisaatiopuun haara? Käytetään rekursiivisissa kutsuissa. Älä aseta tätä kutsuessasi!
- * @returns Taulukko OIDeista, jotka löytyivät hierarkiasta annettujen sääntöjen mukaisesti.
+ * @returns Lista OIDeista, jotka löytyivät hierarkiasta annettujen sääntöjen mukaisesti.
  */
 export const findBranchOidsFromOrganizationHierarchy = (
   hierarchy: Array<OrganizationTree> | undefined = [],

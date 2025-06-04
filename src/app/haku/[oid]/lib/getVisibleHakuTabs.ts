@@ -1,5 +1,4 @@
-import { hasHierarchyPermission } from '@/hooks/useUserPermissions';
-import { UserPermissions } from '@/lib/permissions';
+import { checkHasPermission, UserPermissions } from '@/lib/permissions';
 import { isTruthy } from 'remeda';
 
 export const getVisibleHakuTabs = ({
@@ -11,13 +10,13 @@ export const getVisibleHakuTabs = ({
   tarjoajaOids?: Array<string>;
   hasValintaryhma?: boolean;
 }) => {
-  const hasValinnatRead = hasHierarchyPermission(
+  const hasValinnatRead = checkHasPermission(
     tarjoajaOids,
     hierarchyPermissions,
     'READ',
   );
 
-  const hasValinnatCRUD = hasHierarchyPermission(
+  const hasValinnatCRUD = checkHasPermission(
     tarjoajaOids,
     hierarchyPermissions,
     'CRUD',

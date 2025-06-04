@@ -1,7 +1,6 @@
 'use client';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import {
-  hasHierarchyPermission,
   useHierarchyUserPermissions,
   useUserPermissions,
 } from '@/hooks/useUserPermissions';
@@ -18,6 +17,7 @@ import { isEmpty, unique } from 'remeda';
 import useToaster from '@/hooks/useToaster';
 import { useEffect } from 'react';
 import { getVisibleHakuTabs } from '../lib/getVisibleHakuTabs';
+import { checkHasPermission } from '@/lib/permissions';
 
 const TAB_BUTTON_HEIGHT = '48px';
 
@@ -99,7 +99,7 @@ export const HakuTabs = ({ hakuOid }: { hakuOid: string }) => {
 
   const hierarchyPermissions = useHierarchyUserPermissions(userPermissions);
 
-  const hasValinnatRead = hasHierarchyPermission(
+  const hasValinnatRead = checkHasPermission(
     hakukohdeTarjoajaOids,
     hierarchyPermissions,
     'READ',

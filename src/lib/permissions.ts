@@ -52,6 +52,7 @@ export const selectUserPermissions = (
       };
     }
     const serviceResult = result[serviceKey];
+
     if (
       permission === 'CRUD' &&
       !serviceResult.crudOrganizations.includes(organisaatioOid)
@@ -76,4 +77,64 @@ export const selectUserPermissions = (
 
     return result;
   }, {} as UserPermissionsByService);
+};
+
+const checkHasSomeOrganizationPermission = (
+  organizationOids: Array<string> | string | undefined = [],
+  permissionOrganizationOids: Array<string> | undefined = [],
+) => {
+  // Jos on oikeus OPH-organisaatioon, on myös oikeus kaikkiin muihin organisaatioihin
+  if (permissionOrganizationOids.includes(OPH_ORGANIZATION_OID)) {
+    return true;
+  }
+
+  const organizationOidsArray =
+    organizationOids === undefined || Array.isArray(organizationOids)
+      ? organizationOids
+      : [organizationOids];
+
+  return (
+    permissionOrganizationOids.find((oid) =>
+      organizationOidsArray?.includes(oid),
+    ) !== undefined
+  );
+};
+
+export const selectOrganizationsOidsByPermission = (
+  userPermissions: UserPermissions,
+  permission: Permission,
+) => {
+  switch (permission) {
+    case 'READ':
+      return userPermissions.readOrganizations;
+    case 'READ_UPDATE':
+      return userPermissions.writeOrganizations;
+    case 'CRUD':
+      return userPermissions.crudOrganizations;
+    default:
+      throw new Error(`Unknown permission type: ${permission}`);
+  }
+};
+
+/**
+ * Tarkistaa, onko käyttäjällä permission-parametrin mukainen käyttöoikeus johonkin annetuista organisaatioista.
+ * @param organizationOids Organisaatioiden solmuluokat, joiden käyttöoikeudet halutaan tarkistaa.
+ * @param hierarchyPermissions Käyttäjän organisaatiohierarkiasta täydennetyt käyttöoikeudet (kts. useHierarchyUserPermissions).
+ * @param permission Käyttöoikeus, jota tarkistetaan ('CRUD', 'READ', 'READ_UPDATE').
+ * @returns Boolean: Onko käyttäjällä käyttöoikeus johonkin annetuista organisaatioista?
+ */
+export const checkHasPermission = (
+  organizationOids: Array<string> | string | undefined,
+  hierarchyPermissions: UserPermissions,
+  permission: Permission,
+) => {
+  const permissionOrganizationOids = selectOrganizationsOidsByPermission(
+    hierarchyPermissions,
+    permission,
+  );
+
+  return checkHasSomeOrganizationPermission(
+    organizationOids,
+    permissionOrganizationOids,
+  );
 };
