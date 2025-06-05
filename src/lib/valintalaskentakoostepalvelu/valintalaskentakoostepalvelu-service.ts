@@ -1232,13 +1232,15 @@ export const hakijoidenVastaanottotilatValintatapajonolle = async (
   }));
 };
 
+export type HakukohteenSuodatustiedot = {
+  hasValintakoe: boolean;
+  varasijatayttoPaattyy?: Date;
+  laskettu: boolean;
+};
+
 export type HakukohteidenSuodatustiedot = Record<
   string,
-  {
-    hasValintakoe: boolean;
-    varasijatayttoPaattyy: string | null;
-    laskettu: boolean;
-  }
+  HakukohteenSuodatustiedot
 >;
 
 export const getHakukohteidenSuodatustiedotQueryOptions = ({
@@ -1257,7 +1259,16 @@ export const getHakukohteidenSuodatustiedot = async ({
   hakuOid: string;
 }) => {
   const configuration = getConfiguration();
-  const response = await client.get<HakukohteidenSuodatustiedot>(
+  const response = await client.get<
+    Record<
+      string,
+      {
+        hasValintakoe: boolean;
+        varasijatayttoPaattyy?: string | null;
+        laskettu: boolean;
+      }
+    >
+  >(
     getConfigUrl(
       configuration.routes.valintalaskentakoostepalvelu
         .hakukohteidenSuodatustiedotUrl,
@@ -1266,7 +1277,12 @@ export const getHakukohteidenSuodatustiedot = async ({
       },
     ),
   );
-  return response.data;
+  return mapValues(response.data, (suodatustieto) => ({
+    ...suodatustieto,
+    varasijatayttoPaattyy: suodatustieto.varasijatayttoPaattyy
+      ? new Date(suodatustieto.varasijatayttoPaattyy)
+      : undefined,
+  }));
 };
 
 export async function getHaunParametrit(hakuOid: string) {

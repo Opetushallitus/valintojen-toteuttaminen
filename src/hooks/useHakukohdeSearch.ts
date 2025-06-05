@@ -15,11 +15,14 @@ import { isEmpty, sortBy, toLowerCase } from 'remeda';
 import { isHakukohdeOid } from '@/lib/common';
 import {
   getHakukohteidenSuodatustiedotQueryOptions,
+  HakukohteenSuodatustiedot,
   HakukohteidenSuodatustiedot,
 } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { useSearchParams } from 'next/navigation';
-import { isBefore } from 'date-fns';
+import { isBefore, min } from 'date-fns';
 import { toFinnishDate } from '@/lib/time-utils';
+import { haunAsetuksetQueryOptions } from '@/lib/ohjausparametrit/useHaunAsetukset';
+import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 
 const SEARCH_TERM_PARAM_NAME = 'hksearch';
 const WITH_VALINTAKOE_PARAM_NAME = 'hakukohteet-with-valintakoe';
@@ -39,11 +42,31 @@ type SelectedFilters = {
   withoutLaskenta: boolean;
 };
 
+const checkIsVarasijatayttoPaattamatta = (
+  suodatustieto: HakukohteenSuodatustiedot | undefined,
+  haunAsetukset: HaunAsetukset,
+) => {
+  const varasijatayttoPaattyy =
+    suodatustieto?.varasijatayttoPaattyy && haunAsetukset.varasijatayttoPaattyy
+      ? min([
+          suodatustieto.varasijatayttoPaattyy,
+          haunAsetukset.varasijatayttoPaattyy,
+        ])
+      : (suodatustieto?.varasijatayttoPaattyy ??
+        haunAsetukset.varasijatayttoPaattyy);
+
+  return varasijatayttoPaattyy
+    ? isBefore(toFinnishDate(new Date()), varasijatayttoPaattyy)
+    : false;
+};
+
 export const filterWithSuodatustiedot = ({
+  haunAsetukset,
   hakukohteet,
   suodatustiedot,
   selectedFilters,
 }: {
+  haunAsetukset: HaunAsetukset;
   hakukohteet: Array<Hakukohde>;
   suodatustiedot: HakukohteidenSuodatustiedot;
   selectedFilters: SelectedFilters;
@@ -54,11 +77,7 @@ export const filterWithSuodatustiedot = ({
       (!selectedFilters.withValintakoe || suodatustieto?.hasValintakoe) &&
       (!selectedFilters.withoutLaskenta || !suodatustieto?.laskettu) &&
       (!selectedFilters.varasijatayttoPaattamatta ||
-        (suodatustieto?.varasijatayttoPaattyy &&
-          isBefore(
-            toFinnishDate(new Date()),
-            suodatustieto?.varasijatayttoPaattyy,
-          )))
+        checkIsVarasijatayttoPaattamatta(suodatustieto, haunAsetukset))
     );
   });
 };
@@ -117,8 +136,13 @@ export const useHakukohdeSearchResults = (hakuOid: string) => {
   const { translateEntity } = useTranslations();
   const userPermissions = useUserPermissions();
 
-  const [{ data: hakukohteet }, { data: suodatustiedot }] = useSuspenseQueries({
+  const [
+    { data: haunAsetukset },
+    { data: hakukohteet },
+    { data: suodatustiedot },
+  ] = useSuspenseQueries({
     queries: [
+      haunAsetuksetQueryOptions({ hakuOid }),
       getHakukohteetQueryOptions(hakuOid, userPermissions),
       getHakukohteidenSuodatustiedotQueryOptions({ hakuOid }),
     ],
@@ -133,6 +157,7 @@ export const useHakukohdeSearchResults = (hakuOid: string) => {
 
   const sortedHakukohteet = useMemo(() => {
     const filteredHakukohteet = filterWithSuodatustiedot({
+      haunAsetukset,
       hakukohteet,
       suodatustiedot,
       selectedFilters: {
@@ -152,6 +177,7 @@ export const useHakukohdeSearchResults = (hakuOid: string) => {
     suodatustiedot,
     withoutLaskenta,
     varasijatayttoPaattamatta,
+    haunAsetukset,
   ]);
 
   const hakukohdeMatchTargetsByHakukohdeOid = useMemo(
