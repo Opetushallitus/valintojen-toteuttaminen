@@ -11,12 +11,12 @@ const SijoitteluButton = ({ ...props }: ButtonProps) => {
 };
 
 export const SijoitteluStatusChangeButton = ({
-  organisaatioOid,
+  tarjoajaOid,
   jono,
   permissions,
   statusMutation,
 }: {
-  organisaatioOid: string;
+  tarjoajaOid: string;
   jono: LaskennanValintatapajonoTulosWithHakijaInfo;
   permissions: UserPermissions;
   statusMutation: ReturnType<typeof useSijoitteluStatusMutation>;
@@ -26,7 +26,7 @@ export const SijoitteluStatusChangeButton = ({
   const hasOphUpdate =
     permissions.writeOrganizations.includes(OPH_ORGANIZATION_OID);
 
-  const hasOrgCrud = permissions.crudOrganizations.includes(organisaatioOid);
+  const hasOrgCrud = permissions.crudOrganizations.includes(tarjoajaOid);
 
   switch (true) {
     case !jono.valmisSijoiteltavaksi && jono.siirretaanSijoitteluun:

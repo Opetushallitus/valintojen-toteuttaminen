@@ -22,7 +22,7 @@ const LaskettuVaiheActions = ({
 
   return (
     <SijoitteluStatusChangeButton
-      organisaatioOid={hakukohde?.organisaatioOid}
+      tarjoajaOid={hakukohde?.tarjoajaOid}
       jono={jono}
       permissions={permissions}
       statusMutation={statusMutation}
