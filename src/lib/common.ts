@@ -1,14 +1,14 @@
 import { HttpClientResponse } from './http-client';
 
 // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-2.html#support-for-newtarget
-class CustomError extends Error {
+class OphCustomError extends Error {
   constructor(message?: string) {
     super(message); // 'Error' breaks prototype chain here
     Object.setPrototypeOf(this, new.target.prototype); // restore prototype chain
   }
 }
 
-export class FetchError extends CustomError {
+export class FetchError extends OphCustomError {
   response: Response;
   constructor(response: Response, message: string = 'Fetch error') {
     super(message);
@@ -16,7 +16,7 @@ export class FetchError extends CustomError {
   }
 }
 
-export class OphApiError<D> extends CustomError {
+export class OphApiError<D> extends OphCustomError {
   response: HttpClientResponse<D>;
   constructor(
     response: HttpClientResponse<D>,
@@ -33,7 +33,7 @@ export type OphProcessErrorData = {
   isService?: boolean;
 };
 
-export class OphProcessError extends CustomError {
+export class OphProcessError extends OphCustomError {
   processObject: Array<OphProcessErrorData>;
 
   constructor(
@@ -45,10 +45,19 @@ export class OphProcessError extends CustomError {
   }
 }
 
+export class OphErrorWithTitle extends OphCustomError {
+  title: string;
+
+  constructor(title: string, message: string) {
+    super(message);
+    this.title = title;
+  }
+}
+
 const UNAUTHORIZED_MESSAGE =
   'Ei riittäviä käyttöoikeuksia.\n\n Otillräckliga användarrättigheter. \n\n No access rights.';
 
-export class PermissionError extends CustomError {
+export class PermissionError extends OphCustomError {
   constructor(message: string = UNAUTHORIZED_MESSAGE) {
     super(message);
   }

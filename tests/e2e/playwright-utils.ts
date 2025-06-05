@@ -327,3 +327,35 @@ export function logBrowserConsole(page: Page) {
     }
   });
 }
+
+export async function mockOneOrganizationHierarchy(
+  page: Page,
+  org: {
+    oid: string;
+    children?: Array<{
+      oid: string;
+    }>;
+  },
+) {
+  return page.route(
+    (url) =>
+      url.pathname.includes('organisaatio-service/api/hierarkia/hae') &&
+      url.search.includes(`oidRestrictionList=${org.oid}`),
+    async (route) => {
+      await route.fulfill({
+        json: {
+          organisaatiot: [
+            {
+              oid: org.oid,
+              children:
+                org.children?.map((child) => ({
+                  children: [],
+                  ...child,
+                })) ?? [],
+            },
+          ],
+        },
+      });
+    },
+  );
+}

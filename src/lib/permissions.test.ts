@@ -1,36 +1,70 @@
-import { expect, test } from 'vitest';
-import { OrganizationPermissions, getOrgsForPermission } from './permissions';
+import { beforeAll, describe, expect, test } from 'vitest';
+import {
+  PermissionsResponseData,
+  UserPermissions,
+  VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY,
+  selectUserPermissions,
+} from './permissions';
 
-const permissions: Array<OrganizationPermissions> = [
-  { organizationOid: 'readonly', permissions: ['READ'] },
-  { organizationOid: 'writeonly', permissions: ['READ_UPDATE'] },
-  { organizationOid: 'crudonly', permissions: ['CRUD'] },
-  { organizationOid: 'all', permissions: ['READ', 'CRUD', 'READ_UPDATE'] },
-  { organizationOid: 'writenread', permissions: ['READ', 'READ_UPDATE'] },
-];
+const MUU_PALVELU_SERVICE_KEY = 'muu-palvelu';
 
-test('returns organization oids allowed to read', () => {
-  expect(getOrgsForPermission(permissions, 'READ')).toStrictEqual([
-    'readonly',
-    'writeonly',
-    'crudonly',
-    'all',
-    'writenread',
-  ]);
-});
+const permissionsResponse: PermissionsResponseData = {
+  organisaatiot: [
+    {
+      organisaatioOid: 'crud',
+      kayttooikeudet: [
+        { palvelu: VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY, oikeus: 'CRUD' },
+      ],
+    },
+    {
+      organisaatioOid: 'readwrite',
+      kayttooikeudet: [
+        {
+          palvelu: VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY,
+          oikeus: 'READ_UPDATE',
+        },
+      ],
+    },
+    {
+      organisaatioOid: 'read',
+      kayttooikeudet: [
+        { palvelu: VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY, oikeus: 'READ' },
+      ],
+    },
+    {
+      organisaatioOid: 'read_valintaperusteet',
+      kayttooikeudet: [{ palvelu: MUU_PALVELU_SERVICE_KEY, oikeus: 'READ' }],
+    },
+  ],
+};
 
-test('returns organization oids allowed to write', () => {
-  expect(getOrgsForPermission(permissions, 'READ_UPDATE')).toStrictEqual([
-    'writeonly',
-    'crudonly',
-    'all',
-    'writenread',
-  ]);
-});
+describe('selectUserPermissions', () => {
+  let userPermissions: UserPermissions;
+  beforeAll(() => {
+    userPermissions =
+      selectUserPermissions(permissionsResponse)[
+        VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY
+      ];
+  });
 
-test('returns organization oids allowed to crud', () => {
-  expect(getOrgsForPermission(permissions, 'CRUD')).toStrictEqual([
-    'crudonly',
-    'all',
-  ]);
+  test('valintojentoteuttaminen permission', () => {
+    expect(userPermissions.crudOrganizations).toEqual(['crud']);
+    expect(userPermissions.writeOrganizations).toEqual(
+      expect.arrayContaining(['readwrite', 'crud']),
+    );
+    expect(userPermissions.readOrganizations).toEqual(
+      expect.arrayContaining(['crud', 'readwrite', 'read']),
+    );
+  });
+
+  test('valintaperusteet permission', () => {
+    const valintaperusteetUserPermissions =
+      selectUserPermissions(permissionsResponse)[MUU_PALVELU_SERVICE_KEY];
+
+    expect(valintaperusteetUserPermissions.crudOrganizations).toEqual([]);
+    expect(valintaperusteetUserPermissions.writeOrganizations).toEqual([]);
+    expect(valintaperusteetUserPermissions.readOrganizations).toEqual(
+      expect.arrayContaining(['read_valintaperusteet']),
+    );
+  });
 });

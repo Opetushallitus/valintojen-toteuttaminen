@@ -7,7 +7,9 @@ import {
   selectOption,
   expectAlertTextVisible,
   startExcelImport,
+  mockOneOrganizationHierarchy,
 } from './playwright-utils';
+import { VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY } from '@/lib/permissions';
 
 async function goToPisteSyotto(page: Page) {
   await page.goto(
@@ -30,13 +32,13 @@ async function selectTila(page: Page, option: string) {
 }
 
 test('Näyttää pistesyotön', async ({ page }) => {
-  const headrow = page.locator('[data-test-id="pistesyotto-form"] thead tr');
+  const headrow = page.getByTestId('pistesyotto-form').locator('thead tr');
   await checkRow(
     headrow,
     ['Hakija', 'Köksäkokeen arvosana', 'Nakkikoe, oletko nakkisuojassa?'],
     'th',
   );
-  const rows = page.locator('[data-test-id="pistesyotto-form"] tbody tr');
+  const rows = page.getByTestId('pistesyotto-form').locator('tbody tr');
   await expect(rows).toHaveCount(4);
   await checkRow(rows.nth(0), ['Dacula Kreivi', '', 'EiOsallistui']);
   await checkRow(rows.nth(1), ['Hui Haamu', '', 'Valitse...Merkitsemättä']);
@@ -55,26 +57,35 @@ test('Pistesyötössä muokkaus ei ole sallittu jos koetulosten tallentaminen ei
         json: { koetulostentallennus: false },
       }),
   );
+
+  await mockOneOrganizationHierarchy(page, {
+    oid: '1.2.246.562.10.82941251389',
+  });
+
   await page.route(
     '*/**/kayttooikeus-service/henkilo/current/omattiedot',
     async (route) => {
-      const user = {
-        organisaatiot: [
-          {
-            organisaatioOid: '1.2.246.562.10.61176371294',
-            kayttooikeudet: [
-              { palvelu: 'VALINTOJENTOTEUTTAMINEN', oikeus: 'CRUD' },
-            ],
-          },
-        ],
-      };
-      await route.fulfill({ json: user });
+      await route.fulfill({
+        json: {
+          organisaatiot: [
+            {
+              organisaatioOid: '1.2.246.562.10.82941251389',
+              kayttooikeudet: [
+                {
+                  palvelu: VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY,
+                  oikeus: 'CRUD',
+                },
+              ],
+            },
+          ],
+        },
+      });
     },
   );
 
   await goToPisteSyotto(page);
 
-  const rows = page.locator('[data-test-id="pistesyotto-form"] tbody tr');
+  const rows = page.getByTestId('pistesyotto-form').locator('tbody tr');
   await expect(rows).toHaveCount(4);
   await checkRow(rows.nth(0), ['Dacula Kreivi', '', 'EiOsallistui']);
   await checkRow(rows.nth(1), ['Hui Haamu', '', 'Valitse...Merkitsemättä']);
@@ -88,13 +99,13 @@ test('Pistesyötössä muokkaus ei ole sallittu jos koetulosten tallentaminen ei
 
 test('Näyttää pistesyotöt kaikilla kokeilla', async ({ page }) => {
   await page.getByLabel('Näytä vain laskentaan').click();
-  const headrow = page.locator('[data-test-id="pistesyotto-form"] thead tr');
+  const headrow = page.getByTestId('pistesyotto-form').locator('thead tr');
   await checkRow(
     headrow,
     ['Hakija', 'Köksäkokeen arvosana', 'Nakkikoe, oletko nakkisuojassa?'],
     'th',
   );
-  const rows = page.locator('[data-test-id="pistesyotto-form"] tbody tr');
+  const rows = page.getByTestId('pistesyotto-form').locator('tbody tr');
   await expect(rows).toHaveCount(4);
   await checkRow(rows.nth(0), [
     'Dacula Kreivi',
@@ -223,11 +234,11 @@ test.describe('Suodattimet', () => {
       name: 'Hae hakijan nimellä tai tunnisteilla',
     });
     await hakuInput.fill('Ruht');
-    let rows = page.locator('[data-test-id="pistesyotto-form"] tbody tr');
+    let rows = page.getByTestId('pistesyotto-form').locator('tbody tr');
     await expect(rows).toHaveCount(1);
     await checkRow(rows.nth(0), ['Nukettaja Ruhtinas', '', 'KylläOsallistui']);
     await hakuInput.fill('Hui');
-    rows = page.locator('[data-test-id="pistesyotto-form"] tbody tr');
+    rows = page.getByTestId('pistesyotto-form').locator('tbody tr');
     await expect(rows).toHaveCount(1);
     await checkRow(rows.nth(0), ['Hui Haamu', '', 'Valitse...Merkitsemättä']);
   });
@@ -237,7 +248,7 @@ test.describe('Suodattimet', () => {
       name: 'Hae hakijan nimellä tai tunnisteilla',
     });
     await hakuInput.fill('1.2.246.562.11.00000000000001543832');
-    const rows = page.locator('[data-test-id="pistesyotto-form"] tbody tr');
+    const rows = page.getByTestId('pistesyotto-form').locator('tbody tr');
     await expect(rows).toHaveCount(1);
     await checkRow(rows.nth(0), ['Hui Haamu', '', 'Valitse...Merkitsemättä']);
   });
@@ -247,7 +258,7 @@ test.describe('Suodattimet', () => {
       name: 'Hae hakijan nimellä tai tunnisteilla',
     });
     await hakuInput.fill('1.2.246.562.24.14598775927');
-    const rows = page.locator('[data-test-id="pistesyotto-form"] tbody tr');
+    const rows = page.getByTestId('pistesyotto-form').locator('tbody tr');
     await expect(rows).toHaveCount(1);
     await checkRow(rows.nth(0), [
       'Purukumi Puru',
@@ -258,7 +269,7 @@ test.describe('Suodattimet', () => {
 
   test('Osallistumisentilalla Merkitsemättä', async ({ page }) => {
     await selectTila(page, 'Merkitsemättä');
-    const rows = page.locator('[data-test-id="pistesyotto-form"] tbody tr');
+    const rows = page.getByTestId('pistesyotto-form').locator('tbody tr');
     await expect(rows).toHaveCount(2);
     await checkRow(rows.nth(0), ['Hui Haamu', '', 'Valitse...Merkitsemättä']);
     await checkRow(rows.nth(1), [
@@ -270,7 +281,7 @@ test.describe('Suodattimet', () => {
 
   test('Osallistumisentilalla Osallistui', async ({ page }) => {
     await selectTila(page, 'Osallistui');
-    const rows = page.locator('[data-test-id="pistesyotto-form"] tbody tr');
+    const rows = page.getByTestId('pistesyotto-form').locator('tbody tr');
     await expect(rows).toHaveCount(2);
 
     await checkRow(rows.nth(0), ['Dacula Kreivi', '', 'EiOsallistui']);

@@ -10,7 +10,7 @@ import LASKETUT_HAKIJARYHMAT from './fixtures/lasketut_hakijaryhmat.json';
 import SIJOITTELUAJON_TULOKSET from './fixtures/sijoitteluajon-tulokset.json';
 import SIJOITTELUN_TULOS_HAKUKOHTEELLE from './fixtures/sijoittelun-tulos.json';
 import HAKUKOHTEEN_VALINTATULOKSET from './fixtures/hakukohteen_valintatulokset.json';
-import { SERVICE_KEY } from '@/lib/permissions';
+import { VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY } from '@/lib/permissions';
 import PISTETIEDOT from './fixtures/pistetiedot.json';
 import KOKEET from './fixtures/valintakoe-avaimet.json';
 import EHDOT from './fixtures/hyvaksynnan_ehdot.json';
@@ -47,7 +47,9 @@ export default async function playwrightSetup() {
         organisaatiot: [
           {
             organisaatioOid: OPH_ORGANIZATION_OID,
-            kayttooikeudet: [{ palvelu: SERVICE_KEY, oikeus: 'CRUD' }],
+            kayttooikeudet: [
+              { palvelu: VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY, oikeus: 'CRUD' },
+            ],
           },
         ],
       });
@@ -79,10 +81,18 @@ export default async function playwrightSetup() {
     ) {
       return modifyResponse(response, EHDOT);
     } else if (request.url?.includes('kouta-internal/hakukohde/search')) {
-      const hakuId = request.url.split('&haku=')[1];
+      const url = new URL(request.url, `http://localhost:${port}`);
+
+      const hakuId = url.searchParams.get('haku');
+      const tarjoajaOids = url.searchParams.getAll('tarjoaja');
+
       return modifyResponse(
         response,
-        HAKUKOHTEET.filter((hk) => hk.hakuOid === hakuId),
+        HAKUKOHTEET.filter(
+          (hk) =>
+            hk.hakuOid === hakuId &&
+            (tarjoajaOids.length === 0 || tarjoajaOids.includes(hk.tarjoaja)),
+        ),
       );
     } else if (request.url?.includes('kouta-internal/hakukohde/')) {
       const hakukohdeOid = request.url.split('/').reverse()[0];
@@ -257,6 +267,9 @@ export default async function playwrightSetup() {
       return modifyResponse(response, []);
     } else if (request.url?.includes('/valintatiedot-hakukohteittain')) {
       return modifyResponse(response, VALINTATIEDOT_HAKUKOHTEITTAIN);
+    } else if (request.url?.endsWith('/sijoitteluajo/latest/perustiedot')) {
+      response.statusCode = 404;
+      return response.end();
     } else {
       console.log(
         '(Backend) mock not implemented',

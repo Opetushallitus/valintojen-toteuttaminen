@@ -1,73 +1,106 @@
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import { client } from '@/lib/http-client';
 import {
-  OrganizationPermissions,
-  UserPermissions,
-  SERVICE_KEY,
+  VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY,
   Permission,
-  getOrgsForPermission,
+  selectUserPermissions,
+  UserPermissionsByService,
+  UserPermissions,
+  checkHasPermission,
 } from '@/lib/permissions';
 import { PermissionError } from '@/lib/common';
-import { intersection, isNonNull } from 'remeda';
-import { OPH_ORGANIZATION_OID } from '@/lib/constants';
-import { useOrganizationParentOids } from '@/lib/organisaatio-service';
+import { isEmpty, unique } from 'remeda';
 import { getConfiguration } from '../lib/configuration/client-configuration';
+import {
+  findBranchOidsFromOrganizationHierarchy,
+  useOrganizationHierarchy,
+} from '@/lib/organisaatio-service';
+import { useMemo } from 'react';
 
-const getUserPermissions = async (): Promise<UserPermissions> => {
-  const config = getConfiguration();
+const getUserPermissions = async (): Promise<UserPermissionsByService> => {
+  const configuration = getConfiguration();
   const response = await client.get<{
     organisaatiot: Array<{
       organisaatioOid: string;
       kayttooikeudet: [{ palvelu: string; oikeus: Permission }];
     }>;
-  }>(config.routes.yleiset.kayttoikeusUrl);
-  const organizations: Array<OrganizationPermissions> =
-    response.data.organisaatiot
-      .map((org) => {
-        const permissions: Array<Permission> = org.kayttooikeudet
-          .filter((o) => o.palvelu === SERVICE_KEY)
-          .map((o) => o.oikeus);
-        return permissions.length > 0
-          ? { organizationOid: org.organisaatioOid, permissions }
-          : null;
-      })
-      .filter(isNonNull);
+  }>(configuration.routes.yleiset.kayttoikeusUrl);
 
-  const crudOrganizations = getOrgsForPermission(organizations, 'CRUD');
+  const userPermissions = selectUserPermissions(response.data);
 
-  const userPermissions: UserPermissions = {
-    hasOphCRUD: crudOrganizations.includes(OPH_ORGANIZATION_OID),
-    readOrganizations: getOrgsForPermission(organizations, 'READ'),
-    writeOrganizations: getOrgsForPermission(organizations, 'READ_UPDATE'),
-    crudOrganizations,
-  };
-  if (userPermissions.readOrganizations.length === 0) {
+  if (
+    isEmpty(
+      userPermissions[VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY]
+        ?.readOrganizations ?? [],
+    )
+  ) {
     throw new PermissionError();
   }
+
   return userPermissions;
 };
 
-export const useHasOrganizationPermissions = (
-  oid: string,
+/**
+ * Palauttta tiedon siitä onko käyttäjällä käyttöoikeus johonkin annetuista organisaatioista
+ *
+ * @param organizationOids Organisaatioiden oidit, joista käyttöoikeus halutaan tarkistaa
+ * @param permission Tarkistettava käyttöoikeus ('READ', 'READ_UPDATE', 'CRUD')
+ * @returns
+ */
+export const useHasSomeOrganizationPermission = (
+  organizationOids: Array<string> | string | undefined,
   permission: Permission,
+  serviceKey?: string,
 ) => {
-  const { data: userPermissions } = useUserPermissions();
+  const userPermissions = useUserPermissions(serviceKey);
+
+  const hierarchyUserPermissions = useHierarchyUserPermissions(userPermissions);
+
+  return checkHasPermission(
+    organizationOids,
+    hierarchyUserPermissions,
+    permission,
+  );
+};
+
+/**
+ * Täydentää parametrina annetut käyttöoikeudet organisaatiohierarkiasta kunkin organisaatiopuun haaran jälkeläisillä.
+ * @param userPermissions Käyttöoikeudet käyttöoikeuspalvelusta.
+ * @returns Täydennetyt käyttöoikeudet.
+ */
+export const useHierarchyUserPermissions = (
+  userPermissions: UserPermissions,
+): UserPermissions => {
   const { readOrganizations, writeOrganizations, crudOrganizations } =
     userPermissions;
 
-  let permissionOrganizationOids = readOrganizations;
-  if (permission === 'CRUD') {
-    permissionOrganizationOids = crudOrganizations;
-  } else if (permission === 'READ_UPDATE') {
-    permissionOrganizationOids = writeOrganizations;
-  }
+  const allPermissionOrganizationOids = unique([
+    ...crudOrganizations,
+    ...writeOrganizations,
+    ...readOrganizations,
+  ]);
 
-  const { data: organizationOidWithParentOids } =
-    useOrganizationParentOids(oid);
+  const { data: organizationHierarchy } = useOrganizationHierarchy(
+    allPermissionOrganizationOids,
+  );
 
-  return (
-    intersection(organizationOidWithParentOids, permissionOrganizationOids)
-      .length > 0
+  return useMemo(
+    () => ({
+      hasOphCRUD: userPermissions.hasOphCRUD,
+      crudOrganizations: findBranchOidsFromOrganizationHierarchy(
+        organizationHierarchy,
+        userPermissions.crudOrganizations,
+      ),
+      writeOrganizations: findBranchOidsFromOrganizationHierarchy(
+        organizationHierarchy,
+        userPermissions.writeOrganizations,
+      ),
+      readOrganizations: findBranchOidsFromOrganizationHierarchy(
+        organizationHierarchy,
+        userPermissions.readOrganizations,
+      ),
+    }),
+    [userPermissions, organizationHierarchy],
   );
 };
 
@@ -80,5 +113,9 @@ export const userPermissionsQueryOptions = {
 export const useQueryUserPermissions = () =>
   useQuery({ ...userPermissionsQueryOptions, throwOnError: false });
 
-export const useUserPermissions = () =>
-  useSuspenseQuery(userPermissionsQueryOptions);
+export const useUserPermissions = (
+  serviceKey: string = VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY,
+) => {
+  const { data } = useSuspenseQuery(userPermissionsQueryOptions);
+  return data[serviceKey];
+};

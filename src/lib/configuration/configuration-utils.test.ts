@@ -10,12 +10,15 @@ describe('Configuration: getConfigUrl', () => {
     expect(route).toEqual('vaihdaparametrit/mansikka/ja/kurkku');
   });
 
-  test('does not replace url placeholders with wrong params', () => {
-    const route = getConfigUrl('vaihdaparametrit/{marja}/ja/{vihannes}', {
-      marja: 'mansikka',
-      vihanns: 'kurkku',
-    });
-    expect(route).toEqual('vaihdaparametrit/mansikka/ja/{vihannes}');
+  test('Throws an error if all placeholders are not replaced with values', () => {
+    expect(() =>
+      getConfigUrl('vaihdaparametrit/{marja}/ja/{vihannes}', {
+        marja: 'mansikka',
+        vihanns: 'kurkku',
+      }),
+    ).toThrowError(
+      'Not all placeholders were replaced in route vaihdaparametrit/{marja}/ja/{vihannes}. Result: vaihdaparametrit/mansikka/ja/{vihannes}',
+    );
   });
 
   test('extra parameters do not have effect', () => {

@@ -1,7 +1,7 @@
 'use client';
 import { useEffect } from 'react';
-import { FetchError, PermissionError } from '../lib/common';
-import { useTranslations } from '../lib/localization/useTranslations';
+import { FetchError, OphErrorWithTitle, PermissionError } from '@/lib/common';
+import { useTranslations } from '@/lib/localization/useTranslations';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { Stack } from '@mui/material';
 import { notFound } from 'next/navigation';
@@ -17,8 +17,12 @@ const ErrorComponent = ({
 }) => {
   const { t } = useTranslations();
   return (
-    <Stack spacing={1} sx={{ margin: 1 }} alignItems="flex-start">
-      {title && <OphTypography variant="h1">{title}</OphTypography>}
+    <Stack spacing={1} sx={{ margin: 2 }} alignItems="flex-start">
+      {title && (
+        <OphTypography variant="h1" component="div">
+          {title}
+        </OphTypography>
+      )}
       {message && <OphTypography component="div">{message}</OphTypography>}
       {retry && (
         <OphButton variant="contained" onClick={retry}>
@@ -34,7 +38,7 @@ export function ErrorView({
   reset,
 }: {
   error: (Error & { digest?: string }) | FetchError;
-  reset: () => void;
+  reset?: () => void;
 }) {
   useEffect(() => {
     console.error(error);
@@ -69,7 +73,20 @@ export function ErrorView({
   } else if (error?.digest === 'NEXT_NOT_FOUND') {
     notFound();
   } else if (error instanceof PermissionError) {
-    return <ErrorComponent message={error.message} />;
+    return (
+      <ErrorComponent
+        title={t('virhe.kayttooikeudet')}
+        message={t(error.message)}
+      />
+    );
+  } else if (error instanceof OphErrorWithTitle) {
+    return (
+      <ErrorComponent
+        title={t(error.title)}
+        message={t(error.message)}
+        retry={reset}
+      />
+    );
   } else {
     return <ErrorComponent title={t('virhe.tuntematon')} retry={reset} />;
   }

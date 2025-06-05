@@ -17,6 +17,7 @@ export default defineConfig({
   reporter: 'list',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
+    testIdAttribute: 'data-test-id',
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: `https://localhost:3404${nextConfig.basePath}`,
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */

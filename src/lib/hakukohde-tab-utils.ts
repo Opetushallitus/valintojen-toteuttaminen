@@ -3,7 +3,11 @@ import {
   isKorkeakouluHaku,
 } from '@/lib/kouta/kouta-service';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
-import { UserPermissions } from '@/lib/permissions';
+import {
+  checkHasPermission,
+  Permission,
+  UserPermissions,
+} from '@/lib/permissions';
 import { isInRange, toFinnishDate } from '@/lib/time-utils';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 
@@ -12,7 +16,7 @@ type VisibleFnProps = {
   hakukohde: Hakukohde;
   haunAsetukset: HaunAsetukset;
   usesValintalaskenta: boolean;
-  permissions: UserPermissions;
+  hierarchyPermissions: UserPermissions;
 };
 
 export type BasicTab = {
@@ -21,48 +25,84 @@ export type BasicTab = {
   visibleFn?: (props: VisibleFnProps) => boolean;
 };
 
-const isAllowedToUseValinnat = (
+const isValinnatAllowedForHaku = (
   haunAsetukset: HaunAsetukset,
-  permissions: UserPermissions,
+  hierarchyPermissions: UserPermissions,
 ) => {
   return (
-    permissions.hasOphCRUD ||
+    hierarchyPermissions.hasOphCRUD ||
     isInRange(
       toFinnishDate(new Date()),
-      haunAsetukset?.PH_OLVVPKE?.dateStart,
-      haunAsetukset?.PH_OLVVPKE?.dateEnd,
+      haunAsetukset?.valinnatEstettyOppilaitosvirkailijoilta?.dateStart,
+      haunAsetukset?.valinnatEstettyOppilaitosvirkailijoilta?.dateEnd,
     )
   );
 };
 
-export const TABS: Array<BasicTab> = [
-  { title: 'perustiedot.otsikko', route: 'perustiedot' },
+const hasHakukohdePermission = (
+  hakukohde: Hakukohde,
+  hierarchyPermissions: UserPermissions,
+  permission: Permission,
+) => {
+  return checkHasPermission(
+    hakukohde.tarjoajaOid,
+    hierarchyPermissions,
+    permission,
+  );
+};
+
+export const HAKUKOHDE_TABS: Array<BasicTab> = [
+  {
+    title: 'perustiedot.otsikko',
+    route: 'perustiedot',
+    visibleFn: ({ hakukohde, hierarchyPermissions }) =>
+      hasHakukohdePermission(hakukohde, hierarchyPermissions, 'READ'),
+  },
   {
     title: 'hakeneet.otsikko',
     route: 'hakeneet',
-    visibleFn: ({ haunAsetukset, permissions }) =>
-      isAllowedToUseValinnat(haunAsetukset, permissions),
+    visibleFn: ({ hakukohde, haunAsetukset, hierarchyPermissions }) =>
+      hasHakukohdePermission(hakukohde, hierarchyPermissions, 'READ') &&
+      isValinnatAllowedForHaku(haunAsetukset, hierarchyPermissions),
   },
   {
     title: 'valinnanhallinta.otsikko',
     route: 'valinnan-hallinta',
-    visibleFn: ({ haunAsetukset, permissions, usesValintalaskenta }) =>
+    visibleFn: ({
+      hakukohde,
+      haunAsetukset,
+      hierarchyPermissions,
+      usesValintalaskenta,
+    }) =>
+      hasHakukohdePermission(hakukohde, hierarchyPermissions, 'CRUD') &&
       (haunAsetukset.sijoittelu || usesValintalaskenta) &&
-      isAllowedToUseValinnat(haunAsetukset, permissions),
+      isValinnatAllowedForHaku(haunAsetukset, hierarchyPermissions),
   },
   {
     title: 'valintakoekutsut.otsikko',
     route: 'valintakoekutsut',
-    visibleFn: ({ haunAsetukset, permissions, usesValintalaskenta }) =>
+    visibleFn: ({
+      hakukohde,
+      haunAsetukset,
+      hierarchyPermissions,
+      usesValintalaskenta,
+    }) =>
+      hasHakukohdePermission(hakukohde, hierarchyPermissions, 'READ') &&
       (haunAsetukset.sijoittelu || usesValintalaskenta) &&
-      isAllowedToUseValinnat(haunAsetukset, permissions),
+      isValinnatAllowedForHaku(haunAsetukset, hierarchyPermissions),
   },
   {
     title: 'pistesyotto.otsikko',
     route: 'pistesyotto',
-    visibleFn: ({ haunAsetukset, permissions, usesValintalaskenta }) =>
+    visibleFn: ({
+      hakukohde,
+      haunAsetukset,
+      hierarchyPermissions,
+      usesValintalaskenta,
+    }) =>
+      hasHakukohdePermission(hakukohde, hierarchyPermissions, 'READ_UPDATE') &&
       (haunAsetukset.sijoittelu || usesValintalaskenta) &&
-      isAllowedToUseValinnat(haunAsetukset, permissions),
+      isValinnatAllowedForHaku(haunAsetukset, hierarchyPermissions),
   },
   {
     title: 'harkinnanvaraiset.otsikko',
@@ -71,53 +111,81 @@ export const TABS: Array<BasicTab> = [
       haku,
       hakukohde,
       haunAsetukset,
-      permissions,
+      hierarchyPermissions,
       usesValintalaskenta,
     }) =>
+      hasHakukohdePermission(hakukohde, hierarchyPermissions, 'READ') &&
       !isKorkeakouluHaku(haku) &&
       isHarkinnanvarainenHakukohde(hakukohde) &&
       (haunAsetukset.sijoittelu || usesValintalaskenta) &&
-      isAllowedToUseValinnat(haunAsetukset, permissions),
+      isValinnatAllowedForHaku(haunAsetukset, hierarchyPermissions),
   },
   {
     title: 'hakijaryhmat.otsikko',
     route: 'hakijaryhmat',
-    visibleFn: ({ haku, haunAsetukset, usesValintalaskenta, permissions }) =>
+    visibleFn: ({
+      haku,
+      hakukohde,
+      haunAsetukset,
+      usesValintalaskenta,
+      hierarchyPermissions,
+    }) =>
+      hasHakukohdePermission(hakukohde, hierarchyPermissions, 'READ') &&
       isKorkeakouluHaku(haku) &&
       (haunAsetukset.sijoittelu || usesValintalaskenta) &&
-      isAllowedToUseValinnat(haunAsetukset, permissions),
+      isValinnatAllowedForHaku(haunAsetukset, hierarchyPermissions),
   },
   {
     title: 'valintalaskennan-tulokset.otsikko',
     route: 'valintalaskennan-tulokset',
-    visibleFn: ({ haunAsetukset, usesValintalaskenta, permissions }) =>
+    visibleFn: ({
+      hakukohde,
+      haunAsetukset,
+      usesValintalaskenta,
+      hierarchyPermissions,
+    }) =>
+      hasHakukohdePermission(hakukohde, hierarchyPermissions, 'READ') &&
       (haunAsetukset.sijoittelu || usesValintalaskenta) &&
-      isAllowedToUseValinnat(haunAsetukset, permissions),
+      isValinnatAllowedForHaku(haunAsetukset, hierarchyPermissions),
   },
   {
     title: 'sijoittelun-tulokset.otsikko',
     route: 'sijoittelun-tulokset',
-    visibleFn: ({ haunAsetukset, usesValintalaskenta, permissions }) =>
+    visibleFn: ({
+      hakukohde,
+      haunAsetukset,
+      usesValintalaskenta,
+      hierarchyPermissions,
+    }) =>
+      hasHakukohdePermission(hakukohde, hierarchyPermissions, 'READ') &&
       (haunAsetukset.sijoittelu || usesValintalaskenta) &&
-      isAllowedToUseValinnat(haunAsetukset, permissions),
+      isValinnatAllowedForHaku(haunAsetukset, hierarchyPermissions),
   },
   {
     title: 'valinnan-tulokset.otsikko',
     route: 'valinnan-tulokset',
-    visibleFn: ({ haunAsetukset, usesValintalaskenta, permissions }) =>
+    visibleFn: ({
+      hakukohde,
+      haunAsetukset,
+      usesValintalaskenta,
+      hierarchyPermissions,
+    }) =>
+      hasHakukohdePermission(hakukohde, hierarchyPermissions, 'READ') &&
       !usesValintalaskenta &&
       !haunAsetukset.sijoittelu &&
-      isAllowedToUseValinnat(haunAsetukset, permissions),
+      isValinnatAllowedForHaku(haunAsetukset, hierarchyPermissions),
   },
 ] as const;
 
-export const isTabVisible = ({
+export const isHakukohdeTabVisible = ({
   tab,
   ...visibleProps
 }: { tab: BasicTab } & VisibleFnProps) => {
   return !tab.visibleFn || tab.visibleFn(visibleProps);
 };
 
-export const getVisibleTabs = (visibleProps: VisibleFnProps) => {
-  return TABS.filter((tab) => isTabVisible({ tab, ...visibleProps }));
+export const getVisibleHakukohdeTabs = (visibleProps: VisibleFnProps) => {
+  return HAKUKOHDE_TABS.filter((tab) =>
+    isHakukohdeTabVisible({ tab, ...visibleProps }),
+  );
 };

@@ -64,6 +64,9 @@
     "valintaryhma": "Valintaryhmittäin",
     "yhteisvalinnan-hallinta": "Yhteisvalinnan hallinta"
   },
+  "hakukohde-tabs": {
+    "not-visible": "Välilehti \"{tabName}\" ei ole käytettävissä."
+  },
   "lomake": {
     "jatka": "Jatka",
     "tallentamattomia-muutoksia": "Tallentamattomia muutoksia",
@@ -111,7 +114,12 @@
     "tarkistasyote": "Virheellinen syöte. Tarkista antamasi tiedot.",
     "tiedosto-lataus": "Tiedoston latauksessa tapahtui virhe.",
     "dokumentin-luonti": "Dokumentin luonti epäonnistui. Yritä uudelleen tai ota yhteyttä ylläpitoon.",
-    "osoitetarrat": "Osoitetarrojen muodostamisessa tapahtui virhe!"
+    "osoitetarrat": "Osoitetarrojen muodostamisessa tapahtui virhe!",
+    "kayttooikeudet": "Käyttöoikeusvirhe",
+    "haku-ei-oikeuksia": "Sinulla ei ole oikeuksia tämän haun hakukohteisiin.",
+    "haku-ei-hakukohteita-otsikko": "Hakukohteita ei löytynyt",
+    "haku-ei-hakukohteita-teksti": "Tällä haulla ei ole käyttäjätunnuksellesi kuuluvia hakukohteita.",
+    "hakukohteiden-lataus": "Hakukohteiden lataamisessa tapahtui virhe."
   },
   "haku": {
     "otsikko": "Haut",

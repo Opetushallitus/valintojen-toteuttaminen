@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { getVisibleTabs } from './hakukohde-tab-utils';
+import { getVisibleHakukohdeTabs } from './hakukohde-tab-utils';
 import { Haku, Hakukohde, Tila } from '@/lib/kouta/kouta-types';
 import { toFinnishDate } from '@/lib/time-utils';
 import { UserPermissions } from '@/lib/permissions';
-import { OPH_ORGANIZATION_OID } from './constants';
+import { OPH_ORGANIZATION_OID } from '@/lib/constants';
 
 const HAKU_BASE: Haku = {
   oid: '5.4.3.2.1',
@@ -39,27 +39,42 @@ const HAKUKOHDE_BASE: Hakukohde = {
 
 const OPH_PERMISSIONS: UserPermissions = {
   hasOphCRUD: true,
-  readOrganizations: [],
-  writeOrganizations: [],
+  readOrganizations: [OPH_ORGANIZATION_OID],
+  writeOrganizations: [OPH_ORGANIZATION_OID],
   crudOrganizations: [OPH_ORGANIZATION_OID],
 };
 
-const NORMAL_PERMISSIONS: UserPermissions = {
+const CRUD_PERMISSIONS: UserPermissions = {
   hasOphCRUD: false,
-  readOrganizations: [],
-  writeOrganizations: [],
-  crudOrganizations: [HAKUKOHDE_BASE.organisaatioOid],
+  readOrganizations: [HAKUKOHDE_BASE.tarjoajaOid],
+  writeOrganizations: [HAKUKOHDE_BASE.tarjoajaOid],
+  crudOrganizations: [HAKUKOHDE_BASE.tarjoajaOid],
 };
 
-describe('getVisibleTabs', () => {
+const WRITE_PERMISSIONS: UserPermissions = {
+  hasOphCRUD: false,
+  readOrganizations: [HAKUKOHDE_BASE.tarjoajaOid],
+  writeOrganizations: [HAKUKOHDE_BASE.tarjoajaOid],
+  crudOrganizations: [],
+};
+
+const READ_PERMISSIONS: UserPermissions = {
+  hasOphCRUD: false,
+  readOrganizations: [HAKUKOHDE_BASE.tarjoajaOid],
+  writeOrganizations: [],
+  crudOrganizations: [],
+};
+
+describe('getVisibleHakukohdeTabs', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.setSystemTime(
       toFinnishDate(new Date(Date.parse('2020-01-01T12:00:00.000Z'))),
     );
   });
-  test('returns right tabs for "korkeakoulutus"', async () => {
-    const tabs = getVisibleTabs({
+
+  test('OPH permissions - korkeakoulutus', async () => {
+    const tabs = getVisibleHakukohdeTabs({
       haku: {
         ...HAKU_BASE,
         kohdejoukkoKoodiUri: 'haunkohdejoukko_12#1', // Korkeakoulutus
@@ -67,7 +82,7 @@ describe('getVisibleTabs', () => {
       hakukohde: HAKUKOHDE_BASE,
       haunAsetukset: { sijoittelu: true },
       usesValintalaskenta: true,
-      permissions: OPH_PERMISSIONS,
+      hierarchyPermissions: OPH_PERMISSIONS,
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -81,8 +96,8 @@ describe('getVisibleTabs', () => {
     ]);
   });
 
-  test('returns right tabs for "toisen asteen yhteishaku" and harkinnanvarainen hakukohde', async () => {
-    const tabs = getVisibleTabs({
+  test('OPH permissions - "toisen asteen yhteishaku" and harkinnanvarainen hakukohde', async () => {
+    const tabs = getVisibleHakukohdeTabs({
       haku: {
         ...HAKU_BASE,
         hakutapaKoodiUri: 'hakutapa_01#1', // Yhteishaku
@@ -94,7 +109,7 @@ describe('getVisibleTabs', () => {
       },
       haunAsetukset: { sijoittelu: true },
       usesValintalaskenta: true,
-      permissions: OPH_PERMISSIONS,
+      hierarchyPermissions: OPH_PERMISSIONS,
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -108,8 +123,8 @@ describe('getVisibleTabs', () => {
     ]);
   });
 
-  test('returns right tabs for "toisen asteen yhteishaku" and NOT harkinnanvarainen hakukohde', async () => {
-    const tabs = getVisibleTabs({
+  test('OPH permissions - "toisen asteen yhteishaku" and NOT harkinnanvarainen hakukohde', async () => {
+    const tabs = getVisibleHakukohdeTabs({
       haku: {
         ...HAKU_BASE,
         hakutapaKoodiUri: 'hakutapa_01#1', // Yhteishaku
@@ -121,7 +136,7 @@ describe('getVisibleTabs', () => {
       },
       haunAsetukset: { sijoittelu: true },
       usesValintalaskenta: true,
-      permissions: OPH_PERMISSIONS,
+      hierarchyPermissions: OPH_PERMISSIONS,
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -134,8 +149,8 @@ describe('getVisibleTabs', () => {
     ]);
   });
 
-  test('returns right tabs for korkeakoulutus without sijoittelu and without valintalaskenta', () => {
-    const tabs = getVisibleTabs({
+  test('OPH permissions - korkeakoulutus without sijoittelu and without valintalaskenta', () => {
+    const tabs = getVisibleHakukohdeTabs({
       haku: {
         ...HAKU_BASE,
         kohdejoukkoKoodiUri: 'haunkohdejoukko_12#1', // Korkeakoulutus
@@ -143,7 +158,7 @@ describe('getVisibleTabs', () => {
       hakukohde: HAKUKOHDE_BASE,
       haunAsetukset: { sijoittelu: false },
       usesValintalaskenta: false,
-      permissions: OPH_PERMISSIONS,
+      hierarchyPermissions: OPH_PERMISSIONS,
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -152,8 +167,8 @@ describe('getVisibleTabs', () => {
     ]);
   });
 
-  test('returns right tabs for korkeakoulutus without sijoittelu and with valintalaskenta', async () => {
-    const tabs = getVisibleTabs({
+  test('OPH permissions - korkeakoulutus without sijoittelu and with valintalaskenta', async () => {
+    const tabs = getVisibleHakukohdeTabs({
       haku: {
         ...HAKU_BASE,
         kohdejoukkoKoodiUri: 'haunkohdejoukko_12#1', // Korkeakoulutus
@@ -161,7 +176,7 @@ describe('getVisibleTabs', () => {
       hakukohde: HAKUKOHDE_BASE,
       haunAsetukset: { sijoittelu: false },
       usesValintalaskenta: true,
-      permissions: OPH_PERMISSIONS,
+      hierarchyPermissions: OPH_PERMISSIONS,
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -175,20 +190,153 @@ describe('getVisibleTabs', () => {
     ]);
   });
 
-  test('only show perustiedot-tab, if no OPH permissions and use of valinnat disallowed via ohjausparametrit', async () => {
-    const tabs = getVisibleTabs({
+  test('OPH permissions - use of valinnat disallowed via ohjausparametrit', () => {
+    const tabs = getVisibleHakukohdeTabs({
       haku: HAKU_BASE,
       hakukohde: HAKUKOHDE_BASE,
       haunAsetukset: {
         sijoittelu: true,
-        PH_OLVVPKE: {
+        valinnatEstettyOppilaitosvirkailijoilta: {
           dateStart: Date.parse('2021-01-01T12:00:00.000Z'),
           dateEnd: Date.parse('2021-01-02T12:00:00.000Z'),
         },
       },
       usesValintalaskenta: true,
-      permissions: NORMAL_PERMISSIONS,
+      hierarchyPermissions: OPH_PERMISSIONS,
+    });
+    expect(tabs.map((t) => t.route)).toEqual([
+      'perustiedot',
+      'hakeneet',
+      'valinnan-hallinta',
+      'valintakoekutsut',
+      'pistesyotto',
+      'valintalaskennan-tulokset',
+      'sijoittelun-tulokset',
+    ]);
+  });
+
+  test('CRUD permissions - use of valinnat disallowed via ohjausparametrit', () => {
+    const tabs = getVisibleHakukohdeTabs({
+      haku: HAKU_BASE,
+      hakukohde: HAKUKOHDE_BASE,
+      haunAsetukset: {
+        sijoittelu: true,
+        valinnatEstettyOppilaitosvirkailijoilta: {
+          dateStart: Date.parse('2021-01-01T12:00:00.000Z'),
+          dateEnd: Date.parse('2021-01-02T12:00:00.000Z'),
+        },
+      },
+      usesValintalaskenta: true,
+      hierarchyPermissions: CRUD_PERMISSIONS,
     });
     expect(tabs.map((t) => t.route)).toEqual(['perustiedot']);
+  });
+
+  test('Read permissions, no valintalaskenta and no sijoittelu', () => {
+    const tabs = getVisibleHakukohdeTabs({
+      haku: HAKU_BASE,
+      hakukohde: HAKUKOHDE_BASE,
+      haunAsetukset: {
+        sijoittelu: false,
+      },
+      usesValintalaskenta: false,
+      hierarchyPermissions: READ_PERMISSIONS,
+    });
+    expect(tabs.map((t) => t.route)).toEqual([
+      'perustiedot',
+      'hakeneet',
+      'valinnan-tulokset',
+    ]);
+  });
+
+  test('Read permissions, using valintalaskenta and sijoittelu', () => {
+    const tabs = getVisibleHakukohdeTabs({
+      haku: HAKU_BASE,
+      hakukohde: HAKUKOHDE_BASE,
+      haunAsetukset: {
+        sijoittelu: true,
+      },
+      usesValintalaskenta: true,
+      hierarchyPermissions: READ_PERMISSIONS,
+    });
+    expect(tabs.map((t) => t.route)).toEqual([
+      'perustiedot',
+      'hakeneet',
+      'valintakoekutsut',
+      'valintalaskennan-tulokset',
+      'sijoittelun-tulokset',
+    ]);
+  });
+
+  test('Write permissions, using valintalaskenta and sijoittelu', () => {
+    const tabs = getVisibleHakukohdeTabs({
+      haku: HAKU_BASE,
+      hakukohde: HAKUKOHDE_BASE,
+      haunAsetukset: {
+        sijoittelu: true,
+      },
+      usesValintalaskenta: true,
+      hierarchyPermissions: READ_PERMISSIONS,
+    });
+    expect(tabs.map((t) => t.route)).toEqual([
+      'perustiedot',
+      'hakeneet',
+      'valintakoekutsut',
+      'valintalaskennan-tulokset',
+      'sijoittelun-tulokset',
+    ]);
+  });
+
+  test('CRUD permissions, using valintalaskenta and sijoittelu', () => {
+    const tabs = getVisibleHakukohdeTabs({
+      haku: HAKU_BASE,
+      hakukohde: HAKUKOHDE_BASE,
+      haunAsetukset: {
+        sijoittelu: true,
+      },
+      usesValintalaskenta: true,
+      hierarchyPermissions: READ_PERMISSIONS,
+    });
+    expect(tabs.map((t) => t.route)).toEqual([
+      'perustiedot',
+      'hakeneet',
+      'valintakoekutsut',
+      'valintalaskennan-tulokset',
+      'sijoittelun-tulokset',
+    ]);
+  });
+
+  test('Write permissions - no laskenta and no sijoittelu', () => {
+    const tabs = getVisibleHakukohdeTabs({
+      haku: HAKU_BASE,
+      hakukohde: HAKUKOHDE_BASE,
+      haunAsetukset: {
+        sijoittelu: false,
+      },
+      usesValintalaskenta: false,
+      hierarchyPermissions: WRITE_PERMISSIONS,
+    });
+    expect(tabs.map((t) => t.route)).toEqual([
+      'perustiedot',
+      'hakeneet',
+      'valinnan-tulokset',
+    ]);
+  });
+
+  test('CRUD permissions - no laskenta and no sijoittelu', () => {
+    const tabs = getVisibleHakukohdeTabs({
+      haku: HAKU_BASE,
+      hakukohde: HAKUKOHDE_BASE,
+      haunAsetukset: {
+        sijoittelu: false,
+      },
+      usesValintalaskenta: false,
+      hierarchyPermissions: WRITE_PERMISSIONS,
+    });
+    expect(tabs.map((t) => t.route)).toEqual([
+      'perustiedot',
+      'hakeneet',
+      'valinnan-tulokset',
+    ]);
   });
 });

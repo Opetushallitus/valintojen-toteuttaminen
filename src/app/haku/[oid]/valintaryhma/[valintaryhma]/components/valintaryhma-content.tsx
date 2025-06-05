@@ -109,7 +109,7 @@ export const ValintaryhmaContent = ({
   hakuOid: string;
   valintaryhmaOid: string;
 }) => {
-  const { data: userPermissions } = useUserPermissions();
+  const userPermissions = useUserPermissions();
 
   const { translateEntity } = useTranslations();
 
