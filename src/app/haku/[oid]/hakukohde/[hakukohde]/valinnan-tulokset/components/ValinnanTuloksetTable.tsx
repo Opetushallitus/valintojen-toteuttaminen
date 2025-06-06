@@ -76,6 +76,7 @@ const useColumns = ({
         renderFn: (hakemus) => (
           <ValinnanTilaCell
             haku={haku}
+            hakukohde={hakukohde}
             hakemus={hakemus}
             disabled={disabled}
             updateForm={updateForm}

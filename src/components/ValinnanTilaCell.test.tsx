@@ -1,7 +1,7 @@
 import { describe, expect, test, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { ValinnanTilaCell } from './ValinnanTilaCell';
-import { Haku, Tila } from '@/lib/kouta/kouta-types';
+import { Haku, Hakukohde, Tila } from '@/lib/kouta/kouta-types';
 import { TranslatedName } from '@/lib/localization/localization-types';
 
 const ORG_OID = '1.2.3.4.5';
@@ -18,6 +18,18 @@ const HAKU_BASE: Haku = {
   hakukohteita: 123,
   kohdejoukkoKoodiUri: 'mock-kohdejoukko',
   organisaatioOid: ORG_OID,
+};
+
+const HAKUKOHDE_BASE: Hakukohde = {
+  oid: 'mock-hakukohde-oid',
+  hakuOid: HAKU_BASE.oid,
+  nimi: { fi: 'mock hakukohde' },
+  organisaatioOid: ORG_OID,
+  organisaatioNimi: { fi: 'mock organisaatio' },
+  jarjestyspaikkaHierarkiaNimi: { fi: 'mock jarjestyspaikka' },
+  tarjoajaOid: ORG_OID,
+  voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita: false,
+  opetuskielet: new Set(['fi']),
 };
 
 const ORGS_WITH_UPDATE = [ORG_OID];
@@ -67,6 +79,10 @@ const renderValinnanTilaCell = ({
         ...HAKU_BASE,
         organisaatioOid,
         kohdejoukkoKoodiUri: kohdejoukko,
+      }}
+      hakukohde={{
+        ...HAKUKOHDE_BASE,
+        tarjoajaOid: organisaatioOid,
       }}
       hakemus={{
         hakijanNimi: 'Testi Hakija',
