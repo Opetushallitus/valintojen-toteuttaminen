@@ -29,10 +29,11 @@ export const HakukohdeSearchControls = () => {
     setWithoutLaskenta,
     varasijatayttoPaattamatta,
     setVarasijatayttoPaattamatta,
+    isSomeHakukohdeFilterSelected,
   } = useHakukohdeSearchParamsState();
 
   const [areFiltersVisible, setAreFiltersVisible] = useState(
-    () => withValintakoe || varasijatayttoPaattamatta,
+    () => isSomeHakukohdeFilterSelected,
   );
 
   return (

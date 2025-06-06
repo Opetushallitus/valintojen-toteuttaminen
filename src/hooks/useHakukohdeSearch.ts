@@ -129,6 +129,8 @@ export const useHakukohdeSearchParamsState = () => {
     setVarasijatayttoPaattamatta,
     searchPhrase,
     setSearchPhrase: setSearchDebounce,
+    isSomeHakukohdeFilterSelected:
+      withValintakoe || withoutLaskenta || varasijatayttoPaattamatta,
   };
 };
 
