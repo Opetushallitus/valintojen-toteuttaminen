@@ -45,6 +45,7 @@ type SelectedFilters = {
 const checkIsVarasijatayttoPaattamatta = (
   suodatustieto: HakukohteenSuodatustiedot | undefined,
   haunAsetukset: HaunAsetukset,
+  currentDate: Date,
 ) => {
   const varasijatayttoPaattyy =
     suodatustieto?.varasijatayttoPaattyy && haunAsetukset.varasijatayttoPaattyy
@@ -56,7 +57,7 @@ const checkIsVarasijatayttoPaattamatta = (
         haunAsetukset.varasijatayttoPaattyy);
 
   return varasijatayttoPaattyy
-    ? isBefore(toFinnishDate(new Date()), varasijatayttoPaattyy)
+    ? isBefore(toFinnishDate(currentDate), varasijatayttoPaattyy)
     : false;
 };
 
@@ -71,13 +72,18 @@ export const filterWithSuodatustiedot = ({
   suodatustiedot: HakukohteidenSuodatustiedot;
   selectedFilters: SelectedFilters;
 }) => {
+  const currentDate = new Date();
   return hakukohteet.filter((hakukohde) => {
     const suodatustieto = suodatustiedot?.[hakukohde.oid];
     return (
       (!selectedFilters.withValintakoe || suodatustieto?.hasValintakoe) &&
       (!selectedFilters.withoutLaskenta || !suodatustieto?.laskettu) &&
       (!selectedFilters.varasijatayttoPaattamatta ||
-        checkIsVarasijatayttoPaattamatta(suodatustieto, haunAsetukset))
+        checkIsVarasijatayttoPaattamatta(
+          suodatustieto,
+          haunAsetukset,
+          currentDate,
+        ))
     );
   });
 };
