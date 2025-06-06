@@ -27,10 +27,13 @@ export const HakukohdeSearchControls = () => {
     setWithValintakoe,
     withoutLaskenta,
     setWithoutLaskenta,
+    varasijatayttoPaattamatta,
+    setVarasijatayttoPaattamatta,
+    isSomeHakukohdeFilterSelected,
   } = useHakukohdeSearchParamsState();
 
   const [areFiltersVisible, setAreFiltersVisible] = useState(
-    () => withValintakoe,
+    () => isSomeHakukohdeFilterSelected,
   );
 
   return (
@@ -56,6 +59,11 @@ export const HakukohdeSearchControls = () => {
             label={t('haku.ilman-laskentaa')}
             checked={withoutLaskenta}
             onChange={() => setWithoutLaskenta((checked) => !checked)}
+          />
+          <OphCheckbox
+            label={t('haku.varasijataytto-paattamatta')}
+            checked={varasijatayttoPaattamatta}
+            onChange={() => setVarasijatayttoPaattamatta((checked) => !checked)}
           />
         </FormGroup>
       </Collapsible>
