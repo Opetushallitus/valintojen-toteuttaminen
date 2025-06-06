@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { LocalizedSelect } from '@/components/localized-select';
 import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
-import { Haku } from '@/lib/kouta/kouta-types';
+import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import {
   ophColors,
   OphCheckbox,
@@ -57,13 +57,13 @@ const isHyvaksyttyVarasijaltaVisible = (hakemus: HakemuksenValinnanTulos) =>
     ].includes(hakemus?.valinnanTila as ValinnanTila));
 
 export const EhdollisestiHyvaksyttavissaCheckbox = ({
-  haku,
+  hakukohde,
   hakemus,
   disabled,
   updateForm,
   t,
 }: {
-  haku: Haku;
+  hakukohde: Hakukohde;
   hakemus: Pick<
     HakemuksenValinnanTulos,
     'hakemusOid' | 'ehdollisestiHyvaksyttavissa'
@@ -82,7 +82,7 @@ export const EhdollisestiHyvaksyttavissaCheckbox = ({
   };
 
   const canUpdate = useHasSomeOrganizationPermission(
-    haku.organisaatioOid,
+    hakukohde.tarjoajaOid,
     'READ_UPDATE',
   );
 
@@ -164,14 +164,14 @@ const HylkayksenSyyFields = ({
 };
 
 const EhdollinenFields = ({
-  haku,
+  hakukohde,
   hakemus,
   disabled,
   updateForm,
   t,
   translateEntity,
 }: {
-  haku: Haku;
+  hakukohde: Hakukohde;
   hakemus: HakemuksenValinnanTulos;
   disabled: boolean;
   updateForm: (params: ValinnanTulosChangeParams) => void;
@@ -216,7 +216,7 @@ const EhdollinenFields = ({
   return (
     <>
       <EhdollisestiHyvaksyttavissaCheckbox
-        haku={haku}
+        hakukohde={hakukohde}
         hakemus={hakemus}
         updateForm={updateForm}
         disabled={disabled}
@@ -301,6 +301,7 @@ const ValinnanTilaSelect = ({
 export const ValinnanTilaCell = memo(function ValinnanTilaCell({
   hakemus,
   haku,
+  hakukohde,
   disabled,
   updateForm,
   mode,
@@ -309,6 +310,7 @@ export const ValinnanTilaCell = memo(function ValinnanTilaCell({
 }: {
   hakemus: HakemuksenValinnanTulos;
   haku: Haku;
+  hakukohde: Hakukohde;
   disabled: boolean;
   updateForm: (params: ValinnanTulosChangeParams) => void;
   mode: 'valinta' | 'sijoittelu';
@@ -381,7 +383,7 @@ export const ValinnanTilaCell = memo(function ValinnanTilaCell({
       )}
       {valinnanTila !== ValinnanTila.HYLATTY && isKorkeakouluHaku(haku) && (
         <EhdollinenFields
-          haku={haku}
+          hakukohde={hakukohde}
           hakemus={hakemus}
           disabled={disabled}
           updateForm={updateForm}
