@@ -27,6 +27,10 @@ export const HakukohdeSearchControls = () => {
     setWithValintakoe,
     withoutLaskenta,
     setWithoutLaskenta,
+    sijoittelematta,
+    setSijoittelematta,
+    julkaisematta,
+    setJulkaisematta,
     varasijatayttoPaattamatta,
     setVarasijatayttoPaattamatta,
     isSomeHakukohdeFilterSelected,
@@ -50,6 +54,16 @@ export const HakukohdeSearchControls = () => {
           {t('haku.hakukohde-suodattimet-otsikko')}
         </FormLabel>
         <FormGroup aria-labelledby={FILTERS_LABEL} sx={{ marginBottom: 1 }}>
+          <OphCheckbox
+            label={t('haku.julkaisematta')}
+            checked={julkaisematta}
+            onChange={() => setJulkaisematta((checked) => !checked)}
+          />
+          <OphCheckbox
+            label={t('haku.sijoittelematta')}
+            checked={sijoittelematta}
+            onChange={() => setSijoittelematta((checked) => !checked)}
+          />
           <OphCheckbox
             label={t('haku.on-valintakoe')}
             checked={withValintakoe}

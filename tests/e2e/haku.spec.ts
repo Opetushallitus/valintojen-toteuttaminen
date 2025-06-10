@@ -15,6 +15,15 @@ test('Haku-sivun saavutettavuus', async ({ page }) => {
   await expectPageAccessibilityOk(page);
 });
 
+test('Listaa haun hakukohteet', async ({ page }) => {
+  await page.goto(
+    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102',
+  );
+  await expectAllSpinnersHidden(page);
+  const hakukohdeNavItems = getHakukohdeNaviLinks(page);
+  await expect(hakukohdeNavItems).toHaveCount(3);
+});
+
 test.describe('Hakukohde suodatin', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(
@@ -84,6 +93,33 @@ test.describe('Hakukohde suodatin', () => {
     );
     await expect(hakukohdeNavItems.last()).toContainText(
       'Finnish MAOL competition route, Technology, Sustainable Urban Development',
+    );
+  });
+
+  test('Suodattaa "Ei sijoittelun tuloksia" -tiedolla', async ({ page }) => {
+    await page.getByRole('button', { name: 'Lisää hakuehtoja' }).click();
+    await page.getByLabel('Ei sijoittelun tuloksia').click();
+
+    const hakukohdeNavItems = getHakukohdeNaviLinks(page);
+    await expect(hakukohdeNavItems).toHaveCount(1);
+    await expect(hakukohdeNavItems.first()).toContainText(
+      'Finnish MAOL competition route, Computing and Electrical Engineering',
+    );
+  });
+
+  test('Suodattaa "Valintatapajono julkaisematta" -tiedolla', async ({
+    page,
+  }) => {
+    await page.getByRole('button', { name: 'Lisää hakuehtoja' }).click();
+    await page.getByLabel('Valintatapajono julkaisematta').click();
+
+    const hakukohdeNavItems = getHakukohdeNaviLinks(page);
+    await expect(hakukohdeNavItems).toHaveCount(2);
+    await expect(hakukohdeNavItems.first()).toContainText(
+      'Finnish MAOL competition route, Computing and Electrical Engineering',
+    );
+    await expect(hakukohdeNavItems.last()).toContainText(
+      'Finnish MAOL competition route, Natural Sciences and Mathematics, Science and Engineering',
     );
   });
 

@@ -61,3 +61,16 @@ export type LetterCounts = {
   readyForEPosti: boolean;
   groupEmailId: number | null;
 };
+
+export type HakukohteenSuodatustiedot = {
+  hasValintakoe: boolean;
+  varasijatayttoPaattyy?: Date;
+  laskettu: boolean;
+  sijoittelematta: boolean;
+  julkaisematta: boolean;
+};
+
+export type HakukohteidenSuodatustiedot = Record<
+  string,
+  HakukohteenSuodatustiedot
+>;
