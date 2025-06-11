@@ -74,60 +74,62 @@ export const HakutoiveAccordionContent = ({
         const jonosija = jono.jonosijat[0];
 
         return (
-          <HakutoiveInfoRow key={jono.oid}>
-            <TableCell />
-            <TableCell>
-              <OphTypography variant="label">
-                {getValintatapaJonoNimi({
-                  valinnanVaiheNimi: valinnanvaihe.nimi,
-                  jonoNimi: jono.nimi,
-                })}
-              </OphTypography>
-              <div>
-                {t('henkilo.taulukko.valintalaskenta-tehty')}
-                {': '}
-                {toFormattedDateTimeString(valinnanvaihe.createdAt)}
-              </div>
-            </TableCell>
-            <TableCell>{jonosija.pisteet}</TableCell>
-            <TableCell>
-              <div>{t(`tuloksenTila.${jonosija.tuloksenTila}`)}</div>
-              {jonosija.tuloksenTila !==
-                TuloksenTila.HYVAKSYTTY_HARKINNANVARAISESTI &&
-                !hakukohde.readOnly && (
-                  <EditButton
-                    onClick={() =>
-                      showModal(ValintalaskentaEditGlobalModal, {
-                        hakutoiveNumero,
-                        hakijanNimi: getHenkiloTitle(hakija),
-                        hakukohde,
-                        valintatapajono: jono,
-                        jonosija: jono.jonosijat?.[0], // Yhdellä henkilöllä vain yksi jonosija
-                        onSuccess: () => {
-                          refetchValinnanvaiheet({
-                            hakuOid: hakukohde.hakuOid,
-                            hakemusOid: jonosija.hakemusOid,
-                            queryClient,
-                          });
-                        },
-                      })
-                    }
+          jonosija && (
+            <HakutoiveInfoRow key={jono.oid}>
+              <TableCell />
+              <TableCell>
+                <OphTypography variant="label">
+                  {getValintatapaJonoNimi({
+                    valinnanVaiheNimi: valinnanvaihe.nimi,
+                    jonoNimi: jono.nimi,
+                  })}
+                </OphTypography>
+                <div>
+                  {t('henkilo.taulukko.valintalaskenta-tehty')}
+                  {': '}
+                  {toFormattedDateTimeString(valinnanvaihe.createdAt)}
+                </div>
+              </TableCell>
+              <TableCell>{jonosija.pisteet}</TableCell>
+              <TableCell>
+                <div>{t(`tuloksenTila.${jonosija.tuloksenTila}`)}</div>
+                {jonosija.tuloksenTila !==
+                  TuloksenTila.HYVAKSYTTY_HARKINNANVARAISESTI &&
+                  !hakukohde.readOnly && (
+                    <EditButton
+                      onClick={() =>
+                        showModal(ValintalaskentaEditGlobalModal, {
+                          hakutoiveNumero,
+                          hakijanNimi: getHenkiloTitle(hakija),
+                          hakukohde,
+                          valintatapajono: jono,
+                          jonosija: jono.jonosijat?.[0], // Yhdellä henkilöllä vain yksi jonosija
+                          onSuccess: () => {
+                            refetchValinnanvaiheet({
+                              hakuOid: hakukohde.hakuOid,
+                              hakemusOid: jonosija.hakemusOid,
+                              queryClient,
+                            });
+                          },
+                        })
+                      }
+                    />
+                  )}
+              </TableCell>
+              {
+                /* Näytetään valinnan tiedot vain taulukon ensimmäiselle jonolle, joka siis järjestyksessä viimeinen jono, jonka perusteella valinta tehdään */
+                isFirstJono ? (
+                  <ValinnanTulosCells
+                    hakukohde={hakukohde}
+                    hakutoiveNumero={hakutoiveNumero}
+                    hakija={hakija}
                   />
-                )}
-            </TableCell>
-            {
-              /* Näytetään valinnan tiedot vain taulukon ensimmäiselle jonolle, joka siis järjestyksessä viimeinen jono, jonka perusteella valinta tehdään */
-              isFirstJono ? (
-                <ValinnanTulosCells
-                  hakukohde={hakukohde}
-                  hakutoiveNumero={hakutoiveNumero}
-                  hakija={hakija}
-                />
-              ) : (
-                <TableCell colSpan={4} />
-              )
-            }
-          </HakutoiveInfoRow>
+                ) : (
+                  <TableCell colSpan={4} />
+                )
+              }
+            </HakutoiveInfoRow>
+          )
         );
       });
     })

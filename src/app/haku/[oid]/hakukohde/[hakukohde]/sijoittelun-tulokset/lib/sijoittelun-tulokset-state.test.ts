@@ -215,10 +215,10 @@ describe('Sijoittelun tulokset states', async () => {
     const state = await waitIdle(actor);
 
     expect(state.context.changedHakemukset.length).toEqual(1);
-    expect(state.context.changedHakemukset[0].vastaanottoTila).toEqual(
+    expect(state.context.changedHakemukset?.[0]?.vastaanottoTila).toEqual(
       VastaanottoTila.KESKEN,
     );
-    expect(state.context.changedHakemukset[0].ilmoittautumisTila).toEqual(
+    expect(state.context.changedHakemukset?.[0]?.ilmoittautumisTila).toEqual(
       IlmoittautumisTila.EI_TEHTY,
     );
   });

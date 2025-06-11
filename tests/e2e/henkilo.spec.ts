@@ -56,7 +56,7 @@ const VALINNAN_TULOS_RESULT = hakemusValinnanTulosFixture([
   },
 ]);
 
-const VALINNAN_TULOS_BASE = VALINNAN_TULOS_RESULT[0].valinnantulos;
+const VALINNAN_TULOS_BASE = VALINNAN_TULOS_RESULT[0]?.valinnantulos;
 
 test.beforeEach(async ({ page }) => {
   await page.route('**/codeelement/latest/posti_00100', (route) => {
