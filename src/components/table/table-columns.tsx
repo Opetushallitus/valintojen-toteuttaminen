@@ -128,10 +128,8 @@ export const makeExternalLinkColumn = <T extends Record<string, unknown>>({
   style: { width: 'auto', ...style },
 });
 
-const LINK_TO_PERSON = 'henkilo-ui/oppija/';
-
 export const buildLinkToPerson = (personOid: string) =>
-  LINK_TO_PERSON + personOid;
+  `henkilo-ui/oppija/${personOid}?permissionCheckService=ATARU`;
 
 type HakijaColumnType = {
   hakijanNimi: string;
