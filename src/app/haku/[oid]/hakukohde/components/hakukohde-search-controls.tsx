@@ -55,16 +55,6 @@ export const HakukohdeSearchControls = () => {
         </FormLabel>
         <FormGroup aria-labelledby={FILTERS_LABEL} sx={{ marginBottom: 1 }}>
           <OphCheckbox
-            label={t('haku.julkaisematta')}
-            checked={julkaisematta}
-            onChange={() => setJulkaisematta((checked) => !checked)}
-          />
-          <OphCheckbox
-            label={t('haku.sijoittelematta')}
-            checked={sijoittelematta}
-            onChange={() => setSijoittelematta((checked) => !checked)}
-          />
-          <OphCheckbox
             label={t('haku.on-valintakoe')}
             checked={withValintakoe}
             onChange={() => setWithValintakoe((checked) => !checked)}
@@ -73,6 +63,16 @@ export const HakukohdeSearchControls = () => {
             label={t('haku.ilman-laskentaa')}
             checked={withoutLaskenta}
             onChange={() => setWithoutLaskenta((checked) => !checked)}
+          />
+          <OphCheckbox
+            label={t('haku.sijoittelematta')}
+            checked={sijoittelematta}
+            onChange={() => setSijoittelematta((checked) => !checked)}
+          />
+          <OphCheckbox
+            label={t('haku.julkaisematta')}
+            checked={julkaisematta}
+            onChange={() => setJulkaisematta((checked) => !checked)}
           />
           <OphCheckbox
             label={t('haku.varasijataytto-paattamatta')}
