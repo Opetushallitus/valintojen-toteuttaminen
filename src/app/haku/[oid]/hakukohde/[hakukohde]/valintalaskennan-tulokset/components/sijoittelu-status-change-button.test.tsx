@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { SijoitteluStatusChangeButton } from './sijoittelu-status-change-button';
+import { PureSijoitteluStatusChangeButton } from './sijoittelu-status-change-button';
 import { useSijoitteluStatusMutation } from '../hooks/useSijoitteluStatusMutation';
 import { UserPermissions } from '@/lib/permissions';
 import { OPH_ORGANIZATION_OID } from '@/lib/constants';
@@ -10,12 +10,12 @@ const ORG_OID = '1.2.3.4.5.6';
 const ORG_OID2 = '6.5.4.3.2.1';
 
 const renderSijoitteluButton = ({
-  organisaatioOid,
+  tarjoajaOid,
   jono,
   statusMutation,
   permissions,
 }: {
-  organisaatioOid?: string;
+  tarjoajaOid?: string;
   jono?: {
     valmisSijoiteltavaksi?: boolean;
     siirretaanSijoitteluun?: boolean;
@@ -26,9 +26,11 @@ const renderSijoitteluButton = ({
     isPending?: boolean;
   };
 }) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const tFn: any = vi.fn().mockImplementation((x) => x);
   return render(
-    <SijoitteluStatusChangeButton
-      organisaatioOid={organisaatioOid ?? ORG_OID}
+    <PureSijoitteluStatusChangeButton
+      tarjoajaOid={tarjoajaOid ?? ORG_OID}
       jono={
         {
           valmisSijoiteltavaksi: true,
@@ -36,7 +38,7 @@ const renderSijoitteluButton = ({
           ...jono,
         } as LaskennanValintatapajonoTulosWithHakijaInfo
       }
-      permissions={
+      userPermissions={
         {
           writeOrganizations: [OPH_ORGANIZATION_OID],
           crudOrganizations: [OPH_ORGANIZATION_OID],
@@ -50,6 +52,7 @@ const renderSijoitteluButton = ({
           ...statusMutation,
         } as ReturnType<typeof useSijoitteluStatusMutation>
       }
+      t={tFn}
     />,
   );
 };
@@ -88,7 +91,7 @@ describe('SijoitteluStatusChangeButton', () => {
 
   test('Disable button when permissions only to other ogranization', () => {
     renderSijoitteluButton({
-      organisaatioOid: ORG_OID,
+      tarjoajaOid: ORG_OID,
       permissions: {
         writeOrganizations: [ORG_OID2],
         crudOrganizations: [ORG_OID2],
@@ -103,7 +106,7 @@ describe('SijoitteluStatusChangeButton', () => {
 
   test('Disable "poista"-button even when has permimssions to organization (not OPH)"', () => {
     renderSijoitteluButton({
-      organisaatioOid: ORG_OID,
+      tarjoajaOid: ORG_OID,
       permissions: {
         writeOrganizations: [ORG_OID],
         crudOrganizations: [ORG_OID],
@@ -121,7 +124,7 @@ describe('SijoitteluStatusChangeButton', () => {
       jono: {
         valmisSijoiteltavaksi: false,
       },
-      organisaatioOid: ORG_OID,
+      tarjoajaOid: ORG_OID,
       permissions: {
         writeOrganizations: [ORG_OID],
         crudOrganizations: [ORG_OID],

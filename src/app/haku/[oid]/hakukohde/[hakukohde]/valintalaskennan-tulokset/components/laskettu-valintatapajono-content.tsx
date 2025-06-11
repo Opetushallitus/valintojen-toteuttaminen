@@ -1,4 +1,3 @@
-import { useUserPermissions } from '@/hooks/useUserPermissions';
 import { SijoitteluStatusChangeButton } from './sijoittelu-status-change-button';
 import { useSijoitteluStatusMutation } from '../hooks/useSijoitteluStatusMutation';
 import { Hakukohde } from '@/lib/kouta/kouta-types';
@@ -17,14 +16,12 @@ const LaskettuVaiheActions = ({
   hakukohde: Hakukohde;
   jono: LaskennanValintatapajonoTulosWithHakijaInfo;
 }) => {
-  const permissions = useUserPermissions();
   const statusMutation = useSijoitteluStatusMutation(hakukohde.oid);
 
   return (
     <SijoitteluStatusChangeButton
-      organisaatioOid={hakukohde?.organisaatioOid}
+      tarjoajaOid={hakukohde?.tarjoajaOid}
       jono={jono}
-      permissions={permissions}
       statusMutation={statusMutation}
     />
   );

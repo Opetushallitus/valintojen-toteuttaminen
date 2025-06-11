@@ -4,7 +4,6 @@ import { useJonoTuloksetSearch } from '@/hooks/useJonoTuloksetSearch';
 import { SijoitteluStatusChangeButton } from './sijoittelu-status-change-button';
 import { useSijoitteluStatusMutation } from '../hooks/useSijoitteluStatusMutation';
 import { useHakukohde } from '@/lib/kouta/useHakukohde';
-import { useUserPermissions } from '@/hooks/useUserPermissions';
 import { LaskennanValintatapajonoTulosWithHakijaInfo } from '@/hooks/useEditableValintalaskennanTulokset';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { getValintatapaJonoNimi } from '@/lib/valintalaskenta/valintalaskenta-utils';
@@ -41,7 +40,6 @@ const LaskennatonVaiheActions = ({
   jono: LaskennanValintatapajonoTulosWithHakijaInfo;
   jonoTulosActorRef: JonoTulosActorRef;
 }) => {
-  const permissions = useUserPermissions();
   const statusMutation = useSijoitteluStatusMutation(hakukohde.oid);
 
   const { saveJonoTulos, isUpdating } = useJonoTulosActorRef(jonoTulosActorRef);
@@ -84,9 +82,8 @@ const LaskennatonVaiheActions = ({
         {t('yleinen.tallenna')}
       </OphButton>
       <SijoitteluStatusChangeButton
-        organisaatioOid={hakukohde?.organisaatioOid}
+        tarjoajaOid={hakukohde?.tarjoajaOid}
         jono={jono}
-        permissions={permissions}
         statusMutation={statusMutation}
       />
       <FileDownloadButton
