@@ -13,33 +13,39 @@ import { getHakukohteetQueryOptions } from '../lib/kouta/kouta-service';
 import { useUserPermissions } from './useUserPermissions';
 import { isEmpty, sortBy, toLowerCase } from 'remeda';
 import { isHakukohdeOid } from '@/lib/common';
-import {
-  getHakukohteidenSuodatustiedotQueryOptions,
-  HakukohteenSuodatustiedot,
-  HakukohteidenSuodatustiedot,
-} from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
+import { getHakukohteidenSuodatustiedotQueryOptions } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { useSearchParams } from 'next/navigation';
 import { isBefore, min } from 'date-fns';
 import { toFinnishDate } from '@/lib/time-utils';
 import { haunAsetuksetQueryOptions } from '@/lib/ohjausparametrit/useHaunAsetukset';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
+import {
+  HakukohteenSuodatustiedot,
+  HakukohteidenSuodatustiedot,
+} from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-types';
 
 const SEARCH_TERM_PARAM_NAME = 'hksearch';
 const WITH_VALINTAKOE_PARAM_NAME = 'hakukohteet-with-valintakoe';
 const VARASIJATAYTTO_PAATTAMATTA_PARAM_NAME = 'varasijataytto-paattamatta';
 const LASKETUT_HAKUKOHTEET_PARAM_NAME = 'lasketut';
+const SIJOITTELEMATTOMAT_HAKUKOHTEET_PARAM_NAME = 'sijoittelematta';
+const JULKAISEMATTOMAT_HAKUKOHTEET_PARAM_NAME = 'julkaisematta';
 
 const HAKUKOHDE_SEARCH_PARAMS = [
   SEARCH_TERM_PARAM_NAME,
   WITH_VALINTAKOE_PARAM_NAME,
   VARASIJATAYTTO_PAATTAMATTA_PARAM_NAME,
   LASKETUT_HAKUKOHTEET_PARAM_NAME,
+  SIJOITTELEMATTOMAT_HAKUKOHTEET_PARAM_NAME,
+  JULKAISEMATTOMAT_HAKUKOHTEET_PARAM_NAME,
 ] as const;
 
 type SelectedFilters = {
   withValintakoe: boolean;
   varasijatayttoPaattamatta: boolean;
   withoutLaskenta: boolean;
+  sijoittelematta: boolean;
+  julkaisematta: boolean;
 };
 
 const checkIsVarasijatayttoPaattamatta = (
@@ -78,6 +84,8 @@ export const filterWithSuodatustiedot = ({
     return (
       (!selectedFilters.withValintakoe || suodatustieto?.hasValintakoe) &&
       (!selectedFilters.withoutLaskenta || !suodatustieto?.laskettu) &&
+      (!selectedFilters.sijoittelematta || suodatustieto.sijoittelematta) &&
+      (!selectedFilters.julkaisematta || suodatustieto.julkaisematta) &&
       (!selectedFilters.varasijatayttoPaattamatta ||
         checkIsVarasijatayttoPaattamatta(
           suodatustieto,
@@ -115,6 +123,17 @@ export const useHakukohdeSearchParamsState = () => {
     LASKETUT_HAKUKOHTEET_PARAM_NAME,
     parseAsBoolean.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(false),
   );
+
+  const [sijoittelematta, setSijoittelematta] = useQueryState(
+    SIJOITTELEMATTOMAT_HAKUKOHTEET_PARAM_NAME,
+    parseAsBoolean.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(false),
+  );
+
+  const [julkaisematta, setJulkaisematta] = useQueryState(
+    JULKAISEMATTOMAT_HAKUKOHTEET_PARAM_NAME,
+    parseAsBoolean.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(false),
+  );
+
   const [varasijatayttoPaattamatta, setVarasijatayttoPaattamatta] =
     useQueryState(
       VARASIJATAYTTO_PAATTAMATTA_PARAM_NAME,
@@ -131,6 +150,10 @@ export const useHakukohdeSearchParamsState = () => {
     setWithValintakoe,
     withoutLaskenta,
     setWithoutLaskenta,
+    sijoittelematta,
+    setSijoittelematta,
+    julkaisematta,
+    setJulkaisematta,
     varasijatayttoPaattamatta,
     setVarasijatayttoPaattamatta,
     searchPhrase,
@@ -161,6 +184,8 @@ export const useHakukohdeSearchResults = (hakuOid: string) => {
     withValintakoe,
     varasijatayttoPaattamatta,
     withoutLaskenta,
+    sijoittelematta,
+    julkaisematta,
   } = useHakukohdeSearchParamsState();
 
   const sortedHakukohteet = useMemo(() => {
@@ -172,6 +197,8 @@ export const useHakukohdeSearchResults = (hakuOid: string) => {
         withValintakoe,
         varasijatayttoPaattamatta,
         withoutLaskenta,
+        sijoittelematta,
+        julkaisematta,
       },
     });
 
@@ -186,6 +213,8 @@ export const useHakukohdeSearchResults = (hakuOid: string) => {
     withoutLaskenta,
     varasijatayttoPaattamatta,
     haunAsetukset,
+    sijoittelematta,
+    julkaisematta,
   ]);
 
   const hakukohdeMatchTargetsByHakukohdeOid = useMemo(

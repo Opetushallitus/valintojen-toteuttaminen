@@ -43,6 +43,7 @@ import {
 import { ValintakoekutsutData } from '../types/valintakoekutsut-types';
 import {
   DokumenttiTyyppi,
+  HakukohteidenSuodatustiedot,
   HakutoiveValintakoeOsallistumiset,
   Kirjepohja,
   KirjepohjaNimi,
@@ -1232,17 +1233,6 @@ export const hakijoidenVastaanottotilatValintatapajonolle = async (
   }));
 };
 
-export type HakukohteenSuodatustiedot = {
-  hasValintakoe: boolean;
-  varasijatayttoPaattyy?: Date;
-  laskettu: boolean;
-};
-
-export type HakukohteidenSuodatustiedot = Record<
-  string,
-  HakukohteenSuodatustiedot
->;
-
 export const getHakukohteidenSuodatustiedotQueryOptions = ({
   hakuOid,
 }: {
@@ -1257,7 +1247,7 @@ export const getHakukohteidenSuodatustiedot = async ({
   hakuOid,
 }: {
   hakuOid: string;
-}) => {
+}): Promise<HakukohteidenSuodatustiedot> => {
   const configuration = getConfiguration();
   const response = await client.get<
     Record<
@@ -1266,6 +1256,8 @@ export const getHakukohteidenSuodatustiedot = async ({
         hasValintakoe: boolean;
         varasijatayttoPaattyy?: string | null;
         laskettu: boolean;
+        sijoittelematta: boolean;
+        julkaisematta: boolean;
       }
     >
   >(

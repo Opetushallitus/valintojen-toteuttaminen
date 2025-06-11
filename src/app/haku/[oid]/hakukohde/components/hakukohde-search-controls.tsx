@@ -27,6 +27,10 @@ export const HakukohdeSearchControls = () => {
     setWithValintakoe,
     withoutLaskenta,
     setWithoutLaskenta,
+    sijoittelematta,
+    setSijoittelematta,
+    julkaisematta,
+    setJulkaisematta,
     varasijatayttoPaattamatta,
     setVarasijatayttoPaattamatta,
     isSomeHakukohdeFilterSelected,
@@ -59,6 +63,16 @@ export const HakukohdeSearchControls = () => {
             label={t('haku.ilman-laskentaa')}
             checked={withoutLaskenta}
             onChange={() => setWithoutLaskenta((checked) => !checked)}
+          />
+          <OphCheckbox
+            label={t('haku.sijoittelematta')}
+            checked={sijoittelematta}
+            onChange={() => setSijoittelematta((checked) => !checked)}
+          />
+          <OphCheckbox
+            label={t('haku.julkaisematta')}
+            checked={julkaisematta}
+            onChange={() => setJulkaisematta((checked) => !checked)}
           />
           <OphCheckbox
             label={t('haku.varasijataytto-paattamatta')}

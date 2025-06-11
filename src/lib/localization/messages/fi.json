@@ -137,7 +137,9 @@
     "vahemman-hakuehtoja": "Vähemmän hakuehtoja",
     "ilman-laskentaa": "Valintalaskenta suorittamatta",
     "on-valintakoe": "On valintakoe",
-    "varasijataytto-paattamatta": "Varasijatäyttö päättämättä"
+    "varasijataytto-paattamatta": "Varasijatäyttö päättämättä",
+    "sijoittelematta": "Ei sijoittelun tuloksia",
+    "julkaisematta": "Valintatapajono julkaisematta"
   },
   "hakukohde": {
     "navigaatio": "Hakukohdevalitsin",

@@ -18,16 +18,22 @@ describe('filterWithSuodatustiedot', () => {
       hasValintakoe: true,
       varasijatayttoPaattyy: new Date(future),
       laskettu: false,
+      sijoittelematta: true,
+      julkaisematta: true,
     },
     '2': {
       hasValintakoe: false,
       varasijatayttoPaattyy: new Date(past),
       laskettu: true,
+      sijoittelematta: true,
+      julkaisematta: false,
     },
     '3': {
       hasValintakoe: true,
       varasijatayttoPaattyy: undefined,
       laskettu: true,
+      sijoittelematta: false,
+      julkaisematta: true,
     },
   };
 
@@ -54,6 +60,8 @@ describe('filterWithSuodatustiedot', () => {
         withValintakoe: false,
         withoutLaskenta: false,
         varasijatayttoPaattamatta: false,
+        sijoittelematta: false,
+        julkaisematta: false,
       },
     });
     expect(result.map((h) => h.oid)).toEqual(['1', '2', '3']);
@@ -68,6 +76,8 @@ describe('filterWithSuodatustiedot', () => {
         withValintakoe: true,
         withoutLaskenta: false,
         varasijatayttoPaattamatta: false,
+        sijoittelematta: false,
+        julkaisematta: false,
       },
     });
     expect(result.map((h) => h.oid)).toEqual(['1', '3']);
@@ -82,9 +92,43 @@ describe('filterWithSuodatustiedot', () => {
         withValintakoe: false,
         withoutLaskenta: true,
         varasijatayttoPaattamatta: false,
+        sijoittelematta: false,
+        julkaisematta: false,
       },
     });
     expect(result.map((h) => h.oid)).toEqual(['1']);
+  });
+
+  it('filters by sijoittelematta', () => {
+    const result = filterWithSuodatustiedot({
+      haunAsetukset,
+      hakukohteet,
+      suodatustiedot,
+      selectedFilters: {
+        withValintakoe: false,
+        withoutLaskenta: false,
+        varasijatayttoPaattamatta: false,
+        sijoittelematta: true,
+        julkaisematta: false,
+      },
+    });
+    expect(result.map((h) => h.oid)).toEqual(['1', '2']);
+  });
+
+  it('filters by julkaisematta', () => {
+    const result = filterWithSuodatustiedot({
+      haunAsetukset,
+      hakukohteet,
+      suodatustiedot,
+      selectedFilters: {
+        withValintakoe: false,
+        withoutLaskenta: false,
+        varasijatayttoPaattamatta: false,
+        sijoittelematta: false,
+        julkaisematta: true,
+      },
+    });
+    expect(result.map((h) => h.oid)).toEqual(['1', '3']);
   });
 
   it('filters by varasijatayttoPaattamatta (future date)', () => {
@@ -96,6 +140,8 @@ describe('filterWithSuodatustiedot', () => {
         withValintakoe: false,
         withoutLaskenta: false,
         varasijatayttoPaattamatta: true,
+        sijoittelematta: false,
+        julkaisematta: false,
       },
     });
     expect(result.map((h) => h.oid)).toEqual(['1']);
@@ -113,6 +159,8 @@ describe('filterWithSuodatustiedot', () => {
         withValintakoe: false,
         withoutLaskenta: false,
         varasijatayttoPaattamatta: true,
+        sijoittelematta: false,
+        julkaisematta: false,
       },
     });
     expect(result.map((h) => h.oid)).toEqual([]);
@@ -130,6 +178,8 @@ describe('filterWithSuodatustiedot', () => {
         withValintakoe: false,
         withoutLaskenta: false,
         varasijatayttoPaattamatta: true,
+        sijoittelematta: false,
+        julkaisematta: false,
       },
     });
     expect(result.map((h) => h.oid)).toEqual(['1', '3']);
@@ -144,6 +194,8 @@ describe('filterWithSuodatustiedot', () => {
         withValintakoe: true,
         withoutLaskenta: true,
         varasijatayttoPaattamatta: true,
+        sijoittelematta: true,
+        julkaisematta: true,
       },
     });
     expect(result.map((h) => h.oid)).toEqual(['1']);
@@ -158,22 +210,30 @@ describe('filterWithSuodatustiedot', () => {
           hasValintakoe: true,
           varasijatayttoPaattyy: new Date(past),
           laskettu: true,
+          sijoittelematta: false,
+          julkaisematta: false,
         },
         '2': {
           hasValintakoe: false,
           varasijatayttoPaattyy: new Date(future),
           laskettu: true,
+          sijoittelematta: false,
+          julkaisematta: false,
         },
         '3': {
           hasValintakoe: false,
           varasijatayttoPaattyy: new Date(past),
           laskettu: false,
+          sijoittelematta: false,
+          julkaisematta: false,
         },
       },
       selectedFilters: {
         withValintakoe: true,
         withoutLaskenta: true,
         varasijatayttoPaattamatta: true,
+        sijoittelematta: true,
+        julkaisematta: true,
       },
     });
     expect(result).toHaveLength(0);
@@ -188,6 +248,8 @@ describe('filterWithSuodatustiedot', () => {
         withValintakoe: true,
         withoutLaskenta: false,
         varasijatayttoPaattamatta: true,
+        sijoittelematta: true,
+        julkaisematta: true,
       },
     });
     expect(result).toHaveLength(0);
