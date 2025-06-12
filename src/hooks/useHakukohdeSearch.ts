@@ -255,7 +255,7 @@ export const useHakukohdeSearchResults = (hakuOid: string) => {
         const hakukohdeTarget =
           hakukohdeMatchTargetsByHakukohdeOid[hakukohde.oid];
         return searchPhraseWords.every((word) =>
-          hakukohdeTarget.includes(word),
+          hakukohdeTarget?.includes(word),
         );
       });
     } else {

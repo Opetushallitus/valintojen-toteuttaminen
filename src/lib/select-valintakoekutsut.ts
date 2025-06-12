@@ -125,11 +125,17 @@ export function selectValintakoekutsutKokeittain(
       },
       ({ valintakoeOsallistuminen, valintakoe, hakutoiveValintakoe }) => {
         const hakemus = hakemuksetByOid[hakutoiveOsallistuminen.hakemusOid];
-        kutsutKokeittain[valintakoe.selvitettyTunniste].kutsut.push({
+        if (!hakemus) {
+          console.warn(
+            `Hakemus-OIDille ${hakutoiveOsallistuminen.hakemusOid} löytyi valintakoekutsu, mutta ei hakemusta Atarusta!`,
+          );
+          return;
+        }
+        kutsutKokeittain[valintakoe.selvitettyTunniste]!.kutsut.push({
           hakemusOid: hakemus.hakemusOid,
-          hakijaOid: hakemus?.hakijaOid,
-          hakijanNimi: hakemus?.hakijanNimi,
-          asiointiKieli: hakemus?.asiointikieliKoodi,
+          hakijaOid: hakemus.hakijaOid,
+          hakijanNimi: hakemus.hakijanNimi,
+          asiointiKieli: hakemus.asiointikieliKoodi,
           osallistuminen: `osallistuminen.${valintakoeOsallistuminen}`,
           lisatietoja: mapKeys(
             hakutoiveValintakoe?.osallistuminenTulos?.kuvaus ?? {},
@@ -178,6 +184,13 @@ export function selectValintakoekutsutHakijoittain(
         };
       },
     );
+
+    if (!hakemus) {
+      console.warn(
+        `Hakemus-OIDille ${hakutoiveOsallistuminen.hakemusOid} löytyi valintakoekutsu, mutta ei hakemusta Atarusta!`,
+      );
+      return;
+    }
 
     if (!isEmpty(kutsutByTunniste)) {
       hakijat.push({

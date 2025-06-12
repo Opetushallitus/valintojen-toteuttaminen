@@ -44,7 +44,7 @@ describe('selectUserPermissions', () => {
     userPermissions =
       selectUserPermissions(permissionsResponse)[
         VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY
-      ];
+      ]!;
   });
 
   test('valintojentoteuttaminen permission', () => {
@@ -59,7 +59,7 @@ describe('selectUserPermissions', () => {
 
   test('valintaperusteet permission', () => {
     const valintaperusteetUserPermissions =
-      selectUserPermissions(permissionsResponse)[MUU_PALVELU_SERVICE_KEY];
+      selectUserPermissions(permissionsResponse)[MUU_PALVELU_SERVICE_KEY]!;
 
     expect(valintaperusteetUserPermissions.crudOrganizations).toEqual([]);
     expect(valintaperusteetUserPermissions.writeOrganizations).toEqual([]);

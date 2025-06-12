@@ -26,9 +26,9 @@ const FileSelector = forwardRef<FileSelectorRef, FileSelectorProps>(
         type="file"
         style={{ display: 'none' }}
         onChange={(event) => {
-          const files = event.currentTarget.files;
-          if (files) {
-            onFileSelect(files[0]);
+          const file = event.currentTarget.files?.[0];
+          if (file) {
+            onFileSelect(file);
           }
           if (innerRef.current) {
             innerRef.current.value = '';

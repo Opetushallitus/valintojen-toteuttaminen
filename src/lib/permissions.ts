@@ -138,3 +138,10 @@ export const checkHasPermission = (
     permissionOrganizationOids,
   );
 };
+
+export const EMPTY_USER_PERMISSIONS: UserPermissions = {
+  readOrganizations: [],
+  writeOrganizations: [],
+  crudOrganizations: [],
+  hasOphCRUD: false,
+};

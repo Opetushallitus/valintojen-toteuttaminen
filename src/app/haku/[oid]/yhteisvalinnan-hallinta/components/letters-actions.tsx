@@ -89,7 +89,12 @@ export const LettersActions = ({
               'aria-label': t('yhteisvalinnan-hallinta.kirjeet.valitse-kirje'),
             }}
             value={'' + letter.id}
-            onChange={(e) => setLetter(letters[parseInt(e.target.value)])}
+            onChange={(e) => {
+              const selectedLetter = letters[parseInt(e.target.value)]!;
+              if (selectedLetter) {
+                setLetter(selectedLetter);
+              }
+            }}
             options={letterOptions}
             sx={{ width: '340px' }}
           />
