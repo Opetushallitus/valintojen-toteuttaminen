@@ -40,8 +40,8 @@ const JonosijaInput = ({
   const { onJonoTulosChange } = useJonoTulosActorRef(jonoTulosActorRef);
 
   const hakemusJonoTulos = useHakemusJonoTulos(jonoTulosActorRef, hakemusOid);
-  const tuloksenTila = hakemusJonoTulos.tuloksenTila;
-  const value = hakemusJonoTulos.jonosija ?? '';
+  const tuloksenTila = hakemusJonoTulos?.tuloksenTila;
+  const value = hakemusJonoTulos?.jonosija ?? '';
   const { t } = useTranslations();
   return (
     <PisteetInput
@@ -70,7 +70,7 @@ const TuloksenTilaSelect = ({
   const { onJonoTulosChange } = useJonoTulosActorRef(jonoTulosActorRef);
 
   const hakemusJonoTulos = useHakemusJonoTulos(jonoTulosActorRef, hakemusOid);
-  const value = hakemusJonoTulos.tuloksenTila ?? '';
+  const value = hakemusJonoTulos?.tuloksenTila ?? '';
 
   const tuloksenTilaOptions = useTuloksenTilaOptions({
     harkinnanvarainen: !(
@@ -103,8 +103,8 @@ const KokonaispisteetInput = ({
 }) => {
   const { onJonoTulosChange } = useJonoTulosActorRef(jonoTulosActorRef);
   const hakemusJonoTulos = useHakemusJonoTulos(jonoTulosActorRef, hakemusOid);
-  const tuloksenTila = hakemusJonoTulos.tuloksenTila;
-  const value = hakemusJonoTulos.pisteet ?? '';
+  const tuloksenTila = hakemusJonoTulos?.tuloksenTila;
+  const value = hakemusJonoTulos?.pisteet ?? '';
 
   return (
     <PisteetInput
@@ -130,7 +130,7 @@ const KuvausInput = ({
 }) => {
   const { onJonoTulosChange } = useJonoTulosActorRef(jonoTulosActorRef);
   const hakemusJonoTulos = useHakemusJonoTulos(jonoTulosActorRef, hakemusOid);
-  const value = hakemusJonoTulos.kuvaus ?? {};
+  const value = hakemusJonoTulos?.kuvaus ?? {};
 
   return (
     <OphInput

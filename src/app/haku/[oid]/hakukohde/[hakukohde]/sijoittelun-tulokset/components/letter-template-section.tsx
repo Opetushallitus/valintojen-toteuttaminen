@@ -19,7 +19,9 @@ export const TemplateSection = ({
   setLetterBody: (val: string) => void;
 }) => {
   const { t } = useTranslations();
-  const [usedPohja, setUsedPohja] = useState<Kirjepohja>(pohjat[0]);
+  const [usedPohja, setUsedPohja] = useState<Kirjepohja | undefined>(
+    pohjat?.[0],
+  );
 
   const changeUsedPohja = (event: SelectChangeEvent<string>) => {
     const pohja = pohjat.find((p) => p.nimi === event.target.value)!;

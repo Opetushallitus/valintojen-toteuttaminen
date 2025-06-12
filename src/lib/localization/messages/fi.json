@@ -189,7 +189,8 @@
       "maksuvelvollisuus": "Maksuvelvollisuus",
       "oid": "Hakemuksen tekninen tunniste (OID)",
       "henkilooid": "Oppijan numero"
-    }
+    },
+    "ei-hakijoita": "Ei hakijoita"
   },
   "valinnanhallinta": {
     "otsikko": "Valinnan hallinta",
@@ -440,7 +441,8 @@
     "valinnan-tilan-kuvaus-aria-en": "Hylkäyksen syy englanniksi",
     "poistettu": "Valinnan tulokset poistettu",
     "hyvaksytaan-valintaesitysta": "Hyväksytään valintaesitystä...",
-    "varasijalta": "Hyväksytään varasijalta"
+    "varasijalta": "Hyväksytään varasijalta",
+    "ei-hakemuksia": "Ei hakemuksia"
   },
   "sijoittelu": {
     "tasasijasaanto": {

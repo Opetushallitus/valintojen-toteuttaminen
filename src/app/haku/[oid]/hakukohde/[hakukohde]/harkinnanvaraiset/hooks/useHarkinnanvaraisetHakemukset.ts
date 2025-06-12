@@ -61,13 +61,20 @@ export const useHarkinnanvaraisetHakemukset = ({
         (toive) => toive.hakukohdeOid === hakukohdeOid,
       )?.harkinnanvaraisuudenSyy;
       if (harkinnanvaraisuudenSyy !== 'EI_HARKINNANVARAINEN') {
-        result.push({
-          ...hakemuksetByOid[h.hakemusOid],
-          harkinnanvaraisuudenSyy: harkinnanvaraisuudenSyy
-            ? `harkinnanvaraisuuden-syy.${harkinnanvaraisuudenSyy}`
-            : undefined,
-          harkinnanvarainenTila,
-        });
+        const hakemus = hakemuksetByOid[h.hakemusOid];
+        if (hakemus) {
+          result.push({
+            ...hakemus,
+            harkinnanvaraisuudenSyy: harkinnanvaraisuudenSyy
+              ? `harkinnanvaraisuuden-syy.${harkinnanvaraisuudenSyy}`
+              : undefined,
+            harkinnanvarainenTila,
+          });
+        } else {
+          console.warn(
+            `Hakemus-OIDille ${h.hakemusOid} löytyi harkinnanvaraisuustieto, mutta ei hakemusta Atarusta!`,
+          );
+        }
       }
     });
     return result;

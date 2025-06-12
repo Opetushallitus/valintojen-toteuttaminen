@@ -11,6 +11,7 @@ import {
   ValintakoeAvaimet,
   ValintakoeInputTyyppi,
   ValintaryhmaHakukohteilla,
+  Valintatapajono,
 } from './valintaperusteet-types';
 import { setConfiguration } from '@/lib/configuration/client-configuration';
 import { buildConfiguration } from '@/lib/configuration/server-configuration';
@@ -28,9 +29,9 @@ describe('Valintaperusteet: getValinnanvaiheet', () => {
     const vaiheet: Array<Valinnanvaihe> =
       await getValinnanvaiheet('hakukohdeOid');
     expect(vaiheet.length).toEqual(1);
-    const vaihe = vaiheet[0];
+    const vaihe = vaiheet[0] as NonNullable<Valinnanvaihe>;
     assertValinnanvaihe(vaihe);
-    const jono = vaihe.jonot[0];
+    const jono = vaihe.jonot[0] as NonNullable<Valintatapajono>;
     expect(jono.nimi).toEqual('Lukiokoulutus');
     expect(jono.eiLasketaPaivamaaranJalkeen).toBeUndefined();
     expect(jono.prioriteetti).toEqual(1);
@@ -53,7 +54,7 @@ describe('Valintaperusteet: getValinnanvaiheet', () => {
     const vaiheet: Array<Valinnanvaihe> =
       await getValinnanvaiheet('hakukohdeOid');
     expect(vaiheet.length).toEqual(1);
-    const vaihe = vaiheet[0];
+    const vaihe = vaiheet[0] as NonNullable<Valinnanvaihe>;
     assertValinnanvaihe(vaihe);
     expect(vaihe.jonot.length).toEqual(0);
   });
@@ -91,19 +92,19 @@ describe('Valintaperusteet: getValinnanvaiheet', () => {
     const vaiheet: Array<Valinnanvaihe> =
       await getValinnanvaiheet('hakukohdeOid');
     expect(vaiheet.length).toEqual(1);
-    const vaihe = vaiheet[0];
+    const vaihe = vaiheet[0] as NonNullable<Valinnanvaihe>;
     assertValinnanvaihe(vaihe);
-    expect(vaihe.jonot.length).toEqual(3);
-    expect(vaihe.jonot[0].nimi).toEqual('Ammatillinen koulutus');
-    expect(vaihe.jonot[1].nimi).toEqual('Muu koulutus');
-    expect(vaihe.jonot[2].nimi).toEqual('Lukiokoulutus');
+    expect(vaihe?.jonot?.length).toEqual(3);
+    expect(vaihe?.jonot?.[0]?.nimi).toEqual('Ammatillinen koulutus');
+    expect(vaihe?.jonot?.[1]?.nimi).toEqual('Muu koulutus');
+    expect(vaihe?.jonot?.[2]?.nimi).toEqual('Lukiokoulutus');
   });
 });
 
 function assertValinnanvaihe(vaihe: Valinnanvaihe) {
-  expect(vaihe.nimi).toEqual('Varsinainen valinta');
-  expect(vaihe.aktiivinen).toBeTruthy();
-  expect(vaihe.tyyppi).toEqual(ValinnanvaiheTyyppi.TAVALLINEN);
+  expect(vaihe?.nimi).toEqual('Varsinainen valinta');
+  expect(vaihe?.aktiivinen).toBeTruthy();
+  expect(vaihe?.tyyppi).toEqual(ValinnanvaiheTyyppi.TAVALLINEN);
 }
 
 function buildDummyValinnanvaiheResponse(
@@ -196,12 +197,12 @@ describe('Valintaperusteet: getValintakokeet', () => {
     const kokeet: Array<ValintakoeAvaimet> =
       await getValintakoeAvaimetHakukohteelle('hakukohdeOid');
     expect(kokeet.length).toEqual(4);
-    expect(kokeet[0].inputTyyppi).toEqual(ValintakoeInputTyyppi.INPUT);
-    expect(kokeet[1].inputTyyppi).toEqual(ValintakoeInputTyyppi.BOOLEAN);
-    expect(kokeet[2].inputTyyppi).toEqual(
+    expect(kokeet?.[0]?.inputTyyppi).toEqual(ValintakoeInputTyyppi.INPUT);
+    expect(kokeet?.[1]?.inputTyyppi).toEqual(ValintakoeInputTyyppi.BOOLEAN);
+    expect(kokeet?.[2]?.inputTyyppi).toEqual(
       ValintakoeInputTyyppi.BOOLEAN_ACCEPTED,
     );
-    expect(kokeet[3].inputTyyppi).toEqual(ValintakoeInputTyyppi.SELECT);
+    expect(kokeet?.[3]?.inputTyyppi).toEqual(ValintakoeInputTyyppi.SELECT);
   });
 });
 
