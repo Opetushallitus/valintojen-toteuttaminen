@@ -41,7 +41,7 @@ const getUserPermissions = async (): Promise<UserPermissionsByService> => {
 };
 
 /**
- * Palauttta tiedon siitä onko käyttäjällä käyttöoikeus johonkin annetuista organisaatioista
+ * Palauttaa tiedon siitä onko käyttäjällä käyttöoikeus johonkin annetuista organisaatioista
  *
  * @param organizationOids Organisaatioiden oidit, joista käyttöoikeus halutaan tarkistaa
  * @param permission Tarkistettava käyttöoikeus ('READ', 'READ_UPDATE', 'CRUD')
@@ -61,6 +61,22 @@ export const useHasSomeOrganizationPermission = (
     hierarchyUserPermissions,
     permission,
   );
+};
+
+/**
+ * Palauttaa funktion mikä tarkistaa onko käyttäjällä muokkausoikeuksia annettuun organisaatioon
+ */
+export const useCheckEditPermission = () => {
+  const userPermissions = useUserPermissions();
+
+  const hierarchyUserPermissions = useHierarchyUserPermissions(userPermissions);
+
+  return (organizationOid: string) =>
+    checkHasPermission(
+      organizationOid,
+      hierarchyUserPermissions,
+      'READ_UPDATE',
+    ) || checkHasPermission(organizationOid, hierarchyUserPermissions, 'CRUD');
 };
 
 /**
