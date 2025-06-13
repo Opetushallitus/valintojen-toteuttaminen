@@ -384,6 +384,22 @@ test('Käyttäjä näkee muut hakutoiveet jos yksi hakukohteista on käyttäjän
     'Hyväksyttävissä',
     '',
   ]);
+
+  await expect(
+    page
+      .getByTestId(
+        'henkilo-pistesyotto-hakukohde-1.2.246.562.20.00000000000000045103',
+      )
+      .getByRole('link', { name: 'Tampereen yliopisto, Tekniikan ja' }),
+  ).toBeVisible();
+  // Linkkiä ei näytetä hakijan hakutoiveella jolle käyttäjällä ei ole oikeuksia,
+  await expect(
+    page
+      .getByTestId(
+        'henkilo-pistesyotto-hakukohde-1.2.246.562.20.00000000000000045103',
+      )
+      .getByRole('link', { name: 'Tampereen yliopisto, Rakennetun' }),
+  ).toBeHidden();
 });
 
 test('Näytetään henkilön hakutoiveet valintalaskennan ja sijoittelun tuloksilla', async ({

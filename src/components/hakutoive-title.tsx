@@ -3,6 +3,7 @@ import { Hakukohde } from '@/lib/kouta/kouta-types';
 import { HakukohdeTabLink } from '@/components/hakukohde-tab-link';
 import { Link } from '@mui/material';
 import { NDASH } from '@/lib/constants';
+import { useCheckPermission } from '@/hooks/useUserPermissions';
 
 export const HakutoiveTitle = ({
   hakutoiveNumero,
@@ -12,6 +13,9 @@ export const HakutoiveTitle = ({
   hakukohde: Hakukohde;
 }) => {
   const { translateEntity } = useTranslations();
+
+  const linkEnabled = useCheckPermission('READ_UPDATE')(hakukohde.tarjoajaOid);
+
   return (
     <>
       <span>
@@ -20,16 +24,20 @@ export const HakutoiveTitle = ({
         {translateEntity(hakukohde.nimi)}
         {` ${NDASH} `}
       </span>
-      <Link
-        component={HakukohdeTabLink}
-        hakuOid={hakukohde.hakuOid}
-        hakukohdeOid={hakukohde.oid}
-        tabRoute="perustiedot"
-        prefetch={false}
-        sx={{ textDecoration: 'underline' }}
-      >
-        {translateEntity(hakukohde.jarjestyspaikkaHierarkiaNimi)}
-      </Link>
+      {linkEnabled ? (
+        <Link
+          component={HakukohdeTabLink}
+          hakuOid={hakukohde.hakuOid}
+          hakukohdeOid={hakukohde.oid}
+          tabRoute="perustiedot"
+          prefetch={false}
+          sx={{ textDecoration: 'underline' }}
+        >
+          {translateEntity(hakukohde.jarjestyspaikkaHierarkiaNimi)}
+        </Link>
+      ) : (
+        <span>{translateEntity(hakukohde.jarjestyspaikkaHierarkiaNimi)}</span>
+      )}
     </>
   );
 };

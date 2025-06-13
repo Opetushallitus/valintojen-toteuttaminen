@@ -41,26 +41,17 @@ const getUserPermissions = async (): Promise<UserPermissionsByService> => {
 };
 
 /**
- * Palauttta tiedon siitä onko käyttäjällä käyttöoikeus johonkin annetuista organisaatioista
+ * Palauttaa funktion mikä tarkistaa onko käyttäjällä oikeuksia annettuun organisaatioon
  *
- * @param organizationOids Organisaatioiden oidit, joista käyttöoikeus halutaan tarkistaa
  * @param permission Tarkistettava käyttöoikeus ('READ', 'READ_UPDATE', 'CRUD')
- * @returns
  */
-export const useHasSomeOrganizationPermission = (
-  organizationOids: Array<string> | string | undefined,
-  permission: Permission,
-  serviceKey?: string,
-) => {
-  const userPermissions = useUserPermissions(serviceKey);
+export const useCheckPermission = (permission: Permission) => {
+  const userPermissions = useUserPermissions();
 
   const hierarchyUserPermissions = useHierarchyUserPermissions(userPermissions);
 
-  return checkHasPermission(
-    organizationOids,
-    hierarchyUserPermissions,
-    permission,
-  );
+  return (organizationOid: string) =>
+    checkHasPermission(organizationOid, hierarchyUserPermissions, permission);
 };
 
 /**
