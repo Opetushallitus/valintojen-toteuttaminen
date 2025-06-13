@@ -3,7 +3,7 @@ import { Hakukohde } from '@/lib/kouta/kouta-types';
 import { HakukohdeTabLink } from '@/components/hakukohde-tab-link';
 import { Link } from '@mui/material';
 import { NDASH } from '@/lib/constants';
-import { useCheckEditPermission } from '@/hooks/useUserPermissions';
+import { useCheckPermission } from '@/hooks/useUserPermissions';
 
 export const HakutoiveTitle = ({
   hakutoiveNumero,
@@ -14,7 +14,7 @@ export const HakutoiveTitle = ({
 }) => {
   const { translateEntity } = useTranslations();
 
-  const linkEnabled = useCheckEditPermission()(hakukohde.tarjoajaOid);
+  const linkEnabled = useCheckPermission('READ_UPDATE')(hakukohde.tarjoajaOid);
 
   return (
     <>
@@ -24,7 +24,7 @@ export const HakutoiveTitle = ({
         {translateEntity(hakukohde.nimi)}
         {` ${NDASH} `}
       </span>
-      {linkEnabled && (
+      {linkEnabled ? (
         <Link
           component={HakukohdeTabLink}
           hakuOid={hakukohde.hakuOid}
@@ -35,8 +35,7 @@ export const HakutoiveTitle = ({
         >
           {translateEntity(hakukohde.jarjestyspaikkaHierarkiaNimi)}
         </Link>
-      )}
-      {!linkEnabled && (
+      ) : (
         <span>{translateEntity(hakukohde.jarjestyspaikkaHierarkiaNimi)}</span>
       )}
     </>

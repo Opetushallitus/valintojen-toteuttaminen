@@ -32,8 +32,8 @@ const renderValinnanTilaCell = ({
   kohdejoukko: string;
 }) => {
   vi.mock('@/hooks/useUserPermissions', () => ({
-    useHasSomeOrganizationPermission: (oid: string) => {
-      return ORGS_WITH_UPDATE.includes(oid);
+    useCheckPermission: () => {
+      return (oid: string) => ORGS_WITH_UPDATE.includes(oid);
     },
   }));
 

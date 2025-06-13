@@ -11,7 +11,7 @@ import {
 } from '@tanstack/react-query';
 import { getPostitoimipaikka } from '@/lib/koodisto/koodisto-service';
 import { getAllHakukohteet } from '@/lib/kouta/kouta-service';
-import { useCheckEditPermission } from '@/hooks/useUserPermissions';
+import { useCheckPermission } from '@/hooks/useUserPermissions';
 import { filter, map, pipe, prop, sortBy } from 'remeda';
 import { hakemuksenValintalaskennanTuloksetQueryOptions } from '@/lib/valintalaskenta/valintalaskenta-service';
 import { selectEditableValintalaskennanTulokset } from '@/hooks/useEditableValintalaskennanTulokset';
@@ -106,7 +106,7 @@ export const useHenkiloPageData = ({
     [hakemus.hakutoiveet],
   );
 
-  const checkEditPermission = useCheckEditPermission();
+  const checkEditPermission = useCheckPermission('READ_UPDATE');
 
   const [
     { data: koutaHakukohteet },

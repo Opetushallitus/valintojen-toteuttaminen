@@ -24,7 +24,7 @@ import {
 import { getReadableHakemuksenTila } from '@/lib/sijoittelun-tulokset-utils';
 import { entries, map, pipe } from 'remeda';
 import { styled } from '@/lib/theme';
-import { useHasSomeOrganizationPermission } from '@/hooks/useUserPermissions';
+import { useCheckPermission } from '@/hooks/useUserPermissions';
 import { InfoTooltipButton } from '@/components/info-tooltip-button';
 import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
 import { useValinnanTilaOptions } from '@/hooks/useValinnanTilaOptions';
@@ -81,17 +81,14 @@ export const EhdollisestiHyvaksyttavissaCheckbox = ({
     });
   };
 
-  const canUpdate = useHasSomeOrganizationPermission(
-    haku.organisaatioOid,
-    'READ_UPDATE',
-  );
+  const canUpdate = useCheckPermission('READ_UPDATE');
 
   return (
     <OphCheckbox
       checked={Boolean(ehdollisestiHyvaksyttavissa)}
       onChange={updateEhdollinen}
       label={t('sijoittelun-tulokset.ehdollinen')}
-      disabled={disabled || !canUpdate}
+      disabled={disabled || !canUpdate(haku.organisaatioOid)}
     />
   );
 };
