@@ -11,7 +11,16 @@ import {
 import { useTranslations } from '../lib/localization/useTranslations';
 import { getHakukohteetQueryOptions } from '../lib/kouta/kouta-service';
 import { useUserPermissions } from './useUserPermissions';
-import { isEmpty, sortBy, toLowerCase } from 'remeda';
+import {
+  filter,
+  isEmpty,
+  isNonNullish,
+  map,
+  pipe,
+  sortBy,
+  toLowerCase,
+  unique,
+} from 'remeda';
 import { isHakukohdeOid } from '@/lib/common';
 import { getHakukohteidenSuodatustiedotQueryOptions } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { useSearchParams } from 'next/navigation';
@@ -23,6 +32,8 @@ import {
   HakukohteenSuodatustiedot,
   HakukohteidenSuodatustiedot,
 } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-types';
+import { useKoulutustyypit } from '@/lib/koodisto/useKoulutustyypit';
+import { Koodi } from '@/lib/koodisto/koodisto-types';
 
 const SEARCH_TERM_PARAM_NAME = 'hksearch';
 const WITH_VALINTAKOE_PARAM_NAME = 'hakukohteet-with-valintakoe';
@@ -30,6 +41,7 @@ const VARASIJATAYTTO_PAATTAMATTA_PARAM_NAME = 'varasijataytto-paattamatta';
 const LASKETUT_HAKUKOHTEET_PARAM_NAME = 'lasketut';
 const SIJOITTELEMATTOMAT_HAKUKOHTEET_PARAM_NAME = 'sijoittelematta';
 const JULKAISEMATTOMAT_HAKUKOHTEET_PARAM_NAME = 'julkaisematta';
+const KOULUTUSTYYPPI_PARAM_NAME = 'koulutustyyppi';
 
 const HAKUKOHDE_SEARCH_PARAMS = [
   SEARCH_TERM_PARAM_NAME,
@@ -38,6 +50,7 @@ const HAKUKOHDE_SEARCH_PARAMS = [
   LASKETUT_HAKUKOHTEET_PARAM_NAME,
   SIJOITTELEMATTOMAT_HAKUKOHTEET_PARAM_NAME,
   JULKAISEMATTOMAT_HAKUKOHTEET_PARAM_NAME,
+  KOULUTUSTYYPPI_PARAM_NAME,
 ] as const;
 
 type SelectedFilters = {
@@ -140,6 +153,11 @@ export const useHakukohdeSearchParamsState = () => {
       parseAsBoolean.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(false),
     );
 
+  const [koulutustyyppi, setKoulutustyyppi] = useQueryState(
+    KOULUTUSTYYPPI_PARAM_NAME,
+    DEFAULT_NUQS_OPTIONS,
+  );
+
   const setSearchDebounce = useDebounce(
     setSearchPhrase,
     HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
@@ -156,6 +174,8 @@ export const useHakukohdeSearchParamsState = () => {
     setJulkaisematta,
     varasijatayttoPaattamatta,
     setVarasijatayttoPaattamatta,
+    koulutustyyppi,
+    setKoulutustyyppi,
     searchPhrase,
     setSearchPhrase: setSearchDebounce,
     isSomeHakukohdeFilterSelected:
@@ -166,6 +186,7 @@ export const useHakukohdeSearchParamsState = () => {
 export const useHakukohdeSearchResults = (hakuOid: string) => {
   const { translateEntity } = useTranslations();
   const userPermissions = useUserPermissions();
+  const { data: koulutustyypit } = useKoulutustyypit();
 
   const [
     { data: haunAsetukset },
@@ -187,6 +208,14 @@ export const useHakukohdeSearchResults = (hakuOid: string) => {
     sijoittelematta,
     julkaisematta,
   } = useHakukohdeSearchParamsState();
+
+  const koulutustyyppiOptions: Array<Koodi> = pipe(
+    hakukohteet,
+    map((hakukohde) => hakukohde.koulutustyyppikoodi),
+    unique(),
+    map((koodi) => koulutustyypit.find((kt) => kt.koodiUri === koodi)),
+    filter(isNonNullish),
+  );
 
   const sortedHakukohteet = useMemo(() => {
     const filteredHakukohteet = filterWithSuodatustiedot({
@@ -270,5 +299,6 @@ export const useHakukohdeSearchResults = (hakuOid: string) => {
 
   return {
     results,
+    koulutustyyppiOptions,
   };
 };

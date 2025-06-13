@@ -18,7 +18,7 @@ export const HakukohdePanel = ({ hakuOid }: { hakuOid: string }) => {
 
   return (
     <LeftPanel isOpen={isOpen} setIsOpen={setIsOpen}>
-      <HakukohdeSearchControls />
+      <HakukohdeSearchControls hakuOid={hakuOid} />
       <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
         <HakukohdeList
           hakuOid={hakuOid}

@@ -1,11 +1,19 @@
 import { FormGroup, FormLabel } from '@mui/material';
 import { HakukohdeSearchInput } from './hakukohde-search-input';
-import { OphButton, OphCheckbox } from '@opetushallitus/oph-design-system';
+import {
+  OphButton,
+  OphCheckbox,
+  OphFormFieldWrapper,
+} from '@opetushallitus/oph-design-system';
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { useHakukohdeSearchParamsState } from '@/hooks/useHakukohdeSearch';
+import {
+  useHakukohdeSearchParamsState,
+  useHakukohdeSearchResults,
+} from '@/hooks/useHakukohdeSearch';
 import { useState } from 'react';
 import { Collapsible } from '@/components/collapsible';
 import { withDefaultProps } from '@/lib/mui-utils';
+import { LocalizedSelect } from '@/components/localized-select';
 
 const FILTERS_LABEL = 'hakukohde-filters-label';
 
@@ -19,8 +27,8 @@ const FilterButton = withDefaultProps(OphButton, {
   },
 });
 
-export const HakukohdeSearchControls = () => {
-  const { t } = useTranslations();
+export const HakukohdeSearchControls = ({ hakuOid }: { hakuOid: string }) => {
+  const { t, translateEntity } = useTranslations();
 
   const {
     withValintakoe,
@@ -34,11 +42,20 @@ export const HakukohdeSearchControls = () => {
     varasijatayttoPaattamatta,
     setVarasijatayttoPaattamatta,
     isSomeHakukohdeFilterSelected,
+    koulutustyyppi,
+    setKoulutustyyppi,
   } = useHakukohdeSearchParamsState();
+
+  const { koulutustyyppiOptions } = useHakukohdeSearchResults(hakuOid);
 
   const [areFiltersVisible, setAreFiltersVisible] = useState(
     () => isSomeHakukohdeFilterSelected,
   );
+
+  const koulutusTyyppiOptionsMapped = koulutustyyppiOptions.map((kt) => ({
+    value: kt.koodiUri,
+    label: translateEntity(kt.nimi),
+  }));
 
   return (
     <>
@@ -78,6 +95,25 @@ export const HakukohdeSearchControls = () => {
             label={t('haku.varasijataytto-paattamatta')}
             checked={varasijatayttoPaattamatta}
             onChange={() => setVarasijatayttoPaattamatta((checked) => !checked)}
+          />
+          <OphFormFieldWrapper
+            sx={{
+              width: 'auto',
+              minWidth: '140px',
+              textAlign: 'left',
+              marginTop: '5px',
+            }}
+            label={t('Koulutustyyppi')}
+            renderInput={({ labelId }) => (
+              <LocalizedSelect
+                id="sijoittelun-tila-select"
+                labelId={labelId}
+                value={koulutustyyppi}
+                onChange={(event) => setKoulutustyyppi(event.target.value)}
+                options={koulutusTyyppiOptionsMapped}
+                clearable
+              />
+            )}
           />
         </FormGroup>
       </Collapsible>

@@ -109,6 +109,7 @@ type HakukohdeResponseData = {
   voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita: boolean;
   opetuskieliKoodiUrit: Array<string>;
   tarjoaja: string;
+  koulutustyyppikoodi: string;
 };
 
 const mapToHakukohde = (hakukohdeData: HakukohdeResponseData): Hakukohde => {
@@ -136,6 +137,7 @@ const mapToHakukohde = (hakukohdeData: HakukohdeResponseData): Hakukohde => {
       'organisaatioNimi',
       'jarjestyspaikkaHierarkiaNimi',
       'voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita',
+      'koulutustyyppikoodi',
     ]),
     addProp('opetuskielet', new Set(opetuskielet)),
     addProp('tarjoajaOid', hakukohdeData.tarjoaja),

@@ -45,6 +45,10 @@ export async function getHyvaksynnanEhdot(): Promise<Array<Koodi>> {
   return getKoodit('hyvaksynnanehdot');
 }
 
+export async function getKoulutustyypit(): Promise<Array<Koodi>> {
+  return getKoodit('koulutustyyppi');
+}
+
 export async function getPostitoimipaikka(
   postinumero: string,
 ): Promise<TranslatedName> {
