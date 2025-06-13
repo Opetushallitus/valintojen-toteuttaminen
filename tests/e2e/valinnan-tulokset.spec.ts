@@ -7,6 +7,7 @@ import {
   selectOption,
   testMuodostaHakemusHyvaksymiskirje,
   testNaytaMuutoshistoria,
+  waitForMethodRequest,
 } from './playwright-utils';
 import { buildConfiguration } from '@/lib/configuration/server-configuration';
 import HAUT from './fixtures/haut.json';
@@ -731,13 +732,10 @@ test.describe('Tallennus', () => {
       await expect(confirmationDataRows.nth(0)).toContainText('Purukumi Puru');
 
       const [request] = await Promise.all([
-        page.waitForRequest(
-          (req) =>
-            req
-              .url()
-              .includes(
-                '/valintalaskentakoostepalvelu/resources/erillishaku/tuonti/ui',
-              ) && req.method() === 'POST',
+        waitForMethodRequest(page, 'POST', (url) =>
+          url.includes(
+            '/valintalaskentakoostepalvelu/resources/erillishaku/tuonti/ui',
+          ),
         ),
         confirmModal
           .getByRole('button', { name: 'Merkitse myöhästyneeksi' })
@@ -777,13 +775,10 @@ test.describe('Tallennus', () => {
       });
 
       const [request] = await Promise.all([
-        page.waitForRequest(
-          (req) =>
-            req
-              .url()
-              .includes(
-                '/valintalaskentakoostepalvelu/resources/erillishaku/tuonti/ui',
-              ) && req.method() === 'POST',
+        waitForMethodRequest(page, 'POST', (url) =>
+          url.includes(
+            '/valintalaskentakoostepalvelu/resources/erillishaku/tuonti/ui',
+          ),
         ),
         confirmModal
           .getByRole('button', { name: 'Poista valinnan tulokset' })

@@ -6,6 +6,7 @@ import {
   mockOneOrganizationHierarchy,
   mockValintalaskentaRun,
   selectOption,
+  waitForMethodRequest,
 } from './playwright-utils';
 import HAKENEET from './fixtures/hakeneet.json';
 import POSTI_00100 from './fixtures/posti_00100.json';
@@ -897,10 +898,7 @@ test.describe('Pistesyöttö', () => {
     });
 
     const [saveRes] = await Promise.all([
-      page.waitForRequest(
-        (request) =>
-          request.url().includes(pisteetSaveUrl) && request.method() === 'PUT',
-      ),
+      waitForMethodRequest(page, 'PUT', (url) => url.includes(pisteetSaveUrl)),
       nakkiTallennaButton.click(),
     ]);
 
@@ -955,10 +953,7 @@ test.describe('Pistesyöttö', () => {
     });
 
     await Promise.all([
-      page.waitForRequest(
-        (request) =>
-          request.url().includes(pisteetSaveUrl) && request.method() === 'PUT',
-      ),
+      waitForMethodRequest(page, 'PUT', (url) => url.includes(pisteetSaveUrl)),
       nakkiTallennaButton.click(),
     ]);
 

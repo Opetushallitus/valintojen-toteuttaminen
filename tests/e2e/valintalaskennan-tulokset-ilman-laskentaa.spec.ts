@@ -8,6 +8,7 @@ import {
   mockDocumentExport,
   mockSeurantaProcess,
   startExcelImport,
+  waitForMethodRequest,
 } from './playwright-utils';
 import VALINNANVAIHE_TULOKSET_ILMAN_LASKENTAA from './fixtures/valinnanvaihe-tulokset-ilman-laskentaa.json';
 import VALINNANVAIHEET_ILMAN_LASKENTAA from './fixtures/valinnanvaiheet-ilman-laskentaa.json';
@@ -32,7 +33,7 @@ const PISTEET_TABLE_HEADINGS = [
 
 test.beforeEach(async ({ page }) => {
   await page.route(
-    '**/valintalaskenta-laskenta-service/resources/hakukohde/**',
+    /valintalaskenta-laskenta-service\/resources\/hakukohde\/\S+\/valinnanvaihe/,
     async (route) =>
       await route.fulfill({ json: VALINNANVAIHE_TULOKSET_ILMAN_LASKENTAA }),
   );
@@ -220,7 +221,9 @@ test('Valintatapajono excelin tuonti epäonnistuu', async ({ page }) => {
   );
 });
 
-test('Lähettää muokatun datan tallentaessa', async ({ page }) => {
+test('Lähettää muokatun datan tallentaessa ja lataa tulokset uudelleen', async ({
+  page,
+}) => {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/valintalaskennan-tulokset',
   );
@@ -241,16 +244,12 @@ test('Lähettää muokatun datan tallentaessa', async ({ page }) => {
     .getByRole('textbox', { name: 'Kuvaus englanniksi' })
     .fill('Kuvaus EN');
 
-  // Save data and wait for request
+  const tuloksetPath =
+    'valintalaskenta-laskenta-service/resources/hakukohde/1.2.246.562.20.00000000000000045105/valinnanvaihe';
+
   const [request] = await Promise.all([
-    page.waitForRequest(
-      (req) =>
-        req
-          .url()
-          .includes(
-            'valintalaskenta-laskenta-service/resources/hakukohde/1.2.246.562.20.00000000000000045105/valinnanvaihe',
-          ) && req.method() === 'POST',
-    ),
+    waitForMethodRequest(page, 'POST', (url) => url.includes(tuloksetPath)),
+    waitForMethodRequest(page, 'GET', (url) => url.includes(tuloksetPath)),
     jonoContent.getByRole('button', { name: 'Tallenna' }).click(),
   ]);
 

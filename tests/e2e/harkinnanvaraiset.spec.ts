@@ -6,6 +6,7 @@ import {
   expectPageAccessibilityOk,
   fixtureFromFile,
   selectOption,
+  waitForMethodRequest,
 } from './playwright-utils';
 import { NDASH } from '@/lib/constants';
 
@@ -177,14 +178,10 @@ test('Näyttää ilmoituksen kun harkinnanvaraisen tilan päivitys epäonnistuu'
   await Promise.all([
     page.getByRole('button', { name: 'Tallenna' }).click(),
     // Noudetaan harkinnanvaraisuudet uudestaan tallennuksen jälkeen
-    page.waitForRequest(
-      (request) =>
-        request.method() === 'GET' &&
-        request
-          .url()
-          .includes(
-            '/valintalaskenta-laskenta-service/resources/harkinnanvarainenhyvaksynta/haku/1.2.246.562.29.00000000000000021303/hakukohde/1.2.246.562.20.00000000000000024094',
-          ),
+    waitForMethodRequest(page, 'GET', (url) =>
+      url.includes(
+        '/valintalaskenta-laskenta-service/resources/harkinnanvarainenhyvaksynta/haku/1.2.246.562.29.00000000000000021303/hakukohde/1.2.246.562.20.00000000000000024094',
+      ),
     ),
   ]);
   await expectAlertTextVisible(
