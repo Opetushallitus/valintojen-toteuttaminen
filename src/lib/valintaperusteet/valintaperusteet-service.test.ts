@@ -1,6 +1,6 @@
 import { expect, test, vi, describe, afterEach } from 'vitest';
 import {
-  getValinnanvaiheet,
+  getHakukohteenValinnanvaiheet,
   getValintakoeAvaimetHakukohteelle,
   getValintaryhmat,
 } from './valintaperusteet-service';
@@ -27,7 +27,7 @@ describe('Valintaperusteet: getValinnanvaiheet', () => {
     const clientSpy = vi.spyOn(client, 'get');
     clientSpy.mockImplementationOnce(() => buildDummyValinnanvaiheResponse());
     const vaiheet: Array<Valinnanvaihe> =
-      await getValinnanvaiheet('hakukohdeOid');
+      await getHakukohteenValinnanvaiheet('hakukohdeOid');
     expect(vaiheet.length).toEqual(1);
     const vaihe = vaiheet[0] as NonNullable<Valinnanvaihe>;
     assertValinnanvaihe(vaihe);
@@ -52,7 +52,7 @@ describe('Valintaperusteet: getValinnanvaiheet', () => {
       ]),
     );
     const vaiheet: Array<Valinnanvaihe> =
-      await getValinnanvaiheet('hakukohdeOid');
+      await getHakukohteenValinnanvaiheet('hakukohdeOid');
     expect(vaiheet.length).toEqual(1);
     const vaihe = vaiheet[0] as NonNullable<Valinnanvaihe>;
     assertValinnanvaihe(vaihe);
@@ -90,7 +90,7 @@ describe('Valintaperusteet: getValinnanvaiheet', () => {
       ]),
     );
     const vaiheet: Array<Valinnanvaihe> =
-      await getValinnanvaiheet('hakukohdeOid');
+      await getHakukohteenValinnanvaiheet('hakukohdeOid');
     expect(vaiheet.length).toEqual(1);
     const vaihe = vaiheet[0] as NonNullable<Valinnanvaihe>;
     assertValinnanvaihe(vaihe);

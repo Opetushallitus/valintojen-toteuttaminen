@@ -9,8 +9,8 @@ import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import { SijoittelunTulosTable } from './sijoittelun-tulos-table';
 import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBeforeNavigation';
 import { useQueryClient } from '@tanstack/react-query';
-import { refetchSijoittelunTulokset } from '../lib/refetch-sijoittelun-tulokset';
 import { useIsDirtyValinnanTulos } from '@/lib/state/valinnanTuloksetMachineUtils';
+import { refetchLatestSijoitteluajonTuloksetWithValintaEsitys } from '@/lib/valinta-tulos-service/valinta-tulos-queries';
 
 type SijoittelunTuloksetFormParams = {
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
@@ -34,7 +34,11 @@ export const SijoittelunTulosForm = ({
   const queryClient = useQueryClient();
 
   const onUpdated = useCallback(() => {
-    refetchSijoittelunTulokset(haku.oid, hakukohde.oid, queryClient);
+    refetchLatestSijoitteluajonTuloksetWithValintaEsitys(
+      haku.oid,
+      hakukohde.oid,
+      queryClient,
+    );
   }, [haku.oid, hakukohde.oid, queryClient]);
 
   const sijoittelunTulosActorRef = useSijoittelunTulosActorRef({

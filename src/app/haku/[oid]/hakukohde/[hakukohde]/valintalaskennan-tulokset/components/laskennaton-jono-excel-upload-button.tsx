@@ -6,8 +6,8 @@ import { useTranslations } from '@/lib/localization/useTranslations';
 import { saveValintatapajonoTulosExcel } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { isEmpty } from 'remeda';
-import { refetchLaskennanTulokset } from '../lib/refetchLaskennanTulokset';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
+import { refetchHakukohteenValintalaskennanTulokset } from '@/lib/valintalaskenta/valintalaskenta-queries';
 
 const useJonoExcelUploadMutation = ({
   hakuOid,
@@ -48,7 +48,7 @@ const useJonoExcelUploadMutation = ({
     onSuccess: () => {
       hideModal(SpinnerGlobalModal);
       // Ladataan muuttuneet laskennan tulokset
-      refetchLaskennanTulokset({ queryClient, hakukohdeOid });
+      refetchHakukohteenValintalaskennanTulokset({ queryClient, hakukohdeOid });
       addToast({
         key: 'upload-valintatapajono-excel-success',
         message: 'valintalaskennan-tulokset.tuo-taulukkolaskennasta-onnistui',

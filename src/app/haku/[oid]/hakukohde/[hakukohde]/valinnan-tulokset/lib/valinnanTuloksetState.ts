@@ -5,18 +5,18 @@ import { createValinnanTuloksetMachine } from '@/lib/state/createValinnanTulokse
 import useToaster from '@/hooks/useToaster';
 import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
 import { saveErillishakuValinnanTulokset } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
-import { Haku, Hakukohde, KoutaOidParams } from '@/lib/kouta/kouta-types';
+import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import {
   getHakukohteenValinnanTulokset,
-  getHakukohteenValinnanTuloksetQueryOptions,
   hyvaksyValintaEsitys,
 } from '@/lib/valinta-tulos-service/valinta-tulos-service';
 import { ValinnanTulosErrorGlobalModal } from '@/components/modals/valinnan-tulos-error-global-modal';
 import { showModal } from '@/components/modals/global-modal';
-import { QueryClient, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { isNullish } from 'remeda';
 import { isHakemusOid, rejectAndLog, OphProcessError } from '@/lib/common';
 import { ValinnanTulosEventType } from '@/lib/state/valinnanTuloksetMachineTypes';
+import { refetchHakukohteenValinnanTulokset } from '@/lib/valinta-tulos-service/valinta-tulos-queries';
 
 export const valinnanTuloksetMachine =
   createValinnanTuloksetMachine<HakemuksenValinnanTulos>('valinta').provide({
@@ -86,21 +86,6 @@ const getValintatapajonoOidFromHakemukset = (
   hakemukset: Array<{ valintatapajonoOid?: string }>,
 ) => {
   return hakemukset.find((h) => h.valintatapajonoOid)?.valintatapajonoOid;
-};
-
-const refetchHakukohteenValinnanTulokset = ({
-  queryClient,
-  hakuOid,
-  hakukohdeOid,
-}: KoutaOidParams & {
-  queryClient: QueryClient;
-}) => {
-  const valintaQueryOptions = getHakukohteenValinnanTuloksetQueryOptions({
-    hakuOid,
-    hakukohdeOid,
-  });
-  queryClient.resetQueries(valintaQueryOptions);
-  queryClient.invalidateQueries(valintaQueryOptions);
 };
 
 export const useValinnanTulosActorRef = ({

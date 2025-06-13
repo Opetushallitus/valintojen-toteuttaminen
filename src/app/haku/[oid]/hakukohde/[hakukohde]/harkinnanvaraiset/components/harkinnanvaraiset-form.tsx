@@ -13,22 +13,17 @@ import { OphButton } from '@opetushallitus/oph-design-system';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useState } from 'react';
 import { isEmpty } from 'remeda';
-import { harkinnanvaraisetTilatOptions } from '../hooks/useHarkinnanvaraisetHakemukset';
 import { HarkinnanvaraisetActionBar } from './harkinnanvaraiset-action-bar';
 import { HarkinnanvaraisetTable } from './harkinnanvaraiset-table';
 import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBeforeNavigation';
 import { useSelection } from '@/hooks/useSelection';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
+import { refetchHarkinnanvaraisetTilat } from '@/lib/valintalaskenta/valintalaskenta-queries';
 
 const useTallennaMutation = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const { addToast } = useToaster();
 
   const queryClient = useQueryClient();
-
-  const harkinnanvaraisetOptions = harkinnanvaraisetTilatOptions({
-    hakuOid,
-    hakukohdeOid,
-  });
 
   return useMutation({
     mutationFn: async (
@@ -53,8 +48,11 @@ const useTallennaMutation = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
       console.error(e);
     },
     onSuccess: () => {
-      queryClient.resetQueries(harkinnanvaraisetOptions);
-      queryClient.invalidateQueries(harkinnanvaraisetOptions);
+      refetchHarkinnanvaraisetTilat({
+        queryClient,
+        hakuOid,
+        hakukohdeOid,
+      });
       addToast({
         key: 'set-harkinnanvaraiset-tilat-success',
         message: 'harkinnanvaraiset.tallennettu',

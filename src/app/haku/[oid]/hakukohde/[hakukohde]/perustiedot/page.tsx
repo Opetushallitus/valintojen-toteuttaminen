@@ -8,8 +8,8 @@ import { ValintatapajonotTable } from './components/valintatapajonot-table';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { FullClientSpinner } from '@/components/client-spinner';
-import { hakuQueryOptions } from '@/lib/kouta/useHaku';
 import { BasicInfo } from './components/basic-info';
+import { queryOptionsGetHaku } from '@/lib/kouta/kouta-queries';
 
 type PerustiedotParams = {
   oid: string;
@@ -21,7 +21,7 @@ const PerustiedotContent = ({ oid, hakukohde }: PerustiedotParams) => {
 
   const [hakuQuery, jonotQuery] = useSuspenseQueries({
     queries: [
-      hakuQueryOptions({ hakuOid: oid }),
+      queryOptionsGetHaku({ hakuOid: oid }),
       {
         queryKey: ['getSijoittelunTulokset', oid, hakukohde],
         queryFn: () => getSijoittelunTulokset(oid, hakukohde),

@@ -6,8 +6,8 @@ import { SijoitteluSchedule } from './sijoittelu-schedule';
 import { Box } from '@mui/material';
 import { useSuspenseQueries } from '@tanstack/react-query';
 import { sijoittelunStatus } from '@/lib/sijoittelu/sijoittelu-service';
-import { haunAsetuksetQueryOptions } from '@/lib/ohjausparametrit/useHaunAsetukset';
 import { SijoitteluInfo } from './sijoittelu-info';
+import { queryOptionsGetHaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-queries';
 
 export const SijoitteluContainer = ({ hakuOid }: { hakuOid: string }) => {
   const { t } = useTranslations();
@@ -15,7 +15,7 @@ export const SijoitteluContainer = ({ hakuOid }: { hakuOid: string }) => {
   const [{ data: haunAsetukset }, { data: sijoitteluStatus }] =
     useSuspenseQueries({
       queries: [
-        haunAsetuksetQueryOptions({ hakuOid }),
+        queryOptionsGetHaunAsetukset({ hakuOid }),
         {
           queryKey: ['sijoitteluStatus', hakuOid],
           queryFn: () => sijoittelunStatus(hakuOid),

@@ -1,9 +1,15 @@
 import { QueryClient, queryOptions } from '@tanstack/react-query';
 import {
+  getDocumentIdForHakukohde,
+  getHakukohteidenSuodatustiedot,
+  getHaunParametrit,
   getKirjepohjatHakukohteelle,
   getPisteetForHakukohde,
 } from './valintalaskentakoostepalvelu-service';
-import { KirjepohjaNimi } from './valintalaskentakoostepalvelu-types';
+import {
+  DokumenttiTyyppi,
+  KirjepohjaNimi,
+} from './valintalaskentakoostepalvelu-types';
 import { Hakukohde, KoutaOidParams } from '@/lib/kouta/kouta-types';
 import { getOpetuskieliCode } from '@/lib/kouta/kouta-service';
 
@@ -43,3 +49,36 @@ export const refetchPisteetForHakukohde = (
   queryClient.invalidateQueries(options);
   queryClient.refetchQueries(options);
 };
+
+export const queryOptionsGetHaunParametrit = ({
+  hakuOid,
+}: {
+  hakuOid: string;
+}) =>
+  queryOptions({
+    queryKey: ['getHaunParametrit', hakuOid],
+    queryFn: () => getHaunParametrit(hakuOid),
+    staleTime: 10 * 60 * 1000,
+  });
+
+export const queryOptionsGetDocumentIdForHakukohde = ({
+  hakukohdeOid,
+  documentType,
+}: {
+  hakukohdeOid: string;
+  documentType: DokumenttiTyyppi;
+}) =>
+  queryOptions({
+    queryKey: ['getDocumentIdForHakukohde', hakukohdeOid, documentType],
+    queryFn: () => getDocumentIdForHakukohde(hakukohdeOid, documentType),
+  });
+
+export const queryOptionsGetHakukohteidenSuodatustiedot = ({
+  hakuOid,
+}: {
+  hakuOid: string;
+}) =>
+  queryOptions({
+    queryKey: ['getHakukohteidenSuodatustiedot', hakuOid],
+    queryFn: () => getHakukohteidenSuodatustiedot({ hakuOid }),
+  });

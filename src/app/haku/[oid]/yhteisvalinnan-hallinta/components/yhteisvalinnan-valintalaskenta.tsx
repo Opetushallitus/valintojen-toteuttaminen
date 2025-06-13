@@ -1,14 +1,14 @@
 'use client';
 import { useUserPermissions } from '@/hooks/useUserPermissions';
-import { getHakukohteetQueryOptions } from '@/lib/kouta/kouta-service';
 import { Haku } from '@/lib/kouta/kouta-types';
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { haunAsetuksetQueryOptions } from '@/lib/ohjausparametrit/useHaunAsetukset';
 import { useLaskentaState } from '@/lib/state/laskenta-state';
 import { Stack } from '@mui/material';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { useSuspenseQueries } from '@tanstack/react-query';
 import { ValintalaskentaResult } from '@/components/ValintalaskentaResult';
+import { queryOptionsGetHakukohteet } from '@/lib/kouta/kouta-queries';
+import { queryOptionsGetHaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-queries';
 
 export const YhteisvalinnanValintalaskenta = ({ haku }: { haku: Haku }) => {
   const { t } = useTranslations();
@@ -17,8 +17,8 @@ export const YhteisvalinnanValintalaskenta = ({ haku }: { haku: Haku }) => {
 
   const [{ data: haunAsetukset }, { data: hakukohteet }] = useSuspenseQueries({
     queries: [
-      haunAsetuksetQueryOptions({ hakuOid: haku.oid }),
-      getHakukohteetQueryOptions(haku.oid, userPermissions),
+      queryOptionsGetHaunAsetukset({ hakuOid: haku.oid }),
+      queryOptionsGetHakukohteet(haku.oid, userPermissions),
     ],
   });
 

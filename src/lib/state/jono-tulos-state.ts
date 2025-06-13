@@ -38,7 +38,7 @@ export type JonoTulosContext = {
   jarjestysPeruste: JarjestysPeruste;
   valinnanvaihe: LaskennanValinnanvaiheInfo;
   valintatapajono: LaskennanValintatapajonoTulos;
-  onEvent: (toast: GenericEvent) => void;
+  onEvent: (event: GenericEvent) => void;
   hakukohde: HakukohdeJonoTulosProps;
 };
 

@@ -29,7 +29,7 @@ import { getValintatapajonoTulosExcel } from '@/lib/valintalaskentakoostepalvelu
 import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBeforeNavigation';
 import { ValintatapajonoContentProps } from '../types/valintatapajono-types';
 import { LaskennatonJonoExcelUploadButton } from './laskennaton-jono-excel-upload-button';
-import { refetchLaskennanTulokset } from '../lib/refetchLaskennanTulokset';
+import { refetchHakukohteenValintalaskennanTulokset } from '@/lib/valintalaskenta/valintalaskenta-queries';
 
 const LaskennatonVaiheActions = ({
   hakukohde,
@@ -144,7 +144,7 @@ export const LaskennatonValintatapajonoContent = ({
   const onEvent = useCallback(
     (event: GenericEvent) => {
       if (event.type === 'success') {
-        refetchLaskennanTulokset({
+        refetchHakukohteenValintalaskennanTulokset({
           queryClient,
           hakukohdeOid,
         });

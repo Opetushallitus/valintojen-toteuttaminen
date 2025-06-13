@@ -1,33 +1,20 @@
 'use client';
 
-import { getHakemuksetQueryOptions } from '@/lib/ataru/ataru-service';
+import { queryOptionsGetHakemukset } from '@/lib/ataru/ataru-queries';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 import { HakemuksenHarkinnanvaraisuus } from '@/lib/types/harkinnanvaraiset-types';
-import { getHarkinnanvaraisetTilat } from '@/lib/valintalaskenta/valintalaskenta-service';
+import { queryOptionsGetharkinnanvaraisetTilat } from '@/lib/valintalaskenta/valintalaskenta-queries';
 import { getHarkinnanvaraisuudetHakemuksille } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
-import {
-  queryOptions,
-  useSuspenseQueries,
-  useSuspenseQuery,
-} from '@tanstack/react-query';
+import { useSuspenseQueries, useSuspenseQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { indexBy, prop } from 'remeda';
-
-export const harkinnanvaraisetTilatOptions = ({
-  hakuOid,
-  hakukohdeOid,
-}: KoutaOidParams) =>
-  queryOptions({
-    queryKey: ['getHarkinnanvaraisetTilat', hakuOid, hakukohdeOid],
-    queryFn: () => getHarkinnanvaraisetTilat({ hakuOid, hakukohdeOid }),
-  });
 
 export const useHarkinnanvaraisetHakemukset = ({
   hakuOid,
   hakukohdeOid,
 }: KoutaOidParams): Array<HakemuksenHarkinnanvaraisuus> => {
   const { data: hakemukset } = useSuspenseQuery(
-    getHakemuksetQueryOptions({ hakuOid, hakukohdeOid }),
+    queryOptionsGetHakemukset({ hakuOid, hakukohdeOid }),
   );
 
   const hakemusOids = hakemukset.map((h) => h.hakemusOid);
@@ -46,7 +33,7 @@ export const useHarkinnanvaraisetHakemukset = ({
         queryKey: ['getHarkinnanvaraisuudetHakemuksille', hakemusOids],
         queryFn: () => getHarkinnanvaraisuudetHakemuksille({ hakemusOids }),
       },
-      harkinnanvaraisetTilatOptions({ hakuOid, hakukohdeOid }),
+      queryOptionsGetharkinnanvaraisetTilat({ hakuOid, hakukohdeOid }),
     ],
   });
 

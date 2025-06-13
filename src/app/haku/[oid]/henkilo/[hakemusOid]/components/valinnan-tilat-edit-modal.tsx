@@ -7,18 +7,13 @@ import { useTranslations } from '@/lib/localization/useTranslations';
 import { Stack } from '@mui/material';
 import { OphButton, OphCheckbox } from '@opetushallitus/oph-design-system';
 import useToaster from '@/hooks/useToaster';
-import {
-  QueryClient,
-  useMutation,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { saveValinnanTulokset } from '@/lib/valinta-tulos-service/valinta-tulos-service';
 import {
   IlmoittautumisTila,
   VastaanottoTila,
 } from '@/lib/types/sijoittelu-types';
-import { getHakemuksenValinnanTuloksetQueryOptions } from '../hooks/useHenkiloPageData';
 import {
   isIlmoittautuminenPossible,
   isVastaanottoPossible,
@@ -38,6 +33,7 @@ import { Haku } from '@/lib/kouta/kouta-types';
 import { useIlmoittautumisTilaOptions } from '@/hooks/useIlmoittautumisTilaOptions';
 import { useVastaanottoTilaOptions } from '@/hooks/useVastaanottoTilaOptions';
 import { useIsValintaesitysJulkaistavissa } from '@/hooks/useIsValintaesitysJulkaistavissa';
+import { refetchHakemuksenValinnanTulokset } from '@/lib/valinta-tulos-service/valinta-tulos-queries';
 
 const ModalActions = ({
   onClose,
@@ -58,20 +54,6 @@ const ModalActions = ({
       </OphButton>
     </Stack>
   );
-};
-
-const refetchHakemuksenValinnanTulokset = ({
-  queryClient,
-  hakemusOid,
-}: {
-  queryClient: QueryClient;
-  hakemusOid: string;
-}) => {
-  const valintaQueryOptions = getHakemuksenValinnanTuloksetQueryOptions({
-    hakemusOid,
-  });
-  queryClient.resetQueries(valintaQueryOptions);
-  queryClient.invalidateQueries(valintaQueryOptions);
 };
 
 const useValinnanTilatMutation = ({
