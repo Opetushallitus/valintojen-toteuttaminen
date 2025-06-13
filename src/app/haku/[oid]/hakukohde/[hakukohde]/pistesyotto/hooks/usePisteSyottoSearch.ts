@@ -133,7 +133,7 @@ export const usePisteSyottoSearchResults = (
   const results = useMemo(() => {
     const { orderBy, direction } = getSortParts(sort);
 
-    const filtered = hakukohteenPistetiedot.hakemukset.filter(
+    const filtered = hakukohteenPistetiedot.hakemustenPistetiedot.filter(
       (h) =>
         hakemusFilter(h, searchPhrase) &&
         (osallistumisenTila.length < 1 ||

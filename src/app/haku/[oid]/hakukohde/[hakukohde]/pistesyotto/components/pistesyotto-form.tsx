@@ -3,7 +3,7 @@
 import { TablePaginationWrapper } from '@/components/table/table-pagination-wrapper';
 import { PisteSyottoTable } from './pistesyotto-table';
 import { usePisteSyottoSearchResults } from '../hooks/usePisteSyottoSearch';
-import { FormEvent } from 'react';
+import { FormEvent, useCallback } from 'react';
 import useToaster from '@/hooks/useToaster';
 import { usePistesyottoState } from '@/lib/state/pistesyotto-state';
 import { PisteSyottoActions } from './pistesyotto-actions';
@@ -12,13 +12,34 @@ import { FormBox } from '@/components/form-box';
 import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBeforeNavigation';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 import { useHaunParametrit } from '@/lib/valintalaskentakoostepalvelu/useHaunParametrit';
+import { GenericEvent } from '@/lib/common';
+import { useQueryClient } from '@tanstack/react-query';
+import { refetchPisteetForHakukohde } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-queries';
 
 export const PisteSyottoForm = ({
   hakuOid,
   hakukohdeOid,
-  pistetulokset,
-}: KoutaOidParams & { pistetulokset: HakukohteenPistetiedot }) => {
+  pistetiedot,
+}: KoutaOidParams & {
+  pistetiedot: HakukohteenPistetiedot;
+}) => {
   const { addToast } = useToaster();
+
+  const queryClient = useQueryClient();
+
+  const onEvent = useCallback(
+    (event: GenericEvent) => {
+      if (event.type === 'success') {
+        refetchPisteetForHakukohde(queryClient, { hakuOid, hakukohdeOid });
+      }
+      addToast({
+        key: event.key,
+        message: event.message,
+        type: event.type,
+      });
+    },
+    [addToast, queryClient, hakuOid, hakukohdeOid],
+  );
 
   const {
     actorRef: pistesyottoActorRef,
@@ -28,9 +49,9 @@ export const PisteSyottoForm = ({
   } = usePistesyottoState({
     hakuOid,
     hakukohdeOid,
-    pistetiedot: pistetulokset.hakemukset,
-    valintakokeet: pistetulokset.valintakokeet,
-    addToast,
+    pistetiedot: pistetiedot.hakemustenPistetiedot,
+    valintakokeet: pistetiedot.valintakokeet,
+    onEvent,
   });
 
   const { data: haunParametrit } = useHaunParametrit({ hakuOid });
@@ -48,7 +69,7 @@ export const PisteSyottoForm = ({
     setSort,
     koeResults,
     naytaVainLaskentaanVaikuttavat,
-  } = usePisteSyottoSearchResults(pistetulokset);
+  } = usePisteSyottoSearchResults(pistetiedot);
 
   const submitChanges = (event: FormEvent) => {
     savePistetiedot();

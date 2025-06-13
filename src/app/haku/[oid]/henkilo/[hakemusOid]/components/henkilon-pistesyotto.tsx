@@ -9,13 +9,14 @@ import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { usePistesyottoState } from '@/lib/state/pistesyotto-state';
 import { HakijaInfo } from '@/lib/ataru/ataru-types';
 import useToaster from '@/hooks/useToaster';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBeforeNavigation';
 import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
 import { HakutoiveTitle } from '@/components/hakutoive-title';
 import { Range } from '@/components/range';
 import { getHakukohdeFullName } from '@/lib/kouta/kouta-service';
 import { useHaunParametrit } from '@/lib/valintalaskentakoostepalvelu/useHaunParametrit';
+import { GenericEvent } from '@/lib/common';
 
 const KokeenPistesyotto = ({
   hakija,
@@ -44,6 +45,13 @@ const KokeenPistesyotto = ({
     [hakija, matchingKoePisteet],
   );
 
+  const onEvent = useCallback(
+    (event: GenericEvent) => {
+      addToast(event);
+    },
+    [addToast],
+  );
+
   const {
     actorRef: pistesyottoActorRef,
     isUpdating,
@@ -54,7 +62,7 @@ const KokeenPistesyotto = ({
     hakukohdeOid: hakukohde.oid,
     pistetiedot,
     valintakokeet: koe,
-    addToast,
+    onEvent,
   });
 
   useConfirmChangesBeforeNavigation(isDirty);

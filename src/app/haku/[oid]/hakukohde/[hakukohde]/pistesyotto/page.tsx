@@ -10,27 +10,48 @@ import { PisteSyottoForm } from './components/pistesyotto-form';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { isEmpty } from '@/lib/common';
 import { NoResults } from '@/components/no-results';
-import {
-  pisteTuloksetOptions,
-  usePisteTulokset,
-} from './hooks/usePisteTulokset';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient, useSuspenseQueries } from '@tanstack/react-query';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
+import { getHakemuksetQueryOptions } from '@/lib/ataru/ataru-service';
+import { augmentPisteetWithHakemukset } from './lib/pistesyotto-utils';
+import { HakukohteenPistetiedot } from '@/lib/types/laskenta-types';
+import { queryOptionsGetPisteetForHakukohde } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-queries';
 
 const PisteSyottoContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const { t } = useTranslations();
 
-  const { data: pistetulokset } = usePisteTulokset({ hakuOid, hakukohdeOid });
+  const pistetiedot: HakukohteenPistetiedot = useSuspenseQueries({
+    queries: [
+      queryOptionsGetPisteetForHakukohde({
+        hakuOid,
+        hakukohdeOid,
+      }),
+      getHakemuksetQueryOptions({
+        hakuOid,
+        hakukohdeOid,
+      }),
+    ],
+    combine: ([{ data: pistetulokset }, { data: hakemukset }]) => {
+      return {
+        lastModified: pistetulokset.lastModified,
+        valintakokeet: pistetulokset.valintakokeet,
+        hakemustenPistetiedot: augmentPisteetWithHakemukset(
+          hakemukset,
+          pistetulokset.valintapisteet,
+        ),
+      };
+    },
+  });
 
-  return isEmpty(pistetulokset.valintakokeet) ? (
+  return isEmpty(pistetiedot.valintakokeet) ? (
     <NoResults text={t('pistesyotto.ei-tuloksia')} />
   ) : (
     <Box sx={{ width: '100%', position: 'relative' }}>
-      <PisteSyottoControls kokeet={pistetulokset.valintakokeet} />
+      <PisteSyottoControls kokeet={pistetiedot.valintakokeet} />
       <PisteSyottoForm
         hakuOid={hakuOid}
         hakukohdeOid={hakukohdeOid}
-        pistetulokset={pistetulokset}
+        pistetiedot={pistetiedot}
       />
     </Box>
   );
@@ -42,7 +63,7 @@ export default function PisteSyottoPage(props: {
   const params = use(props.params);
   const queryClient = useQueryClient();
   queryClient.prefetchQuery(
-    pisteTuloksetOptions({
+    queryOptionsGetPisteetForHakukohde({
       hakuOid: params.oid,
       hakukohdeOid: params.hakukohde,
     }),

@@ -169,7 +169,19 @@ test('Näyttää ilmoituksen kun tallennus onnistuu', async ({ page }) => {
     name: 'Osallistumisen tila',
     option: 'Osallistui',
   });
-  await page.getByRole('button', { name: 'Tallenna' }).click();
+
+  await Promise.all([
+    page.getByRole('button', { name: 'Tallenna' }).click(),
+    page.waitForRequest(
+      (request) =>
+        request.method() === 'GET' &&
+        request
+          .url()
+          .includes(
+            '/valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105',
+          ),
+    ),
+  ]);
   await expect(page.getByText('Tiedot tallennettu.')).toBeVisible();
   await getMuiCloseButton(page).click();
   await expect(page.getByText('Tiedot tallennettu.')).toBeHidden();

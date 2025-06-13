@@ -84,8 +84,8 @@ export const filterWithSuodatustiedot = ({
     return (
       (!selectedFilters.withValintakoe || suodatustieto?.hasValintakoe) &&
       (!selectedFilters.withoutLaskenta || !suodatustieto?.laskettu) &&
-      (!selectedFilters.sijoittelematta || suodatustieto.sijoittelematta) &&
-      (!selectedFilters.julkaisematta || suodatustieto.julkaisematta) &&
+      (!selectedFilters.sijoittelematta || suodatustieto?.sijoittelematta) &&
+      (!selectedFilters.julkaisematta || suodatustieto?.julkaisematta) &&
       (!selectedFilters.varasijatayttoPaattamatta ||
         checkIsVarasijatayttoPaattamatta(
           suodatustieto,
