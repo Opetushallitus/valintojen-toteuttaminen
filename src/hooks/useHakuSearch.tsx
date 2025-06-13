@@ -159,7 +159,7 @@ export const useHakuSearchResults = () => {
   const { translateEntity } = useTranslations();
 
   const { data: haut } = useSuspenseQuery({
-    queryKey: ['getHaut'],
+    queryKey: ['getHaut', userPermissions],
     queryFn: () => getHaut(userPermissions),
     select: (data) =>
       data.map((haku) => ({

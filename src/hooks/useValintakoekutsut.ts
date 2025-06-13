@@ -21,7 +21,7 @@ const useValintakoekutsutData = <T>({
   select: (data: ValintakoekutsutData) => T;
 }) => {
   const { data: valintakoekutsutData } = useSuspenseQuery({
-    queryKey: ['getValintakoekutsutData', hakukohdeOid],
+    queryKey: ['getValintakoekutsutData', hakuOid, hakukohdeOid],
     queryFn: () => getValintakoekutsutData({ hakuOid, hakukohdeOid }),
     select,
   });

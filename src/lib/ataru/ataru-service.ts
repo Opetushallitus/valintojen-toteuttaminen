@@ -164,15 +164,7 @@ export const getHakijat = async (params: GetHakijatParams) => {
 
 export const getHakemuksetQueryOptions = (params: GetHakemuksetParams) => {
   return queryOptions({
-    queryKey: [
-      'getHakemukset',
-      params.hakuOid,
-      params.hakukohdeOid,
-      params.hakemusOids,
-      params.henkiloOid,
-      params.name,
-      params.henkilotunnus,
-    ],
+    queryKey: ['getHakemukset', params],
     queryFn: () => getHakemukset(params),
   });
 };

@@ -324,11 +324,7 @@ export const getHakukohteenValinnanTuloksetQueryOptions = (
   params: KoutaOidParams,
 ) =>
   queryOptions({
-    queryKey: [
-      'getHakukohteenValinnanTulokset',
-      params.hakuOid,
-      params.hakukohdeOid,
-    ],
+    queryKey: ['getHakukohteenValinnanTulokset', params],
     queryFn: () => getHakukohteenValinnanTulokset(params),
   });
 

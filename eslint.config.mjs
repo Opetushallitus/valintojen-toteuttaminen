@@ -7,6 +7,7 @@ import ts from 'typescript-eslint';
 import playwright from 'eslint-plugin-playwright';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import vitest from '@vitest/eslint-plugin';
+import pluginQuery from '@tanstack/eslint-plugin-query';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -26,6 +27,7 @@ const config = ts.config(
       'coverage',
     ],
   },
+  ...pluginQuery.configs['flat/recommended'],
   ...compat.extends('next/core-web-vitals', 'next/typescript'),
   eslintConfigPrettier,
   {

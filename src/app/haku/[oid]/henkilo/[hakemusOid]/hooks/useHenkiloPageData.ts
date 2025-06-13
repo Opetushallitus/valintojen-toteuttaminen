@@ -129,7 +129,7 @@ export const useHenkiloPageData = ({
         queryFn: () => getPostitoimipaikka(hakemus.postinumero),
       },
       {
-        queryKey: ['getPisteetForHakemus', hakemusOid],
+        queryKey: ['getPisteetForHakemus', hakemusOid, hakukohdeOids],
         queryFn: () => getKoePisteetForHakemus({ hakemusOid, hakukohdeOids }),
       },
       {
