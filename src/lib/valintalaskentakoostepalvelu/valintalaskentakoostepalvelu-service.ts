@@ -87,7 +87,7 @@ type PistetietoItem = {
     oid: string;
     additionalData: Record<string, string>;
   };
-  hakukohteidenOsallistumistiedot: Record<
+  hakukohteidenOsallistumistiedot?: Record<
     string,
     {
       valintakokeidenOsallistumistiedot: Record<
@@ -125,7 +125,7 @@ const selectKokeenPisteet = (
     .map((k) => {
       //osallistumistiedot on löydyttävä myös hakukohteidenOsallistumistiedoista jotta kokeen pisteitä näytettäis
       const osallistumisTiedot =
-        pistetieto.hakukohteidenOsallistumistiedot[hakukohdeOid]
+        pistetieto.hakukohteidenOsallistumistiedot?.[hakukohdeOid]
           ?.valintakokeidenOsallistumistiedot[k.tunniste]?.osallistumistieto;
       if (isNullish(osallistumisTiedot)) {
         return null;
