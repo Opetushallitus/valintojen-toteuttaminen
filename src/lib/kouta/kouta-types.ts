@@ -51,7 +51,7 @@ export type Hakukohde = {
   tarjoajaOid: string;
   voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita: boolean;
   opetuskielet: Set<Language>;
-  koulutustyyppikoodi: string;
+  koulutustyyppikoodi?: string;
 };
 
 export enum Tila {
