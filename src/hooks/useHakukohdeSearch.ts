@@ -59,6 +59,7 @@ type SelectedFilters = {
   withoutLaskenta: boolean;
   sijoittelematta: boolean;
   julkaisematta: boolean;
+  koulutustyyppi: string;
 };
 
 const checkIsVarasijatayttoPaattamatta = (
@@ -99,6 +100,8 @@ export const filterWithSuodatustiedot = ({
       (!selectedFilters.withoutLaskenta || !suodatustieto?.laskettu) &&
       (!selectedFilters.sijoittelematta || suodatustieto.sijoittelematta) &&
       (!selectedFilters.julkaisematta || suodatustieto.julkaisematta) &&
+      (isEmpty(selectedFilters.koulutustyyppi) ||
+        hakukohde.koulutustyyppikoodi === selectedFilters.koulutustyyppi) &&
       (!selectedFilters.varasijatayttoPaattamatta ||
         checkIsVarasijatayttoPaattamatta(
           suodatustieto,
@@ -207,6 +210,7 @@ export const useHakukohdeSearchResults = (hakuOid: string) => {
     withoutLaskenta,
     sijoittelematta,
     julkaisematta,
+    koulutustyyppi,
   } = useHakukohdeSearchParamsState();
 
   const koulutustyyppiOptions: Array<Koodi> = pipe(
@@ -228,6 +232,7 @@ export const useHakukohdeSearchResults = (hakuOid: string) => {
         withoutLaskenta,
         sijoittelematta,
         julkaisematta,
+        koulutustyyppi,
       },
     });
 
@@ -244,6 +249,7 @@ export const useHakukohdeSearchResults = (hakuOid: string) => {
     haunAsetukset,
     sijoittelematta,
     julkaisematta,
+    koulutustyyppi,
   ]);
 
   const hakukohdeMatchTargetsByHakukohdeOid = useMemo(

@@ -138,6 +138,24 @@ test.describe('Hakukohde suodatin', () => {
     await page.getByLabel('Varasijatäyttö päättämättä').click();
     await expect(hakukohdeNavItems).toHaveCount(0);
   });
+
+  test('Suodattaa koulutustyypillä', async ({ page }) => {
+    await page.getByRole('button', { name: 'Lisää hakuehtoja' }).click();
+    await page
+      .getByRole('combobox', { name: 'Koulutustyyppi Valitse' })
+      .click();
+    await page.getByRole('option', { name: 'EB, RP, ISH' }).click();
+    const hakukohdeNavItems = getHakukohdeNaviLinks(page);
+    await expect(hakukohdeNavItems).toHaveCount(1);
+    await expect(hakukohdeNavItems.first()).toContainText(
+      'Finnish MAOL competition route, Computing and Electrical Engineering',
+    );
+    await page
+      .getByRole('combobox', { name: 'Koulutustyyppi Valitse' })
+      .click();
+    await page.getByRole('option', { name: 'Korkeakoulutus' }).click();
+    await expect(hakukohdeNavItems).toHaveCount(2);
+  });
 });
 
 test('Näyttää virheilmoituksen oppilaitos-virkailijalle, jos ei voida näyttää yhtään hakukohdetta', async ({

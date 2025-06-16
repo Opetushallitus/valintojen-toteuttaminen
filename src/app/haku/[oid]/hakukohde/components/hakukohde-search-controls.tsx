@@ -96,25 +96,28 @@ export const HakukohdeSearchControls = ({ hakuOid }: { hakuOid: string }) => {
             checked={varasijatayttoPaattamatta}
             onChange={() => setVarasijatayttoPaattamatta((checked) => !checked)}
           />
-          <OphFormFieldWrapper
-            sx={{
-              width: 'auto',
-              minWidth: '140px',
-              textAlign: 'left',
-              marginTop: '5px',
-            }}
-            label={t('Koulutustyyppi')}
-            renderInput={({ labelId }) => (
-              <LocalizedSelect
-                id="sijoittelun-tila-select"
-                labelId={labelId}
-                value={koulutustyyppi}
-                onChange={(event) => setKoulutustyyppi(event.target.value)}
-                options={koulutusTyyppiOptionsMapped}
-                clearable
-              />
-            )}
-          />
+          {koulutusTyyppiOptionsMapped.length > 1 && (
+            <OphFormFieldWrapper
+              sx={{
+                width: 'auto',
+                maxWidth: '95%',
+                minWidth: '140px',
+                textAlign: 'left',
+                marginTop: '5px',
+              }}
+              label={t('haku.koulutustyyppi')}
+              renderInput={({ labelId }) => (
+                <LocalizedSelect
+                  id="sijoittelun-tila-select"
+                  labelId={labelId}
+                  value={koulutustyyppi}
+                  onChange={(event) => setKoulutustyyppi(event.target.value)}
+                  options={koulutusTyyppiOptionsMapped}
+                  clearable
+                />
+              )}
+            />
+          )}
         </FormGroup>
       </Collapsible>
     </>
