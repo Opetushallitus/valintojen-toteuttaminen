@@ -139,7 +139,8 @@
     "on-valintakoe": "On valintakoe",
     "varasijataytto-paattamatta": "Varasijatäyttö päättämättä",
     "sijoittelematta": "Ei sijoittelun tuloksia",
-    "julkaisematta": "Valintatapajono julkaisematta"
+    "julkaisematta": "Valintatapajono julkaisematta",
+    "koulutustyyppi": "Koulutustyyppi"
   },
   "hakukohde": {
     "navigaatio": "Hakukohdevalitsin",

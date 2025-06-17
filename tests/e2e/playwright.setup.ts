@@ -19,6 +19,7 @@ import VASTAANOTTOTILAT_HAKIJOILLE from './fixtures/valintatapajonon-hakijoiden-
 import { OPH_ORGANIZATION_OID } from '@/lib/constants';
 import KIRJEIDEN_MUODOSTUKSEN_TILANNE from './fixtures/kirjeiden-muodostuksen-tilanne.json';
 import VALINTATIEDOT_HAKUKOHTEITTAIN from './fixtures/valintatiedot-hakukohteittain.json';
+import KOULUTUSTYYPIT from './fixtures/koulutustyypit.json';
 
 const port = 3104;
 
@@ -80,6 +81,12 @@ export default async function playwrightSetup() {
       )
     ) {
       return modifyResponse(response, EHDOT);
+    } else if (
+      request.url?.includes(
+        `koodisto-service/rest/codeelement/codes/koulutustyyppi`,
+      )
+    ) {
+      return modifyResponse(response, KOULUTUSTYYPIT);
     } else if (request.url?.includes('kouta-internal/hakukohde/search')) {
       const url = new URL(request.url, `http://localhost:${port}`);
 

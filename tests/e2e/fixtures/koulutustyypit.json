@@ -1,0 +1,63 @@
+[
+  {
+    "koodiUri": "koulutustyyppi_3",
+    "metadata": [
+      {
+        "nimi": "Korkeakoulutus",
+        "lyhytNimi": "Korkeakoulutus",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Högskoleutbildning",
+        "lyhytNimi": "Högskoleutbildning",
+        "kieli": "SV"
+      }
+    ],
+    "versio": 2,
+    "koodiArvo": "3"
+  },
+  {
+    "koodiUri": "koulutustyyppi_26",
+    "metadata": [
+      {
+        "nimi": "Ammatillinen perustutkinto",
+        "lyhytNimi": "",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Yrkesinriktad grundexamen",
+        "lyhytNimi": "",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Initial vocational qualification",
+        "lyhytNimi": "",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 2,
+    "koodiArvo": "26"
+  },
+  {
+    "koodiUri": "koulutustyyppi_21",
+    "metadata": [
+      {
+        "nimi": "EB, RP, ISH",
+        "lyhytNimi": "EB, RP, ISH",
+        "kieli": "FI"
+      },
+      {
+        "nimi": "EB, RP, ISH",
+        "lyhytNimi": "EB, RP, ISH",
+        "kieli": "SV"
+      },
+      {
+        "nimi": "EB, RP, ISH",
+        "lyhytNimi": "EB, RP, ISH",
+        "kieli": "EN"
+      }
+    ],
+    "versio": 2,
+    "koodiArvo": "21"
+  }
+]

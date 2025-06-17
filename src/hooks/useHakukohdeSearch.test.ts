@@ -62,6 +62,7 @@ describe('filterWithSuodatustiedot', () => {
         varasijatayttoPaattamatta: false,
         sijoittelematta: false,
         julkaisematta: false,
+        koulutustyyppi: '',
       },
     });
     expect(result.map((h) => h.oid)).toEqual(['1', '2', '3']);
@@ -78,6 +79,7 @@ describe('filterWithSuodatustiedot', () => {
         varasijatayttoPaattamatta: false,
         sijoittelematta: false,
         julkaisematta: false,
+        koulutustyyppi: '',
       },
     });
     expect(result.map((h) => h.oid)).toEqual(['1', '3']);
@@ -94,6 +96,7 @@ describe('filterWithSuodatustiedot', () => {
         varasijatayttoPaattamatta: false,
         sijoittelematta: false,
         julkaisematta: false,
+        koulutustyyppi: '',
       },
     });
     expect(result.map((h) => h.oid)).toEqual(['1']);
@@ -110,6 +113,7 @@ describe('filterWithSuodatustiedot', () => {
         varasijatayttoPaattamatta: false,
         sijoittelematta: true,
         julkaisematta: false,
+        koulutustyyppi: '',
       },
     });
     expect(result.map((h) => h.oid)).toEqual(['1', '2']);
@@ -126,6 +130,7 @@ describe('filterWithSuodatustiedot', () => {
         varasijatayttoPaattamatta: false,
         sijoittelematta: false,
         julkaisematta: true,
+        koulutustyyppi: '',
       },
     });
     expect(result.map((h) => h.oid)).toEqual(['1', '3']);
@@ -142,6 +147,7 @@ describe('filterWithSuodatustiedot', () => {
         varasijatayttoPaattamatta: true,
         sijoittelematta: false,
         julkaisematta: false,
+        koulutustyyppi: '',
       },
     });
     expect(result.map((h) => h.oid)).toEqual(['1']);
@@ -161,6 +167,7 @@ describe('filterWithSuodatustiedot', () => {
         varasijatayttoPaattamatta: true,
         sijoittelematta: false,
         julkaisematta: false,
+        koulutustyyppi: '',
       },
     });
     expect(result.map((h) => h.oid)).toEqual([]);
@@ -180,6 +187,7 @@ describe('filterWithSuodatustiedot', () => {
         varasijatayttoPaattamatta: true,
         sijoittelematta: false,
         julkaisematta: false,
+        koulutustyyppi: '',
       },
     });
     expect(result.map((h) => h.oid)).toEqual(['1', '3']);
@@ -196,6 +204,7 @@ describe('filterWithSuodatustiedot', () => {
         varasijatayttoPaattamatta: true,
         sijoittelematta: true,
         julkaisematta: true,
+        koulutustyyppi: '',
       },
     });
     expect(result.map((h) => h.oid)).toEqual(['1']);
@@ -234,6 +243,7 @@ describe('filterWithSuodatustiedot', () => {
         varasijatayttoPaattamatta: true,
         sijoittelematta: true,
         julkaisematta: true,
+        koulutustyyppi: '',
       },
     });
     expect(result).toHaveLength(0);
@@ -250,6 +260,7 @@ describe('filterWithSuodatustiedot', () => {
         varasijatayttoPaattamatta: true,
         sijoittelematta: true,
         julkaisematta: true,
+        koulutustyyppi: '',
       },
     });
     expect(result).toHaveLength(0);
