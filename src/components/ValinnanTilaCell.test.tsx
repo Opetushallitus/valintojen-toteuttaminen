@@ -1,10 +1,11 @@
 import { describe, expect, test, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { ValinnanTilaCell } from './ValinnanTilaCell';
-import { Haku, Tila } from '@/lib/kouta/kouta-types';
+import { Haku, Hakukohde, Tila } from '@/lib/kouta/kouta-types';
 import { TranslatedName } from '@/lib/localization/localization-types';
 
-const ORG_OID = '1.2.3.4.5';
+const HAKUKOHDE_ORG_OID = '1.2.3.4.5';
+const TARJOAJA_OID = 'tarjoaja-oid';
 
 const HAKU_BASE: Haku = {
   oid: '5.4.3.2.1',
@@ -17,18 +18,30 @@ const HAKU_BASE: Haku = {
   hakutapaKoodiUri: 'mock-hakutapa',
   hakukohteita: 123,
   kohdejoukkoKoodiUri: 'mock-kohdejoukko',
-  organisaatioOid: ORG_OID,
+  organisaatioOid: 'haku-org-oid',
 };
 
-const ORGS_WITH_UPDATE = [ORG_OID];
+const HAKUKOHDE_BASE: Hakukohde = {
+  oid: 'mock-hakukohde-oid',
+  hakuOid: HAKU_BASE.oid,
+  nimi: { fi: 'mock hakukohde' },
+  organisaatioOid: HAKUKOHDE_ORG_OID,
+  organisaatioNimi: { fi: 'mock organisaatio' },
+  jarjestyspaikkaHierarkiaNimi: { fi: 'mock jarjestyspaikka' },
+  tarjoajaOid: TARJOAJA_OID,
+  voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita: false,
+  opetuskielet: new Set(['fi']),
+};
+
+const ORGS_WITH_UPDATE = [TARJOAJA_OID];
 
 const mockUpdateForm = vi.fn();
 
 const renderValinnanTilaCell = ({
-  organisaatioOid,
+  tarjoajaOid,
   kohdejoukko,
 }: {
-  organisaatioOid: string;
+  tarjoajaOid: string;
   kohdejoukko: string;
 }) => {
   vi.mock('@/hooks/useUserPermissions', () => ({
@@ -65,8 +78,11 @@ const renderValinnanTilaCell = ({
     <ValinnanTilaCell
       haku={{
         ...HAKU_BASE,
-        organisaatioOid,
         kohdejoukkoKoodiUri: kohdejoukko,
+      }}
+      hakukohde={{
+        ...HAKUKOHDE_BASE,
+        tarjoajaOid,
       }}
       hakemus={{
         hakijanNimi: 'Testi Hakija',
@@ -89,7 +105,7 @@ const getEhdollinenCheckbox = () =>
 describe('Ehdollisesti hyväksyttävissä checkbox', () => {
   test('Show when korkeakoulutus', () => {
     renderValinnanTilaCell({
-      organisaatioOid: ORG_OID,
+      tarjoajaOid: TARJOAJA_OID,
       kohdejoukko: 'haunkohdejoukko_12',
     });
 
@@ -99,7 +115,7 @@ describe('Ehdollisesti hyväksyttävissä checkbox', () => {
 
   test('Hide when not korkeakoulutus', () => {
     renderValinnanTilaCell({
-      organisaatioOid: ORG_OID,
+      tarjoajaOid: TARJOAJA_OID,
       kohdejoukko: 'haunkohdejoukko_01',
     });
 
@@ -108,9 +124,9 @@ describe('Ehdollisesti hyväksyttävissä checkbox', () => {
     expect(checkbox).not.toBeInTheDocument();
   });
 
-  test('Enable when update permissions to haku organization', () => {
+  test('Enable when update permissions to hakukohde tarjoaja organization', () => {
     renderValinnanTilaCell({
-      organisaatioOid: ORG_OID,
+      tarjoajaOid: TARJOAJA_OID,
       kohdejoukko: 'haunkohdejoukko_12',
     });
 
@@ -118,9 +134,9 @@ describe('Ehdollisesti hyväksyttävissä checkbox', () => {
     expect(checkbox).toBeEnabled();
   });
 
-  test('Disable when no update permissions to haku organization', () => {
+  test('Disable when no update permissions to hakukohde tarjoaja organization', () => {
     renderValinnanTilaCell({
-      organisaatioOid: 'oid-with-no-permissions',
+      tarjoajaOid: HAKUKOHDE_ORG_OID,
       kohdejoukko: 'haunkohdejoukko_12',
     });
 
