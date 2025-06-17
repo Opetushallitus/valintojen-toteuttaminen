@@ -46,7 +46,7 @@ export const selectSijoitteluajonTuloksetValintatiedoilla = ({
           const hakemus = hakemuksetIndexed[h.hakemusOid];
           const valintatulos = valintatuloksetIndexed[h.hakemusOid];
           const maksunTila =
-            hakemus.maksuvelvollisuus === Maksuvelvollisuus.MAKSUVELVOLLINEN &&
+            hakemus?.maksuvelvollisuus === Maksuvelvollisuus.MAKSUVELVOLLINEN &&
             (lukuvuosimaksutIndexed[h.hakijaOid]?.maksuntila ??
               MaksunTila.MAKSAMATTA);
           if (h.pisteet < 0) {
@@ -56,7 +56,7 @@ export const selectSijoitteluajonTuloksetValintatiedoilla = ({
           return {
             hakijaOid: h.hakijaOid,
             hakemusOid: h.hakemusOid,
-            hakijanNimi: hakemus?.hakijanNimi,
+            hakijanNimi: hakemus?.hakijanNimi ?? '',
             pisteet: h.pisteet,
             valinnanTila: h.tila,
             valintatapajonoOid: h.valintatapajonoOid,
@@ -65,27 +65,27 @@ export const selectSijoitteluajonTuloksetValintatiedoilla = ({
             jonosija: h.jonosija,
             tasasijaJonosija: h.tasasijaJonosija,
             hakutoive: h.prioriteetti,
-            ilmoittautumisTila: valintatulos.ilmoittautumistila,
-            julkaistavissa: valintatulos.julkaistavissa,
-            vastaanottoTila: valintatulos.vastaanottotila,
+            ilmoittautumisTila: valintatulos?.ilmoittautumistila,
+            julkaistavissa: valintatulos?.julkaistavissa,
+            vastaanottoTila: valintatulos?.vastaanottotila,
             maksunTila: maksunTila || undefined,
             ehdollisestiHyvaksyttavissa:
-              valintatulos.ehdollisestiHyvaksyttavissa,
-            hyvaksyttyVarasijalta: valintatulos.hyvaksyttyVarasijalta,
+              valintatulos?.ehdollisestiHyvaksyttavissa,
+            hyvaksyttyVarasijalta: Boolean(valintatulos?.hyvaksyttyVarasijalta),
             onkoMuuttunutViimeSijoittelussa: h.onkoMuuttunutViimeSijoittelussa,
             ehdollisenHyvaksymisenEhtoKoodi:
-              valintatulos.ehdollisenHyvaksymisenEhtoKoodi,
+              valintatulos?.ehdollisenHyvaksymisenEhtoKoodi,
             ehdollisenHyvaksymisenEhtoFI:
-              valintatulos.ehdollisenHyvaksymisenEhtoFI,
+              valintatulos?.ehdollisenHyvaksymisenEhtoFI,
             ehdollisenHyvaksymisenEhtoSV:
-              valintatulos.ehdollisenHyvaksymisenEhtoSV,
+              valintatulos?.ehdollisenHyvaksymisenEhtoSV,
             ehdollisenHyvaksymisenEhtoEN:
-              valintatulos.ehdollisenHyvaksymisenEhtoEN,
-            vastaanottoDeadlineMennyt: valintatulos.vastaanottoDeadlineMennyt,
-            vastaanottoDeadline: valintatulos.vastaanottoDeadline,
+              valintatulos?.ehdollisenHyvaksymisenEhtoEN,
+            vastaanottoDeadlineMennyt: valintatulos?.vastaanottoDeadlineMennyt,
+            vastaanottoDeadline: valintatulos?.vastaanottoDeadline,
             hyvaksyttyHarkinnanvaraisesti:
-              valintatulos.hyvaksyttyHarkinnanvaraisesti,
-            hyvaksyPeruuntunut: valintatulos.hyvaksyPeruuntunut,
+              valintatulos?.hyvaksyttyHarkinnanvaraisesti,
+            hyvaksyPeruuntunut: Boolean(valintatulos?.hyvaksyPeruuntunut),
             hyvaksymiskirjeLahetetty:
               lahetetytKirjeetIndexed[h.hakijaOid]?.kirjeLahetetty,
             siirtynytToisestaValintatapajonosta:

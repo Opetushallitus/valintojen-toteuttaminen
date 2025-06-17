@@ -1,3 +1,4 @@
+import { NonEmpty } from '@/lib/common';
 import { Language } from '@/lib/localization/localization-types';
 import { TFunction } from '@/lib/localization/useTranslations';
 import { LetterCounts } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-types';
@@ -24,7 +25,7 @@ export type Letter = {
   letterType: LetterType;
 };
 
-function mapLetterOptions(kirjetyypit: Array<LetterType>): Array<Letter> {
+function mapLetterOptions(kirjetyypit: NonEmpty<LetterType>) {
   return kirjetyypit.flatMap((letterType, idx) => {
     const indexBase = idx * 3;
     return [
@@ -32,10 +33,10 @@ function mapLetterOptions(kirjetyypit: Array<LetterType>): Array<Letter> {
       { id: indexBase + 1, lang: 'sv', letterType },
       { id: indexBase + 2, lang: 'en', letterType },
     ];
-  });
+  }) as NonEmpty<Letter>;
 }
 
-export const KK_KIRJETYYPIT: Array<Letter> = mapLetterOptions([
+export const KK_KIRJETYYPIT: NonEmpty<Letter> = mapLetterOptions([
   LetterType.HYVAKSYMISKIRJE,
   LetterType.EI_HYVAKSYTTYJEN_KIRJE,
 ]);

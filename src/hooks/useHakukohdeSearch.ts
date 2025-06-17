@@ -98,8 +98,8 @@ export const filterWithSuodatustiedot = ({
     return (
       (!selectedFilters.withValintakoe || suodatustieto?.hasValintakoe) &&
       (!selectedFilters.withoutLaskenta || !suodatustieto?.laskettu) &&
-      (!selectedFilters.sijoittelematta || suodatustieto.sijoittelematta) &&
-      (!selectedFilters.julkaisematta || suodatustieto.julkaisematta) &&
+      (!selectedFilters.sijoittelematta || suodatustieto?.sijoittelematta) &&
+      (!selectedFilters.julkaisematta || suodatustieto?.julkaisematta) &&
       (isEmpty(selectedFilters.koulutustyyppi) ||
         hakukohde.koulutustyyppikoodi === selectedFilters.koulutustyyppi) &&
       (!selectedFilters.varasijatayttoPaattamatta ||
@@ -290,7 +290,7 @@ export const useHakukohdeSearchResults = (hakuOid: string) => {
         const hakukohdeTarget =
           hakukohdeMatchTargetsByHakukohdeOid[hakukohde.oid];
         return searchPhraseWords.every((word) =>
-          hakukohdeTarget.includes(word),
+          hakukohdeTarget?.includes(word),
         );
       });
     } else {

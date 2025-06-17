@@ -154,7 +154,7 @@ export const useHenkiloPageData = ({
           sijoittelunTulos?.hakutoiveenValintatapajonot?.find(
             (sijoitteluJono) =>
               sijoitteluJono.valintatapajonoOid ===
-              valinnanTulos.valintatapajonoOid,
+              valinnanTulos?.valintatapajonoOid,
           );
 
         const readOnly = !checkEditPermission(hakukohde.tarjoajaOid);

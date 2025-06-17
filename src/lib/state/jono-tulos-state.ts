@@ -100,8 +100,8 @@ export type JarjestysperusteChangeEvent = {
 export type JonoTulosActorRef = ActorRefFrom<typeof jonoTulosMachine>;
 
 const isJonoTulosEqual = (
-  tulos1: LaskennanJonosijaTulos,
-  tulos2: LaskennanJonosijaTulos,
+  tulos1: LaskennanJonosijaTulos | undefined,
+  tulos2: LaskennanJonosijaTulos | undefined,
 ) => {
   return isDeepEqual(tulos1, tulos2);
 };
@@ -119,6 +119,10 @@ const jonoTulosChangeReducer = ({
 
   const existingHakemusJonoTulos =
     context.changedJonoTulokset[hakemusOid] ?? context.jonoTulokset[hakemusOid];
+
+  if (!existingHakemusJonoTulos) {
+    return context.changedJonoTulokset;
+  }
 
   let newJonosija = event.jonosija ?? existingHakemusJonoTulos.jonosija ?? '';
   let newPisteet = event.pisteet ?? existingHakemusJonoTulos.pisteet ?? '';
@@ -303,6 +307,8 @@ export const jonoTulosMachine = createMachine({
                         nimi: '',
                       });
                     }
+                    const firstJarjestyskriteeri = jarjestyskriteerit[0]!;
+
                     const numberArvo = Number(
                       kaytetaanKokonaispisteita
                         ? changedJonoTulos?.pisteet
@@ -310,23 +316,23 @@ export const jonoTulosMachine = createMachine({
                     );
 
                     if (isNaN(numberArvo)) {
-                      jarjestyskriteerit[0].arvo = 0;
+                      firstJarjestyskriteeri.arvo = 0;
                     } else {
                       if (kaytetaanKokonaispisteita) {
-                        jarjestyskriteerit[0].arvo = numberArvo;
+                        firstJarjestyskriteeri.arvo = numberArvo;
                       } else {
                         /* Järjestyskriteerin pisteiden (arvo-kenttä) negatiivisia arvoja käytetään jonosijojen manuaaliseen tallentamiseen.
                          * Näin saadaan haluttu järjestys ilman oikeita pistetietoja.
                          */
-                        jarjestyskriteerit[0].arvo = -numberArvo;
+                        firstJarjestyskriteeri.arvo = -numberArvo;
                       }
                     }
 
                     const kuvaus =
                       changedJonoTulos?.kuvaus ?? jonoTulos.kuvaus ?? {};
 
-                    jarjestyskriteerit[0].tila = tuloksenTila;
-                    jarjestyskriteerit[0].kuvaus = mapKeys(kuvaus, (key) =>
+                    firstJarjestyskriteeri.tila = tuloksenTila;
+                    firstJarjestyskriteeri.kuvaus = mapKeys(kuvaus, (key) =>
                       key.toUpperCase(),
                     );
                   }
