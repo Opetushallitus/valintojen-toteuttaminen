@@ -5,6 +5,8 @@ import {
   findTableColumnIndexByTitle,
   mockDocumentProcess,
   selectOption,
+  testMuodostaHakemusHyvaksymiskirje,
+  testNaytaMuutoshistoria,
 } from './playwright-utils';
 import {
   IlmoittautumisTila,
@@ -499,103 +501,11 @@ test.describe('Valintaesityksen hyväksyminen', () => {
 
 test.describe('Hakemuksen muut toiminnot', () => {
   test('Näytä muutoshistoria', async ({ page }) => {
-    await page.route(
-      '*/**/valinta-tulos-service/auth/muutoshistoria*',
-      async (route) => {
-        await route.fulfill({
-          status: 200,
-          json: [
-            {
-              changes: [
-                {
-                  field: 'valinnantilanViimeisinMuutos',
-                  from: '2024-05-14T09:52:43.341+03:00',
-                  to: '2024-10-02T14:38:11.336+03:00',
-                },
-                {
-                  field: 'valinnantila',
-                  from: 'HYLATTY',
-                  to: 'PERUUNTUNUT',
-                },
-              ],
-              timestamp: '2024-10-02T14:36:00.955506+03:00',
-            },
-            {
-              changes: [
-                {
-                  field: 'valinnantilanViimeisinMuutos',
-                  to: '2024-05-14T09:52:43.341+03:00',
-                },
-                {
-                  field: 'valinnantila',
-                  to: 'HYLATTY',
-                },
-                {
-                  field: 'hyvaksyttyVarasijalta',
-                  to: false,
-                },
-                {
-                  field: 'hyvaksyPeruuntunut',
-                  to: false,
-                },
-                {
-                  field: 'julkaistavissa',
-                  to: false,
-                },
-              ],
-              timestamp: '2024-05-14T09:52:41.927195+03:00',
-            },
-          ],
-        });
-      },
-    );
-    await page
-      .getByRole('row', { name: 'Nukettaja Ruhtinas' })
-      .getByRole('button', { name: 'Muut toiminnot' })
-      .click();
-    await expect(page.getByText('Muutoshistoria')).toBeVisible();
-    await page.getByText('Muutoshistoria').click();
-    await expect(page.getByText('Muokkausajankohta')).toBeVisible();
-    await expect(page.getByLabel('Muutoshistoria')).toContainText(
-      'Sijoittelun tila: Peruuntunut',
-    );
-    await expect(page.getByLabel('Muutoshistoria')).toContainText(
-      'Sijoittelun tila: Hylätty',
-    );
-    await page.getByText('Sulje').click();
-    await expect(page.getByText('Muokkausajankohta')).toBeHidden();
+    await testNaytaMuutoshistoria(page);
   });
 
   test('Muodosta hyväksymiskirje', async ({ page }) => {
-    await mockDocumentProcess({
-      page,
-      urlMatcher:
-        '*/**/valintalaskentakoostepalvelu/resources/viestintapalvelu/hyvaksymiskirjeet/aktivoi*',
-    });
-    await page
-      .getByRole('row', { name: 'Nukettaja Ruhtinas' })
-      .getByRole('button', { name: 'Muut toiminnot' })
-      .click();
-    const hyvaksymiskirjeItem = page.getByRole('menuitem', {
-      name: 'Hyväksymiskirje',
-      exact: true,
-    });
-    await hyvaksymiskirjeItem.click();
-    await expect(
-      page.getByText('Hyväksymiskirjeen muodostaminen'),
-    ).toBeVisible();
-
-    const palautuksenErapaivaField = page.getByLabel(
-      'Palautuksen eräpäivä vastaanottajalle',
-    );
-    await palautuksenErapaivaField.click();
-    await page.getByLabel('Choose lauantaina 15.').click();
-    await page.getByRole('option', { name: '15.30' }).click();
-    await expect(palautuksenErapaivaField.locator('input')).toHaveValue(
-      '15.02.2025 15:30',
-    );
-    await page.getByRole('button', { name: 'Muodosta kirje' }).click();
-    await expect(page.getByRole('button', { name: 'Lataa' })).toBeVisible();
+    await testMuodostaHakemusHyvaksymiskirje(page);
   });
 
   test('Lähetä vastaanottoposti', async ({ page }) => {
