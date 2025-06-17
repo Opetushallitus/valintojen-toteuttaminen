@@ -487,7 +487,7 @@ export const getValintakoeExcel = async ({
     valintakoeTunnisteet: valintakoeTunniste,
   });
   const excelProcessId = createResponse?.data?.id;
-  return downloadProcessDocument(excelProcessId);
+  return downloadProcessDocument(excelProcessId, true);
 };
 
 type GetValintakoeOsoitetarratParams = KoutaOidParams & {
@@ -516,7 +516,7 @@ export const getValintakoeOsoitetarrat = async ({
     tag: 'valintakoetulos',
   });
   const tarratProcessId = startProcessResponse?.data?.id;
-  return downloadProcessDocument(tarratProcessId);
+  return downloadProcessDocument(tarratProcessId, true);
 };
 
 export const getOsoitetarratHakemuksille = async ({
@@ -536,7 +536,7 @@ export const getOsoitetarratHakemuksille = async ({
     },
   );
   const tarratProcessId = startProcessResponse?.data?.id;
-  return downloadProcessDocument(tarratProcessId);
+  return downloadProcessDocument(tarratProcessId, true);
 };
 
 export const getOsoitetarratHaulle = async ({
@@ -550,7 +550,7 @@ export const getOsoitetarratHaulle = async ({
     '',
   );
   const tarratProcessId = startProcessResponse?.data?.id;
-  return downloadProcessDocument(tarratProcessId);
+  return downloadProcessDocument(tarratProcessId, true);
 };
 
 export const getValintalaskennanTulosExcel = async ({
@@ -590,7 +590,7 @@ export const getValintatapajonoTulosExcel = async ({
 
   const excelProcessId = excelRes?.data?.id;
 
-  return await downloadProcessDocument(excelProcessId);
+  return await downloadProcessDocument(excelProcessId, true);
 };
 
 const pollDocumentSeuranta = async (uuid: string) => {
@@ -679,7 +679,7 @@ export const getPistesyottoExcel = async ({
   );
   const excelProcessId = createResponse?.data?.id;
 
-  return await downloadProcessDocument(excelProcessId);
+  return await downloadProcessDocument(excelProcessId, true);
 };
 
 export const getSijoittelunTulosExcel = async ({
@@ -702,7 +702,7 @@ export const getSijoittelunTulosExcel = async ({
   );
   const excelProcessId = createResponse?.data?.id;
 
-  return await downloadProcessDocument(excelProcessId);
+  return await downloadProcessDocument(excelProcessId, true);
 };
 
 export const getSijoittelunTulosHaulleExcel = async (
