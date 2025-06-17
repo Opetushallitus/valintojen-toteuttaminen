@@ -576,17 +576,22 @@ test.describe('Hakemuksen muut toiminnot', () => {
       .getByRole('row', { name: 'Nukettaja Ruhtinas' })
       .getByRole('button', { name: 'Muut toiminnot' })
       .click();
-    await expect(
-      page.getByText('Hyväksymiskirje', { exact: true }),
-    ).toBeVisible();
-    await page.getByText('Hyväksymiskirje', { exact: true }).click();
+    const hyvaksymiskirjeItem = page.getByRole('menuitem', {
+      name: 'Hyväksymiskirje',
+      exact: true,
+    });
+    await hyvaksymiskirjeItem.click();
     await expect(
       page.getByText('Hyväksymiskirjeen muodostaminen'),
     ).toBeVisible();
-    await page.getByPlaceholder('pp.kk.vvvv hh.mm').click();
+
+    const palautuksenErapaivaField = page.getByLabel(
+      'Palautuksen eräpäivä vastaanottajalle',
+    );
+    await palautuksenErapaivaField.click();
     await page.getByLabel('Choose lauantaina 15.').click();
     await page.getByRole('option', { name: '15.30' }).click();
-    await expect(page.getByPlaceholder('pp.kk.vvvv hh.mm')).toHaveValue(
+    await expect(palautuksenErapaivaField.locator('input')).toHaveValue(
       '15.02.2025 15:30',
     );
     await page.getByRole('button', { name: 'Muodosta kirje' }).click();
