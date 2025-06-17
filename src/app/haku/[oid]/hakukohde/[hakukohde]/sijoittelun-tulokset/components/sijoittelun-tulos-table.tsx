@@ -112,6 +112,7 @@ const useColumns = ({
           <ValinnanTilaCell
             hakemus={props}
             haku={haku}
+            hakukohde={hakukohde}
             updateForm={updateForm}
             disabled={disabled}
             mode="sijoittelu"
