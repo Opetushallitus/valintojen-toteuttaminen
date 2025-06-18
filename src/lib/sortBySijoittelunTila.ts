@@ -6,15 +6,17 @@ type SijoittelunTilaSortable = {
   varasijanNumero?: number;
 };
 
-const compareInts = (a: number, b: number, asc: boolean) => {
-  switch (true) {
-    case a > b:
-      return asc ? 1 : -1;
-    case b > a:
-      return asc ? -1 : 1;
-    default:
-      return 0;
-  }
+const compareInts = (
+  a: number | undefined,
+  b: number | undefined,
+  asc: boolean,
+) => {
+  if (a === undefined && b === undefined) return 0;
+  else if (a === undefined) return -1;
+  else if (b === undefined) return 1;
+  else if (a > b) return asc ? 1 : -1;
+  else if (b > a) return asc ? -1 : 1;
+  else return 0;
 };
 
 export function sortBySijoittelunTila<T extends SijoittelunTilaSortable>(
@@ -25,19 +27,15 @@ export function sortBySijoittelunTila<T extends SijoittelunTilaSortable>(
   return filtered.sort((a, b) => {
     const aSijoittelunTila = a.sijoittelunTila ?? a.tila;
     const bSijoittelunTila = b.sijoittelunTila ?? b.tila;
-    const aOrdinal =
-      (aSijoittelunTila && ValinnanTilaOrdinals[aSijoittelunTila]) ?? Infinity;
-    const bOrdinal =
-      (bSijoittelunTila && ValinnanTilaOrdinals[bSijoittelunTila]) ?? Infinity;
+    const aOrdinal = aSijoittelunTila && ValinnanTilaOrdinals[aSijoittelunTila];
+    const bOrdinal = bSijoittelunTila && ValinnanTilaOrdinals[bSijoittelunTila];
     if (
       aOrdinal === bOrdinal &&
-      aOrdinal === ValinnanTilaOrdinals[ValinnanTila.VARALLA] &&
-      a.varasijanNumero &&
-      b.varasijanNumero
+      aOrdinal === ValinnanTilaOrdinals[ValinnanTila.VARALLA]
     ) {
       return compareInts(a.varasijanNumero, b.varasijanNumero, asc);
+    } else {
+      return compareInts(aOrdinal, bOrdinal, asc);
     }
-
-    return compareInts(aOrdinal, bOrdinal, asc);
   });
 }
