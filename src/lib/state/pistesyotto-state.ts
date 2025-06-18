@@ -327,7 +327,7 @@ export const createPisteSyottoMachine = (
 
 type PistesyottoMachineParams = KoutaOidParams & {
   pistetiedot: Array<HakemuksenPistetiedot>;
-  valintakokeet: Array<ValintakoeAvaimet> | ValintakoeAvaimet;
+  valintakokeet: Array<ValintakoeAvaimet>;
   onEvent: (event: GenericEvent) => void;
 };
 
@@ -343,7 +343,7 @@ export const usePistesyottoState = ({
       hakuOid,
       hakukohdeOid,
       pistetiedot,
-      Array.isArray(valintakokeet) ? valintakokeet : [valintakokeet],
+      valintakokeet,
       onEvent,
     );
   }, [hakuOid, hakukohdeOid, pistetiedot, valintakokeet, onEvent]);

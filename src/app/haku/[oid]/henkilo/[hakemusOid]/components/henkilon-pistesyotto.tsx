@@ -2,11 +2,14 @@
 
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { Box, Divider, Typography } from '@mui/material';
-import { isEmpty } from 'remeda';
+import { isEmpty, isNullish } from 'remeda';
 import { KoeInputs } from '@/components/koe-inputs';
 import { ValintakoeAvaimet } from '@/lib/valintaperusteet/valintaperusteet-types';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
-import { usePistesyottoState } from '@/lib/state/pistesyotto-state';
+import {
+  PistesyottoActorRef,
+  usePistesyottoState,
+} from '@/lib/state/pistesyotto-state';
 import { HakijaInfo } from '@/lib/ataru/ataru-types';
 import useToaster from '@/hooks/useToaster';
 import { useCallback, useMemo } from 'react';
@@ -17,61 +20,32 @@ import { Range } from '@/components/range';
 import { getHakukohdeFullName } from '@/lib/kouta/kouta-service';
 import { useHaunParametrit } from '@/lib/valintalaskentakoostepalvelu/useHaunParametrit';
 import { GenericEvent } from '@/lib/common';
+import { ValintakoeOsallistuminenTulos } from '@/lib/types/laskenta-types';
 
 const KokeenPistesyotto = ({
   hakija,
   koe,
   hakukohde,
+  pistesyottoActorRef,
+  disabled,
 }: {
   hakija: HakijaInfo;
   koe: ValintakoeAvaimet;
   hakukohde: HenkilonHakukohdeTuloksilla;
+  pistesyottoActorRef: PistesyottoActorRef;
+  disabled: boolean;
 }) => {
   const { t, translateEntity } = useTranslations();
-
-  const { addToast } = useToaster();
 
   const matchingKoePisteet = hakukohde.pisteet?.find(
     (p) => p.tunniste === koe.tunniste,
   );
 
-  const pistetiedot = useMemo(
-    () => [
-      {
-        ...hakija,
-        valintakokeenPisteet: matchingKoePisteet ? [matchingKoePisteet] : [],
-      },
-    ],
-    [hakija, matchingKoePisteet],
-  );
-
-  const onEvent = useCallback(
-    (event: GenericEvent) => {
-      addToast(event);
-    },
-    [addToast],
-  );
-
-  const {
-    actorRef: pistesyottoActorRef,
-    isUpdating,
-    isDirty,
-    savePistetiedot,
-  } = usePistesyottoState({
-    hakuOid: hakukohde.hakuOid,
-    hakukohdeOid: hakukohde.oid,
-    pistetiedot,
-    valintakokeet: koe,
-    onEvent,
-  });
-
-  useConfirmChangesBeforeNavigation(isDirty);
-
-  const { data: haunParametrit } = useHaunParametrit({
-    hakuOid: hakukohde.hakuOid,
-  });
-
   const labelId = `${koe.tunniste}_label_${hakukohde.oid}`;
+  const hideInputs =
+    isNullish(matchingKoePisteet) ||
+    matchingKoePisteet.osallistuminen ===
+      ValintakoeOsallistuminenTulos.EI_KUTSUTTU;
 
   return (
     <>
@@ -95,26 +69,110 @@ const KokeenPistesyotto = ({
           hakukohde: getHakukohdeFullName(hakukohde, translateEntity),
         })}
       >
-        <KoeInputs
-          hakemusOid={hakija.hakemusOid}
-          koe={koe}
-          pistesyottoActorRef={pistesyottoActorRef}
-          disabled={hakukohde.readOnly || !haunParametrit.pistesyottoEnabled}
-        />
-        {!hakukohde.readOnly && (
-          <OphButton
-            variant="contained"
-            loading={isUpdating}
-            disabled={!haunParametrit.pistesyottoEnabled}
-            onClick={() => {
-              savePistetiedot();
-            }}
-          >
-            {t('yleinen.tallenna')}
-          </OphButton>
+        {hideInputs ? (
+          <></>
+        ) : (
+          <KoeInputs
+            hakemusOid={hakija.hakemusOid}
+            koe={koe}
+            pistesyottoActorRef={pistesyottoActorRef}
+            disabled={disabled}
+          />
         )}
       </Box>
     </>
+  );
+};
+
+const HakukohteenPisteSyotto = ({
+  hakija,
+  hakukohde,
+}: {
+  hakija: HakijaInfo;
+  hakukohde: HenkilonHakukohdeTuloksilla;
+}) => {
+  const { t } = useTranslations();
+
+  const { addToast } = useToaster();
+
+  const onEvent = useCallback(
+    (event: GenericEvent) => {
+      addToast(event);
+    },
+    [addToast],
+  );
+
+  const pistetiedot = useMemo(
+    () => [
+      {
+        ...hakija,
+        valintakokeenPisteet: hakukohde.pisteet ?? [],
+      },
+    ],
+    [hakija, hakukohde],
+  );
+
+  const { data: haunParametrit } = useHaunParametrit({
+    hakuOid: hakukohde.hakuOid,
+  });
+
+  const {
+    actorRef: pistesyottoActorRef,
+    isUpdating,
+    isDirty,
+    savePistetiedot,
+  } = usePistesyottoState({
+    hakuOid: hakukohde.hakuOid,
+    hakukohdeOid: hakukohde.oid,
+    pistetiedot,
+    valintakokeet: hakukohde.kokeet ?? [],
+    onEvent,
+  });
+
+  useConfirmChangesBeforeNavigation(isDirty);
+
+  return (
+    <Box data-test-id={`henkilo-pistesyotto-hakukohde-${hakukohde.oid}`}>
+      <Typography
+        variant="h4"
+        component="h3"
+        sx={{ paddingLeft: 1, paddingY: 2 }}
+      >
+        <HakutoiveTitle
+          hakutoiveNumero={hakukohde.hakutoiveNumero}
+          hakukohde={hakukohde}
+        />
+        {!hakukohde.readOnly &&
+          hakukohde.pisteet &&
+          hakukohde.pisteet.length > 0 && (
+            <OphButton
+              variant="contained"
+              loading={isUpdating}
+              disabled={!haunParametrit.pistesyottoEnabled}
+              onClick={() => {
+                savePistetiedot();
+              }}
+            >
+              {t('yleinen.tallenna')}
+            </OphButton>
+          )}
+      </Typography>
+      {hakukohde.kokeet?.map((koe) => {
+        return (
+          <Box key={koe.tunniste} sx={{ paddingBottom: 2 }}>
+            <KokeenPistesyotto
+              koe={koe}
+              hakukohde={hakukohde}
+              hakija={hakija}
+              pistesyottoActorRef={pistesyottoActorRef}
+              disabled={
+                hakukohde.readOnly || !haunParametrit.pistesyottoEnabled
+              }
+            />
+          </Box>
+        );
+      })}
+    </Box>
   );
 };
 
@@ -126,6 +184,7 @@ export const HenkilonPistesyotto = ({
   hakukohteet: Array<HenkilonHakukohdeTuloksilla>;
 }) => {
   const { t } = useTranslations();
+
   const hakukohteetKokeilla = hakukohteet?.filter(
     (hakukohde) => !isEmpty(hakukohde.kokeet ?? []),
   );
@@ -133,36 +192,13 @@ export const HenkilonPistesyotto = ({
   return isEmpty(hakukohteetKokeilla) ? null : (
     <Box sx={{ marginTop: 3 }}>
       <Typography variant="h3">{t('henkilo.pistesyotto')}</Typography>
-      {hakukohteetKokeilla.map((hakukohde) => {
-        return (
-          <Box
-            key={hakukohde.oid}
-            data-test-id={`henkilo-pistesyotto-hakukohde-${hakukohde.oid}`}
-          >
-            <Typography
-              variant="h4"
-              component="h3"
-              sx={{ paddingLeft: 1, paddingY: 2 }}
-            >
-              <HakutoiveTitle
-                hakutoiveNumero={hakukohde.hakutoiveNumero}
-                hakukohde={hakukohde}
-              />
-            </Typography>
-            {hakukohde.kokeet?.map((koe) => {
-              return (
-                <Box key={koe.tunniste} sx={{ paddingBottom: 2 }}>
-                  <KokeenPistesyotto
-                    koe={koe}
-                    hakukohde={hakukohde}
-                    hakija={hakija}
-                  />
-                </Box>
-              );
-            })}
-          </Box>
-        );
-      })}
+      {hakukohteetKokeilla.map((hakukohde) => (
+        <HakukohteenPisteSyotto
+          key={hakukohde.oid}
+          hakukohde={hakukohde}
+          hakija={hakija}
+        />
+      ))}
     </Box>
   );
 };
