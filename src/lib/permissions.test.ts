@@ -43,7 +43,7 @@ const permissionsResponse: PermissionsResponseData = {
 const DEFAULT_USER_PERMISSIONS =
   selectUserPermissions(permissionsResponse)[
     VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY
-  ];
+  ]!;
 
 const OPH_USER_PERMISSIONS = {
   readOrganizations: [OPH_ORGANIZATION_OID],
@@ -72,7 +72,7 @@ describe('selectUserPermissions', () => {
 
   test('Muu palvelu permission', () => {
     const valintaperusteetUserPermissions =
-      selectUserPermissions(permissionsResponse)[MUU_PALVELU_SERVICE_KEY];
+      selectUserPermissions(permissionsResponse)[MUU_PALVELU_SERVICE_KEY]!;
 
     expect(valintaperusteetUserPermissions.crudOrganizations).toEqual([]);
     expect(valintaperusteetUserPermissions.writeOrganizations).toEqual([]);

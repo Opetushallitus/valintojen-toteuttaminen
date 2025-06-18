@@ -7,6 +7,7 @@ import {
   UserPermissionsByService,
   UserPermissions,
   checkHasPermission,
+  EMPTY_USER_PERMISSIONS,
 } from '@/lib/permissions';
 import { PermissionError } from '@/lib/common';
 import { isEmpty, unique } from 'remeda';
@@ -108,5 +109,5 @@ export const useUserPermissions = (
   serviceKey: string = VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY,
 ) => {
   const { data } = useSuspenseQuery(userPermissionsQueryOptions);
-  return data[serviceKey];
+  return data[serviceKey] ?? EMPTY_USER_PERMISSIONS;
 };

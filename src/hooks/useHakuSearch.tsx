@@ -45,7 +45,10 @@ const KAUSI_MAPPING = Object.freeze({
   },
 });
 
-const getKausiVuosiTranslation = (kausiUri: string, vuosi: number) => {
+const getKausiVuosiTranslation = (
+  kausiUri: string | undefined,
+  vuosi: number,
+) => {
   if (kausiUri === 'kausi_s' || kausiUri === 'kausi_k') {
     const kausiName = KAUSI_MAPPING?.[kausiUri];
     return {
@@ -165,7 +168,7 @@ export const useHakuSearchResults = () => {
           (hakutapa) => hakutapa.koodiUri === haku.hakutapaKoodiUri,
         )?.nimi,
         alkamiskausiNimi: getKausiVuosiTranslation(
-          haku.alkamisKausiKoodiUri?.split('#')?.[0],
+          haku?.alkamisKausiKoodiUri?.split('#')?.[0],
           haku.alkamisVuosi,
         ),
       })),

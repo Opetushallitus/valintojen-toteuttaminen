@@ -59,7 +59,7 @@ export const HakuTabs = ({ hakuOid }: { hakuOid: string }) => {
   const { t } = useTranslations();
 
   const userPermissions = useUserPermissions();
-  const hasOphCRUD = userPermissions.hasOphCRUD;
+  const hasOphCRUD = userPermissions?.hasOphCRUD;
 
   const { addToast } = useToaster();
 

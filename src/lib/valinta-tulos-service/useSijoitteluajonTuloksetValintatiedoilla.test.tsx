@@ -24,7 +24,8 @@ describe('selectSijoitteluajonTuloksetValintatiedoilla', () => {
       await getTuloksetValintatiedoilla();
     expect(tulokset).not.toBeNull();
     expect(tulokset!.valintatapajonot.length).toEqual(1);
-    const jono = tulokset!.valintatapajonot[0];
+    const jono = tulokset!.valintatapajonot[0]!;
+    expect(jono).toBeDefined();
     expect(jono.nimi).toEqual('Todistusvalinta (YO)');
     expect(jono.aloituspaikat).toEqual(2);
     expect(jono.alkuperaisetAloituspaikat).toEqual(1);
@@ -33,7 +34,7 @@ describe('selectSijoitteluajonTuloksetValintatiedoilla', () => {
     expect(jono.varasijataytto).toBeTruthy();
     expect(jono.hakemukset.length).toEqual(3);
     assertHakemus(
-      jono.hakemukset[0],
+      jono.hakemukset[0]!,
       2,
       'Dacula Kreivi',
       15,
@@ -42,7 +43,7 @@ describe('selectSijoitteluajonTuloksetValintatiedoilla', () => {
       IlmoittautumisTila.EI_TEHTY,
     );
     assertHakemus(
-      jono.hakemukset[1],
+      jono.hakemukset[1]!,
       1,
       'Nukettaja Ruhtinas',
       15,
@@ -51,7 +52,7 @@ describe('selectSijoitteluajonTuloksetValintatiedoilla', () => {
       IlmoittautumisTila.LASNA,
     );
     assertHakemus(
-      jono.hakemukset[2],
+      jono.hakemukset[2]!,
       3,
       'Purukumi Puru',
       12,
@@ -65,13 +66,13 @@ describe('selectSijoitteluajonTuloksetValintatiedoilla', () => {
     const tulokset: SijoitteluajonTuloksetValintatiedoilla | null =
       await getTuloksetValintatiedoilla();
     expect(tulokset).not.toBeNull();
-    const hakemukset = tulokset!.valintatapajonot[0].hakemukset;
-    expect(hakemukset[0].hakemusOid).toEqual('hakemus2');
-    expect(hakemukset[0].sija).toEqual(1);
-    expect(hakemukset[1].hakemusOid).toEqual('hakemus1');
-    expect(hakemukset[1].sija).toEqual(2);
-    expect(hakemukset[2].hakemusOid).toEqual('hakemus3');
-    expect(hakemukset[2].sija).toEqual(3);
+    const hakemukset = tulokset!.valintatapajonot?.[0]?.hakemukset;
+    expect(hakemukset?.[0]?.hakemusOid).toEqual('hakemus2');
+    expect(hakemukset?.[0]?.sija).toEqual(1);
+    expect(hakemukset?.[1]?.hakemusOid).toEqual('hakemus1');
+    expect(hakemukset?.[1]?.sija).toEqual(2);
+    expect(hakemukset?.[2]?.hakemusOid).toEqual('hakemus3');
+    expect(hakemukset?.[2]?.sija).toEqual(3);
   });
 });
 

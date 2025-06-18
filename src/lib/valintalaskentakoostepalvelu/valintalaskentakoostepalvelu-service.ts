@@ -119,7 +119,7 @@ const getPisteetForHakemus = async ({ hakemusOid }: { hakemusOid: string }) => {
 const selectKokeenPisteet = (
   hakukohdeOid: string,
   pistetieto: PistetietoItem,
-  kokeet: Array<ValintakoeAvaimet>,
+  kokeet: Array<ValintakoeAvaimet> = [],
 ): Array<ValintakokeenPisteet> => {
   return kokeet
     .map((k) => {
@@ -198,22 +198,32 @@ export const getPisteetForHakukohde = async (
   const hakemuksetIndexed = indexBy(hakemukset, prop('hakemusOid'));
 
   const hakemuksetKokeilla: Array<HakemuksenPistetiedot> =
-    pistetiedot.valintapisteet.map((p: PistetietoItem) => {
-      const hakemus = hakemuksetIndexed[p.applicationAdditionalDataDTO.oid];
-      const kokeenPisteet: Array<ValintakokeenPisteet> = selectKokeenPisteet(
-        hakukohdeOid,
-        p,
-        kokeet,
-      );
-      return {
-        hakemusOid: hakemus.hakemusOid,
-        hakijaOid: hakemus.hakijaOid,
-        hakijanNimi: hakemus.hakijanNimi,
-        etunimet: hakemus.etunimet,
-        sukunimi: hakemus.sukunimi,
-        valintakokeenPisteet: kokeenPisteet,
-      };
-    });
+    pistetiedot.valintapisteet
+      .map((p: PistetietoItem) => {
+        const hakemus = hakemuksetIndexed[p.applicationAdditionalDataDTO.oid];
+
+        if (!hakemus) {
+          console.warn(
+            `Hakemus-OIDille ${p.applicationAdditionalDataDTO.oid} löytyi pistetieto, mutta ei hakemusta Atarusta!`,
+          );
+          return null;
+        }
+
+        const kokeenPisteet: Array<ValintakokeenPisteet> = selectKokeenPisteet(
+          hakukohdeOid,
+          p,
+          kokeet,
+        );
+        return {
+          hakemusOid: hakemus.hakemusOid,
+          hakijaOid: hakemus.hakijaOid,
+          hakijanNimi: hakemus.hakijanNimi,
+          etunimet: hakemus.etunimet,
+          sukunimi: hakemus.sukunimi,
+          valintakokeenPisteet: kokeenPisteet,
+        };
+      })
+      .filter(isNonNullish);
 
   const lastModified = isNonNullish(pistetiedot.lastmodified)
     ? new Date(pistetiedot.lastmodified)
@@ -587,7 +597,6 @@ export const getValintatapajonoTulosExcel = async ({
   urlWithQuery.searchParams.append('valintatapajonoOid', valintatapajonoOid);
 
   const excelRes = await client.post<{ id: string }>(urlWithQuery, {});
-
   const excelProcessId = excelRes?.data?.id;
 
   return await downloadProcessDocument(excelProcessId, true);
@@ -619,7 +628,7 @@ const pollDocumentSeuranta = async (uuid: string) => {
       if (resData.virheita) {
         throw new OphApiError(
           documentRes,
-          resData.virheilmoitukset?.[0].ilmoitus,
+          resData.virheilmoitukset?.[0]?.ilmoitus,
         );
       }
       return {
@@ -1065,12 +1074,14 @@ export const tuloskirjeidenMuodostuksenTilanne = async (
   const letterCounts: Array<LetterCounts> = [];
   for (const key of Object.keys(res.data)) {
     for (const lang of ['fi', 'sv', 'en']) {
-      const countObject = res.data[key][lang];
-      letterCounts.push({
-        templateName: key,
-        lang: lang as Language,
-        ...countObject,
-      });
+      const countObject = res.data[key]?.[lang];
+      if (countObject) {
+        letterCounts.push({
+          templateName: key,
+          lang: lang as Language,
+          ...countObject,
+        });
+      }
     }
   }
   return letterCounts;

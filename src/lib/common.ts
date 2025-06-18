@@ -133,3 +133,5 @@ export const rejectAndLog = (message: string) => {
   console.error(message);
   return Promise.reject(new Error(message));
 };
+
+export type NonEmpty<T> = Array<T> & { 0: T };

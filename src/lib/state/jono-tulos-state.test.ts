@@ -163,11 +163,11 @@ describe('JonoTulosMachine', () => {
     const jonoTuloksetSnapshot =
       actor.getSnapshot().context.changedJonoTulokset;
 
-    expect(jonoTuloksetSnapshot['hakemus1'].tuloksenTila).toEqual(
+    expect(jonoTuloksetSnapshot?.['hakemus1']?.tuloksenTila).toEqual(
       TuloksenTila.HYLATTY,
     );
-    expect(jonoTuloksetSnapshot['hakemus1'].jonosija).toEqual('');
-    expect(jonoTuloksetSnapshot['hakemus1'].pisteet).toEqual('');
+    expect(jonoTuloksetSnapshot?.['hakemus1']?.jonosija).toEqual('');
+    expect(jonoTuloksetSnapshot?.['hakemus1']?.pisteet).toEqual('');
   });
 
   test('should handle JARJESTYSPERUSTE_CHANGED event', () => {
@@ -186,10 +186,10 @@ describe('JonoTulosMachine', () => {
     actor.send(jarjestysperusteChangeEvent);
     const snapshot = actor.getSnapshot();
     expect(snapshot.context.jarjestysPeruste).toBe('kokonaispisteet');
-    expect(snapshot.context.changedJonoTulokset['hakemus1'].tuloksenTila).toBe(
+    expect(snapshot.context.changedJonoTulokset['hakemus1']?.tuloksenTila).toBe(
       TuloksenTila.MAARITTELEMATON,
     );
-    expect(snapshot.context.changedJonoTulokset['hakemus1'].jonosija).toBe('');
+    expect(snapshot.context.changedJonoTulokset['hakemus1']?.jonosija).toBe('');
   });
 
   test('should remove tulos from changes if modifying it to have same value as original', () => {

@@ -51,7 +51,7 @@ const hasHakukohdePermission = (
   );
 };
 
-export const HAKUKOHDE_TABS: Array<BasicTab> = [
+export const HAKUKOHDE_TABS: ReadonlyArray<BasicTab> = [
   {
     title: 'perustiedot.otsikko',
     route: 'perustiedot',

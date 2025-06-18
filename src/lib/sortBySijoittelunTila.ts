@@ -6,6 +6,19 @@ type SijoittelunTilaSortable = {
   varasijanNumero?: number;
 };
 
+const compareInts = (
+  a: number | undefined,
+  b: number | undefined,
+  asc: boolean,
+) => {
+  if (a === undefined && b === undefined) return 0;
+  else if (a === undefined) return -1;
+  else if (b === undefined) return 1;
+  else if (a > b) return asc ? 1 : -1;
+  else if (b > a) return asc ? -1 : 1;
+  else return 0;
+};
+
 export function sortBySijoittelunTila<T extends SijoittelunTilaSortable>(
   direction: string,
   filtered: Array<T>,
@@ -14,43 +27,15 @@ export function sortBySijoittelunTila<T extends SijoittelunTilaSortable>(
   return filtered.sort((a, b) => {
     const aSijoittelunTila = a.sijoittelunTila ?? a.tila;
     const bSijoittelunTila = b.sijoittelunTila ?? b.tila;
-    if (aSijoittelunTila && bSijoittelunTila) {
-      const aOrdinal = ValinnanTilaOrdinals[aSijoittelunTila];
-      const bOrdinal = ValinnanTilaOrdinals[bSijoittelunTila];
-      if (
-        aOrdinal === bOrdinal &&
-        aOrdinal === ValinnanTilaOrdinals[ValinnanTila.VARALLA] &&
-        a.varasijanNumero &&
-        b.varasijanNumero
-      ) {
-        return a.varasijanNumero > b.varasijanNumero
-          ? asc
-            ? 1
-            : -1
-          : b.varasijanNumero > a.varasijanNumero
-            ? asc
-              ? -1
-              : 1
-            : 0;
-      }
-      return aOrdinal > bOrdinal
-        ? asc
-          ? 1
-          : -1
-        : bOrdinal > aOrdinal
-          ? asc
-            ? -1
-            : 1
-          : 0;
+    const aOrdinal = aSijoittelunTila && ValinnanTilaOrdinals[aSijoittelunTila];
+    const bOrdinal = bSijoittelunTila && ValinnanTilaOrdinals[bSijoittelunTila];
+    if (
+      aOrdinal === bOrdinal &&
+      aOrdinal === ValinnanTilaOrdinals[ValinnanTila.VARALLA]
+    ) {
+      return compareInts(a.varasijanNumero, b.varasijanNumero, asc);
+    } else {
+      return compareInts(aOrdinal, bOrdinal, asc);
     }
-    return aSijoittelunTila
-      ? asc
-        ? 1
-        : -1
-      : bSijoittelunTila
-        ? asc
-          ? -1
-          : 1
-        : 0;
   });
 }

@@ -21,7 +21,7 @@ import {
   prop,
   sortBy,
 } from 'remeda';
-import { Hakemus } from '@/lib/ataru/ataru-types';
+import { HakemuksenTila, Hakemus } from '@/lib/ataru/ataru-types';
 import { hakukohteenValinnanvaiheetQueryOptions } from '@/lib/valintaperusteet/valintaperusteet-service';
 import { Valinnanvaihe } from '@/lib/valintaperusteet/valintaperusteet-types';
 import { selectLaskennattomatValinnanvaiheet } from '@/lib/valintaperusteet/valintaperusteet-utils';
@@ -165,11 +165,16 @@ export const selectEditableValintalaskennanTulokset = <
             nimi: jono.nimi,
             valintatapajonooid: jono.oid,
             prioriteetti: jono.prioriteetti,
-            valmisSijoiteltavaksi:
+            valmisSijoiteltavaksi: Boolean(
               jono.automaattinenSijoitteluunSiirto ??
-              laskettuJono?.valmisSijoiteltavaksi,
-            siirretaanSijoitteluun: laskettuJono?.siirretaanSijoitteluun,
-            kaytetaanKokonaispisteita: laskettuJono?.kaytetaanKokonaispisteita,
+                laskettuJono?.valmisSijoiteltavaksi,
+            ),
+            siirretaanSijoitteluun: Boolean(
+              laskettuJono?.siirretaanSijoitteluun,
+            ),
+            kaytetaanKokonaispisteita: Boolean(
+              laskettuJono?.kaytetaanKokonaispisteita,
+            ),
             jonosijat: pipe(
               // Valintalaskenta ei ole käytössä valinnanvaiheelle, joten käydään läpi kaikki hakemukset
               // täydentäen tuloksen puuttuessa "tyhjä" laskennan tulos, jotta voidaan näyttää
@@ -252,17 +257,34 @@ export const useEditableValintalaskennanTulokset = ({
 
   const hakemuksetByOid = indexBy(hakemukset ?? [], prop('hakemusOid'));
 
-  return selectEditableValintalaskennanTulokset<AdditionalHakemusFields>({
-    valintalaskennanTulokset: hakukohteenLaskennanTulokset,
-    valinnanvaiheet,
-    hakemukset,
-    selectHakemusFields(hakemusOid) {
-      const hakemus = hakemuksetByOid[hakemusOid];
-      return {
-        hakijanNimi: hakemus.hakijanNimi,
-        hakemuksenTila: hakemus.tila,
-        henkilotunnus: hakemus.henkilotunnus,
-      };
-    },
-  });
+  const notFoundHakemukset: Array<string> = [];
+
+  const result =
+    selectEditableValintalaskennanTulokset<AdditionalHakemusFields>({
+      valintalaskennanTulokset: hakukohteenLaskennanTulokset,
+      valinnanvaiheet,
+      hakemukset,
+      selectHakemusFields(hakemusOid) {
+        const hakemus = hakemuksetByOid[hakemusOid];
+
+        if (!hakemus) {
+          notFoundHakemukset.push(hakemusOid);
+        }
+
+        return {
+          hakijanNimi: hakemus?.hakijanNimi ?? '',
+          hakemuksenTila: hakemus?.tila ?? HakemuksenTila.KESKEN,
+          henkilotunnus: hakemus?.henkilotunnus ?? '',
+        };
+      },
+    });
+
+  if (notFoundHakemukset.length > 0) {
+    console.warn(
+      'Seuraavien hakemusten tietoja ei löytynyt Atarusta, vaikka valintalaskennan tuloksia löytyi:',
+      notFoundHakemukset,
+    );
+  }
+
+  return result;
 };

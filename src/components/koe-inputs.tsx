@@ -15,6 +15,7 @@ import {
   useKoePistetiedot,
 } from '../lib/state/pistesyotto-state';
 import { OsallistumisenTilaSelect } from '@/components/osallistumisen-tila-select';
+import { memo } from 'react';
 
 const KOE_SELECT_STYLE = {
   minWidth: '150px',
@@ -79,7 +80,7 @@ const ArvoSelect = ({
   />
 );
 
-export const KoeInputsStateless = ({
+export const KoeInputsStateless = memo(function KoeInputsStateless({
   hakemusOid,
   koe,
   disabled,
@@ -94,7 +95,7 @@ export const KoeInputsStateless = ({
   disabled: boolean;
   onChange: (event: PistesyottoChangeParams) => void;
   t: TFunction;
-}) => {
+}) {
   const arvoId = `koe-arvo-${hakemusOid}-${koe.tunniste}`;
 
   const changeOsallistumisenTila = (event: SelectChangeEvent<string>) => {
@@ -160,7 +161,7 @@ export const KoeInputsStateless = ({
       )}
     </Box>
   );
-};
+});
 
 export const KoeInputs = ({
   hakemusOid,

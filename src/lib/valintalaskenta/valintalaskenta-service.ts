@@ -363,7 +363,7 @@ export const getHakijaryhmat = async (
   return data.map((ryhma) => {
     const ryhmanHakijat: Array<HakijaryhmanHakija> = hakemukset.map((h) => {
       const hakemusSijoittelussa = findHakemusSijoittelussa(
-        sijoittelunHakemukset[h.hakemusOid],
+        sijoittelunHakemukset?.[h.hakemusOid],
         tulokset.valintatapajonot,
       );
       const jonosijanTiedot = ryhma.jonosijat.find(
@@ -433,7 +433,7 @@ const sijoittelunTilaOrdinalForHakemus = (tila: ValinnanTila): number => {
 };
 
 const findHakemusSijoittelussa = (
-  hakijanHakemukset: Array<SijoittelunHakemus>,
+  hakijanHakemukset: Array<SijoittelunHakemus> = [],
   valintatapajonot: Array<SijoitteluajonValintatapajono>,
 ): SijoittelunHakemus => {
   return hakijanHakemukset?.reduce((h, hakemus) => {
