@@ -220,7 +220,85 @@ test('Valintatapajono excelin tuonti epäonnistuu', async ({ page }) => {
   );
 });
 
-test('Lähettää muokatun datan tallentaessa', async ({ page }) => {
+test('Lähettää muokatun pisteet-datan tallentaessa', async ({ page }) => {
+  await page.goto(
+    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/valintalaskennan-tulokset',
+  );
+
+  const jonoHeadingText = 'Varsinainen valinta: Tutkintoon valmentava koulutus';
+
+  const jonoContent = page.getByRole('region', { name: jonoHeadingText });
+
+  await jonoContent.getByRole('button', { name: 'Kokonaispisteet' }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Kyllä' }).click();
+
+  const firstRow = jonoContent.locator('tbody tr').first();
+  await firstRow.getByRole('textbox', { name: 'pisteet' }).fill('6,6');
+  await firstRow
+    .getByRole('textbox', { name: 'Kuvaus suomeksi' })
+    .fill('Kuvaus FI');
+  await firstRow
+    .getByRole('textbox', { name: 'Kuvaus ruotsiksi' })
+    .fill('Kuvaus SV');
+  await firstRow
+    .getByRole('textbox', { name: 'Kuvaus englanniksi' })
+    .fill('Kuvaus EN');
+
+  // Save data and wait for request
+  const [request] = await Promise.all([
+    page.waitForRequest(
+      (req) =>
+        req
+          .url()
+          .includes(
+            'valintalaskenta-laskenta-service/resources/hakukohde/1.2.246.562.20.00000000000000045105/valinnanvaihe',
+          ) && req.method() === 'POST',
+    ),
+    jonoContent.getByRole('button', { name: 'Tallenna' }).click(),
+  ]);
+
+  // Check if request payload matches the modified data
+  const requestData = JSON.parse(request.postData() || '{}');
+  expect(requestData).toMatchObject({
+    jarjestysnumero: 0,
+    valinnanvaiheoid: '1711376481658-8750199942485536118',
+    nimi: 'Varsinainen valinta',
+    createdAt: null,
+    valintatapajonot: [
+      {
+        oid: '1679913593167-8093928466417053918',
+        nimi: 'Tutkintoon valmentava koulutus',
+        valintatapajonooid: '1679913593167-8093928466417053918',
+        prioriteetti: 0,
+        valmisSijoiteltavaksi: true,
+        siirretaanSijoitteluun: false,
+        kaytetaanKokonaispisteita: true,
+        jonosijat: [
+          {
+            hakemusOid: '1.2.246.562.11.00000000000001796027',
+            hakijaOid: '1.2.246.562.24.69259807406',
+            jonosija: 1,
+            tuloksenTila: 'HYVAKSYTTAVISSA',
+            prioriteetti: 0,
+            jarjestyskriteerit: [
+              {
+                arvo: 6.6,
+                tila: 'HYVAKSYTTAVISSA',
+                kuvaus: { FI: 'Kuvaus FI', SV: 'Kuvaus SV', EN: 'Kuvaus EN' },
+                prioriteetti: 0,
+                nimi: '',
+              },
+            ],
+            harkinnanvarainen: false,
+          },
+        ],
+      },
+    ],
+    hakuOid: '1.2.246.562.29.00000000000000045102',
+  });
+});
+
+test('Lähettää muokatun jonosija-datan tallentaessa', async ({ page }) => {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/valintalaskennan-tulokset',
   );

@@ -33,6 +33,8 @@ import {
   OphProcessErrorData,
   nullWhen404,
   isOphOid,
+  pointToComma,
+  commaToPoint,
 } from '../common';
 import { getHakemukset, getHakijat } from '../ataru/ataru-service';
 import {
@@ -138,7 +140,7 @@ const selectKokeenPisteet = (
       ] as ValintakoeOsallistuminenTulos;
       return {
         tunniste: k.tunniste,
-        arvo,
+        arvo: pointToComma(arvo),
         osallistuminen: osallistuminen,
         osallistuminenTunniste: k.osallistuminenTunniste,
       };
@@ -245,7 +247,7 @@ export const updatePisteetForHakukohde = async (
     const additionalData = pipe(
       p.valintakokeenPisteet,
       flatMap((vp) => [
-        { key: vp.tunniste, value: vp.arvo },
+        { key: vp.tunniste, arvo: commaToPoint(vp.arvo) },
         { key: vp.osallistuminenTunniste, value: vp.osallistuminen },
       ]),
       indexBy((kv) => kv.key),

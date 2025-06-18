@@ -56,6 +56,7 @@ import {
 import { getConfiguration } from '@/lib/configuration/client-configuration';
 import { getConfigUrl } from '../configuration/configuration-utils';
 import { siirraTaiPoistaValintatapajonoAutomaattisestaSijoittelusta } from '../valintaperusteet/valintaperusteet-service';
+import { commaToPoint, pointToComma } from '@/lib/common';
 
 const createLaskentaURL = async ({
   laskentaTyyppi,
@@ -370,7 +371,7 @@ export const getHakijaryhmat = async (
         (js) => js.hakemusOid === h.hakemusOid,
       );
       const sijoittelunTila = hakemusSijoittelussa?.tila;
-      const pisteet = hakemusSijoittelussa?.pisteet;
+      const pisteet = pointToComma(hakemusSijoittelussa?.pisteet) ?? '';
       const vastaanottoTila = findVastaanottotila(
         valintaTulokset,
         hakemusSijoittelussa,
@@ -390,7 +391,7 @@ export const getHakijaryhmat = async (
         ),
         kuuluuHakijaryhmaan: kuuluuRyhmaan,
         sijoittelunTila,
-        pisteet: pisteet ?? 0,
+        pisteet,
         vastaanottoTila,
         jononNimi,
         varasijanNumero: hakemusSijoittelussa.varasijanNumero,
@@ -551,7 +552,7 @@ export const saveJonosijanJarjestyskriteeri = ({
     ),
     {
       tila,
-      arvo,
+      arvo: commaToPoint(arvo),
       selite,
     },
   );

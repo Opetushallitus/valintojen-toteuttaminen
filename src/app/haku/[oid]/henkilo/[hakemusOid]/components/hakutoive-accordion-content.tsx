@@ -103,7 +103,7 @@ export const HakutoiveAccordionContent = ({
                           hakijanNimi: getHenkiloTitle(hakija),
                           hakukohde,
                           valintatapajono: jono,
-                          jonosija: jono.jonosijat?.[0], // Yhdellä henkilöllä vain yksi jonosija
+                          jonosija,
                           onSuccess: () => {
                             refetchValinnanvaiheet({
                               hakuOid: hakukohde.hakuOid,

@@ -1,3 +1,4 @@
+import { commaToPoint } from '../common';
 import { TFunction } from '../localization/useTranslations';
 
 export type ValidationResult = {
@@ -30,7 +31,7 @@ export const numberValidator = ({
       : !!min && (min as number);
   return {
     validate: (val: string) => {
-      const v = val.trim().replace(',', '.');
+      const v = commaToPoint(val) ?? '';
       if (nullable && v.length < 1) {
         return { error: false };
       }

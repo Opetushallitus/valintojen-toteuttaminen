@@ -11,7 +11,7 @@ export type HakijaryhmanHakija = {
   hyvaksyttyHakijaryhmasta: boolean;
   sijoittelunTila?: ValinnanTila;
   vastaanottoTila?: string;
-  pisteet: number;
+  pisteet: string;
   jononNimi?: string;
   varasijanNumero?: number;
 };

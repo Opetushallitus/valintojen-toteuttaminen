@@ -1,9 +1,7 @@
+import { pointToComma } from '@/lib/common';
 import { NDASH } from '@/lib/constants';
 
-export const Range = ({
-  min,
-  max,
-}: {
-  min?: number | string;
-  max?: number | string;
-}) => (min || max ? `${min ?? ''}${NDASH}${max ?? ''}` : '');
+export const Range = ({ min, max }: { min?: string; max?: string }) =>
+  min || max
+    ? `${pointToComma(min) ?? ''}${NDASH}${pointToComma(max) ?? ''}`
+    : '';

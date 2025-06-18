@@ -106,6 +106,7 @@ test('Näyttää pistesyotöt kaikilla kokeilla', async ({ page }) => {
     'th',
   );
   const rows = page.getByTestId('pistesyotto-form').locator('tbody tr');
+
   await expect(rows).toHaveCount(4);
   await checkRow(rows.nth(0), [
     'Dacula Kreivi',
@@ -117,11 +118,19 @@ test('Näyttää pistesyotöt kaikilla kokeilla', async ({ page }) => {
     'Ei osallistunut',
     'Valitse...Merkitsemättä',
   ]);
-  await checkRow(rows.nth(2), [
+
+  const nukettajaRow = rows.nth(2);
+  await checkRow(nukettajaRow, [
     'Nukettaja Ruhtinas',
     'Osallistui',
     'KylläOsallistui',
   ]);
+  const arvosanaInput = nukettajaRow
+    .getByRole('cell')
+    .nth(1)
+    .getByRole('textbox');
+  await expect(arvosanaInput).toHaveValue('8,8');
+
   await checkRow(rows.nth(3), [
     'Purukumi Puru',
     'Ei osallistunut',

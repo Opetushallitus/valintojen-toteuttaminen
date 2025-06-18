@@ -26,6 +26,7 @@ import { hakukohteenValinnanvaiheetQueryOptions } from '@/lib/valintaperusteet/v
 import { Valinnanvaihe } from '@/lib/valintaperusteet/valintaperusteet-types';
 import { selectLaskennattomatValinnanvaiheet } from '@/lib/valintaperusteet/valintaperusteet-utils';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
+import { pointToComma } from '@/lib/common';
 
 export type LaskennanJonosijaTulos<
   A extends Record<string, unknown> = Record<string, unknown>,
@@ -99,9 +100,12 @@ const selectJonosijaFields = (
     jonosija: jonosija?.toString() ?? '',
     harkinnanvarainen: jonosijaData?.harkinnanvarainen,
     prioriteetti: jonosijaData?.prioriteetti,
-    jarjestyskriteerit: jonosijaData?.jarjestyskriteerit,
+    jarjestyskriteerit: jonosijaData?.jarjestyskriteerit.map((kriteeri) => ({
+      ...kriteeri,
+      arvo: pointToComma(kriteeri.arvo?.toString()) ?? '',
+    })),
     hakutoiveNumero: jonosijaData?.prioriteetti,
-    pisteet: jarjestyskriteeri?.arvo?.toString() ?? '',
+    pisteet: pointToComma(jarjestyskriteeri?.arvo?.toString()) ?? '',
     tuloksenTila: jonosijaData?.tuloksenTila as TuloksenTila | undefined,
     muokattu: Boolean(jonosijaData?.muokattu),
     kuvaus: mapKeys(jarjestyskriteeri?.kuvaus ?? {}, (key) =>

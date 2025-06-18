@@ -10,7 +10,7 @@ import {
   SijoittelunValintatapajonoTulos,
   VastaanottoTila,
 } from '../types/sijoittelu-types';
-import { nullWhen404, OphApiError } from '../common';
+import { nullWhen404, OphApiError, pointToComma } from '../common';
 import {
   HakemusChangeEvent,
   SijoitteluajonTuloksetResponseData,
@@ -60,7 +60,7 @@ export const getSijoittelunTulokset = async (
         varasijoilla: tulos.varasijoilla,
         vastaanottaneet: tulos.paikanVastaanottaneet,
         paikanPeruneet: tulos.peruneet,
-        pisteraja: tulos.alinHyvaksyttyPistemaara,
+        pisteraja: pointToComma(tulos.alinHyvaksyttyPistemaara),
       };
     });
   return jsonTulokset;
@@ -107,7 +107,7 @@ export const getLatestSijoitteluAjonTuloksetForHakukohde = async (
       return {
         hakijaOid: h.hakijaOid,
         hakemusOid: h.hakemusOid,
-        pisteet: h.pisteet,
+        pisteet: pointToComma(h.pisteet) ?? '',
         tila: h.tila,
         valintatapajonoOid: h.valintatapajonoOid,
         hyvaksyttyHakijaryhmista: h.hyvaksyttyHakijaryhmista,
