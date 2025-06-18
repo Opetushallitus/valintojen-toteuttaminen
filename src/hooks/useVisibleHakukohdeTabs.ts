@@ -35,7 +35,7 @@ export const useVisibleHakukohdeTabs = ({
   const usesValintalaskenta = checkIsValintalaskentaUsed(valinnanvaiheet);
 
   const hierarchyPermissions = useHierarchyUserPermissions(
-    permissions[VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY]!,
+    permissions[VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY],
   );
 
   return getVisibleHakukohdeTabs({

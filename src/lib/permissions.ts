@@ -19,7 +19,12 @@ export type UserPermissions = {
   hasOphCRUD: boolean;
 };
 
-export type UserPermissionsByService = Record<string, UserPermissions>;
+export type UserPermissionsByService = {
+  // Sovellus ei käynnisty, jos käyttäjällä ei ole valintojen toteuttamisen käyttöoikeuksia,
+  // eli valintojen toteuttamisen käyttöoikeudet löytyy aina.
+  [VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY]: UserPermissions;
+  [key: string]: UserPermissions;
+};
 
 export type PermissionsResponseData = {
   organisaatiot: Array<{
