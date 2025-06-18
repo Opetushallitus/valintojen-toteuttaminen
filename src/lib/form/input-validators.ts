@@ -29,7 +29,8 @@ export const numberValidator = ({
       ? Number.parseFloat(min)
       : !!min && (min as number);
   return {
-    validate: (v: string) => {
+    validate: (val: string) => {
+      const v = val.trim().replace(',', '.');
       if (nullable && v.length < 1) {
         return { error: false };
       }
