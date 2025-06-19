@@ -167,6 +167,7 @@ test.describe('Valintalaskennan muokkausmodaali', () => {
     page,
   }) => {
     await initSaveModal(page);
+    await expectAllSpinnersHidden(page);
     await expectPageAccessibilityOk(page);
   });
 
