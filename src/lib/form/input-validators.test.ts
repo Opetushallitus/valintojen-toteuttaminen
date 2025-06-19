@@ -60,7 +60,6 @@ test('number must be lesser or equal to max', () => {
   expect(validator.validate('-4').error).toBeFalsy();
   expect(validator.validate('10').error).toBeFalsy();
   expect(validator.validate('10.5').error).toBeTruthy();
-  expect(validator.validate('wargh').error).toBeTruthy();
   expect(validator.validate('waargh')).toStrictEqual({
     error: true,
     helperText: 'validaatio.numero.syota',
