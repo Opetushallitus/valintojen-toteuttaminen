@@ -37,7 +37,7 @@ export const queryOptionsGetKirjepohjatHakukohteelle = ({
 
 export const queryOptionsGetPisteetForHakukohde = (params: KoutaOidParams) =>
   queryOptions({
-    queryKey: ['getPistetiedotHakukohteelle', params],
+    queryKey: ['getPistetiedotForHakukohde', params],
     queryFn: () => getPisteetForHakukohde(params),
   });
 
@@ -46,8 +46,8 @@ export const refetchPisteetForHakukohde = (
   params: KoutaOidParams,
 ) => {
   const options = queryOptionsGetPisteetForHakukohde(params);
+  queryClient.resetQueries(options);
   queryClient.invalidateQueries(options);
-  queryClient.refetchQueries(options);
 };
 
 export const queryOptionsGetHaunParametrit = ({

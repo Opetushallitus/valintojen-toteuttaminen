@@ -1,5 +1,5 @@
 'use client';
-import { use } from 'react';
+import { use, useMemo } from 'react';
 
 import { TabContainer } from '../components/tab-container';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
@@ -20,7 +20,7 @@ import { queryOptionsGetHakemukset } from '@/lib/ataru/ataru-queries';
 const PisteSyottoContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const { t } = useTranslations();
 
-  const pistetiedot: HakukohteenPistetiedot = useSuspenseQueries({
+  const [{ data: pistetulokset }, { data: hakemukset }] = useSuspenseQueries({
     queries: [
       queryOptionsGetPisteetForHakukohde({
         hakuOid,
@@ -31,17 +31,18 @@ const PisteSyottoContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
         hakukohdeOid,
       }),
     ],
-    combine: ([{ data: pistetulokset }, { data: hakemukset }]) => {
-      return {
-        lastModified: pistetulokset.lastModified,
-        valintakokeet: pistetulokset.valintakokeet,
-        hakemustenPistetiedot: augmentPisteetWithHakemukset(
-          hakemukset,
-          pistetulokset.valintapisteet,
-        ),
-      };
-    },
   });
+
+  const pistetiedot: HakukohteenPistetiedot = useMemo(() => {
+    return {
+      lastModified: pistetulokset?.lastModified,
+      valintakokeet: pistetulokset?.valintakokeet ?? [],
+      hakemustenPistetiedot: augmentPisteetWithHakemukset(
+        hakemukset,
+        pistetulokset.valintapisteet,
+      ),
+    };
+  }, [pistetulokset, hakemukset]);
 
   return isEmpty(pistetiedot.valintakokeet) ? (
     <NoResults text={t('pistesyotto.ei-tuloksia')} />

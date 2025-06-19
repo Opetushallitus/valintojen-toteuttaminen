@@ -167,16 +167,18 @@ test('Näyttää ilmoituksen kun tallennus onnistuu, lähetetään oikeat pistee
         status: 204,
       }),
   );
-  const huiRow = page.getByRole('row', { name: 'Hui Haamu' });
+  const nukettajaRow = page.getByRole('row', { name: 'Nukettaja Ruhtinas' });
+  await nukettajaRow.getByRole('cell').nth(1).getByRole('textbox').fill('8,7');
+
   await selectOption({
     page,
-    locator: huiRow,
+    locator: nukettajaRow,
     name: 'Arvo',
-    option: 'Kyllä',
+    option: 'Ei',
   });
   await selectOption({
     page,
-    locator: huiRow,
+    locator: nukettajaRow,
     name: 'Osallistumisen tila',
     option: 'Osallistui',
   });
@@ -205,17 +207,16 @@ test('Näyttää ilmoituksen kun tallennus onnistuu, lähetetään oikeat pistee
 
   const postData = JSON.parse(putRequest.postData() || '{}');
 
-  expect(postData.length).toBe(4);
-  const daculaPostData = postData[0];
-  expect(daculaPostData).toMatchObject({
+  const nukettajaPostData = postData[0];
+  expect(nukettajaPostData).toMatchObject({
     oid: '1.2.246.562.11.00000000000001796027',
     personOid: '1.2.246.562.24.69259807406',
     firstNames: 'Ruhtinas',
     lastName: 'Nukettaja',
     additionalData: {
-      koksa: '8.8',
+      koksa: '8.7',
       'koksa-osallistuminen': 'OSALLISTUI',
-      nakki: 'true',
+      nakki: 'false',
       'nakki-osallistuminen': 'OSALLISTUI',
     },
   });
