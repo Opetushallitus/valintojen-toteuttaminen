@@ -18,13 +18,13 @@ import {
 import { ListTable } from '@/components/table/list-table';
 import { getSortParts } from '@/components/table/table-utils';
 import { isEmpty, sortBy } from 'remeda';
-import { getChangeHistoryForHakemusQueryOptions } from '@/lib/valinta-tulos-service/valinta-tulos-service';
 import { QuerySuspenseBoundary } from '../query-suspense-boundary';
 import { FullClientSpinner } from '../client-spinner';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { toFormattedDateTimeString } from '@/lib/localization/translation-utils';
 import { isTimestamp } from '@/lib/time-utils';
 import { ErrorAlert } from '../error-alert';
+import { queryOptionsGetChangeHistoryForHakemus } from '@/lib/valinta-tulos-service/valinta-tulos-queries';
 
 export const HistoryEvent = ({
   changes,
@@ -71,7 +71,7 @@ const HistoryModalContent = ({
   valintatapajonoOid: string;
 }) => {
   const { data: history } = useSuspenseQuery(
-    getChangeHistoryForHakemusQueryOptions({ hakemusOid, valintatapajonoOid }),
+    queryOptionsGetChangeHistoryForHakemus({ hakemusOid, valintatapajonoOid }),
   );
 
   const [sort, setSort] = useState<string>('changeTime:desc');

@@ -1,13 +1,16 @@
 'use client';
 
 import { Haku, Hakukohde, Tila } from './kouta-types';
-import { client } from '../http-client';
-import { Language, TranslatedName } from '../localization/localization-types';
-import { UserPermissions } from '../permissions';
+import { client } from '@/lib/http-client';
+import {
+  Language,
+  TranslatedName,
+} from '@/lib/localization/localization-types';
+import { UserPermissions } from '@/lib/permissions';
 import { addProp, pick, pipe } from 'remeda';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
 import { getConfigUrl } from '@/lib/configuration/configuration-utils';
-import { NDASH } from '../constants';
+import { NDASH } from '@/lib/constants';
 
 type HakuResponseData = {
   oid: string;
@@ -51,8 +54,7 @@ export async function getHaut(userPermissions: UserPermissions) {
   const response = await client.get<Array<HakuResponseData>>(
     `${configuration.routes.koutaInternal.hautUrl}${tarjoajaOids}`,
   );
-  const haut: Array<Haku> = response.data.map(mapToHaku);
-  return haut;
+  return response.data.map(mapToHaku);
 }
 
 export const isYhteishaku = (haku: Haku): boolean =>
@@ -170,14 +172,6 @@ export async function getAllHakukohteet(
     await client.get<Array<HakukohdeResponseData>>(hakukohteetUrl);
   return response.data.map(mapToHakukohde);
 }
-
-export const getHakukohteetQueryOptions = (
-  hakuOid: string,
-  userPermissions: UserPermissions,
-) => ({
-  queryKey: ['getHakukohteet', hakuOid, userPermissions],
-  queryFn: () => getHakukohteet(hakuOid, userPermissions),
-});
 
 export async function getHakukohde(hakukohdeOid: string): Promise<Hakukohde> {
   const hakukohdeUrl = getConfigUrl(

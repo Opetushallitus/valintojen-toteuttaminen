@@ -22,9 +22,9 @@ import { Hakukohde } from '@/lib/kouta/kouta-types';
 import { TuloksenTila } from '@/lib/types/laskenta-types';
 import { OphLink } from '@opetushallitus/oph-design-system';
 import { useMemo } from 'react';
-import { refetchLaskennanTulokset } from '../lib/refetchLaskennanTulokset';
 import { useQueryClient } from '@tanstack/react-query';
 import { useConfiguration } from '@/hooks/useConfiguration';
+import { refetchHakukohteenValintalaskennanTulokset } from '@/lib/valintalaskenta/valintalaskenta-queries';
 
 const TRANSLATIONS_PREFIX = 'valintalaskennan-tulokset.taulukko';
 
@@ -120,7 +120,7 @@ export const LaskettuValintatapajonoTable = ({
                       valintatapajono: jono,
                       jonosija: props,
                       onSuccess: () => {
-                        refetchLaskennanTulokset({
+                        refetchHakukohteenValintalaskennanTulokset({
                           hakukohdeOid: hakukohde.oid,
                           queryClient,
                         });

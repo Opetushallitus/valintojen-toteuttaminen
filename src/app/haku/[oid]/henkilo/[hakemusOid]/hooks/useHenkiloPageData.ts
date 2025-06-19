@@ -4,26 +4,22 @@ import {
   getAtaruHakemukset,
   parseHakijaTiedot,
 } from '@/lib/ataru/ataru-service';
-import {
-  queryOptions,
-  useSuspenseQueries,
-  useSuspenseQuery,
-} from '@tanstack/react-query';
+import { useSuspenseQueries, useSuspenseQuery } from '@tanstack/react-query';
 import { getPostitoimipaikka } from '@/lib/koodisto/koodisto-service';
 import { getAllHakukohteet } from '@/lib/kouta/kouta-service';
 import { useCheckPermission } from '@/hooks/useUserPermissions';
 import { filter, map, pipe, prop, sortBy } from 'remeda';
-import { hakemuksenValintalaskennanTuloksetQueryOptions } from '@/lib/valintalaskenta/valintalaskenta-service';
 import { selectEditableValintalaskennanTulokset } from '@/hooks/useEditableValintalaskennanTulokset';
-import {
-  getLatestSijoitteluajonTuloksetForHakemus,
-  getHakemuksenValinnanTulokset,
-} from '@/lib/valinta-tulos-service/valinta-tulos-service';
 import { notFound } from 'next/navigation';
 import { useMemo } from 'react';
 import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
 import { getKoePisteetForHakemus } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { getValintakoeAvaimetHakukohteille } from '@/lib/valintaperusteet/valintaperusteet-service';
+import { queryOptionsGetHakemuksenValintalaskennanTulokset } from '@/lib/valintalaskenta/valintalaskenta-queries';
+import {
+  queryOptionsGetHakemuksenValinnanTulokset,
+  queryOptionsGetLatestSijoitteluajonTuloksetForHakemus,
+} from '@/lib/valinta-tulos-service/valinta-tulos-queries';
 
 const useAtaruHakemus = ({
   hakuOid,
@@ -46,33 +42,6 @@ const useAtaruHakemus = ({
   return hakemus;
 };
 
-export const latestSijoitteluajonTuloksetForHakemusQueryOptions = ({
-  hakuOid,
-  hakemusOid,
-}: {
-  hakuOid: string;
-  hakemusOid: string;
-}) =>
-  queryOptions({
-    queryKey: [
-      'getLatestSijoitteluajonTuloksetForHakemus',
-      hakuOid,
-      hakemusOid,
-    ],
-    queryFn: () =>
-      getLatestSijoitteluajonTuloksetForHakemus({ hakuOid, hakemusOid }),
-  });
-
-export const getHakemuksenValinnanTuloksetQueryOptions = ({
-  hakemusOid,
-}: {
-  hakemusOid: string;
-}) =>
-  queryOptions({
-    queryKey: ['getHakemuksenValinnanTulokset', hakemusOid],
-    queryFn: () => getHakemuksenValinnanTulokset({ hakemusOid }),
-  });
-
 export const useHenkiloPageData = ({
   hakuOid,
   hakemusOid,
@@ -88,12 +57,15 @@ export const useHenkiloPageData = ({
     { data: valinnanTuloksetResponse },
   ] = useSuspenseQueries({
     queries: [
-      hakemuksenValintalaskennanTuloksetQueryOptions({ hakuOid, hakemusOid }),
-      latestSijoitteluajonTuloksetForHakemusQueryOptions({
+      queryOptionsGetHakemuksenValintalaskennanTulokset({
         hakuOid,
         hakemusOid,
       }),
-      getHakemuksenValinnanTuloksetQueryOptions({ hakemusOid }),
+      queryOptionsGetLatestSijoitteluajonTuloksetForHakemus({
+        hakuOid,
+        hakemusOid,
+      }),
+      queryOptionsGetHakemuksenValinnanTulokset({ hakemusOid }),
     ],
   });
 

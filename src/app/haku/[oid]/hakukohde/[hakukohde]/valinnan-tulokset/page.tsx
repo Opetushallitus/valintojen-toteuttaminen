@@ -6,16 +6,12 @@ import { useTranslations } from '@/lib/localization/useTranslations';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { Box, Stack } from '@mui/material';
 import { useSuspenseQueries } from '@tanstack/react-query';
-import { getHakukohteenValinnanTuloksetQueryOptions } from '@/lib/valinta-tulos-service/valinta-tulos-service';
 import { isEmpty } from '@/lib/common';
 import { NoResults } from '@/components/no-results';
 import { FullClientSpinner } from '@/components/client-spinner';
-import { getHakemuksetQueryOptions } from '@/lib/ataru/ataru-service';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 import { FormBox } from '@/components/form-box';
 import { ValinnanTuloksetTable } from './components/ValinnanTuloksetTable';
-import { hakuQueryOptions } from '@/lib/kouta/useHaku';
-import { hakukohdeQueryOptions } from '@/lib/kouta/useHakukohde';
 import { ValinnanTuloksetSearchControls } from './components/ValinnanTuloksetSearchControls';
 import { useValinnanTulosActorRef } from './lib/valinnanTuloksetState';
 import { ValinnanTuloksetActions } from '@/components/ValinnanTuloksetActions';
@@ -25,6 +21,12 @@ import { useIsDirtyValinnanTulos } from '@/lib/state/valinnanTuloksetMachineUtil
 import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBeforeNavigation';
 import { useHakemuksetValinnanTuloksilla } from './hooks/useHakemuksetValinnanTuloksilla';
 import { ValinnanTuloksetSpinnerModal } from './components/ValinnanTuloksetSpinnerModal';
+import { queryOptionsGetHakukohteenValinnanTulokset } from '@/lib/valinta-tulos-service/valinta-tulos-queries';
+import {
+  queryOptionsGetHakukohde,
+  queryOptionsGetHaku,
+} from '@/lib/kouta/kouta-queries';
+import { queryOptionsGetHakemukset } from '@/lib/ataru/ataru-queries';
 
 const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const { t } = useTranslations();
@@ -36,13 +38,13 @@ const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
     { data: hakemukset },
   ] = useSuspenseQueries({
     queries: [
-      hakuQueryOptions({ hakuOid }),
-      hakukohdeQueryOptions({ hakukohdeOid }),
-      getHakukohteenValinnanTuloksetQueryOptions({
+      queryOptionsGetHaku({ hakuOid }),
+      queryOptionsGetHakukohde({ hakukohdeOid }),
+      queryOptionsGetHakukohteenValinnanTulokset({
         hakuOid,
         hakukohdeOid,
       }),
-      getHakemuksetQueryOptions({
+      queryOptionsGetHakemukset({
         hakuOid,
         hakukohdeOid,
       }),

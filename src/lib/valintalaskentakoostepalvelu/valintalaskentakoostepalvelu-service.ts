@@ -61,7 +61,6 @@ import {
   translateName,
 } from '../localization/translation-utils';
 import { AssertionError } from 'assert';
-import { queryOptions } from '@tanstack/react-query';
 import { Language } from '../localization/localization-types';
 import {
   HakemuksenValinnanTulos,
@@ -977,18 +976,6 @@ export const getKirjepohjatHakukohteelle = async ({
   });
 };
 
-export const documentIdForHakukohdeQueryOptions = ({
-  hakukohdeOid,
-  documentType,
-}: {
-  hakukohdeOid: string;
-  documentType: DokumenttiTyyppi;
-}) =>
-  queryOptions({
-    queryKey: ['getDocumentIdForHakukohde', hakukohdeOid, documentType],
-    queryFn: () => getDocumentIdForHakukohde(hakukohdeOid, documentType),
-  });
-
 export const getDocumentIdForHakukohde = async (
   hakukohdeOid: string,
   documentType: DokumenttiTyyppi,
@@ -1231,16 +1218,6 @@ export const hakijoidenVastaanottotilatValintatapajonolle = async (
     hakemusOid: hvt.hakemusOid,
   }));
 };
-
-export const getHakukohteidenSuodatustiedotQueryOptions = ({
-  hakuOid,
-}: {
-  hakuOid: string;
-}) =>
-  queryOptions({
-    queryKey: ['getHakukohteidenSuodatustiedot', hakuOid],
-    queryFn: () => getHakukohteidenSuodatustiedot({ hakuOid }),
-  });
 
 export const getHakukohteidenSuodatustiedot = async ({
   hakuOid,

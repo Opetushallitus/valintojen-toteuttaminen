@@ -1,7 +1,5 @@
 'use client';
 import { useSuspenseQueries } from '@tanstack/react-query';
-import { hakukohteenValintalaskennanTuloksetQueryOptions } from '../lib/valintalaskenta/valintalaskenta-service';
-import { getHakemuksetQueryOptions } from '../lib/ataru/ataru-service';
 import { TranslatedName } from '../lib/localization/localization-types';
 import {
   ValintalaskennanValintatapaJonosijaModel,
@@ -22,11 +20,13 @@ import {
   sortBy,
 } from 'remeda';
 import { HakemuksenTila, Hakemus } from '@/lib/ataru/ataru-types';
-import { hakukohteenValinnanvaiheetQueryOptions } from '@/lib/valintaperusteet/valintaperusteet-service';
 import { Valinnanvaihe } from '@/lib/valintaperusteet/valintaperusteet-types';
 import { selectLaskennattomatValinnanvaiheet } from '@/lib/valintaperusteet/valintaperusteet-utils';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 import { pointToComma } from '@/lib/common';
+import { queryOptionsGetHakukohteenValintalaskennanTulokset } from '@/lib/valintalaskenta/valintalaskenta-queries';
+import { queryOptionsGetHakukohteenValinnanvaiheet } from '@/lib/valintaperusteet/valintaperusteet-queries';
+import { queryOptionsGetHakemukset } from '@/lib/ataru/ataru-queries';
 
 export type LaskennanJonosijaTulos<
   A extends Record<string, unknown> = Record<string, unknown>,
@@ -250,12 +250,12 @@ export const useEditableValintalaskennanTulokset = ({
     { data: valinnanvaiheet },
   ] = useSuspenseQueries({
     queries: [
-      getHakemuksetQueryOptions({
+      queryOptionsGetHakemukset({
         hakuOid,
         hakukohdeOid,
       }),
-      hakukohteenValintalaskennanTuloksetQueryOptions(hakukohdeOid),
-      hakukohteenValinnanvaiheetQueryOptions(hakukohdeOid),
+      queryOptionsGetHakukohteenValintalaskennanTulokset(hakukohdeOid),
+      queryOptionsGetHakukohteenValinnanvaiheet(hakukohdeOid),
     ],
   });
 

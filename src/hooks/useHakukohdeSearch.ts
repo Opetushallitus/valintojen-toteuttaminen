@@ -9,7 +9,6 @@ import {
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
 } from '@/lib/constants';
 import { useTranslations } from '../lib/localization/useTranslations';
-import { getHakukohteetQueryOptions } from '../lib/kouta/kouta-service';
 import { useUserPermissions } from './useUserPermissions';
 import {
   filter,
@@ -22,11 +21,9 @@ import {
   unique,
 } from 'remeda';
 import { isHakukohdeOid } from '@/lib/common';
-import { getHakukohteidenSuodatustiedotQueryOptions } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { useSearchParams } from 'next/navigation';
 import { isBefore, min } from 'date-fns';
 import { toFinnishDate } from '@/lib/time-utils';
-import { haunAsetuksetQueryOptions } from '@/lib/ohjausparametrit/useHaunAsetukset';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import {
   HakukohteenSuodatustiedot,
@@ -34,6 +31,9 @@ import {
 } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-types';
 import { useKoulutustyypit } from '@/lib/koodisto/useKoulutustyypit';
 import { Koodi } from '@/lib/koodisto/koodisto-types';
+import { queryOptionsGetHakukohteet } from '@/lib/kouta/kouta-queries';
+import { queryOptionsGetHakukohteidenSuodatustiedot } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-queries';
+import { queryOptionsGetHaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-queries';
 
 const SEARCH_TERM_PARAM_NAME = 'hksearch';
 const WITH_VALINTAKOE_PARAM_NAME = 'hakukohteet-with-valintakoe';
@@ -197,9 +197,9 @@ export const useHakukohdeSearchResults = (hakuOid: string) => {
     { data: suodatustiedot },
   ] = useSuspenseQueries({
     queries: [
-      haunAsetuksetQueryOptions({ hakuOid }),
-      getHakukohteetQueryOptions(hakuOid, userPermissions),
-      getHakukohteidenSuodatustiedotQueryOptions({ hakuOid }),
+      queryOptionsGetHaunAsetukset({ hakuOid }),
+      queryOptionsGetHakukohteet(hakuOid, userPermissions),
+      queryOptionsGetHakukohteidenSuodatustiedot({ hakuOid }),
     ],
   });
 

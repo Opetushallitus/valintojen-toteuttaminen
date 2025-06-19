@@ -1,6 +1,5 @@
 'use client';
 
-import { queryOptions } from '@tanstack/react-query';
 import { client } from '../http-client';
 import {
   Valinnanvaihe,
@@ -77,16 +76,7 @@ const convertValinnanvaihe = (vaihe: ValinnanvaiheModel): Valinnanvaihe => {
   };
 };
 
-export const hakukohteenValinnanvaiheetQueryOptions = (
-  hakukohdeOid: string,
-) => {
-  return queryOptions({
-    queryKey: ['getValinnanvaiheet', hakukohdeOid],
-    queryFn: () => getValinnanvaiheet(hakukohdeOid),
-  });
-};
-
-export const getValinnanvaiheet = async (
+export const getHakukohteenValinnanvaiheet = async (
   hakukohdeOid: string,
 ): Promise<Array<Valinnanvaihe>> => {
   const configuration = getConfiguration();

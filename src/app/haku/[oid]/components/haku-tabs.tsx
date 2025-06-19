@@ -4,7 +4,6 @@ import {
   useHierarchyUserPermissions,
   useUserPermissions,
 } from '@/hooks/useUserPermissions';
-import { getHakukohteetQueryOptions } from '@/lib/kouta/kouta-service';
 import { DEFAULT_BOX_BORDER, styled } from '@/lib/theme';
 import { Box, Stack } from '@mui/material';
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
@@ -18,6 +17,7 @@ import useToaster from '@/hooks/useToaster';
 import { useEffect } from 'react';
 import { getVisibleHakuTabs } from '../lib/getVisibleHakuTabs';
 import { checkHasPermission } from '@/lib/permissions';
+import { queryOptionsGetHakukohteet } from '@/lib/kouta/kouta-queries';
 
 const TAB_BUTTON_HEIGHT = '48px';
 
@@ -77,7 +77,7 @@ export const HakuTabs = ({ hakuOid }: { hakuOid: string }) => {
         queryFn: () => onkoHaullaValintaryhma(hakuOid),
       },
       {
-        ...getHakukohteetQueryOptions(hakuOid, userPermissions),
+        ...queryOptionsGetHakukohteet(hakuOid, userPermissions),
         enabled: !hasOphCRUD,
       },
     ],

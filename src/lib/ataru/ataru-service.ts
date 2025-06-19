@@ -6,7 +6,6 @@ import {
 } from './ataru-types';
 import { client } from '../http-client';
 import { Language } from '../localization/localization-types';
-import { queryOptions } from '@tanstack/react-query';
 import { KoutaOidParams } from '../kouta/kouta-types';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
 
@@ -77,7 +76,7 @@ type AtaruHakemus = {
   hakutoiveet: Array<AtaruHakutoive>;
 };
 
-type GetHakemuksetParams = KoutaOidParams & {
+export type GetHakemuksetParams = KoutaOidParams & {
   hakemusOids?: Array<string>;
   name?: string;
   henkiloOid?: string;
@@ -160,13 +159,6 @@ type GetHakijatParams = Partial<GetHakemuksetParams>;
 export const getHakijat = async (params: GetHakijatParams) => {
   const ataruHakemukset = await getAtaruHakemukset(params);
   return ataruHakemukset.map(parseHakijaTiedot);
-};
-
-export const getHakemuksetQueryOptions = (params: GetHakemuksetParams) => {
-  return queryOptions({
-    queryKey: ['getHakemukset', params],
-    queryFn: () => getHakemukset(params),
-  });
 };
 
 export async function getHakemukset({

@@ -12,10 +12,10 @@ import { isEmpty } from '@/lib/common';
 import { NoResults } from '@/components/no-results';
 import { useQueryClient, useSuspenseQueries } from '@tanstack/react-query';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
-import { getHakemuksetQueryOptions } from '@/lib/ataru/ataru-service';
 import { augmentPisteetWithHakemukset } from './lib/pistesyotto-utils';
 import { HakukohteenPistetiedot } from '@/lib/types/laskenta-types';
 import { queryOptionsGetPisteetForHakukohde } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-queries';
+import { queryOptionsGetHakemukset } from '@/lib/ataru/ataru-queries';
 
 const PisteSyottoContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const { t } = useTranslations();
@@ -26,7 +26,7 @@ const PisteSyottoContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
         hakuOid,
         hakukohdeOid,
       }),
-      getHakemuksetQueryOptions({
+      queryOptionsGetHakemukset({
         hakuOid,
         hakukohdeOid,
       }),

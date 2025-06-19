@@ -14,9 +14,9 @@ import { ValinnanTulosCells } from './valinnan-tulos-cells';
 import { styled } from '@/lib/theme';
 import { EditButton } from '@/components/edit-button';
 import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
-import { hakemuksenValintalaskennanTuloksetQueryOptions } from '@/lib/valintalaskenta/valintalaskenta-service';
-import { QueryClient, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { TuloksenTila } from '@/lib/types/laskenta-types';
+import { refetchHakemuksenValintalaskennanTulokset } from '@/lib/valintalaskenta/valintalaskenta-queries';
 
 const HakutoiveInfoRow = styled(TableRow)({
   '&:nth-of-type(even)': {
@@ -26,23 +26,6 @@ const HakutoiveInfoRow = styled(TableRow)({
     backgroundColor: ophColors.lightBlue2,
   },
 });
-
-const refetchValinnanvaiheet = ({
-  queryClient,
-  hakuOid,
-  hakemusOid,
-}: {
-  queryClient: QueryClient;
-  hakuOid: string;
-  hakemusOid: string;
-}) => {
-  const options = hakemuksenValintalaskennanTuloksetQueryOptions({
-    hakuOid,
-    hakemusOid,
-  });
-  queryClient.resetQueries(options);
-  queryClient.invalidateQueries(options);
-};
 
 export const HakutoiveAccordionContent = ({
   hakija,
@@ -105,7 +88,7 @@ export const HakutoiveAccordionContent = ({
                           valintatapajono: jono,
                           jonosija,
                           onSuccess: () => {
-                            refetchValinnanvaiheet({
+                            refetchHakemuksenValintalaskennanTulokset({
                               hakuOid: hakukohde.hakuOid,
                               hakemusOid: jonosija.hakemusOid,
                               queryClient,

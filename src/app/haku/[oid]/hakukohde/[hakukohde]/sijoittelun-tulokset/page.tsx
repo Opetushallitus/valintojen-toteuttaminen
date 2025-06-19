@@ -6,22 +6,24 @@ import { useTranslations } from '@/lib/localization/useTranslations';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { Box } from '@mui/material';
 import { useQueryClient, useSuspenseQueries } from '@tanstack/react-query';
-import { getLatestSijoitteluajonTuloksetWithValintaEsitysQueryOptions } from '@/lib/valinta-tulos-service/valinta-tulos-service';
 import { isEmpty } from '@/lib/common';
 import { PageSizeSelector } from '@/components/table/page-size-selector';
 import { NoResults } from '@/components/no-results';
 import { useSijoittelunTulosSearchParams } from './hooks/useSijoittelunTulosSearch';
 import { SijoittelunTulosContent } from './components/sijoittelun-tulos-content';
 import { SijoittelunTulosControls } from './components/sijoittelun-tulos-controls';
-import { hakuQueryOptions } from '@/lib/kouta/useHaku';
 import { FullClientSpinner } from '@/components/client-spinner';
-import { hakukohdeQueryOptions } from '@/lib/kouta/useHakukohde';
-import { hakukohteenValinnanvaiheetQueryOptions } from '@/lib/valintaperusteet/valintaperusteet-service';
-import { documentIdForHakukohdeQueryOptions } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { checkIsValintalaskentaUsed } from '@/lib/valintaperusteet/valintaperusteet-utils';
-import { getHakemuksetQueryOptions } from '@/lib/ataru/ataru-service';
 import { useSijoitteluajonTuloksetValintatiedoilla } from '@/lib/valinta-tulos-service/useSijoitteluajonTuloksetValintatiedoilla';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
+import { queryOptionsGetLatestSijoitteluajonTuloksetWithValintaEsitys } from '@/lib/valinta-tulos-service/valinta-tulos-queries';
+import {
+  queryOptionsGetHakukohde,
+  queryOptionsGetHaku,
+} from '@/lib/kouta/kouta-queries';
+import { queryOptionsGetHakukohteenValinnanvaiheet } from '@/lib/valintaperusteet/valintaperusteet-queries';
+import { queryOptionsGetHakemukset } from '@/lib/ataru/ataru-queries';
+import { queryOptionsGetDocumentIdForHakukohde } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-queries';
 
 const SijoitteluContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const { t } = useTranslations();
@@ -36,14 +38,14 @@ const SijoitteluContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
     { data: hakemukset },
   ] = useSuspenseQueries({
     queries: [
-      hakuQueryOptions({ hakuOid }),
-      hakukohdeQueryOptions({ hakukohdeOid }),
-      getLatestSijoitteluajonTuloksetWithValintaEsitysQueryOptions({
+      queryOptionsGetHaku({ hakuOid }),
+      queryOptionsGetHakukohde({ hakukohdeOid }),
+      queryOptionsGetLatestSijoitteluajonTuloksetWithValintaEsitys({
         hakuOid,
         hakukohdeOid,
       }),
-      hakukohteenValinnanvaiheetQueryOptions(hakukohdeOid),
-      getHakemuksetQueryOptions({
+      queryOptionsGetHakukohteenValinnanvaiheet(hakukohdeOid),
+      queryOptionsGetHakemukset({
         hakuOid,
         hakukohdeOid,
       }),
@@ -116,19 +118,19 @@ export default function SijoittelunTuloksetPage(props: {
 
   const queryClient = useQueryClient();
   queryClient.prefetchQuery(
-    documentIdForHakukohdeQueryOptions({
+    queryOptionsGetDocumentIdForHakukohde({
       hakukohdeOid: params.hakukohde,
       documentType: 'osoitetarrat',
     }),
   );
   queryClient.prefetchQuery(
-    documentIdForHakukohdeQueryOptions({
+    queryOptionsGetDocumentIdForHakukohde({
       hakukohdeOid: params.hakukohde,
       documentType: 'hyvaksymiskirjeet',
     }),
   );
   queryClient.prefetchQuery(
-    documentIdForHakukohdeQueryOptions({
+    queryOptionsGetDocumentIdForHakukohde({
       hakukohdeOid: params.hakukohde,
       documentType: 'sijoitteluntulokset',
     }),
