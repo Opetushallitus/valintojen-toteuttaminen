@@ -1,4 +1,3 @@
-import { Toast } from '@/hooks/useToaster';
 import {
   HakemuksenPistetiedot,
   ValintakoeOsallistuminenTulos,
@@ -11,6 +10,7 @@ import { ActorRefFrom, assign, createMachine, fromPromise } from 'xstate';
 import { ValintakoeAvaimet } from '@/lib/valintaperusteet/valintaperusteet-types';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 import { commaToPoint } from '@/lib/common';
+import { GenericEvent } from '@/lib/common';
 
 export type PisteSyottoContext = {
   pistetiedot: Array<HakemuksenPistetiedot>;
@@ -180,7 +180,7 @@ export const createPisteSyottoMachine = (
   hakukohdeOid: string,
   pistetiedot: Array<HakemuksenPistetiedot>,
   valintakokeet: Array<ValintakoeAvaimet>,
-  addToast: (toast: Toast) => void,
+  onEvent: (event: GenericEvent) => void,
 ) => {
   const kokeetByTunniste = indexBy(valintakokeet, prop('tunniste'));
   return createMachine({
@@ -303,13 +303,13 @@ export const createPisteSyottoMachine = (
     },
     actions: {
       alert: (_, params) =>
-        addToast({
+        onEvent({
           key: `pistetiedot-update-failed-for-${hakukohdeOid}`,
           message: (params as { message: string }).message,
           type: 'error',
         }),
       successNotify: () =>
-        addToast({
+        onEvent({
           key: `pistetiedot-updated-for-${hakukohdeOid}`,
           message: 'pistesyotto.valmis',
           type: 'success',
@@ -328,7 +328,7 @@ export const createPisteSyottoMachine = (
 type PistesyottoMachineParams = KoutaOidParams & {
   pistetiedot: Array<HakemuksenPistetiedot>;
   valintakokeet: Array<ValintakoeAvaimet> | ValintakoeAvaimet;
-  addToast: (toast: Toast) => void;
+  onEvent: (event: GenericEvent) => void;
 };
 
 export const usePistesyottoState = ({
@@ -336,7 +336,7 @@ export const usePistesyottoState = ({
   hakukohdeOid,
   pistetiedot,
   valintakokeet,
-  addToast,
+  onEvent,
 }: PistesyottoMachineParams) => {
   const machine = useMemo(() => {
     return createPisteSyottoMachine(
@@ -344,9 +344,9 @@ export const usePistesyottoState = ({
       hakukohdeOid,
       pistetiedot,
       Array.isArray(valintakokeet) ? valintakokeet : [valintakokeet],
-      addToast,
+      onEvent,
     );
-  }, [hakuOid, hakukohdeOid, pistetiedot, valintakokeet, addToast]);
+  }, [hakuOid, hakukohdeOid, pistetiedot, valintakokeet, onEvent]);
 
   const actorRef = useActorRef(machine);
   return usePistesyottoActorRef(actorRef);

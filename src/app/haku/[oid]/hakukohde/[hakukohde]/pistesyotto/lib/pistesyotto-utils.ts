@@ -1,7 +1,10 @@
+import { Hakemus } from '@/lib/ataru/ataru-types';
 import {
+  HakemuksenPistetiedot,
   ValintakoeOsallistuminenTulos,
   ValintakokeenPisteet,
 } from '@/lib/types/laskenta-types';
+import { indexBy, isNonNullish, prop } from 'remeda';
 
 export const isNotPartOfThisHakukohde = (
   pisteet: ValintakokeenPisteet | undefined,
@@ -28,3 +31,35 @@ export const NOT_READABLE_REASON_MAP = {
   [ValintakoeOsallistuminenTulos.OSALLISTUI]: '',
   [ValintakoeOsallistuminenTulos.EI_VAADITA]: '',
 } as const;
+
+export const augmentPisteetWithHakemukset = (
+  hakemukset: Array<Hakemus>,
+  pistetiedot: Array<{
+    hakemusOid: string;
+    valintakokeenPisteet: Array<ValintakokeenPisteet>;
+  }>,
+): Array<HakemuksenPistetiedot> => {
+  const hakemuksetIndexed = indexBy(hakemukset, prop('hakemusOid'));
+
+  return pistetiedot
+    .map((p) => {
+      const hakemus = hakemuksetIndexed[p.hakemusOid];
+
+      if (!hakemus) {
+        console.warn(
+          `Hakemus-OIDille ${p.hakemusOid} löytyi pistetieto, mutta ei hakemusta Atarusta!`,
+        );
+        return null;
+      }
+
+      return {
+        hakemusOid: hakemus.hakemusOid,
+        hakijaOid: hakemus.hakijaOid,
+        hakijanNimi: hakemus.hakijanNimi,
+        etunimet: hakemus.etunimet,
+        sukunimi: hakemus.sukunimi,
+        valintakokeenPisteet: p.valintakokeenPisteet,
+      };
+    })
+    .filter(isNonNullish);
+};

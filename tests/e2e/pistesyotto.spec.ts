@@ -157,7 +157,7 @@ test('Näyttää ilmoituksen virheellisestä syötteestä tallennettaessa', asyn
   ).toBeVisible();
 });
 
-test('Näyttää ilmoituksen kun tallennus onnistuu ja lähettää oikeat pisteet', async ({
+test('Näyttää ilmoituksen kun tallennus onnistuu, lähetetään oikeat pisteet ja noudetaan tiedot uudelleen', async ({
   page,
 }) => {
   await page.route(
@@ -180,14 +180,25 @@ test('Näyttää ilmoituksen kun tallennus onnistuu ja lähettää oikeat pistee
     name: 'Osallistumisen tila',
     option: 'Osallistui',
   });
+
   const [putRequest] = await Promise.all([
     page.waitForRequest(
       (request) =>
+        request.method() === 'PUT' &&
         request
           .url()
           .includes(
             '/valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105',
-          ) && request.method() === 'PUT',
+          ),
+    ),
+    page.waitForRequest(
+      (request) =>
+        request.method() === 'GET' &&
+        request
+          .url()
+          .includes(
+            '/valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105',
+          ),
     ),
     page.getByRole('button', { name: 'Tallenna' }).click(),
   ]);
