@@ -247,7 +247,7 @@ export const updatePisteetForHakukohde = async (
     const additionalData = pipe(
       p.valintakokeenPisteet,
       flatMap((vp) => [
-        { key: vp.tunniste, arvo: commaToPoint(vp.arvo) },
+        { key: vp.tunniste, value: commaToPoint(vp.arvo) },
         { key: vp.osallistuminenTunniste, value: vp.osallistuminen },
       ]),
       indexBy((kv) => kv.key),
@@ -261,6 +261,7 @@ export const updatePisteetForHakukohde = async (
       additionalData,
     };
   });
+
   await client.put(
     getConfigUrl(
       configuration.routes.valintalaskentakoostepalvelu
