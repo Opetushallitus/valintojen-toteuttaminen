@@ -18,7 +18,6 @@ import {
   useSuspenseQuery,
 } from '@tanstack/react-query';
 import {
-  getKirjepohjatHakukohteelle,
   luoEiHyvaksymiskirjeetPDF,
   luoHyvaksymiskirjeetPDF,
 } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
@@ -27,6 +26,7 @@ import { Box, FormControlLabel, Radio, RadioGroup } from '@mui/material';
 import { ProgressModalDialog } from './progress-modal-dialog';
 import { styled } from '@/lib/theme';
 import { TemplateSection } from './letter-template-section';
+import { queryOptionsGetKirjepohjatHakukohteelle } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-queries';
 
 type LetterTemplateModalProps = {
   title: string;
@@ -122,10 +122,12 @@ export const AcceptedLetterTemplateModal = createModal(
 
     const { t } = useTranslations();
 
-    const { data: pohjat, isLoading } = useSuspenseQuery({
-      queryKey: ['getKirjepohjat', hakukohde.hakuOid, template, hakukohde.oid],
-      queryFn: () => getKirjepohjatHakukohteelle(template, hakukohde),
-    });
+    const { data: pohjat, isLoading } = useSuspenseQuery(
+      queryOptionsGetKirjepohjatHakukohteelle({
+        template: template,
+        hakukohde,
+      }),
+    );
 
     const [onlyForbidden, setOnlyForbidden] = useState<boolean>(false);
     const [deadlineDate, setDeadlineDate] = useState<Date | null>(null);
@@ -228,10 +230,12 @@ export const NonAcceptedLetterTemplateModal = createModal(
 
     const { t } = useTranslations();
 
-    const { data: pohjat, isLoading } = useSuspenseQuery({
-      queryKey: ['getKirjepohjat', hakukohde.hakuOid, template, hakukohde.oid],
-      queryFn: () => getKirjepohjatHakukohteelle(template, hakukohde),
-    });
+    const { data: pohjat, isLoading } = useSuspenseQuery(
+      queryOptionsGetKirjepohjatHakukohteelle({
+        template: template,
+        hakukohde,
+      }),
+    );
 
     const [templateBody, setTemplateBody] = useState<string>(
       pohjat[0]?.sisalto || '',

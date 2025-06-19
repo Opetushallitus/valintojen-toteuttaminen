@@ -157,7 +157,7 @@ test('Näyttää ilmoituksen virheellisestä syötteestä tallennettaessa', asyn
   ).toBeVisible();
 });
 
-test('Näyttää ilmoituksen kun tallennus onnistuu ja lähettää oikeat pisteet', async ({
+test('Näyttää ilmoituksen kun tallennus onnistuu, lähetetään oikeat pisteet ja noudetaan tiedot uudelleen', async ({
   page,
 }) => {
   await page.route(
@@ -167,44 +167,56 @@ test('Näyttää ilmoituksen kun tallennus onnistuu ja lähettää oikeat pistee
         status: 204,
       }),
   );
-  const huiRow = page.getByRole('row', { name: 'Hui Haamu' });
+  const nukettajaRow = page.getByRole('row', { name: 'Nukettaja Ruhtinas' });
+  await nukettajaRow.getByRole('cell').nth(1).getByRole('textbox').fill('8,7');
+
   await selectOption({
     page,
-    locator: huiRow,
+    locator: nukettajaRow,
     name: 'Arvo',
-    option: 'Kyllä',
+    option: 'Ei',
   });
   await selectOption({
     page,
-    locator: huiRow,
+    locator: nukettajaRow,
     name: 'Osallistumisen tila',
     option: 'Osallistui',
   });
+
   const [putRequest] = await Promise.all([
     page.waitForRequest(
       (request) =>
+        request.method() === 'PUT' &&
         request
           .url()
           .includes(
             '/valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105',
-          ) && request.method() === 'PUT',
+          ),
+    ),
+    page.waitForRequest(
+      (request) =>
+        request.method() === 'GET' &&
+        request
+          .url()
+          .includes(
+            '/valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105',
+          ),
     ),
     page.getByRole('button', { name: 'Tallenna' }).click(),
   ]);
 
   const postData = JSON.parse(putRequest.postData() || '{}');
 
-  expect(postData.length).toBe(4);
-  const daculaPostData = postData[0];
-  expect(daculaPostData).toMatchObject({
+  const nukettajaPostData = postData[0];
+  expect(nukettajaPostData).toMatchObject({
     oid: '1.2.246.562.11.00000000000001796027',
     personOid: '1.2.246.562.24.69259807406',
     firstNames: 'Ruhtinas',
     lastName: 'Nukettaja',
     additionalData: {
-      koksa: '8.8',
+      koksa: '8.7',
       'koksa-osallistuminen': 'OSALLISTUI',
-      nakki: 'true',
+      nakki: 'false',
       'nakki-osallistuminen': 'OSALLISTUI',
     },
   });

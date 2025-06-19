@@ -38,7 +38,6 @@ import {
   HarkinnanvarainenTila,
   HarkinnanvaraisestiHyvaksytty,
 } from '../types/harkinnanvaraiset-types';
-import { queryOptions } from '@tanstack/react-query';
 import {
   getFullnameOfHakukohde,
   Haku,
@@ -174,14 +173,6 @@ export const getLaskennanYhteenveto = async (
   return response.data;
 };
 
-export const hakukohteenValintalaskennanTuloksetQueryOptions = (
-  hakukohdeOid: string,
-) =>
-  queryOptions({
-    queryKey: ['getHakukohteenValintalaskennanTulokset', hakukohdeOid],
-    queryFn: () => getHakukohteenValintalaskennanTulokset(hakukohdeOid),
-  });
-
 export const getHakukohteenValintalaskennanTulokset = async (
   hakukohdeOid: string,
 ) => {
@@ -212,20 +203,6 @@ export type HakemuksenValintalaskennanTuloksetModel = {
     harkinnanvaraisuus: boolean;
     hakijaryhma: Array<unknown>;
   }>;
-};
-
-export const hakemuksenValintalaskennanTuloksetQueryOptions = ({
-  hakuOid,
-  hakemusOid,
-}: {
-  hakuOid: string;
-  hakemusOid: string;
-}) => {
-  return queryOptions({
-    queryKey: ['getHakemuksenValintalaskennanTulokset', hakuOid, hakemusOid],
-    queryFn: () =>
-      getHakemuksenValintalaskennanTulokset({ hakuOid, hakemusOid }),
-  });
 };
 
 export const getHakemuksenValintalaskennanTulokset = async ({

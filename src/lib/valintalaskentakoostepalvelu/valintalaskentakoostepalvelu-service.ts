@@ -10,7 +10,6 @@ import {
 } from '../types/sijoittelu-types';
 import {
   HakemuksenPistetiedot,
-  HakukohteenPistetiedot,
   ValintakoeOsallistuminenTulos,
   ValintakokeenPisteet,
 } from '../types/laskenta-types';
@@ -36,7 +35,7 @@ import {
   pointToComma,
   commaToPoint,
 } from '../common';
-import { getHakemukset, getHakijat } from '../ataru/ataru-service';
+import { getHakijat } from '../ataru/ataru-service';
 import {
   getValintakokeet,
   getValintakoeAvaimetHakukohteelle,
@@ -62,7 +61,6 @@ import {
   translateName,
 } from '../localization/translation-utils';
 import { AssertionError } from 'assert';
-import { queryOptions } from '@tanstack/react-query';
 import { Language } from '../localization/localization-types';
 import {
   HakemuksenValinnanTulos,
@@ -163,13 +161,19 @@ export const getKoePisteetForHakemus = async ({
   });
 };
 
-export const getPisteetForHakukohde = async (
-  hakuOid: string,
-  hakukohdeOid: string,
-): Promise<HakukohteenPistetiedot> => {
+export const getPisteetForHakukohde = async ({
+  hakuOid,
+  hakukohdeOid,
+}: KoutaOidParams): Promise<{
+  lastModified?: Date;
+  valintakokeet: Array<ValintakoeAvaimet>;
+  valintapisteet: Array<{
+    hakemusOid: string;
+    valintakokeenPisteet: Array<ValintakokeenPisteet>;
+  }>;
+}> => {
   const configuration = getConfiguration();
   const kokeetPromise = getValintakoeAvaimetHakukohteelle(hakukohdeOid);
-  const hakemuksetPromise = getHakemukset({ hakuOid, hakukohdeOid });
   const pisteTiedotFetch = abortableClient.get<{
     lastmodified?: string;
     valintapisteet: Array<PistetietoItem>;
@@ -184,56 +188,25 @@ export const getPisteetForHakukohde = async (
     ),
   );
 
-  let kokeet = await kokeetPromise;
+  const kokeet = await kokeetPromise;
+  kokeet.sort((a, b) => a.kuvaus.localeCompare(b.kuvaus));
 
   if (isEmpty(kokeet)) {
     pisteTiedotFetch.abort('Ei kokeita, perutaan pistetietojen haku');
-    return { hakemukset: EMPTY_ARRAY, valintakokeet: EMPTY_ARRAY };
+    return { valintakokeet: EMPTY_ARRAY, valintapisteet: EMPTY_ARRAY };
   }
 
-  kokeet = kokeet.sort((a, b) => a.kuvaus.localeCompare(b.kuvaus));
+  const { data: pistetiedot } = await pisteTiedotFetch.promise;
 
-  const [hakemukset, { data: pistetiedot }] = await Promise.all([
-    hakemuksetPromise,
-    pisteTiedotFetch.promise,
-  ]);
-  const hakemuksetIndexed = indexBy(hakemukset, prop('hakemusOid'));
-
-  const hakemuksetKokeilla: Array<HakemuksenPistetiedot> =
-    pistetiedot.valintapisteet
-      .map((p: PistetietoItem) => {
-        const hakemus = hakemuksetIndexed[p.applicationAdditionalDataDTO.oid];
-
-        if (!hakemus) {
-          console.warn(
-            `Hakemus-OIDille ${p.applicationAdditionalDataDTO.oid} löytyi pistetieto, mutta ei hakemusta Atarusta!`,
-          );
-          return null;
-        }
-
-        const kokeenPisteet: Array<ValintakokeenPisteet> = selectKokeenPisteet(
-          hakukohdeOid,
-          p,
-          kokeet,
-        );
-        return {
-          hakemusOid: hakemus.hakemusOid,
-          hakijaOid: hakemus.hakijaOid,
-          hakijanNimi: hakemus.hakijanNimi,
-          etunimet: hakemus.etunimet,
-          sukunimi: hakemus.sukunimi,
-          valintakokeenPisteet: kokeenPisteet,
-        };
-      })
-      .filter(isNonNullish);
-
-  const lastModified = isNonNullish(pistetiedot.lastmodified)
-    ? new Date(pistetiedot.lastmodified)
-    : undefined;
   return {
-    lastModified,
+    lastModified: isNonNullish(pistetiedot.lastmodified)
+      ? new Date(pistetiedot.lastmodified)
+      : undefined,
     valintakokeet: kokeet,
-    hakemukset: hakemuksetKokeilla,
+    valintapisteet: pistetiedot.valintapisteet.map((p) => ({
+      hakemusOid: p.applicationAdditionalDataDTO.oid,
+      valintakokeenPisteet: selectKokeenPisteet(hakukohdeOid, p, kokeet),
+    })),
   };
 };
 
@@ -966,21 +939,32 @@ type TemplateResponse = {
   templateReplacements: Array<{ name: string; defaultValue: string }>;
 };
 
-export const getKirjepohjatHakukohteelle = async (
-  kirjepohjanNimi: KirjepohjaNimi,
-  hakukohde: Hakukohde,
-): Promise<Array<Kirjepohja>> => {
+type KirjepohjatParams = {
+  kirjepohjanNimi: KirjepohjaNimi;
+  opetuskieli: string | null;
+  hakuOid: string;
+  hakukohdeOid: string;
+  tarjoajaOid: string;
+};
+
+export const getKirjepohjatHakukohteelle = async ({
+  kirjepohjanNimi,
+  hakuOid,
+  hakukohdeOid,
+  tarjoajaOid,
+  opetuskieli,
+}: KirjepohjatParams): Promise<Array<Kirjepohja>> => {
   const configuration = getConfiguration();
-  const opetuskieliCode = (getOpetuskieliCode(hakukohde) || 'fi').toUpperCase();
+  const opetuskieliCode = (opetuskieli ?? 'fi').toUpperCase();
   const res = await client.get<Array<TemplateResponse>>(
     getConfigUrl(
       configuration.routes.valintalaskentakoostepalvelu.kirjepohjat,
       {
         templateName: kirjepohjanNimi,
         language: opetuskieliCode,
-        tarjoajaOid: hakukohde.tarjoajaOid,
-        tag: hakukohde.oid,
-        hakuOid: hakukohde.hakuOid,
+        tarjoajaOid,
+        tag: hakukohdeOid,
+        hakuOid,
       },
     ),
   );
@@ -991,18 +975,6 @@ export const getKirjepohjatHakukohteelle = async (
     return { nimi: tr.name, sisalto: content || '' };
   });
 };
-
-export const documentIdForHakukohdeQueryOptions = ({
-  hakukohdeOid,
-  documentType,
-}: {
-  hakukohdeOid: string;
-  documentType: DokumenttiTyyppi;
-}) =>
-  queryOptions({
-    queryKey: ['getDocumentIdForHakukohde', hakukohdeOid, documentType],
-    queryFn: () => getDocumentIdForHakukohde(hakukohdeOid, documentType),
-  });
 
 export const getDocumentIdForHakukohde = async (
   hakukohdeOid: string,
@@ -1246,16 +1218,6 @@ export const hakijoidenVastaanottotilatValintatapajonolle = async (
     hakemusOid: hvt.hakemusOid,
   }));
 };
-
-export const getHakukohteidenSuodatustiedotQueryOptions = ({
-  hakuOid,
-}: {
-  hakuOid: string;
-}) =>
-  queryOptions({
-    queryKey: ['getHakukohteidenSuodatustiedot', hakuOid],
-    queryFn: () => getHakukohteidenSuodatustiedot({ hakuOid }),
-  });
 
 export const getHakukohteidenSuodatustiedot = async ({
   hakuOid,

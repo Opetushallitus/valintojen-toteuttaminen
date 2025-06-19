@@ -1,9 +1,6 @@
 'use client';
 import { useUserPermissions } from '@/hooks/useUserPermissions';
-import {
-  getHakukohdeFullName,
-  getHakukohteetQueryOptions,
-} from '@/lib/kouta/kouta-service';
+import { getHakukohdeFullName } from '@/lib/kouta/kouta-service';
 import { getValintaryhmat } from '@/lib/valintaperusteet/valintaperusteet-service';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import {
@@ -28,6 +25,7 @@ import { useHaunAsetukset } from '@/lib/ohjausparametrit/useHaunAsetukset';
 import { getLasketutHakukohteet } from '@/lib/valintalaskenta/valintalaskenta-service';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { useLaskentaState } from '@/lib/state/laskenta-state';
+import { queryOptionsGetHakukohteet } from '@/lib/kouta/kouta-queries';
 
 const StyledContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -126,7 +124,7 @@ export const ValintaryhmaContent = ({
   });
 
   const { data: hakukohteet } = useSuspenseQuery(
-    getHakukohteetQueryOptions(hakuOid, userPermissions),
+    queryOptionsGetHakukohteet(hakuOid, userPermissions),
   );
 
   const valittuRyhma = useMemo(() => {

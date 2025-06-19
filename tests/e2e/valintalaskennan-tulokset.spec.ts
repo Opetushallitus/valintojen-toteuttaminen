@@ -5,6 +5,7 @@ import {
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
   selectOption,
+  waitForMethodRequest,
 } from './playwright-utils';
 import LASKETUT_VALINNANVAIHEET from './fixtures/lasketut-valinnanvaiheet.json';
 import { TuloksenTila } from '@/lib/types/laskenta-types';
@@ -212,15 +213,18 @@ test.describe('Valintalaskennan muokkausmodaali', () => {
     ).toBeDisabled();
   });
 
-  test('Lähetetään laskennan tulosten tallennuspyyntö oikeilla arvoilla ja näytetään ilmoitus', async ({
+  test('Lähetetään laskennan tulosten tallennuspyyntö oikeilla arvoilla, näytetään ilmoitus ja ladataan tulokset uudelleen', async ({
     page,
   }) => {
-    const muokkausUrl = `**/valintalaskenta-laskenta-service/resources/valintatapajono/1679913592869-3133925962577840128/${DACULA_HAKEMUS_OID}/0/jonosija`;
-    await page.route(muokkausUrl, (route) => {
-      return route.fulfill({
-        status: 200,
-      });
-    });
+    const muokkausUrl = `/valintalaskenta-laskenta-service/resources/valintatapajono/1679913592869-3133925962577840128/${DACULA_HAKEMUS_OID}/0/jonosija`;
+    await page.route(
+      (url) => url.pathname.includes(muokkausUrl),
+      (route) => {
+        return route.fulfill({
+          status: 200,
+        });
+      },
+    );
 
     await initSaveModal(page);
     const valintalaskentaMuokkausModal = page.getByRole('dialog', {
@@ -244,7 +248,12 @@ test.describe('Valintalaskennan muokkausmodaali', () => {
     });
 
     const [request] = await Promise.all([
-      page.waitForRequest(muokkausUrl),
+      waitForMethodRequest(page, 'POST', (url) => url.includes(muokkausUrl)),
+      waitForMethodRequest(
+        page,
+        'GET',
+        /valintalaskenta-laskenta-service\/resources\/hakukohde\/\S+\/valinnanvaihe/,
+      ),
       saveButton.click(),
     ]);
 

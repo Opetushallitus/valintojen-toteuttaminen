@@ -1,6 +1,5 @@
 'use client';
 
-import { hakukohteenValinnanvaiheetQueryOptions } from '@/lib/valintaperusteet/valintaperusteet-service';
 import { useSuspenseQueries } from '@tanstack/react-query';
 import {
   Table,
@@ -23,10 +22,11 @@ import {
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { ErrorRow } from './error-row';
-import { hakukohteenValintalaskennanTuloksetQueryOptions } from '@/lib/valintalaskenta/valintalaskenta-service';
 import { checkCanStartLaskentaForValinnanvaihe } from '@/lib/valintaperusteet/valintaperusteet-utils';
 import { NoResults } from '@/components/no-results';
 import { HallintaTableRow } from './hallinta-table-row';
+import { queryOptionsGetHakukohteenValintalaskennanTulokset } from '@/lib/valintalaskenta/valintalaskenta-queries';
+import { queryOptionsGetHakukohteenValinnanvaiheet } from '@/lib/valintaperusteet/valintaperusteet-queries';
 
 type HallintaTableParams = {
   haku: Haku;
@@ -54,8 +54,8 @@ const HallintaTable = ({
   const [valinnanvaiheetQuery, lasketutValinnanvaiheetQuery] =
     useSuspenseQueries({
       queries: [
-        hakukohteenValinnanvaiheetQueryOptions(hakukohde.oid),
-        hakukohteenValintalaskennanTuloksetQueryOptions(hakukohde.oid),
+        queryOptionsGetHakukohteenValinnanvaiheet(hakukohde.oid),
+        queryOptionsGetHakukohteenValintalaskennanTulokset(hakukohde.oid),
       ],
     });
 

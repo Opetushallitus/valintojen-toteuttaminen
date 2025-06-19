@@ -12,8 +12,8 @@ import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
 import { SearchInput } from '@/components/search-input';
 import { OtherActionsHakukohdeButton } from './other-actions-hakukohde-button';
 import { useSuspenseQueries } from '@tanstack/react-query';
-import { documentIdForHakukohdeQueryOptions } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { SijoittelunTuloksetExcelDownloadButton } from './sijoittelun-tulokset-excel-download-button';
+import { queryOptionsGetDocumentIdForHakukohde } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-queries';
 
 export const SijoittelunTulosControls = ({
   haku,
@@ -43,15 +43,15 @@ export const SijoittelunTulosControls = ({
     tuloksetDocumentQuery,
   ] = useSuspenseQueries({
     queries: [
-      documentIdForHakukohdeQueryOptions({
+      queryOptionsGetDocumentIdForHakukohde({
         hakukohdeOid: hakukohde.oid,
         documentType: 'hyvaksymiskirjeet',
       }),
-      documentIdForHakukohdeQueryOptions({
+      queryOptionsGetDocumentIdForHakukohde({
         hakukohdeOid: hakukohde.oid,
         documentType: 'osoitetarrat',
       }),
-      documentIdForHakukohdeQueryOptions({
+      queryOptionsGetDocumentIdForHakukohde({
         hakukohdeOid: hakukohde.oid,
         documentType: 'sijoitteluntulokset',
       }),

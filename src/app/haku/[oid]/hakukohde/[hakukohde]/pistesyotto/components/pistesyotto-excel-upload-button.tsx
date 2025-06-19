@@ -1,10 +1,5 @@
 import { OphButton } from '@opetushallitus/oph-design-system';
-import {
-  QueryClient,
-  useMutation,
-  useQueryClient,
-} from '@tanstack/react-query';
-import { pisteTuloksetOptions } from '../hooks/usePisteTulokset';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import useToaster from '@/hooks/useToaster';
 import { savePistesyottoExcel } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { OphModal } from '@/components/modals/oph-modal';
@@ -20,18 +15,7 @@ import { SpinnerGlobalModal } from '@/components/modals/spinner-global-modal';
 import { FileSelectButton } from '@/components/file-select-button';
 import { ErrorTable } from '@/components/error-table';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
-
-const refetchPisteTulokset = ({
-  queryClient,
-  hakuOid,
-  hakukohdeOid,
-}: KoutaOidParams & {
-  queryClient: QueryClient;
-}) => {
-  const options = pisteTuloksetOptions({ hakuOid, hakukohdeOid });
-  queryClient.resetQueries(options);
-  queryClient.invalidateQueries(options);
-};
+import { refetchPisteetForHakukohde } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-queries';
 
 const ErrorModalDialog = createModal(({ error }: { error: Error }) => {
   const modalProps = useOphModalProps();
@@ -83,13 +67,19 @@ const useExcelUploadMutation = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
       hideModal(SpinnerGlobalModal);
       // Tuonti onnistui osittain -> ladataan muuttuneet pistetulokset
       if (error instanceof OphApiError) {
-        refetchPisteTulokset({ queryClient, hakuOid, hakukohdeOid });
+        refetchPisteetForHakukohde(queryClient, {
+          hakuOid,
+          hakukohdeOid,
+        });
       }
       showModal(ErrorModalDialog, { error });
     },
     onSuccess: () => {
       // Ladataan muuttuneet pistetulokset
-      refetchPisteTulokset({ queryClient, hakuOid, hakukohdeOid });
+      refetchPisteetForHakukohde(queryClient, {
+        hakuOid,
+        hakukohdeOid,
+      });
       hideModal(SpinnerGlobalModal);
       addToast({
         key: 'put-pistesyotto-excel-success',

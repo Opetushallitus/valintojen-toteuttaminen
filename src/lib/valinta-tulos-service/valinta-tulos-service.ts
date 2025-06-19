@@ -10,7 +10,7 @@ import {
   SijoittelunValintatapajonoTulos,
   VastaanottoTila,
 } from '../types/sijoittelu-types';
-import { nullWhen404, OphApiError, pointToComma } from '../common';
+import { nullWhen404, OphApiError, pointToComma } from '@/lib/common';
 import {
   HakemusChangeEvent,
   SijoitteluajonTuloksetResponseData,
@@ -20,7 +20,6 @@ import {
   ValinnanTulosUpdateErrorResult,
 } from './valinta-tulos-types';
 import { toFormattedDateTimeString } from '../localization/translation-utils';
-import { queryOptions } from '@tanstack/react-query';
 import { KoutaOidParams } from '../kouta/kouta-types';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
 import { getConfigUrl } from '../configuration/configuration-utils';
@@ -65,20 +64,6 @@ export const getSijoittelunTulokset = async (
     });
   return jsonTulokset;
 };
-
-export const getLatestSijoitteluajonTuloksetWithValintaEsitysQueryOptions = ({
-  hakuOid,
-  hakukohdeOid,
-}: KoutaOidParams) =>
-  queryOptions({
-    queryKey: [
-      'getLatestSijoitteluajonTuloksetWithValintaEsitys',
-      hakuOid,
-      hakukohdeOid,
-    ],
-    queryFn: () =>
-      getLatestSijoitteluajonTuloksetWithValintaEsitys(hakuOid, hakukohdeOid),
-  });
 
 export const getLatestSijoitteluajonTuloksetWithValintaEsitys = async (
   hakuOid: string,
@@ -320,18 +305,6 @@ export type HakukohteenValinnanTuloksetData = {
   data: Record<string, ValinnanTulosModel>;
 };
 
-export const getHakukohteenValinnanTuloksetQueryOptions = (
-  params: KoutaOidParams,
-) =>
-  queryOptions({
-    queryKey: [
-      'getHakukohteenValinnanTulokset',
-      params.hakuOid,
-      params.hakukohdeOid,
-    ],
-    queryFn: () => getHakukohteenValinnanTulokset(params),
-  });
-
 export const getHakukohteenValinnanTulokset = async (
   params: KoutaOidParams,
 ): Promise<HakukohteenValinnanTuloksetData> => {
@@ -426,20 +399,6 @@ type ChangeHistoryEventResponse = {
     },
   ];
 };
-
-export const getChangeHistoryForHakemusQueryOptions = (params: {
-  hakemusOid: string;
-  valintatapajonoOid: string;
-}) =>
-  queryOptions({
-    queryKey: [
-      'getChangeHistoryForHakemus',
-      params.hakemusOid,
-      params.valintatapajonoOid,
-    ],
-    queryFn: () =>
-      getChangeHistoryForHakemus(params.hakemusOid, params.valintatapajonoOid),
-  });
 
 export const getChangeHistoryForHakemus = async (
   hakemusOid: string,

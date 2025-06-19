@@ -6,7 +6,6 @@ import { EMPTY_OBJECT } from '@/lib/common';
 import {
   HakemuksenHarkinnanvaraisuus,
   HarkinnanvarainenTilaValue,
-  HarkinnanvaraisestiHyvaksytty,
   HarkinnanvaraisetTilatByHakemusOids,
 } from '@/lib/types/harkinnanvaraiset-types';
 import { saveHarkinnanvaraisetTilat } from '@/lib/valintalaskenta/valintalaskenta-service';
@@ -14,12 +13,12 @@ import { OphButton } from '@opetushallitus/oph-design-system';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useState } from 'react';
 import { isEmpty } from 'remeda';
-import { harkinnanvaraisetTilatOptions } from '../hooks/useHarkinnanvaraisetHakemukset';
 import { HarkinnanvaraisetActionBar } from './harkinnanvaraiset-action-bar';
 import { HarkinnanvaraisetTable } from './harkinnanvaraiset-table';
 import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBeforeNavigation';
 import { useSelection } from '@/hooks/useSelection';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
+import { refetchHarkinnanvaraisetTilat } from '@/lib/valintalaskenta/valintalaskenta-queries';
 
 const useTallennaMutation = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const { addToast } = useToaster();
@@ -39,22 +38,6 @@ const useTallennaMutation = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
         harkinnanvaraisuusTila: tila === '' ? undefined : tila,
       }));
       await saveHarkinnanvaraisetTilat(harkinnanvaraisetValues);
-      queryClient.setQueryData(
-        harkinnanvaraisetTilatOptions({ hakuOid, hakukohdeOid }).queryKey,
-        (oldData) => {
-          const unchangedOldValues = (oldData ?? []).filter(
-            (old) =>
-              harkinnanvaraisetTilat[old.hakemusOid] ===
-              (old.harkinnanvaraisuusTila ?? ''),
-          );
-
-          const changedValues = harkinnanvaraisetValues.filter((value) => {
-            return value.harkinnanvaraisuusTila != null;
-          }) as Array<HarkinnanvaraisestiHyvaksytty>;
-
-          return unchangedOldValues.concat(changedValues);
-        },
-      );
     },
     onError: (e) => {
       addToast({
@@ -65,6 +48,11 @@ const useTallennaMutation = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
       console.error(e);
     },
     onSuccess: () => {
+      refetchHarkinnanvaraisetTilat({
+        queryClient,
+        hakuOid,
+        hakukohdeOid,
+      });
       addToast({
         key: 'set-harkinnanvaraiset-tilat-success',
         message: 'harkinnanvaraiset.tallennettu',

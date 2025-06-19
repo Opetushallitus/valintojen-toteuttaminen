@@ -7,6 +7,7 @@ import {
   selectOption,
   testMuodostaHakemusHyvaksymiskirje,
   testNaytaMuutoshistoria,
+  waitForMethodRequest,
 } from './playwright-utils';
 import {
   IlmoittautumisTila,
@@ -376,12 +377,19 @@ test.describe('Tallennus', () => {
     await expect(page.getByText('Ei muutoksia mitä tallentaa')).toBeVisible();
   });
 
-  test('Tallentaa muutokset', async ({ page }) => {
+  test('Tallentaa muutokset ja lataa tulokset uudelleen', async ({ page }) => {
     await page.getByText('Maksamatta').click();
     await page.getByRole('option', { name: 'Maksettu' }).click();
-    await getYoValintatapajonoContent(page)
-      .getByRole('button', { name: 'Tallenna', exact: true })
-      .click();
+    await Promise.all([
+      waitForMethodRequest(page, 'GET', (url) =>
+        url.includes(
+          'sijoitteluntulos/1.2.246.562.29.00000000000000045102/sijoitteluajo/latest/hakukohde/1.2.246.562.20.00000000000000045105',
+        ),
+      ),
+      getYoValintatapajonoContent(page)
+        .getByRole('button', { name: 'Tallenna', exact: true })
+        .click(),
+    ]);
     await expect(
       page.getByText('Valintaesityksen muutokset tallennettu'),
     ).toBeVisible();
@@ -575,10 +583,8 @@ test.describe('Hakemuksen muut toiminnot', () => {
     );
 
     const [request] = await Promise.all([
-      page.waitForRequest(
-        (req) =>
-          req.url().includes('/valinta-tulos-service/auth/valinnan-tulos') &&
-          req.method() === 'PATCH',
+      waitForMethodRequest(page, 'PATCH', (url) =>
+        url.includes('/valinta-tulos-service/auth/valinnan-tulos'),
       ),
       confirmModal
         .getByRole('button', { name: 'Merkitse myöhästyneeksi' })
