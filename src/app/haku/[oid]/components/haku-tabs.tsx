@@ -14,7 +14,7 @@ import { ClientSpinner } from '@/components/client-spinner';
 import { OphErrorWithTitle, PermissionError } from '@/lib/common';
 import { isEmpty, unique } from 'remeda';
 import useToaster from '@/hooks/useToaster';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { getVisibleHakuTabs } from '../lib/getVisibleHakuTabs';
 import { checkHasPermission } from '@/lib/permissions';
 import { queryOptionsGetHakukohteet } from '@/lib/kouta/kouta-queries';
@@ -144,12 +144,12 @@ export const HakuTabs = ({ hakuOid }: { hakuOid: string }) => {
           hasValintaryhma: hasValintaryhma,
         }).map((tabName) => {
           return (
-            <>
+            <React.Fragment key={tabName}>
               {tabName === 'yhteisvalinnan-hallinta' && (
                 <Box sx={{ flexGrow: 1 }} />
               )}
-              <TabButton key={tabName} hakuOid={hakuOid} tabName={tabName} />
-            </>
+              <TabButton hakuOid={hakuOid} tabName={tabName} />
+            </React.Fragment>
           );
         })
       )}
