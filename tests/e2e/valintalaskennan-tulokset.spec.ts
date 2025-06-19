@@ -92,7 +92,7 @@ test('Näytetään valintalaskennan tulokset', async ({ page }) => {
   await checkRow(jono1Rows.nth(1), [
     '2',
     'Purukumi Puru',
-    '9.91 Lisätietoja',
+    '9,91 Lisätietoja',
     '1',
     'Hyväksyttävissä',
     '',
@@ -167,6 +167,7 @@ test.describe('Valintalaskennan muokkausmodaali', () => {
     page,
   }) => {
     await initSaveModal(page);
+    await expectAllSpinnersHidden(page);
     await expectPageAccessibilityOk(page);
   });
 
@@ -226,7 +227,7 @@ test.describe('Valintalaskennan muokkausmodaali', () => {
       name: 'Muokkaa valintalaskentaa',
     });
 
-    await valintalaskentaMuokkausModal.getByLabel('Pisteet').fill('12');
+    await valintalaskentaMuokkausModal.getByLabel('Pisteet').fill('12,2');
 
     await selectOption({
       page,
@@ -248,7 +249,7 @@ test.describe('Valintalaskennan muokkausmodaali', () => {
     ]);
 
     expect(request.postDataJSON()).toEqual({
-      arvo: '12',
+      arvo: '12.2',
       tila: TuloksenTila.HYLATTY,
       selite: 'Syy muokkaukselle',
     });

@@ -135,3 +135,9 @@ export const rejectAndLog = (message: string) => {
 };
 
 export type NonEmpty<T> = Array<T> & { 0: T };
+
+export const pointToComma = (val?: string | number): string | undefined =>
+  val?.toString().replace('.', ',');
+
+export const commaToPoint = (val?: string | number): string | undefined =>
+  val?.toString().replace(',', '.');

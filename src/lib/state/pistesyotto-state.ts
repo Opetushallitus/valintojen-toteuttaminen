@@ -10,6 +10,7 @@ import { clone, indexBy, isEmpty, isNonNullish, isNumber, prop } from 'remeda';
 import { ActorRefFrom, assign, createMachine, fromPromise } from 'xstate';
 import { ValintakoeAvaimet } from '@/lib/valintaperusteet/valintaperusteet-types';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
+import { commaToPoint } from '@/lib/common';
 
 export type PisteSyottoContext = {
   pistetiedot: Array<HakemuksenPistetiedot>;
@@ -283,6 +284,7 @@ export const createPisteSyottoMachine = (
           context.changedPistetiedot
             .flatMap((pt) => pt.valintakokeenPisteet)
             .find((p) => {
+              const arvo = commaToPoint(p.arvo);
               const matchingKoe = context.kokeetByTunniste[p.tunniste];
               const maxVal =
                 isNonNullish(matchingKoe?.max) &&
@@ -292,11 +294,9 @@ export const createPisteSyottoMachine = (
                 Number.parseFloat(matchingKoe.min);
               const invalid: boolean =
                 (isNumber(minVal) &&
-                  (isNaN(Number(p.arvo)) ||
-                    (minVal as number) > Number(p.arvo))) ||
+                  (isNaN(Number(arvo)) || (minVal as number) > Number(arvo))) ||
                 (isNumber(maxVal) &&
-                  (isNaN(Number(p.arvo)) ||
-                    (maxVal as number) < Number(p.arvo)));
+                  (isNaN(Number(arvo)) || (maxVal as number) < Number(arvo)));
               return invalid;
             }),
         ),

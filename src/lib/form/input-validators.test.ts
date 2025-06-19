@@ -10,6 +10,7 @@ test('validates that input is number', () => {
   expect(validator.validate('=').error).toBeTruthy();
   expect(validator.validate('19').error).toBeFalsy();
   expect(validator.validate('5.4').error).toBeFalsy();
+  expect(validator.validate('5,4').error).toBeFalsy();
   expect(validator.validate('-800.421').error).toBeFalsy();
   expect(validator.validate('0').error).toBeFalsy();
 });
@@ -27,6 +28,7 @@ test('allows empty', () => {
 test('number must be between min and max', () => {
   const validator = numberValidator({ t, min: 4, max: 10 });
   expect(validator.validate('7.5').error).toBeFalsy();
+  expect(validator.validate('7,5').error).toBeFalsy();
   expect(validator.validate('4').error).toBeFalsy();
   expect(validator.validate('10').error).toBeFalsy();
   expect(validator.validate('3').error).toBeTruthy();
@@ -40,6 +42,7 @@ test('number must be between min and max', () => {
 test('number must be greater or equal to min', () => {
   const validator = numberValidator({ t, min: 4 });
   expect(validator.validate('7.5').error).toBeFalsy();
+  expect(validator.validate('7,5').error).toBeFalsy();
   expect(validator.validate('4').error).toBeFalsy();
   expect(validator.validate('10').error).toBeFalsy();
   expect(validator.validate('3').error).toBeTruthy();
@@ -53,6 +56,7 @@ test('number must be greater or equal to min', () => {
 test('number must be lesser or equal to max', () => {
   const validator = numberValidator({ t, max: 10 });
   expect(validator.validate('7.5').error).toBeFalsy();
+  expect(validator.validate('7,5').error).toBeFalsy();
   expect(validator.validate('-4').error).toBeFalsy();
   expect(validator.validate('10').error).toBeFalsy();
   expect(validator.validate('10.5').error).toBeTruthy();

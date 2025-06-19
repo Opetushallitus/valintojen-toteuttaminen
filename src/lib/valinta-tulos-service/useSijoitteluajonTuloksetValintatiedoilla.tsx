@@ -7,6 +7,7 @@ import {
 } from '../types/sijoittelu-types';
 import { SijoitteluajonTuloksetWithValintaEsitysResponseData } from './valinta-tulos-types';
 import { useMemo } from 'react';
+import { pointToComma } from '@/lib/common';
 
 type SelectSijoitteluajonTuloksetValintatiedoillaProps = {
   hakemukset: Array<Hakemus>;
@@ -57,7 +58,7 @@ export const selectSijoitteluajonTuloksetValintatiedoilla = ({
             hakijaOid: h.hakijaOid,
             hakemusOid: h.hakemusOid,
             hakijanNimi: hakemus?.hakijanNimi ?? '',
-            pisteet: h.pisteet,
+            pisteet: pointToComma(h.pisteet) ?? '',
             valinnanTila: h.tila,
             valintatapajonoOid: h.valintatapajonoOid,
             hyvaksyttyHakijaryhmista: h.hyvaksyttyHakijaryhmista,

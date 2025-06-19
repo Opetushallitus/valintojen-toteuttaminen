@@ -366,7 +366,7 @@ test('Käyttäjä näkee muut hakutoiveet jos yksi hakukohteista on käyttäjän
   expect(firstRowTextContents).toEqual([
     '',
     'Jono 2Valintalaskenta tehty: 12.11.2024 17:54:55',
-    '13',
+    '13,3',
     'Hyväksyttävissä',
     'HYVÄKSYTTY',
     'Kyllä',
@@ -426,7 +426,7 @@ test('Näytetään henkilön hakutoiveet valintalaskennan ja sijoittelun tuloksi
   expect(firstRowTextContents).toEqual([
     '',
     'Jono 2Valintalaskenta tehty: 12.11.2024 17:54:55',
-    '13',
+    '13,3',
     'HyväksyttävissäMuokkaa',
     'HYVÄKSYTTY',
     'KylläMuokkaa',
@@ -485,7 +485,7 @@ test('Näytetään hakutoiveet valintalaskennan tuloksilla, ilman sijoittelun tu
   expect(firstRowTextContents).toEqual([
     '',
     'Jono 2Valintalaskenta tehty: 12.11.2024 17:54:55',
-    '13',
+    '13,3',
     'HyväksyttävissäMuokkaa',
     'Ei valinnan tulosta',
   ]);
@@ -559,7 +559,7 @@ test.describe('Muokkausmodaalit', () => {
     );
     await expect(
       valintalaskentaMuokkausModal.getByLabel('Pisteet'),
-    ).toHaveValue('13');
+    ).toHaveValue('13,3');
     await expect(
       valintalaskentaMuokkausModal.getByLabel('Tila', { exact: true }),
     ).toContainText('Hyväksyttävissä');
@@ -589,7 +589,7 @@ test.describe('Muokkausmodaalit', () => {
       name: 'Muokkaa valintalaskentaa',
     });
 
-    await valintalaskentaMuokkausModal.getByLabel('Pisteet').fill('12');
+    await valintalaskentaMuokkausModal.getByLabel('Pisteet').fill('12,2');
 
     await selectOption({
       page,
@@ -611,7 +611,7 @@ test.describe('Muokkausmodaalit', () => {
     ]);
 
     expect(request.postDataJSON()).toEqual({
-      arvo: '12',
+      arvo: '12.2',
       tila: TuloksenTila.HYLATTY,
       selite: 'Syy muokkaukselle',
     });
@@ -859,6 +859,7 @@ test.describe('Pistesyöttö', () => {
 
     const koksaPisteetInput = koksakoe.getByLabel('Pisteet');
     await expect(koksaPisteetInput).toBeVisible();
+    await expect(koksaPisteetInput).toHaveValue('8,8');
     const koksaOsallistuiInput = koksakoe.getByText('Osallistui', {
       exact: true,
     });

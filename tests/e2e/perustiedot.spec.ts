@@ -40,7 +40,7 @@ test('Näyttää perustiedot', async ({ page }) => {
     '150',
     '35',
     '15',
-    '7.76',
+    '7,76',
   ]);
   await checkRow(rows.nth(1), [
     'Erikoisjono',
@@ -50,7 +50,7 @@ test('Näyttää perustiedot', async ({ page }) => {
     '250',
     '5',
     '5',
-    '9.76',
+    '9,76',
   ]);
   await checkRow(rows.nth(2), [
     'Harkinnanvaraisten jono',
@@ -60,7 +60,7 @@ test('Näyttää perustiedot', async ({ page }) => {
     '5',
     '1',
     '5',
-    '5.76',
+    '5,76',
   ]);
 });
 

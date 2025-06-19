@@ -19,7 +19,7 @@ const ROWS = {
     'Kyllä',
     'Valintatapajono: Todistusvalinta (YO)VARALLA (1)',
     'Kyllä',
-    '78',
+    '78,8',
     'KESKEN',
   ],
   kreiviTable2: [
@@ -27,7 +27,7 @@ const ROWS = {
     'Ei',
     'Valintatapajono: Todistusvalinta (YO)VARALLA (1)',
     'Ei',
-    '78',
+    '78,8',
     'KESKEN',
   ],
   purukumiTable1: [

@@ -113,7 +113,7 @@ test('Näytä "Sijoittelun tulokset" -välilehti ja sisältö', async ({ page })
       '2',
       'Dacula Kreivi',
       '0',
-      '78',
+      '78,8',
       'HYVÄKSYTTY',
       'Vastaanottanut sitovasti',
       'Läsnä syksy, poissa kevät',

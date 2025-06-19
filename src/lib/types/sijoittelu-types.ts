@@ -11,7 +11,7 @@ export type SijoittelunValintatapajonoTulos = {
   varasijoilla: number;
   vastaanottaneet: number;
   paikanPeruneet: number;
-  pisteraja: number;
+  pisteraja?: string;
 };
 
 export enum ValinnanTila {
@@ -55,7 +55,7 @@ export enum IlmoittautumisTila {
 export type SijoittelunHakemus = {
   hakijaOid: string;
   hakemusOid: string;
-  pisteet: number;
+  pisteet: string;
   tila: ValinnanTila;
   valintatapajonoOid: string;
   hyvaksyttyHakijaryhmista: Array<string>;
@@ -66,7 +66,7 @@ export type SijoittelunHakemus = {
 export type SijoittelunHakemusValintatiedoilla = {
   hakemusOid: string;
   hakijaOid: string;
-  pisteet: number;
+  pisteet: string;
   valintatapajonoOid: string;
   hyvaksyttyHakijaryhmista: Array<string>;
   varasijanNumero: number;

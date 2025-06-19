@@ -106,6 +106,7 @@ test('Näyttää pistesyotöt kaikilla kokeilla', async ({ page }) => {
     'th',
   );
   const rows = page.getByTestId('pistesyotto-form').locator('tbody tr');
+
   await expect(rows).toHaveCount(4);
   await checkRow(rows.nth(0), [
     'Dacula Kreivi',
@@ -117,11 +118,19 @@ test('Näyttää pistesyotöt kaikilla kokeilla', async ({ page }) => {
     'Ei osallistunut',
     'Valitse...Merkitsemättä',
   ]);
-  await checkRow(rows.nth(2), [
+
+  const nukettajaRow = rows.nth(2);
+  await checkRow(nukettajaRow, [
     'Nukettaja Ruhtinas',
     'Osallistui',
     'KylläOsallistui',
   ]);
+  const arvosanaInput = nukettajaRow
+    .getByRole('cell')
+    .nth(1)
+    .getByRole('textbox');
+  await expect(arvosanaInput).toHaveValue('8,8');
+
   await checkRow(rows.nth(3), [
     'Purukumi Puru',
     'Ei osallistunut',
@@ -148,7 +157,9 @@ test('Näyttää ilmoituksen virheellisestä syötteestä tallennettaessa', asyn
   ).toBeVisible();
 });
 
-test('Näyttää ilmoituksen kun tallennus onnistuu', async ({ page }) => {
+test('Näyttää ilmoituksen kun tallennus onnistuu ja lähettää oikeat pisteet', async ({
+  page,
+}) => {
   await page.route(
     '*/**/valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105',
     async (route) =>
@@ -169,7 +180,35 @@ test('Näyttää ilmoituksen kun tallennus onnistuu', async ({ page }) => {
     name: 'Osallistumisen tila',
     option: 'Osallistui',
   });
-  await page.getByRole('button', { name: 'Tallenna' }).click();
+  const [putRequest] = await Promise.all([
+    page.waitForRequest(
+      (request) =>
+        request
+          .url()
+          .includes(
+            '/valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105',
+          ) && request.method() === 'PUT',
+    ),
+    page.getByRole('button', { name: 'Tallenna' }).click(),
+  ]);
+
+  const postData = JSON.parse(putRequest.postData() || '{}');
+
+  expect(postData.length).toBe(4);
+  const daculaPostData = postData[0];
+  expect(daculaPostData).toMatchObject({
+    oid: '1.2.246.562.11.00000000000001796027',
+    personOid: '1.2.246.562.24.69259807406',
+    firstNames: 'Ruhtinas',
+    lastName: 'Nukettaja',
+    additionalData: {
+      koksa: '8.8',
+      'koksa-osallistuminen': 'OSALLISTUI',
+      nakki: 'true',
+      'nakki-osallistuminen': 'OSALLISTUI',
+    },
+  });
+
   await expect(page.getByText('Tiedot tallennettu.')).toBeVisible();
   await getMuiCloseButton(page).click();
   await expect(page.getByText('Tiedot tallennettu.')).toBeHidden();

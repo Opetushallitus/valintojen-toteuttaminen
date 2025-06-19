@@ -11,7 +11,7 @@ import {
   LaskennanValintatapajonoTulos,
   LaskennanValinnanvaiheInfo,
 } from '@/hooks/useEditableValintalaskennanTulokset';
-import { GenericEvent, isEmpty } from '@/lib/common';
+import { commaToPoint, GenericEvent, isEmpty } from '@/lib/common';
 import { produce } from 'immer';
 import {
   clone,
@@ -311,7 +311,7 @@ export const jonoTulosMachine = createMachine({
 
                     const numberArvo = Number(
                       kaytetaanKokonaispisteita
-                        ? changedJonoTulos?.pisteet
+                        ? commaToPoint(changedJonoTulos?.pisteet)
                         : changedJonoTulos.jonosija,
                     );
 
