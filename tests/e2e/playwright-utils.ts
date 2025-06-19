@@ -457,3 +457,17 @@ export async function testNaytaMuutoshistoria(page: Page) {
   await page.getByText('Sulje').click();
   await expect(page.getByText('Muokkausajankohta')).toBeHidden();
 }
+
+export const waitForMethodRequest = (
+  page: Page,
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
+  urlMatcher: ((urlStr: string) => boolean) | RegExp,
+) => {
+  return page.waitForRequest((request) => {
+    const isMatch =
+      urlMatcher instanceof RegExp
+        ? urlMatcher.test(request.url())
+        : urlMatcher(request.url());
+    return request.method() === method && isMatch;
+  });
+};

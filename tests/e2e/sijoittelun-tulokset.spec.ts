@@ -7,6 +7,7 @@ import {
   selectOption,
   testMuodostaHakemusHyvaksymiskirje,
   testNaytaMuutoshistoria,
+  waitForMethodRequest,
 } from './playwright-utils';
 import {
   IlmoittautumisTila,
@@ -575,10 +576,8 @@ test.describe('Hakemuksen muut toiminnot', () => {
     );
 
     const [request] = await Promise.all([
-      page.waitForRequest(
-        (req) =>
-          req.url().includes('/valinta-tulos-service/auth/valinnan-tulos') &&
-          req.method() === 'PATCH',
+      waitForMethodRequest(page, 'PATCH', (url) =>
+        url.includes('/valinta-tulos-service/auth/valinnan-tulos'),
       ),
       confirmModal
         .getByRole('button', { name: 'Merkitse myöhästyneeksi' })

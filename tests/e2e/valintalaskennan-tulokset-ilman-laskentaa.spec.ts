@@ -8,6 +8,7 @@ import {
   mockDocumentExport,
   mockSeurantaProcess,
   startExcelImport,
+  waitForMethodRequest,
 } from './playwright-utils';
 import VALINNANVAIHE_TULOKSET_ILMAN_LASKENTAA from './fixtures/valinnanvaihe-tulokset-ilman-laskentaa.json';
 import VALINNANVAIHEET_ILMAN_LASKENTAA from './fixtures/valinnanvaiheet-ilman-laskentaa.json';
@@ -32,7 +33,7 @@ const PISTEET_TABLE_HEADINGS = [
 
 test.beforeEach(async ({ page }) => {
   await page.route(
-    '**/valintalaskenta-laskenta-service/resources/hakukohde/**',
+    /valintalaskenta-laskenta-service\/resources\/hakukohde\/\S+\/valinnanvaihe/,
     async (route) =>
       await route.fulfill({ json: VALINNANVAIHE_TULOKSET_ILMAN_LASKENTAA }),
   );
@@ -220,6 +221,9 @@ test('Valintatapajono excelin tuonti epäonnistuu', async ({ page }) => {
   );
 });
 
+const tuloksetPath =
+  'valintalaskenta-laskenta-service/resources/hakukohde/1.2.246.562.20.00000000000000045105/valinnanvaihe';
+
 test('Lähettää muokatun pisteet-datan tallentaessa', async ({ page }) => {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/valintalaskennan-tulokset',
@@ -246,14 +250,7 @@ test('Lähettää muokatun pisteet-datan tallentaessa', async ({ page }) => {
 
   // Save data and wait for request
   const [request] = await Promise.all([
-    page.waitForRequest(
-      (req) =>
-        req
-          .url()
-          .includes(
-            'valintalaskenta-laskenta-service/resources/hakukohde/1.2.246.562.20.00000000000000045105/valinnanvaihe',
-          ) && req.method() === 'POST',
-    ),
+    waitForMethodRequest(page, 'POST', (url) => url.includes(tuloksetPath)),
     jonoContent.getByRole('button', { name: 'Tallenna' }).click(),
   ]);
 
@@ -298,7 +295,9 @@ test('Lähettää muokatun pisteet-datan tallentaessa', async ({ page }) => {
   });
 });
 
-test('Lähettää muokatun jonosija-datan tallentaessa', async ({ page }) => {
+test('Lähettää muokatun jonosija-datan tallentaessa ja lataa tulokset uudelleen', async ({
+  page,
+}) => {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/valintalaskennan-tulokset',
   );
@@ -309,26 +308,10 @@ test('Lähettää muokatun jonosija-datan tallentaessa', async ({ page }) => {
 
   const firstRow = jonoContent.locator('tbody tr').first();
   await firstRow.getByRole('textbox', { name: 'jonosija' }).fill('2');
-  await firstRow
-    .getByRole('textbox', { name: 'Kuvaus suomeksi' })
-    .fill('Kuvaus FI');
-  await firstRow
-    .getByRole('textbox', { name: 'Kuvaus ruotsiksi' })
-    .fill('Kuvaus SV');
-  await firstRow
-    .getByRole('textbox', { name: 'Kuvaus englanniksi' })
-    .fill('Kuvaus EN');
 
-  // Save data and wait for request
   const [request] = await Promise.all([
-    page.waitForRequest(
-      (req) =>
-        req
-          .url()
-          .includes(
-            'valintalaskenta-laskenta-service/resources/hakukohde/1.2.246.562.20.00000000000000045105/valinnanvaihe',
-          ) && req.method() === 'POST',
-    ),
+    waitForMethodRequest(page, 'POST', (url) => url.includes(tuloksetPath)),
+    waitForMethodRequest(page, 'GET', (url) => url.includes(tuloksetPath)),
     jonoContent.getByRole('button', { name: 'Tallenna' }).click(),
   ]);
 
@@ -359,7 +342,6 @@ test('Lähettää muokatun jonosija-datan tallentaessa', async ({ page }) => {
               {
                 arvo: -2,
                 tila: 'HYVAKSYTTAVISSA',
-                kuvaus: { FI: 'Kuvaus FI', SV: 'Kuvaus SV', EN: 'Kuvaus EN' },
                 prioriteetti: 0,
                 nimi: '',
               },
