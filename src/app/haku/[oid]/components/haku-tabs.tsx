@@ -142,9 +142,16 @@ export const HakuTabs = ({ hakuOid }: { hakuOid: string }) => {
           hierarchyPermissions,
           tarjoajaOids: hakukohdeTarjoajaOids,
           hasValintaryhma: hasValintaryhma,
-        }).map((tabName) => (
-          <TabButton key={tabName} hakuOid={hakuOid} tabName={tabName} />
-        ))
+        }).map((tabName) => {
+          return (
+            <>
+              {tabName === 'yhteisvalinnan-hallinta' && (
+                <Box sx={{ flexGrow: 1 }} />
+              )}
+              <TabButton key={tabName} hakuOid={hakuOid} tabName={tabName} />
+            </>
+          );
+        })
       )}
     </Stack>
   );
