@@ -149,7 +149,9 @@ export const ProgressModalDialog = ({
       }
     >
       {mutation.isError && <ErrorContainer error={mutation.error} />}
-      {mutation.isSuccess && <Typography>Suoritus valmis</Typography>}
+      {mutation.isSuccess && (
+        <Typography>{t('yleinen.suoritus-valmis')}</Typography>
+      )}
     </OphModal>
   );
 };
@@ -172,19 +174,19 @@ export const ProgressModal = createModal(
       onError: (e) => {
         console.error(e);
       },
-      mutationFn: async () => await functionToMutate(),
+      mutationFn: functionToMutate,
       onSuccess: (data) => {
-        if (setDocument) {
-          setDocument(data);
-        }
+        setDocument?.(data);
       },
     });
 
+    const { isPending, isError, data, mutate } = mutation;
+
     useEffect(() => {
-      if (!(mutation.isPending || mutation.data || mutation.error)) {
-        mutation.mutate();
+      if (!(isPending || data || isError)) {
+        mutate();
       }
-    }, [mutation]);
+    }, [isPending, isError, data, mutate]);
 
     return (
       <ProgressModalDialog
