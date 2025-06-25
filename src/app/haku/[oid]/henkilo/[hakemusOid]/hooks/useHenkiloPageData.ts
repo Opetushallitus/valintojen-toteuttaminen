@@ -83,7 +83,7 @@ export const useHenkiloPageData = ({
   const [
     { data: koutaHakukohteet },
     { data: postitoimipaikka },
-    { data: pisteetByHakukohde },
+    { data: pisteetByHakukohde, refetch: refetchPisteet },
     { data: kokeetByHakukohde },
   ] = useSuspenseQueries({
     queries: [
@@ -105,7 +105,7 @@ export const useHenkiloPageData = ({
         queryFn: () => getKoePisteetForHakemus({ hakemusOid, hakukohdeOids }),
       },
       {
-        queryKey: ['getValintakoeAvaimetHaukohteille', hakukohdeOids],
+        queryKey: ['getValintakoeAvaimetHakukohteille', hakukohdeOids],
         queryFn: () => getValintakoeAvaimetHakukohteille({ hakukohdeOids }),
       },
     ],
@@ -171,5 +171,5 @@ export const useHenkiloPageData = ({
     checkEditPermission,
   ]);
 
-  return { hakukohteet, hakija, postitoimipaikka };
+  return { hakukohteet, hakija, postitoimipaikka, refetchPisteet };
 };

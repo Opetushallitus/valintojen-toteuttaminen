@@ -248,6 +248,42 @@ export const updatePisteetForHakukohde = async (
   );
 };
 
+export const updatePisteetForHakemus = async (
+  hakemusOid: string,
+  pistetiedot: Array<HakemuksenPistetiedot>,
+) => {
+  const configuration = getConfiguration();
+  const mappedPistetiedot = pistetiedot.map((p) => {
+    const additionalData = pipe(
+      p.valintakokeenPisteet,
+      flatMap((vp) => [
+        { key: vp.tunniste, value: commaToPoint(vp.arvo) },
+        { key: vp.osallistuminenTunniste, value: vp.osallistuminen },
+      ]),
+      indexBy((kv) => kv.key),
+      mapValues((val) => val.value),
+    );
+    return {
+      oid: p.hakemusOid,
+      personOid: p.hakijaOid,
+      firstNames: p.etunimet,
+      lastName: p.sukunimi,
+      additionalData,
+    };
+  });
+
+  await client.put(
+    getConfigUrl(
+      configuration.routes.valintalaskentakoostepalvelu
+        .koostetutPistetiedotHakemukselleUrl,
+      {
+        hakemusOid,
+      },
+    ),
+    mappedPistetiedot,
+  );
+};
+
 const getValintakoeOsallistumiset = async ({
   hakukohdeOid,
 }: {
