@@ -15,6 +15,7 @@ import {
 } from '../types/laskenta-types';
 import {
   difference,
+  filter,
   flatMap,
   indexBy,
   isEmpty,
@@ -23,6 +24,7 @@ import {
   mapValues,
   pipe,
   prop,
+  uniqueBy,
 } from 'remeda';
 import {
   OphApiError,
@@ -252,25 +254,31 @@ export const updatePisteetForHakemus = async (
   hakemusOid: string,
   pistetiedot: Array<HakemuksenPistetiedot>,
 ) => {
+  if (!pistetiedot || pistetiedot.length < 1) {
+    throw 'Yritys päivittää hakemus ilman pistetietoja';
+  }
+
   const configuration = getConfiguration();
-  const mappedPistetiedot = pistetiedot.map((p) => {
-    const additionalData = pipe(
-      p.valintakokeenPisteet,
-      flatMap((vp) => [
-        { key: vp.tunniste, value: commaToPoint(vp.arvo) },
-        { key: vp.osallistuminenTunniste, value: vp.osallistuminen },
-      ]),
-      indexBy((kv) => kv.key),
-      mapValues((val) => val.value),
-    );
-    return {
-      oid: p.hakemusOid,
-      personOid: p.hakijaOid,
-      firstNames: p.etunimet,
-      lastName: p.sukunimi,
-      additionalData,
-    };
-  });
+  const additionalData = pipe(
+    pistetiedot,
+    flatMap((p) => p.valintakokeenPisteet),
+    filter(isNonNullish),
+    uniqueBy(prop('tunniste')),
+    flatMap((vp) => [
+      { key: vp.tunniste, value: commaToPoint(vp.arvo) },
+      { key: vp.osallistuminenTunniste, value: vp.osallistuminen },
+    ]),
+    indexBy((kv) => kv.key),
+    mapValues((val) => val.value),
+  );
+
+  const mappedPistetiedot = {
+    oid: pistetiedot[0]!.hakemusOid,
+    personOid: pistetiedot[0]!.hakijaOid,
+    firstNames: pistetiedot[0]!.etunimet,
+    lastName: pistetiedot[0]!.sukunimi,
+    additionalData,
+  };
 
   await client.put(
     getConfigUrl(

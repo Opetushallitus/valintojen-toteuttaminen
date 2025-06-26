@@ -45,7 +45,7 @@ const KokeenPistesyotto = ({
   hakija: HakijaInfo;
   koe: ValintakoeAvaimet;
   hakukohde: HenkilonHakukohdeTuloksilla;
-  pistesyottoActorRef: PistesyottoActorRef;
+  pistesyottoActorRef: HenkilonPistesyottoActorRef;
   disabled: boolean;
 }) => {
   const { t, translateEntity } = useTranslations();
