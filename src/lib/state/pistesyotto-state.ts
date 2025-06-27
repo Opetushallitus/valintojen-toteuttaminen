@@ -31,7 +31,7 @@ export enum PisteSyottoEvent {
   PISTETIETO_CHANGED = 'PISTETIETO_CHANGED',
 }
 
-type PistesyottoAnyEvent =
+export type PistesyottoAnyEvent =
   | PistesyottoUpdateEvent
   | PistesyottoChangedPistetietoEvent;
 

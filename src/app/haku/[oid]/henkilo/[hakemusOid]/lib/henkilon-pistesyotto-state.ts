@@ -11,42 +11,27 @@ import { ValintakoeAvaimet } from '@/lib/valintaperusteet/valintaperusteet-types
 import { commaToPoint } from '@/lib/common';
 import { GenericEvent } from '@/lib/common';
 import { HakijaInfo } from '@/lib/ataru/ataru-types';
+import {
+  PistesyottoAnyEvent,
+  PisteSyottoEvent,
+  PisteSyottoStates,
+} from '@/lib/state/pistesyotto-state';
 
-export type PisteSyottoContext = {
+type HenkilonPisteSyottoContext = {
   pistetiedot: Array<ValintakokeenPisteet>;
   changedPistetiedot: Array<ValintakokeenPisteet>;
   kokeetByTunniste: Record<string, ValintakoeAvaimet>;
   toastMessage?: string;
 };
 
-export enum PisteSyottoStates {
-  IDLE = 'IDLE',
-  UPDATING = 'UPDATING',
-  UPDATE_COMPLETED = 'UPDATE_COMPLETED',
-  ERROR = 'ERROR',
-}
-
-export enum PisteSyottoEvent {
-  UPDATE = 'UPDATE',
-  PISTETIETO_CHANGED = 'PISTETIETO_CHANGED',
-}
-
-type PistesyottoAnyEvent =
-  | PistesyottoUpdateEvent
-  | PistesyottoChangedPistetietoEvent;
-
-export type PistesyottoUpdateEvent = {
-  type: PisteSyottoEvent.UPDATE;
-};
-
-export type HenkilonPistesyottoChangeParams = {
+type HenkilonPistesyottoChangeParams = {
   hakemusOid: string;
   koeTunniste: string;
   arvo?: string;
   osallistuminen?: ValintakoeOsallistuminenTulos;
 };
 
-export type PistesyottoChangedPistetietoEvent = {
+type PistesyottoChangedPistetietoEvent = {
   type: PisteSyottoEvent.PISTETIETO_CHANGED;
 } & HenkilonPistesyottoChangeParams;
 
@@ -74,7 +59,7 @@ const pistetietoChangeReducer = ({
   context,
   event,
 }: {
-  context: PisteSyottoContext;
+  context: HenkilonPisteSyottoContext;
   event: PistesyottoChangedPistetietoEvent;
 }) => {
   const changedPistetieto = context.changedPistetiedot.find(
@@ -125,7 +110,7 @@ const pistetietoChangeReducer = ({
   return context.changedPistetiedot;
 };
 
-const mergePistetiedot = (context: PisteSyottoContext) => {
+const mergePistetiedot = (context: HenkilonPisteSyottoContext) => {
   return context.pistetiedot.map((p) => {
     const changePistetieto = context.changedPistetiedot.find(
       (c) => c.tunniste === p.tunniste,
@@ -150,7 +135,7 @@ export const createHenkilonPisteSyottoMachine = (
       kokeetByTunniste,
     },
     types: {} as {
-      context: PisteSyottoContext;
+      context: HenkilonPisteSyottoContext;
       events: PistesyottoAnyEvent;
       actions:
         | { type: 'alert'; params: { message: string } }
