@@ -12,7 +12,7 @@ import {
   prop,
   uniqueBy,
 } from 'remeda';
-import { KoeInputs } from '@/components/koe-inputs';
+import { KoeInputsStateless } from '@/components/koe-inputs';
 import { ValintakoeAvaimet } from '@/lib/valintaperusteet/valintaperusteet-types';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { HakijaInfo } from '@/lib/ataru/ataru-types';
@@ -32,8 +32,45 @@ import {
 import { QueryObserverResult, RefetchOptions } from '@tanstack/react-query';
 import {
   HenkilonPistesyottoActorRef,
+  useHenkilonKoePistetiedot,
+  useHenkilonPistesyottoActorRef,
   useHenkilonPistesyottoState,
 } from '../lib/henkilon-pistesyotto-state';
+
+const KoeInputs = ({
+  hakemusOid,
+  koe,
+  pistesyottoActorRef,
+  disabled,
+}: {
+  hakemusOid: string;
+  koe: ValintakoeAvaimet;
+  pistesyottoActorRef: HenkilonPistesyottoActorRef;
+  disabled: boolean;
+}) => {
+  const { t } = useTranslations();
+  const { onKoeChange, isUpdating } =
+    useHenkilonPistesyottoActorRef(pistesyottoActorRef);
+
+  const { arvo, osallistuminen } = useHenkilonKoePistetiedot(
+    pistesyottoActorRef,
+    {
+      koeTunniste: koe.tunniste,
+    },
+  );
+
+  return (
+    <KoeInputsStateless
+      hakemusOid={hakemusOid}
+      koe={koe}
+      disabled={disabled || isUpdating}
+      osallistuminen={osallistuminen}
+      onChange={onKoeChange}
+      arvo={arvo}
+      t={t}
+    />
+  );
+};
 
 const KokeenPistesyotto = ({
   hakija,
@@ -172,11 +209,13 @@ export const HenkilonPistesyotto = ({
 
   const pistetiedot = useMemo(
     () =>
-      hakukohteet.flatMap((hakukohde) => ({
-        ...hakija,
-        valintakokeenPisteet: hakukohde.pisteet ?? [],
-      })),
-    [hakija, hakukohteet],
+      pipe(
+        hakukohteet,
+        flatMap((hakukohde) => hakukohde.pisteet),
+        filter(isNonNullish),
+        uniqueBy(prop('tunniste')),
+      ),
+    [hakukohteet],
   );
 
   const hakukohteetKokeilla = useMemo(
@@ -201,7 +240,7 @@ export const HenkilonPistesyotto = ({
     isDirty,
     savePistetiedot,
   } = useHenkilonPistesyottoState({
-    hakemusOid: hakija.hakemusOid,
+    hakija,
     pistetiedot: pistetiedot,
     valintakokeet: kokeet,
     onEvent,

@@ -70,6 +70,7 @@ import {
 } from '../valinta-tulos-service/valinta-tulos-types';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
 import { getConfigUrl } from '../configuration/configuration-utils';
+import { HakijaInfo } from '../ataru/ataru-types';
 
 export const getHakukohteenValintatuloksetIlmanHakijanTilaa = async (
   hakuOid: string,
@@ -251,8 +252,8 @@ export const updatePisteetForHakukohde = async (
 };
 
 export const updatePisteetForHakemus = async (
-  hakemusOid: string,
-  pistetiedot: Array<HakemuksenPistetiedot>,
+  hakija: HakijaInfo,
+  pistetiedot: Array<ValintakokeenPisteet>,
 ) => {
   if (!pistetiedot || pistetiedot.length < 1) {
     throw 'Yritys päivittää hakemus ilman pistetietoja';
@@ -261,7 +262,6 @@ export const updatePisteetForHakemus = async (
   const configuration = getConfiguration();
   const additionalData = pipe(
     pistetiedot,
-    flatMap((p) => p.valintakokeenPisteet),
     filter(isNonNullish),
     uniqueBy(prop('tunniste')),
     flatMap((vp) => [
@@ -273,10 +273,10 @@ export const updatePisteetForHakemus = async (
   );
 
   const mappedPistetiedot = {
-    oid: pistetiedot[0]!.hakemusOid,
-    personOid: pistetiedot[0]!.hakijaOid,
-    firstNames: pistetiedot[0]!.etunimet,
-    lastName: pistetiedot[0]!.sukunimi,
+    oid: hakija.hakemusOid,
+    personOid: hakija.hakijaOid,
+    firstNames: hakija.etunimet,
+    lastName: hakija.sukunimi,
     additionalData,
   };
 
@@ -285,7 +285,7 @@ export const updatePisteetForHakemus = async (
       configuration.routes.valintalaskentakoostepalvelu
         .koostetutPistetiedotHakemukselleUrl,
       {
-        hakemusOid,
+        hakemusOid: hakija.hakemusOid,
       },
     ),
     mappedPistetiedot,
