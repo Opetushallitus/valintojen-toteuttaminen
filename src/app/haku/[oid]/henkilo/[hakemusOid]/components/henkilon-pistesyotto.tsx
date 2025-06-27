@@ -250,26 +250,25 @@ export const HenkilonPistesyotto = ({
 
   return isEmpty(hakukohteetKokeilla) ? null : (
     <Box sx={{ marginTop: 3 }}>
-      <Typography variant="h3">
-        {t('henkilo.pistesyotto')}
-        {hakukohteetKokeilla.some(
-          (hakukohde) =>
-            !hakukohde.readOnly &&
-            hakukohde.pisteet &&
-            hakukohde.pisteet.length > 0,
-        ) && (
-          <OphButton
-            variant="contained"
-            loading={isUpdating}
-            disabled={!haunParametrit.pistesyottoEnabled}
-            onClick={() => {
-              savePistetiedot();
-            }}
-          >
-            {t('yleinen.tallenna')}
-          </OphButton>
-        )}
-      </Typography>
+      <Typography variant="h3">{t('henkilo.pistesyotto')}</Typography>
+      {hakukohteetKokeilla.some(
+        (hakukohde) =>
+          !hakukohde.readOnly &&
+          hakukohde.pisteet &&
+          hakukohde.pisteet.length > 0,
+      ) && (
+        <OphButton
+          sx={{ margin: '0.8rem 0' }}
+          variant="contained"
+          loading={isUpdating}
+          disabled={!haunParametrit.pistesyottoEnabled}
+          onClick={() => {
+            savePistetiedot();
+          }}
+        >
+          {t('yleinen.tallenna')}
+        </OphButton>
+      )}
       {hakukohteetKokeilla.map((hakukohde) => (
         <HakukohteenPisteSyotto
           key={hakukohde.oid}
