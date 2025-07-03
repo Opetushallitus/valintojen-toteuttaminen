@@ -179,14 +179,20 @@ export const HenkilonPistesyotto = ({
   hakija,
   hakukohteet,
   refetchPisteet,
+  lastModified,
 }: {
   hakuOid: string;
   hakija: HakijaInfo;
   hakukohteet: Array<HenkilonHakukohdeTuloksilla>;
-  refetchPisteet: (
-    options?: RefetchOptions,
-  ) => Promise<
-    QueryObserverResult<Record<string, Array<ValintakokeenPisteet>>, Error>
+  lastModified?: string;
+  refetchPisteet: (options?: RefetchOptions) => Promise<
+    QueryObserverResult<
+      {
+        lastModified?: string;
+        pisteet: Record<string, Array<ValintakokeenPisteet>>;
+      },
+      Error
+    >
   >;
 }) => {
   const { t } = useTranslations();
@@ -207,21 +213,18 @@ export const HenkilonPistesyotto = ({
     [addToast, refetchPisteet],
   );
 
-  const pistetiedot = useMemo(
-    () =>
-      pipe(
-        hakukohteet,
-        flatMap((hakukohde) => hakukohde.pisteet),
-        filter(isNonNullish),
-        uniqueBy(prop('tunniste')),
-      ),
-    [hakukohteet],
-  );
+  const pistetiedot = useMemo(() => {
+    return pipe(
+      hakukohteet,
+      flatMap((hakukohde) => hakukohde.pisteet),
+      filter(isNonNullish),
+      uniqueBy(prop('tunniste')),
+    );
+  }, [hakukohteet]);
 
-  const hakukohteetKokeilla = useMemo(
-    () => hakukohteet?.filter((hakukohde) => !isEmpty(hakukohde.kokeet ?? [])),
-    [hakukohteet],
-  );
+  const hakukohteetKokeilla = useMemo(() => {
+    return hakukohteet?.filter((hakukohde) => !isEmpty(hakukohde.kokeet ?? []));
+  }, [hakukohteet]);
 
   const kokeet = useMemo(
     () =>
@@ -241,8 +244,9 @@ export const HenkilonPistesyotto = ({
     savePistetiedot,
   } = useHenkilonPistesyottoState({
     hakija,
-    pistetiedot: pistetiedot,
+    pistetiedot,
     valintakokeet: kokeet,
+    lastModified,
     onEvent,
   });
 

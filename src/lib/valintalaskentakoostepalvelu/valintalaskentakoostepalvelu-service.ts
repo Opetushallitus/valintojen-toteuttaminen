@@ -155,13 +155,19 @@ export const getKoePisteetForHakemus = async ({
 }: {
   hakemusOid: string;
   hakukohdeOids: Array<string>;
-}): Promise<Record<string, Array<ValintakokeenPisteet>>> => {
+}): Promise<{
+  lastModified?: string;
+  pisteet: Record<string, Array<ValintakokeenPisteet>>;
+}> => {
   const kokeet = await getValintakoeAvaimetHakukohteille({ hakukohdeOids });
   const pistetiedot = await getPisteetForHakemus({ hakemusOid });
 
-  return mapValues(pistetiedot.hakukohteittain, (p, hakukohdeOid) => {
-    return selectKokeenPisteet(hakukohdeOid, p, kokeet[hakukohdeOid]);
-  });
+  return {
+    lastModified: pistetiedot.lastmodified,
+    pisteet: mapValues(pistetiedot.hakukohteittain, (p, hakukohdeOid) => {
+      return selectKokeenPisteet(hakukohdeOid, p, kokeet[hakukohdeOid]);
+    }),
+  };
 };
 
 export const getPisteetForHakukohde = async ({
@@ -254,6 +260,7 @@ export const updatePisteetForHakukohde = async (
 export const updatePisteetForHakemus = async (
   hakija: HakijaInfo,
   pistetiedot: Array<ValintakokeenPisteet>,
+  lastModified?: string,
 ) => {
   if (!pistetiedot || pistetiedot.length < 1) {
     throw 'Yritys päivittää hakemus ilman pistetietoja';
@@ -280,6 +287,11 @@ export const updatePisteetForHakemus = async (
     additionalData,
   };
 
+  let headers = {};
+  if (isNonNullish(lastModified)) {
+    headers = { 'If-Unmodified-Since': lastModified };
+  }
+
   await client.put(
     getConfigUrl(
       configuration.routes.valintalaskentakoostepalvelu
@@ -289,6 +301,7 @@ export const updatePisteetForHakemus = async (
       },
     ),
     mappedPistetiedot,
+    { headers },
   );
 };
 

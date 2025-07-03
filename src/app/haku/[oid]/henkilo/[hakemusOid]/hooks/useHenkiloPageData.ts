@@ -153,7 +153,7 @@ export const useHenkiloPageData = ({
               }
             : undefined,
           kokeet: kokeetByHakukohde[hakukohde.oid],
-          pisteet: pisteetByHakukohde[hakukohde.oid],
+          pisteet: pisteetByHakukohde.pisteet[hakukohde.oid],
         };
       }),
     );
@@ -165,11 +165,17 @@ export const useHenkiloPageData = ({
     valinnanTuloksetByHakukohde,
     valinnanTuloksetResponse.lastModified,
     kokeetByHakukohde,
-    pisteetByHakukohde,
+    pisteetByHakukohde.pisteet,
     hakemusOid,
     hakija.hakijaOid,
     checkEditPermission,
   ]);
 
-  return { hakukohteet, hakija, postitoimipaikka, refetchPisteet };
+  return {
+    hakukohteet,
+    hakija,
+    postitoimipaikka,
+    refetchPisteet,
+    lastModified: pisteetByHakukohde.lastModified,
+  };
 };

@@ -8,7 +8,7 @@ import { useCallback, useMemo } from 'react';
 import { clone, indexBy, isNonNullish, isNumber, prop } from 'remeda';
 import { ActorRefFrom, assign, createMachine, fromPromise } from 'xstate';
 import { ValintakoeAvaimet } from '@/lib/valintaperusteet/valintaperusteet-types';
-import { commaToPoint } from '@/lib/common';
+import { commaToPoint, FetchError } from '@/lib/common';
 import { GenericEvent } from '@/lib/common';
 import { HakijaInfo } from '@/lib/ataru/ataru-types';
 import {
@@ -22,6 +22,7 @@ type HenkilonPisteSyottoContext = {
   changedPistetiedot: Array<ValintakokeenPisteet>;
   kokeetByTunniste: Record<string, ValintakoeAvaimet>;
   toastMessage?: string;
+  error?: Error | FetchError | null;
 };
 
 type HenkilonPistesyottoChangeParams = {
@@ -124,10 +125,11 @@ export const createHenkilonPisteSyottoMachine = (
   pistetiedot: Array<ValintakokeenPisteet>,
   valintakokeet: Array<ValintakoeAvaimet>,
   onEvent: (event: GenericEvent) => void,
+  lastModified?: string,
 ) => {
   const kokeetByTunniste = indexBy(valintakokeet, prop('tunniste'));
   return createMachine({
-    id: `HenkiloPistesyottoMachine-${hakija.hakemusOid}`,
+    id: `HenkiloPistesyottoMachine-${hakija.hakemusOid}-${lastModified}`,
     initial: PisteSyottoStates.IDLE,
     context: {
       pistetiedot,
@@ -181,6 +183,9 @@ export const createHenkilonPisteSyottoMachine = (
           },
           onError: {
             target: PisteSyottoStates.ERROR,
+            actions: assign({
+              error: ({ event }) => event.error as Error,
+            }),
           },
         },
       },
@@ -243,12 +248,19 @@ export const createHenkilonPisteSyottoMachine = (
         ),
     },
     actions: {
-      alert: (_, params) =>
+      alert: ({ context }, params) => {
+        const conflictError =
+          context.error instanceof FetchError &&
+          context.error.response.status === 412;
+        const message = conflictError
+          ? 'henkilo.virhe.pistesyotto-tallennus-konflikti'
+          : params.message;
         onEvent({
           key: `pistetiedot-update-failed-for-${hakija.hakemusOid}`,
-          message: (params as { message: string }).message,
+          message,
           type: 'error',
-        }),
+        });
+      },
       successNotify: () =>
         onEvent({
           key: `pistetiedot-updated-for-${hakija.hakemusOid}`,
@@ -259,7 +271,7 @@ export const createHenkilonPisteSyottoMachine = (
     actors: {
       updatePistetiedot: fromPromise(
         ({ input }: { input: Array<ValintakokeenPisteet> }) => {
-          return updatePisteetForHakemus(hakija, input);
+          return updatePisteetForHakemus(hakija, input, lastModified);
         },
       ),
     },
@@ -270,6 +282,7 @@ type HenkiloPistesyottoMachineParams = {
   hakija: HakijaInfo;
   pistetiedot: Array<ValintakokeenPisteet>;
   valintakokeet: Array<ValintakoeAvaimet>;
+  lastModified?: string;
   onEvent: (event: GenericEvent) => void;
 };
 
@@ -277,6 +290,7 @@ export const useHenkilonPistesyottoState = ({
   hakija,
   pistetiedot,
   valintakokeet,
+  lastModified,
   onEvent,
 }: HenkiloPistesyottoMachineParams) => {
   const machine = useMemo(() => {
@@ -285,8 +299,9 @@ export const useHenkilonPistesyottoState = ({
       pistetiedot,
       valintakokeet,
       onEvent,
+      lastModified,
     );
-  }, [pistetiedot, valintakokeet, onEvent, hakija]);
+  }, [pistetiedot, valintakokeet, onEvent, hakija, lastModified]);
 
   const actorRef = useActorRef(machine);
   return useHenkilonPistesyottoActorRef(actorRef);

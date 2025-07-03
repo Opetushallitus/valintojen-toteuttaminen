@@ -28,11 +28,16 @@ const HenkiloContent = ({
   const { data: haku } = useHaku({ hakuOid });
   const { data: haunAsetukset } = useHaunAsetukset({ hakuOid });
 
-  const { hakukohteet, hakija, postitoimipaikka, refetchPisteet } =
-    useHenkiloPageData({
-      hakuOid,
-      hakemusOid,
-    });
+  const {
+    hakukohteet,
+    hakija,
+    postitoimipaikka,
+    refetchPisteet,
+    lastModified,
+  } = useHenkiloPageData({
+    hakuOid,
+    hakemusOid,
+  });
 
   return (
     <>
@@ -64,6 +69,7 @@ const HenkiloContent = ({
         hakija={hakija}
         hakukohteet={hakukohteet}
         refetchPisteet={refetchPisteet}
+        lastModified={lastModified}
       />
     </>
   );
