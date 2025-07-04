@@ -15,6 +15,7 @@ import { useHaunParametrit } from '@/lib/valintalaskentakoostepalvelu/useHaunPar
 import { GenericEvent } from '@/lib/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { refetchPisteetForHakukohde } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-queries';
+import { isNonNullish } from 'remeda';
 
 export const PisteSyottoForm = ({
   hakuOid,
@@ -37,6 +38,7 @@ export const PisteSyottoForm = ({
         message: event.message,
         type: event.type,
         messageParams: event.messageParams,
+        manualCloseOnly: isNonNullish(event.messageParams),
       });
     },
     [addToast, queryClient, hakuOid, hakukohdeOid],
