@@ -174,7 +174,7 @@ export const getPisteetForHakukohde = async ({
   hakuOid,
   hakukohdeOid,
 }: KoutaOidParams): Promise<{
-  lastModified?: Date;
+  lastModified?: string;
   valintakokeet: Array<ValintakoeAvaimet>;
   valintapisteet: Array<{
     hakemusOid: string;
@@ -208,9 +208,7 @@ export const getPisteetForHakukohde = async ({
   const { data: pistetiedot } = await pisteTiedotFetch.promise;
 
   return {
-    lastModified: isNonNullish(pistetiedot.lastmodified)
-      ? new Date(pistetiedot.lastmodified)
-      : undefined,
+    lastModified: pistetiedot.lastmodified,
     valintakokeet: kokeet,
     valintapisteet: pistetiedot.valintapisteet.map((p) => ({
       hakemusOid: p.applicationAdditionalDataDTO.oid,
@@ -223,6 +221,7 @@ export const updatePisteetForHakukohde = async (
   hakuOid: string,
   hakukohdeOid: string,
   pistetiedot: Array<HakemuksenPistetiedot>,
+  lastModified?: string,
 ) => {
   const configuration = getConfiguration();
   const mappedPistetiedot = pistetiedot.map((p) => {
@@ -244,6 +243,11 @@ export const updatePisteetForHakukohde = async (
     };
   });
 
+  let headers = {};
+  if (isNonNullish(lastModified)) {
+    headers = { 'If-Unmodified-Since': lastModified };
+  }
+
   await client.put(
     getConfigUrl(
       configuration.routes.valintalaskentakoostepalvelu
@@ -254,6 +258,7 @@ export const updatePisteetForHakukohde = async (
       },
     ),
     mappedPistetiedot,
+    { headers },
   );
 };
 

@@ -36,6 +36,7 @@ export const PisteSyottoForm = ({
         key: event.key,
         message: event.message,
         type: event.type,
+        messageParams: event.messageParams,
       });
     },
     [addToast, queryClient, hakuOid, hakukohdeOid],
@@ -52,6 +53,7 @@ export const PisteSyottoForm = ({
     pistetiedot: pistetiedot.hakemustenPistetiedot,
     valintakokeet: pistetiedot.valintakokeet,
     onEvent,
+    lastModified: pistetiedot.lastModified,
   });
 
   const { data: haunParametrit } = useHaunParametrit({ hakuOid });

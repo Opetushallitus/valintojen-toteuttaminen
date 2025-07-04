@@ -21,7 +21,6 @@ type HenkilonPisteSyottoContext = {
   pistetiedot: Array<ValintakokeenPisteet>;
   changedPistetiedot: Array<ValintakokeenPisteet>;
   kokeetByTunniste: Record<string, ValintakoeAvaimet>;
-  toastMessage?: string;
   error?: Error | FetchError | null;
 };
 
@@ -140,11 +139,13 @@ export const createHenkilonPisteSyottoMachine = (
       context: HenkilonPisteSyottoContext;
       events: PistesyottoAnyEvent;
       actions:
-        | { type: 'alert'; params: { message: string } }
+        | { type: 'alert' }
+        | { type: 'warn'; params: { message: string } }
         | { type: 'successNotify' };
     },
     states: {
       [PisteSyottoStates.IDLE]: {
+        always: {},
         on: {
           [PisteSyottoEvent.PISTETIETO_CHANGED]: {
             actions: assign({
@@ -156,7 +157,7 @@ export const createHenkilonPisteSyottoMachine = (
               guard: 'hasUnchangedPistetiedot',
               target: PisteSyottoStates.IDLE,
               actions: {
-                type: 'alert',
+                type: 'warn',
                 params: { message: 'virhe.eimuutoksia' },
               },
             },
@@ -164,7 +165,7 @@ export const createHenkilonPisteSyottoMachine = (
               guard: 'hasInvalidPisteet',
               target: PisteSyottoStates.IDLE,
               actions: {
-                type: 'alert',
+                type: 'warn',
                 params: { message: 'virhe.tarkistasyote' },
               },
             },
@@ -190,15 +191,16 @@ export const createHenkilonPisteSyottoMachine = (
         },
       },
       [PisteSyottoStates.ERROR]: {
+        entry: {
+          type: 'alert',
+          params: { message: 'virhe.tallennus' },
+        },
         always: [
           {
             target: PisteSyottoStates.IDLE,
-            actions: {
-              type: 'alert',
-              params: { message: 'virhe.tallennus' },
-            },
           },
         ],
+        exit: assign({ error: null }),
       },
       [PisteSyottoStates.UPDATE_COMPLETED]: {
         always: [
@@ -248,16 +250,23 @@ export const createHenkilonPisteSyottoMachine = (
         ),
     },
     actions: {
-      alert: ({ context }, params) => {
+      alert: ({ context }) => {
         const conflictError =
           context.error instanceof FetchError &&
           context.error.response.status === 412;
         const message = conflictError
           ? 'henkilo.virhe.pistesyotto-tallennus-konflikti'
-          : params.message;
+          : 'virhe.tallennus';
         onEvent({
           key: `pistetiedot-update-failed-for-${hakija.hakemusOid}`,
           message,
+          type: 'error',
+        });
+      },
+      warn: (_, params) => {
+        onEvent({
+          key: `pistetiedot-warning-for-${hakija.hakemusOid}`,
+          message: params.message,
           type: 'error',
         });
       },

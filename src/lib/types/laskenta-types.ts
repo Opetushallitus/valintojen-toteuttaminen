@@ -126,7 +126,7 @@ export type HakemuksenPistetiedot = {
 export type HakukohteenPistetiedot = {
   valintakokeet: Array<ValintakoeAvaimet>;
   hakemustenPistetiedot: Array<HakemuksenPistetiedot>;
-  lastModified?: Date;
+  lastModified?: string;
 };
 
 export enum TuloksenTila {
