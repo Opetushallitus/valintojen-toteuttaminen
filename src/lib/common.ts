@@ -105,6 +105,7 @@ export const isHakemusOid = (value: string) =>
 export type GenericEvent = {
   key: string;
   message: string;
+  messageParams?: Record<string, string | number>;
   type: 'error' | 'success';
 };
 

@@ -39,7 +39,13 @@ const InfoToast = ({
         onFocus={() => toastEnter(toast.key)}
         onMouseLeave={() => toastLeave(toast.key)}
         onBlur={() => toastLeave(toast.key)}
-        sx={{ pointerEvents: 'all', marginBottom: 2, whiteSpace: 'pre' }}
+        sx={{
+          pointerEvents: 'all',
+          marginBottom: 2,
+          whiteSpace: 'pre-line',
+          overflowX: 'hidden',
+          maxWidth: '90%',
+        }}
       >
         <Typography sx={{ color: ophColors.white }}>
           {t({

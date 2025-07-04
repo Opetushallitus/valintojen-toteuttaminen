@@ -1,54 +1,39 @@
 import {
-  HakemuksenPistetiedot,
   ValintakoeOsallistuminenTulos,
+  ValintakokeenPisteet,
 } from '@/lib/types/laskenta-types';
-import { updatePisteetForHakukohde } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
+import { updatePisteetForHakemus } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { useActorRef, useSelector } from '@xstate/react';
 import { useCallback, useMemo } from 'react';
 import { clone, indexBy, isNonNullish, isNumber, prop } from 'remeda';
 import { ActorRefFrom, assign, createMachine, fromPromise } from 'xstate';
 import { ValintakoeAvaimet } from '@/lib/valintaperusteet/valintaperusteet-types';
-import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 import { commaToPoint, FetchError } from '@/lib/common';
 import { GenericEvent } from '@/lib/common';
+import { HakijaInfo } from '@/lib/ataru/ataru-types';
+import {
+  PistesyottoAnyEvent,
+  PisteSyottoEvent,
+  PisteSyottoStates,
+} from '@/lib/state/pistesyotto-state';
 
-export type PisteSyottoContext = {
-  pistetiedot: Array<HakemuksenPistetiedot>;
-  changedPistetiedot: Array<HakemuksenPistetiedot>;
+type HenkilonPisteSyottoContext = {
+  pistetiedot: Array<ValintakokeenPisteet>;
+  changedPistetiedot: Array<ValintakokeenPisteet>;
   kokeetByTunniste: Record<string, ValintakoeAvaimet>;
   error?: Error | FetchError | null;
 };
 
-export enum PisteSyottoStates {
-  IDLE = 'IDLE',
-  UPDATING = 'UPDATING',
-  UPDATE_COMPLETED = 'UPDATE_COMPLETED',
-  ERROR = 'ERROR',
-}
-
-export enum PisteSyottoEvent {
-  UPDATE = 'UPDATE',
-  PISTETIETO_CHANGED = 'PISTETIETO_CHANGED',
-}
-
-export type PistesyottoAnyEvent =
-  | PistesyottoUpdateEvent
-  | PistesyottoChangedPistetietoEvent;
-
-export type PistesyottoUpdateEvent = {
-  type: PisteSyottoEvent.UPDATE;
-};
-
-export type PistesyottoChangeParams = {
+type HenkilonPistesyottoChangeParams = {
   hakemusOid: string;
   koeTunniste: string;
   arvo?: string;
   osallistuminen?: ValintakoeOsallistuminenTulos;
 };
 
-export type PistesyottoChangedPistetietoEvent = {
+type PistesyottoChangedPistetietoEvent = {
   type: PisteSyottoEvent.PISTETIETO_CHANGED;
-} & PistesyottoChangeParams;
+} & HenkilonPistesyottoChangeParams;
 
 const isKoeValuesEqual = (
   oldKoe:
@@ -62,109 +47,88 @@ const isKoeValuesEqual = (
 
   return (
     oldKoe?.osallistuminen === newKoe?.osallistuminen &&
-    oldArvo === (newKoe?.arvo ?? '')
+    oldArvo === newKoe?.arvo
   );
 };
 
-export type PistesyottoActorRef = ActorRefFrom<
-  ReturnType<typeof createPisteSyottoMachine>
+export type HenkilonPistesyottoActorRef = ActorRefFrom<
+  ReturnType<typeof createHenkilonPisteSyottoMachine>
 >;
 
 const pistetietoChangeReducer = ({
   context,
   event,
 }: {
-  context: PisteSyottoContext;
+  context: HenkilonPisteSyottoContext;
   event: PistesyottoChangedPistetietoEvent;
 }) => {
   const changedPistetieto = context.changedPistetiedot.find(
-    (h) => h.hakemusOid === event.hakemusOid,
+    (h) => h.tunniste === event.koeTunniste,
   );
   const existingPistetieto = context.pistetiedot.find(
-    (h) => h.hakemusOid === event.hakemusOid,
-  );
-
-  const existingKoe = existingPistetieto?.valintakokeenPisteet?.find(
-    (k) => k.tunniste === event.koeTunniste,
+    (h) => h.tunniste === event.koeTunniste,
   );
 
   const pistetieto = clone(existingPistetieto);
 
-  const koe = clone(
-    changedPistetieto?.valintakokeenPisteet?.find(
-      (k) => k.tunniste === event.koeTunniste,
-    ) ?? existingKoe,
-  );
-
-  if (pistetieto && koe) {
+  if (pistetieto) {
     const newArvo = event.arvo;
     if (
       newArvo &&
-      koe.osallistuminen === ValintakoeOsallistuminenTulos.MERKITSEMATTA
+      pistetieto.osallistuminen === ValintakoeOsallistuminenTulos.MERKITSEMATTA
     ) {
-      koe.osallistuminen = ValintakoeOsallistuminenTulos.OSALLISTUI;
+      pistetieto.osallistuminen = ValintakoeOsallistuminenTulos.OSALLISTUI;
     } else {
-      koe.osallistuminen = event.osallistuminen ?? koe.osallistuminen;
+      pistetieto.osallistuminen =
+        event.osallistuminen ?? pistetieto.osallistuminen;
     }
 
     if (
       event.osallistuminen &&
       event.osallistuminen !== ValintakoeOsallistuminenTulos.OSALLISTUI
     ) {
-      koe.arvo = '';
+      pistetieto.arvo = '';
     } else {
-      koe.arvo = newArvo ?? koe.arvo;
+      pistetieto.arvo = newArvo ?? pistetieto.arvo;
     }
 
     if (changedPistetieto) {
-      const newPisteet = clone(changedPistetieto.valintakokeenPisteet).map(
-        (p) => (p.tunniste === event.koeTunniste ? koe : p),
-      );
-
-      // pistetiedolla ei enää muokattuja kokeen pisteitä, voidaan poistaa
-      if (
-        !newPisteet.some(
-          (p) =>
-            !isKoeValuesEqual(
-              p,
-              existingPistetieto?.valintakokeenPisteet?.find(
-                (vp) => vp.tunniste === p.tunniste,
-              ),
-            ),
-        )
-      ) {
+      // muuttunut kokeen pistetieto sama kuin alkuperäinen
+      if (isKoeValuesEqual(existingPistetieto, pistetieto)) {
         return context.changedPistetiedot.filter(
-          (p) => p.hakemusOid !== event.hakemusOid,
+          (p) => p.tunniste !== event.koeTunniste,
+        );
+      } else {
+        return context.changedPistetiedot.map((h) =>
+          h.tunniste === event.koeTunniste ? pistetieto : h,
         );
       }
-
-      // pistetiedolla edelleen muokattuja kokeen pisteitä. Vaihdetaan muokattuun pistetietoon.
-      pistetieto.valintakokeenPisteet = newPisteet;
-
-      return context.changedPistetiedot.map((h) =>
-        h.hakemusOid === event.hakemusOid ? pistetieto : h,
-      );
     } else {
-      pistetieto.valintakokeenPisteet = pistetieto.valintakokeenPisteet.map(
-        (p) => (p.tunniste === koe.tunniste ? koe : p),
-      );
       return [...context.changedPistetiedot, pistetieto];
     }
   }
   return context.changedPistetiedot;
 };
 
-export const createPisteSyottoMachine = (
-  hakuOid: string,
-  hakukohdeOid: string,
-  pistetiedot: Array<HakemuksenPistetiedot>,
+const mergePistetiedot = (context: HenkilonPisteSyottoContext) => {
+  return context.pistetiedot.map((p) => {
+    const changePistetieto = context.changedPistetiedot.find(
+      (c) => c.tunniste === p.tunniste,
+    );
+    return changePistetieto ?? p;
+  });
+};
+
+export const createHenkilonPisteSyottoMachine = (
+  hakija: HakijaInfo,
+  pistetiedot: Array<ValintakokeenPisteet>,
   valintakokeet: Array<ValintakoeAvaimet>,
   onEvent: (event: GenericEvent) => void,
   lastModified?: string,
 ) => {
   const kokeetByTunniste = indexBy(valintakokeet, prop('tunniste'));
   return createMachine({
-    id: `PistesyottoMachine-${hakukohdeOid}`,
+    id: `HenkiloPistesyottoMachine-${hakija.hakemusOid}-${lastModified}`,
     initial: PisteSyottoStates.IDLE,
     context: {
       pistetiedot,
@@ -172,7 +136,7 @@ export const createPisteSyottoMachine = (
       kokeetByTunniste,
     },
     types: {} as {
-      context: PisteSyottoContext;
+      context: HenkilonPisteSyottoContext;
       events: PistesyottoAnyEvent;
       actions:
         | { type: 'alert' }
@@ -181,6 +145,7 @@ export const createPisteSyottoMachine = (
     },
     states: {
       [PisteSyottoStates.IDLE]: {
+        always: {},
         on: {
           [PisteSyottoEvent.PISTETIETO_CHANGED]: {
             actions: assign({
@@ -213,7 +178,7 @@ export const createPisteSyottoMachine = (
       [PisteSyottoStates.UPDATING]: {
         invoke: {
           src: 'updatePistetiedot',
-          input: ({ context }) => context.changedPistetiedot,
+          input: ({ context }) => mergePistetiedot(context),
           onDone: {
             target: PisteSyottoStates.UPDATE_COMPLETED,
           },
@@ -226,14 +191,16 @@ export const createPisteSyottoMachine = (
         },
       },
       [PisteSyottoStates.ERROR]: {
+        entry: {
+          type: 'alert',
+          params: { message: 'virhe.tallennus' },
+        },
         always: [
           {
             target: PisteSyottoStates.IDLE,
-            actions: {
-              type: 'alert',
-            },
           },
         ],
+        exit: assign({ error: null }),
       },
       [PisteSyottoStates.UPDATE_COMPLETED]: {
         always: [
@@ -247,7 +214,7 @@ export const createPisteSyottoMachine = (
             pistetiedot: ({ context }) =>
               context.pistetiedot.map((p) => {
                 const changed = context.changedPistetiedot.find(
-                  (c) => c.hakemusOid === p.hakemusOid,
+                  (c) => c.tunniste === p.tunniste,
                 );
                 return changed ?? p;
               }),
@@ -264,24 +231,22 @@ export const createPisteSyottoMachine = (
         context.changedPistetiedot.length === 0,
       hasInvalidPisteet: ({ context }) =>
         isNonNullish(
-          context.changedPistetiedot
-            .flatMap((pt) => pt.valintakokeenPisteet)
-            .find((p) => {
-              const arvo = commaToPoint(p.arvo);
-              const matchingKoe = context.kokeetByTunniste[p.tunniste];
-              const maxVal =
-                isNonNullish(matchingKoe?.max) &&
-                Number.parseFloat(matchingKoe.max);
-              const minVal =
-                isNonNullish(matchingKoe?.min) &&
-                Number.parseFloat(matchingKoe.min);
-              const invalid: boolean =
-                (isNumber(minVal) &&
-                  (isNaN(Number(arvo)) || (minVal as number) > Number(arvo))) ||
-                (isNumber(maxVal) &&
-                  (isNaN(Number(arvo)) || (maxVal as number) < Number(arvo)));
-              return invalid;
-            }),
+          context.changedPistetiedot.find((p) => {
+            const arvo = commaToPoint(p.arvo);
+            const matchingKoe = context.kokeetByTunniste[p.tunniste];
+            const maxVal =
+              isNonNullish(matchingKoe?.max) &&
+              Number.parseFloat(matchingKoe.max);
+            const minVal =
+              isNonNullish(matchingKoe?.min) &&
+              Number.parseFloat(matchingKoe.min);
+            const invalid: boolean =
+              (isNumber(minVal) &&
+                (isNaN(Number(arvo)) || (minVal as number) > Number(arvo))) ||
+              (isNumber(maxVal) &&
+                (isNaN(Number(arvo)) || (maxVal as number) < Number(arvo)));
+            return invalid;
+          }),
         ),
     },
     actions: {
@@ -290,97 +255,75 @@ export const createPisteSyottoMachine = (
           context.error instanceof FetchError &&
           context.error.response.status === 412;
         const message = conflictError
-          ? 'pistesyotto.virhe-tallennus-konflikti'
+          ? 'henkilo.virhe.pistesyotto-tallennus-konflikti'
           : 'virhe.tallennus';
-        let messageParams = {};
-        if (conflictError && context.error instanceof FetchError) {
-          const errorsJ = JSON.parse(context.error.message) as Array<{
-            applicationOID: string;
-            applicantName: string;
-          }>;
-          const errors = errorsJ.map(
-            (em) => `- ${em.applicationOID} (${em.applicantName})\n`,
-          );
-          messageParams = { applications: errors };
-        }
-        return onEvent({
-          key: `pistetiedot-update-failed-for-${hakukohdeOid}`,
+        onEvent({
+          key: `pistetiedot-update-failed-for-${hakija.hakemusOid}`,
           message,
-          messageParams,
           type: 'error',
         });
       },
-      warn: (_, params) =>
+      warn: (_, params) => {
         onEvent({
-          key: `pistetiedot-update-failed-for-${hakukohdeOid}`,
+          key: `pistetiedot-warning-for-${hakija.hakemusOid}`,
           message: params.message,
           type: 'error',
-        }),
+        });
+      },
       successNotify: () =>
         onEvent({
-          key: `pistetiedot-updated-for-${hakukohdeOid}`,
+          key: `pistetiedot-updated-for-${hakija.hakemusOid}`,
           message: 'pistesyotto.valmis',
           type: 'success',
         }),
     },
     actors: {
       updatePistetiedot: fromPromise(
-        ({ input }: { input: Array<HakemuksenPistetiedot> }) => {
-          return updatePisteetForHakukohde(
-            hakuOid,
-            hakukohdeOid,
-            input,
-            lastModified,
-          );
+        ({ input }: { input: Array<ValintakokeenPisteet> }) => {
+          return updatePisteetForHakemus(hakija, input, lastModified);
         },
       ),
     },
   });
 };
 
-type PistesyottoMachineParams = KoutaOidParams & {
-  pistetiedot: Array<HakemuksenPistetiedot>;
+type HenkiloPistesyottoMachineParams = {
+  hakija: HakijaInfo;
+  pistetiedot: Array<ValintakokeenPisteet>;
   valintakokeet: Array<ValintakoeAvaimet>;
-  onEvent: (event: GenericEvent) => void;
   lastModified?: string;
+  onEvent: (event: GenericEvent) => void;
 };
 
-export const usePistesyottoState = ({
-  hakuOid,
-  hakukohdeOid,
+export const useHenkilonPistesyottoState = ({
+  hakija,
   pistetiedot,
   valintakokeet,
-  onEvent,
   lastModified,
-}: PistesyottoMachineParams) => {
+  onEvent,
+}: HenkiloPistesyottoMachineParams) => {
   const machine = useMemo(() => {
-    return createPisteSyottoMachine(
-      hakuOid,
-      hakukohdeOid,
+    return createHenkilonPisteSyottoMachine(
+      hakija,
       pistetiedot,
       valintakokeet,
       onEvent,
       lastModified,
     );
-  }, [
-    hakuOid,
-    hakukohdeOid,
-    pistetiedot,
-    valintakokeet,
-    onEvent,
-    lastModified,
-  ]);
+  }, [pistetiedot, valintakokeet, onEvent, hakija, lastModified]);
 
   const actorRef = useActorRef(machine);
-  return usePistesyottoActorRef(actorRef);
+  return useHenkilonPistesyottoActorRef(actorRef);
 };
 
-export const usePistesyottoActorRef = (actorRef: PistesyottoActorRef) => {
+export const useHenkilonPistesyottoActorRef = (
+  actorRef: HenkilonPistesyottoActorRef,
+) => {
   const snapshot = useSelector(actorRef, (s) => s);
   const isDirty = useIsDirty(actorRef);
 
   const onKoeChange = useCallback(
-    (params: PistesyottoChangeParams) => {
+    (params: HenkilonPistesyottoChangeParams) => {
       actorRef.send({
         type: PisteSyottoEvent.PISTETIETO_CHANGED,
         ...params,
@@ -403,23 +346,17 @@ export const usePistesyottoActorRef = (actorRef: PistesyottoActorRef) => {
   };
 };
 
-export const useKoePistetiedot = (
-  pistesyottoActor: PistesyottoActorRef,
-  { hakemusOid, koeTunniste }: { hakemusOid: string; koeTunniste: string },
+export const useHenkilonKoePistetiedot = (
+  pistesyottoActor: HenkilonPistesyottoActorRef,
+  { koeTunniste }: { koeTunniste: string },
 ) => {
   return useSelector(pistesyottoActor, (s) => {
-    let koe = s.context.changedPistetiedot
-      .find((p: { hakemusOid: string }) => p.hakemusOid === hakemusOid)
-      ?.valintakokeenPisteet.find(
-        (p: { tunniste: string }) => p.tunniste === koeTunniste,
-      );
+    let koe = s.context.changedPistetiedot.find(
+      (p) => p.tunniste === koeTunniste,
+    );
 
     if (!koe) {
-      koe = s.context.pistetiedot
-        .find((p: { hakemusOid: string }) => p.hakemusOid === hakemusOid)
-        ?.valintakokeenPisteet.find(
-          (p: { tunniste: string }) => p.tunniste === koeTunniste,
-        );
+      koe = s.context.pistetiedot.find((p) => p.tunniste === koeTunniste);
     }
     return {
       arvo: koe?.arvo ?? '',
@@ -428,7 +365,7 @@ export const useKoePistetiedot = (
   });
 };
 
-export const useIsDirty = (pistesyottoActorRef: PistesyottoActorRef) =>
+export const useIsDirty = (pistesyottoActorRef: HenkilonPistesyottoActorRef) =>
   useSelector(
     pistesyottoActorRef,
     (s) => s.context.changedPistetiedot.length !== 0,

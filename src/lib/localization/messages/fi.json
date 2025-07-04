@@ -256,7 +256,8 @@
       "hakemus-oid": "Hakemuksen tekninen tunniste (OID)"
     },
     "pisteet": "Pisteet",
-    "arvo": "Arvo"
+    "arvo": "Arvo",
+    "virhe-tallennus-konflikti": "Tallennuksessa yritettiin kirjoittaa yli uudempia pistetietoja hakemuksille. Tallennus onnistui vain hakemusten osalta joilla ei ollut uudempia pistetietoja. Ole hyvä ja lataa sivu uudelleen.\n\n Hakemukset joille löytyi uudempia pistetietoja: \n{applications}"
   },
   "harkinnanvaraiset": {
     "hae": "Hae hakijan nimellä tai tunnisteilla",
@@ -572,7 +573,10 @@
     "valinta-save-error": "Valinnan tietojen tallentaminen epäonnistui",
     "valinta-save-success": "Valinnan tietojen tallentaminen onnistui",
     "pistesyotto": "Pistesyöttö",
-    "koe-tunnus-hakukohde": "{koe} hakukohteelle {hakukohde}"
+    "koe-tunnus-hakukohde": "{koe} hakukohteelle {hakukohde}",
+    "virhe": {
+      "pistesyotto-tallennus-konflikti": "Tallennuksessa yritettiin kirjoittaa yli uudempia pistetietoja. Ole hyvä ja lataa sivu uudelleen."
+    }
   },
   "kirjetyypit": {
     "hyvaksymiskirje": "Hyväksymiskirje",

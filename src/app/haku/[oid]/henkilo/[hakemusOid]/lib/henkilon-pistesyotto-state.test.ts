@@ -1,13 +1,12 @@
 import {
-  HakemuksenPistetiedot,
+  ValintakokeenPisteet,
   ValintakoeOsallistuminenTulos,
 } from '@/lib/types/laskenta-types';
 import { describe, expect, test } from 'vitest';
-import {
-  createPisteSyottoMachine,
-  PisteSyottoEvent,
-} from './pistesyotto-state';
+import { createHenkilonPisteSyottoMachine } from './henkilon-pistesyotto-state';
 import { createActor } from 'xstate';
+import { PisteSyottoEvent } from '@/lib/state/pistesyotto-state';
+import { HakijaInfo } from '@/lib/ataru/ataru-types';
 
 type GeneratePistetiedotProps = {
   arvo: string | undefined;
@@ -15,25 +14,32 @@ type GeneratePistetiedotProps = {
   tunniste: string;
 };
 
-const generatePistetiedot = (pisteet: Array<GeneratePistetiedotProps>) => ({
+const hakija: HakijaInfo = {
   hakijanNimi: 'Meikäläinen Matti',
   hakemusOid: '1',
   hakijaOid: '3',
   etunimet: 'Matti',
   sukunimi: 'Meikäläinen',
-  valintakokeenPisteet: pisteet.map(({ tunniste, arvo, osallistuminen }) => ({
+  asiointikieliKoodi: 'fi',
+  henkilotunnus: '',
+  lahiosoite: '',
+  postinumero: '',
+};
+
+const generatePistetiedot = (
+  pisteet: Array<GeneratePistetiedotProps>,
+): Array<ValintakokeenPisteet> =>
+  pisteet.map(({ tunniste, arvo, osallistuminen }) => ({
     osallistuminenTunniste: `${tunniste}_osallistuminen`,
     tunniste,
     arvo,
     osallistuminen,
-  })),
-});
+  }));
 
-const initPistesyottoState = (pistetiedot: HakemuksenPistetiedot) => {
-  const machine = createPisteSyottoMachine(
-    'haku-oid',
-    'hakukohde-oid',
-    [pistetiedot],
+const initPistesyottoState = (pistetiedot: Array<ValintakokeenPisteet>) => {
+  const machine = createHenkilonPisteSyottoMachine(
+    hakija,
+    pistetiedot,
     [],
     () => {},
   );
@@ -68,7 +74,7 @@ describe('createPisteSyottoMachine', () => {
           arvo: '8.',
           osallistuminen: ValintakoeOsallistuminenTulos.OSALLISTUI,
         },
-      ]),
+      ])[0]!,
     );
 
     actor.send({
@@ -87,7 +93,7 @@ describe('createPisteSyottoMachine', () => {
           arvo: '8.1',
           osallistuminen: ValintakoeOsallistuminenTulos.OSALLISTUI,
         },
-      ]),
+      ])[0]!,
     );
   });
 
@@ -117,7 +123,7 @@ describe('createPisteSyottoMachine', () => {
           arvo: '8.0',
           osallistuminen: ValintakoeOsallistuminenTulos.OSALLISTUI,
         },
-      ]),
+      ])[0]!,
     );
 
     actor.send({
@@ -158,7 +164,7 @@ describe('createPisteSyottoMachine', () => {
           arvo: '8.0',
           osallistuminen: ValintakoeOsallistuminenTulos.OSALLISTUI,
         },
-      ]),
+      ])[0]!,
     );
   });
 
@@ -194,7 +200,7 @@ describe('createPisteSyottoMachine', () => {
             arvo: '',
             osallistuminen: newOsallistuminen,
           },
-        ]),
+        ])[0]!,
       );
     },
   );
@@ -245,12 +251,7 @@ describe('createPisteSyottoMachine', () => {
           arvo: '10',
           osallistuminen: ValintakoeOsallistuminenTulos.EI_VAADITA,
         },
-        {
-          tunniste: '2',
-          arvo: '9',
-          osallistuminen: ValintakoeOsallistuminenTulos.OSALLISTUI,
-        },
-      ]),
+      ])[0]!,
     );
   });
 
@@ -285,12 +286,7 @@ describe('createPisteSyottoMachine', () => {
           arvo: '8',
           osallistuminen: ValintakoeOsallistuminenTulos.EI_VAADITA,
         },
-        {
-          tunniste: '2',
-          arvo: '9',
-          osallistuminen: ValintakoeOsallistuminenTulos.OSALLISTUI,
-        },
-      ]),
+      ])[0]!,
     );
 
     actor.send({
@@ -302,8 +298,8 @@ describe('createPisteSyottoMachine', () => {
 
     changedPistetiedot = actor.getSnapshot().context.changedPistetiedot;
 
-    expect(changedPistetiedot.length).toEqual(1);
-    expect(changedPistetiedot[0]).toMatchObject(
+    expect(changedPistetiedot.length).toEqual(2);
+    expect(changedPistetiedot).toEqual(
       generatePistetiedot([
         {
           tunniste: '1',
