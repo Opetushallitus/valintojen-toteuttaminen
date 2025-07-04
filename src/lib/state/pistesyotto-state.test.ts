@@ -245,6 +245,11 @@ describe('createPisteSyottoMachine', () => {
           arvo: '10',
           osallistuminen: ValintakoeOsallistuminenTulos.EI_VAADITA,
         },
+        {
+          tunniste: '2',
+          arvo: '9',
+          osallistuminen: ValintakoeOsallistuminenTulos.OSALLISTUI,
+        },
       ]),
     );
   });
@@ -279,6 +284,11 @@ describe('createPisteSyottoMachine', () => {
           tunniste: '1',
           arvo: '8',
           osallistuminen: ValintakoeOsallistuminenTulos.EI_VAADITA,
+        },
+        {
+          tunniste: '2',
+          arvo: '9',
+          osallistuminen: ValintakoeOsallistuminenTulos.OSALLISTUI,
         },
       ]),
     );

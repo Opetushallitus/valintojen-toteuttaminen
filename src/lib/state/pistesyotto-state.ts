@@ -62,7 +62,7 @@ const isKoeValuesEqual = (
 
   return (
     oldKoe?.osallistuminen === newKoe?.osallistuminen &&
-    oldArvo === newKoe?.arvo
+    oldArvo === (newKoe?.arvo ?? '')
   );
 };
 
