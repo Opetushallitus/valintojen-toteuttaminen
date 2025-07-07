@@ -1,138 +1,32 @@
 'use client';
 
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { Box, Divider, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import {
   filter,
   flatMap,
   isEmpty,
   isNonNullish,
-  isNullish,
   pipe,
   prop,
   uniqueBy,
 } from 'remeda';
-import { KoeInputsStateless } from '@/components/koe-inputs';
-import { ValintakoeAvaimet } from '@/lib/valintaperusteet/valintaperusteet-types';
-import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
+import { OphButton } from '@opetushallitus/oph-design-system';
 import { HakijaInfo } from '@/lib/ataru/ataru-types';
 import useToaster from '@/hooks/useToaster';
 import { useCallback, useMemo } from 'react';
 import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBeforeNavigation';
 import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
 import { HakutoiveTitle } from '@/components/hakutoive-title';
-import { Range } from '@/components/range';
-import { getHakukohdeFullName } from '@/lib/kouta/kouta-service';
 import { useHaunParametrit } from '@/lib/valintalaskentakoostepalvelu/useHaunParametrit';
 import { GenericEvent } from '@/lib/common';
-import {
-  ValintakoeOsallistuminenTulos,
-  ValintakokeenPisteet,
-} from '@/lib/types/laskenta-types';
+import { ValintakokeenPisteet } from '@/lib/types/laskenta-types';
 import { QueryObserverResult, RefetchOptions } from '@tanstack/react-query';
 import {
   HenkilonPistesyottoActorRef,
-  useHenkilonKoePistetiedot,
-  useHenkilonPistesyottoActorRef,
   useHenkilonPistesyottoState,
 } from '../lib/henkilon-pistesyotto-state';
-
-const KoeInputs = ({
-  hakemusOid,
-  koe,
-  pistesyottoActorRef,
-  disabled,
-}: {
-  hakemusOid: string;
-  koe: ValintakoeAvaimet;
-  pistesyottoActorRef: HenkilonPistesyottoActorRef;
-  disabled: boolean;
-}) => {
-  const { t } = useTranslations();
-  const { onKoeChange, isUpdating } =
-    useHenkilonPistesyottoActorRef(pistesyottoActorRef);
-
-  const { arvo, osallistuminen } = useHenkilonKoePistetiedot(
-    pistesyottoActorRef,
-    {
-      koeTunniste: koe.tunniste,
-    },
-  );
-
-  return (
-    <KoeInputsStateless
-      hakemusOid={hakemusOid}
-      koe={koe}
-      disabled={disabled || isUpdating}
-      osallistuminen={osallistuminen}
-      onChange={onKoeChange}
-      arvo={arvo}
-      t={t}
-    />
-  );
-};
-
-const KokeenPistesyotto = ({
-  hakija,
-  koe,
-  hakukohde,
-  pistesyottoActorRef,
-  disabled,
-}: {
-  hakija: HakijaInfo;
-  koe: ValintakoeAvaimet;
-  hakukohde: HenkilonHakukohdeTuloksilla;
-  pistesyottoActorRef: HenkilonPistesyottoActorRef;
-  disabled: boolean;
-}) => {
-  const { t, translateEntity } = useTranslations();
-
-  const matchingKoePisteet = hakukohde.pisteet?.find(
-    (p) => p.tunniste === koe.tunniste,
-  );
-
-  const labelId = `${koe.tunniste}_label_${hakukohde.oid}`;
-  const hideInputs =
-    isNullish(matchingKoePisteet) ||
-    matchingKoePisteet.osallistuminen ===
-      ValintakoeOsallistuminenTulos.EI_KUTSUTTU;
-
-  return (
-    <>
-      <Box sx={{ paddingLeft: 1, paddingBottom: 1 }}>
-        <OphTypography variant="label" id={labelId}>
-          {koe.kuvaus} <Range min={koe.min} max={koe.max} />
-        </OphTypography>
-      </Box>
-      <Divider orientation="horizontal" />
-      <Box
-        component="section"
-        sx={{
-          display: 'flex',
-          gap: 2,
-          paddingLeft: 1,
-          marginTop: 1.5,
-          alignItems: 'flex-start',
-        }}
-        aria-label={t('henkilo.koe-tunnus-hakukohde', {
-          koe: koe.kuvaus,
-          hakukohde: getHakukohdeFullName(hakukohde, translateEntity),
-        })}
-      >
-        {hideInputs ? (
-          <></>
-        ) : (
-          <KoeInputs
-            hakemusOid={hakija.hakemusOid}
-            koe={koe}
-            pistesyottoActorRef={pistesyottoActorRef}
-            disabled={disabled}
-          />
-        )}
-      </Box>
-    </>
-  );
-};
+import { KokeenPistesyotto } from './kokeen-pistesyotto';
 
 const HakukohteenPisteSyotto = ({
   hakija,

@@ -11,70 +11,31 @@ import { ValintakoeAvaimet } from '@/lib/valintaperusteet/valintaperusteet-types
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 import { commaToPoint, FetchError } from '@/lib/common';
 import { Toast } from '@/hooks/useToaster';
+import {
+  isKoeValuesEqual,
+  PistesyottoAnyEvent,
+  PistesyottoChangedPistetietoEvent,
+  PistesyottoChangeParams,
+  PisteSyottoEvent,
+  PisteSyottoStates,
+} from '@/lib/state/pistesyotto-state-common';
 
-export type PisteSyottoContext = {
+export type HakukohdePisteSyottoContext = {
   pistetiedot: Array<HakemuksenPistetiedot>;
   changedPistetiedot: Array<HakemuksenPistetiedot>;
   kokeetByTunniste: Record<string, ValintakoeAvaimet>;
   error?: Error | FetchError | null;
 };
 
-export enum PisteSyottoStates {
-  IDLE = 'IDLE',
-  UPDATING = 'UPDATING',
-  UPDATE_COMPLETED = 'UPDATE_COMPLETED',
-  ERROR = 'ERROR',
-}
-
-export enum PisteSyottoEvent {
-  UPDATE = 'UPDATE',
-  PISTETIETO_CHANGED = 'PISTETIETO_CHANGED',
-}
-
-export type PistesyottoAnyEvent =
-  | PistesyottoUpdateEvent
-  | PistesyottoChangedPistetietoEvent;
-
-export type PistesyottoUpdateEvent = {
-  type: PisteSyottoEvent.UPDATE;
-};
-
-export type PistesyottoChangeParams = {
-  hakemusOid: string;
-  koeTunniste: string;
-  arvo?: string;
-  osallistuminen?: ValintakoeOsallistuminenTulos;
-};
-
-export type PistesyottoChangedPistetietoEvent = {
-  type: PisteSyottoEvent.PISTETIETO_CHANGED;
-} & PistesyottoChangeParams;
-
-const isKoeValuesEqual = (
-  oldKoe:
-    | { arvo?: string; osallistuminen: ValintakoeOsallistuminenTulos }
-    | undefined,
-  newKoe:
-    | { arvo?: string; osallistuminen: ValintakoeOsallistuminenTulos }
-    | undefined,
-) => {
-  const oldArvo = oldKoe?.arvo ?? '';
-
-  return (
-    oldKoe?.osallistuminen === newKoe?.osallistuminen &&
-    oldArvo === (newKoe?.arvo ?? '')
-  );
-};
-
-export type PistesyottoActorRef = ActorRefFrom<
-  ReturnType<typeof createPisteSyottoMachine>
+export type HakukohdePistesyottoActorRef = ActorRefFrom<
+  ReturnType<typeof createHakukohdePisteSyottoMachine>
 >;
 
 const pistetietoChangeReducer = ({
   context,
   event,
 }: {
-  context: PisteSyottoContext;
+  context: HakukohdePisteSyottoContext;
   event: PistesyottoChangedPistetietoEvent;
 }) => {
   const changedPistetieto = context.changedPistetiedot.find(
@@ -154,7 +115,7 @@ const pistetietoChangeReducer = ({
   return context.changedPistetiedot;
 };
 
-export const createPisteSyottoMachine = (
+export const createHakukohdePisteSyottoMachine = (
   hakuOid: string,
   hakukohdeOid: string,
   pistetiedot: Array<HakemuksenPistetiedot>,
@@ -172,7 +133,7 @@ export const createPisteSyottoMachine = (
       kokeetByTunniste,
     },
     types: {} as {
-      context: PisteSyottoContext;
+      context: HakukohdePisteSyottoContext;
       events: PistesyottoAnyEvent;
       actions:
         | { type: 'alert' }
@@ -330,7 +291,7 @@ export const createPisteSyottoMachine = (
   });
 };
 
-type PistesyottoMachineParams = KoutaOidParams & {
+type HakukohdePistesyottoMachineParams = KoutaOidParams & {
   pistetiedot: Array<HakemuksenPistetiedot>;
   valintakokeet: Array<ValintakoeAvaimet>;
   onEvent: (event: Toast) => void;
@@ -344,10 +305,10 @@ export const usePistesyottoState = ({
   valintakokeet,
   onEvent,
   lastModified,
-}: PistesyottoMachineParams) => {
+}: HakukohdePistesyottoMachineParams) => {
   const machine = useMemo(
     () =>
-      createPisteSyottoMachine(
+      createHakukohdePisteSyottoMachine(
         hakuOid,
         hakukohdeOid,
         pistetiedot,
@@ -362,7 +323,9 @@ export const usePistesyottoState = ({
   return usePistesyottoActorRef(actorRef);
 };
 
-export const usePistesyottoActorRef = (actorRef: PistesyottoActorRef) => {
+export const usePistesyottoActorRef = (
+  actorRef: HakukohdePistesyottoActorRef,
+) => {
   const snapshot = useSelector(actorRef, (s) => s);
   const isDirty = useIsDirty(actorRef);
 
@@ -391,7 +354,7 @@ export const usePistesyottoActorRef = (actorRef: PistesyottoActorRef) => {
 };
 
 export const useKoePistetiedot = (
-  pistesyottoActor: PistesyottoActorRef,
+  pistesyottoActor: HakukohdePistesyottoActorRef,
   { hakemusOid, koeTunniste }: { hakemusOid: string; koeTunniste: string },
 ) => {
   return useSelector(pistesyottoActor, (s) => {
@@ -415,7 +378,7 @@ export const useKoePistetiedot = (
   });
 };
 
-export const useIsDirty = (pistesyottoActorRef: PistesyottoActorRef) =>
+export const useIsDirty = (pistesyottoActorRef: HakukohdePistesyottoActorRef) =>
   useSelector(
     pistesyottoActorRef,
     (s) => s.context.changedPistetiedot.length !== 0,

@@ -1,5 +1,6 @@
 'use client';
-import { TFunction, useTranslations } from '@/lib/localization/useTranslations';
+
+import { TFunction } from '@/lib/localization/useTranslations';
 import { ValintakoeOsallistuminenTulos } from '@/lib/types/laskenta-types';
 import {
   ValintakoeAvaimet,
@@ -8,12 +9,7 @@ import {
 import { Box, SelectChangeEvent } from '@mui/material';
 import { LocalizedSelect } from '@/components/localized-select';
 import { PisteetInput } from './pisteet-input';
-import {
-  PistesyottoActorRef,
-  PistesyottoChangeParams,
-  usePistesyottoActorRef,
-  useKoePistetiedot,
-} from '../lib/state/pistesyotto-state';
+import { PistesyottoChangeParams } from '../lib/state/pistesyotto-state-common';
 import { OsallistumisenTilaSelect } from '@/components/osallistumisen-tila-select';
 import { memo } from 'react';
 
@@ -21,10 +17,9 @@ const KOE_SELECT_STYLE = {
   minWidth: '150px',
 };
 
-export type KoeInputsProps = {
+type KoeInputsStatelessProps = {
   hakemusOid: string;
   koe: ValintakoeAvaimet;
-  pistesyottoActorRef: PistesyottoActorRef;
   naytaVainLaskentaanVaikuttavat?: boolean;
   disabled?: boolean;
 };
@@ -54,7 +49,7 @@ const ArvoSelect = ({
   arvo,
   onChange,
   t,
-}: Omit<KoeInputsProps, 'pistesyottoActorRef'> & {
+}: KoeInputsStatelessProps & {
   id: string;
   arvo: string;
   osallistuminen?: ValintakoeOsallistuminenTulos;
@@ -89,7 +84,7 @@ export const KoeInputsStateless = memo(function KoeInputsStateless({
   onChange,
   t,
   naytaVainLaskentaanVaikuttavat,
-}: Omit<KoeInputsProps, 'pistesyottoActorRef'> & {
+}: KoeInputsStatelessProps & {
   arvo: string;
   osallistuminen?: ValintakoeOsallistuminenTulos;
   disabled: boolean;
@@ -162,33 +157,3 @@ export const KoeInputsStateless = memo(function KoeInputsStateless({
     </Box>
   );
 });
-
-export const KoeInputs = ({
-  hakemusOid,
-  koe,
-  pistesyottoActorRef,
-  naytaVainLaskentaanVaikuttavat,
-  disabled,
-}: KoeInputsProps) => {
-  const { t } = useTranslations();
-  const { onKoeChange, isUpdating } =
-    usePistesyottoActorRef(pistesyottoActorRef);
-
-  const { arvo, osallistuminen } = useKoePistetiedot(pistesyottoActorRef, {
-    hakemusOid,
-    koeTunniste: koe.tunniste,
-  });
-
-  return (
-    <KoeInputsStateless
-      hakemusOid={hakemusOid}
-      koe={koe}
-      disabled={disabled || isUpdating}
-      osallistuminen={osallistuminen}
-      onChange={onKoeChange}
-      arvo={arvo}
-      t={t}
-      naytaVainLaskentaanVaikuttavat={naytaVainLaskentaanVaikuttavat}
-    />
-  );
-};

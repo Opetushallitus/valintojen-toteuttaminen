@@ -5,7 +5,7 @@ import {
 import { describe, expect, test } from 'vitest';
 import { createHenkilonPisteSyottoMachine } from './henkilon-pistesyotto-state';
 import { createActor } from 'xstate';
-import { PisteSyottoEvent } from '@/lib/state/pistesyotto-state';
+import { PisteSyottoEvent } from '@/lib/state/pistesyotto-state-common';
 import { HakijaInfo } from '@/lib/ataru/ataru-types';
 
 type GeneratePistetiedotProps = {

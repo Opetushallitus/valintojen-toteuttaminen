@@ -12,43 +12,19 @@ import { commaToPoint, FetchError } from '@/lib/common';
 import { GenericEvent } from '@/lib/common';
 import { HakijaInfo } from '@/lib/ataru/ataru-types';
 import {
+  isKoeValuesEqual,
   PistesyottoAnyEvent,
+  PistesyottoChangedPistetietoEvent,
+  PistesyottoChangeParams,
   PisteSyottoEvent,
   PisteSyottoStates,
-} from '@/lib/state/pistesyotto-state';
+} from '@/lib/state/pistesyotto-state-common';
 
 type HenkilonPisteSyottoContext = {
   pistetiedot: Array<ValintakokeenPisteet>;
   changedPistetiedot: Array<ValintakokeenPisteet>;
   kokeetByTunniste: Record<string, ValintakoeAvaimet>;
   error?: Error | FetchError | null;
-};
-
-type HenkilonPistesyottoChangeParams = {
-  hakemusOid: string;
-  koeTunniste: string;
-  arvo?: string;
-  osallistuminen?: ValintakoeOsallistuminenTulos;
-};
-
-type PistesyottoChangedPistetietoEvent = {
-  type: PisteSyottoEvent.PISTETIETO_CHANGED;
-} & HenkilonPistesyottoChangeParams;
-
-const isKoeValuesEqual = (
-  oldKoe:
-    | { arvo?: string; osallistuminen: ValintakoeOsallistuminenTulos }
-    | undefined,
-  newKoe:
-    | { arvo?: string; osallistuminen: ValintakoeOsallistuminenTulos }
-    | undefined,
-) => {
-  const oldArvo = oldKoe?.arvo ?? '';
-
-  return (
-    oldKoe?.osallistuminen === newKoe?.osallistuminen &&
-    oldArvo === newKoe?.arvo
-  );
 };
 
 export type HenkilonPistesyottoActorRef = ActorRefFrom<
@@ -323,7 +299,7 @@ export const useHenkilonPistesyottoActorRef = (
   const isDirty = useIsDirty(actorRef);
 
   const onKoeChange = useCallback(
-    (params: HenkilonPistesyottoChangeParams) => {
+    (params: PistesyottoChangeParams) => {
       actorRef.send({
         type: PisteSyottoEvent.PISTETIETO_CHANGED,
         ...params,

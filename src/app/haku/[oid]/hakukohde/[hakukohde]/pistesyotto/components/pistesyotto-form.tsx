@@ -5,7 +5,6 @@ import { PisteSyottoTable } from './pistesyotto-table';
 import { usePisteSyottoSearchResults } from '../hooks/usePisteSyottoSearch';
 import { FormEvent, useCallback } from 'react';
 import useToaster, { Toast } from '@/hooks/useToaster';
-import { usePistesyottoState } from '@/lib/state/pistesyotto-state';
 import { PisteSyottoActions } from './pistesyotto-actions';
 import { HakukohteenPistetiedot } from '@/lib/types/laskenta-types';
 import { FormBox } from '@/components/form-box';
@@ -14,6 +13,7 @@ import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 import { useHaunParametrit } from '@/lib/valintalaskentakoostepalvelu/useHaunParametrit';
 import { useQueryClient } from '@tanstack/react-query';
 import { refetchPisteetForHakukohde } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-queries';
+import { usePistesyottoState } from '../lib/hakukohde-pistesyotto-state';
 
 export const PisteSyottoForm = ({
   hakuOid,
