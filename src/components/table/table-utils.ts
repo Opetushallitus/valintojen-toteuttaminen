@@ -23,6 +23,10 @@ function getValueByPath<R extends Record<string, PropValue>>(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     pathOr(stringToPath(key), '' as any),
     when(isTranslatedName, translateEntity),
+    when(
+      (v) => !isNaN(Number(v)),
+      (v) => Number.parseFloat(v),
+    ),
   );
 }
 
