@@ -33,16 +33,22 @@ const PisteSyottoContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
     ],
   });
 
-  const pistetiedot: HakukohteenPistetiedot = useMemo(() => {
-    return {
+  const pistetiedot: HakukohteenPistetiedot = useMemo(
+    () => ({
       lastModified: pistetulokset?.lastModified,
       valintakokeet: pistetulokset?.valintakokeet ?? [],
       hakemustenPistetiedot: augmentPisteetWithHakemukset(
         hakemukset,
         pistetulokset.valintapisteet,
       ),
-    };
-  }, [pistetulokset, hakemukset]);
+    }),
+    [
+      pistetulokset.lastModified,
+      pistetulokset.valintakokeet,
+      pistetulokset.valintapisteet,
+      hakemukset,
+    ],
+  );
 
   return isEmpty(pistetiedot.valintakokeet) ? (
     <NoResults text={t('pistesyotto.ei-tuloksia')} />
@@ -50,6 +56,7 @@ const PisteSyottoContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
     <Box sx={{ width: '100%', position: 'relative' }}>
       <PisteSyottoControls kokeet={pistetiedot.valintakokeet} />
       <PisteSyottoForm
+        key={`pistesyotto-content-${pistetiedot.lastModified}`}
         hakuOid={hakuOid}
         hakukohdeOid={hakukohdeOid}
         pistetiedot={pistetiedot}

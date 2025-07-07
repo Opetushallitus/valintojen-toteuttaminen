@@ -10,7 +10,7 @@ import { ActorRefFrom, assign, createMachine, fromPromise } from 'xstate';
 import { ValintakoeAvaimet } from '@/lib/valintaperusteet/valintaperusteet-types';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 import { commaToPoint, FetchError } from '@/lib/common';
-import { GenericEvent } from '@/lib/common';
+import { Toast } from '@/hooks/useToaster';
 
 export type PisteSyottoContext = {
   pistetiedot: Array<HakemuksenPistetiedot>;
@@ -159,12 +159,12 @@ export const createPisteSyottoMachine = (
   hakukohdeOid: string,
   pistetiedot: Array<HakemuksenPistetiedot>,
   valintakokeet: Array<ValintakoeAvaimet>,
-  onEvent: (event: GenericEvent) => void,
+  onEvent: (event: Toast) => void,
   lastModified?: string,
 ) => {
   const kokeetByTunniste = indexBy(valintakokeet, prop('tunniste'));
   return createMachine({
-    id: `PistesyottoMachine-${hakukohdeOid}`,
+    id: `PistesyottoMachine-${hakukohdeOid}-${lastModified}`,
     initial: PisteSyottoStates.IDLE,
     context: {
       pistetiedot,
@@ -244,15 +244,6 @@ export const createPisteSyottoMachine = (
         ],
         entry: [
           assign({
-            pistetiedot: ({ context }) =>
-              context.pistetiedot.map((p) => {
-                const changed = context.changedPistetiedot.find(
-                  (c) => c.hakemusOid === p.hakemusOid,
-                );
-                return changed ?? p;
-              }),
-          }),
-          assign({
             changedPistetiedot: [],
           }),
         ],
@@ -308,6 +299,7 @@ export const createPisteSyottoMachine = (
           message,
           messageParams,
           type: 'error',
+          manualCloseOnly: conflictError,
         });
       },
       warn: (_, params) =>
@@ -341,7 +333,7 @@ export const createPisteSyottoMachine = (
 type PistesyottoMachineParams = KoutaOidParams & {
   pistetiedot: Array<HakemuksenPistetiedot>;
   valintakokeet: Array<ValintakoeAvaimet>;
-  onEvent: (event: GenericEvent) => void;
+  onEvent: (event: Toast) => void;
   lastModified?: string;
 };
 
@@ -353,25 +345,20 @@ export const usePistesyottoState = ({
   onEvent,
   lastModified,
 }: PistesyottoMachineParams) => {
-  const machine = useMemo(() => {
-    return createPisteSyottoMachine(
-      hakuOid,
-      hakukohdeOid,
-      pistetiedot,
-      valintakokeet,
-      onEvent,
-      lastModified,
-    );
-  }, [
-    hakuOid,
-    hakukohdeOid,
-    pistetiedot,
-    valintakokeet,
-    onEvent,
-    lastModified,
-  ]);
-
+  const machine = useMemo(
+    () =>
+      createPisteSyottoMachine(
+        hakuOid,
+        hakukohdeOid,
+        pistetiedot,
+        valintakokeet,
+        onEvent,
+        lastModified,
+      ),
+    [hakuOid, hakukohdeOid, pistetiedot, valintakokeet, onEvent, lastModified],
+  );
   const actorRef = useActorRef(machine);
+
   return usePistesyottoActorRef(actorRef);
 };
 
