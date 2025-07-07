@@ -7,6 +7,7 @@ import { ValintakoeAvaimet } from '@/lib/valintaperusteet/valintaperusteet-types
 import { ReadOnlyKoeCell } from './koe-readonly-cell';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { useMemo } from 'react';
+import { Range } from '@/components/range';
 import {
   createStickyHakijaColumn,
   makeColumnWithCustomRender,
@@ -40,7 +41,7 @@ export const PisteSyottoTable = ({
     const stickyHakijaColumn = createStickyHakijaColumn(t);
     const koeColumns = kokeet.map((koe) => {
       return makeColumnWithCustomRender<HakemuksenPistetiedot>({
-        title: koe.kuvaus,
+        title: `${koe.kuvaus} ${Range({ min: koe.min, max: koe.max })}`,
         key: koe.tunniste,
         renderFn: (props) => {
           const matchingKoePisteet = props.valintakokeenPisteet.find(
