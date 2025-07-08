@@ -60,6 +60,17 @@ const HAKEMUKSET_BY_OID = {
     lahiosoite: 'Yläpääntie 875',
     postinumero: '00100',
   },
+  '1.2.246.562.11.00000000000001543857': {
+    asiointikieliKoodi: 'sv',
+    etunimet: 'Päätön',
+    hakemusOid: '1.2.246.562.11.00000000000001543857',
+    hakijaOid: '1.2.246.562.24.30476885829',
+    hakijanNimi: 'Ratsu Päätön',
+    henkilotunnus: '181213-441V',
+    lahiosoite: 'Yläpääntie 875',
+    postinumero: '02200',
+    sukunimi: 'Ratsu',
+  },
 };
 
 const HAKUKOHDE: Hakukohde = {

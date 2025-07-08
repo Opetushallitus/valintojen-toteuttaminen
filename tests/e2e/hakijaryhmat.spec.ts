@@ -62,6 +62,22 @@ const ROWS = {
     '0',
     'KESKEN',
   ],
+  ratsuTable1: [
+    'Ratsu Päätön',
+    'Ei',
+    'Valintatapajono: Todistusvalinta (AMM)HYLÄTTY',
+    'Kyllä',
+    '0',
+    'KESKEN',
+  ],
+  ratsuTable2: [
+    'Ratsu Päätön',
+    'Ei',
+    'Valintatapajono: Todistusvalinta (AMM)HYLÄTTY',
+    'Ei',
+    '0',
+    'KESKEN',
+  ],
 };
 
 const getYoAccordionContent = (page: Page) => {
@@ -118,6 +134,7 @@ test('Näyttää hakijaryhmät', async ({ page }) => {
     ROWS.kreiviTable1,
     ROWS.purukumiTable1,
     ROWS.haamuTable1,
+    ROWS.ratsuTable1,
   ]);
 
   const accordion2Content = getAmmAccordionContent(page);
@@ -127,6 +144,7 @@ test('Näyttää hakijaryhmät', async ({ page }) => {
     ROWS.kreiviTable2,
     ROWS.purukumiTable2,
     ROWS.haamuTable2,
+    ROWS.ratsuTable2,
   ]);
 });
 
@@ -149,6 +167,7 @@ test('Järjestää listan sijoittelun tilan mukaan', async ({ page }) => {
     ROWS.kreiviTable1,
     ROWS.purukumiTable1,
     ROWS.haamuTable1,
+    ROWS.ratsuTable1,
   ]);
 
   await tilaHeader.getByRole('button').click();
@@ -157,6 +176,7 @@ test('Järjestää listan sijoittelun tilan mukaan', async ({ page }) => {
 
   await assertRows(rows, [
     ROWS.haamuTable1,
+    ROWS.ratsuTable1,
     ROWS.purukumiTable1,
     ROWS.kreiviTable1,
     ROWS.ruhtinas,
@@ -200,7 +220,7 @@ test.describe('Suodattimet', () => {
   test('Suodattaa sijoitteluntilalla HYLÄTTY', async () => {
     await selectTila(page, 'HYLÄTTY');
     const rows = getYoAccordionContent(page).locator('tbody tr');
-    await assertRows(rows, [ROWS.haamuTable1]);
+    await assertRows(rows, [ROWS.haamuTable1, ROWS.ratsuTable1]);
   });
 
   test('Suodattaa sijoitteluntilalla VARALLA', async () => {
@@ -214,7 +234,7 @@ test.describe('Suodattimet', () => {
     const rows = getYoAccordionContent(page).locator('tbody tr');
     await expect(rows).toHaveCount(3);
     await selectKuuluuRyhmaan(page, 'Ei');
-    await assertRows(rows, [ROWS.haamuTable1]);
+    await assertRows(rows, [ROWS.haamuTable1, ROWS.ratsuTable1]);
   });
 
   test('Suodattaa tiedolla onko hakemus hyvaksytty hakijaryhmasta', async () => {
@@ -223,11 +243,11 @@ test.describe('Suodattimet', () => {
     const ammAccordionContent = getAmmAccordionContent(page);
     const yoRows = yoAccordionContent.locator('tbody tr');
     const ammRows = ammAccordionContent.locator('tbody tr');
-    await expect(yoRows).toHaveCount(4);
+    await expect(yoRows).toHaveCount(5);
     await expect(ammRows).toHaveCount(1);
     await selectHyvaksytty(page, 'Ei');
     await expect(yoRows).toHaveCount(0);
-    await expect(ammRows).toHaveCount(3);
+    await expect(ammRows).toHaveCount(4);
   });
 });
 

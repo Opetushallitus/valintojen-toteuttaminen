@@ -96,7 +96,7 @@ test('Näyttää valintalaskennan tulokset', async ({ page }) => {
 
   const jonoRows = jonoContent.locator('tbody tr');
 
-  await expect(jonoRows).toHaveCount(4);
+  await expect(jonoRows).toHaveCount(5);
 
   await checkRow(jonoRows.first(), [
     expectTextboxValue('1'),

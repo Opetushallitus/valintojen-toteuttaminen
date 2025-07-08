@@ -148,13 +148,29 @@ test('Näytä "Sijoittelun tulokset" -välilehti ja sisältö', async ({ page })
     'th',
   );
   const rows2nd = secondAccordion.locator('tbody tr');
-  await expect(rows2nd).toHaveCount(1);
+  await expect(rows2nd).toHaveCount(2);
   await checkRow(
     rows2nd.nth(0),
     ['', '', 'Hui Haamu', '0', 'HYLÄTTY'],
     'td',
     false,
   );
+  await checkRow(
+    rows2nd.nth(1),
+    ['', '', 'Ratsu Päätön', '0', 'PERUUNTUNUT'],
+    'td',
+    false,
+  );
+
+  const tooltip = page.getByRole('tooltip').filter({
+    hasText: 'Peruuntunut, varasijatäyttö päättynyt',
+  });
+
+  await expect(tooltip).toBeHidden();
+
+  await secondAccordion.getByRole('button', { name: 'Lisätietoja' }).click();
+
+  await expect(tooltip).toBeVisible();
 
   await expect(page.getByText('Hakijalle näytetään: Kesken')).toBeVisible();
 });
@@ -308,8 +324,9 @@ test.describe('Suodattimet', () => {
   test('Vain muuttuneet hakemukset', async ({ page }) => {
     await page.getByLabel('Näytä vain edellisestä').click();
     const rows = page.locator('tbody tr');
-    await expect(rows).toHaveCount(1);
+    await expect(rows).toHaveCount(2);
     await expect(rows.filter({ hasText: 'Hui Haamu' })).toHaveCount(1);
+    await expect(rows.filter({ hasText: 'Ratsu Päätön' })).toHaveCount(1);
   });
 
   test('Ehdollisesti hyväksytyt hakemukset', async ({ page }) => {
