@@ -1,3 +1,4 @@
+import { TranslatedName } from '../localization/localization-types';
 import { ValinnanTulosActorRef } from '../state/createValinnanTuloksetMachine';
 import { HakemuksenValinnanTulos } from '../valinta-tulos-service/valinta-tulos-types';
 
@@ -82,6 +83,7 @@ export type SijoittelunHakemusValintatiedoilla = {
   hyvaksyttyHarkinnanvaraisesti?: boolean;
   hyvaksyPeruuntunut: boolean;
   hyvaksymiskirjeLahetetty?: string;
+  tilanKuvaukset?: TranslatedName;
 } & HakemuksenValinnanTulos;
 
 export type SijoitteluajonValintatapajono = {

@@ -295,6 +295,28 @@ const ValinnanTilaSelect = ({
   );
 };
 
+const ValinnanTilaKuvaus = ({
+  hakemus,
+  t,
+  translateEntity,
+}: {
+  hakemus: HakemuksenValinnanTulos;
+  t: TFunction;
+  translateEntity: (entity: TranslatedName) => string;
+}) => {
+  const hakemuksenTila = getReadableHakemuksenTila(hakemus, t);
+  const tilanKuvaus = `${hakemus.tilanKuvaukset ? '\n' + translateEntity(hakemus.tilanKuvaukset) : ''}`;
+
+  return (
+    <>
+      <span>{hakemuksenTila}</span>
+      {hakemus.valinnanTila === ValinnanTila.PERUUNTUNUT && (
+        <InfoTooltipButton title={tilanKuvaus} />
+      )}
+    </>
+  );
+};
+
 export const ValinnanTilaCell = memo(function ValinnanTilaCell({
   hakemus,
   haku,
@@ -321,8 +343,6 @@ export const ValinnanTilaCell = memo(function ValinnanTilaCell({
     valinnanTila,
     vastaanottoTila,
   } = hakemus;
-
-  const hakemuksenTila = getReadableHakemuksenTila(hakemus, t);
 
   const updateHyvaksyttyVarasijalta = () => {
     updateForm({
@@ -352,7 +372,11 @@ export const ValinnanTilaCell = memo(function ValinnanTilaCell({
             error={!isValidValinnanTila(hakemus)}
           />
         ) : (
-          hakemuksenTila
+          <ValinnanTilaKuvaus
+            hakemus={hakemus}
+            t={t}
+            translateEntity={translateEntity}
+          />
         )}
         {siirtynytToisestaValintatapajonosta && (
           <InfoTooltipButton
