@@ -15,6 +15,7 @@ import {
 } from '../types/laskenta-types';
 import {
   difference,
+  filter,
   flatMap,
   indexBy,
   isEmpty,
@@ -23,6 +24,7 @@ import {
   mapValues,
   pipe,
   prop,
+  uniqueBy,
 } from 'remeda';
 import {
   OphApiError,
@@ -68,6 +70,7 @@ import {
 } from '../valinta-tulos-service/valinta-tulos-types';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
 import { getConfigUrl } from '../configuration/configuration-utils';
+import { HakijaInfo } from '../ataru/ataru-types';
 
 export const getHakukohteenValintatuloksetIlmanHakijanTilaa = async (
   hakuOid: string,
@@ -152,20 +155,26 @@ export const getKoePisteetForHakemus = async ({
 }: {
   hakemusOid: string;
   hakukohdeOids: Array<string>;
-}): Promise<Record<string, Array<ValintakokeenPisteet>>> => {
+}): Promise<{
+  lastModified?: string;
+  pisteet: Record<string, Array<ValintakokeenPisteet>>;
+}> => {
   const kokeet = await getValintakoeAvaimetHakukohteille({ hakukohdeOids });
   const pistetiedot = await getPisteetForHakemus({ hakemusOid });
 
-  return mapValues(pistetiedot.hakukohteittain, (p, hakukohdeOid) => {
-    return selectKokeenPisteet(hakukohdeOid, p, kokeet[hakukohdeOid]);
-  });
+  return {
+    lastModified: pistetiedot.lastmodified,
+    pisteet: mapValues(pistetiedot.hakukohteittain, (p, hakukohdeOid) => {
+      return selectKokeenPisteet(hakukohdeOid, p, kokeet[hakukohdeOid]);
+    }),
+  };
 };
 
 export const getPisteetForHakukohde = async ({
   hakuOid,
   hakukohdeOid,
 }: KoutaOidParams): Promise<{
-  lastModified?: Date;
+  lastModified?: string;
   valintakokeet: Array<ValintakoeAvaimet>;
   valintapisteet: Array<{
     hakemusOid: string;
@@ -199,9 +208,7 @@ export const getPisteetForHakukohde = async ({
   const { data: pistetiedot } = await pisteTiedotFetch.promise;
 
   return {
-    lastModified: isNonNullish(pistetiedot.lastmodified)
-      ? new Date(pistetiedot.lastmodified)
-      : undefined,
+    lastModified: pistetiedot.lastmodified,
     valintakokeet: kokeet,
     valintapisteet: pistetiedot.valintapisteet.map((p) => ({
       hakemusOid: p.applicationAdditionalDataDTO.oid,
@@ -214,6 +221,7 @@ export const updatePisteetForHakukohde = async (
   hakuOid: string,
   hakukohdeOid: string,
   pistetiedot: Array<HakemuksenPistetiedot>,
+  lastModified?: string,
 ) => {
   const configuration = getConfiguration();
   const mappedPistetiedot = pistetiedot.map((p) => {
@@ -235,6 +243,11 @@ export const updatePisteetForHakukohde = async (
     };
   });
 
+  let headers = {};
+  if (isNonNullish(lastModified)) {
+    headers = { 'If-Unmodified-Since': lastModified };
+  }
+
   await client.put(
     getConfigUrl(
       configuration.routes.valintalaskentakoostepalvelu
@@ -245,6 +258,55 @@ export const updatePisteetForHakukohde = async (
       },
     ),
     mappedPistetiedot,
+    { headers },
+  );
+};
+
+export const updatePisteetForHakemus = async (
+  hakija: HakijaInfo,
+  pistetiedot: Array<ValintakokeenPisteet>,
+  lastModified?: string,
+) => {
+  if (!pistetiedot || pistetiedot.length < 1) {
+    throw 'Yritys päivittää hakemus ilman pistetietoja';
+  }
+
+  const configuration = getConfiguration();
+  const additionalData = pipe(
+    pistetiedot,
+    filter(isNonNullish),
+    uniqueBy(prop('tunniste')),
+    flatMap((vp) => [
+      { key: vp.tunniste, value: commaToPoint(vp.arvo) },
+      { key: vp.osallistuminenTunniste, value: vp.osallistuminen },
+    ]),
+    indexBy((kv) => kv.key),
+    mapValues((val) => val.value),
+  );
+
+  const mappedPistetiedot = {
+    oid: hakija.hakemusOid,
+    personOid: hakija.hakijaOid,
+    firstNames: hakija.etunimet,
+    lastName: hakija.sukunimi,
+    additionalData,
+  };
+
+  let headers = {};
+  if (isNonNullish(lastModified)) {
+    headers = { 'If-Unmodified-Since': lastModified };
+  }
+
+  await client.put(
+    getConfigUrl(
+      configuration.routes.valintalaskentakoostepalvelu
+        .koostetutPistetiedotHakemukselleUrl,
+      {
+        hakemusOid: hakija.hakemusOid,
+      },
+    ),
+    mappedPistetiedot,
+    { headers },
   );
 };
 

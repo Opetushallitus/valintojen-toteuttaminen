@@ -19,10 +19,7 @@ import {
   ValinnanTila,
   VastaanottoTila,
 } from '@/lib/types/sijoittelu-types';
-import {
-  TuloksenTila,
-  ValintakoeOsallistuminenTulos,
-} from '@/lib/types/laskenta-types';
+import { TuloksenTila } from '@/lib/types/laskenta-types';
 import { NDASH } from '@/lib/constants';
 
 const HAKUKOHDE_OID = '1.2.246.562.20.00000000000000045105';
@@ -848,12 +845,6 @@ test.describe('Pistesyöttö', () => {
     });
     await expect(nakkiOsallistuiInput).toBeVisible();
 
-    const nakkiTallennaButton = nakkikoe.getByRole('button', {
-      name: 'Tallenna',
-    });
-
-    await expect(nakkiTallennaButton).toBeEnabled();
-
     const koksakoe = pisteSyottoHakukohde.getByLabel('Köksäkokeen arvosana');
 
     await expect(koksakoe).toBeVisible();
@@ -866,16 +857,23 @@ test.describe('Pistesyöttö', () => {
     });
     await expect(koksaOsallistuiInput).toBeVisible();
 
-    const koksaTallennaButton = koksakoe.getByRole('button', {
-      name: 'Tallenna',
-    });
-    await expect(koksaTallennaButton).toBeEnabled();
+    await expect(
+      page.getByRole('button', {
+        name: 'Tallenna',
+      }),
+    ).toBeEnabled();
   });
 
-  test('Pistesyötön tallennus lähettää muokatut arvot ja näyttää ilmoituksen tallennuksen onnistumisesta', async ({
+  test('Pistesyötön tallennus lähettää muokatut ja muokkaamattomat arvot ja näyttää ilmoituksen tallennuksen onnistumisesta', async ({
     page,
   }) => {
-    const pisteetSaveUrl = `/valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/haku/1.2.246.562.29.00000000000000045102/hakukohde/${HAKUKOHDE_OID}`;
+    await page.goto(
+      '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo/1.2.246.562.11.00000000000001796027',
+    );
+
+    await expectAllSpinnersHidden(page);
+
+    const pisteetSaveUrl = `/valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/hakemus/1.2.246.562.11.00000000000001796027`;
 
     await page.route('**' + pisteetSaveUrl, (route) => {
       if (route.request().method() === 'PUT') {
@@ -884,12 +882,6 @@ test.describe('Pistesyöttö', () => {
         });
       }
     });
-
-    await page.goto(
-      '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo/1.2.246.562.11.00000000000001796027',
-    );
-
-    await expectAllSpinnersHidden(page);
 
     const pistesyottoHeading = page.getByRole('heading', {
       name: 'Pistesyöttö',
@@ -910,26 +902,27 @@ test.describe('Pistesyöttö', () => {
       option: 'Ei osallistunut',
     });
 
-    const nakkiTallennaButton = nakkikoe.getByRole('button', {
+    const tallennaButton = page.getByRole('button', {
       name: 'Tallenna',
     });
 
     const [saveRes] = await Promise.all([
       waitForMethodRequest(page, 'PUT', (url) => url.includes(pisteetSaveUrl)),
-      nakkiTallennaButton.click(),
+      tallennaButton.click(),
     ]);
 
-    expect(saveRes.postDataJSON()).toMatchObject([
-      {
-        oid: '1.2.246.562.11.00000000000001796027',
-        personOid: '1.2.246.562.24.69259807406',
-        firstNames: 'Ruhtinas',
-        lastName: 'Nukettaja',
-        additionalData: {
-          'nakki-osallistuminen': ValintakoeOsallistuminenTulos.EI_OSALLISTUNUT,
-        },
+    expect(saveRes.postDataJSON()).toMatchObject({
+      oid: '1.2.246.562.11.00000000000001796027',
+      personOid: '1.2.246.562.24.69259807406',
+      firstNames: 'Ruhtinas',
+      lastName: 'Nukettaja',
+      additionalData: {
+        koksa: '8.8',
+        'koksa-osallistuminen': 'OSALLISTUI',
+        nakki: '',
+        'nakki-osallistuminen': 'EI_OSALLISTUNUT',
       },
-    ]);
+    });
 
     await expectAlertTextVisible(page, 'Tiedot tallennettu');
   });
@@ -937,7 +930,13 @@ test.describe('Pistesyöttö', () => {
   test('Näytetään virhe, kun pistesyötön tallennus epäonnistuu', async ({
     page,
   }) => {
-    const pisteetSaveUrl = `/valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/haku/1.2.246.562.29.00000000000000045102/hakukohde/${HAKUKOHDE_OID}`;
+    await page.goto(
+      '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo/1.2.246.562.11.00000000000001796027',
+    );
+
+    await expectAllSpinnersHidden(page);
+
+    const pisteetSaveUrl = `/valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/hakemus/1.2.246.562.11.00000000000001796027`;
 
     await page.route('**' + pisteetSaveUrl, (route) => {
       if (route.request().method() === 'PUT') {
@@ -946,10 +945,6 @@ test.describe('Pistesyöttö', () => {
         });
       }
     });
-
-    await page.goto(
-      '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo/1.2.246.562.11.00000000000001796027',
-    );
 
     const pisteSyottoHakukohde = page.getByTestId(
       `henkilo-pistesyotto-hakukohde-${HAKUKOHDE_OID}`,
@@ -965,13 +960,13 @@ test.describe('Pistesyöttö', () => {
       option: 'Ei osallistunut',
     });
 
-    const nakkiTallennaButton = nakkikoe.getByRole('button', {
+    const tallennaButton = page.getByRole('button', {
       name: 'Tallenna',
     });
 
     await Promise.all([
       waitForMethodRequest(page, 'PUT', (url) => url.includes(pisteetSaveUrl)),
-      nakkiTallennaButton.click(),
+      tallennaButton.click(),
     ]);
 
     await expectAlertTextVisible(

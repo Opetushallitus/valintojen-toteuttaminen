@@ -28,7 +28,13 @@ const HenkiloContent = ({
   const { data: haku } = useHaku({ hakuOid });
   const { data: haunAsetukset } = useHaunAsetukset({ hakuOid });
 
-  const { hakukohteet, hakija, postitoimipaikka } = useHenkiloPageData({
+  const {
+    hakukohteet,
+    hakija,
+    postitoimipaikka,
+    refetchPisteet,
+    lastModified,
+  } = useHenkiloPageData({
     hakuOid,
     hakemusOid,
   });
@@ -58,7 +64,13 @@ const HenkiloContent = ({
         />
       </Stack>
       <HakutoiveetTable hakukohteet={hakukohteet} hakija={hakija} />
-      <HenkilonPistesyotto hakija={hakija} hakukohteet={hakukohteet} />
+      <HenkilonPistesyotto
+        hakuOid={hakuOid}
+        hakija={hakija}
+        hakukohteet={hakukohteet}
+        refetchPisteet={refetchPisteet}
+        lastModified={lastModified}
+      />
     </>
   );
 };

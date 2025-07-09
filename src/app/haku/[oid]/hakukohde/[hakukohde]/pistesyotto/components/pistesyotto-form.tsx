@@ -4,17 +4,16 @@ import { TablePaginationWrapper } from '@/components/table/table-pagination-wrap
 import { PisteSyottoTable } from './pistesyotto-table';
 import { usePisteSyottoSearchResults } from '../hooks/usePisteSyottoSearch';
 import { FormEvent, useCallback } from 'react';
-import useToaster from '@/hooks/useToaster';
-import { usePistesyottoState } from '@/lib/state/pistesyotto-state';
+import useToaster, { Toast } from '@/hooks/useToaster';
 import { PisteSyottoActions } from './pistesyotto-actions';
 import { HakukohteenPistetiedot } from '@/lib/types/laskenta-types';
 import { FormBox } from '@/components/form-box';
 import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBeforeNavigation';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 import { useHaunParametrit } from '@/lib/valintalaskentakoostepalvelu/useHaunParametrit';
-import { GenericEvent } from '@/lib/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { refetchPisteetForHakukohde } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-queries';
+import { usePistesyottoState } from '../lib/hakukohde-pistesyotto-state';
 
 export const PisteSyottoForm = ({
   hakuOid,
@@ -28,15 +27,11 @@ export const PisteSyottoForm = ({
   const queryClient = useQueryClient();
 
   const onEvent = useCallback(
-    (event: GenericEvent) => {
+    (event: Toast) => {
       if (event.type === 'success') {
         refetchPisteetForHakukohde(queryClient, { hakuOid, hakukohdeOid });
       }
-      addToast({
-        key: event.key,
-        message: event.message,
-        type: event.type,
-      });
+      addToast(event);
     },
     [addToast, queryClient, hakuOid, hakukohdeOid],
   );
@@ -52,6 +47,7 @@ export const PisteSyottoForm = ({
     pistetiedot: pistetiedot.hakemustenPistetiedot,
     valintakokeet: pistetiedot.valintakokeet,
     onEvent,
+    lastModified: pistetiedot.lastModified,
   });
 
   const { data: haunParametrit } = useHaunParametrit({ hakuOid });
@@ -97,6 +93,7 @@ export const PisteSyottoForm = ({
         countTranslationKey="hakeneet.hakija-maara"
       >
         <PisteSyottoTable
+          key={`pistesyotto-table-${pistesyottoActorRef.getSnapshot().machine.id}`}
           setSort={setSort}
           sort={sort}
           pistetiedot={pageResults}

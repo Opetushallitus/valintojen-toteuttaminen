@@ -13,9 +13,9 @@ import {
 } from '@/components/table/table-columns';
 import { ListTable } from '@/components/table/list-table';
 import { isNotPartOfThisHakukohde } from '../lib/pistesyotto-utils';
-import { PistesyottoActorRef } from '@/lib/state/pistesyotto-state';
 import { isNullish } from 'remeda';
-import { KoeInputs } from '@/components/koe-inputs';
+import { HakukohdePistesyottoActorRef } from '../lib/hakukohde-pistesyotto-state';
+import { KoeInputs } from './koe-inputs';
 
 export const PisteSyottoTable = ({
   pistetiedot,
@@ -30,7 +30,7 @@ export const PisteSyottoTable = ({
   sort: string;
   setSort: (newSort: string) => void;
   kokeet: Array<ValintakoeAvaimet>;
-  pistesyottoActorRef: PistesyottoActorRef;
+  pistesyottoActorRef: HakukohdePistesyottoActorRef;
   pisteSyottoDisabled: boolean;
   naytaVainLaskentaanVaikuttavat: boolean;
 }) => {
