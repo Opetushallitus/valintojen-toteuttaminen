@@ -101,5 +101,30 @@
     ],
     "personOid": "1.2.246.562.24.30476885816",
     "lahiosoite": "Yläpääntie 875"
+  },
+  {
+    "etunimet": "Päätön",
+    "asiointiKieli": {
+      "kieliKoodi": "sv",
+      "kieliTyyppi": ""
+    },
+    "sukunimi": "Ratsu",
+    "postinumero": "02200",
+    "oid": "1.2.246.562.11.00000000000001543857",
+    "hakuOid": "1.2.246.562.29.00000000000000045102",
+    "henkilotunnus": "181213-441V",
+    "hakutoiveet": [
+      {
+        "processingState": "processed",
+        "eligibilityState": "uneligible",
+        "paymentObligation": "unreviewed",
+        "hakukohdeOid": "1.2.246.562.20.00000000000000045105",
+        "languageRequirement": "unreviewed",
+        "degreeRequirement": "unreviewed"
+      }
+    ],
+    "personOid": "1.2.246.562.24.30476885829",
+    "lahiosoite": "Yläpääntie 875"
   }
 ]
+

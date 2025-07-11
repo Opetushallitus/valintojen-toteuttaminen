@@ -77,6 +77,14 @@
           "tila": "HYLATTY",
           "valintatapajonoOid": "valintatapajono-amm",
           "hyvaksyttyHakijaryhmista": ["ensikertalaiset-hakijaryhma-oid"]
+        },
+        {
+          "hakijaOid": "1.2.246.562.24.30476885829",
+          "hakemusOid": "1.2.246.562.11.00000000000001543857",
+          "pisteet": 0,
+          "tila": "HYLATTY",
+          "valintatapajonoOid": "valintatapajono-amm",
+          "hyvaksyttyHakijaryhmista": ["ensikertalaiset-hakijaryhma-oid"]
         }
       ]
     }

@@ -23,7 +23,7 @@ test('Näyttää hakeneet', async ({ page }) => {
     'th',
   );
   const rows = page.locator('tbody tr');
-  await expect(rows).toHaveCount(4);
+  await expect(rows).toHaveCount(5);
   await checkRow(rows.nth(0), [
     'Nukettaja Ruhtinas',
     'Hakukelpoinen',
@@ -55,6 +55,14 @@ test('Näyttää hakeneet', async ({ page }) => {
     'Tarkastamatta',
     '1.2.246.562.11.00000000000001543832',
     '1.2.246.562.24.30476885816',
+  ]);
+  await checkRow(rows.nth(4), [
+    'Ratsu Päätön',
+    'Ei hakukelpoinen',
+    '1',
+    'Tarkastamatta',
+    '1.2.246.562.11.00000000000001543857',
+    '1.2.246.562.24.30476885829',
   ]);
 });
 
@@ -92,7 +100,7 @@ test('Ei näytä maksuvelvollisuutta ja hakukelpoisuutta kun kyseessä ei ole ko
     'th',
   );
   const rows = page.locator('tbody tr');
-  await expect(rows).toHaveCount(4);
+  await expect(rows).toHaveCount(5);
   await checkRow(rows.nth(0), [
     'Nukettaja Ruhtinas',
     '2',

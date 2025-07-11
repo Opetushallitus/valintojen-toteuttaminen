@@ -180,7 +180,7 @@ test.describe('Valinnan tulokset', () => {
       'th',
     );
     const rows = page.locator('tbody tr');
-    await expect(rows).toHaveCount(4);
+    await expect(rows).toHaveCount(5);
 
     const nukettajaRow = rows.nth(0);
     await checkRow(
@@ -263,6 +263,20 @@ test.describe('Valinnan tulokset', () => {
       'td',
       false,
     );
+
+    await checkRow(
+      rows.nth(4),
+      [
+        '',
+        'Ratsu Päätön',
+        'Valitse...Ehdollinen valinta',
+        'JulkaistavissaValitse...',
+        '',
+        '',
+      ],
+      'td',
+      false,
+    );
   });
 
   test.describe('Suodattimet', () => {
@@ -326,7 +340,7 @@ test.describe('Valinnan tulokset', () => {
     test('Valitsee kaikki hakemukset', async ({ page }) => {
       await expect(page.getByText('Ei hakijoita valittu')).toBeVisible();
       await page.getByLabel('Valitse kaikki').click();
-      await expect(page.getByText('4 hakijaa valittu')).toBeVisible();
+      await expect(page.getByText('5 hakijaa valittu')).toBeVisible();
     });
 
     test('Valitsee hakemuksia yksitellen', async ({ page }) => {
@@ -343,10 +357,10 @@ test.describe('Valinnan tulokset', () => {
         .getByRole('menuitem', { name: 'HYVÄKSYTTY', exact: true })
         .click();
       await expect(
-        page.getByText('Muutettiin tila 2:lle hakemukselle'),
+        page.getByText('Muutettiin tila 3:lle hakemukselle'),
       ).toBeVisible();
       await expect(page.getByRole('row').getByText('HYVÄKSYTTY')).toHaveCount(
-        4,
+        5,
       );
     });
 
