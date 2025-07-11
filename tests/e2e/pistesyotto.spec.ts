@@ -35,7 +35,11 @@ test('Näyttää pistesyotön', async ({ page }) => {
   const headrow = page.getByTestId('pistesyotto-form').locator('thead tr');
   await checkRow(
     headrow,
-    ['Hakija', 'Köksäkokeen arvosana', 'Nakkikoe, oletko nakkisuojassa?'],
+    [
+      'Hakija',
+      'Köksäkokeen arvosana (4–10)',
+      'Nakkikoe, oletko nakkisuojassa?',
+    ],
     'th',
   );
   const rows = page.getByTestId('pistesyotto-form').locator('tbody tr');
@@ -102,7 +106,11 @@ test('Näyttää pistesyotöt kaikilla kokeilla', async ({ page }) => {
   const headrow = page.getByTestId('pistesyotto-form').locator('thead tr');
   await checkRow(
     headrow,
-    ['Hakija', 'Köksäkokeen arvosana', 'Nakkikoe, oletko nakkisuojassa?'],
+    [
+      'Hakija',
+      'Köksäkokeen arvosana (4–10)',
+      'Nakkikoe, oletko nakkisuojassa?',
+    ],
     'th',
   );
   const rows = page.getByTestId('pistesyotto-form').locator('tbody tr');
