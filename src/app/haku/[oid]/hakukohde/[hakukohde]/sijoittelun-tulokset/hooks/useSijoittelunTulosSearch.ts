@@ -158,14 +158,6 @@ export const useSijoittelunTulosSearch = (
       if (orderBy === 'sijoittelunTila') {
         return sortByValinnanTila(direction, filtered);
       }
-      if (orderBy === 'sija') {
-        return filtered.sort((a, b) => {
-          const asc = direction === 'asc';
-          const aVal = a.sija ?? Number.MAX_VALUE;
-          const bVal = b.sija ?? Number.MAX_VALUE;
-          return asc ? bVal - aVal : aVal - bVal;
-        });
-      }
       return filtered.sort(byProp(orderBy, direction, translateEntity));
     };
 
