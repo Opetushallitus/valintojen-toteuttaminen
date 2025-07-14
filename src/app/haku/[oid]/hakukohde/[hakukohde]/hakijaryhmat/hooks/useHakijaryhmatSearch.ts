@@ -15,7 +15,7 @@ import {
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { HakijaryhmanHakija } from '@/lib/types/laskenta-types';
 import { hakemusFilter } from '@/lib/filters';
-import { sortBySijoittelunTila } from '@/lib/sortBySijoittelunTila';
+import { sortByValinnanTila } from '@/lib/sortByValinnanTila';
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -140,7 +140,7 @@ export const useHakijaryhmatSearch = (
 
     const sortHakijat = (orderBy: string, direction: SortDirection) => {
       if (orderBy === 'sijoittelunTila') {
-        return sortBySijoittelunTila(direction, filtered);
+        return sortByValinnanTila(direction, filtered);
       }
       return filtered.sort(byProp(orderBy, direction, translateEntity));
     };
