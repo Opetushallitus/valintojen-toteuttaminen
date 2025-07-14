@@ -1,6 +1,6 @@
 import { TranslatedName } from '@/lib/localization/localization-types';
 import { isTranslatedName } from '@/lib/localization/translation-utils';
-import { pathOr, pipe, stringToPath, when } from 'remeda';
+import { isNumber, pathOr, pipe, stringToPath, when } from 'remeda';
 
 export type SortDirection = 'asc' | 'desc';
 
@@ -24,7 +24,7 @@ function getValueByPath<R extends Record<string, PropValue>>(
     pathOr(stringToPath(key), '' as any),
     when(isTranslatedName, translateEntity),
     when(
-      (v) => !isNaN(Number(v)),
+      (v) => isNumber(v),
       (v) => Number.parseFloat(v),
     ),
   );
