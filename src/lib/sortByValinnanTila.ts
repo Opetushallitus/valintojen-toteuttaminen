@@ -18,20 +18,23 @@ export function sortByValinnanTila<T extends ValinnanTilaSortable>(
   filtered: Array<T>,
 ): Array<T> {
   const asc = direction === 'asc';
+  const NULL_TO_BOTTOM = asc ? Infinity : -Infinity;
   return filtered.sort((a, b) => {
     const aSijoittelunTila = a.sijoittelunTila ?? a.tila ?? a.valinnanTila;
     const bSijoittelunTila = b.sijoittelunTila ?? b.tila ?? b.valinnanTila;
     const aOrdinal =
-      (aSijoittelunTila && ValinnanTilaOrdinals[aSijoittelunTila]) ?? Infinity;
+      (aSijoittelunTila && ValinnanTilaOrdinals[aSijoittelunTila]) ??
+      NULL_TO_BOTTOM;
     const bOrdinal =
-      (bSijoittelunTila && ValinnanTilaOrdinals[bSijoittelunTila]) ?? Infinity;
+      (bSijoittelunTila && ValinnanTilaOrdinals[bSijoittelunTila]) ??
+      NULL_TO_BOTTOM;
     if (
       aOrdinal === bOrdinal &&
       aOrdinal === ValinnanTilaOrdinals[ValinnanTila.VARALLA]
     ) {
       return compareInts(
-        a.varasijanNumero ?? Infinity,
-        b.varasijanNumero ?? Infinity,
+        a.varasijanNumero ?? NULL_TO_BOTTOM,
+        b.varasijanNumero ?? NULL_TO_BOTTOM,
         asc,
       );
     } else {

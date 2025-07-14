@@ -124,9 +124,9 @@ test('handles missing sijoittelunTila and tila descending', () => {
     { sijoittelunTila: ValinnanTila.HYLATTY },
   ];
   const sorted = sortByValinnanTila('desc', arr)!;
-  expect(sorted[0]?.foo).toBe('bar');
-  expect(sorted[1]?.sijoittelunTila).toBe(ValinnanTila.HYLATTY);
-  expect(sorted[2]?.tila).toBe(ValinnanTila.HYVAKSYTTY);
+  expect(sorted[0]?.sijoittelunTila).toBe(ValinnanTila.HYLATTY);
+  expect(sorted[1]?.tila).toBe(ValinnanTila.HYVAKSYTTY);
+  expect(sorted[2]?.foo).toBe('bar');
 });
 
 test('handles undefined varasijanNumero for VARALLA ascending', () => {
@@ -148,7 +148,7 @@ test('handles undefined varasijanNumero for VARALLA descending', () => {
     { tila: ValinnanTila.VARALLA, varasijanNumero: 1 },
   ];
   const sorted = sortByValinnanTila('desc', arr);
-  expect(sorted[0]?.varasijanNumero).toBeUndefined();
-  expect(sorted[1]?.varasijanNumero).toBe(2);
-  expect(sorted[2]?.varasijanNumero).toBe(1);
+  expect(sorted[0]?.varasijanNumero).toBe(2);
+  expect(sorted[1]?.varasijanNumero).toBe(1);
+  expect(sorted[2]?.varasijanNumero).toBeUndefined();
 });
