@@ -4,6 +4,7 @@ type SijoittelunTilaSortable = {
   sijoittelunTila?: ValinnanTila;
   tila?: ValinnanTila;
   varasijanNumero?: number;
+  valinnanTila?: ValinnanTila;
 };
 
 const compareInts = (
@@ -25,8 +26,8 @@ export function sortBySijoittelunTila<T extends SijoittelunTilaSortable>(
 ): Array<T> {
   const asc = direction === 'asc';
   return filtered.sort((a, b) => {
-    const aSijoittelunTila = a.sijoittelunTila ?? a.tila;
-    const bSijoittelunTila = b.sijoittelunTila ?? b.tila;
+    const aSijoittelunTila = a.sijoittelunTila ?? a.tila ?? a.valinnanTila;
+    const bSijoittelunTila = b.sijoittelunTila ?? b.tila ?? b.valinnanTila;
     const aOrdinal = aSijoittelunTila && ValinnanTilaOrdinals[aSijoittelunTila];
     const bOrdinal = bSijoittelunTila && ValinnanTilaOrdinals[bSijoittelunTila];
     if (
