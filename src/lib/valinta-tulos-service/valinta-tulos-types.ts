@@ -1,4 +1,5 @@
 import { MaksunTila } from '../ataru/ataru-types';
+import { TranslatedName } from '../localization/localization-types';
 import {
   IlmoittautumisTila,
   ValinnanTila,
@@ -76,6 +77,7 @@ export type SijoitteluajonTuloksetResponseData = {
       prioriteetti: number;
       onkoMuuttunutViimeSijoittelussa: boolean;
       siirtynytToisestaValintatapajonosta: boolean;
+      tilanKuvaukset?: { FI: string; SV: string; EN: string };
     }>;
   }>;
   sijoitteluajoId: string;
@@ -153,4 +155,5 @@ export type HakemuksenValinnanTulos = {
   siirtynytToisestaValintatapajonosta?: boolean;
   vastaanottoDeadline?: string;
   vastaanottoDeadlineMennyt?: boolean;
+  tilanKuvaukset?: TranslatedName;
 };

@@ -91,6 +91,25 @@
       "vastaanottotila": "KESKEN",
       "ilmoittautumistila": "EI_TEHTY",
       "hyvaksyttyHarkinnanvaraisesti": false
+    },
+    {
+      "valintatapajonoOid": "valintatapajono-amm",
+      "hakemusOid": "1.2.246.562.11.00000000000001543857",
+      "henkiloOid": "1.2.246.562.24.30476885829",
+      "pisteet": -1,
+      "valinnantila": "PERUUNTUNUT",
+      "ehdollisestiHyvaksyttavissa": false,
+      "julkaistavissa": false,
+      "hyvaksyttyVarasijalta": false,
+      "hyvaksyPeruuntunut": false,
+      "hyvaksyttyHakijaryhmista": [],
+      "varasijanNumero": 0,
+      "jonosija": 0,
+      "tasasijaJonosija": 0,
+      "prioriteetti": 0,
+      "vastaanottotila": "KESKEN",
+      "ilmoittautumistila": "EI_TEHTY",
+      "hyvaksyttyHarkinnanvaraisesti": false
     }
   ],
   "sijoittelunTulokset": {
@@ -161,6 +180,24 @@
             "hakemusOid": "1.2.246.562.11.00000000000001543832",
             "pisteet": -1,
             "tila": "HYLATTY",
+            "valintatapajonoOid": "valintatapajono-amm",
+            "hyvaksyttyHakijaryhmista": [],
+            "varasijanNumero": 0,
+            "jonosija": 0,
+            "tasasijaJonosija": 0,
+            "prioriteetti": 0,
+            "onkoMuuttunutViimeSijoittelussa": true
+          },
+          {
+            "hakijaOid": "1.2.246.562.24.30476885829",
+            "hakemusOid": "1.2.246.562.11.00000000000001543857",
+            "pisteet": -1,
+            "tila": "PERUUNTUNUT",
+            "tilanKuvaukset": {
+                "FI": "Peruuntunut, varasijatäyttö päättynyt",
+                "SV": "Annullerad, besättning av reservplatser har upphört",
+                "EN": "Cancelled, waiting list selection has ended"
+            },
             "valintatapajonoOid": "valintatapajono-amm",
             "hyvaksyttyHakijaryhmista": [],
             "varasijanNumero": 0,

@@ -1,4 +1,4 @@
-import { indexBy } from 'remeda';
+import { indexBy, mapKeys } from 'remeda';
 import { Hakemus, MaksunTila, Maksuvelvollisuus } from '../ataru/ataru-types';
 import {
   SijoitteluajonTuloksetValintatiedoilla,
@@ -54,6 +54,10 @@ export const selectSijoitteluajonTuloksetValintatiedoilla = ({
             hasNegativePisteet = true;
           }
 
+          const tilanKuvaukset = h.tilanKuvaukset
+            ? mapKeys(h.tilanKuvaukset, (key) => key.toLowerCase())
+            : undefined;
+
           return {
             hakijaOid: h.hakijaOid,
             hakemusOid: h.hakemusOid,
@@ -91,6 +95,7 @@ export const selectSijoitteluajonTuloksetValintatiedoilla = ({
               lahetetytKirjeetIndexed[h.hakijaOid]?.kirjeLahetetty,
             siirtynytToisestaValintatapajonosta:
               h.siirtynytToisestaValintatapajonosta,
+            tilanKuvaukset,
           };
         });
       hakemuksetTuloksilla.sort((a, b) =>
