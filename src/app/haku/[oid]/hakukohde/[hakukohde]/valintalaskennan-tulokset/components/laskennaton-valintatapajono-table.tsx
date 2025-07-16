@@ -1,8 +1,5 @@
 'use client';
-import {
-  ListTable,
-  ListTablePaginationProps,
-} from '@/components/table/list-table';
+import { ListTable } from '@/components/table/list-table';
 import { createHakijaColumn } from '@/components/table/table-columns';
 import { ListTableColumn } from '@/components/table/table-types';
 import { LaskennanJonosijaTulosWithHakijaInfo } from '@/hooks/useEditableValintalaskennanTulokset';
@@ -25,6 +22,9 @@ import {
 import { TuloksenTila } from '@/lib/types/laskenta-types';
 import { Language } from '@/lib/localization/localization-types';
 import { useTranslations } from '@/lib/localization/useTranslations';
+import { useSelector } from '@xstate/react';
+import { useJonoTuloksetSearch } from '@/hooks/useJonoTuloksetSearch';
+import { clone } from 'remeda';
 
 const TRANSLATIONS_PREFIX = 'valintalaskennan-tulokset.taulukko';
 
@@ -151,24 +151,47 @@ const KuvausInput = ({
 
 export const LaskennatonValintatapajonoTable = ({
   haku,
-  jonosijat,
-  setSort,
-  sort,
-  pagination,
+  valintatapajonoOid,
   jonoTulosActorRef,
+  paginationLabel,
 }: {
   haku: Haku;
-  jonosijat: Array<LaskennanJonosijaTulosWithHakijaInfo>;
   valintatapajonoOid: string;
-  sort: string;
-  setSort: (newSort: string) => void;
-  pagination: ListTablePaginationProps;
   jonoTulosActorRef: JonoTulosActorRef;
+  paginationLabel: string;
 }) => {
   const [selectedJarjestysperuste] =
     useSelectedJarjestysperuste(jonoTulosActorRef);
 
   const { t } = useTranslations();
+
+  const changedJonosijat = useSelector(
+    jonoTulosActorRef,
+    (state) => state.context.changedJonoTulokset,
+  );
+
+  const jonosijat = useSelector(
+    jonoTulosActorRef,
+    (state) => state.context.jonoTulokset,
+  );
+
+  const { results, sort, setSort, pageSize, setPage, page } =
+    useJonoTuloksetSearch(valintatapajonoOid, clone(jonosijat));
+
+  const rows = useMemo(
+    () =>
+      results.map((jonosija) => {
+        const changedJonosija =
+          changedJonosijat.find(
+            (js) => js.hakemusOid === jonosija.hakemusOid,
+          ) ?? {};
+        return {
+          ...jonosija,
+          ...changedJonosija,
+        };
+      }),
+    [results, changedJonosijat],
+  );
 
   const columns: Array<JonoColumn> = useMemo(
     () => [
@@ -238,10 +261,15 @@ export const LaskennatonValintatapajonoTable = ({
     <ListTable
       rowKeyProp="hakijaOid"
       columns={columns}
-      rows={jonosijat}
+      rows={rows}
       sort={sort}
       setSort={setSort}
-      pagination={pagination}
+      pagination={{
+        page,
+        setPage,
+        pageSize,
+        label: paginationLabel,
+      }}
     />
   );
 };
