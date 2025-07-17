@@ -24,8 +24,11 @@ function getValueByPath<R extends Record<string, PropValue>>(
     pathOr(stringToPath(key), '' as any),
     when(isTranslatedName, translateEntity),
     when(
-      (v) => isNumber(v),
-      (v) => Number.parseFloat(v),
+      (v) =>
+        isNumber(
+          Number.parseFloat(typeof v === 'string' ? v.replace(',', '.') : v),
+        ),
+      (v) => Number.parseFloat(typeof v === 'string' ? v.replace(',', '.') : v),
     ),
   );
 }
