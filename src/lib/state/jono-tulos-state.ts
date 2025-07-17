@@ -456,7 +456,6 @@ export const useJonotulosState = ({
   // https://stately.ai/docs/input#passing-new-data-to-an-actor
   useEffect(() => {
     if (jonoChanged) {
-      console.log('jonoChanged');
       actorRef.send({
         type: JonoTulosEventType.RESET,
         input: {
