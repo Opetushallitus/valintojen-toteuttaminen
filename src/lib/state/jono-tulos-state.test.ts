@@ -12,6 +12,7 @@ import {
 import { TuloksenTila } from '../types/laskenta-types';
 import { LaskennanJonosijaTulos } from '@/hooks/useEditableValintalaskennanTulokset';
 import { when } from 'remeda';
+import { HakemuksenTila } from '../ataru/ataru-types';
 
 const mockContextInput = ({
   jonoTulos = {},
@@ -42,8 +43,11 @@ const mockContextInput = ({
       nimi: 'jono1',
       jonosijat: [
         {
-          tuloksenTila,
+          tuloksenTila: TuloksenTila.HYVAKSYTTAVISSA,
           hakemusOid: 'hakemus1',
+          hakijanNimi: 'Ruhtinas',
+          hakemuksenTila: HakemuksenTila.KESKEN,
+          henkilotunnus: '',
           kuvaus,
           hakijaOid: 'hakija1',
           jarjestyskriteerit: jonoTulos
@@ -87,7 +91,7 @@ describe('JonoTulosMachine', () => {
     actor.send(changeEvent);
     const jonoTuloksetSnapshot =
       actor.getSnapshot().context.changedJonoTulokset;
-    expect(jonoTuloksetSnapshot['hakemus1']).toMatchObject({
+    expect(jonoTuloksetSnapshot[0]).toMatchObject({
       hakemusOid: 'hakemus1',
       tuloksenTila: TuloksenTila.HYVAKSYTTAVISSA,
       pisteet: '10',
@@ -112,7 +116,7 @@ describe('JonoTulosMachine', () => {
 
     const jonoTuloksetSnapshot =
       actor.getSnapshot().context.changedJonoTulokset;
-    expect(jonoTuloksetSnapshot['hakemus1']).toMatchObject({
+    expect(jonoTuloksetSnapshot[0]).toMatchObject({
       hakemusOid: 'hakemus1',
       tuloksenTila: TuloksenTila.HYVAKSYTTAVISSA,
       pisteet: 'x',
@@ -134,7 +138,7 @@ describe('JonoTulosMachine', () => {
     actor.send(changeEvent);
     const jonoTuloksetSnapshot =
       actor.getSnapshot().context.changedJonoTulokset;
-    expect(jonoTuloksetSnapshot['hakemus1']).toMatchObject({
+    expect(jonoTuloksetSnapshot[0]).toMatchObject({
       hakemusOid: 'hakemus1',
       tuloksenTila: TuloksenTila.HYVAKSYTTAVISSA,
       pisteet: '10',
@@ -163,11 +167,11 @@ describe('JonoTulosMachine', () => {
     const jonoTuloksetSnapshot =
       actor.getSnapshot().context.changedJonoTulokset;
 
-    expect(jonoTuloksetSnapshot?.['hakemus1']?.tuloksenTila).toEqual(
+    expect(jonoTuloksetSnapshot?.[0]?.tuloksenTila).toEqual(
       TuloksenTila.HYLATTY,
     );
-    expect(jonoTuloksetSnapshot?.['hakemus1']?.jonosija).toEqual('');
-    expect(jonoTuloksetSnapshot?.['hakemus1']?.pisteet).toEqual('');
+    expect(jonoTuloksetSnapshot?.[0]?.jonosija).toEqual('');
+    expect(jonoTuloksetSnapshot?.[0]?.pisteet).toEqual('');
   });
 
   test('should handle JARJESTYSPERUSTE_CHANGED event', () => {
@@ -186,10 +190,10 @@ describe('JonoTulosMachine', () => {
     actor.send(jarjestysperusteChangeEvent);
     const snapshot = actor.getSnapshot();
     expect(snapshot.context.jarjestysPeruste).toBe('kokonaispisteet');
-    expect(snapshot.context.changedJonoTulokset['hakemus1']?.tuloksenTila).toBe(
+    expect(snapshot.context.changedJonoTulokset[0]?.tuloksenTila).toBe(
       TuloksenTila.MAARITTELEMATON,
     );
-    expect(snapshot.context.changedJonoTulokset['hakemus1']?.jonosija).toBe('');
+    expect(snapshot.context.changedJonoTulokset[0]?.jonosija).toBe('');
   });
 
   test('should remove tulos from changes if modifying it to have same value as original', () => {
@@ -217,7 +221,7 @@ describe('JonoTulosMachine', () => {
     });
     let snapshot = actor.getSnapshot();
 
-    expect(snapshot.context.changedJonoTulokset['hakemus1']).toMatchObject({
+    expect(snapshot.context.changedJonoTulokset[0]).toMatchObject({
       hakemusOid: 'hakemus1',
       tuloksenTila: TuloksenTila.HYVAKSYTTAVISSA,
       jonosija: '5',
@@ -235,7 +239,7 @@ describe('JonoTulosMachine', () => {
       },
     });
     snapshot = actor.getSnapshot();
-    expect(snapshot.context.changedJonoTulokset).toEqual({});
+    expect(snapshot.context.changedJonoTulokset).toEqual([]);
   });
 
   test('should stay in IDLE state on UPDATE event if there are no changes', () => {

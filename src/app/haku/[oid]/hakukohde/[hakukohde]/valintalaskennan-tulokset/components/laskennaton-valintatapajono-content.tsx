@@ -1,6 +1,5 @@
 'use client';
 import { Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
-import { useJonoTuloksetSearch } from '@/hooks/useJonoTuloksetSearch';
 import { SijoitteluStatusChangeButton } from './sijoittelu-status-change-button';
 import { useSijoitteluStatusMutation } from '../hooks/useSijoitteluStatusMutation';
 import { useHakukohde } from '@/lib/kouta/useHakukohde';
@@ -130,14 +129,9 @@ export const LaskennatonValintatapajonoContent = ({
 }: ValintatapajonoContentProps) => {
   const { t } = useTranslations();
 
-  const { valintatapajonooid, jonosijat } = jono;
-
-  const { results, sort, setSort, pageSize, setPage, page } =
-    useJonoTuloksetSearch(valintatapajonooid, jonosijat);
+  const { data: hakukohde } = useHakukohde({ hakukohdeOid });
 
   const { addToast } = useToaster();
-
-  const { data: hakukohde } = useHakukohde({ hakukohdeOid });
 
   const queryClient = useQueryClient();
 
@@ -161,6 +155,8 @@ export const LaskennatonValintatapajonoContent = ({
     onEvent,
   });
 
+  const { valintatapajonooid } = jono;
+
   const isDirty = useIsJonoTulosDirty(jonoTulosActorRef);
   useConfirmChangesBeforeNavigation(isDirty);
 
@@ -172,24 +168,18 @@ export const LaskennatonValintatapajonoContent = ({
         jono={jono}
       />
       <LaskennatonValintatapajonoTable
+        key={jono.oid}
         haku={haku}
-        setSort={setSort}
-        sort={sort}
         valintatapajonoOid={valintatapajonooid}
-        jonosijat={results}
         jonoTulosActorRef={jonoTulosActorRef}
-        pagination={{
-          page,
-          setPage,
-          pageSize,
-          label:
-            t('yleinen.sivutus') +
-            ': ' +
-            getValintatapaJonoNimi({
-              valinnanVaiheNimi: valinnanVaihe.nimi,
-              jonoNimi: jono.nimi,
-            }),
-        }}
+        paginationLabel={
+          t('yleinen.sivutus') +
+          ': ' +
+          getValintatapaJonoNimi({
+            valinnanVaiheNimi: valinnanVaihe.nimi,
+            jonoNimi: jono.nimi,
+          })
+        }
       />
     </>
   );

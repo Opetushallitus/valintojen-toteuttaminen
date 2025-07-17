@@ -14,6 +14,39 @@ import {
   VastaanottoTila,
 } from '@/lib/types/sijoittelu-types';
 
+const RUHTINAS_ROW = [
+  '',
+  '1',
+  'Nukettaja Ruhtinas',
+  '0',
+  '100',
+  'HYVÄKSYTTY',
+  'JulkaistavissaKesken',
+  '',
+];
+
+const DACULA_ROW = [
+  '',
+  '2',
+  'Dacula Kreivi',
+  '0',
+  '78,8',
+  'HYVÄKSYTTY',
+  'Vastaanottanut sitovasti',
+  'Läsnä syksy, poissa kevät',
+  'Maksamatta',
+];
+
+const PURUKUMI_ROW = [
+  '',
+  '3',
+  'Purukumi Puru',
+  '0',
+  '49',
+  'VARALLA (1)',
+  'Julkaistavissa',
+];
+
 async function goToSijoittelunTulokset(page: Page) {
   await page.clock.setFixedTime(new Date('2025-02-05T12:00:00'));
   await page.route(
@@ -92,43 +125,9 @@ test('Näytä "Sijoittelun tulokset" -välilehti ja sisältö', async ({ page })
   );
   const rows = firstAccordion.locator('tbody tr');
   await expect(rows).toHaveCount(3);
-  await checkRow(
-    rows.nth(0),
-    [
-      '',
-      '1',
-      'Nukettaja Ruhtinas',
-      '0',
-      '100',
-      'HYVÄKSYTTY',
-      'JulkaistavissaKesken',
-      '',
-    ],
-    'td',
-    false,
-  );
-  await checkRow(
-    rows.nth(1),
-    [
-      '',
-      '2',
-      'Dacula Kreivi',
-      '0',
-      '78,8',
-      'HYVÄKSYTTY',
-      'Vastaanottanut sitovasti',
-      'Läsnä syksy, poissa kevät',
-      'Maksamatta',
-    ],
-    'td',
-    false,
-  );
-  await checkRow(
-    rows.nth(2),
-    ['', '3', 'Purukumi Puru', '0', '49', 'VARALLA (1)', 'Julkaistavissa'],
-    'td',
-    false,
-  );
+  await checkRow(rows.nth(0), RUHTINAS_ROW, 'td', false);
+  await checkRow(rows.nth(1), DACULA_ROW, 'td', false);
+  await checkRow(rows.nth(2), PURUKUMI_ROW, 'td', false);
 
   const secondAccordion = getAmmValintatapajonoContent(page);
   const secondAccordionHeadRow = secondAccordion.locator('thead tr');
@@ -334,6 +333,80 @@ test.describe('Suodattimet', () => {
     const rows = page.locator('tbody tr');
     await expect(rows).toHaveCount(1);
     await expect(rows.filter({ hasText: 'Purukumi Puru' })).toHaveCount(1);
+  });
+});
+
+test.describe('Taulukon sorttaus', () => {
+  test('Jonosijoilla', async ({ page }) => {
+    const sortButton = page
+      .getByTestId('sijoittelun-tulokset-form-valintatapajono-yo')
+      .getByRole('button', { name: 'Jonosija' });
+    await sortButton.click();
+    const rows = page
+      .getByTestId('sijoittelun-tulokset-form-valintatapajono-yo')
+      .locator('tbody tr');
+    await expect(rows).toHaveCount(3);
+    await checkRow(rows.nth(0), RUHTINAS_ROW, 'td', false);
+    await checkRow(rows.nth(1), DACULA_ROW, 'td', false);
+    await checkRow(rows.nth(2), PURUKUMI_ROW, 'td', false);
+    await sortButton.click();
+    await checkRow(rows.nth(0), PURUKUMI_ROW, 'td', false);
+    await checkRow(rows.nth(1), DACULA_ROW, 'td', false);
+    await checkRow(rows.nth(2), RUHTINAS_ROW, 'td', false);
+  });
+
+  test('Hakijan nimellä', async ({ page }) => {
+    const sortButton = page
+      .getByTestId('sijoittelun-tulokset-form-valintatapajono-yo')
+      .getByRole('button', { name: 'Hakija' });
+    await sortButton.click();
+    const rows = page
+      .getByTestId('sijoittelun-tulokset-form-valintatapajono-yo')
+      .locator('tbody tr');
+    await expect(rows).toHaveCount(3);
+    await checkRow(rows.nth(0), DACULA_ROW, 'td', false);
+    await checkRow(rows.nth(1), RUHTINAS_ROW, 'td', false);
+    await checkRow(rows.nth(2), PURUKUMI_ROW, 'td', false);
+    await sortButton.click();
+    await checkRow(rows.nth(0), PURUKUMI_ROW, 'td', false);
+    await checkRow(rows.nth(1), RUHTINAS_ROW, 'td', false);
+    await checkRow(rows.nth(2), DACULA_ROW, 'td', false);
+  });
+
+  test('Pisteillä', async ({ page }) => {
+    const sortButton = page
+      .getByTestId('sijoittelun-tulokset-form-valintatapajono-yo')
+      .getByRole('button', { name: 'Pisteet' });
+    await sortButton.click();
+    const rows = page
+      .getByTestId('sijoittelun-tulokset-form-valintatapajono-yo')
+      .locator('tbody tr');
+    await expect(rows).toHaveCount(3);
+    await checkRow(rows.nth(0), PURUKUMI_ROW, 'td', false);
+    await checkRow(rows.nth(1), DACULA_ROW, 'td', false);
+    await checkRow(rows.nth(2), RUHTINAS_ROW, 'td', false);
+    await sortButton.click();
+    await checkRow(rows.nth(0), RUHTINAS_ROW, 'td', false);
+    await checkRow(rows.nth(1), DACULA_ROW, 'td', false);
+    await checkRow(rows.nth(2), PURUKUMI_ROW, 'td', false);
+  });
+
+  test('Sijoittelun tiloilla', async ({ page }) => {
+    const sortButton = page
+      .getByTestId('sijoittelun-tulokset-form-valintatapajono-yo')
+      .getByRole('button', { name: 'Sijoittelun tila' });
+    await sortButton.click();
+    const rows = page
+      .getByTestId('sijoittelun-tulokset-form-valintatapajono-yo')
+      .locator('tbody tr');
+    await expect(rows).toHaveCount(3);
+    await checkRow(rows.nth(0), RUHTINAS_ROW, 'td', false);
+    await checkRow(rows.nth(1), DACULA_ROW, 'td', false);
+    await checkRow(rows.nth(2), PURUKUMI_ROW, 'td', false);
+    await sortButton.click();
+    await checkRow(rows.nth(0), PURUKUMI_ROW, 'td', false);
+    await checkRow(rows.nth(1), RUHTINAS_ROW, 'td', false);
+    await checkRow(rows.nth(2), DACULA_ROW, 'td', false);
   });
 });
 
