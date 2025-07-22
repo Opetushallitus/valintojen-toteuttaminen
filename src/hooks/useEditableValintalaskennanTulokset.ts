@@ -30,10 +30,7 @@ import { queryOptionsGetHakemukset } from '@/lib/ataru/ataru-queries';
 
 export type LaskennanJonosijaTulos<
   A extends Record<string, unknown> = Record<string, unknown>,
-> = Omit<
-  Partial<ValintalaskennanValintatapaJonosijaModel>,
-  'harkinnanvarainen' | 'jonosija'
-> & {
+> = Omit<Partial<ValintalaskennanValintatapaJonosijaModel>, 'jonosija'> & {
   hakemusOid: string;
   hakijaOid: string;
   hakutoiveNumero?: number;

@@ -210,7 +210,6 @@ export const jonoTulosMachine = createMachine({
         },
         [JonoTulosEventType.RESET]: {
           actions: assign(({ event }) => {
-            console.log('RESETTING');
             return resetContext(event.input);
           }),
         },
@@ -349,7 +348,7 @@ export const jonoTulosMachine = createMachine({
                     tuloksenTila,
                     prioriteetti: jonoTulos.prioriteetti ?? 0,
                     jarjestyskriteerit,
-                    harkinnanvarainen: false,
+                    harkinnanvarainen: Boolean(jonoTulos.harkinnanvarainen),
                   };
                 }),
             },
