@@ -10,14 +10,14 @@ import {
   LaskennanJonosijaTulos,
   LaskennanValintatapajonoTulos,
   LaskennanValinnanvaiheInfo,
+  LaskennanJonosijaTulosWithHakijaInfo,
+  LaskennanValintatapajonoTulosWithHakijaInfo,
 } from '@/hooks/useEditableValintalaskennanTulokset';
 import { commaToPoint, GenericEvent, isEmpty } from '@/lib/common';
-import { produce } from 'immer';
 import {
   clone,
   constant,
   filter,
-  fromEntries,
   isDeepEqual,
   isNonNullish,
   isNullish,
@@ -30,11 +30,9 @@ import {
 import { Hakukohde } from '@/lib/kouta/kouta-types';
 import { saveValinnanvaiheTulokset } from '../valintalaskenta/valintalaskenta-service';
 
-type JonoTulosByHakemusOid = Record<string, LaskennanJonosijaTulos>;
-
 export type JonoTulosContext = {
-  jonoTulokset: JonoTulosByHakemusOid;
-  changedJonoTulokset: JonoTulosByHakemusOid;
+  jonoTulokset: Array<LaskennanJonosijaTulosWithHakijaInfo>;
+  changedJonoTulokset: Array<LaskennanJonosijaTulosWithHakijaInfo>;
   jarjestysPeruste: JarjestysPeruste;
   valinnanvaihe: LaskennanValinnanvaiheInfo;
   valintatapajono: LaskennanValintatapajonoTulos;
@@ -69,7 +67,7 @@ export type JonoTulosUpdateEvent = {
 export type JonoTulosContextInput = {
   hakukohde: HakukohdeJonoTulosProps;
   valinnanvaihe: LaskennanValinnanvaiheInfo;
-  valintatapajono: LaskennanValintatapajonoTulos;
+  valintatapajono: LaskennanValintatapajonoTulosWithHakijaInfo;
   onEvent: (toast: GenericEvent) => void;
 };
 
@@ -115,14 +113,21 @@ const jonoTulosChangeReducer = ({
 }) => {
   const { hakemusOid } = event;
 
-  const oldJonoTulos = context.jonoTulokset[hakemusOid];
+  const oldJonoTulos = context.jonoTulokset.find(
+    (js) => js.hakemusOid === hakemusOid,
+  );
 
-  const existingHakemusJonoTulos =
-    context.changedJonoTulokset[hakemusOid] ?? context.jonoTulokset[hakemusOid];
+  const changedTulos = context.changedJonoTulokset.find(
+    (js) => js.hakemusOid === hakemusOid,
+  );
+
+  const existingHakemusJonoTulos = changedTulos ?? oldJonoTulos;
 
   if (!existingHakemusJonoTulos) {
     return context.changedJonoTulokset;
   }
+
+  const newJonoTulos = clone(existingHakemusJonoTulos);
 
   let newJonosija = event.jonosija ?? existingHakemusJonoTulos.jonosija ?? '';
   let newPisteet = event.pisteet ?? existingHakemusJonoTulos.pisteet ?? '';
@@ -148,23 +153,22 @@ const jonoTulosChangeReducer = ({
     newTuloksenTila = TuloksenTila.HYVAKSYTTAVISSA;
   }
 
-  const newJonoTulos = {
-    hakemusOid,
-    hakijaOid: existingHakemusJonoTulos.hakijaOid,
-    tuloksenTila: newTuloksenTila,
-    kuvaus: event.kuvaus ?? existingHakemusJonoTulos.kuvaus ?? {},
-    jarjestyskriteerit: existingHakemusJonoTulos.jarjestyskriteerit,
-    jonosija: newJonosija,
-    pisteet: newPisteet,
-  };
+  newJonoTulos.tuloksenTila = newTuloksenTila;
+  newJonoTulos.kuvaus = event.kuvaus ?? newJonoTulos.kuvaus ?? {};
+  newJonoTulos.jonosija = newJonosija;
+  newJonoTulos.pisteet = newPisteet;
 
-  return produce(context.changedJonoTulokset, (draftTulokset) => {
-    if (isJonoTulosEqual(oldJonoTulos, newJonoTulos)) {
-      delete draftTulokset[hakemusOid];
-    } else {
-      draftTulokset[hakemusOid] = newJonoTulos;
-    }
-  });
+  if (changedTulos) {
+    return isJonoTulosEqual(oldJonoTulos, newJonoTulos)
+      ? context.changedJonoTulokset.filter(
+          (t) => t.hakemusOid !== newJonoTulos.hakemusOid,
+        )
+      : context.changedJonoTulokset.map((t) =>
+          t.hakemusOid === newJonoTulos.hakemusOid ? newJonoTulos : t,
+        );
+  } else {
+    return [...context.changedJonoTulokset, newJonoTulos];
+  }
 };
 
 const resetContext = (input: JonoTulosContextInput) => {
@@ -173,12 +177,8 @@ const resetContext = (input: JonoTulosContextInput) => {
     hakukohde: input.hakukohde,
     valintatapajono: input.valintatapajono,
     valinnanvaihe: input.valinnanvaihe,
-    jonoTulokset: pipe(
-      input.valintatapajono.jonosijat,
-      map((tulos) => [tulos.hakemusOid, tulos] as const),
-      ($) => fromEntries($),
-    ),
-    changedJonoTulokset: {},
+    jonoTulokset: input.valintatapajono.jonosijat,
+    changedJonoTulokset: [],
     jarjestysPeruste: (input.valintatapajono.kaytetaanKokonaispisteita
       ? 'kokonaispisteet'
       : 'jonosija') as JarjestysPeruste,
@@ -220,18 +220,12 @@ export const jonoTulosMachine = createMachine({
                 values(context.jonoTulokset),
                 // Löytyy tallennettuja järjestyskriteereitä, eli tuloksia
                 filter((jonoTulos) => !isEmpty(jonoTulos.jarjestyskriteerit)),
-                map((jonoTulos) => {
-                  return [
-                    jonoTulos.hakemusOid,
-                    {
-                      ...jonoTulos,
-                      pisteet: '',
-                      jonosija: '',
-                      tuloksenTila: TuloksenTila.MAARITTELEMATON,
-                    },
-                  ] as const;
-                }),
-                ($) => fromEntries($),
+                map((jonoTulos) => ({
+                  ...jonoTulos,
+                  pisteet: '',
+                  jonosija: '',
+                  tuloksenTila: TuloksenTila.MAARITTELEMATON,
+                })),
               );
             },
           }),
@@ -276,11 +270,13 @@ export const jonoTulosMachine = createMachine({
               valmisSijoiteltavaksi: valintatapajono.valmisSijoiteltavaksi,
               siirretaanSijoitteluun: valintatapajono.siirretaanSijoitteluun,
               kaytetaanKokonaispisteita,
-              jonosijat: values(jonoTulokset)
+              jonosijat: jonoTulokset
                 .filter((jonoTulos) => {
                   return (
                     // Löytyy uusi muutos (käyttöliittymästä) hakemuksen tuloksiin
-                    changedJonoTulokset[jonoTulos.hakemusOid] ||
+                    changedJonoTulokset.find(
+                      (jt) => jt.hakemusOid === jonoTulos.hakemusOid,
+                    ) ||
                     // Löytyy vanha (aiemmin ladattu) muutos hakemuksen laskennan tuloksiin
                     isNonNullish(jonoTulos.tuloksenTila)
                   );
@@ -289,8 +285,9 @@ export const jonoTulosMachine = createMachine({
                   const jarjestyskriteerit =
                     clone(jonoTulos.jarjestyskriteerit) ?? [];
 
-                  const changedJonoTulos =
-                    changedJonoTulokset[jonoTulos.hakemusOid];
+                  const changedJonoTulos = changedJonoTulokset.find(
+                    (jt) => jt.hakemusOid === jonoTulos.hakemusOid,
+                  );
 
                   const tuloksenTila =
                     changedJonoTulos?.tuloksenTila ??
@@ -426,7 +423,7 @@ export const jonoTulosMachine = createMachine({
 type JonoTulosMachineParams = {
   hakukohde: HakukohdeJonoTulosProps;
   valinnanvaihe: LaskennanValinnanvaiheInfo;
-  laskettuJono: LaskennanValintatapajonoTulos;
+  laskettuJono: LaskennanValintatapajonoTulosWithHakijaInfo;
   onEvent: (toast: GenericEvent) => void;
 };
 
@@ -496,7 +493,7 @@ export const useSelectedJarjestysperuste = (
     (s) => s.context.jarjestysPeruste,
   );
 
-  const setSelectedJarjesteysperuste = useCallback(
+  const setSelectedJarjestysperuste = useCallback(
     (newJarjestysPeruste: JarjestysPeruste) => {
       jonoTulosActorRef.send({
         type: JonoTulosEventType.JARJESTYSPERUSTE_CHANGED,
@@ -506,7 +503,7 @@ export const useSelectedJarjestysperuste = (
     [jonoTulosActorRef],
   );
 
-  return [jarjestysPeruste, setSelectedJarjesteysperuste] as const;
+  return [jarjestysPeruste, setSelectedJarjestysperuste] as const;
 };
 
 export const useHakemusJonoTulos = (
@@ -516,8 +513,9 @@ export const useHakemusJonoTulos = (
   return useSelector(
     jonoTulosActorRef,
     (s) =>
-      s.context.changedJonoTulokset[hakemusOid] ??
-      s.context.jonoTulokset[hakemusOid],
+      s.context.changedJonoTulokset.find(
+        (jt) => jt.hakemusOid === hakemusOid,
+      ) ?? s.context.jonoTulokset.find((jt) => jt.hakemusOid === hakemusOid),
   );
 };
 

@@ -73,3 +73,27 @@ test('sort byProp with number', () => {
     { name: 'Ruhtinas Nukettaja', title: { fi: 'Ruhtinas' }, age: 30 },
   ]);
 });
+
+test('sort byProp with number handling decimals', () => {
+  const dataWithDecimals = [
+    { name: 'Kreivi Dacula', title: { fi: 'Kreivi' }, points: 500 },
+    { name: 'Ruhtinas Nukettaja', title: { fi: 'Ruhtinas' }, points: '30,5' },
+    { name: 'Hui Kauhistus', title: { fi: '' }, points: 9999.9 },
+  ];
+
+  expect(
+    dataWithDecimals.sort(byProp('points', 'asc', translateEntity)),
+  ).toEqual([
+    { name: 'Ruhtinas Nukettaja', title: { fi: 'Ruhtinas' }, points: '30,5' },
+    { name: 'Kreivi Dacula', title: { fi: 'Kreivi' }, points: 500 },
+    { name: 'Hui Kauhistus', title: { fi: '' }, points: 9999.9 },
+  ]);
+
+  expect(
+    dataWithDecimals.sort(byProp('points', 'desc', translateEntity)),
+  ).toEqual([
+    { name: 'Hui Kauhistus', title: { fi: '' }, points: 9999.9 },
+    { name: 'Kreivi Dacula', title: { fi: 'Kreivi' }, points: 500 },
+    { name: 'Ruhtinas Nukettaja', title: { fi: 'Ruhtinas' }, points: '30,5' },
+  ]);
+});

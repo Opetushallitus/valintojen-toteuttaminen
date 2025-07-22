@@ -1,6 +1,7 @@
+import { commaToPoint } from '@/lib/common';
 import { TranslatedName } from '@/lib/localization/localization-types';
 import { isTranslatedName } from '@/lib/localization/translation-utils';
-import { pathOr, pipe, stringToPath, when } from 'remeda';
+import { isNumber, isString, pathOr, pipe, stringToPath, when } from 'remeda';
 
 export type SortDirection = 'asc' | 'desc';
 
@@ -23,10 +24,10 @@ function getValueByPath<R extends Record<string, PropValue>>(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     pathOr(stringToPath(key), '' as any),
     when(isTranslatedName, translateEntity),
-    when(
-      (v) => !isNaN(Number(v)),
-      (v) => Number.parseFloat(v),
-    ),
+    when(isString, (value) => {
+      const numberValue = Number.parseFloat(commaToPoint(value) ?? '');
+      return isNumber(numberValue) ? numberValue : value;
+    }),
   );
 }
 

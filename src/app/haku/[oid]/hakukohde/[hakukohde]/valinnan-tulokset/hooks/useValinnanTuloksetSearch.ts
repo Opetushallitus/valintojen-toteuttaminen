@@ -12,6 +12,7 @@ import { useTranslations } from '@/lib/localization/useTranslations';
 import { hakemusFilter } from '@/lib/filters';
 import { isEmpty } from 'remeda';
 import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
+import { sortByValinnanTila } from '@/lib/sortByValinnanTila';
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -108,6 +109,10 @@ export const useValinnanTuloksetSearch = (
           vastaanottoTila === hakemus?.vastaanottoTila) &&
         hakemusFilter(hakemus, searchPhrase),
     );
+
+    if (orderBy === 'valinnantila') {
+      return sortByValinnanTila(direction, filtered);
+    }
 
     return orderBy && direction
       ? filtered.sort(byProp(orderBy, direction, translateEntity))

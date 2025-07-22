@@ -18,7 +18,7 @@ import {
   ValinnanTila,
 } from '@/lib/types/sijoittelu-types';
 import { hakemusFilter } from '@/lib/filters';
-import { sortBySijoittelunTila } from '@/lib/sortBySijoittelunTila';
+import { sortByValinnanTila } from '@/lib/sortByValinnanTila';
 import { isHyvaksyttyHarkinnanvaraisesti } from '@/lib/sijoittelun-tulokset-utils';
 
 const DEFAULT_PAGE_SIZE = 10;
@@ -156,15 +156,7 @@ export const useSijoittelunTulosSearch = (
 
     const sortHakijat = (orderBy: string, direction: SortDirection) => {
       if (orderBy === 'sijoittelunTila') {
-        return sortBySijoittelunTila(direction, filtered);
-      }
-      if (orderBy === 'sija') {
-        return filtered.sort((a, b) => {
-          const asc = direction === 'asc';
-          const aVal = a.sija ?? Number.MAX_VALUE;
-          const bVal = b.sija ?? Number.MAX_VALUE;
-          return asc ? bVal - aVal : aVal - bVal;
-        });
+        return sortByValinnanTila(direction, filtered);
       }
       return filtered.sort(byProp(orderBy, direction, translateEntity));
     };
@@ -173,7 +165,7 @@ export const useSijoittelunTulosSearch = (
 
     return orderBy && direction
       ? sortHakijat(orderBy, direction)
-      : sortBySijoittelunTila(direction ?? 'asc', filtered);
+      : sortByValinnanTila(direction ?? 'asc', filtered);
   }, [
     hakemukset,
     searchPhrase,
