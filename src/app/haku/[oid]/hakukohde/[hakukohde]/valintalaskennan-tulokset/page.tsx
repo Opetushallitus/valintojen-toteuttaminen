@@ -9,7 +9,7 @@ import {
   useEditableValintalaskennanTulokset,
 } from '@/hooks/useEditableValintalaskennanTulokset';
 import { PageSizeSelector } from '@/components/table/page-size-selector';
-import React, { use } from 'react';
+import React, { use, useMemo } from 'react';
 import { LaskennatonValintatapajonoContent } from './components/laskennaton-valintatapajono-content';
 import { useJonoTuloksetSearchParams } from '@/hooks/useJonoTuloksetSearch';
 import { FullClientSpinner } from '@/components/client-spinner';
@@ -112,12 +112,14 @@ const ValinnanvaiheetContent = ({
 }) => {
   const { t } = useTranslations();
 
-  const { lasketutValinnanvaiheet, valinnanvaiheetIlmanLaskentaa } = groupBy(
-    valinnanvaiheet,
-    (vaihe) =>
-      vaihe.createdAt
-        ? 'lasketutValinnanvaiheet'
-        : 'valinnanvaiheetIlmanLaskentaa',
+  const { lasketutValinnanvaiheet, valinnanvaiheetIlmanLaskentaa } = useMemo(
+    () =>
+      groupBy(valinnanvaiheet, (vaihe) =>
+        vaihe.createdAt
+          ? 'lasketutValinnanvaiheet'
+          : 'valinnanvaiheetIlmanLaskentaa',
+      ),
+    [valinnanvaiheet],
   );
 
   return (

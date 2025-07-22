@@ -29,7 +29,6 @@ import {
 } from 'remeda';
 import { Hakukohde } from '@/lib/kouta/kouta-types';
 import { saveValinnanvaiheTulokset } from '../valintalaskenta/valintalaskenta-service';
-import { useHasChangedArray } from '@/hooks/useHasChanged';
 
 export type JonoTulosContext = {
   jonoTulokset: Array<LaskennanJonosijaTulosWithHakijaInfo>;
@@ -450,29 +449,19 @@ export const useJonotulosState = ({
 
   const onEventCb = useCallback(onEvent, [onEvent]);
 
-  const jonoChanged = useHasChangedArray(laskettuJono.jonosijat);
   // Resetoidaan konteksti kun data muuttuu. Aktoria ei käynnistetä uudelleen automaattisesti kun input muuttuu.
   // https://stately.ai/docs/input#passing-new-data-to-an-actor
   useEffect(() => {
-    if (jonoChanged) {
-      actorRef.send({
-        type: JonoTulosEventType.RESET,
-        input: {
-          hakukohde,
-          valinnanvaihe,
-          valintatapajono: laskettuJono,
-          onEvent: onEventCb,
-        },
-      });
-    }
-  }, [
-    actorRef,
-    hakukohde,
-    valinnanvaihe,
-    laskettuJono,
-    onEventCb,
-    jonoChanged,
-  ]);
+    actorRef.send({
+      type: JonoTulosEventType.RESET,
+      input: {
+        hakukohde,
+        valinnanvaihe,
+        valintatapajono: laskettuJono,
+        onEvent: onEventCb,
+      },
+    });
+  }, [actorRef, hakukohde, valinnanvaihe, laskettuJono, onEventCb]);
   return useJonoTulosActorRef(actorRef);
 };
 

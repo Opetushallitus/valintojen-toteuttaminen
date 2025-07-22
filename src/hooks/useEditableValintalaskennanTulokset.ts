@@ -27,6 +27,7 @@ import { pointToComma } from '@/lib/common';
 import { queryOptionsGetHakukohteenValintalaskennanTulokset } from '@/lib/valintalaskenta/valintalaskenta-queries';
 import { queryOptionsGetHakukohteenValinnanvaiheet } from '@/lib/valintaperusteet/valintaperusteet-queries';
 import { queryOptionsGetHakemukset } from '@/lib/ataru/ataru-queries';
+import { useMemo } from 'react';
 
 export type LaskennanJonosijaTulos<
   A extends Record<string, unknown> = Record<string, unknown>,
@@ -256,36 +257,36 @@ export const useEditableValintalaskennanTulokset = ({
     ],
   });
 
-  const hakemuksetByOid = indexBy(hakemukset ?? [], prop('hakemusOid'));
+  return useMemo(() => {
+    const notFoundHakemukset: Array<string> = [];
+    const hakemuksetByOid = indexBy(hakemukset ?? [], prop('hakemusOid'));
+    const result =
+      selectEditableValintalaskennanTulokset<AdditionalHakemusFields>({
+        valintalaskennanTulokset: hakukohteenLaskennanTulokset,
+        valinnanvaiheet,
+        hakemukset,
+        selectHakemusFields(hakemusOid) {
+          const hakemus = hakemuksetByOid[hakemusOid];
 
-  const notFoundHakemukset: Array<string> = [];
+          if (!hakemus) {
+            notFoundHakemukset.push(hakemusOid);
+          }
 
-  const result =
-    selectEditableValintalaskennanTulokset<AdditionalHakemusFields>({
-      valintalaskennanTulokset: hakukohteenLaskennanTulokset,
-      valinnanvaiheet,
-      hakemukset,
-      selectHakemusFields(hakemusOid) {
-        const hakemus = hakemuksetByOid[hakemusOid];
+          return {
+            hakijanNimi: hakemus?.hakijanNimi ?? '',
+            hakemuksenTila: hakemus?.tila ?? HakemuksenTila.KESKEN,
+            henkilotunnus: hakemus?.henkilotunnus ?? '',
+          };
+        },
+      });
 
-        if (!hakemus) {
-          notFoundHakemukset.push(hakemusOid);
-        }
+    if (notFoundHakemukset.length > 0) {
+      console.warn(
+        'Seuraavien hakemusten tietoja ei löytynyt Atarusta, vaikka valintalaskennan tuloksia löytyi:',
+        notFoundHakemukset,
+      );
+    }
 
-        return {
-          hakijanNimi: hakemus?.hakijanNimi ?? '',
-          hakemuksenTila: hakemus?.tila ?? HakemuksenTila.KESKEN,
-          henkilotunnus: hakemus?.henkilotunnus ?? '',
-        };
-      },
-    });
-
-  if (notFoundHakemukset.length > 0) {
-    console.warn(
-      'Seuraavien hakemusten tietoja ei löytynyt Atarusta, vaikka valintalaskennan tuloksia löytyi:',
-      notFoundHakemukset,
-    );
-  }
-
-  return result;
+    return result;
+  }, [hakukohteenLaskennanTulokset, valinnanvaiheet, hakemukset]);
 };
