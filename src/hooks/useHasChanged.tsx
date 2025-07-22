@@ -10,10 +10,10 @@ export function useHasChanged<T>(
   return !compare(value, previousValue);
 }
 
-export function useHasChangedArrayIgnoringSort<T>(values: Array<T>) {
+export function useHasChangedArray<T>(values: Array<T>) {
   const previousValues = usePrevious(values);
   return (
     previousValues?.length !== values.length ||
-    values.some((v) => !previousValues.find((pv) => isDeepEqual(pv, v)))
+    values.some((v, index) => !isDeepEqual(previousValues[index], v))
   );
 }

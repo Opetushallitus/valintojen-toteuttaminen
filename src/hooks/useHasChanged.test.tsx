@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { useHasChanged, useHasChangedArrayIgnoringSort } from './useHasChanged';
+import { useHasChanged, useHasChangedArray } from './useHasChanged';
 import { renderHook } from '@testing-library/react';
 
 describe('useHasChanged', () => {
@@ -27,27 +27,23 @@ describe('useHasChanged', () => {
   });
 });
 
-describe('useHasChangedArrayIgnoringSort', () => {
+describe('useHasChangedArray', () => {
   it('should return true on initial render', () => {
     const value = [42, 33];
-    const { result } = renderHook(() => useHasChangedArrayIgnoringSort(value));
+    const { result } = renderHook(() => useHasChangedArray(value));
     expect(result.current).toBe(true);
   });
 
   it('should return false when value does not change', () => {
     const value = ['ruhtinas', 'nukettaja'];
-    const { result, rerender } = renderHook(() =>
-      useHasChangedArrayIgnoringSort(value),
-    );
+    const { result, rerender } = renderHook(() => useHasChangedArray(value));
     rerender();
     expect(result.current).toBe(false);
   });
 
   it('should return true when value changes', () => {
     let value = [1, 3];
-    const { result, rerender } = renderHook(() =>
-      useHasChangedArrayIgnoringSort(value),
-    );
+    const { result, rerender } = renderHook(() => useHasChangedArray(value));
     rerender();
     expect(result.current).toBe(false);
     value = [2, 3];
@@ -60,9 +56,7 @@ describe('useHasChangedArrayIgnoringSort', () => {
       { key: 1, name: 'Dacula' },
       { key: 3, name: 'Kreivi' },
     ];
-    const { result, rerender } = renderHook(() =>
-      useHasChangedArrayIgnoringSort(value),
-    );
+    const { result, rerender } = renderHook(() => useHasChangedArray(value));
     rerender();
     expect(result.current).toBe(false);
     value = [
@@ -73,14 +67,12 @@ describe('useHasChangedArrayIgnoringSort', () => {
     expect(result.current).toBe(true);
   });
 
-  it('should return false if only order of items has changed', () => {
+  it('should return true if order of items has changed', () => {
     let value = [
       { key: 1, name: 'Dacula' },
       { key: 3, name: 'Kreivi' },
     ];
-    const { result, rerender } = renderHook(() =>
-      useHasChangedArrayIgnoringSort(value),
-    );
+    const { result, rerender } = renderHook(() => useHasChangedArray(value));
     rerender();
     expect(result.current).toBe(false);
     value = [
@@ -88,6 +80,6 @@ describe('useHasChangedArrayIgnoringSort', () => {
       { key: 1, name: 'Dacula' },
     ];
     rerender();
-    expect(result.current).toBe(false);
+    expect(result.current).toBe(true);
   });
 });
