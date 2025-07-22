@@ -24,6 +24,7 @@ import { Language } from '@/lib/localization/localization-types';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { useSelector } from '@xstate/react';
 import { useJonoTuloksetSearch } from '@/hooks/useJonoTuloksetSearch';
+import { clone } from 'remeda';
 
 const TRANSLATIONS_PREFIX = 'valintalaskennan-tulokset.taulukko';
 
@@ -174,9 +175,12 @@ export const LaskennatonValintatapajonoTable = ({
     (state) => state.context.jonoTulokset,
   );
 
-  const jonosijatForSearch = useMemo(
+  const { results, sort, setSort, pageSize, setPage, page } =
+    useJonoTuloksetSearch(valintatapajonoOid, clone(jonosijat));
+
+  const rows = useMemo(
     () =>
-      jonosijat.map((jonosija) => {
+      results.map((jonosija) => {
         const changedJonosija =
           changedJonosijat.find(
             (js) => js.hakemusOid === jonosija.hakemusOid,
@@ -186,11 +190,8 @@ export const LaskennatonValintatapajonoTable = ({
           ...changedJonosija,
         };
       }),
-    [jonosijat, changedJonosijat],
+    [results, changedJonosijat],
   );
-
-  const { results, sort, setSort, pageSize, setPage, page } =
-    useJonoTuloksetSearch(valintatapajonoOid, jonosijatForSearch);
 
   const columns: Array<JonoColumn> = useMemo(
     () => [
@@ -260,7 +261,7 @@ export const LaskennatonValintatapajonoTable = ({
     <ListTable
       rowKeyProp="hakijaOid"
       columns={columns}
-      rows={results}
+      rows={rows}
       sort={sort}
       setSort={setSort}
       pagination={{
