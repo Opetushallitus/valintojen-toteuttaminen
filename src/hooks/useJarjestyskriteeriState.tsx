@@ -5,7 +5,7 @@ import { useHasChanged } from '@/hooks/useHasChanged';
 import { useMutation } from '@tanstack/react-query';
 import {
   deleteJonosijanJarjestyskriteeri,
-  saveJonosijanJarjestyskriteeri,
+  saveJonosijanJarjestyskriteerit,
 } from '@/lib/valintalaskenta/valintalaskenta-service';
 
 type MutationMode = 'save' | 'delete';
@@ -27,7 +27,7 @@ const useJarjestyskriteeriMutation = ({
     mutationFn: async ({
       mode,
       ...params
-    }: JarjestyskriteeriParams & { mode: MutationMode }) => {
+    }: Array<JarjestyskriteeriParams> & { mode: MutationMode }) => {
       if (mode === 'delete') {
         await deleteJonosijanJarjestyskriteeri({
           valintatapajonoOid,
@@ -35,11 +35,10 @@ const useJarjestyskriteeriMutation = ({
           jarjestyskriteeriPrioriteetti,
         });
       } else {
-        await saveJonosijanJarjestyskriteeri({
+        await saveJonosijanJarjestyskriteerit({
           valintatapajonoOid,
           hakemusOid,
-          jarjestyskriteeriPrioriteetti,
-          ...params,
+          kriteerit: params,
         });
       }
     },

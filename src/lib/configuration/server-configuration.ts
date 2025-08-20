@@ -59,7 +59,7 @@ export async function buildConfiguration() {
         valmisSijoiteltavaksiUrl: `${domain}/valintalaskenta-laskenta-service/resources/valintatapajono/{valintatapajonoOid}/valmissijoiteltavaksi?status={status}`,
         getHarkinnanvaraisetTilatUrl: `${domain}/valintalaskenta-laskenta-service/resources/harkinnanvarainenhyvaksynta/haku/{hakuOid}/hakukohde/{hakukohdeOid}`,
         setHarkinnanvaraisetTilatUrl: `${domain}/valintalaskenta-laskenta-service/resources/harkinnanvarainenhyvaksynta`,
-        jarjestyskriteeriMuokkausUrl: `${domain}/valintalaskenta-laskenta-service/resources/valintatapajono/{valintatapajonoOid}/{hakemusOid}/{jarjestyskriteeriPrioriteetti}/jonosija`,
+        jarjestyskriteeritMuokkausUrl: `${domain}/valintalaskenta-laskenta-service/resources/valintatapajono/{valintatapajonoOid}/{hakemusOid}/jonosija/jarjestyskriteerit`,
       },
       valintalaskentakoostepalvelu: {
         valintalaskentaKoostePalveluLogin: `${domain}/valintalaskentakoostepalvelu/cas/login`,
