@@ -24,11 +24,13 @@ const ModalActions = ({
   onSave,
   onDelete,
   deleteDisabled,
+  amountToSave,
 }: {
   onClose: () => void;
   onSave: () => void;
   onDelete: () => void;
   deleteDisabled?: boolean;
+  amountToSave: number;
 }) => {
   const { t } = useTranslations();
 
@@ -46,6 +48,10 @@ const ModalActions = ({
       </OphButton>
       <OphButton variant="contained" onClick={onSave}>
         {t('yleinen.tallenna')}
+        {amountToSave > 0 &&
+          t('valintalaskenta.muokkaus.tallenna-n-kriteeria', {
+            maara: amountToSave,
+          })}
       </OphButton>
     </Stack>
   );
@@ -180,6 +186,7 @@ export const ValintalaskentaEditGlobalModal = createModal<{
             onDelete={() => deleteKriteeri(jarjestyskriteeriPrioriteetti)}
             // Jonosijan tuloksen muokkauksen voi poistaa vain jos sellainen on tallennettu
             deleteDisabled={!jonosija.muokattu}
+            amountToSave={snapshot.context.changedKriteerit?.length ?? 0}
           />
         }
       >
