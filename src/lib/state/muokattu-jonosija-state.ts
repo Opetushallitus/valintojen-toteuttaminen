@@ -37,6 +37,7 @@ type MuokattuJonosijaDeleteEvent = {
 type MuokattuJonosijaContext = {
   jonosija: LaskennanJonosijaTulos;
   changedKriteerit: Array<JarjestyskriteeriParams>;
+  onSuccess: () => void;
 };
 
 type MuokattuJonosijaEvents =
@@ -103,6 +104,7 @@ function createMuokattuJonosijaMachine(
   valintatapajonoOid: string,
   jonosija: LaskennanJonosijaTulos,
   addToast: (toast: Toast) => void,
+  onSuccess: () => void,
 ) {
   return createMachine({
     id: `muokattujonosija-${valintatapajonoOid}-hakemus-${jonosija.hakemusOid}`,
@@ -112,7 +114,8 @@ function createMuokattuJonosijaMachine(
       events: MuokattuJonosijaEvents;
       actions:
         | { type: 'alert'; params: { message: string } }
-        | { type: 'successNotify'; params: { message: string } };
+        | { type: 'successNotify'; params: { message: string } }
+        | { type: 'successfullyCompleted' };
       actors:
         | {
             src: 'save';
@@ -139,6 +142,7 @@ function createMuokattuJonosijaMachine(
     },
     context: {
       jonosija,
+      onSuccess,
       changedKriteerit: new Array<JarjestyskriteeriParams>(),
     },
     states: {
@@ -192,6 +196,9 @@ function createMuokattuJonosijaMachine(
                 type: 'successNotify',
                 params: { message: 'valintalaskenta.muokkaus.save-success' },
               },
+              {
+                type: 'successfullyCompleted',
+              },
             ],
           },
           onError: {
@@ -221,6 +228,9 @@ function createMuokattuJonosijaMachine(
               {
                 type: 'successNotify',
                 params: { message: 'valintalaskenta.muokkaus.delete-success' },
+              },
+              {
+                type: 'successfullyCompleted',
               },
             ],
           },
@@ -252,6 +262,7 @@ function createMuokattuJonosijaMachine(
           type: 'success',
         });
       },
+      successfullyCompleted: ({ context }) => context.onSuccess(),
     },
     actors: {
       save: fromPromise(async ({ input }) => {
@@ -275,18 +286,22 @@ function createMuokattuJonosijaMachine(
 export const useMuokattuJonosijaActorRef = ({
   valintatapajonoOid,
   jonosija,
+  onSuccess,
 }: {
   valintatapajonoOid: string;
   jonosija: LaskennanJonosijaTulos;
+  onSuccess: () => void;
 }) => {
   const { addToast } = useToaster();
+
   const machine = useMemo(() => {
     return createMuokattuJonosijaMachine(
       valintatapajonoOid,
       jonosija,
       addToast,
+      onSuccess,
     );
-  }, [valintatapajonoOid, jonosija, addToast]);
+  }, [valintatapajonoOid, jonosija, addToast, onSuccess]);
   const actorRef = useActorRef(machine);
   const snapshot = useSelector(actorRef, (s) => s);
   //const isDirty = useIsJonoTulosDirty(actorRef);

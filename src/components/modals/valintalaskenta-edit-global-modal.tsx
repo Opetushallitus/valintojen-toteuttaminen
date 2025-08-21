@@ -1,11 +1,12 @@
 import {
   createModal,
+  hideModal,
   useOphModalProps,
 } from '@/components/modals/global-modal';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { OphButton, OphInput } from '@opetushallitus/oph-design-system';
 import { Stack } from '@mui/material';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
   LaskennanJonosijaTulos,
   LaskennanValintatapajonoTulos,
@@ -18,6 +19,7 @@ import { useMuokkausParams } from '@/hooks/useJarjestyskriteeriState';
 import { JarjestyskriteeriParams } from '@/lib/types/jarjestyskriteeri-types';
 import { useTuloksenTilaOptions } from '@/hooks/useTuloksenTilaOptions';
 import { useMuokattuJonosijaActorRef } from '@/lib/state/muokattu-jonosija-state';
+import { useHasChanged } from '@/hooks/useHasChanged';
 
 const ModalActions = ({
   onClose,
@@ -136,7 +138,7 @@ export const ValintalaskentaEditGlobalModal = createModal<{
     hakukohde,
     valintatapajono,
     jonosija,
-    //onSuccess,
+    onSuccess,
   }) => {
     const { open, slotProps, onClose } = useOphModalProps();
     const { t } = useTranslations();
@@ -150,6 +152,15 @@ export const ValintalaskentaEditGlobalModal = createModal<{
         label: `${prioriteetti + 1}. ${nimi}`,
       })) ?? [];
 
+    const jonosijaChanged = useHasChanged(jonosija.hakemusOid);
+
+    const successCallback = useCallback(() => {
+      if (jonosijaChanged) {
+        hideModal(ValintalaskentaEditGlobalModal);
+        onSuccess();
+      }
+    }, [jonosijaChanged, onSuccess]);
+
     const {
       snapshot,
       deleteKriteeri,
@@ -159,6 +170,7 @@ export const ValintalaskentaEditGlobalModal = createModal<{
     } = useMuokattuJonosijaActorRef({
       valintatapajonoOid: valintatapajono.valintatapajonooid,
       jonosija,
+      onSuccess: successCallback,
     });
 
     const jarjestyskriteeri =
