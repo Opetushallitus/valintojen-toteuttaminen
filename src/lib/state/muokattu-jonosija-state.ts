@@ -1,13 +1,14 @@
 import { assign, createMachine, fromPromise, PromiseActorLogic } from 'xstate';
 import { JarjestyskriteeriParams } from '../types/jarjestyskriteeri-types';
-import { LaskennanJonosijaTulosWithHakijaInfo } from '@/hooks/useEditableValintalaskennanTulokset';
+import { LaskennanJonosijaTulos } from '@/hooks/useEditableValintalaskennanTulokset';
 import { commaToPoint } from '../common';
 import {
   deleteJonosijanJarjestyskriteeri,
   saveJonosijanJarjestyskriteerit,
 } from '../valintalaskenta/valintalaskenta-service';
 import useToaster, { Toast } from '@/hooks/useToaster';
-import { useActorRef } from '@xstate/react';
+import { useActorRef, useSelector } from '@xstate/react';
+import { useMemo } from 'react';
 
 export enum MuokattuJonosijaEventTypes {
   ADD = 'ADD',
@@ -34,7 +35,7 @@ type MuokattuJonosijaDeleteEvent = {
 } & { jarjestyskriteeriPrioriteetti: number };
 
 type MuokattuJonosijaContext = {
-  jonosija: LaskennanJonosijaTulosWithHakijaInfo;
+  jonosija: LaskennanJonosijaTulos;
   changedKriteerit: Array<JarjestyskriteeriParams>;
 };
 
@@ -48,11 +49,10 @@ function applyKriteeriChange(
   event: MuokattuJonosijaChangeEvent,
 ): Array<JarjestyskriteeriParams> {
   const originalKriteeri = context.jonosija.jarjestyskriteerit?.find(
-    (k) => k.prioriteetti === event.jarjestyskriteeriPrioriteetti,
+    (k) => k.prioriteetti === event.prioriteetti,
   );
   const existingChangedKriteeri = context.changedKriteerit.find(
-    (k) =>
-      k.jarjestyskriteeriPrioriteetti === event.jarjestyskriteeriPrioriteetti,
+    (k) => k.prioriteetti === event.prioriteetti,
   );
   if (
     originalKriteeri?.arvo === commaToPoint(event.arvo) &&
@@ -61,9 +61,7 @@ function applyKriteeriChange(
   ) {
     if (existingChangedKriteeri) {
       return context.changedKriteerit.filter(
-        (ck) =>
-          ck.jarjestyskriteeriPrioriteetti !==
-          existingChangedKriteeri.jarjestyskriteeriPrioriteetti,
+        (ck) => ck.prioriteetti !== existingChangedKriteeri.prioriteetti,
       );
     }
     return context.changedKriteerit;
@@ -74,16 +72,14 @@ function applyKriteeriChange(
     existingChangedKriteeri.selite = event.selite;
     existingChangedKriteeri.tila = event.tila;
     return context.changedKriteerit.map((ck) =>
-      ck.jarjestyskriteeriPrioriteetti === event.jarjestyskriteeriPrioriteetti
-        ? existingChangedKriteeri
-        : ck,
+      ck.prioriteetti === event.prioriteetti ? existingChangedKriteeri : ck,
     );
   } else {
     return [
       ...context.changedKriteerit,
       {
         arvo: event.arvo,
-        jarjestyskriteeriPrioriteetti: event.jarjestyskriteeriPrioriteetti,
+        prioriteetti: event.prioriteetti,
         selite: event.selite,
         tila: event.tila,
       },
@@ -105,7 +101,7 @@ function isModifiedJonosija({ context }: { context: MuokattuJonosijaContext }) {
 
 function createMuokattuJonosijaMachine(
   valintatapajonoOid: string,
-  jonosija: LaskennanJonosijaTulosWithHakijaInfo,
+  jonosija: LaskennanJonosijaTulos,
   addToast: (toast: Toast) => void,
 ) {
   return createMachine({
@@ -175,7 +171,7 @@ function createMuokattuJonosijaMachine(
             {
               actions: {
                 type: 'alert',
-                params: { message: 'virhe.eimuuttunut' },
+                params: { message: 'valintalaskenta.muokkaus.ei-muokkausta' },
               },
             },
           ],
@@ -194,7 +190,7 @@ function createMuokattuJonosijaMachine(
             actions: [
               {
                 type: 'successNotify',
-                params: { message: 'muokkaus.tallennettu' },
+                params: { message: 'valintalaskenta.muokkaus.save-success' },
               },
             ],
           },
@@ -203,7 +199,7 @@ function createMuokattuJonosijaMachine(
             actions: [
               {
                 type: 'alert',
-                params: { message: 'virhe.tallennus' },
+                params: { message: 'valintalaskenta.muokkaus.save-error' },
               },
             ],
           },
@@ -224,7 +220,7 @@ function createMuokattuJonosijaMachine(
             actions: [
               {
                 type: 'successNotify',
-                params: { message: 'muokkaus.tallennettu' },
+                params: { message: 'valintalaskenta.muokkaus.delete-success' },
               },
             ],
           },
@@ -233,7 +229,7 @@ function createMuokattuJonosijaMachine(
             actions: [
               {
                 type: 'alert',
-                params: { message: 'virhe.tallennus' },
+                params: { message: 'valintalaskenta.muokkaus.delete-error' },
               },
             ],
           },
@@ -281,11 +277,40 @@ export const useMuokattuJonosijaActorRef = ({
   jonosija,
 }: {
   valintatapajonoOid: string;
-  jonosija: LaskennanJonosijaTulosWithHakijaInfo;
+  jonosija: LaskennanJonosijaTulos;
 }) => {
   const { addToast } = useToaster();
-  const sijoittelunTuloksetActorRef = useActorRef(
-    createMuokattuJonosijaMachine(valintatapajonoOid, jonosija, addToast),
-  );
-  return sijoittelunTuloksetActorRef;
+  const machine = useMemo(() => {
+    return createMuokattuJonosijaMachine(
+      valintatapajonoOid,
+      jonosija,
+      addToast,
+    );
+  }, [valintatapajonoOid, jonosija, addToast]);
+  const actorRef = useActorRef(machine);
+  const snapshot = useSelector(actorRef, (s) => s);
+  //const isDirty = useIsJonoTulosDirty(actorRef);
+  return {
+    actorRef,
+    snapshot,
+    isPending:
+      snapshot.matches(MuokattuJonosijaState.SAVING) ||
+      snapshot.matches(MuokattuJonosijaState.DELETING),
+    onJarjestysKriteeriChange: (params: JarjestyskriteeriParams) => {
+      actorRef.send({
+        type: MuokattuJonosijaEventTypes.ADD,
+        ...params,
+      });
+    },
+    saveKriteerit: () => {
+      actorRef.send({ type: MuokattuJonosijaEventTypes.SAVE });
+    },
+    deleteKriteeri: (jarjestyskriteeriPrioriteetti: number) => {
+      actorRef.send({
+        type: MuokattuJonosijaEventTypes.DELETE,
+        jarjestyskriteeriPrioriteetti: jarjestyskriteeriPrioriteetti,
+      });
+    },
+    //isDirty,
+  };
 };

@@ -1,6 +1,5 @@
 import {
   createModal,
-  hideModal,
   useOphModalProps,
 } from '@/components/modals/global-modal';
 import { useTranslations } from '@/lib/localization/useTranslations';
@@ -15,10 +14,10 @@ import { Hakukohde } from '@/lib/kouta/kouta-types';
 import { HakutoiveTitle } from '../hakutoive-title';
 import { EditModal, InlineFormControl, PaddedLabel } from './edit-modal';
 import { LocalizedSelect } from '@/components/localized-select';
-import { useJarjestyskriteeriState } from '@/hooks/useJarjestyskriteeriState';
+import { useMuokkausParams } from '@/hooks/useJarjestyskriteeriState';
 import { JarjestyskriteeriParams } from '@/lib/types/jarjestyskriteeri-types';
-import useToaster from '@/hooks/useToaster';
 import { useTuloksenTilaOptions } from '@/hooks/useTuloksenTilaOptions';
+import { useMuokattuJonosijaActorRef } from '@/lib/state/muokattu-jonosija-state';
 
 const ModalActions = ({
   onClose,
@@ -131,18 +130,13 @@ export const ValintalaskentaEditGlobalModal = createModal<{
     hakukohde,
     valintatapajono,
     jonosija,
-    onSuccess,
+    //onSuccess,
   }) => {
     const { open, slotProps, onClose } = useOphModalProps();
     const { t } = useTranslations();
 
-    const { addToast } = useToaster();
-
     const [jarjestyskriteeriPrioriteetti, setJarjestyskriteeriPrioriteetti] =
       useState<number>(0);
-
-    const jarjestyskriteeri =
-      jonosija.jarjestyskriteerit?.[jarjestyskriteeriPrioriteetti];
 
     const jarjestyskriteeriOptions =
       jonosija.jarjestyskriteerit?.map(({ nimi, prioriteetti }) => ({
@@ -151,33 +145,23 @@ export const ValintalaskentaEditGlobalModal = createModal<{
       })) ?? [];
 
     const {
+      snapshot,
+      deleteKriteeri,
       isPending,
-      muokkausParams,
-      setMuokkausParams,
-      saveJarjestyskriteeri,
-      deleteJarjestyskriteeri,
-    } = useJarjestyskriteeriState({
-      hakemusOid: jonosija.hakemusOid,
+      saveKriteerit,
+      onJarjestysKriteeriChange,
+    } = useMuokattuJonosijaActorRef({
       valintatapajonoOid: valintatapajono.valintatapajonooid,
-      jarjestyskriteeri,
-      onError: (e, mode) => {
-        addToast({
-          key: `valintalaskenta-${mode}-error`,
-          message: `valintalaskenta.muokkaus.${mode}-error`,
-          type: 'error',
-        });
-        console.error(e);
-      },
-      onSuccess: (mode) => {
-        addToast({
-          key: `valintalaskenta-${mode}-success`,
-          message: `valintalaskenta.muokkaus.${mode}-success`,
-          type: 'success',
-        });
-        onSuccess();
-        hideModal(ValintalaskentaEditGlobalModal);
-      },
+      jonosija,
     });
+
+    const jarjestyskriteeri =
+      snapshot.context.changedKriteerit.find(
+        (k) => k.prioriteetti === jarjestyskriteeriPrioriteetti,
+      ) ?? jonosija.jarjestyskriteerit?.[jarjestyskriteeriPrioriteetti];
+
+    const [muokkausParams, setMuokkausParams] =
+      useMuokkausParams(jarjestyskriteeri);
 
     return (
       <EditModal
@@ -192,8 +176,8 @@ export const ValintalaskentaEditGlobalModal = createModal<{
         actions={
           <ModalActions
             onClose={onClose}
-            onSave={() => saveJarjestyskriteeri()}
-            onDelete={() => deleteJarjestyskriteeri()}
+            onSave={saveKriteerit}
+            onDelete={() => deleteKriteeri(jarjestyskriteeriPrioriteetti)}
             // Jonosijan tuloksen muokkauksen voi poistaa vain jos sellainen on tallennettu
             deleteDisabled={!jonosija.muokattu}
           />
@@ -242,12 +226,13 @@ export const ValintalaskentaEditGlobalModal = createModal<{
         />
         <JarjestyskriteeriFields
           value={muokkausParams}
-          onChange={(changedParams) =>
+          onChange={(changedParams) => {
+            onJarjestysKriteeriChange({ ...muokkausParams, ...changedParams });
             setMuokkausParams((oldParams) => ({
               ...oldParams,
               ...changedParams,
-            }))
-          }
+            }));
+          }}
         />
       </EditModal>
     );

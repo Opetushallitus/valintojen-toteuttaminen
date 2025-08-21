@@ -26,8 +26,11 @@ const useJarjestyskriteeriMutation = ({
   return useMutation({
     mutationFn: async ({
       mode,
-      ...params
-    }: Array<JarjestyskriteeriParams> & { mode: MutationMode }) => {
+      params,
+    }: {
+      params: Array<JarjestyskriteeriParams>;
+      mode: MutationMode;
+    }) => {
       if (mode === 'delete') {
         await deleteJonosijanJarjestyskriteeri({
           valintatapajonoOid,
@@ -51,12 +54,27 @@ const useJarjestyskriteeriMutation = ({
   });
 };
 
-const useMuokkausParams = (jarjestyskriteeri?: Jarjestyskriteeri) => {
+const isJarjestyskriteeri = (x: unknown): x is Jarjestyskriteeri => {
+  return (x as Jarjestyskriteeri).kuvaus !== undefined;
+};
+
+const getSelite = (
+  jarjestyskriteeri?: Jarjestyskriteeri | JarjestyskriteeriParams,
+) => {
+  return isJarjestyskriteeri(jarjestyskriteeri)
+    ? (jarjestyskriteeri?.kuvaus?.FI ?? '')
+    : (jarjestyskriteeri?.selite ?? '');
+};
+
+export const useMuokkausParams = (
+  jarjestyskriteeri?: Jarjestyskriteeri | JarjestyskriteeriParams,
+) => {
   const [muokkausParams, setMuokkausParams] = useState<JarjestyskriteeriParams>(
     () => ({
       tila: jarjestyskriteeri?.tila ?? TuloksenTila.MAARITTELEMATON,
       arvo: jarjestyskriteeri?.arvo?.toString() ?? '',
-      selite: jarjestyskriteeri?.kuvaus?.FI ?? '',
+      selite: getSelite(jarjestyskriteeri),
+      prioriteetti: jarjestyskriteeri?.prioriteetti ?? 0,
     }),
   );
 
@@ -69,7 +87,8 @@ const useMuokkausParams = (jarjestyskriteeri?: Jarjestyskriteeri) => {
       setMuokkausParams({
         tila: jarjestyskriteeri?.tila ?? TuloksenTila.MAARITTELEMATON,
         arvo: jarjestyskriteeri?.arvo?.toString() ?? '',
-        selite: jarjestyskriteeri?.kuvaus?.FI ?? '',
+        selite: getSelite(jarjestyskriteeri),
+        prioriteetti: jarjestyskriteeri?.prioriteetti ?? 0,
       });
     }
   }, [jarjestyskriteeri, jarjestyskriteeriChanged]);
@@ -103,9 +122,10 @@ export const useJarjestyskriteeriState = ({
 
   return {
     isPending,
-    saveJarjestyskriteeri: () => mutate({ ...muokkausParams, mode: 'save' }),
+    saveJarjestyskriteeri: () =>
+      mutate({ params: [muokkausParams], mode: 'save' }),
     deleteJarjestyskriteeri: () =>
-      mutate({ ...muokkausParams, mode: 'delete' }),
+      mutate({ params: [muokkausParams], mode: 'delete' }),
     muokkausParams,
     setMuokkausParams,
   };

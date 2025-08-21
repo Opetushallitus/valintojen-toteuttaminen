@@ -56,6 +56,7 @@ import { getConfiguration } from '@/lib/configuration/client-configuration';
 import { getConfigUrl } from '../configuration/configuration-utils';
 import { siirraTaiPoistaValintatapajonoAutomaattisestaSijoittelusta } from '../valintaperusteet/valintaperusteet-service';
 import { commaToPoint, pointToComma } from '@/lib/common';
+import { JarjestyskriteeriParams } from '../types/jarjestyskriteeri-types';
 
 const createLaskentaURL = async ({
   laskentaTyyppi,
@@ -492,12 +493,7 @@ type JarjestyskriteeritSaveParams = Omit<
   JarjestyskriteeriKeyParams,
   'jarjestyskriteeriPrioriteetti'
 > & {
-  kriteerit: Array<{
-    jarjestyskriteeriPrioriteetti: number;
-    tila: string;
-    arvo: string;
-    selite: string;
-  }>;
+  kriteerit: Array<JarjestyskriteeriParams>;
 };
 
 type JarjestyskriteeriChangeResult = KoutaOidParams & {
@@ -524,7 +520,7 @@ export const saveJonosijanJarjestyskriteerit = ({
     tila: k.tila,
     arvo: commaToPoint(k.arvo),
     selite: k.selite,
-    jarjestyskriteeriPrioriteetti: k.jarjestyskriteeriPrioriteetti,
+    jarjestyskriteeriPrioriteetti: k.prioriteetti,
   }));
   return client.post<JarjestyskriteeriChangeResult>(
     getConfigUrl(

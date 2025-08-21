@@ -644,7 +644,8 @@
       "save-error": "Valintalaskennan tietojen tallentaminen epäonnistui",
       "save-success": "Valintalaskennan tietojen tallentaminen onnistui",
       "delete-error": "Valintalaskennan muokkauksen poistaminen epäonnistui",
-      "delete-success": "Valintalaskennan muokkauksen poistaminen onnistui"
+      "delete-success": "Valintalaskennan muokkauksen poistaminen onnistui",
+      "ei-muokkausta": "Valintajonon järjestyskriteerejä ei ole muokattu"
     }
   },
   "yhteisvalinnan-hallinta": {
