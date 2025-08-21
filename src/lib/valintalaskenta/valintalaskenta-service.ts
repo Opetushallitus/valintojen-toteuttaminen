@@ -544,7 +544,7 @@ export const deleteJonosijanJarjestyskriteeri = ({
   return client.delete<JarjestyskriteeriChangeResult>(
     getConfigUrl(
       configuration.routes.valintalaskentaLaskentaService
-        .jarjestyskriteeritMuokkausUrl,
+        .jarjestyskriteeriPoistoUrl,
       {
         valintatapajonoOid,
         hakemusOid,
