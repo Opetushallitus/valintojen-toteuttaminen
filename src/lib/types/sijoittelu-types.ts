@@ -67,6 +67,7 @@ export type SijoittelunHakemus = {
 export type SijoittelunHakemusValintatiedoilla = {
   hakemusOid: string;
   hakijaOid: string;
+  henkilotunnus?: string | null;
   pisteet: string;
   valintatapajonoOid: string;
   hyvaksyttyHakijaryhmista: Array<string>;

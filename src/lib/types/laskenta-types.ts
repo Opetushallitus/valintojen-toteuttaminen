@@ -8,6 +8,7 @@ export type HakijaryhmanHakija = {
   kuuluuHakijaryhmaan: boolean;
   hakemusOid: string;
   hakijaOid: string;
+  henkilotunnus?: string | null;
   hyvaksyttyHakijaryhmasta: boolean;
   sijoittelunTila?: ValinnanTila;
   vastaanottoTila?: string;
@@ -121,6 +122,7 @@ export type HakemuksenPistetiedot = {
   valintakokeenPisteet: Array<ValintakokeenPisteet>;
   etunimet: string;
   sukunimi: string;
+  henkilotunnus?: string | null;
 };
 
 export type HakukohteenPistetiedot = {

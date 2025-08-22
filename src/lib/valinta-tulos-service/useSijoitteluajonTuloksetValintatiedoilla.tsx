@@ -62,6 +62,7 @@ export const selectSijoitteluajonTuloksetValintatiedoilla = ({
             hakijaOid: h.hakijaOid,
             hakemusOid: h.hakemusOid,
             hakijanNimi: hakemus?.hakijanNimi ?? '',
+            henkilotunnus: hakemus?.henkilotunnus,
             pisteet: pointToComma(h.pisteet) ?? '',
             valinnanTila: h.tila,
             valintatapajonoOid: h.valintatapajonoOid,

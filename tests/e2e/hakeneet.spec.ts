@@ -180,4 +180,21 @@ test.describe('Hakeneet suodatin', () => {
       '1.2.246.562.24.14598775927',
     ]);
   });
+
+  test('Suodattaa hetulla', async () => {
+    const hakuInput = page.getByRole('textbox', {
+      name: 'Hae hakijan nimellä tai tunnisteilla',
+    });
+    await hakuInput.fill('101172-979F');
+    const rows = page.locator('tbody tr');
+    await expect(rows).toHaveCount(1);
+    await checkRow(rows.nth(0), [
+      'Dacula Kreivi',
+      'Hakukelpoinen',
+      '1',
+      'Maksuvelvollinen',
+      '1.2.246.562.11.00000000000001793706',
+      '1.2.246.562.24.25732574711',
+    ]);
+  });
 });

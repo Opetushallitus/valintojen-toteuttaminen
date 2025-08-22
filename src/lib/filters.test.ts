@@ -5,6 +5,7 @@ const hakemus = {
   hakijanNimi: 'Ruhtinas Nukettaja',
   hakemusOid: '1.2.3.4.5.6',
   hakijaOid: '1.1.2.3.4.5',
+  henkilotunnus: '101010-123N',
 };
 
 test('filters by hakijanNimi', () => {
@@ -29,4 +30,10 @@ test('filters by hakemusOid', () => {
 
 test('filters by hakijaOid', () => {
   expect(hakemusFilter(hakemus, '1.1.2.3.4.5')).toBeTruthy();
+});
+
+test('filters by hetu', () => {
+  expect(hakemusFilter(hakemus, '101010-123N')).toBeTruthy();
+  expect(hakemusFilter(hakemus, '101010')).toBeTruthy();
+  expect(hakemusFilter(hakemus, '101010-123R')).toBeFalsy();
 });

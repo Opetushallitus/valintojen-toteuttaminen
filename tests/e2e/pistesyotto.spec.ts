@@ -326,6 +326,16 @@ test.describe('Suodattimet', () => {
     ]);
   });
 
+  test('Henkilötunnuksella', async ({ page }) => {
+    const hakuInput = page.getByRole('textbox', {
+      name: 'Hae hakijan nimellä tai tunnisteilla',
+    });
+    await hakuInput.fill('101172-979F');
+    const rows = page.getByTestId('pistesyotto-form').locator('tbody tr');
+    await expect(rows).toHaveCount(1);
+    await checkRow(rows.nth(0), ['Dacula Kreivi', '', 'EiOsallistui']);
+  });
+
   test('Osallistumisentilalla Merkitsemättä', async ({ page }) => {
     await selectTila(page, 'Merkitsemättä');
     const rows = page.getByTestId('pistesyotto-form').locator('tbody tr');
