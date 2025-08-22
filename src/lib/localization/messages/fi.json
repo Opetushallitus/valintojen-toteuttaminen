@@ -639,6 +639,7 @@
       "hakutoive": "Hakutoive",
       "valintatapajono": "Valintatapajono",
       "jarjestyskriteeri": "Järjestyskriteeri",
+      "jarjestyskriteeri-kuvaus": "Valitse järjestyskriteeri, jonka tietoja haluat muokata. Voit muokata useampaa kriteeriä kerralla.",
       "poista-muokkaus": "Poista muokkaus",
       "tallennetaan-valintalaskentaa": "Tallennetaan valintalaskennan tietoja...",
       "save-error": "Valintalaskennan tietojen tallentaminen epäonnistui",

@@ -304,7 +304,6 @@ export const useMuokattuJonosijaActorRef = ({
   }, [valintatapajonoOid, jonosija, addToast, onSuccess]);
   const actorRef = useActorRef(machine);
   const snapshot = useSelector(actorRef, (s) => s);
-  //const isDirty = useIsJonoTulosDirty(actorRef);
   return {
     actorRef,
     snapshot,
@@ -326,6 +325,5 @@ export const useMuokattuJonosijaActorRef = ({
         jarjestyskriteeriPrioriteetti: jarjestyskriteeriPrioriteetti,
       });
     },
-    //isDirty,
   };
 };

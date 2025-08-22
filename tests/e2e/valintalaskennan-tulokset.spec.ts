@@ -216,7 +216,7 @@ test.describe('Valintalaskennan muokkausmodaali', () => {
   test('Lähetetään laskennan tulosten tallennuspyyntö oikeilla arvoilla, näytetään ilmoitus ja ladataan tulokset uudelleen', async ({
     page,
   }) => {
-    const muokkausUrl = `/valintalaskenta-laskenta-service/resources/valintatapajono/1679913592869-3133925962577840128/${DACULA_HAKEMUS_OID}/0/jonosija`;
+    const muokkausUrl = `/valintalaskenta-laskenta-service/resources/valintatapajono/1679913592869-3133925962577840128/${DACULA_HAKEMUS_OID}/jonosija/jarjestyskriteerit`;
     await page.route(
       (url) => url.pathname.includes(muokkausUrl),
       (route) => {
@@ -257,11 +257,14 @@ test.describe('Valintalaskennan muokkausmodaali', () => {
       saveButton.click(),
     ]);
 
-    expect(request.postDataJSON()).toEqual({
-      arvo: '12.2',
-      tila: TuloksenTila.HYLATTY,
-      selite: 'Syy muokkaukselle',
-    });
+    expect(request.postDataJSON()).toEqual([
+      {
+        arvo: '12.2',
+        tila: TuloksenTila.HYLATTY,
+        jarjestyskriteeriPrioriteetti: 0,
+        selite: 'Syy muokkaukselle',
+      },
+    ]);
 
     await expectAlertTextVisible(
       page,
@@ -273,7 +276,7 @@ test.describe('Valintalaskennan muokkausmodaali', () => {
     page,
   }) => {
     await page.route(
-      `**/valintalaskenta-laskenta-service/resources/valintatapajono/1679913592869-3133925962577840128/${DACULA_HAKEMUS_OID}/0/jonosija`,
+      `**/valintalaskenta-laskenta-service/resources/valintatapajono/1679913592869-3133925962577840128/${DACULA_HAKEMUS_OID}/jonosija/jarjestyskriteerit`,
       (route) => {
         return route.fulfill({
           status: 400,
@@ -284,6 +287,14 @@ test.describe('Valintalaskennan muokkausmodaali', () => {
     const valintaMuokkausModal = page.getByRole('dialog', {
       name: 'Muokkaa valintalaskentaa',
     });
+
+    const valintalaskentaMuokkausModal = page.getByRole('dialog', {
+      name: 'Muokkaa valintalaskentaa',
+    });
+
+    await valintalaskentaMuokkausModal
+      .getByLabel('Muokkauksen syy')
+      .fill('Tämän muutoksen pitäisi epäonnistua');
 
     const tallennaButton = valintaMuokkausModal.getByRole('button', {
       name: 'Tallenna',

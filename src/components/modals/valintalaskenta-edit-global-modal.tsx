@@ -4,8 +4,12 @@ import {
   useOphModalProps,
 } from '@/components/modals/global-modal';
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { OphButton, OphInput } from '@opetushallitus/oph-design-system';
-import { Stack } from '@mui/material';
+import {
+  OphButton,
+  OphFormFieldWrapper,
+  OphInput,
+} from '@opetushallitus/oph-design-system';
+import { Box, Divider, Stack, Typography } from '@mui/material';
 import { useCallback, useState } from 'react';
 import {
   LaskennanJonosijaTulos,
@@ -15,7 +19,7 @@ import { Hakukohde } from '@/lib/kouta/kouta-types';
 import { HakutoiveTitle } from '../hakutoive-title';
 import { EditModal, InlineFormControl, PaddedLabel } from './edit-modal';
 import { LocalizedSelect } from '@/components/localized-select';
-import { useMuokkausParams } from '@/hooks/useJarjestyskriteeriState';
+import { useMuokkausParams } from '@/hooks/useJarjestyskriteeriMuokkausParams';
 import { JarjestyskriteeriParams } from '@/lib/types/jarjestyskriteeri-types';
 import { useTuloksenTilaOptions } from '@/hooks/useTuloksenTilaOptions';
 import { useMuokattuJonosijaActorRef } from '@/lib/state/muokattu-jonosija-state';
@@ -225,24 +229,36 @@ export const ValintalaskentaEditGlobalModal = createModal<{
             <span aria-labelledby={labelId}>{valintatapajono.nimi}</span>
           )}
         />
-        <InlineFormControl
-          label={
-            <PaddedLabel>
-              {t('valintalaskenta.muokkaus.jarjestyskriteeri')}
-            </PaddedLabel>
-          }
-          renderInput={({ labelId }) => (
-            <LocalizedSelect
-              sx={{ width: '100%' }}
-              labelId={labelId}
-              value={jarjestyskriteeriPrioriteetti.toString()}
-              options={jarjestyskriteeriOptions}
-              onChange={(e) =>
-                setJarjestyskriteeriPrioriteetti(Number(e.target.value))
-              }
-            />
-          )}
-        />
+        <Box sx={{ gridColumnStart: 'span 2' }}>
+          <Divider sx={{ marginBottom: (theme) => theme.spacing(2) }} />
+          <OphFormFieldWrapper
+            label={t('valintalaskenta.muokkaus.jarjestyskriteeri')}
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              rowGap: (theme) => theme.spacing(0.5),
+            }}
+            renderInput={({ labelId }) => (
+              <Box sx={{ boxSizing: 'border-box' }}>
+                <Typography>
+                  {t('valintalaskenta.muokkaus.jarjestyskriteeri-kuvaus')}
+                </Typography>
+                <LocalizedSelect
+                  sx={{
+                    display: 'block',
+                    marginTop: (theme) => theme.spacing(0.5),
+                  }}
+                  labelId={labelId}
+                  value={jarjestyskriteeriPrioriteetti.toString()}
+                  options={jarjestyskriteeriOptions}
+                  onChange={(e) =>
+                    setJarjestyskriteeriPrioriteetti(Number(e.target.value))
+                  }
+                />
+              </Box>
+            )}
+          />
+        </Box>
         <JarjestyskriteeriFields
           value={muokkausParams}
           onChange={(changedParams) => {
