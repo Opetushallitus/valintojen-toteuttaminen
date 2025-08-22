@@ -575,7 +575,7 @@ test.describe('Muokkausmodaalit', () => {
   test('Valintalaskennan tallennuksessa lähetetään muokatut tiedot ja näytetään ilmoitus tallennuksen onnistumisesta', async ({
     page,
   }) => {
-    const muokkausUrl = `/valintalaskenta-laskenta-service/resources/valintatapajono/17093042998533736417074016063604/${NUKETTAJA_HAKEMUS_OID}/0/jonosija`;
+    const muokkausUrl = `/valintalaskenta-laskenta-service/resources/valintatapajono/17093042998533736417074016063604/${NUKETTAJA_HAKEMUS_OID}/jonosija/jarjestyskriteerit`;
     await page.route('**' + muokkausUrl, (route) => {
       return route.fulfill({
         status: 200,
@@ -608,11 +608,14 @@ test.describe('Muokkausmodaalit', () => {
       saveButton.click(),
     ]);
 
-    expect(request.postDataJSON()).toEqual({
-      arvo: '12.2',
-      tila: TuloksenTila.HYLATTY,
-      selite: 'Syy muokkaukselle',
-    });
+    expect(request.postDataJSON()).toEqual([
+      {
+        arvo: '12.2',
+        tila: TuloksenTila.HYLATTY,
+        selite: 'Syy muokkaukselle',
+        jarjestyskriteeriPrioriteetti: 0,
+      },
+    ]);
 
     await expectAlertTextVisible(
       page,
@@ -624,7 +627,7 @@ test.describe('Muokkausmodaalit', () => {
     page,
   }) => {
     await page.route(
-      `**/valintalaskenta-laskenta-service/resources/valintatapajono/17093042998533736417074016063604/${NUKETTAJA_HAKEMUS_OID}/0/jonosija`,
+      `**/valintalaskenta-laskenta-service/resources/valintatapajono/17093042998533736417074016063604/${NUKETTAJA_HAKEMUS_OID}/jonosija/jarjestyskriteerit`,
       (route) => {
         return route.fulfill({
           status: 400,
@@ -635,6 +638,8 @@ test.describe('Muokkausmodaalit', () => {
     const valintaMuokkausModal = page.getByRole('dialog', {
       name: 'Muokkaa valintalaskentaa',
     });
+
+    await valintaMuokkausModal.getByLabel('Pisteet').fill('-12,2');
 
     const tallennaButton = valintaMuokkausModal.getByRole('button', {
       name: 'Tallenna',

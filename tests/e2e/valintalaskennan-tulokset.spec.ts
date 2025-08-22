@@ -288,11 +288,7 @@ test.describe('Valintalaskennan muokkausmodaali', () => {
       name: 'Muokkaa valintalaskentaa',
     });
 
-    const valintalaskentaMuokkausModal = page.getByRole('dialog', {
-      name: 'Muokkaa valintalaskentaa',
-    });
-
-    await valintalaskentaMuokkausModal
+    await valintaMuokkausModal
       .getByLabel('Muokkauksen syy')
       .fill('Tämän muutoksen pitäisi epäonnistua');
 
