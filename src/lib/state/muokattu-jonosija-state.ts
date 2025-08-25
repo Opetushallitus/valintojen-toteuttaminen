@@ -1,0 +1,250 @@
+import { assign, createMachine, fromPromise, PromiseActorLogic } from 'xstate';
+import { JarjestyskriteeriParams } from '../types/jarjestyskriteeri-types';
+import { LaskennanJonosijaTulos } from '@/hooks/useEditableValintalaskennanTulokset';
+import {
+  deleteJonosijanJarjestyskriteeri,
+  saveJonosijanJarjestyskriteerit,
+} from '../valintalaskenta/valintalaskenta-service';
+import useToaster, { Toast } from '@/hooks/useToaster';
+import { useActorRef, useSelector } from '@xstate/react';
+import { useMemo } from 'react';
+import {
+  MuokattuJonosijaContext,
+  MuokattuJonosijaDeleteEvent,
+  MuokattuJonosijaEvents,
+  MuokattuJonosijaEventTypes,
+  MuokattuJonosijaState,
+} from './muokattuJonosijaMachineTypes';
+import {
+  applyKriteeriChange,
+  hasChangedKriteerit,
+  isModifiedJonosija,
+} from './muokattuJonosijaMachineUtils';
+
+function createMuokattuJonosijaMachine(
+  valintatapajonoOid: string,
+  jonosija: LaskennanJonosijaTulos,
+  addToast: (toast: Toast) => void,
+  onSuccess: () => void,
+) {
+  return createMachine({
+    id: `muokattujonosija-${valintatapajonoOid}-hakemus-${jonosija.hakemusOid}`,
+    initial: MuokattuJonosijaState.IDLE,
+    types: {} as {
+      context: MuokattuJonosijaContext;
+      events: MuokattuJonosijaEvents;
+      actions:
+        | { type: 'alert'; params: { message: string } }
+        | { type: 'successNotify'; params: { message: string } }
+        | { type: 'successfullyCompleted' };
+      actors:
+        | {
+            src: 'save';
+            logic: PromiseActorLogic<
+              void,
+              {
+                changedKriteerit: Array<JarjestyskriteeriParams>;
+                hakemusOid: string;
+                valintatapajonoOid: string;
+              }
+            >;
+          }
+        | {
+            src: 'delete';
+            logic: PromiseActorLogic<
+              void,
+              {
+                hakemusOid: string;
+                valintatapajonoOid: string;
+                jarjestyskriteeriPrioriteetti: number;
+              }
+            >;
+          };
+    },
+    context: {
+      jonosija,
+      onSuccess,
+      changedKriteerit: new Array<JarjestyskriteeriParams>(),
+    },
+    states: {
+      [MuokattuJonosijaState.IDLE]: {
+        on: {
+          [MuokattuJonosijaEventTypes.ADD]: {
+            actions: assign({
+              changedKriteerit: ({ context, event }) => {
+                return applyKriteeriChange(context, event);
+              },
+            }),
+          },
+          [MuokattuJonosijaEventTypes.SAVE]: [
+            {
+              guard: 'hasChangedKriteerit',
+              target: MuokattuJonosijaState.SAVING,
+            },
+            {
+              actions: {
+                type: 'alert',
+                params: { message: 'virhe.eimuutoksia' },
+              },
+            },
+          ],
+          [MuokattuJonosijaEventTypes.DELETE]: [
+            {
+              guard: 'isModifiedJonosija',
+              target: MuokattuJonosijaState.DELETING,
+            },
+            {
+              actions: {
+                type: 'alert',
+                params: { message: 'valintalaskenta.muokkaus.ei-muokkausta' },
+              },
+            },
+          ],
+        },
+      },
+      [MuokattuJonosijaState.SAVING]: {
+        invoke: {
+          src: 'save',
+          input: ({ context }) => ({
+            changedKriteerit: context.changedKriteerit,
+            hakemusOid: context.jonosija.hakemusOid,
+            valintatapajonoOid,
+          }),
+          onDone: {
+            target: MuokattuJonosijaState.IDLE,
+            actions: [
+              {
+                type: 'successNotify',
+                params: { message: 'valintalaskenta.muokkaus.save-success' },
+              },
+              {
+                type: 'successfullyCompleted',
+              },
+            ],
+          },
+          onError: {
+            target: MuokattuJonosijaState.IDLE,
+            actions: [
+              {
+                type: 'alert',
+                params: { message: 'valintalaskenta.muokkaus.save-error' },
+              },
+            ],
+          },
+        },
+      },
+      [MuokattuJonosijaState.DELETING]: {
+        invoke: {
+          src: 'delete',
+          input: ({ context, event }) => ({
+            jarjestyskriteeriPrioriteetti: (
+              event as MuokattuJonosijaDeleteEvent
+            ).jarjestyskriteeriPrioriteetti,
+            hakemusOid: context.jonosija.hakemusOid,
+            valintatapajonoOid,
+          }),
+          onDone: {
+            target: MuokattuJonosijaState.IDLE,
+            actions: [
+              {
+                type: 'successNotify',
+                params: { message: 'valintalaskenta.muokkaus.delete-success' },
+              },
+              {
+                type: 'successfullyCompleted',
+              },
+            ],
+          },
+          onError: {
+            target: MuokattuJonosijaState.IDLE,
+            actions: [
+              {
+                type: 'alert',
+                params: { message: 'valintalaskenta.muokkaus.delete-error' },
+              },
+            ],
+          },
+        },
+      },
+    },
+  }).provide({
+    guards: { hasChangedKriteerit, isModifiedJonosija },
+    actions: {
+      alert: ({ context }, params) =>
+        addToast({
+          key: `muokattu-jonosija-update-failed-for-${context.jonosija.hakemusOid}-${valintatapajonoOid}`,
+          message: params.message,
+          type: 'error',
+        }),
+      successNotify: ({ context }, params) => {
+        addToast({
+          key: `muokattu-jonosija-updated-for-${context.jonosija.hakemusOid}-${valintatapajonoOid}`,
+          message: params.message,
+          type: 'success',
+        });
+      },
+      successfullyCompleted: ({ context }) => context.onSuccess(),
+    },
+    actors: {
+      save: fromPromise(async ({ input }) => {
+        await saveJonosijanJarjestyskriteerit({
+          valintatapajonoOid: input.valintatapajonoOid,
+          hakemusOid: input.hakemusOid,
+          kriteerit: input.changedKriteerit,
+        });
+      }),
+      delete: fromPromise(async ({ input }) => {
+        await deleteJonosijanJarjestyskriteeri({
+          valintatapajonoOid: input.valintatapajonoOid,
+          hakemusOid: input.hakemusOid,
+          jarjestyskriteeriPrioriteetti: input.jarjestyskriteeriPrioriteetti,
+        });
+      }),
+    },
+  });
+}
+
+export const useMuokattuJonosijaState = ({
+  valintatapajonoOid,
+  jonosija,
+  onSuccess,
+}: {
+  valintatapajonoOid: string;
+  jonosija: LaskennanJonosijaTulos;
+  onSuccess: () => void;
+}) => {
+  const { addToast } = useToaster();
+
+  const machine = useMemo(() => {
+    return createMuokattuJonosijaMachine(
+      valintatapajonoOid,
+      jonosija,
+      addToast,
+      onSuccess,
+    );
+  }, [valintatapajonoOid, jonosija, addToast, onSuccess]);
+  const actorRef = useActorRef(machine);
+  const snapshot = useSelector(actorRef, (s) => s);
+  return {
+    actorRef,
+    snapshot,
+    isPending:
+      snapshot.matches(MuokattuJonosijaState.SAVING) ||
+      snapshot.matches(MuokattuJonosijaState.DELETING),
+    onJarjestysKriteeriChange: (params: JarjestyskriteeriParams) => {
+      actorRef.send({
+        type: MuokattuJonosijaEventTypes.ADD,
+        ...params,
+      });
+    },
+    saveKriteerit: () => {
+      actorRef.send({ type: MuokattuJonosijaEventTypes.SAVE });
+    },
+    deleteKriteeri: (jarjestyskriteeriPrioriteetti: number) => {
+      actorRef.send({
+        type: MuokattuJonosijaEventTypes.DELETE,
+        jarjestyskriteeriPrioriteetti: jarjestyskriteeriPrioriteetti,
+      });
+    },
+  };
+};

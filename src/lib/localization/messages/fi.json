@@ -639,12 +639,15 @@
       "hakutoive": "Hakutoive",
       "valintatapajono": "Valintatapajono",
       "jarjestyskriteeri": "Järjestyskriteeri",
+      "jarjestyskriteeri-kuvaus": "Valitse järjestyskriteeri, jonka tietoja haluat muokata. Voit muokata useampaa kriteeriä kerralla.",
       "poista-muokkaus": "Poista muokkaus",
       "tallennetaan-valintalaskentaa": "Tallennetaan valintalaskennan tietoja...",
       "save-error": "Valintalaskennan tietojen tallentaminen epäonnistui",
       "save-success": "Valintalaskennan tietojen tallentaminen onnistui",
       "delete-error": "Valintalaskennan muokkauksen poistaminen epäonnistui",
-      "delete-success": "Valintalaskennan muokkauksen poistaminen onnistui"
+      "delete-success": "Valintalaskennan muokkauksen poistaminen onnistui",
+      "ei-muokkausta": "Valintajonon järjestyskriteerejä ei ole muokattu",
+      "tallenna-n-kriteeria": "{count, plural, one { 1 järjestyskriteeri} other { {count} järjestyskriteeriä}}"
     }
   },
   "yhteisvalinnan-hallinta": {

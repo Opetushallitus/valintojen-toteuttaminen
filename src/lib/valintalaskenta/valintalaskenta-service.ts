@@ -56,6 +56,7 @@ import { getConfiguration } from '@/lib/configuration/client-configuration';
 import { getConfigUrl } from '../configuration/configuration-utils';
 import { siirraTaiPoistaValintatapajonoAutomaattisestaSijoittelusta } from '../valintaperusteet/valintaperusteet-service';
 import { commaToPoint, pointToComma } from '@/lib/common';
+import { JarjestyskriteeriParams } from '../types/jarjestyskriteeri-types';
 
 const createLaskentaURL = async ({
   laskentaTyyppi,
@@ -489,10 +490,11 @@ type JarjestyskriteeriKeyParams = {
   jarjestyskriteeriPrioriteetti: number;
 };
 
-export type SaveJarjestyskriteeriParams = JarjestyskriteeriKeyParams & {
-  tila: string;
-  arvo: string;
-  selite: string;
+type JarjestyskriteeritSaveParams = Omit<
+  JarjestyskriteeriKeyParams,
+  'jarjestyskriteeriPrioriteetti'
+> & {
+  kriteerit: Array<JarjestyskriteeriParams>;
 };
 
 type JarjestyskriteeriChangeResult = KoutaOidParams & {
@@ -509,30 +511,28 @@ type JarjestyskriteeriChangeResult = KoutaOidParams & {
   }>;
 };
 
-export const saveJonosijanJarjestyskriteeri = ({
+export const saveJonosijanJarjestyskriteerit = ({
   valintatapajonoOid,
   hakemusOid,
-  jarjestyskriteeriPrioriteetti,
-  tila,
-  arvo,
-  selite,
-}: SaveJarjestyskriteeriParams) => {
+  kriteerit,
+}: JarjestyskriteeritSaveParams) => {
   const configuration = getConfiguration();
+  const body = kriteerit.map((k) => ({
+    tila: k.tila,
+    arvo: commaToPoint(k.arvo),
+    selite: k.selite,
+    jarjestyskriteeriPrioriteetti: k.prioriteetti,
+  }));
   return client.post<JarjestyskriteeriChangeResult>(
     getConfigUrl(
       configuration.routes.valintalaskentaLaskentaService
-        .jarjestyskriteeriMuokkausUrl,
+        .jarjestyskriteeritMuokkausUrl,
       {
         valintatapajonoOid,
         hakemusOid,
-        jarjestyskriteeriPrioriteetti,
       },
     ),
-    {
-      tila,
-      arvo: commaToPoint(arvo),
-      selite,
-    },
+    body,
   );
 };
 
@@ -545,7 +545,7 @@ export const deleteJonosijanJarjestyskriteeri = ({
   return client.delete<JarjestyskriteeriChangeResult>(
     getConfigUrl(
       configuration.routes.valintalaskentaLaskentaService
-        .jarjestyskriteeriMuokkausUrl,
+        .jarjestyskriteeriPoistoUrl,
       {
         valintatapajonoOid,
         hakemusOid,

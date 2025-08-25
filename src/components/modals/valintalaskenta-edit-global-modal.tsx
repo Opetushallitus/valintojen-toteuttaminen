@@ -4,9 +4,13 @@ import {
   useOphModalProps,
 } from '@/components/modals/global-modal';
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { OphButton, OphInput } from '@opetushallitus/oph-design-system';
-import { Stack } from '@mui/material';
-import { useState } from 'react';
+import {
+  OphButton,
+  OphFormFieldWrapper,
+  OphInput,
+} from '@opetushallitus/oph-design-system';
+import { Box, Divider, Stack } from '@mui/material';
+import { useCallback, useState } from 'react';
 import {
   LaskennanJonosijaTulos,
   LaskennanValintatapajonoTulos,
@@ -15,21 +19,24 @@ import { Hakukohde } from '@/lib/kouta/kouta-types';
 import { HakutoiveTitle } from '../hakutoive-title';
 import { EditModal, InlineFormControl, PaddedLabel } from './edit-modal';
 import { LocalizedSelect } from '@/components/localized-select';
-import { useJarjestyskriteeriState } from '@/hooks/useJarjestyskriteeriState';
+import { useMuokkausParams } from '@/hooks/useJarjestyskriteeriMuokkausParams';
 import { JarjestyskriteeriParams } from '@/lib/types/jarjestyskriteeri-types';
-import useToaster from '@/hooks/useToaster';
 import { useTuloksenTilaOptions } from '@/hooks/useTuloksenTilaOptions';
+import { useMuokattuJonosijaState } from '@/lib/state/muokattu-jonosija-state';
+import { useHasChanged } from '@/hooks/useHasChanged';
 
 const ModalActions = ({
   onClose,
   onSave,
   onDelete,
   deleteDisabled,
+  amountToSave,
 }: {
   onClose: () => void;
   onSave: () => void;
   onDelete: () => void;
   deleteDisabled?: boolean;
+  amountToSave: number;
 }) => {
   const { t } = useTranslations();
 
@@ -47,6 +54,10 @@ const ModalActions = ({
       </OphButton>
       <OphButton variant="contained" onClick={onSave}>
         {t('yleinen.tallenna')}
+        {amountToSave > 0 &&
+          t('valintalaskenta.muokkaus.tallenna-n-kriteeria', {
+            count: amountToSave,
+          })}
       </OphButton>
     </Stack>
   );
@@ -136,13 +147,8 @@ export const ValintalaskentaEditGlobalModal = createModal<{
     const { open, slotProps, onClose } = useOphModalProps();
     const { t } = useTranslations();
 
-    const { addToast } = useToaster();
-
     const [jarjestyskriteeriPrioriteetti, setJarjestyskriteeriPrioriteetti] =
       useState<number>(0);
-
-    const jarjestyskriteeri =
-      jonosija.jarjestyskriteerit?.[jarjestyskriteeriPrioriteetti];
 
     const jarjestyskriteeriOptions =
       jonosija.jarjestyskriteerit?.map(({ nimi, prioriteetti }) => ({
@@ -150,34 +156,31 @@ export const ValintalaskentaEditGlobalModal = createModal<{
         label: `${prioriteetti + 1}. ${nimi}`,
       })) ?? [];
 
-    const {
-      isPending,
-      muokkausParams,
-      setMuokkausParams,
-      saveJarjestyskriteeri,
-      deleteJarjestyskriteeri,
-    } = useJarjestyskriteeriState({
-      hakemusOid: jonosija.hakemusOid,
-      valintatapajonoOid: valintatapajono.valintatapajonooid,
-      jarjestyskriteeri,
-      onError: (e, mode) => {
-        addToast({
-          key: `valintalaskenta-${mode}-error`,
-          message: `valintalaskenta.muokkaus.${mode}-error`,
-          type: 'error',
-        });
-        console.error(e);
-      },
-      onSuccess: (mode) => {
-        addToast({
-          key: `valintalaskenta-${mode}-success`,
-          message: `valintalaskenta.muokkaus.${mode}-success`,
-          type: 'success',
-        });
-        onSuccess();
+    const jonosijaChanged = useHasChanged(jonosija.hakemusOid);
+
+    const successCallback = useCallback(() => {
+      if (jonosijaChanged) {
         hideModal(ValintalaskentaEditGlobalModal);
-      },
+        onSuccess();
+      }
+    }, [jonosijaChanged, onSuccess]);
+
+    const {
+      snapshot,
+      deleteKriteeri,
+      isPending,
+      saveKriteerit,
+      onJarjestysKriteeriChange,
+    } = useMuokattuJonosijaState({
+      valintatapajonoOid: valintatapajono.valintatapajonooid,
+      jonosija,
+      onSuccess: successCallback,
     });
+
+    const muokkausParams = useMuokkausParams(
+      snapshot.context,
+      jarjestyskriteeriPrioriteetti,
+    );
 
     return (
       <EditModal
@@ -192,10 +195,11 @@ export const ValintalaskentaEditGlobalModal = createModal<{
         actions={
           <ModalActions
             onClose={onClose}
-            onSave={() => saveJarjestyskriteeri()}
-            onDelete={() => deleteJarjestyskriteeri()}
+            onSave={saveKriteerit}
+            onDelete={() => deleteKriteeri(jarjestyskriteeriPrioriteetti)}
             // Jonosijan tuloksen muokkauksen voi poistaa vain jos sellainen on tallennettu
             deleteDisabled={!jonosija.muokattu}
+            amountToSave={snapshot.context.changedKriteerit?.length ?? 0}
           />
         }
       >
@@ -222,31 +226,32 @@ export const ValintalaskentaEditGlobalModal = createModal<{
             <span aria-labelledby={labelId}>{valintatapajono.nimi}</span>
           )}
         />
-        <InlineFormControl
-          label={
-            <PaddedLabel>
-              {t('valintalaskenta.muokkaus.jarjestyskriteeri')}
-            </PaddedLabel>
-          }
-          renderInput={({ labelId }) => (
-            <LocalizedSelect
-              sx={{ width: '100%' }}
-              labelId={labelId}
-              value={jarjestyskriteeriPrioriteetti.toString()}
-              options={jarjestyskriteeriOptions}
-              onChange={(e) =>
-                setJarjestyskriteeriPrioriteetti(Number(e.target.value))
-              }
-            />
-          )}
-        />
+        <Box sx={{ gridColumnStart: 'span 2' }}>
+          <Divider sx={{ marginBottom: (theme) => theme.spacing(2) }} />
+          <OphFormFieldWrapper
+            label={t('valintalaskenta.muokkaus.jarjestyskriteeri')}
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              rowGap: (theme) => theme.spacing(0.5),
+            }}
+            helperText={t('valintalaskenta.muokkaus.jarjestyskriteeri-kuvaus')}
+            renderInput={({ labelId }) => (
+              <LocalizedSelect
+                labelId={labelId}
+                value={jarjestyskriteeriPrioriteetti.toString()}
+                options={jarjestyskriteeriOptions}
+                onChange={(e) =>
+                  setJarjestyskriteeriPrioriteetti(Number(e.target.value))
+                }
+              />
+            )}
+          />
+        </Box>
         <JarjestyskriteeriFields
           value={muokkausParams}
           onChange={(changedParams) =>
-            setMuokkausParams((oldParams) => ({
-              ...oldParams,
-              ...changedParams,
-            }))
+            onJarjestysKriteeriChange({ ...muokkausParams, ...changedParams })
           }
         />
       </EditModal>
