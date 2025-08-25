@@ -9,7 +9,7 @@ import {
   OphFormFieldWrapper,
   OphInput,
 } from '@opetushallitus/oph-design-system';
-import { Box, Divider, Stack, Typography } from '@mui/material';
+import { Box, Divider, Stack } from '@mui/material';
 import { useCallback, useState } from 'react';
 import {
   LaskennanJonosijaTulos,
@@ -235,27 +235,16 @@ export const ValintalaskentaEditGlobalModal = createModal<{
               flexDirection: 'column',
               rowGap: (theme) => theme.spacing(0.5),
             }}
+            helperText={t('valintalaskenta.muokkaus.jarjestyskriteeri-kuvaus')}
             renderInput={({ labelId }) => (
-              <Box sx={{ boxSizing: 'border-box' }}>
-                <Typography>
-                  {t('valintalaskenta.muokkaus.jarjestyskriteeri-kuvaus')}
-                </Typography>
-                <LocalizedSelect
-                  sx={{
-                    display: 'block',
-                    marginTop: (theme) => theme.spacing(0.5),
-                    '.MuiSelect-select': {
-                      boxSizing: 'border-box',
-                    },
-                  }}
-                  labelId={labelId}
-                  value={jarjestyskriteeriPrioriteetti.toString()}
-                  options={jarjestyskriteeriOptions}
-                  onChange={(e) =>
-                    setJarjestyskriteeriPrioriteetti(Number(e.target.value))
-                  }
-                />
-              </Box>
+              <LocalizedSelect
+                labelId={labelId}
+                value={jarjestyskriteeriPrioriteetti.toString()}
+                options={jarjestyskriteeriOptions}
+                onChange={(e) =>
+                  setJarjestyskriteeriPrioriteetti(Number(e.target.value))
+                }
+              />
             )}
           />
         </Box>
