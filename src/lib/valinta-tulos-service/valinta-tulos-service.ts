@@ -58,6 +58,7 @@ export const getSijoittelunTulokset = async (
         harkinnanvaraisestiHyvaksytty: tulos.harkinnanvaraisestiHyvaksytty,
         varasijoilla: tulos.varasijoilla,
         vastaanottaneet: tulos.paikanVastaanottaneet,
+        ehdollisestiVastaanottaneet: tulos.ehdollisestiVastaanottaneet,
         paikanPeruneet: tulos.peruneet,
         pisteraja: pointToComma(tulos.alinHyvaksyttyPistemaara),
       };

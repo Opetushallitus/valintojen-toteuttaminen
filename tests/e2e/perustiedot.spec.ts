@@ -25,6 +25,7 @@ test('Näyttää perustiedot', async ({ page }) => {
       'Joista ehdollisesti hyväksytyt',
       'Varasijoilla',
       'Paikan vastaanottaneet',
+      'Ehdollisesti vastaanottaneet',
       'Paikan peruneet',
       'Alin hyväksytty pistemäärä',
     ],
@@ -39,6 +40,7 @@ test('Näyttää perustiedot', async ({ page }) => {
     '20',
     '150',
     '35',
+    '25',
     '15',
     '7,76',
   ]);
@@ -50,6 +52,7 @@ test('Näyttää perustiedot', async ({ page }) => {
     '250',
     '5',
     '5',
+    '5',
     '9,76',
   ]);
   await checkRow(rows.nth(2), [
@@ -58,6 +61,7 @@ test('Näyttää perustiedot', async ({ page }) => {
     '2',
     '1',
     '5',
+    '1',
     '1',
     '5',
     '5,76',
