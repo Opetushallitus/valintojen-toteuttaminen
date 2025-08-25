@@ -647,7 +647,7 @@
       "delete-error": "Valintalaskennan muokkauksen poistaminen epäonnistui",
       "delete-success": "Valintalaskennan muokkauksen poistaminen onnistui",
       "ei-muokkausta": "Valintajonon järjestyskriteerejä ei ole muokattu",
-      "tallenna-n-kriteeria": " {maara} järjestyskriteeriä"
+      "tallenna-n-kriteeria": "{count, plural, one { 1 järjestyskriteeri} other { {count} järjestyskriteeriä}}"
     }
   },
   "yhteisvalinnan-hallinta": {

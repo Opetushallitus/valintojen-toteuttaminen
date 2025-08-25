@@ -1,7 +1,6 @@
 import { assign, createMachine, fromPromise, PromiseActorLogic } from 'xstate';
 import { JarjestyskriteeriParams } from '../types/jarjestyskriteeri-types';
 import { LaskennanJonosijaTulos } from '@/hooks/useEditableValintalaskennanTulokset';
-import { commaToPoint } from '../common';
 import {
   deleteJonosijanJarjestyskriteeri,
   saveJonosijanJarjestyskriteerit,
@@ -9,96 +8,18 @@ import {
 import useToaster, { Toast } from '@/hooks/useToaster';
 import { useActorRef, useSelector } from '@xstate/react';
 import { useMemo } from 'react';
-
-export enum MuokattuJonosijaEventTypes {
-  ADD = 'ADD',
-  SAVE = 'SAVE',
-  DELETE = 'DELETE',
-}
-
-export enum MuokattuJonosijaState {
-  IDLE = 'IDLE',
-  SAVING = 'SAVING',
-  DELETING = 'DELETING',
-}
-
-type MuokattuJonosijaChangeEvent = {
-  type: MuokattuJonosijaEventTypes.ADD;
-} & JarjestyskriteeriParams;
-
-type MuokattuJonosijaSaveEvent = {
-  type: MuokattuJonosijaEventTypes.SAVE;
-};
-
-type MuokattuJonosijaDeleteEvent = {
-  type: MuokattuJonosijaEventTypes.DELETE;
-} & { jarjestyskriteeriPrioriteetti: number };
-
-type MuokattuJonosijaContext = {
-  jonosija: LaskennanJonosijaTulos;
-  changedKriteerit: Array<JarjestyskriteeriParams>;
-  onSuccess: () => void;
-};
-
-type MuokattuJonosijaEvents =
-  | MuokattuJonosijaChangeEvent
-  | MuokattuJonosijaSaveEvent
-  | MuokattuJonosijaDeleteEvent;
-
-function applyKriteeriChange(
-  context: MuokattuJonosijaContext,
-  event: MuokattuJonosijaChangeEvent,
-): Array<JarjestyskriteeriParams> {
-  const originalKriteeri = context.jonosija.jarjestyskriteerit?.find(
-    (k) => k.prioriteetti === event.prioriteetti,
-  );
-  const existingChangedKriteeri = context.changedKriteerit.find(
-    (k) => k.prioriteetti === event.prioriteetti,
-  );
-  if (
-    originalKriteeri?.arvo === commaToPoint(event.arvo) &&
-    originalKriteeri?.kuvaus?.FI === event.selite &&
-    originalKriteeri.tila === event.tila
-  ) {
-    if (existingChangedKriteeri) {
-      return context.changedKriteerit.filter(
-        (ck) => ck.prioriteetti !== existingChangedKriteeri.prioriteetti,
-      );
-    }
-    return context.changedKriteerit;
-  }
-
-  if (existingChangedKriteeri) {
-    existingChangedKriteeri.arvo = event.arvo;
-    existingChangedKriteeri.selite = event.selite;
-    existingChangedKriteeri.tila = event.tila;
-    return context.changedKriteerit.map((ck) =>
-      ck.prioriteetti === event.prioriteetti ? existingChangedKriteeri : ck,
-    );
-  } else {
-    return [
-      ...context.changedKriteerit,
-      {
-        arvo: event.arvo,
-        prioriteetti: event.prioriteetti,
-        selite: event.selite,
-        tila: event.tila,
-      },
-    ];
-  }
-}
-
-function hasChangedKriteerit({
-  context,
-}: {
-  context: MuokattuJonosijaContext;
-}) {
-  return context.changedKriteerit.length > 0;
-}
-
-function isModifiedJonosija({ context }: { context: MuokattuJonosijaContext }) {
-  return Boolean(context.jonosija.muokattu);
-}
+import {
+  MuokattuJonosijaContext,
+  MuokattuJonosijaDeleteEvent,
+  MuokattuJonosijaEvents,
+  MuokattuJonosijaEventTypes,
+  MuokattuJonosijaState,
+} from './muokattuJonosijaMachineTypes';
+import {
+  applyKriteeriChange,
+  hasChangedKriteerit,
+  isModifiedJonosija,
+} from './muokattuJonosijaMachineUtils';
 
 function createMuokattuJonosijaMachine(
   valintatapajonoOid: string,
@@ -283,7 +204,7 @@ function createMuokattuJonosijaMachine(
   });
 }
 
-export const useMuokattuJonosijaActorRef = ({
+export const useMuokattuJonosijaState = ({
   valintatapajonoOid,
   jonosija,
   onSuccess,

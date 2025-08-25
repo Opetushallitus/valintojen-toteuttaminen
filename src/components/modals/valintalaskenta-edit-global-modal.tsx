@@ -22,7 +22,7 @@ import { LocalizedSelect } from '@/components/localized-select';
 import { useMuokkausParams } from '@/hooks/useJarjestyskriteeriMuokkausParams';
 import { JarjestyskriteeriParams } from '@/lib/types/jarjestyskriteeri-types';
 import { useTuloksenTilaOptions } from '@/hooks/useTuloksenTilaOptions';
-import { useMuokattuJonosijaActorRef } from '@/lib/state/muokattu-jonosija-state';
+import { useMuokattuJonosijaState } from '@/lib/state/muokattu-jonosija-state';
 import { useHasChanged } from '@/hooks/useHasChanged';
 
 const ModalActions = ({
@@ -56,7 +56,7 @@ const ModalActions = ({
         {t('yleinen.tallenna')}
         {amountToSave > 0 &&
           t('valintalaskenta.muokkaus.tallenna-n-kriteeria', {
-            maara: amountToSave,
+            count: amountToSave,
           })}
       </OphButton>
     </Stack>
@@ -171,19 +171,16 @@ export const ValintalaskentaEditGlobalModal = createModal<{
       isPending,
       saveKriteerit,
       onJarjestysKriteeriChange,
-    } = useMuokattuJonosijaActorRef({
+    } = useMuokattuJonosijaState({
       valintatapajonoOid: valintatapajono.valintatapajonooid,
       jonosija,
       onSuccess: successCallback,
     });
 
-    const jarjestyskriteeri =
-      snapshot.context.changedKriteerit.find(
-        (k) => k.prioriteetti === jarjestyskriteeriPrioriteetti,
-      ) ?? jonosija.jarjestyskriteerit?.[jarjestyskriteeriPrioriteetti];
-
-    const [muokkausParams, setMuokkausParams] =
-      useMuokkausParams(jarjestyskriteeri);
+    const muokkausParams = useMuokkausParams(
+      snapshot.context,
+      jarjestyskriteeriPrioriteetti,
+    );
 
     return (
       <EditModal
@@ -247,6 +244,9 @@ export const ValintalaskentaEditGlobalModal = createModal<{
                   sx={{
                     display: 'block',
                     marginTop: (theme) => theme.spacing(0.5),
+                    '.MuiSelect-select': {
+                      boxSizing: 'border-box',
+                    },
                   }}
                   labelId={labelId}
                   value={jarjestyskriteeriPrioriteetti.toString()}
@@ -261,13 +261,9 @@ export const ValintalaskentaEditGlobalModal = createModal<{
         </Box>
         <JarjestyskriteeriFields
           value={muokkausParams}
-          onChange={(changedParams) => {
-            onJarjestysKriteeriChange({ ...muokkausParams, ...changedParams });
-            setMuokkausParams((oldParams) => ({
-              ...oldParams,
-              ...changedParams,
-            }));
-          }}
+          onChange={(changedParams) =>
+            onJarjestysKriteeriChange({ ...muokkausParams, ...changedParams })
+          }
         />
       </EditModal>
     );

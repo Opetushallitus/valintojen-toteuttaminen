@@ -1,7 +1,7 @@
 import { Jarjestyskriteeri, TuloksenTila } from '@/lib/types/laskenta-types';
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import { JarjestyskriteeriParams } from '../lib/types/jarjestyskriteeri-types';
-import { useHasChanged } from '@/hooks/useHasChanged';
+import { MuokattuJonosijaContext } from '@/lib/state/muokattuJonosijaMachineTypes';
 
 const isJarjestyskriteeri = (x: unknown): x is Jarjestyskriteeri => {
   return (x as Jarjestyskriteeri).kuvaus !== undefined;
@@ -16,31 +16,19 @@ const getSelite = (
 };
 
 export const useMuokkausParams = (
-  jarjestyskriteeri?: Jarjestyskriteeri | JarjestyskriteeriParams,
+  context: MuokattuJonosijaContext,
+  jarjestyskriteeriPrioriteetti: number,
 ) => {
-  const [muokkausParams, setMuokkausParams] = useState<JarjestyskriteeriParams>(
-    () => ({
+  return useMemo(() => {
+    const jarjestyskriteeri =
+      context.changedKriteerit.find(
+        (k) => k.prioriteetti === jarjestyskriteeriPrioriteetti,
+      ) ?? context.jonosija.jarjestyskriteerit?.[jarjestyskriteeriPrioriteetti];
+    return {
       tila: jarjestyskriteeri?.tila ?? TuloksenTila.MAARITTELEMATON,
       arvo: jarjestyskriteeri?.arvo?.toString() ?? '',
       selite: getSelite(jarjestyskriteeri),
       prioriteetti: jarjestyskriteeri?.prioriteetti ?? 0,
-    }),
-  );
-
-  const jarjestyskriteeriChanged = useHasChanged(
-    jarjestyskriteeri?.prioriteetti,
-  );
-
-  useEffect(() => {
-    if (jarjestyskriteeriChanged) {
-      setMuokkausParams({
-        tila: jarjestyskriteeri?.tila ?? TuloksenTila.MAARITTELEMATON,
-        arvo: jarjestyskriteeri?.arvo?.toString() ?? '',
-        selite: getSelite(jarjestyskriteeri),
-        prioriteetti: jarjestyskriteeri?.prioriteetti ?? 0,
-      });
-    }
-  }, [jarjestyskriteeri, jarjestyskriteeriChanged]);
-
-  return [muokkausParams, setMuokkausParams] as const;
+    };
+  }, [jarjestyskriteeriPrioriteetti, context]);
 };
