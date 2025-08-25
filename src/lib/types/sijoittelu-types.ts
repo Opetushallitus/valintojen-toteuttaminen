@@ -11,6 +11,7 @@ export type SijoittelunValintatapajonoTulos = {
   harkinnanvaraisestiHyvaksytty: number;
   varasijoilla: number;
   vastaanottaneet: number;
+  ehdollisestiVastaanottaneet: number;
   paikanPeruneet: number;
   pisteraja?: string;
 };

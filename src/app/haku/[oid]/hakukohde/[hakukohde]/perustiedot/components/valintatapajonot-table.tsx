@@ -5,9 +5,13 @@ import {
   makeCountColumn,
   makeGenericColumn,
 } from '@/components/table/table-columns';
-import { isToisenAsteenYhteisHaku } from '@/lib/kouta/kouta-service';
+import {
+  isKorkeakouluHaku,
+  isToisenAsteenYhteisHaku,
+} from '@/lib/kouta/kouta-service';
 import { Haku } from '@/lib/kouta/kouta-types';
 import { SijoittelunValintatapajonoTulos } from '@/lib/types/sijoittelu-types';
+import { isNonNull } from 'remeda';
 
 export const ValintatapajonotTable = ({
   valintatapajonoTulokset,
@@ -53,6 +57,13 @@ export const ValintatapajonotTable = ({
       key: 'vastaanottaneet',
       amountProp: 'vastaanottaneet',
     }),
+    isKorkeakouluHaku(haku)
+      ? makeCountColumn<SijoittelunValintatapajonoTulos>({
+          title: 'perustiedot.taulukko.ehdollisesti-vastaanottaneet',
+          key: 'ehdollisesti-vastaanottaneet',
+          amountProp: 'ehdollisestiVastaanottaneet',
+        })
+      : null,
     makeCountColumn<SijoittelunValintatapajonoTulos>({
       title: 'perustiedot.taulukko.peruneet',
       key: 'peruneet',
@@ -63,7 +74,7 @@ export const ValintatapajonotTable = ({
       key: 'pisteraja',
       amountProp: 'pisteraja',
     }),
-  ];
+  ].filter(isNonNull);
 
   return (
     <ListTable
