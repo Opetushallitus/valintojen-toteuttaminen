@@ -56,6 +56,7 @@ export const augmentPisteetWithHakemukset = (
         hakemusOid: hakemus.hakemusOid,
         hakijaOid: hakemus.hakijaOid,
         hakijanNimi: hakemus.hakijanNimi,
+        henkilotunnus: hakemus.henkilotunnus,
         etunimet: hakemus.etunimet,
         sukunimi: hakemus.sukunimi,
         valintakokeenPisteet: p.valintakokeenPisteet,

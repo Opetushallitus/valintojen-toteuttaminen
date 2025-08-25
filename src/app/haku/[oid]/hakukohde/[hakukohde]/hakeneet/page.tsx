@@ -33,12 +33,13 @@ const HakeneetContent = ({ haku, hakukohdeOid }: HakeneetParams) => {
     pageResults,
     sort,
     setSort,
+    unfilteredResults,
   } = useHakeneetSearchResults(haku.oid, hakukohdeOid);
 
   const { searchPhrase, setSearchPhrase } = useHakeneetSearchParams();
   const { t } = useTranslations();
 
-  return isEmpty(pageResults) ? (
+  return isEmpty(unfilteredResults) ? (
     <NoResults text={t('hakeneet.ei-hakijoita')} />
   ) : (
     <>

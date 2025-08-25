@@ -217,6 +217,13 @@ test.describe('Suodattimet', () => {
     await assertRows(rows, [ROWS.purukumiTable1]);
   });
 
+  test('Suodattaa hetulla', async () => {
+    const hakuInput = page.getByLabel('Hae hakijan nimellä tai');
+    await hakuInput.fill('101172-979F');
+    const rows = getYoAccordionContent(page).locator('tbody tr');
+    await assertRows(rows, [ROWS.kreiviTable1]);
+  });
+
   test('Suodattaa sijoitteluntilalla HYLÄTTY', async () => {
     await selectTila(page, 'HYLÄTTY');
     const rows = getYoAccordionContent(page).locator('tbody tr');

@@ -306,6 +306,16 @@ test.describe('Suodattimet', () => {
     await expect(rows.filter({ hasText: 'Purukumi Puru' })).toHaveCount(1);
   });
 
+  test('Henkilötunnuksella', async ({ page }) => {
+    const hakuInput = page.getByRole('textbox', {
+      name: 'Hae hakijan nimellä tai tunnisteilla',
+    });
+    await hakuInput.fill('101172-979F');
+    const rows = page.locator('tbody tr');
+    await expect(rows).toHaveCount(1);
+    await expect(rows.filter({ hasText: 'Dacula Kreivi' })).toHaveCount(1);
+  });
+
   test('Julkaisutilalla VARALLA', async ({ page }) => {
     await selectTila(page, 'VARALLA');
     const rows = page.locator('tbody tr');

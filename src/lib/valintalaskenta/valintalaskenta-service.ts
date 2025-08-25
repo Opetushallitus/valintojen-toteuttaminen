@@ -362,6 +362,7 @@ export const getHakijaryhmat = async (
         hakijanNimi: h.hakijanNimi,
         hakemusOid: h.hakemusOid,
         hakijaOid: h.hakijaOid,
+        henkilotunnus: h.henkilotunnus,
         hyvaksyttyHakijaryhmasta: isHyvaksyttyHakijaryhmasta(
           ryhma.hakijaryhmaOid,
           hakemusSijoittelussa,

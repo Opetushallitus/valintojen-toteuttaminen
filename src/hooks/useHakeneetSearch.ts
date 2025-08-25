@@ -95,5 +95,6 @@ export const useHakeneetSearchResults = (
     results,
     sort,
     setSort,
+    unfilteredResults: hakeneet,
   };
 };
