@@ -11,18 +11,20 @@ import {
 import { CachePolicy, PriceClass } from 'aws-cdk-lib/aws-cloudfront';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 
-type EnvironmentName = 'untuva' | 'hahtuva' | 'pallero';
+type EnvironmentName = 'untuva' | 'hahtuva' | 'pallero' | 'sade';
 
 const publicHostedZones: Record<EnvironmentName, string> = {
   untuva: 'untuvaopintopolku.fi',
   hahtuva: 'hahtuvaopintopolku.fi',
   pallero: 'testiopintopolku.fi',
+  sade: 'opintopolku.fi',
 };
 
 const publicHostedZoneIds: Record<EnvironmentName, string> = {
   untuva: 'Z1399RU36FG2N9',
   hahtuva: 'Z20VS6J64SGAG9',
   pallero: 'Z175BBXSKVCV3B',
+  sade: 'ZNMCY72OCXY4M',
 };
 
 interface ValintojenToteuttaminenStackProps extends cdk.StackProps {
@@ -70,6 +72,9 @@ const envOverrides = {
     FEATURE_VALINTALASKENTAKERRALLA_VANHA: 'true',
   },
   pallero: {},
+  sade: {
+    FEATURE_VALINTALASKENTAKERRALLA_VANHA: 'true',
+  },
 };
 
 export class SovellusStack extends cdk.Stack {
