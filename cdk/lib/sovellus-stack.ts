@@ -69,9 +69,7 @@ const envOverrides = {
   hahtuva: {
     FEATURE_VALINTALASKENTAKERRALLA_VANHA: 'true',
   },
-  pallero: {
-    FEATURE_VALINTALASKENTAKERRALLA_VANHA: 'true',
-  },
+  pallero: {},
 };
 
 export class SovellusStack extends cdk.Stack {
