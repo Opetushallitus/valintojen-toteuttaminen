@@ -20,6 +20,7 @@ on:
           - untuva
           - hahtuva
           - pallero
+          - sade
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -55,4 +56,6 @@ jobs:
           SKIP_OPENNEXT_BUILD: true
         run: |
           cd cdk
+          cdk deploy HostedZoneStack --require-approval never -c "environment=${{ inputs.environment }}"
+          cdk deploy ValintojenToteuttaminenCertificateStack --require-approval never -c "environment=${{ inputs.environment }}"
           cdk deploy SovellusStack --require-approval never -c "environment=${{ inputs.environment }}"
