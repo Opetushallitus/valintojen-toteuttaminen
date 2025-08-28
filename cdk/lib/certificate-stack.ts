@@ -16,5 +16,10 @@ export class ValintojenToteuttaminenCertificateStack extends cdk.Stack {
     props: ValintojenToteuttaminenCertificateStackProps,
   ) {
     super(scope, id, props);
+
+    this.certificate = new acm.Certificate(this, 'SiteCertificate', {
+      domainName: props.domain,
+      validation: acm.CertificateValidation.fromDns(props.hostedZone),
+    });
   }
 }

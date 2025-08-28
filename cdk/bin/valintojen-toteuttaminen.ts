@@ -43,4 +43,5 @@ new ValintojenToteuttaminenSovellusStack(app, 'SovellusStack', {
   hostedZone: hostedZoneStack.hostedZone,
   certificate: certificateStack.certificate,
   crossRegionReferences: true,
+  domainName: domainName,
 });

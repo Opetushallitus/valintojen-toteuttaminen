@@ -16,6 +16,7 @@ interface ValintojenToteuttaminenStackProps extends cdk.StackProps {
   environmentName: EnvironmentName;
   hostedZone: route53.IHostedZone;
   certificate: acm.ICertificate;
+  domainName: string;
 }
 
 const nameFunctionProps = (
@@ -79,8 +80,6 @@ export class ValintojenToteuttaminenSovellusStack extends cdk.Stack {
         : '/dev/NextJs/serverCachePolicyId',
     );
 
-    const domainName = `valintojen-toteuttaminen.${publicHostedZones[props.environmentName]}`;
-
     const nextjs = new Nextjs(this, 'Nextjs', {
       nextjsPath: '..', // relative path from your project root to NextJS
       basePath: '/valintojen-toteuttaminen',
@@ -91,7 +90,7 @@ export class ValintojenToteuttaminenSovellusStack extends cdk.Stack {
         ...envOverrides[props.environmentName],
       },
       domainProps: {
-        domainName,
+        domainName: props.domainName,
         certificate: props.certificate,
         hostedZone: props.hostedZone,
       },
