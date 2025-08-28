@@ -10,25 +10,12 @@ import {
 } from 'cdk-nextjs-standalone';
 import { CachePolicy, PriceClass } from 'aws-cdk-lib/aws-cloudfront';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
-
-type EnvironmentName = 'untuva' | 'hahtuva' | 'pallero' | 'sade';
-
-const publicHostedZones: Record<EnvironmentName, string> = {
-  untuva: 'untuvaopintopolku.fi',
-  hahtuva: 'hahtuvaopintopolku.fi',
-  pallero: 'testiopintopolku.fi',
-  sade: 'opintopolku.fi',
-};
-
-const publicHostedZoneIds: Record<EnvironmentName, string> = {
-  untuva: 'Z1399RU36FG2N9',
-  hahtuva: 'Z20VS6J64SGAG9',
-  pallero: 'Z175BBXSKVCV3B',
-  sade: 'ZNMCY72OCXY4M',
-};
+import { EnvironmentName, publicHostedZones } from './constants';
 
 interface ValintojenToteuttaminenStackProps extends cdk.StackProps {
   environmentName: EnvironmentName;
+  hostedZone: route53.IHostedZone;
+  certificate: acm.ICertificate;
 }
 
 const nameFunctionProps = (
@@ -77,7 +64,7 @@ const envOverrides = {
   },
 };
 
-export class SovellusStack extends cdk.Stack {
+export class ValintojenToteuttaminenSovellusStack extends cdk.Stack {
   constructor(
     scope: Construct,
     id: string,
@@ -92,26 +79,7 @@ export class SovellusStack extends cdk.Stack {
         : '/dev/NextJs/serverCachePolicyId',
     );
 
-    const hostedZone = route53.HostedZone.fromHostedZoneAttributes(
-      this,
-      'PublicHostedZone',
-      {
-        zoneName: `${publicHostedZones[props.environmentName]}.`,
-        hostedZoneId: `${publicHostedZoneIds[props.environmentName]}`,
-      },
-    );
-
     const domainName = `valintojen-toteuttaminen.${publicHostedZones[props.environmentName]}`;
-
-    const certificate = new acm.DnsValidatedCertificate(
-      this,
-      'SiteCertificate',
-      {
-        domainName,
-        hostedZone,
-        region: 'us-east-1', // Cloudfront only checks this region for certificates.
-      },
-    );
 
     const nextjs = new Nextjs(this, 'Nextjs', {
       nextjsPath: '..', // relative path from your project root to NextJS
@@ -124,8 +92,8 @@ export class SovellusStack extends cdk.Stack {
       },
       domainProps: {
         domainName,
-        certificate,
-        hostedZone,
+        certificate: props.certificate,
+        hostedZone: props.hostedZone,
       },
       overrides: {
         nextjsDistribution: {
