@@ -21,6 +21,8 @@ import { SpinnerModal } from '@/components/modals/spinner-modal';
 import { ConfirmationGlobalModal } from '@/components/modals/confirmation-global-modal';
 import { T } from '@tolgee/react';
 import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
+import { useContext } from 'react';
+import { HakukohdeReadonlyContext } from '@/app/haku/[oid]/hakukohde/[hakukohde]/hakukohde-readonly-context';
 
 export const ValinnanTuloksetOtherActionsCell = ({
   hakemus,
@@ -42,6 +44,8 @@ export const ValinnanTuloksetOtherActionsCell = ({
   removeValinnanTulos?: (hakemusOid: string) => void;
 }) => {
   const { t } = useTranslations();
+
+  const readonly = useContext(HakukohdeReadonlyContext);
 
   const createHyvaksymiskirjePDFs = async () => {
     showModal(AcceptedLetterTemplateModal, {
@@ -87,7 +91,7 @@ export const ValinnanTuloksetOtherActionsCell = ({
         icon={<History />}
         onClick={showChangeHistoryForHakemus}
       />
-      {removeValinnanTulos && (
+      {removeValinnanTulos && !readonly && (
         <Dropdown.MenuItem
           label={t('valinnan-tulokset.toiminnot.poista-valinnan-tulokset')}
           icon={<DeleteOutline />}
@@ -118,20 +122,22 @@ export const ValinnanTuloksetOtherActionsCell = ({
         />
       )}
 
-      <Dropdown.MenuItem
-        label={t('sijoittelun-tulokset.toiminnot.hyvaksymiskirje')}
-        icon={<InsertDriveFileOutlined />}
-        onClick={createHyvaksymiskirjePDFs}
-        disabled={
-          !hakemuksentulosTallennettu ||
-          !isKirjeidenMuodostaminenAllowed(
-            haku,
-            userPermissions,
-            kaikkiJonotHyvaksytty,
-          )
-        }
-      />
-      {isSendVastaanottoPostiVisible(haku, userPermissions) && (
+      {!readonly && (
+        <Dropdown.MenuItem
+          label={t('sijoittelun-tulokset.toiminnot.hyvaksymiskirje')}
+          icon={<InsertDriveFileOutlined />}
+          onClick={createHyvaksymiskirjePDFs}
+          disabled={
+            !hakemuksentulosTallennettu ||
+            !isKirjeidenMuodostaminenAllowed(
+              haku,
+              userPermissions,
+              kaikkiJonotHyvaksytty,
+            )
+          }
+        />
+      )}
+      {!readonly && isSendVastaanottoPostiVisible(haku, userPermissions) && (
         <Dropdown.MenuItem
           label={t('vastaanottoposti.laheta')}
           icon={<MailOutline />}

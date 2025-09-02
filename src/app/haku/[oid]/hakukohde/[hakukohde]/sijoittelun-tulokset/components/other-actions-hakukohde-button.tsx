@@ -1,6 +1,6 @@
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { Divider } from '@mui/material';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import {
   FileDownloadOutlined,
   MailOutline,
@@ -19,6 +19,7 @@ import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
 import { Dropdown } from '@/components/dropdown';
 import { useSendVastaanottoPostiMutation } from '@/hooks/useSendVastaanottoPostiMutation';
 import { useConfiguration } from '@/hooks/useConfiguration';
+import { HakukohdeReadonlyContext } from '@/app/haku/[oid]/hakukohde/[hakukohde]/hakukohde-readonly-context';
 
 const SendVastaanottopostiMenuItem = ({
   hakukohde,
@@ -163,6 +164,8 @@ export const OtherActionsHakukohdeButton = ({
   const { configuration, getConfigUrl } = useConfiguration();
   const { t } = useTranslations();
 
+  const readonly = useContext(HakukohdeReadonlyContext);
+
   const [hyvaksymiskirje, setHyvaksymiskirjeDocument] = useState<string | null>(
     hyvaksymiskirjeDocumentId,
   );
@@ -188,18 +191,22 @@ export const OtherActionsHakukohdeButton = ({
       label={t('sijoittelun-tulokset.toiminnot.menu-hakukohde')}
       disabled={disabled}
     >
-      <SendVastaanottopostiMenuItem hakukohde={hakukohde} />
-      <Divider />
-      <FormHyvaksymisKirjeMenuItem
-        hakukohde={hakukohde}
-        sijoitteluajoId={sijoitteluajoId}
-        setDocument={setHyvaksymiskirjeDocument}
-      />
-      <FormEiHyvaksymisKirjeMenuItem
-        hakukohde={hakukohde}
-        sijoitteluajoId={sijoitteluajoId}
-        korkeakouluHaku={isKorkeakouluHaku(haku)}
-      />
+      {!readonly && <SendVastaanottopostiMenuItem hakukohde={hakukohde} />}
+      {!readonly && <Divider />}
+      {!readonly && (
+        <FormHyvaksymisKirjeMenuItem
+          hakukohde={hakukohde}
+          sijoitteluajoId={sijoitteluajoId}
+          setDocument={setHyvaksymiskirjeDocument}
+        />
+      )}
+      {!readonly && (
+        <FormEiHyvaksymisKirjeMenuItem
+          hakukohde={hakukohde}
+          sijoitteluajoId={sijoitteluajoId}
+          korkeakouluHaku={isKorkeakouluHaku(haku)}
+        />
+      )}
       <Dropdown.MenuItem
         onClick={() => openDocument(hyvaksymiskirje)}
         icon={<FileDownloadOutlined />}
@@ -209,11 +216,13 @@ export const OtherActionsHakukohdeButton = ({
         disabled={!hyvaksymiskirje}
       />
       <Divider />
-      <FormOsoiteTarratMenuItem
-        hakukohde={hakukohde}
-        sijoitteluajoId={sijoitteluajoId}
-        setDocument={setOsoitetarraDocument}
-      />
+      {!readonly && (
+        <FormOsoiteTarratMenuItem
+          hakukohde={hakukohde}
+          sijoitteluajoId={sijoitteluajoId}
+          setDocument={setOsoitetarraDocument}
+        />
+      )}
       <Dropdown.MenuItem
         onClick={() => openDocument(osoitetarraDocument)}
         icon={<FileDownloadOutlined />}
