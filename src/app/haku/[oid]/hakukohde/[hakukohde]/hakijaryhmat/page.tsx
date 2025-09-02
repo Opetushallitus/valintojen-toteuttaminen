@@ -54,15 +54,7 @@ const HakijaryhmatContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
           gap: 2,
         }}
       >
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'flex-end',
-            gap: 2,
-          }}
-        >
-          <HakijaryhmatControls />
-        </Box>
+        <HakijaryhmatControls />
         <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
       </Box>
       {hakijaryhmatQuery.data.map((hakijaryhma) => (
