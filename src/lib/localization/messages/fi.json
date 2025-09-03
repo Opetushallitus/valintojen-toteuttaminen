@@ -77,7 +77,8 @@
     "HYVAKSYTTAVISSA": "Hyväksyttävissä",
     "HYLATTY": "Hylätty",
     "MAARITTELEMATON": "Määrittelemätön",
-    "HYVAKSYTTY_HARKINNANVARAISESTI": "Hyväksytty harkinnanvaraisesti"
+    "HYVAKSYTTY_HARKINNANVARAISESTI": "Hyväksytty harkinnanvaraisesti",
+    "VIRHE": "Virhe"
   },
   "valintakoe": {
     "osallistumisenTila": {

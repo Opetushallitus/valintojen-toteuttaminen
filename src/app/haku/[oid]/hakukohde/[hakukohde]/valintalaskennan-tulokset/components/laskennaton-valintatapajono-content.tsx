@@ -7,7 +7,7 @@ import { LaskennanValintatapajonoTulosWithHakijaInfo } from '@/hooks/useEditable
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { getValintatapaJonoNimi } from '@/lib/valintalaskenta/valintalaskenta-utils';
 import { LaskennatonValintatapajonoTable } from './laskennaton-valintatapajono-table';
-import { useCallback } from 'react';
+import { useCallback, useContext } from 'react';
 import { ConfirmationGlobalModal } from '@/components/modals/confirmation-global-modal';
 import { showModal } from '@/components/modals/global-modal';
 import { OphButton } from '@opetushallitus/oph-design-system';
@@ -29,6 +29,7 @@ import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBefo
 import { ValintatapajonoContentProps } from '../types/valintatapajono-types';
 import { LaskennatonJonoExcelUploadButton } from './laskennaton-jono-excel-upload-button';
 import { refetchHakukohteenValintalaskennanTulokset } from '@/lib/valintalaskenta/valintalaskenta-queries';
+import { HakukohdeReadonlyContext } from '@/app/haku/[oid]/hakukohde/[hakukohde]/hakukohde-readonly-context';
 
 const LaskennatonVaiheActions = ({
   hakukohde,
@@ -40,6 +41,8 @@ const LaskennatonVaiheActions = ({
   jonoTulosActorRef: JonoTulosActorRef;
 }) => {
   const statusMutation = useSijoitteluStatusMutation(hakukohde.oid);
+
+  const readonly = useContext(HakukohdeReadonlyContext);
 
   const { saveJonoTulos, isUpdating } = useJonoTulosActorRef(jonoTulosActorRef);
 
@@ -72,19 +75,23 @@ const LaskennatonVaiheActions = ({
       gap={2}
       sx={{ alignItems: 'flex-start', marginBottom: 1, flexWrap: 'wrap' }}
     >
-      <OphButton
-        variant="contained"
-        type="submit"
-        onClick={() => saveJonoTulos()}
-        loading={isUpdating}
-      >
-        {t('yleinen.tallenna')}
-      </OphButton>
-      <SijoitteluStatusChangeButton
-        tarjoajaOid={hakukohde?.tarjoajaOid}
-        jono={jono}
-        statusMutation={statusMutation}
-      />
+      {!readonly && (
+        <OphButton
+          variant="contained"
+          type="submit"
+          onClick={() => saveJonoTulos()}
+          loading={isUpdating}
+        >
+          {t('yleinen.tallenna')}
+        </OphButton>
+      )}
+      {!readonly && (
+        <SijoitteluStatusChangeButton
+          tarjoajaOid={hakukohde?.tarjoajaOid}
+          jono={jono}
+          statusMutation={statusMutation}
+        />
+      )}
       <FileDownloadButton
         defaultFileName="valintalaskennan-tulokset.xlsx"
         getFile={() =>
@@ -99,11 +106,13 @@ const LaskennatonVaiheActions = ({
       >
         {t('yleinen.vie-taulukkolaskentaan')}
       </FileDownloadButton>
-      <LaskennatonJonoExcelUploadButton
-        hakuOid={hakukohde.hakuOid}
-        hakukohdeOid={hakukohde.oid}
-        valintatapajonoOid={jono.oid}
-      />
+      {!readonly && (
+        <LaskennatonJonoExcelUploadButton
+          hakuOid={hakukohde.hakuOid}
+          hakukohdeOid={hakukohde.oid}
+          valintatapajonoOid={jono.oid}
+        />
+      )}
       <ToggleButtonGroup
         color="primary"
         value={jarjestysPeruste}
