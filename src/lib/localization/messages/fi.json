@@ -331,6 +331,7 @@
     "otsikko": "Sijoittelun tulokset",
     "julkaistavissa": "Julkaistavissa",
     "hakijalle-naytetaan": "Hakijalle näytetään:",
+    "hakijalle-naytetaan-virhe": "Virhe hakijalle näytettävän vastaanottotiedon haussa",
     "ehdollinen": "Ehdollinen valinta",
     "varasijalta": "Hyväksytään varasijalta",
     "nayta-ehdolliset": "Näytä vain ehdollisesti hyväksytyt hakijat",
