@@ -39,14 +39,18 @@ const HenkiloContent = ({
     hakemusOid,
   });
 
+  const laskentaAllowed = hakukohteet.every((hk) => !hk.readOnly);
+
   return (
     <>
       <Typography variant="h2">{getHenkiloTitle(hakija)}</Typography>
-      <HenkilonValintalaskenta
-        hakukohteet={hakukohteet}
-        haku={haku}
-        haunAsetukset={haunAsetukset}
-      />
+      {laskentaAllowed && (
+        <HenkilonValintalaskenta
+          hakukohteet={hakukohteet}
+          haku={haku}
+          haunAsetukset={haunAsetukset}
+        />
+      )}
       <Stack direction="row" spacing="4vw" sx={{ paddingTop: 1 }}>
         <LabeledInfoItem
           label={t('henkilo.hakemus-oid')}
