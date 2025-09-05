@@ -37,6 +37,8 @@ import {
   ValinnanTulosMassChangeParams,
   ValinnanTulosState,
 } from '@/lib/state/valinnanTuloksetMachineTypes';
+import { HakukohdeReadonlyContext } from '@/app/haku/[oid]/hakukohde/[hakukohde]/hakukohde-readonly-context';
+import { useContext } from 'react';
 
 const ActionsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -270,7 +272,9 @@ export const ValinnanTuloksetActions = ({
     haku,
   });
 
-  return (
+  const readonly = useContext(HakukohdeReadonlyContext);
+
+  return readonly ? null : (
     <ActionsContainer>
       <OphButton
         onClick={() => {

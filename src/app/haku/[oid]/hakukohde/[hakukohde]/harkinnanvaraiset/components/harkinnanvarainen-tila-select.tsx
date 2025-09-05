@@ -18,6 +18,7 @@ export const HarkinnanvarainenTilaSelect = ({
   harkinnanvarainenTila,
   harkinnanvaraisetTilat,
   onHarkinnanvaraisetTilatChange,
+  readonly,
 }: {
   hakemusOid: string;
   hakijanNimi: string;
@@ -26,6 +27,7 @@ export const HarkinnanvarainenTilaSelect = ({
   onHarkinnanvaraisetTilatChange?: (
     harkinnanvaraisetTilaChanges: HarkinnanvaraisetTilatByHakemusOids,
   ) => void;
+  readonly: boolean;
 }) => {
   const { t } = useTranslations();
   const isDirty = isDefined(harkinnanvaraisetTilat[hakemusOid]);
@@ -40,6 +42,7 @@ export const HarkinnanvarainenTilaSelect = ({
             }
           : {},
       }}
+      disabled={readonly}
       clearable={true}
       inputProps={{
         'aria-label': t(

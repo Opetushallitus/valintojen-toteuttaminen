@@ -7,7 +7,6 @@ export default async function HakuLayout(props: {
   params: Promise<{ oid: string; hakukohde: string }>;
 }) {
   const params = await props.params;
-
   const { children } = props;
 
   return (

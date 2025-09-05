@@ -11,7 +11,7 @@ import {
 import { saveHarkinnanvaraisetTilat } from '@/lib/valintalaskenta/valintalaskenta-service';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { isEmpty } from 'remeda';
 import { HarkinnanvaraisetActionBar } from './harkinnanvaraiset-action-bar';
 import { HarkinnanvaraisetTable } from './harkinnanvaraiset-table';
@@ -19,6 +19,7 @@ import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBefo
 import { useSelection } from '@/hooks/useSelection';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 import { refetchHarkinnanvaraisetTilat } from '@/lib/valintalaskenta/valintalaskenta-queries';
+import { HakukohdeReadonlyContext } from '@/app/haku/[oid]/hakukohde/[hakukohde]/hakukohde-readonly-context';
 
 const useTallennaMutation = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const { addToast } = useToaster();
@@ -70,6 +71,8 @@ export const HarkinnanvaraisetForm = ({
   harkinnanvaraisetHakemukset: Array<HakemuksenHarkinnanvaraisuus>;
 }) => {
   const { t } = useTranslations();
+
+  const readonly = useContext(HakukohdeReadonlyContext);
 
   const { selection, setSelection, resetSelection } = useSelection(
     harkinnanvaraisetHakemukset,
@@ -125,19 +128,23 @@ export const HarkinnanvaraisetForm = ({
       autoComplete="off"
       sx={{ display: 'flex', flexDirection: 'column', rowGap: 2 }}
     >
-      <OphButton
-        variant="contained"
-        type="submit"
-        sx={{ alignSelf: 'flex-start' }}
-        loading={isPending}
-      >
-        {t('yleinen.tallenna')}
-      </OphButton>
-      <HarkinnanvaraisetActionBar
-        selection={selection}
-        onHarkinnanvaraisetTilatChange={handleHarkinnanvaraisetTilatChange}
-        resetSelection={resetSelection}
-      />
+      {!readonly && (
+        <OphButton
+          variant="contained"
+          type="submit"
+          sx={{ alignSelf: 'flex-start' }}
+          loading={isPending}
+        >
+          {t('yleinen.tallenna')}
+        </OphButton>
+      )}
+      {!readonly && (
+        <HarkinnanvaraisetActionBar
+          selection={selection}
+          onHarkinnanvaraisetTilatChange={handleHarkinnanvaraisetTilatChange}
+          resetSelection={resetSelection}
+        />
+      )}
       <HarkinnanvaraisetTable
         data={harkinnanvaraisetHakemukset}
         selection={selection}

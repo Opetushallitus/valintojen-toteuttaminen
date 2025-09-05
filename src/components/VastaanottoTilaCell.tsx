@@ -154,7 +154,14 @@ const SijoittelunVastaanottoTila = ({
   return (
     isVastaanottoPossible(hakemus) && (
       <>
-        <QuerySuspenseBoundary suspenseFallback={<ClientSpinner size={16} />}>
+        <QuerySuspenseBoundary
+          suspenseFallback={<ClientSpinner size={16} />}
+          errorFallbackRender={() => (
+            <Typography>
+              {t('sijoittelun-tulokset.hakijalle-naytetaan-virhe')}
+            </Typography>
+          )}
+        >
           {valintatapajono && (
             <HakijanVastaanottoTilaSection
               haku={haku}

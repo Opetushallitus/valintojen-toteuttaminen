@@ -43,6 +43,8 @@ export const HakijaryhmatControls = () => {
         display: 'flex',
         flexDirection: 'row',
         columnGap: 2,
+        flexWrap: 'wrap',
+        flexGrow: 3,
       }}
     >
       <SearchInput
