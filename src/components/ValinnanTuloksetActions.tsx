@@ -37,6 +37,7 @@ import {
   ValinnanTulosMassChangeParams,
   ValinnanTulosState,
 } from '@/lib/state/valinnanTuloksetMachineTypes';
+import { useHasOnlyHakukohdeReadPermission } from '@/hooks/useHasOnlyHakukohdeReadPermission';
 
 const ActionsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -270,7 +271,9 @@ export const ValinnanTuloksetActions = ({
     haku,
   });
 
-  return (
+  const userHasOnlyReadPermission = useHasOnlyHakukohdeReadPermission();
+
+  return userHasOnlyReadPermission ? null : (
     <ActionsContainer>
       <OphButton
         onClick={() => {

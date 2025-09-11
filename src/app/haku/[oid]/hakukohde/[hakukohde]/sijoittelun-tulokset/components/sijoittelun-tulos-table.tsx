@@ -30,6 +30,7 @@ import {
   ValinnanTulosEventType,
   ValinnanTulosState,
 } from '@/lib/state/valinnanTuloksetMachineTypes';
+import { useHasOnlyHakukohdeReadPermission } from '@/hooks/useHasOnlyHakukohdeReadPermission';
 
 export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
   title,
@@ -49,6 +50,7 @@ export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
 const TRANSLATIONS_PREFIX = 'sijoittelun-tulokset.taulukko';
 
 const useColumns = ({
+  readonly,
   haku,
   hakukohde,
   sijoitteluajoId,
@@ -58,6 +60,7 @@ const useColumns = ({
   kayttaaLaskentaa,
   hasNegativePisteet,
 }: {
+  readonly: boolean;
   haku: Haku;
   hakukohde: Hakukohde;
   sijoitteluajoId: string;
@@ -114,7 +117,7 @@ const useColumns = ({
             haku={haku}
             hakukohde={hakukohde}
             updateForm={updateForm}
-            disabled={disabled}
+            disabled={readonly || disabled}
             mode="sijoittelu"
             t={t}
             translateEntity={translateEntity}
@@ -131,7 +134,7 @@ const useColumns = ({
             valintatapajono={valintatapajono}
             hakemus={props}
             updateForm={updateForm}
-            disabled={disabled}
+            disabled={readonly || disabled}
             mode="sijoittelu"
             t={t}
           />
@@ -144,7 +147,7 @@ const useColumns = ({
           <IlmoittautumisTilaSelect
             hakemus={props}
             updateForm={updateForm}
-            disabled={disabled}
+            disabled={readonly || disabled}
           />
         ),
       }),
@@ -156,7 +159,7 @@ const useColumns = ({
               <MaksuCell
                 hakemus={props}
                 updateForm={updateForm}
-                disabled={disabled}
+                disabled={readonly || disabled}
               />
             ),
           })
@@ -189,6 +192,7 @@ const useColumns = ({
     kayttaaLaskentaa,
     hasNegativePisteet,
     translateEntity,
+    readonly,
   ]);
 };
 
@@ -211,6 +215,8 @@ export const SijoittelunTulosTable = ({
 }) => {
   const { t } = useTranslations();
 
+  const userHasOnlyReadPermission = useHasOnlyHakukohdeReadPermission();
+
   const contextHakemukset = useSelector(
     sijoittelunTulosActorRef,
     (state) => state.context.hakemukset,
@@ -226,6 +232,7 @@ export const SijoittelunTulosTable = ({
   } = useSijoittelunTulosSearch(valintatapajono.oid, contextHakemukset);
 
   const columns = useColumns({
+    readonly: userHasOnlyReadPermission,
     haku,
     hakukohde,
     sijoitteluajoId,
@@ -259,19 +266,21 @@ export const SijoittelunTulosTable = ({
 
   return (
     <>
-      <SijoittelunTuloksetActionBar
-        hakemukset={contextHakemukset}
-        selection={selection}
-        resetSelection={resetSelection}
-        actorRef={sijoittelunTulosActorRef}
-      />
+      {!userHasOnlyReadPermission && (
+        <SijoittelunTuloksetActionBar
+          hakemukset={contextHakemukset}
+          selection={selection}
+          resetSelection={resetSelection}
+          actorRef={sijoittelunTulosActorRef}
+        />
+      )}
       <ListTable
         rowKeyProp="hakemusOid"
         columns={columns}
         rows={rows}
         sort={sort}
         setSort={setSort}
-        checkboxSelection={true}
+        checkboxSelection={!userHasOnlyReadPermission}
         selection={selection}
         pagination={{
           page,

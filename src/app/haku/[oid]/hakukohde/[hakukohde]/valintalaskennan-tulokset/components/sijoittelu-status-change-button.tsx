@@ -9,6 +9,7 @@ import {
   useHierarchyUserPermissions,
   useUserPermissions,
 } from '@/hooks/useUserPermissions';
+import { useHasOnlyHakukohdeReadPermission } from '@/hooks/useHasOnlyHakukohdeReadPermission';
 
 const SijoitteluButton = ({ ...props }: ButtonProps) => {
   return <OphButton {...props} variant="outlined" />;
@@ -52,6 +53,7 @@ export const PureSijoitteluStatusChangeButton = ({
     case jono.valmisSijoiteltavaksi && jono.siirretaanSijoitteluun:
       return (
         <SijoitteluButton
+          sx={{ marginBottom: 2 }}
           loading={statusMutation.isPending}
           disabled={!hasOphUpdate}
           onClick={() =>
@@ -78,8 +80,9 @@ export const SijoitteluStatusChangeButton = ({
   const { t } = useTranslations();
   const userPermissions = useUserPermissions();
   const hierarchyUserPermissions = useHierarchyUserPermissions(userPermissions);
+  const userHasOnlyReadPermission = useHasOnlyHakukohdeReadPermission();
 
-  return (
+  return userHasOnlyReadPermission ? null : (
     <PureSijoitteluStatusChangeButton
       tarjoajaOid={tarjoajaOid}
       jono={jono}

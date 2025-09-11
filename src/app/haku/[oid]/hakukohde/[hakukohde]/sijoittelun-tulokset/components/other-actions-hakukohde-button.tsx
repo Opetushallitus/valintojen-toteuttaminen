@@ -19,6 +19,7 @@ import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
 import { Dropdown } from '@/components/dropdown';
 import { useSendVastaanottoPostiMutation } from '@/hooks/useSendVastaanottoPostiMutation';
 import { useConfiguration } from '@/hooks/useConfiguration';
+import { useHasOnlyHakukohdeReadPermission } from '@/hooks/useHasOnlyHakukohdeReadPermission';
 
 const SendVastaanottopostiMenuItem = ({
   hakukohde,
@@ -163,6 +164,8 @@ export const OtherActionsHakukohdeButton = ({
   const { configuration, getConfigUrl } = useConfiguration();
   const { t } = useTranslations();
 
+  const userHasOnlyReadPermission = useHasOnlyHakukohdeReadPermission();
+
   const [hyvaksymiskirje, setHyvaksymiskirjeDocument] = useState<string | null>(
     hyvaksymiskirjeDocumentId,
   );
@@ -188,18 +191,24 @@ export const OtherActionsHakukohdeButton = ({
       label={t('sijoittelun-tulokset.toiminnot.menu-hakukohde')}
       disabled={disabled}
     >
-      <SendVastaanottopostiMenuItem hakukohde={hakukohde} />
-      <Divider />
-      <FormHyvaksymisKirjeMenuItem
-        hakukohde={hakukohde}
-        sijoitteluajoId={sijoitteluajoId}
-        setDocument={setHyvaksymiskirjeDocument}
-      />
-      <FormEiHyvaksymisKirjeMenuItem
-        hakukohde={hakukohde}
-        sijoitteluajoId={sijoitteluajoId}
-        korkeakouluHaku={isKorkeakouluHaku(haku)}
-      />
+      {!userHasOnlyReadPermission && (
+        <SendVastaanottopostiMenuItem hakukohde={hakukohde} />
+      )}
+      {!userHasOnlyReadPermission && <Divider />}
+      {!userHasOnlyReadPermission && (
+        <FormHyvaksymisKirjeMenuItem
+          hakukohde={hakukohde}
+          sijoitteluajoId={sijoitteluajoId}
+          setDocument={setHyvaksymiskirjeDocument}
+        />
+      )}
+      {!userHasOnlyReadPermission && (
+        <FormEiHyvaksymisKirjeMenuItem
+          hakukohde={hakukohde}
+          sijoitteluajoId={sijoitteluajoId}
+          korkeakouluHaku={isKorkeakouluHaku(haku)}
+        />
+      )}
       <Dropdown.MenuItem
         onClick={() => openDocument(hyvaksymiskirje)}
         icon={<FileDownloadOutlined />}
@@ -209,11 +218,13 @@ export const OtherActionsHakukohdeButton = ({
         disabled={!hyvaksymiskirje}
       />
       <Divider />
-      <FormOsoiteTarratMenuItem
-        hakukohde={hakukohde}
-        sijoitteluajoId={sijoitteluajoId}
-        setDocument={setOsoitetarraDocument}
-      />
+      {!userHasOnlyReadPermission && (
+        <FormOsoiteTarratMenuItem
+          hakukohde={hakukohde}
+          sijoitteluajoId={sijoitteluajoId}
+          setDocument={setOsoitetarraDocument}
+        />
+      )}
       <Dropdown.MenuItem
         onClick={() => openDocument(osoitetarraDocument)}
         icon={<FileDownloadOutlined />}

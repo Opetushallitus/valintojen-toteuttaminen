@@ -25,6 +25,8 @@ import { useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useConfiguration } from '@/hooks/useConfiguration';
 import { refetchHakukohteenValintalaskennanTulokset } from '@/lib/valintalaskenta/valintalaskenta-queries';
+import { isNonNull } from 'remeda';
+import { useHasOnlyHakukohdeReadPermission } from '@/hooks/useHasOnlyHakukohdeReadPermission';
 
 const TRANSLATIONS_PREFIX = 'valintalaskennan-tulokset.taulukko';
 
@@ -60,6 +62,8 @@ export const LaskettuValintatapajonoTable = ({
   const { t, translateEntity } = useTranslations();
 
   const { configuration, getConfigUrl } = useConfiguration();
+
+  const userHasOnlyReadPermission = useHasOnlyHakukohdeReadPermission();
 
   const queryClient = useQueryClient();
 
@@ -104,35 +108,37 @@ export const LaskettuValintatapajonoTable = ({
           key: 'kuvaus',
           render: (props) => <span>{translateEntity(props.kuvaus)}</span>,
         },
-        {
-          title: `${TRANSLATIONS_PREFIX}.toiminnot`,
-          key: 'muokkaa',
-          render: (props) => {
-            return (
-              props.tuloksenTila !==
-                TuloksenTila.HYVAKSYTTY_HARKINNANVARAISESTI && (
-                <EditButton
-                  onClick={() => {
-                    showModal(ValintalaskentaEditGlobalModal, {
-                      hakutoiveNumero: props.hakutoiveNumero,
-                      hakijanNimi: getHenkiloTitle(props),
-                      hakukohde: hakukohde,
-                      valintatapajono: jono,
-                      jonosija: props,
-                      onSuccess: () => {
-                        refetchHakukohteenValintalaskennanTulokset({
-                          hakukohdeOid: hakukohde.oid,
-                          queryClient,
+        userHasOnlyReadPermission
+          ? null
+          : {
+              title: `${TRANSLATIONS_PREFIX}.toiminnot`,
+              key: 'muokkaa',
+              render: (props) => {
+                return (
+                  props.tuloksenTila !==
+                    TuloksenTila.HYVAKSYTTY_HARKINNANVARAISESTI && (
+                    <EditButton
+                      onClick={() => {
+                        showModal(ValintalaskentaEditGlobalModal, {
+                          hakutoiveNumero: props.hakutoiveNumero,
+                          hakijanNimi: getHenkiloTitle(props),
+                          hakukohde: hakukohde,
+                          valintatapajono: jono,
+                          jonosija: props,
+                          onSuccess: () => {
+                            refetchHakukohteenValintalaskennanTulokset({
+                              hakukohdeOid: hakukohde.oid,
+                              queryClient,
+                            });
+                          },
                         });
-                      },
-                    });
-                  }}
-                />
-              )
-            );
-          },
-          sortable: false,
-        },
+                      }}
+                    />
+                  )
+                );
+              },
+              sortable: false,
+            },
       ],
       [
         t,
@@ -142,8 +148,9 @@ export const LaskettuValintatapajonoTable = ({
         queryClient,
         configuration,
         getConfigUrl,
+        userHasOnlyReadPermission,
       ],
-    );
+    ).filter(isNonNull);
 
   return (
     <ListTable

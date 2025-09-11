@@ -22,6 +22,7 @@ import {
   ValinnanTulosEventType,
   ValinnanTulosState,
 } from '@/lib/state/valinnanTuloksetMachineTypes';
+import { useHasOnlyHakukohdeReadPermission } from '@/hooks/useHasOnlyHakukohdeReadPermission';
 
 const TRANSLATIONS_PREFIX = 'valinnan-tulokset.taulukko';
 
@@ -29,10 +30,12 @@ const useColumns = ({
   haku,
   hakukohde,
   actorRef,
+  readonly,
 }: {
   haku: Haku;
   hakukohde: Hakukohde;
   actorRef: ValinnanTulosActorRef;
+  readonly: boolean;
 }) => {
   const { t, translateEntity } = useTranslations();
 
@@ -78,7 +81,7 @@ const useColumns = ({
             haku={haku}
             hakukohde={hakukohde}
             hakemus={hakemus}
-            disabled={disabled}
+            disabled={disabled || readonly}
             updateForm={updateForm}
             mode="valinta"
             t={t}
@@ -95,7 +98,7 @@ const useColumns = ({
             hakukohde={hakukohde}
             hakemus={hakemus}
             updateForm={updateForm}
-            disabled={disabled}
+            disabled={disabled || readonly}
             mode="valinta"
             t={t}
           />
@@ -109,7 +112,7 @@ const useColumns = ({
             <IlmoittautumisTilaSelect
               hakemus={hakemus}
               updateForm={updateForm}
-              disabled={disabled}
+              disabled={disabled || readonly}
             />
           );
         },
@@ -123,7 +126,7 @@ const useColumns = ({
               haku={haku}
               hakukohde={hakukohde}
               hakemus={hakemus}
-              disabled={disabled}
+              disabled={disabled || readonly}
               kaikkiJonotHyvaksytty={true}
               removeValinnanTulos={removeValinnanTulos}
               valintatapajonoOid={valintatapajonoOid}
@@ -141,6 +144,7 @@ const useColumns = ({
     valintatapajonoOid,
     removeValinnanTulos,
     translateEntity,
+    readonly,
   ]);
 };
 
@@ -155,7 +159,10 @@ export const ValinnanTuloksetTable = ({
 }) => {
   const { t } = useTranslations();
 
+  const userHasOnlyReadPermission = useHasOnlyHakukohdeReadPermission();
+
   const columns = useColumns({
+    readonly: userHasOnlyReadPermission,
     haku,
     hakukohde,
     actorRef,
@@ -192,19 +199,21 @@ export const ValinnanTuloksetTable = ({
 
   return (
     <>
-      <ValinnanTuloksetActionBar
-        selection={selection}
-        hakemukset={rows}
-        actorRef={actorRef}
-        resetSelection={resetSelection}
-      />
+      {!userHasOnlyReadPermission && (
+        <ValinnanTuloksetActionBar
+          selection={selection}
+          hakemukset={rows}
+          actorRef={actorRef}
+          resetSelection={resetSelection}
+        />
+      )}
       <ListTable
         rowKeyProp="hakemusOid"
         columns={columns}
         rows={rows}
         selection={selection}
         setSelection={setSelection}
-        checkboxSelection={true}
+        checkboxSelection={!userHasOnlyReadPermission}
         translateHeader={false}
         sort={sort}
         setSort={setSort}

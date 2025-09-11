@@ -29,6 +29,7 @@ import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBefo
 import { ValintatapajonoContentProps } from '../types/valintatapajono-types';
 import { LaskennatonJonoExcelUploadButton } from './laskennaton-jono-excel-upload-button';
 import { refetchHakukohteenValintalaskennanTulokset } from '@/lib/valintalaskenta/valintalaskenta-queries';
+import { useHasOnlyHakukohdeReadPermission } from '@/hooks/useHasOnlyHakukohdeReadPermission';
 
 const LaskennatonVaiheActions = ({
   hakukohde,
@@ -40,6 +41,8 @@ const LaskennatonVaiheActions = ({
   jonoTulosActorRef: JonoTulosActorRef;
 }) => {
   const statusMutation = useSijoitteluStatusMutation(hakukohde.oid);
+
+  const userHasOnlyReadPermission = useHasOnlyHakukohdeReadPermission();
 
   const { saveJonoTulos, isUpdating } = useJonoTulosActorRef(jonoTulosActorRef);
 
@@ -72,19 +75,23 @@ const LaskennatonVaiheActions = ({
       gap={2}
       sx={{ alignItems: 'flex-start', marginBottom: 1, flexWrap: 'wrap' }}
     >
-      <OphButton
-        variant="contained"
-        type="submit"
-        onClick={() => saveJonoTulos()}
-        loading={isUpdating}
-      >
-        {t('yleinen.tallenna')}
-      </OphButton>
-      <SijoitteluStatusChangeButton
-        tarjoajaOid={hakukohde?.tarjoajaOid}
-        jono={jono}
-        statusMutation={statusMutation}
-      />
+      {!userHasOnlyReadPermission && (
+        <OphButton
+          variant="contained"
+          type="submit"
+          onClick={() => saveJonoTulos()}
+          loading={isUpdating}
+        >
+          {t('yleinen.tallenna')}
+        </OphButton>
+      )}
+      {!userHasOnlyReadPermission && (
+        <SijoitteluStatusChangeButton
+          tarjoajaOid={hakukohde?.tarjoajaOid}
+          jono={jono}
+          statusMutation={statusMutation}
+        />
+      )}
       <FileDownloadButton
         defaultFileName="valintalaskennan-tulokset.xlsx"
         getFile={() =>
@@ -99,11 +106,13 @@ const LaskennatonVaiheActions = ({
       >
         {t('yleinen.vie-taulukkolaskentaan')}
       </FileDownloadButton>
-      <LaskennatonJonoExcelUploadButton
-        hakuOid={hakukohde.hakuOid}
-        hakukohdeOid={hakukohde.oid}
-        valintatapajonoOid={jono.oid}
-      />
+      {!userHasOnlyReadPermission && (
+        <LaskennatonJonoExcelUploadButton
+          hakuOid={hakukohde.hakuOid}
+          hakukohdeOid={hakukohde.oid}
+          valintatapajonoOid={jono.oid}
+        />
+      )}
       <ToggleButtonGroup
         color="primary"
         value={jarjestysPeruste}

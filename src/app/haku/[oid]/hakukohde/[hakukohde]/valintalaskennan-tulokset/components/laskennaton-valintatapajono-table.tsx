@@ -25,6 +25,7 @@ import { useTranslations } from '@/lib/localization/useTranslations';
 import { useSelector } from '@xstate/react';
 import { useJonoTuloksetSearch } from '@/hooks/useJonoTuloksetSearch';
 import { clone } from 'remeda';
+import { useHasOnlyHakukohdeReadPermission } from '@/hooks/useHasOnlyHakukohdeReadPermission';
 
 const TRANSLATIONS_PREFIX = 'valintalaskennan-tulokset.taulukko';
 
@@ -33,9 +34,11 @@ type JonoColumn = ListTableColumn<LaskennanJonosijaTulosWithHakijaInfo>;
 const JonosijaInput = ({
   jonoTulosActorRef,
   hakemusOid,
+  readonly,
 }: {
   jonoTulosActorRef: JonoTulosActorRef;
   hakemusOid: string;
+  readonly: boolean;
 }) => {
   const { onJonoTulosChange } = useJonoTulosActorRef(jonoTulosActorRef);
 
@@ -45,7 +48,7 @@ const JonosijaInput = ({
   const { t } = useTranslations();
   return (
     <PisteetInput
-      disabled={tuloksenTila === TuloksenTila.HYLATTY}
+      disabled={readonly || tuloksenTila === TuloksenTila.HYLATTY}
       value={value}
       ariaLabel={t('valintalaskennan-tulokset.taulukko.jonosija')}
       onChange={(arvo) =>
@@ -62,10 +65,12 @@ const TuloksenTilaSelect = ({
   jonoTulosActorRef,
   haku,
   hakemusOid,
+  readonly,
 }: {
   jonoTulosActorRef: JonoTulosActorRef;
   haku: Haku;
   hakemusOid: string;
+  readonly: boolean;
 }) => {
   const { onJonoTulosChange } = useJonoTulosActorRef(jonoTulosActorRef);
 
@@ -80,6 +85,7 @@ const TuloksenTilaSelect = ({
 
   return (
     <LocalizedSelect
+      disabled={readonly}
       value={value}
       options={tuloksenTilaOptions}
       sx={{ width: '100%' }}
@@ -97,9 +103,11 @@ const TuloksenTilaSelect = ({
 const KokonaispisteetInput = ({
   jonoTulosActorRef,
   hakemusOid,
+  readonly,
 }: {
   jonoTulosActorRef: JonoTulosActorRef;
   hakemusOid: string;
+  readonly: boolean;
 }) => {
   const { onJonoTulosChange } = useJonoTulosActorRef(jonoTulosActorRef);
   const hakemusJonoTulos = useHakemusJonoTulos(jonoTulosActorRef, hakemusOid);
@@ -109,7 +117,7 @@ const KokonaispisteetInput = ({
   return (
     <PisteetInput
       value={value}
-      disabled={tuloksenTila === TuloksenTila.HYLATTY}
+      disabled={readonly || tuloksenTila === TuloksenTila.HYLATTY}
       onChange={(newPisteet) =>
         onJonoTulosChange({ hakemusOid, pisteet: newPisteet })
       }
@@ -122,11 +130,13 @@ const KuvausInput = ({
   hakemusOid,
   language,
   label,
+  readonly,
 }: {
   jonoTulosActorRef: JonoTulosActorRef;
   hakemusOid: string;
   language: Language;
   label: string;
+  readonly: boolean;
 }) => {
   const { onJonoTulosChange } = useJonoTulosActorRef(jonoTulosActorRef);
   const hakemusJonoTulos = useHakemusJonoTulos(jonoTulosActorRef, hakemusOid);
@@ -134,6 +144,7 @@ const KuvausInput = ({
 
   return (
     <OphInput
+      disabled={readonly}
       value={value?.[language] ?? ''}
       inputProps={{ 'aria-label': label }}
       onChange={(e) => {
@@ -164,6 +175,8 @@ export const LaskennatonValintatapajonoTable = ({
     useSelectedJarjestysperuste(jonoTulosActorRef);
 
   const { t } = useTranslations();
+
+  const userHasOnlyReadPermission = useHasOnlyHakukohdeReadPermission();
 
   const changedJonosijat = useSelector(
     jonoTulosActorRef,
@@ -205,6 +218,7 @@ export const LaskennatonValintatapajonoTable = ({
                   <JonosijaInput
                     jonoTulosActorRef={jonoTulosActorRef}
                     hakemusOid={hakemusOid}
+                    readonly={userHasOnlyReadPermission}
                   />
                 );
               },
@@ -220,6 +234,7 @@ export const LaskennatonValintatapajonoTable = ({
             jonoTulosActorRef={jonoTulosActorRef}
             haku={haku}
             hakemusOid={props.hakemusOid}
+            readonly={userHasOnlyReadPermission}
           />
         ),
       },
@@ -232,6 +247,7 @@ export const LaskennatonValintatapajonoTable = ({
                 <KokonaispisteetInput
                   jonoTulosActorRef={jonoTulosActorRef}
                   hakemusOid={hakemusOid}
+                  readonly={userHasOnlyReadPermission}
                 />
               ),
             } as JonoColumn,
@@ -248,13 +264,20 @@ export const LaskennatonValintatapajonoTable = ({
                 hakemusOid={hakemusOid}
                 language={lang}
                 label={t(`${TRANSLATIONS_PREFIX}.kuvaus-${lang}`)}
+                readonly={userHasOnlyReadPermission}
               />
             ),
             sortable: false,
           }) as JonoColumn,
       ),
     ],
-    [t, jonoTulosActorRef, selectedJarjestysperuste, haku],
+    [
+      t,
+      jonoTulosActorRef,
+      selectedJarjestysperuste,
+      haku,
+      userHasOnlyReadPermission,
+    ],
   );
 
   return (

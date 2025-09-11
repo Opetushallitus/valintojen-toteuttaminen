@@ -20,6 +20,7 @@ import {
   HarkinnanvaraisetTilatByHakemusOids,
 } from '@/lib/types/harkinnanvaraiset-types';
 import { SelectionProps } from '@/components/table/table-checkboxes';
+import { useHasOnlyHakukohdeReadPermission } from '@/hooks/useHasOnlyHakukohdeReadPermission';
 
 export const HarkinnanvaraisetTable = ({
   data,
@@ -37,6 +38,8 @@ export const HarkinnanvaraisetTable = ({
   harkinnanvaraisetTilat: Record<string, HarkinnanvarainenTilaValue>;
 }) => {
   const { t } = useTranslations();
+
+  const userHasOnlyReadPermission = useHasOnlyHakukohdeReadPermission();
 
   const { results, sort, setSort, page, setPage, pageSize } =
     useHarkinanvaraisetPaginated(data);
@@ -61,13 +64,19 @@ export const HarkinnanvaraisetTable = ({
               harkinnanvarainenTila={props.harkinnanvarainenTila}
               harkinnanvaraisetTilat={harkinnanvaraisetTilat}
               onHarkinnanvaraisetTilatChange={onHarkinnanvaraisetTilatChange}
+              readonly={userHasOnlyReadPermission}
             />
           );
         },
         sortable: false,
       }),
     ],
-    [t, onHarkinnanvaraisetTilatChange, harkinnanvaraisetTilat],
+    [
+      t,
+      onHarkinnanvaraisetTilatChange,
+      harkinnanvaraisetTilat,
+      userHasOnlyReadPermission,
+    ],
   );
 
   return (
@@ -78,7 +87,7 @@ export const HarkinnanvaraisetTable = ({
         rows={results}
         sort={sort}
         setSort={setSort}
-        checkboxSelection={true}
+        checkboxSelection={!userHasOnlyReadPermission}
         selection={selection}
         setSelection={setSelection}
         getRowCheckboxLabel={({ hakijanNimi }) =>

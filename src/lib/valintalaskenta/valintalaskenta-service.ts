@@ -28,6 +28,7 @@ import {
   groupBy,
   indexBy,
   isDefined,
+  isEmpty,
   isNonNull,
   mapValues,
   only,
@@ -356,9 +357,10 @@ export const getHakijaryhmat = async (
       );
       const kuuluuRyhmaan =
         jonosijanTiedot?.jarjestyskriteerit[0]?.tila === 'HYVAKSYTTAVISSA';
-      const jononNimi =
-        valintatapajonotSijoittelusta[hakemusSijoittelussa.valintatapajonoOid]
-          ?.nimi;
+      const jononNimi = hakemusSijoittelussa
+        ? valintatapajonotSijoittelusta[hakemusSijoittelussa.valintatapajonoOid]
+            ?.nimi
+        : '';
       return {
         hakijanNimi: h.hakijanNimi,
         hakemusOid: h.hakemusOid,
@@ -373,7 +375,7 @@ export const getHakijaryhmat = async (
         pisteet,
         vastaanottoTila,
         jononNimi,
-        varasijanNumero: hakemusSijoittelussa.varasijanNumero,
+        varasijanNumero: hakemusSijoittelussa?.varasijanNumero,
       };
     });
     const ryhmanValintatapajonoNimi = tulokset.valintatapajonot.find(
@@ -394,7 +396,7 @@ export const getHakijaryhmat = async (
 
 const findVastaanottotila = (
   valintatulokset: Array<HenkilonValintaTulos>,
-  hakemusSijoittelussa: SijoittelunHakemus,
+  hakemusSijoittelussa: SijoittelunHakemus | null,
 ) => {
   if (hakemusSijoittelussa) {
     return valintatulokset.find(
@@ -415,7 +417,10 @@ const sijoittelunTilaOrdinalForHakemus = (tila: ValinnanTila): number => {
 const findHakemusSijoittelussa = (
   hakijanHakemukset: Array<SijoittelunHakemus> = [],
   valintatapajonot: Array<SijoitteluajonValintatapajono>,
-): SijoittelunHakemus => {
+): SijoittelunHakemus | null => {
+  if (isEmpty(hakijanHakemukset)) {
+    return null;
+  }
   return hakijanHakemukset?.reduce((h, hakemus) => {
     if (
       sijoittelunTilaOrdinalForHakemus(hakemus.tila) >
@@ -443,8 +448,10 @@ const findHakemusSijoittelussa = (
 
 const isHyvaksyttyHakijaryhmasta = (
   hakijaryhmaOid: string,
-  hakemusSijoittelussa: SijoittelunHakemus,
-) => hakemusSijoittelussa.hyvaksyttyHakijaryhmista.includes(hakijaryhmaOid);
+  hakemusSijoittelussa: SijoittelunHakemus | null,
+) =>
+  hakemusSijoittelussa?.hyvaksyttyHakijaryhmista.includes(hakijaryhmaOid) ||
+  false;
 
 //Voisiko tässä käyttää lasketussahakijaryhmässä olevaa kiintiötä?
 const getKiintio = (
