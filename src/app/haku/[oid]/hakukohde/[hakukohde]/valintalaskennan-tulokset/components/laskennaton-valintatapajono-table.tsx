@@ -4,7 +4,7 @@ import { createHakijaColumn } from '@/components/table/table-columns';
 import { ListTableColumn } from '@/components/table/table-types';
 import { LaskennanJonosijaTulosWithHakijaInfo } from '@/hooks/useEditableValintalaskennanTulokset';
 import { OphInput } from '@opetushallitus/oph-design-system';
-import { useContext, useMemo } from 'react';
+import { useMemo } from 'react';
 import { PisteetInput } from '@/components/pisteet-input';
 import { useTuloksenTilaOptions } from '@/hooks/useTuloksenTilaOptions';
 import {
@@ -25,7 +25,7 @@ import { useTranslations } from '@/lib/localization/useTranslations';
 import { useSelector } from '@xstate/react';
 import { useJonoTuloksetSearch } from '@/hooks/useJonoTuloksetSearch';
 import { clone } from 'remeda';
-import { HakukohdeReadonlyContext } from '@/app/haku/[oid]/hakukohde/[hakukohde]/hakukohde-readonly-context';
+import { useHasOnlyHakukohdeReadPermission } from '@/hooks/useHasOnlyHakukohdeReadPermission';
 
 const TRANSLATIONS_PREFIX = 'valintalaskennan-tulokset.taulukko';
 
@@ -176,7 +176,7 @@ export const LaskennatonValintatapajonoTable = ({
 
   const { t } = useTranslations();
 
-  const readonly = useContext(HakukohdeReadonlyContext);
+  const userHasOnlyReadPermission = useHasOnlyHakukohdeReadPermission();
 
   const changedJonosijat = useSelector(
     jonoTulosActorRef,
@@ -218,7 +218,7 @@ export const LaskennatonValintatapajonoTable = ({
                   <JonosijaInput
                     jonoTulosActorRef={jonoTulosActorRef}
                     hakemusOid={hakemusOid}
-                    readonly={readonly}
+                    readonly={userHasOnlyReadPermission}
                   />
                 );
               },
@@ -234,7 +234,7 @@ export const LaskennatonValintatapajonoTable = ({
             jonoTulosActorRef={jonoTulosActorRef}
             haku={haku}
             hakemusOid={props.hakemusOid}
-            readonly={readonly}
+            readonly={userHasOnlyReadPermission}
           />
         ),
       },
@@ -247,7 +247,7 @@ export const LaskennatonValintatapajonoTable = ({
                 <KokonaispisteetInput
                   jonoTulosActorRef={jonoTulosActorRef}
                   hakemusOid={hakemusOid}
-                  readonly={readonly}
+                  readonly={userHasOnlyReadPermission}
                 />
               ),
             } as JonoColumn,
@@ -264,14 +264,20 @@ export const LaskennatonValintatapajonoTable = ({
                 hakemusOid={hakemusOid}
                 language={lang}
                 label={t(`${TRANSLATIONS_PREFIX}.kuvaus-${lang}`)}
-                readonly={readonly}
+                readonly={userHasOnlyReadPermission}
               />
             ),
             sortable: false,
           }) as JonoColumn,
       ),
     ],
-    [t, jonoTulosActorRef, selectedJarjestysperuste, haku, readonly],
+    [
+      t,
+      jonoTulosActorRef,
+      selectedJarjestysperuste,
+      haku,
+      userHasOnlyReadPermission,
+    ],
   );
 
   return (

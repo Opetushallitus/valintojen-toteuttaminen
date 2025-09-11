@@ -9,8 +9,7 @@ import {
   useHierarchyUserPermissions,
   useUserPermissions,
 } from '@/hooks/useUserPermissions';
-import { useContext } from 'react';
-import { HakukohdeReadonlyContext } from '@/app/haku/[oid]/hakukohde/[hakukohde]/hakukohde-readonly-context';
+import { useHasOnlyHakukohdeReadPermission } from '@/hooks/useHasOnlyHakukohdeReadPermission';
 
 const SijoitteluButton = ({ ...props }: ButtonProps) => {
   return <OphButton {...props} variant="outlined" />;
@@ -81,9 +80,9 @@ export const SijoitteluStatusChangeButton = ({
   const { t } = useTranslations();
   const userPermissions = useUserPermissions();
   const hierarchyUserPermissions = useHierarchyUserPermissions(userPermissions);
-  const readonly = useContext(HakukohdeReadonlyContext);
+  const userHasOnlyReadPermission = useHasOnlyHakukohdeReadPermission();
 
-  return readonly ? null : (
+  return userHasOnlyReadPermission ? null : (
     <PureSijoitteluStatusChangeButton
       tarjoajaOid={tarjoajaOid}
       jono={jono}

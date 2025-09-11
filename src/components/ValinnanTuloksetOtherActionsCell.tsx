@@ -21,8 +21,7 @@ import { SpinnerModal } from '@/components/modals/spinner-modal';
 import { ConfirmationGlobalModal } from '@/components/modals/confirmation-global-modal';
 import { T } from '@tolgee/react';
 import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
-import { useContext } from 'react';
-import { HakukohdeReadonlyContext } from '@/app/haku/[oid]/hakukohde/[hakukohde]/hakukohde-readonly-context';
+import { useHasOnlyHakukohdeReadPermission } from '@/hooks/useHasOnlyHakukohdeReadPermission';
 
 export const ValinnanTuloksetOtherActionsCell = ({
   hakemus,
@@ -45,7 +44,7 @@ export const ValinnanTuloksetOtherActionsCell = ({
 }) => {
   const { t } = useTranslations();
 
-  const readonly = useContext(HakukohdeReadonlyContext);
+  const userHasOnlyReadPermission = useHasOnlyHakukohdeReadPermission();
 
   const createHyvaksymiskirjePDFs = async () => {
     showModal(AcceptedLetterTemplateModal, {
@@ -91,7 +90,7 @@ export const ValinnanTuloksetOtherActionsCell = ({
         icon={<History />}
         onClick={showChangeHistoryForHakemus}
       />
-      {removeValinnanTulos && !readonly && (
+      {removeValinnanTulos && !userHasOnlyReadPermission && (
         <Dropdown.MenuItem
           label={t('valinnan-tulokset.toiminnot.poista-valinnan-tulokset')}
           icon={<DeleteOutline />}
@@ -122,7 +121,7 @@ export const ValinnanTuloksetOtherActionsCell = ({
         />
       )}
 
-      {!readonly && (
+      {!userHasOnlyReadPermission && (
         <Dropdown.MenuItem
           label={t('sijoittelun-tulokset.toiminnot.hyvaksymiskirje')}
           icon={<InsertDriveFileOutlined />}
@@ -137,14 +136,15 @@ export const ValinnanTuloksetOtherActionsCell = ({
           }
         />
       )}
-      {!readonly && isSendVastaanottoPostiVisible(haku, userPermissions) && (
-        <Dropdown.MenuItem
-          label={t('vastaanottoposti.laheta')}
-          icon={<MailOutline />}
-          onClick={() => sendVastaanottoposti()}
-          disabled={!hakemuksentulosTallennettu}
-        />
-      )}
+      {!userHasOnlyReadPermission &&
+        isSendVastaanottoPostiVisible(haku, userPermissions) && (
+          <Dropdown.MenuItem
+            label={t('vastaanottoposti.laheta')}
+            icon={<MailOutline />}
+            onClick={() => sendVastaanottoposti()}
+            disabled={!hakemuksentulosTallennettu}
+          />
+        )}
     </Dropdown.MenuButton>
   );
 };

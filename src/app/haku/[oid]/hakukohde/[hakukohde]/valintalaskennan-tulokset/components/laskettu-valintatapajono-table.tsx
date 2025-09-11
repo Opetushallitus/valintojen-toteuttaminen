@@ -21,12 +21,12 @@ import { getHenkiloTitle } from '@/lib/henkilo-utils';
 import { Hakukohde } from '@/lib/kouta/kouta-types';
 import { TuloksenTila } from '@/lib/types/laskenta-types';
 import { OphLink } from '@opetushallitus/oph-design-system';
-import { useContext, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useConfiguration } from '@/hooks/useConfiguration';
 import { refetchHakukohteenValintalaskennanTulokset } from '@/lib/valintalaskenta/valintalaskenta-queries';
-import { HakukohdeReadonlyContext } from '@/app/haku/[oid]/hakukohde/[hakukohde]/hakukohde-readonly-context';
 import { isNonNull } from 'remeda';
+import { useHasOnlyHakukohdeReadPermission } from '@/hooks/useHasOnlyHakukohdeReadPermission';
 
 const TRANSLATIONS_PREFIX = 'valintalaskennan-tulokset.taulukko';
 
@@ -63,7 +63,7 @@ export const LaskettuValintatapajonoTable = ({
 
   const { configuration, getConfigUrl } = useConfiguration();
 
-  const readonly = useContext(HakukohdeReadonlyContext);
+  const userHasOnlyReadPermission = useHasOnlyHakukohdeReadPermission();
 
   const queryClient = useQueryClient();
 
@@ -108,7 +108,7 @@ export const LaskettuValintatapajonoTable = ({
           key: 'kuvaus',
           render: (props) => <span>{translateEntity(props.kuvaus)}</span>,
         },
-        readonly
+        userHasOnlyReadPermission
           ? null
           : {
               title: `${TRANSLATIONS_PREFIX}.toiminnot`,
@@ -148,7 +148,7 @@ export const LaskettuValintatapajonoTable = ({
         queryClient,
         configuration,
         getConfigUrl,
-        readonly,
+        userHasOnlyReadPermission,
       ],
     ).filter(isNonNull);
 

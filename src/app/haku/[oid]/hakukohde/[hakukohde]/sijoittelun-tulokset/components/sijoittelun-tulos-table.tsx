@@ -11,7 +11,7 @@ import {
   SijoittelunHakemusValintatiedoilla,
   SijoittelunTulosActorRef,
 } from '@/lib/types/sijoittelu-types';
-import { useCallback, useContext, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { KeysMatching, ListTableColumn } from '@/components/table/table-types';
 import { MaksuCell } from './maksu-cell';
 import { IlmoittautumisTilaSelect } from '@/components/IlmoittautumisTilaSelect';
@@ -30,7 +30,7 @@ import {
   ValinnanTulosEventType,
   ValinnanTulosState,
 } from '@/lib/state/valinnanTuloksetMachineTypes';
-import { HakukohdeReadonlyContext } from '@/app/haku/[oid]/hakukohde/[hakukohde]/hakukohde-readonly-context';
+import { useHasOnlyHakukohdeReadPermission } from '@/hooks/useHasOnlyHakukohdeReadPermission';
 
 export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
   title,
@@ -215,7 +215,7 @@ export const SijoittelunTulosTable = ({
 }) => {
   const { t } = useTranslations();
 
-  const readonly = useContext(HakukohdeReadonlyContext);
+  const userHasOnlyReadPermission = useHasOnlyHakukohdeReadPermission();
 
   const contextHakemukset = useSelector(
     sijoittelunTulosActorRef,
@@ -232,7 +232,7 @@ export const SijoittelunTulosTable = ({
   } = useSijoittelunTulosSearch(valintatapajono.oid, contextHakemukset);
 
   const columns = useColumns({
-    readonly,
+    readonly: userHasOnlyReadPermission,
     haku,
     hakukohde,
     sijoitteluajoId,
@@ -266,7 +266,7 @@ export const SijoittelunTulosTable = ({
 
   return (
     <>
-      {!readonly && (
+      {!userHasOnlyReadPermission && (
         <SijoittelunTuloksetActionBar
           hakemukset={contextHakemukset}
           selection={selection}
@@ -280,7 +280,7 @@ export const SijoittelunTulosTable = ({
         rows={rows}
         sort={sort}
         setSort={setSort}
-        checkboxSelection={!readonly}
+        checkboxSelection={!userHasOnlyReadPermission}
         selection={selection}
         pagination={{
           page,

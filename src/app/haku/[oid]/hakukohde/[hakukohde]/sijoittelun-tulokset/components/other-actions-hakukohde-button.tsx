@@ -1,6 +1,6 @@
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { Divider } from '@mui/material';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import {
   FileDownloadOutlined,
   MailOutline,
@@ -19,7 +19,7 @@ import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
 import { Dropdown } from '@/components/dropdown';
 import { useSendVastaanottoPostiMutation } from '@/hooks/useSendVastaanottoPostiMutation';
 import { useConfiguration } from '@/hooks/useConfiguration';
-import { HakukohdeReadonlyContext } from '@/app/haku/[oid]/hakukohde/[hakukohde]/hakukohde-readonly-context';
+import { useHasOnlyHakukohdeReadPermission } from '@/hooks/useHasOnlyHakukohdeReadPermission';
 
 const SendVastaanottopostiMenuItem = ({
   hakukohde,
@@ -164,7 +164,7 @@ export const OtherActionsHakukohdeButton = ({
   const { configuration, getConfigUrl } = useConfiguration();
   const { t } = useTranslations();
 
-  const readonly = useContext(HakukohdeReadonlyContext);
+  const userHasOnlyReadPermission = useHasOnlyHakukohdeReadPermission();
 
   const [hyvaksymiskirje, setHyvaksymiskirjeDocument] = useState<string | null>(
     hyvaksymiskirjeDocumentId,
@@ -191,16 +191,18 @@ export const OtherActionsHakukohdeButton = ({
       label={t('sijoittelun-tulokset.toiminnot.menu-hakukohde')}
       disabled={disabled}
     >
-      {!readonly && <SendVastaanottopostiMenuItem hakukohde={hakukohde} />}
-      {!readonly && <Divider />}
-      {!readonly && (
+      {!userHasOnlyReadPermission && (
+        <SendVastaanottopostiMenuItem hakukohde={hakukohde} />
+      )}
+      {!userHasOnlyReadPermission && <Divider />}
+      {!userHasOnlyReadPermission && (
         <FormHyvaksymisKirjeMenuItem
           hakukohde={hakukohde}
           sijoitteluajoId={sijoitteluajoId}
           setDocument={setHyvaksymiskirjeDocument}
         />
       )}
-      {!readonly && (
+      {!userHasOnlyReadPermission && (
         <FormEiHyvaksymisKirjeMenuItem
           hakukohde={hakukohde}
           sijoitteluajoId={sijoitteluajoId}
@@ -216,7 +218,7 @@ export const OtherActionsHakukohdeButton = ({
         disabled={!hyvaksymiskirje}
       />
       <Divider />
-      {!readonly && (
+      {!userHasOnlyReadPermission && (
         <FormOsoiteTarratMenuItem
           hakukohde={hakukohde}
           sijoitteluajoId={sijoitteluajoId}

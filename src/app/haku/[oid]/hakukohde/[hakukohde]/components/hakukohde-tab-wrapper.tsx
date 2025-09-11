@@ -2,16 +2,13 @@
 
 import { NoResults } from '@/components/no-results';
 import { useHakukohdeTab } from '@/hooks/useHakukohdeTab';
-import {
-  useCheckPermission,
-  useUserPermissions,
-} from '@/hooks/useUserPermissions';
+import { HakukohdeUseHasReadOnlyContext } from '@/hooks/useHasOnlyHakukohdeReadPermission';
+import { useCheckPermission } from '@/hooks/useUserPermissions';
 import { useVisibleHakukohdeTabs } from '@/hooks/useVisibleHakukohdeTabs';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 import { useHakukohde } from '@/lib/kouta/useHakukohde';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { DoNotDisturb } from '@mui/icons-material';
-import { HakukohdeReadonlyContext } from '../hakukohde-readonly-context';
 
 export const HakukohdeTabWrapper = ({
   hakuOid,
@@ -29,15 +26,14 @@ export const HakukohdeTabWrapper = ({
   );
 
   const { data: hakukohde } = useHakukohde({ hakukohdeOid });
-  const permissions = useUserPermissions();
   const hasCrud = useCheckPermission('CRUD')(hakukohde.tarjoajaOid);
   const hasUpdate = useCheckPermission('READ_UPDATE')(hakukohde.tarjoajaOid);
-  const readonly = !permissions.hasOphCRUD && !hasCrud && !hasUpdate;
+  const hasOnlyRead = !hasCrud && !hasUpdate;
 
   return isTabVisible ? (
-    <HakukohdeReadonlyContext value={readonly}>
+    <HakukohdeUseHasReadOnlyContext value={hasOnlyRead}>
       {children}
-    </HakukohdeReadonlyContext>
+    </HakukohdeUseHasReadOnlyContext>
   ) : (
     <NoResults
       icon={<DoNotDisturb />}

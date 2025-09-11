@@ -1,7 +1,7 @@
 'use client';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { Box } from '@mui/material';
-import { useContext, useMemo } from 'react';
+import { useMemo } from 'react';
 import { ListTableColumn } from '@/components/table/table-types';
 import {
   createHakijaColumn,
@@ -20,7 +20,7 @@ import {
   HarkinnanvaraisetTilatByHakemusOids,
 } from '@/lib/types/harkinnanvaraiset-types';
 import { SelectionProps } from '@/components/table/table-checkboxes';
-import { HakukohdeReadonlyContext } from '@/app/haku/[oid]/hakukohde/[hakukohde]/hakukohde-readonly-context';
+import { useHasOnlyHakukohdeReadPermission } from '@/hooks/useHasOnlyHakukohdeReadPermission';
 
 export const HarkinnanvaraisetTable = ({
   data,
@@ -39,7 +39,7 @@ export const HarkinnanvaraisetTable = ({
 }) => {
   const { t } = useTranslations();
 
-  const readonly = useContext(HakukohdeReadonlyContext);
+  const userHasOnlyReadPermission = useHasOnlyHakukohdeReadPermission();
 
   const { results, sort, setSort, page, setPage, pageSize } =
     useHarkinanvaraisetPaginated(data);
@@ -64,14 +64,19 @@ export const HarkinnanvaraisetTable = ({
               harkinnanvarainenTila={props.harkinnanvarainenTila}
               harkinnanvaraisetTilat={harkinnanvaraisetTilat}
               onHarkinnanvaraisetTilatChange={onHarkinnanvaraisetTilatChange}
-              readonly={readonly}
+              readonly={userHasOnlyReadPermission}
             />
           );
         },
         sortable: false,
       }),
     ],
-    [t, onHarkinnanvaraisetTilatChange, harkinnanvaraisetTilat, readonly],
+    [
+      t,
+      onHarkinnanvaraisetTilatChange,
+      harkinnanvaraisetTilat,
+      userHasOnlyReadPermission,
+    ],
   );
 
   return (
@@ -82,7 +87,7 @@ export const HarkinnanvaraisetTable = ({
         rows={results}
         sort={sort}
         setSort={setSort}
-        checkboxSelection={!readonly}
+        checkboxSelection={!userHasOnlyReadPermission}
         selection={selection}
         setSelection={setSelection}
         getRowCheckboxLabel={({ hakijanNimi }) =>
