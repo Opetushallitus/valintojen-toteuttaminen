@@ -3,17 +3,17 @@
 import { TablePaginationWrapper } from '@/components/table/table-pagination-wrapper';
 import { PisteSyottoTable } from './pistesyotto-table';
 import { usePisteSyottoSearchResults } from '../hooks/usePisteSyottoSearch';
-import { FormEvent, useCallback } from 'react';
+import { FormEvent, useCallback, useEffect } from 'react';
 import useToaster, { Toast } from '@/hooks/useToaster';
 import { PisteSyottoActions } from './pistesyotto-actions';
 import { HakukohteenPistetiedot } from '@/lib/types/laskenta-types';
 import { FormBox } from '@/components/form-box';
-import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBeforeNavigation';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 import { useHaunParametrit } from '@/lib/valintalaskentakoostepalvelu/useHaunParametrit';
 import { useQueryClient } from '@tanstack/react-query';
 import { refetchPisteetForHakukohde } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-queries';
 import { usePistesyottoState } from '../lib/hakukohde-pistesyotto-state';
+import { useNavigationBlocker } from '@/hooks/useNavigationBlocker';
 
 export const PisteSyottoForm = ({
   hakuOid,
@@ -52,7 +52,11 @@ export const PisteSyottoForm = ({
 
   const { data: haunParametrit } = useHaunParametrit({ hakuOid });
 
-  useConfirmChangesBeforeNavigation(isDirty);
+  const { setIsBlocked } = useNavigationBlocker();
+
+  useEffect(() => {
+    setIsBlocked(isDirty);
+  }, [isDirty, setIsBlocked]);
 
   const {
     page,

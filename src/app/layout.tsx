@@ -18,6 +18,7 @@ import {
 import { PermissionProvider } from '@/components/providers/permission-provider';
 import { ConfigurationProvider } from '@/components/providers/configuration-provider';
 import { buildConfiguration } from '@/lib/configuration/server-configuration';
+import { NavigationBlockerProvider } from '@/components/providers/navigation-blocker-provider';
 
 export const metadata: Metadata = {
   title: 'Valintojen Toteuttaminen',
@@ -46,8 +47,10 @@ export default async function RootLayout({
                     <LocalizationProvider>
                       <LocalizedThemeProvider>
                         <NuqsAdapter>
-                          <Toaster />
-                          <GlobalModalProvider>{children}</GlobalModalProvider>
+                          <NavigationBlockerProvider>
+                            <Toaster />
+                            <GlobalModalProvider>{children}</GlobalModalProvider>
+                          </NavigationBlockerProvider>
                         </NuqsAdapter>
                       </LocalizedThemeProvider>
                     </LocalizationProvider>
