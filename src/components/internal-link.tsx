@@ -8,19 +8,17 @@ import { useRouter } from 'next/navigation';
 export const InternalLink = ({
   children,
   ...props
-}: LinkProps & { children: React.ReactNode; }) => {
-
+}: LinkProps & { children: React.ReactNode }) => {
   const { isBlocked, setIsBlocked } = useNavigationBlocker();
   const router = useRouter();
 
   const { t } = useTranslations();
   const { href } = props;
-  
+
   return (
     <Link
       {...props}
       onNavigate={(e) => {
-        console.log(e);
         if (isBlocked && href) {
           e.preventDefault();
           showModal(ConfirmationGlobalModal, {
@@ -30,7 +28,9 @@ export const InternalLink = ({
             cancelLabel: t('yleinen.peruuta'),
             onConfirm: () => {
               setIsBlocked(false);
-              router.replace(href.pathname);
+              router.replace(
+                typeof href === 'string' ? href : String(href.pathname ?? ''),
+              );
             },
           });
         }
