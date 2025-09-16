@@ -10,6 +10,8 @@ import {
 import { isDefined, isEmpty, uniqueBy } from 'remeda';
 import { getValintaryhmat } from '@/lib/valintaperusteet/valintaperusteet-service';
 import { ValintaryhmaHakukohteilla } from '@/lib/valintaperusteet/valintaperusteet-types';
+import { queryOptionsGetHakukohteet } from '@/lib/kouta/kouta-queries';
+import { useUserPermissions } from '@/hooks/useUserPermissions';
 
 export const useValintaryhmaSearchParams = () => {
   const [searchPhrase, setSearchPhrase] = useQueryState(
@@ -57,9 +59,26 @@ function filterRyhmatWithHakukohteet(
 }
 
 export const useValintaryhmaSearchResults = (hakuOid: string) => {
+  const userPermissions = useUserPermissions();
+
+  const { data: hakukohteet } = useSuspenseQuery(
+    queryOptionsGetHakukohteet(hakuOid, userPermissions),
+  );
+
+  const hakukohteetWithWriteAccess = useMemo(
+    () =>
+      (userPermissions.hasOphCRUD
+        ? hakukohteet
+        : hakukohteet.filter((hk) =>
+            userPermissions.writeOrganizations.includes(hk.tarjoajaOid),
+          )
+      ).map((hk) => hk.oid),
+    [hakukohteet, userPermissions],
+  );
+
   const { data: ryhmat } = useSuspenseQuery({
-    queryKey: ['getValintaryhmat', hakuOid],
-    queryFn: () => getValintaryhmat(hakuOid),
+    queryKey: ['getValintaryhmat', hakuOid, hakukohteetWithWriteAccess],
+    queryFn: () => getValintaryhmat(hakuOid, hakukohteetWithWriteAccess),
   });
 
   const flattenedRyhmat = useMemo(() => {
@@ -86,5 +105,6 @@ export const useValintaryhmaSearchResults = (hakuOid: string) => {
   return {
     results,
     ryhmat,
+    hakukohteetWithWriteAccess,
   };
 };

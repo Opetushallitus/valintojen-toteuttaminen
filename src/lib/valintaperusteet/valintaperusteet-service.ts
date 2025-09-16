@@ -207,8 +207,19 @@ function mapValintaryhma(
   };
 }
 
+function hasHakukohde(
+  ryhma: ValintaryhmaHakukohteillaResponse,
+  hakukohteet: Array<string>,
+): boolean {
+  return (
+    ryhma.hakukohdeViitteet.some((hv) => hakukohteet.includes(hv.oid)) ||
+    ryhma.alavalintaryhmat.some((avr) => hasHakukohde(avr, hakukohteet))
+  );
+}
+
 export const getValintaryhmat = async (
   hakuOid: string,
+  hakukohteet: Array<string>,
 ): Promise<{
   muutRyhmat: Array<ValintaryhmaHakukohteilla>;
   hakuRyhma: ValintaryhmaHakukohteilla | null;
@@ -218,8 +229,13 @@ export const getValintaryhmat = async (
     `${configuration.routes.valintaperusteetService.valintaryhmatHakukohteilla}?hakuOid=${hakuOid}&hakukohteet=true`,
   );
   const hakuRyhma = response.data.find((r) => r.hakuOid === hakuOid);
-  const muutRyhmat =
-    hakuRyhma?.alavalintaryhmat.map((vr) => mapValintaryhma(vr)) ?? [];
+  const muutRyhmat = (
+    hakuRyhma?.alavalintaryhmat.map((vr) => mapValintaryhma(vr)) ?? []
+  ).concat(
+    response.data
+      .filter((r) => r.hakuOid !== hakuOid && hasHakukohde(r, hakukohteet))
+      .map((vr) => mapValintaryhma(vr)),
+  );
   return {
     hakuRyhma: hakuRyhma ? mapValintaryhma(hakuRyhma) : null,
     muutRyhmat: sortRyhmatByName(muutRyhmat),
