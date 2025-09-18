@@ -2,6 +2,7 @@ import { test, expect, Page } from '@playwright/test';
 import {
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
+  mockOneOrganizationHierarchy,
   mockValintalaskentaRun,
 } from './playwright-utils';
 
@@ -32,12 +33,12 @@ const HAKUKOHTEET = [
     oid: 'hakukohde-tutu',
     hakuOid: '1.2.246.562.29.00000000000000017683',
     nimi: { fi: 'Liukumäen testaajat' },
-    organisaatioOid: 'organisaatio-2',
+    organisaatioOid: '1.2.246.562.10.28054987509',
     organisaatioNimi: { fi: 'Liukumäki' },
     jarjestyspaikkaHierarkiaNimi: { fi: 'Sibeliuksen puisto' },
     voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita: false,
     opetuskieliKoodiUrit: ['fi'],
-    tarjoaja: 'tarjoaja-2',
+    tarjoaja: '1.2.246.562.10.28054987509',
   },
 ] as const;
 
@@ -388,6 +389,55 @@ test.describe('Valintaryhmän laskenta', () => {
     await startLaskenta(page);
     await expect(page.getByText('Valintalaskenta epäonnistui')).toBeVisible();
     await expect(page.getByText('Unknown error')).toBeVisible();
+  });
+});
+
+test.describe('Käyttäjällä oikeus vain yhteen valintaryhmään', () => {
+  let page: Page;
+
+  test.beforeAll(async ({ browser }) => {
+    page = await browser.newPage();
+    await mockOneOrganizationHierarchy(page, {
+      oid: '1.2.246.562.10.28054987509',
+    });
+    await page.route(
+      '*/**/kayttooikeus-service/henkilo/current/omattiedot',
+      async (route) => {
+        const user = {
+          organisaatiot: [
+            {
+              organisaatioOid: '1.2.246.562.10.28054987509',
+              kayttooikeudet: [
+                { palvelu: 'VALINTOJENTOTEUTTAMINEN', oikeus: 'CRUD' },
+              ],
+            },
+          ],
+        };
+        await route.fulfill({ json: user });
+      },
+    );
+    await page.route(
+      '*/**/kouta-internal/hakukohde/search?all=false&haku=1.2.246.562.29.00000000000000017683*',
+      async (route) => {
+        await route.fulfill({ json: HAKUKOHTEET });
+      },
+    );
+    await page.goto(
+      '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000017683/valintaryhma',
+    );
+  });
+
+  test('Näyttää valintaryhmät listassa', async () => {
+    await expect(page.getByText('Valitse valintaryhmä')).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: 'Koko haun valintaryhmä' }),
+    ).toBeHidden();
+    await expect(
+      page.getByRole('link', { name: 'Peruskoulupohjaiset' }),
+    ).toBeHidden();
+    await expect(page.getByRole('link', { name: 'Peruskaava' })).toBeHidden();
+    await expect(page.getByRole('link', { name: 'Pääsykoe' })).toBeHidden();
+    await expect(page.getByRole('link', { name: 'TUTU' })).toBeVisible();
   });
 });
 

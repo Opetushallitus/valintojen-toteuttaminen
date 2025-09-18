@@ -88,10 +88,12 @@ const ValintaryhmaBody = ({
 
   return (
     <>
-      <ValintaryhmanValintalaskenta
-        hakukohteet={hakukohteet}
-        actorRef={actorRef}
-      />
+      {valittuRyhma.userHasWriteAccess && (
+        <ValintaryhmanValintalaskenta
+          hakukohteet={hakukohteet}
+          actorRef={actorRef}
+        />
+      )}
       <ValintaryhmaHakukohdeTable
         hakukohteet={hakukohteetWithLink}
         actorRef={actorRef}
@@ -116,16 +118,11 @@ export const ValintaryhmaContent = ({
   );
 
   const { data: valintaryhmat } = useSuspenseQuery({
-    queryKey: [
-      'getValintaryhmat',
-      hakuOid,
-      userPermissions.writeOrganizations,
-      hakukohteet,
-    ],
+    queryKey: ['getValintaryhmat', hakuOid, userPermissions, hakukohteet],
     queryFn: () =>
       getValintaryhmat(
         hakuOid,
-        userPermissions.writeOrganizations,
+        userPermissions,
         hakukohteet.map((hk) => hk.oid),
       ),
   });

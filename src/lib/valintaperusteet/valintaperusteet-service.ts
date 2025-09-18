@@ -14,6 +14,7 @@ import {
 import { isDefined, sort } from 'remeda';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
 import { getConfigUrl } from '../configuration/configuration-utils';
+import { UserPermissions } from '../permissions';
 
 export const getValintaryhma = async (
   hakukohdeOid: string,
@@ -194,19 +195,20 @@ function sortRyhmatByName(
 
 function mapValintaryhma(
   ryhma: ValintaryhmaHakukohteillaResponse,
-  organizations: Array<string>,
+  userPermissions: UserPermissions,
   parentOid: string | null = null,
 ): ValintaryhmaHakukohteilla {
   const sortedAlaryhmat = sortRyhmatByName(
     ryhma.alavalintaryhmat.map((avr) =>
-      mapValintaryhma(avr, organizations, ryhma.oid),
+      mapValintaryhma(avr, userPermissions, ryhma.oid),
     ),
   );
   const userHasWriteAccess =
-    isDefined(ryhma.vastuuorganisaatio) &&
-    organizations.includes(
-      ryhma.vastuuorganisaatio?.oid ?? 'EI_VASTUUORGANISATIOTA',
-    );
+    userPermissions.hasOphCRUD ||
+    (isDefined(ryhma.vastuuorganisaatio) &&
+      userPermissions.writeOrganizations.includes(
+        ryhma.vastuuorganisaatio?.oid ?? 'EI_VASTUUORGANISATIOTA',
+      ));
   return {
     oid: ryhma.oid,
     nimi: ryhma.nimi,
@@ -227,7 +229,7 @@ function hasHakukohde(
   );
 }
 
-function hasOrganization(
+function hasOrganizationRightToValintaryhma(
   ryhma: ValintaryhmaHakukohteillaResponse,
   organizations: Array<string>,
 ): boolean {
@@ -236,13 +238,15 @@ function hasOrganization(
       organizations.includes(
         ryhma.vastuuorganisaatio?.oid ?? 'EI_VASTUUORGANISATIOTA',
       )) ||
-    ryhma.alavalintaryhmat.some((avr) => hasOrganization(avr, organizations))
+    ryhma.alavalintaryhmat.some((avr) =>
+      hasOrganizationRightToValintaryhma(avr, organizations),
+    )
   );
 }
 
 export const getValintaryhmat = async (
   hakuOid: string,
-  organizations: Array<string>,
+  userPermissions: UserPermissions,
   hakukohteet: Array<string>,
 ): Promise<{
   muutRyhmat: Array<ValintaryhmaHakukohteilla>;
@@ -252,23 +256,35 @@ export const getValintaryhmat = async (
   const response = await client.get<Array<ValintaryhmaHakukohteillaResponse>>(
     `${configuration.routes.valintaperusteetService.valintaryhmatHakukohteilla}?hakuOid=${hakuOid}&hakukohteet=true`,
   );
-  const hakuRyhma = response.data.find((r) => r.hakuOid === hakuOid);
+  const hakuRyhma = response.data.find(
+    (r) =>
+      r.hakuOid === hakuOid &&
+      (userPermissions.hasOphCRUD ||
+        hasOrganizationRightToValintaryhma(
+          r,
+          userPermissions.writeOrganizations,
+        )),
+  );
   const muutRyhmat = (
     hakuRyhma?.alavalintaryhmat.map((vr) =>
-      mapValintaryhma(vr, organizations),
+      mapValintaryhma(vr, userPermissions),
     ) ?? []
   ).concat(
     response.data
       .filter(
         (r) =>
           r.hakuOid == null &&
-          hasOrganization(r, organizations) &&
+          (userPermissions.hasOphCRUD ||
+            hasOrganizationRightToValintaryhma(
+              r,
+              userPermissions.writeOrganizations,
+            )) &&
           hasHakukohde(r, hakukohteet),
       )
-      .map((vr) => mapValintaryhma(vr, organizations)),
+      .map((vr) => mapValintaryhma(vr, userPermissions)),
   );
   return {
-    hakuRyhma: hakuRyhma ? mapValintaryhma(hakuRyhma, organizations) : null,
+    hakuRyhma: hakuRyhma ? mapValintaryhma(hakuRyhma, userPermissions) : null,
     muutRyhmat: sortRyhmatByName(muutRyhmat),
   };
 };

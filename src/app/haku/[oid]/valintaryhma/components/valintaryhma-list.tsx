@@ -9,6 +9,7 @@ import { ValintaryhmaHakukohteilla } from '@/lib/valintaperusteet/valintaperuste
 import { ValintaryhmaAccordion } from './valintaryhma-accordion';
 import { ValintaryhmaLink } from './valintaryhma-link';
 import { styled } from '@/lib/theme';
+import { hasRightToValintaryhmaOrAlaValintaryhma } from '../lib/valintaryhma-util';
 
 const useSelectedValintaryhmaOid = () => useParams().valintaryhma;
 
@@ -69,7 +70,12 @@ const Content = ({
       ? NAV_LIST_SELECTED_ITEM_CLASS
       : '';
 
-  return valintaryhma.alaValintaryhmat.length > 0 ? (
+  const alaValintaryhmatUserHasPermission =
+    valintaryhma.alaValintaryhmat.filter(
+      hasRightToValintaryhmaOrAlaValintaryhma,
+    );
+
+  return alaValintaryhmatUserHasPermission.length > 0 ? (
     <ValintaryhmaAccordion
       title={
         <ValintaryhmaLink
@@ -79,6 +85,7 @@ const Content = ({
           onClick={onItemClick}
           tabIndex={0}
           className={selectedClassName}
+          disabled={!valintaryhma.userHasWriteAccess}
         >
           <OphTypography title={valintaryhma.nimi} color="inherit">
             {valintaryhma.nimi}
@@ -92,7 +99,7 @@ const Content = ({
         aria-label={t('valintaryhma.navigaatio')}
         sx={{ paddingRight: 0 }}
       >
-        {valintaryhma.alaValintaryhmat
+        {alaValintaryhmatUserHasPermission
           .filter((vr) => visibleValintaryhmat.includes(vr.oid))
           .map((vr: ValintaryhmaHakukohteilla) => (
             <Content
@@ -132,7 +139,9 @@ export const ValintaryhmaList = ({
   const { t } = useTranslations();
   const { results, ryhmat } = useValintaryhmaSearchResults(hakuOid);
 
-  const topResults = results.filter((r) => r.parentOid === null);
+  const topResults = results.filter(
+    (r) => r.parentOid === null && hasRightToValintaryhmaOrAlaValintaryhma(r),
+  );
 
   const selectedValintaryhmaOid = useSelectedValintaryhmaOid();
 
@@ -140,14 +149,15 @@ export const ValintaryhmaList = ({
     <>
       <OphTypography>
         {t('valintaryhmittain.valintaryhma-maara', {
-          count: results.length + 1,
+          count:
+            results.length + (ryhmat.hakuRyhma?.userHasWriteAccess ? 1 : 0),
         })}
       </OphTypography>
       <ValintaryhmaNavigationList
         tabIndex={0}
         aria-label={t('valintaryhmittain.navigaatio')}
       >
-        {ryhmat?.hakuRyhma && (
+        {ryhmat?.hakuRyhma && ryhmat?.hakuRyhma.userHasWriteAccess && (
           <ValintaryhmaLink
             hakuOid={hakuOid}
             valintaryhmaOid={ryhmat.hakuRyhma.oid}
