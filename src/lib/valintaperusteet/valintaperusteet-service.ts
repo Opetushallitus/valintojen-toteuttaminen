@@ -254,7 +254,7 @@ export const getValintaryhmat = async (
 }> => {
   const configuration = getConfiguration();
   const response = await client.get<Array<ValintaryhmaHakukohteillaResponse>>(
-    `${configuration.routes.valintaperusteetService.valintaryhmatHakukohteilla}?hakuOid=${hakuOid}&hakukohteet=true`,
+    `${configuration.routes.valintaperusteetService.valintaryhmatHakukohteilla}/${hakuOid}`,
   );
   const hakuRyhma = response.data.find(
     (r) =>

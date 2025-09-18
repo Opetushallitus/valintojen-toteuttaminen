@@ -38,7 +38,7 @@ export async function buildConfiguration() {
         valintaperusteetUrl: `${domain}/valintaperusteet-service/resources/`,
         automaattinenSiirtoUrl: `${domain}/valintaperusteet-service/resources/V2valintaperusteet/{valintatapajonoOid}/automaattinenSiirto?status={status}`,
         hakukohdeValintakokeetUrl: `${domain}/valintaperusteet-service/resources/hakukohde/{hakukohdeOid}/valintakoe`,
-        valintaryhmatHakukohteilla: `${domain}/valintaperusteet-service/resources/puu`,
+        valintaryhmatHakukohteilla: `${domain}/valintaperusteet-service/resources/puu/haku`,
         onkoHaullaValintaryhma: `${domain}/valintaperusteet-service/resources/valintaryhma/onko-haulla-valintaryhmia/{hakuOid}`,
       },
       ataru: {
