@@ -18,7 +18,7 @@ import { OphTypography } from '@opetushallitus/oph-design-system';
 import {
   findHakukohteetRecursively,
   findParent,
-} from '../lib/valintaryhma-util';
+} from '@/app/haku/[oid]/valintaryhma/lib/valintaryhma-util';
 import { ValintaryhmanValintalaskenta } from './valintaryhma-valintalaskenta';
 import { useHaku } from '@/lib/kouta/useHaku';
 import { useHaunAsetukset } from '@/lib/ohjausparametrit/useHaunAsetukset';
@@ -88,10 +88,12 @@ const ValintaryhmaBody = ({
 
   return (
     <>
-      <ValintaryhmanValintalaskenta
-        hakukohteet={hakukohteet}
-        actorRef={actorRef}
-      />
+      {valittuRyhma.userHasWriteAccess && (
+        <ValintaryhmanValintalaskenta
+          hakukohteet={hakukohteet}
+          actorRef={actorRef}
+        />
+      )}
       <ValintaryhmaHakukohdeTable
         hakukohteet={hakukohteetWithLink}
         actorRef={actorRef}
@@ -111,9 +113,18 @@ export const ValintaryhmaContent = ({
 
   const { translateEntity } = useTranslations();
 
+  const { data: hakukohteet } = useSuspenseQuery(
+    queryOptionsGetHakukohteet(hakuOid, userPermissions),
+  );
+
   const { data: valintaryhmat } = useSuspenseQuery({
-    queryKey: ['getValintaryhmat', hakuOid],
-    queryFn: () => getValintaryhmat(hakuOid),
+    queryKey: ['getValintaryhmat', hakuOid, userPermissions, hakukohteet],
+    queryFn: () =>
+      getValintaryhmat(
+        hakuOid,
+        userPermissions,
+        hakukohteet.map((hk) => hk.oid),
+      ),
   });
 
   const { data: haku } = useHaku({ hakuOid });
@@ -122,10 +133,6 @@ export const ValintaryhmaContent = ({
     queryKey: ['getLasketutHakukohteet', hakuOid],
     queryFn: () => getLasketutHakukohteet(hakuOid),
   });
-
-  const { data: hakukohteet } = useSuspenseQuery(
-    queryOptionsGetHakukohteet(hakuOid, userPermissions),
-  );
 
   const valittuRyhma = useMemo(() => {
     function findRecursively(

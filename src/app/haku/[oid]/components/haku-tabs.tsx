@@ -75,7 +75,7 @@ export const HakuTabs = ({ hakuOid }: { hakuOid: string }) => {
       {
         queryKey: ['onkoHaullaValintaryhma', hakuOid],
         queryFn: () => onkoHaullaValintaryhma(hakuOid),
-        enabled: hasOphCRUD,
+        enabled: userPermissions.writeOrganizations.length > 0,
       },
       {
         ...queryOptionsGetHakukohteet(hakuOid, userPermissions),
