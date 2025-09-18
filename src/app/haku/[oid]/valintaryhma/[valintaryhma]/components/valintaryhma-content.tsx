@@ -18,7 +18,7 @@ import { OphTypography } from '@opetushallitus/oph-design-system';
 import {
   findHakukohteetRecursively,
   findParent,
-} from '../lib/valintaryhma-util';
+} from '@/app/haku/[oid]/valintaryhma/lib/valintaryhma-util';
 import { ValintaryhmanValintalaskenta } from './valintaryhma-valintalaskenta';
 import { useHaku } from '@/lib/kouta/useHaku';
 import { useHaunAsetukset } from '@/lib/ohjausparametrit/useHaunAsetukset';

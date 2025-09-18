@@ -425,6 +425,12 @@ test.describe('Käyttäjällä oikeus vain yhteen valintaryhmään', () => {
     await page.goto(
       '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000017683/valintaryhma',
     );
+    await page.route(
+      '**/valintalaskenta-laskenta-service/resources/haku/1.2.246.562.29.00000000000000017683/lasketut-hakukohteet',
+      async (route) => {
+        await route.fulfill({ json: [] });
+      },
+    );
   });
 
   test('Näyttää valintaryhmät listassa', async () => {
@@ -438,6 +444,38 @@ test.describe('Käyttäjällä oikeus vain yhteen valintaryhmään', () => {
     await expect(page.getByRole('link', { name: 'Peruskaava' })).toBeHidden();
     await expect(page.getByRole('link', { name: 'Pääsykoe' })).toBeHidden();
     await expect(page.getByRole('link', { name: 'TUTU' })).toBeVisible();
+  });
+
+  test('Navigoi sallittuun valintaryhmään', async () => {
+    await expect(page.getByText('Valitse valintaryhmä')).toBeVisible();
+    await page.getByRole('link', { name: 'TUTU' }).click();
+    await expect(page.getByText('Valitse valintaryhmä')).toBeHidden();
+    await expect(
+      page.getByRole('button', { name: 'Suorita valintalaskenta' }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('cell', { name: 'Hiekkasärkät, Hiekkalinnan' }),
+    ).toBeHidden();
+    await expect(
+      page.getByRole('cell', {
+        name: 'Sibeliuksen puisto, Pihakeinun pystyttäjät',
+      }),
+    ).toBeHidden();
+    await expect(
+      page.getByRole('cell', {
+        name: 'Sibeliuksen puisto, Liukumäen testaajat',
+      }),
+    ).toBeVisible();
+  });
+
+  test('Laskentanappi on piilotettu jos käyttäjällä ei ole oikeuksia valintaryhmään', async () => {
+    await page.goto(
+      '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000017683/valintaryhma/2234567-3234567',
+    );
+    await expect(page.getByText('Valitse valintaryhmä')).toBeHidden();
+    await expect(
+      page.getByRole('button', { name: 'Suorita valintalaskenta' }),
+    ).toBeHidden();
   });
 });
 
