@@ -144,24 +144,24 @@ export const ValintaryhmaList = ({
   );
 
   const selectedValintaryhmaOid = useSelectedValintaryhmaOid();
-
+  console.log(results);
   return (
     <>
       <OphTypography>
         {t('valintaryhmittain.valintaryhma-maara', {
-          count:
-            results.length + (ryhmat.hakuRyhma?.userHasWriteAccess ? 1 : 0),
+          count: results.length + (ryhmat.hakuRyhma ? 1 : 0),
         })}
       </OphTypography>
       <ValintaryhmaNavigationList
         tabIndex={0}
         aria-label={t('valintaryhmittain.navigaatio')}
       >
-        {ryhmat?.hakuRyhma && ryhmat?.hakuRyhma.userHasWriteAccess && (
+        {ryhmat?.hakuRyhma && (
           <ValintaryhmaLink
             hakuOid={hakuOid}
             valintaryhmaOid={ryhmat.hakuRyhma.oid}
             tabIndex={0}
+            disabled={!ryhmat?.hakuRyhma.userHasWriteAccess}
             className={`${
               selectedValintaryhmaOid === ryhmat.hakuRyhma.oid
                 ? NAV_LIST_SELECTED_ITEM_CLASS

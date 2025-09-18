@@ -438,6 +438,7 @@ test.describe('Käyttäjällä oikeus vain yhteen valintaryhmään', () => {
     await expect(
       page.getByRole('link', { name: 'Koko haun valintaryhmä' }),
     ).toBeHidden();
+    await expect(page.getByText('Koko haun valintaryhmä')).toBeVisible();
     await expect(
       page.getByRole('link', { name: 'Peruskoulupohjaiset' }),
     ).toBeHidden();

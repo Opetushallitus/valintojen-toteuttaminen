@@ -248,7 +248,16 @@ test('Valintaperusteet: getValintaryhmat', async () => {
   const ryhmat: {
     hakuRyhma: ValintaryhmaHakukohteilla | null;
     muutRyhmat: Array<ValintaryhmaHakukohteilla>;
-  } = await getValintaryhmat('haku-1');
+  } = await getValintaryhmat(
+    'haku-1',
+    {
+      hasOphCRUD: true,
+      readOrganizations: [],
+      writeOrganizations: [],
+      crudOrganizations: [],
+    },
+    ['hk-1', 'hk-2', 'hk-3'],
+  );
   expect(ryhmat.hakuRyhma?.nimi).toEqual('Haun valintaryhmä');
   expect(ryhmat.muutRyhmat.map((r) => r.nimi)).toEqual([
     'Valintaryhmä 1',
