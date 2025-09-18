@@ -11,7 +11,7 @@ import {
   Valintatapajono,
   ValintaryhmaHakukohteilla,
 } from './valintaperusteet-types';
-import { sort } from 'remeda';
+import { isDefined, sort } from 'remeda';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
 import { getConfigUrl } from '../configuration/configuration-utils';
 
@@ -183,6 +183,7 @@ type ValintaryhmaHakukohteillaResponse = {
   nimi: string;
   hakukohdeViitteet: Array<{ oid: string }>;
   alavalintaryhmat: Array<ValintaryhmaHakukohteillaResponse>;
+  vastuuorganisaatio: { oid: string; parentOidPath: string } | null;
 };
 
 function sortRyhmatByName(
@@ -217,8 +218,22 @@ function hasHakukohde(
   );
 }
 
+function hasOrganization(
+  ryhma: ValintaryhmaHakukohteillaResponse,
+  organizations: Array<string>,
+): boolean {
+  return (
+    (isDefined(ryhma.vastuuorganisaatio) &&
+      organizations.includes(
+        ryhma.vastuuorganisaatio?.oid ?? 'EI_VASTUUORGANISATIOTA',
+      )) ||
+    ryhma.alavalintaryhmat.some((avr) => hasOrganization(avr, organizations))
+  );
+}
+
 export const getValintaryhmat = async (
   hakuOid: string,
+  organizations: Array<string>,
   hakukohteet: Array<string>,
 ): Promise<{
   muutRyhmat: Array<ValintaryhmaHakukohteilla>;
@@ -233,7 +248,12 @@ export const getValintaryhmat = async (
     hakuRyhma?.alavalintaryhmat.map((vr) => mapValintaryhma(vr)) ?? []
   ).concat(
     response.data
-      .filter((r) => r.hakuOid !== hakuOid && hasHakukohde(r, hakukohteet))
+      .filter(
+        (r) =>
+          r.hakuOid == null &&
+          hasOrganization(r, organizations) &&
+          hasHakukohde(r, hakukohteet),
+      )
       .map((vr) => mapValintaryhma(vr)),
   );
   return {

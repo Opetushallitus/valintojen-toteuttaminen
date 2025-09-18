@@ -65,20 +65,19 @@ export const useValintaryhmaSearchResults = (hakuOid: string) => {
     queryOptionsGetHakukohteet(hakuOid, userPermissions),
   );
 
-  const hakukohteetWithWriteAccess = useMemo(
-    () =>
-      (userPermissions.hasOphCRUD
-        ? hakukohteet
-        : hakukohteet.filter((hk) =>
-            userPermissions.writeOrganizations.includes(hk.tarjoajaOid),
-          )
-      ).map((hk) => hk.oid),
-    [hakukohteet, userPermissions],
-  );
-
   const { data: ryhmat } = useSuspenseQuery({
-    queryKey: ['getValintaryhmat', hakuOid, hakukohteetWithWriteAccess],
-    queryFn: () => getValintaryhmat(hakuOid, hakukohteetWithWriteAccess),
+    queryKey: [
+      'getValintaryhmat',
+      hakuOid,
+      userPermissions.writeOrganizations,
+      hakukohteet,
+    ],
+    queryFn: () =>
+      getValintaryhmat(
+        hakuOid,
+        userPermissions.writeOrganizations,
+        hakukohteet.map((h) => h.oid),
+      ),
   });
 
   const flattenedRyhmat = useMemo(() => {
@@ -105,6 +104,5 @@ export const useValintaryhmaSearchResults = (hakuOid: string) => {
   return {
     results,
     ryhmat,
-    hakukohteetWithWriteAccess,
   };
 };

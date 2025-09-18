@@ -111,9 +111,23 @@ export const ValintaryhmaContent = ({
 
   const { translateEntity } = useTranslations();
 
+  const { data: hakukohteet } = useSuspenseQuery(
+    queryOptionsGetHakukohteet(hakuOid, userPermissions),
+  );
+
   const { data: valintaryhmat } = useSuspenseQuery({
-    queryKey: ['getValintaryhmat', hakuOid],
-    queryFn: () => getValintaryhmat(hakuOid),
+    queryKey: [
+      'getValintaryhmat',
+      hakuOid,
+      userPermissions.writeOrganizations,
+      hakukohteet,
+    ],
+    queryFn: () =>
+      getValintaryhmat(
+        hakuOid,
+        userPermissions.writeOrganizations,
+        hakukohteet.map((hk) => hk.oid),
+      ),
   });
 
   const { data: haku } = useHaku({ hakuOid });
@@ -122,10 +136,6 @@ export const ValintaryhmaContent = ({
     queryKey: ['getLasketutHakukohteet', hakuOid],
     queryFn: () => getLasketutHakukohteet(hakuOid),
   });
-
-  const { data: hakukohteet } = useSuspenseQuery(
-    queryOptionsGetHakukohteet(hakuOid, userPermissions),
-  );
 
   const valittuRyhma = useMemo(() => {
     function findRecursively(
