@@ -67,7 +67,12 @@ export const useValintaryhmaSearchResults = (hakuOid: string) => {
   );
 
   const { data: ryhmat } = useSuspenseQuery({
-    queryKey: ['getValintaryhmat', hakuOid, userPermissions, hakukohteet],
+    queryKey: [
+      'getValintaryhmat',
+      hakuOid,
+      userPermissions,
+      hakukohteet.length,
+    ],
     queryFn: () =>
       getValintaryhmat(
         hakuOid,
