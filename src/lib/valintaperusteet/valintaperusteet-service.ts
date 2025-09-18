@@ -194,16 +194,25 @@ function sortRyhmatByName(
 
 function mapValintaryhma(
   ryhma: ValintaryhmaHakukohteillaResponse,
+  organizations: Array<string>,
   parentOid: string | null = null,
 ): ValintaryhmaHakukohteilla {
   const sortedAlaryhmat = sortRyhmatByName(
-    ryhma.alavalintaryhmat.map((avr) => mapValintaryhma(avr, ryhma.oid)),
+    ryhma.alavalintaryhmat.map((avr) =>
+      mapValintaryhma(avr, organizations, ryhma.oid),
+    ),
   );
+  const userHasWriteAccess =
+    isDefined(ryhma.vastuuorganisaatio) &&
+    organizations.includes(
+      ryhma.vastuuorganisaatio?.oid ?? 'EI_VASTUUORGANISATIOTA',
+    );
   return {
     oid: ryhma.oid,
     nimi: ryhma.nimi,
     parentOid,
     hakukohteet: ryhma.hakukohdeViitteet.map((h) => h.oid),
+    userHasWriteAccess,
     alaValintaryhmat: sortedAlaryhmat,
   };
 }
@@ -245,7 +254,9 @@ export const getValintaryhmat = async (
   );
   const hakuRyhma = response.data.find((r) => r.hakuOid === hakuOid);
   const muutRyhmat = (
-    hakuRyhma?.alavalintaryhmat.map((vr) => mapValintaryhma(vr)) ?? []
+    hakuRyhma?.alavalintaryhmat.map((vr) =>
+      mapValintaryhma(vr, organizations),
+    ) ?? []
   ).concat(
     response.data
       .filter(
@@ -254,10 +265,10 @@ export const getValintaryhmat = async (
           hasOrganization(r, organizations) &&
           hasHakukohde(r, hakukohteet),
       )
-      .map((vr) => mapValintaryhma(vr)),
+      .map((vr) => mapValintaryhma(vr, organizations)),
   );
   return {
-    hakuRyhma: hakuRyhma ? mapValintaryhma(hakuRyhma) : null,
+    hakuRyhma: hakuRyhma ? mapValintaryhma(hakuRyhma, organizations) : null,
     muutRyhmat: sortRyhmatByName(muutRyhmat),
   };
 };

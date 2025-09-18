@@ -113,6 +113,7 @@ const Content = ({
       className={`${selectedClassName} zepra`}
       onClick={onItemClick}
       tabIndex={0}
+      disabled={!valintaryhma.userHasWriteAccess}
     >
       <OphTypography title={valintaryhma.nimi} color="inherit">
         {valintaryhma.nimi}
