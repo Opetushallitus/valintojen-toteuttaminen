@@ -2,6 +2,7 @@ import { ConfirmationGlobalModal } from '@/components/modals/confirmation-global
 import { showModal } from '@/components/modals/global-modal';
 import { NavigationBlockerContext } from '@/components/providers/navigation-blocker-provider';
 import { useTranslations } from '@/lib/localization/useTranslations';
+import { useRouter } from 'next/navigation';
 import { use, useEffect } from 'react';
 
 export function useNavigationBlocker() {
@@ -11,6 +12,7 @@ export function useNavigationBlocker() {
 export function useNavigationBlockerWithWindowEvents(isDirty: boolean) {
   const { setIsBlocked } = useNavigationBlocker();
   const { t } = useTranslations();
+  const router = useRouter();
 
   useEffect(() => {
     setIsBlocked(isDirty);
@@ -32,7 +34,7 @@ export function useNavigationBlockerWithWindowEvents(isDirty: boolean) {
           onConfirm: () => {
             setIsBlocked(false);
             window.removeEventListener('popstate', handleBackButton);
-            window.history.back();
+            router.back();
           },
         });
       }
@@ -42,5 +44,5 @@ export function useNavigationBlockerWithWindowEvents(isDirty: boolean) {
       window.removeEventListener('beforeunload', handleBeforeUnload);
       window.removeEventListener('popstate', handleBackButton);
     };
-  }, [isDirty, setIsBlocked, t]);
+  }, [isDirty, setIsBlocked, t, router]);
 }
