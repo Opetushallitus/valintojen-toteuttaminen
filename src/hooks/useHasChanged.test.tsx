@@ -25,4 +25,10 @@ describe('useHasChanged', () => {
     rerender();
     expect(result.current).toBe(true);
   });
+
+  it('should return false if original value is undefinend and new value is empty string', () => {
+    const { result, rerender } = renderHook(() => useHasChanged(undefined));
+    rerender();
+    expect(result.current).toBe(false);
+  });
 });

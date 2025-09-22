@@ -1,6 +1,8 @@
-import { describe, expect, test } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { createHakijaColumn, HakijaColumnLinkType } from './table-columns';
+
+vi.mock('next/navigation', () => ({ useRouter: () => null }));
 
 const HAKEMUS = {
   hakemusOid: '1.2.3',
