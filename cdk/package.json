@@ -15,7 +15,7 @@
     "typescript": "~5.8.2"
   },
   "dependencies": {
-    "aws-cdk-lib": "^2.184.1",
+    "aws-cdk-lib": "^2.187.0",
     "cdk-nextjs-standalone": "^4.2.3",
     "constructs": "^10.4.2",
     "ts-node": "^10.9.2"
