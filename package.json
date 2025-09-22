@@ -45,7 +45,7 @@
     "nextjs-toploader": "^3.7.15",
     "nuqs": "^2.4.1",
     "quill": "^2.0.3",
-    "react": "^19.0.0",
+    "react": "^19.1.0",
     "react-datepicker": "^8.2.1",
     "react-dom": "^19.0.0",
     "react-error-boundary": "^5.0.0",
