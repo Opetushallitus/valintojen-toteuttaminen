@@ -25,11 +25,11 @@ import { GenericEvent } from '@/lib/common';
 import { useQueryClient } from '@tanstack/react-query';
 import { FileDownloadButton } from '@/components/file-download-button';
 import { getValintatapajonoTulosExcel } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
-import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBeforeNavigation';
 import { ValintatapajonoContentProps } from '../types/valintatapajono-types';
 import { LaskennatonJonoExcelUploadButton } from './laskennaton-jono-excel-upload-button';
 import { refetchHakukohteenValintalaskennanTulokset } from '@/lib/valintalaskenta/valintalaskenta-queries';
 import { useHasOnlyHakukohdeReadPermission } from '@/hooks/useHasOnlyHakukohdeReadPermission';
+import { useNavigationBlockerWithWindowEvents } from '@/hooks/useNavigationBlocker';
 
 const LaskennatonVaiheActions = ({
   hakukohde,
@@ -167,7 +167,7 @@ export const LaskennatonValintatapajonoContent = ({
   const { valintatapajonooid } = jono;
 
   const isDirty = useIsJonoTulosDirty(jonoTulosActorRef);
-  useConfirmChangesBeforeNavigation(isDirty);
+  useNavigationBlockerWithWindowEvents(isDirty);
 
   return (
     <>

@@ -3,7 +3,7 @@
 import { TablePaginationWrapper } from '@/components/table/table-pagination-wrapper';
 import { PisteSyottoTable } from './pistesyotto-table';
 import { usePisteSyottoSearchResults } from '../hooks/usePisteSyottoSearch';
-import { FormEvent, useCallback, useEffect } from 'react';
+import { FormEvent, useCallback } from 'react';
 import useToaster, { Toast } from '@/hooks/useToaster';
 import { PisteSyottoActions } from './pistesyotto-actions';
 import { HakukohteenPistetiedot } from '@/lib/types/laskenta-types';
@@ -13,7 +13,7 @@ import { useHaunParametrit } from '@/lib/valintalaskentakoostepalvelu/useHaunPar
 import { useQueryClient } from '@tanstack/react-query';
 import { refetchPisteetForHakukohde } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-queries';
 import { usePistesyottoState } from '../lib/hakukohde-pistesyotto-state';
-import { useNavigationBlocker } from '@/hooks/useNavigationBlocker';
+import { useNavigationBlockerWithWindowEvents } from '@/hooks/useNavigationBlocker';
 
 export const PisteSyottoForm = ({
   hakuOid,
@@ -52,11 +52,7 @@ export const PisteSyottoForm = ({
 
   const { data: haunParametrit } = useHaunParametrit({ hakuOid });
 
-  const { setIsBlocked } = useNavigationBlocker();
-
-  useEffect(() => {
-    setIsBlocked(isDirty);
-  }, [isDirty, setIsBlocked]);
+  useNavigationBlockerWithWindowEvents(isDirty);
 
   const {
     page,

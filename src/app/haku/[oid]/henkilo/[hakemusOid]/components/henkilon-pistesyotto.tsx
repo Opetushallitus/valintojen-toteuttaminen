@@ -15,7 +15,6 @@ import { OphButton } from '@opetushallitus/oph-design-system';
 import { HakijaInfo } from '@/lib/ataru/ataru-types';
 import useToaster from '@/hooks/useToaster';
 import { useCallback, useMemo } from 'react';
-import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBeforeNavigation';
 import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
 import { HakutoiveTitle } from '@/components/hakutoive-title';
 import { useHaunParametrit } from '@/lib/valintalaskentakoostepalvelu/useHaunParametrit';
@@ -27,6 +26,7 @@ import {
   useHenkilonPistesyottoState,
 } from '../lib/henkilon-pistesyotto-state';
 import { KokeenPistesyotto } from './kokeen-pistesyotto';
+import { useNavigationBlockerWithWindowEvents } from '@/hooks/useNavigationBlocker';
 
 const HakukohteenPisteSyotto = ({
   hakija,
@@ -144,7 +144,7 @@ export const HenkilonPistesyotto = ({
     onEvent,
   });
 
-  useConfirmChangesBeforeNavigation(isDirty);
+  useNavigationBlockerWithWindowEvents(isDirty);
 
   return isEmpty(hakukohteetKokeilla) ? null : (
     <Box sx={{ marginTop: 3 }}>

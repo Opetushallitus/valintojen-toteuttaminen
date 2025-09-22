@@ -198,7 +198,7 @@ test('Pyytää käyttäjältä vahvistusta navigointiin kun on tallentamattomia 
     name: HARKINNANVARAINEN_INPUT_NAME,
     option: 'Hyväksytty',
   });
-  // Tyhjennetään, ja valitaan uudelleen, jotta useConfirmChangesBeforeNavigation-hook ajetaan toisen kerran
+  // Tyhjennetään, ja valitaan uudelleen, jotta useNavigationBlocker-hook ajetaan toisen kerran
   await selectOption({
     page,
     name: HARKINNANVARAINEN_INPUT_NAME,
