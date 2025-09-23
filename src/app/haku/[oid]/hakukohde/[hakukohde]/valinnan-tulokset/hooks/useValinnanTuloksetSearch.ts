@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { parseAsInteger, useQueryState } from 'nuqs';
-import { useHasChanged } from '@/hooks/useHasChanged';
+import { useHasChangedForQueryState } from '@/hooks/useHasChanged';
 import { byProp, getSortParts } from '@/components/table/table-utils';
 import {
   DEFAULT_NUQS_OPTIONS,
@@ -51,9 +51,9 @@ export const useValinnanTuloksetSearchParams = () => {
 
   const [sort, setSort] = useState<string>('');
 
-  const searchPhraseChanged = useHasChanged(searchPhrase);
-  const valinnanTilaChanged = useHasChanged(valinnanTila);
-  const vastaanottoTilaChanged = useHasChanged(vastaanottoTila);
+  const searchPhraseChanged = useHasChangedForQueryState(searchPhrase);
+  const valinnanTilaChanged = useHasChangedForQueryState(valinnanTila);
+  const vastaanottoTilaChanged = useHasChangedForQueryState(vastaanottoTila);
 
   useEffect(() => {
     if (searchPhraseChanged || valinnanTilaChanged || vastaanottoTilaChanged) {

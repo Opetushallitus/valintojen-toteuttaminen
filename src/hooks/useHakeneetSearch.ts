@@ -2,7 +2,7 @@
 import { useEffect, useMemo } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { parseAsInteger, useQueryState } from 'nuqs';
-import { useHasChanged } from '@/hooks/useHasChanged';
+import { useHasChangedForQueryState } from '@/hooks/useHasChanged';
 import { byProp, getSortParts } from '../components/table/table-utils';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import {
@@ -39,7 +39,7 @@ export const useHakeneetSearchParams = () => {
 
   const [sort, setSort] = useQueryState('sort', DEFAULT_NUQS_OPTIONS);
 
-  const searchPhraseChanged = useHasChanged(searchPhrase);
+  const searchPhraseChanged = useHasChangedForQueryState(searchPhrase);
 
   useEffect(() => {
     if (searchPhraseChanged) {

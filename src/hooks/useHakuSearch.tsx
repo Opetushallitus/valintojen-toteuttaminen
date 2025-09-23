@@ -8,7 +8,7 @@ import {
 } from '../lib/kouta/kouta-types';
 import { useDebounce } from '@/hooks/useDebounce';
 import { parseAsInteger, useQueryState } from 'nuqs';
-import { useHasChanged } from '@/hooks/useHasChanged';
+import { useHasChangedForQueryState } from '@/hooks/useHasChanged';
 import { byProp, getSortParts } from '../components/table/table-utils';
 import { getHaut } from '../lib/kouta/kouta-service';
 import { useSuspenseQuery } from '@tanstack/react-query';
@@ -112,10 +112,11 @@ export const useHakuSearchParams = () => {
 
   const [sort, setSort] = useQueryState('sort', DEFAULT_NUQS_OPTIONS);
 
-  const tilachanged = useHasChanged(tila);
-  const searchPhraseChanged = useHasChanged(searchPhrase);
-  const selectedAlkamisKausiChanged = useHasChanged(selectedAlkamisKausi);
-  const selectedHakutapaChanged = useHasChanged(selectedHakutapa);
+  const tilachanged = useHasChangedForQueryState(tila);
+  const searchPhraseChanged = useHasChangedForQueryState(searchPhrase);
+  const selectedAlkamisKausiChanged =
+    useHasChangedForQueryState(selectedAlkamisKausi);
+  const selectedHakutapaChanged = useHasChangedForQueryState(selectedHakutapa);
 
   useEffect(() => {
     if (
