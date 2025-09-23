@@ -9,7 +9,7 @@ export const InternalLink = ({
   children,
   ...props
 }: LinkProps & { children: React.ReactNode }) => {
-  const { isBlocked, setIsBlocked } = useNavigationBlocker();
+  const { isBlocked, unblock } = useNavigationBlocker();
   const router = useRouter();
 
   const { t } = useTranslations();
@@ -27,7 +27,7 @@ export const InternalLink = ({
             confirmLabel: t('lomake.jatka'),
             cancelLabel: t('yleinen.peruuta'),
             onConfirm: () => {
-              setIsBlocked(false);
+              unblock();
               router.replace(
                 typeof href === 'string' ? href : String(href.pathname ?? ''),
               );

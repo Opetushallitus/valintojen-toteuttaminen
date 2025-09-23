@@ -10,12 +10,16 @@ export function useNavigationBlocker() {
 }
 
 export function useNavigationBlockerWithWindowEvents(isDirty: boolean) {
-  const { setIsBlocked } = useNavigationBlocker();
+  const { unblock, increaseBlocked, decreaseBlocked } = useNavigationBlocker();
   const { t } = useTranslations();
   const router = useRouter();
 
   useEffect(() => {
-    setIsBlocked(isDirty);
+    if (isDirty) {
+      increaseBlocked();
+    } else {
+      decreaseBlocked();
+    }
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       if (isDirty) {
         event.preventDefault();
@@ -32,7 +36,7 @@ export function useNavigationBlockerWithWindowEvents(isDirty: boolean) {
           confirmLabel: t('lomake.jatka'),
           cancelLabel: t('yleinen.peruuta'),
           onConfirm: () => {
-            setIsBlocked(false);
+            unblock();
             window.removeEventListener('popstate', handleBackButton);
             router.back();
           },
@@ -44,5 +48,7 @@ export function useNavigationBlockerWithWindowEvents(isDirty: boolean) {
       window.removeEventListener('beforeunload', handleBeforeUnload);
       window.removeEventListener('popstate', handleBackButton);
     };
-  }, [isDirty, setIsBlocked, t, router]);
+    // useNavigationBlocker functions alter provided shared variable, providing them in deps causes unwanted recursion
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDirty, t, router]);
 }
