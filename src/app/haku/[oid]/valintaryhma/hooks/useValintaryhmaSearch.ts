@@ -66,19 +66,11 @@ export const useValintaryhmaSearchResults = (hakuOid: string) => {
     queryOptionsGetHakukohteet(hakuOid, userPermissions),
   );
 
+  const hakukohdeOids = hakukohteet.map((h) => h.oid);
+
   const { data: ryhmat } = useSuspenseQuery({
-    queryKey: [
-      'getValintaryhmat',
-      hakuOid,
-      userPermissions,
-      hakukohteet.length,
-    ],
-    queryFn: () =>
-      getValintaryhmat(
-        hakuOid,
-        userPermissions,
-        hakukohteet.map((h) => h.oid),
-      ),
+    queryKey: ['getValintaryhmat', hakuOid, userPermissions, hakukohdeOids],
+    queryFn: () => getValintaryhmat(hakuOid, userPermissions, hakukohdeOids),
   });
 
   const flattenedRyhmat = useMemo(() => {

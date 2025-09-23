@@ -229,17 +229,17 @@ function hasHakukohde(
   );
 }
 
-function hasOrganizationRightToValintaryhma(
+function hasOrganizationPermissionToValintaryhma(
   ryhma: ValintaryhmaHakukohteillaResponse,
   organizations: Array<string>,
 ): boolean {
   return (
     (isDefined(ryhma.vastuuorganisaatio) &&
       organizations.includes(
-        ryhma.vastuuorganisaatio?.oid ?? 'EI_VASTUUORGANISATIOTA',
+        ryhma.vastuuorganisaatio?.oid ?? 'EI_VASTUUORGANISAATIOTA',
       )) ||
     ryhma.alavalintaryhmat.some((avr) =>
-      hasOrganizationRightToValintaryhma(avr, organizations),
+      hasOrganizationPermissionToValintaryhma(avr, organizations),
     )
   );
 }
@@ -260,7 +260,7 @@ export const getValintaryhmat = async (
     (r) =>
       r.hakuOid === hakuOid &&
       (userPermissions.hasOphCRUD ||
-        hasOrganizationRightToValintaryhma(
+        hasOrganizationPermissionToValintaryhma(
           r,
           userPermissions.writeOrganizations,
         )),
@@ -275,7 +275,7 @@ export const getValintaryhmat = async (
         (r) =>
           r.hakuOid == null &&
           (userPermissions.hasOphCRUD ||
-            hasOrganizationRightToValintaryhma(
+            hasOrganizationPermissionToValintaryhma(
               r,
               userPermissions.writeOrganizations,
             )) &&

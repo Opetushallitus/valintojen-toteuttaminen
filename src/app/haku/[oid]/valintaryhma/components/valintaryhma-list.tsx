@@ -144,7 +144,7 @@ export const ValintaryhmaList = ({
   );
 
   const selectedValintaryhmaOid = useSelectedValintaryhmaOid();
-  console.log(results);
+
   return (
     <>
       <OphTypography>
