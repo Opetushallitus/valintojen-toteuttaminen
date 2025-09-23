@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useState } from 'react';
+import { createContext, useCallback, useState } from 'react';
 
 interface NavigationBlockerContextType {
   isBlocked: boolean;
@@ -24,15 +24,17 @@ export function NavigationBlockerProvider({
 }) {
   const [numberOfBlockers, setNumberOfBlockers] = useState(0);
 
-  function increaseBlocked() {
-    setNumberOfBlockers(Math.max(0, numberOfBlockers) + 1);
-  }
-  function decreaseBlocked() {
-    setNumberOfBlockers(Math.max(0, numberOfBlockers - 1));
-  }
-  function unblock() {
+  const increaseBlocked = useCallback(() => {
+    setNumberOfBlockers((oldCount) => Math.max(0, oldCount) + 1);
+  }, [setNumberOfBlockers]);
+
+  const decreaseBlocked = useCallback(() => {
+    setNumberOfBlockers((oldCount) => Math.max(0, oldCount - 1));
+  }, [setNumberOfBlockers]);
+
+  const unblock = useCallback(() => {
     setNumberOfBlockers(0);
-  }
+  }, [setNumberOfBlockers]);
 
   return (
     <NavigationBlockerContext.Provider

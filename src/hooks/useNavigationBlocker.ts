@@ -48,7 +48,5 @@ export function useNavigationBlockerWithWindowEvents(isDirty: boolean) {
       window.removeEventListener('beforeunload', handleBeforeUnload);
       window.removeEventListener('popstate', handleBackButton);
     };
-    // useNavigationBlocker functions alter provided shared variable, providing them in deps causes unwanted recursion
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isDirty, t, router]);
+  }, [isDirty, t, router, unblock, increaseBlocked, decreaseBlocked]);
 }
