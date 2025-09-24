@@ -21,7 +21,10 @@ import {
   Language,
   TranslatedName,
 } from '@/lib/localization/localization-types';
-import { getReadableHakemuksenTila } from '@/lib/sijoittelun-tulokset-utils';
+import {
+  getReadableHakemuksenTila,
+  showHyvaksyPeruuntunut,
+} from '@/lib/sijoittelun-tulokset-utils';
 import { entries, map, pipe } from 'remeda';
 import { styled } from '@/lib/theme';
 import { useCheckPermission } from '@/hooks/useUserPermissions';
@@ -339,6 +342,7 @@ export const ValinnanTilaCell = memo(function ValinnanTilaCell({
   const {
     hakemusOid,
     hyvaksyttyVarasijalta,
+    hyvaksyPeruuntunut,
     siirtynytToisestaValintatapajonosta,
     valinnanTila,
     vastaanottoTila,
@@ -348,6 +352,13 @@ export const ValinnanTilaCell = memo(function ValinnanTilaCell({
     updateForm({
       hakemusOid,
       hyvaksyttyVarasijalta: !hyvaksyttyVarasijalta,
+    });
+  };
+
+  const updateHyvaksyPeruuntunut = () => {
+    updateForm({
+      hakemusOid,
+      hyvaksyPeruuntunut: !hyvaksyPeruuntunut,
     });
   };
 
@@ -391,6 +402,14 @@ export const ValinnanTilaCell = memo(function ValinnanTilaCell({
           checked={hyvaksyttyVarasijalta}
           onChange={updateHyvaksyttyVarasijalta}
           label={t('sijoittelun-tulokset.varasijalta')}
+          disabled={disabled}
+        />
+      )}
+      {mode === 'sijoittelu' && showHyvaksyPeruuntunut(hakemus) && (
+        <OphCheckbox
+          checked={hyvaksyPeruuntunut}
+          onChange={updateHyvaksyPeruuntunut}
+          label={t('sijoittelun-tulokset.hyvaksy-peruuntunut')}
           disabled={disabled}
         />
       )}
