@@ -91,6 +91,8 @@ export const useHierarchyUserPermissions = (
         organizationHierarchy,
         userPermissions.readOrganizations,
       ),
+      sijoitteluPeruuntuneidenHyvaksyntaAllowed:
+        userPermissions.sijoitteluPeruuntuneidenHyvaksyntaAllowed,
     }),
     [userPermissions, organizationHierarchy],
   );

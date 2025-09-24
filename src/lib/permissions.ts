@@ -2,7 +2,16 @@ import { OPH_ORGANIZATION_OID } from './constants';
 
 export const VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY = 'VALINTOJENTOTEUTTAMINEN';
 
-export type Permission = 'CRUD' | 'READ' | 'READ_UPDATE';
+export const SIJOITTELU_SERVICE_KEY = 'SIJOITTELU';
+
+export const PERUUNTUNEIDEN_HYVAKSYNTA_PERMISSION_KEY =
+  'PERUUNTUNEIDEN_HYVAKSYNTA';
+
+export type Permission =
+  | 'CRUD'
+  | 'READ'
+  | 'READ_UPDATE'
+  | 'PERUUNTUNEIDEN_HYVAKSYNTA';
 
 export type OrganizationPermissions = {
   organizationOid: string;
@@ -15,6 +24,7 @@ export type UserPermissions = {
   writeOrganizations: Array<string>;
   crudOrganizations: Array<string>;
   hasOphCRUD: boolean;
+  sijoitteluPeruuntuneidenHyvaksyntaAllowed: boolean;
 };
 
 export type UserPermissionsByService = {
@@ -44,6 +54,13 @@ export const selectUserPermissions = (
     });
   });
 
+  const canHyvaksyPeruuntunut =
+    organizations.find(
+      (o) =>
+        o.permission === PERUUNTUNEIDEN_HYVAKSYNTA_PERMISSION_KEY &&
+        o.serviceKey === SIJOITTELU_SERVICE_KEY,
+    )?.organisaatioOid === OPH_ORGANIZATION_OID;
+
   return organizations.reduce((result, org) => {
     const { organisaatioOid, serviceKey, permission } = org;
     if (!result[serviceKey]) {
@@ -52,6 +69,7 @@ export const selectUserPermissions = (
         writeOrganizations: [],
         crudOrganizations: [],
         hasOphCRUD: false,
+        sijoitteluPeruuntuneidenHyvaksyntaAllowed: canHyvaksyPeruuntunut,
       };
     }
     const serviceResult = result[serviceKey];
@@ -147,4 +165,5 @@ export const EMPTY_USER_PERMISSIONS: UserPermissions = {
   writeOrganizations: [],
   crudOrganizations: [],
   hasOphCRUD: false,
+  sijoitteluPeruuntuneidenHyvaksyntaAllowed: false,
 };

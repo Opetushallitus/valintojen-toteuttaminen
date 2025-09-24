@@ -43,9 +43,12 @@ export const isIlmoittautuminenPossible = (h: SijoittelunTilaKentat): boolean =>
     h.vastaanottoTila as VastaanottoTila,
   );
 
-export const showHyvaksyPeruuntunut = (h: SijoittelunTilaKentat): boolean =>
-  //TODO tarkista APP_SIJOITTELU_PERUUNTUNEIDEN_HYVAKSYNTA_1.2.246.562.10.00000000001"
-  (true && h.valinnanTila === ValinnanTila.PERUUNTUNUT) ||
+export const showHyvaksyPeruuntunut = (
+  h: SijoittelunTilaKentat,
+  peruuntuneenHyvaksyminenAllowed: boolean,
+): boolean =>
+  (peruuntuneenHyvaksyminenAllowed &&
+    h.valinnanTila === ValinnanTila.PERUUNTUNUT) ||
   (isTruthy(h.hyvaksyPeruuntunut) &&
     isDefined(h.valinnanTila) &&
     [
@@ -54,9 +57,10 @@ export const showHyvaksyPeruuntunut = (h: SijoittelunTilaKentat): boolean =>
       ValinnanTila.VARASIJALTA_HYVAKSYTTY,
     ].includes(h.valinnanTila));
 
-export const canHyvaksyPeruuntunut = (h: SijoittelunTilaKentat): boolean =>
-  //TODO tarkista APP_SIJOITTELU_PERUUNTUNEIDEN_HYVAKSYNTA_1.2.246.562.10.00000000001"
-  !h.julkaistavissa;
+export const canHyvaksyPeruuntunut = (
+  h: SijoittelunTilaKentat,
+  peruuntuneenHyvaksyminenAllowed: boolean,
+): boolean => peruuntuneenHyvaksyminenAllowed && !h.julkaistavissa;
 
 export const isValintaesitysJulkaistavissa = (
   haku: Haku,

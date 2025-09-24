@@ -328,6 +328,7 @@ export const ValinnanTilaCell = memo(function ValinnanTilaCell({
   disabled,
   updateForm,
   mode,
+  peruuntuneenHyvaksyminenAllowed = false,
   t,
   translateEntity,
 }: {
@@ -337,6 +338,7 @@ export const ValinnanTilaCell = memo(function ValinnanTilaCell({
   disabled: boolean;
   updateForm: (params: ValinnanTulosChangeParams) => void;
   mode: 'valinta' | 'sijoittelu';
+  peruuntuneenHyvaksyminenAllowed?: boolean;
   t: TFunction;
   translateEntity: (entity: TranslatedName) => string;
 }) {
@@ -406,14 +408,18 @@ export const ValinnanTilaCell = memo(function ValinnanTilaCell({
           disabled={disabled}
         />
       )}
-      {mode === 'sijoittelu' && showHyvaksyPeruuntunut(hakemus) && (
-        <OphCheckbox
-          checked={hyvaksyPeruuntunut}
-          onChange={updateHyvaksyPeruuntunut}
-          label={t('sijoittelun-tulokset.hyvaksy-peruuntunut')}
-          disabled={disabled || !canHyvaksyPeruuntunut(hakemus)}
-        />
-      )}
+      {mode === 'sijoittelu' &&
+        showHyvaksyPeruuntunut(hakemus, peruuntuneenHyvaksyminenAllowed) && (
+          <OphCheckbox
+            checked={hyvaksyPeruuntunut}
+            onChange={updateHyvaksyPeruuntunut}
+            label={t('sijoittelun-tulokset.hyvaksy-peruuntunut')}
+            disabled={
+              disabled ||
+              !canHyvaksyPeruuntunut(hakemus, peruuntuneenHyvaksyminenAllowed)
+            }
+          />
+        )}
       {mode === 'valinta' && valinnanTila === ValinnanTila.HYLATTY && (
         <HylkayksenSyyFields
           hakemus={hakemus}
