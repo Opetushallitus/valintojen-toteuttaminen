@@ -9,7 +9,7 @@ import { ValintaryhmaHakukohteilla } from '@/lib/valintaperusteet/valintaperuste
 import { ValintaryhmaAccordion } from './valintaryhma-accordion';
 import { ValintaryhmaLink } from './valintaryhma-link';
 import { styled } from '@/lib/theme';
-import { hasRightToValintaryhmaOrAlaValintaryhma } from '../lib/valintaryhma-util';
+import { hasPermissionToValintaryhmaOrAlaValintaryhma } from '../lib/valintaryhma-util';
 
 const useSelectedValintaryhmaOid = () => useParams().valintaryhma;
 
@@ -72,7 +72,7 @@ const Content = ({
 
   const alaValintaryhmatUserHasPermission =
     valintaryhma.alaValintaryhmat.filter(
-      hasRightToValintaryhmaOrAlaValintaryhma,
+      hasPermissionToValintaryhmaOrAlaValintaryhma,
     );
 
   return alaValintaryhmatUserHasPermission.length > 0 ? (
@@ -140,7 +140,8 @@ export const ValintaryhmaList = ({
   const { results, ryhmat } = useValintaryhmaSearchResults(hakuOid);
 
   const topResults = results.filter(
-    (r) => r.parentOid === null && hasRightToValintaryhmaOrAlaValintaryhma(r),
+    (r) =>
+      r.parentOid === null && hasPermissionToValintaryhmaOrAlaValintaryhma(r),
   );
 
   const selectedValintaryhmaOid = useSelectedValintaryhmaOid();

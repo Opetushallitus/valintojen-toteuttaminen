@@ -207,7 +207,7 @@ function mapValintaryhma(
     userPermissions.hasOphCRUD ||
     (isDefined(ryhma.vastuuorganisaatio) &&
       userPermissions.writeOrganizations.includes(
-        ryhma.vastuuorganisaatio?.oid ?? 'EI_VASTUUORGANISATIOTA',
+        ryhma.vastuuorganisaatio?.oid ?? 'EI_VASTUUORGANISAATIOTA',
       ));
   return {
     oid: ryhma.oid,

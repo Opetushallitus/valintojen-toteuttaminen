@@ -29,11 +29,11 @@ export function findHakukohteetRecursively(
   );
 }
 
-export function hasRightToValintaryhmaOrAlaValintaryhma(
+export function hasPermissionToValintaryhmaOrAlaValintaryhma(
   ryhma: ValintaryhmaHakukohteilla,
 ): boolean {
   return (
     ryhma.userHasWriteAccess ||
-    ryhma.alaValintaryhmat.some(hasRightToValintaryhmaOrAlaValintaryhma)
+    ryhma.alaValintaryhmat.some(hasPermissionToValintaryhmaOrAlaValintaryhma)
   );
 }

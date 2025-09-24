@@ -12,7 +12,7 @@ import { getValintaryhmat } from '@/lib/valintaperusteet/valintaperusteet-servic
 import { ValintaryhmaHakukohteilla } from '@/lib/valintaperusteet/valintaperusteet-types';
 import { queryOptionsGetHakukohteet } from '@/lib/kouta/kouta-queries';
 import { useUserPermissions } from '@/hooks/useUserPermissions';
-import { hasRightToValintaryhmaOrAlaValintaryhma } from '../lib/valintaryhma-util';
+import { hasPermissionToValintaryhmaOrAlaValintaryhma } from '../lib/valintaryhma-util';
 
 export const useValintaryhmaSearchParams = () => {
   const [searchPhrase, setSearchPhrase] = useQueryState(
@@ -75,7 +75,7 @@ export const useValintaryhmaSearchResults = (hakuOid: string) => {
 
   const flattenedRyhmat = useMemo(() => {
     const flattened = ryhmat.muutRyhmat
-      .filter(hasRightToValintaryhmaOrAlaValintaryhma)
+      .filter(hasPermissionToValintaryhmaOrAlaValintaryhma)
       .flatMap(flattenValintaryhma);
     return filterRyhmatWithHakukohteet(flattened);
   }, [ryhmat]);
