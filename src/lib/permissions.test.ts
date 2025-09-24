@@ -50,6 +50,7 @@ const OPH_USER_PERMISSIONS = {
   writeOrganizations: [OPH_ORGANIZATION_OID],
   crudOrganizations: [OPH_ORGANIZATION_OID],
   hasOphCRUD: true,
+  sijoitteluPeruuntuneidenHyvaksyntaAllowed: false,
 };
 
 const EMPTY_PERMISSIONS: UserPermissions = {
@@ -57,6 +58,7 @@ const EMPTY_PERMISSIONS: UserPermissions = {
   writeOrganizations: [],
   readOrganizations: [],
   hasOphCRUD: false,
+  sijoitteluPeruuntuneidenHyvaksyntaAllowed: false,
 };
 
 describe('selectUserPermissions', () => {

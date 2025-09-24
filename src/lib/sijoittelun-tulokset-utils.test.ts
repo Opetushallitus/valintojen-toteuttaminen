@@ -30,6 +30,7 @@ const mockPermissions: UserPermissions = {
   readOrganizations: [],
   writeOrganizations: [],
   crudOrganizations: [],
+  sijoitteluPeruuntuneidenHyvaksyntaAllowed: false,
 };
 
 describe('isKirjeidenMuodostaminenAllowed', () => {
