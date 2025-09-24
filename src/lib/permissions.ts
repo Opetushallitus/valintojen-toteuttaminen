@@ -1,9 +1,7 @@
 import { OPH_ORGANIZATION_OID } from './constants';
 
-//TODO: check in OK-519 if service "VALINTOJENTOTEUTTAMINENKK" should still be considered
 export const VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY = 'VALINTOJENTOTEUTTAMINEN';
 
-//TODO: check also in OK-519 if role "TULOSTENTUONTI" is relevant
 export type Permission = 'CRUD' | 'READ' | 'READ_UPDATE';
 
 export type OrganizationPermissions = {

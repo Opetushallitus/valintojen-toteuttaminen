@@ -32,6 +32,7 @@
     "nimi": "TUTU",
     "ylavalintaryhma": null,
     "hakukohdeViitteet": [{"oid": "hakukohde-tutu"}],
-    "alavalintaryhmat": []
+    "alavalintaryhmat": [],
+    "vastuuorganisaatio": {"oid": "1.2.246.562.10.28054987509"}
   }]
 }]

@@ -11,9 +11,10 @@ import {
   Valintatapajono,
   ValintaryhmaHakukohteilla,
 } from './valintaperusteet-types';
-import { sort } from 'remeda';
+import { isDefined, sort } from 'remeda';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
 import { getConfigUrl } from '../configuration/configuration-utils';
+import { UserPermissions } from '../permissions';
 
 export const getValintaryhma = async (
   hakukohdeOid: string,
@@ -183,6 +184,7 @@ type ValintaryhmaHakukohteillaResponse = {
   nimi: string;
   hakukohdeViitteet: Array<{ oid: string }>;
   alavalintaryhmat: Array<ValintaryhmaHakukohteillaResponse>;
+  vastuuorganisaatio: { oid: string; parentOidPath: string } | null;
 };
 
 function sortRyhmatByName(
@@ -193,35 +195,96 @@ function sortRyhmatByName(
 
 function mapValintaryhma(
   ryhma: ValintaryhmaHakukohteillaResponse,
+  userPermissions: UserPermissions,
   parentOid: string | null = null,
 ): ValintaryhmaHakukohteilla {
   const sortedAlaryhmat = sortRyhmatByName(
-    ryhma.alavalintaryhmat.map((avr) => mapValintaryhma(avr, ryhma.oid)),
+    ryhma.alavalintaryhmat.map((avr) =>
+      mapValintaryhma(avr, userPermissions, ryhma.oid),
+    ),
   );
+  const userHasWriteAccess =
+    userPermissions.hasOphCRUD ||
+    (isDefined(ryhma.vastuuorganisaatio) &&
+      userPermissions.writeOrganizations.includes(
+        ryhma.vastuuorganisaatio?.oid ?? 'EI_VASTUUORGANISAATIOTA',
+      ));
   return {
     oid: ryhma.oid,
     nimi: ryhma.nimi,
     parentOid,
     hakukohteet: ryhma.hakukohdeViitteet.map((h) => h.oid),
+    userHasWriteAccess,
     alaValintaryhmat: sortedAlaryhmat,
   };
 }
 
+function hasHakukohde(
+  ryhma: ValintaryhmaHakukohteillaResponse,
+  hakukohteet: Array<string>,
+): boolean {
+  return (
+    ryhma.hakukohdeViitteet.some((hv) => hakukohteet.includes(hv.oid)) ||
+    ryhma.alavalintaryhmat.some((avr) => hasHakukohde(avr, hakukohteet))
+  );
+}
+
+function hasOrganizationPermissionToValintaryhma(
+  ryhma: ValintaryhmaHakukohteillaResponse,
+  organizations: Array<string>,
+): boolean {
+  return (
+    (isDefined(ryhma.vastuuorganisaatio) &&
+      organizations.includes(
+        ryhma.vastuuorganisaatio?.oid ?? 'EI_VASTUUORGANISAATIOTA',
+      )) ||
+    ryhma.alavalintaryhmat.some((avr) =>
+      hasOrganizationPermissionToValintaryhma(avr, organizations),
+    )
+  );
+}
+
 export const getValintaryhmat = async (
   hakuOid: string,
+  userPermissions: UserPermissions,
+  hakukohteet: Array<string>,
 ): Promise<{
   muutRyhmat: Array<ValintaryhmaHakukohteilla>;
   hakuRyhma: ValintaryhmaHakukohteilla | null;
 }> => {
   const configuration = getConfiguration();
   const response = await client.get<Array<ValintaryhmaHakukohteillaResponse>>(
-    `${configuration.routes.valintaperusteetService.valintaryhmatHakukohteilla}?hakuOid=${hakuOid}&hakukohteet=true`,
+    `${configuration.routes.valintaperusteetService.valintaryhmatHakukohteilla}/${hakuOid}`,
   );
-  const hakuRyhma = response.data.find((r) => r.hakuOid === hakuOid);
-  const muutRyhmat =
-    hakuRyhma?.alavalintaryhmat.map((vr) => mapValintaryhma(vr)) ?? [];
+  const hakuRyhma = response.data.find(
+    (r) =>
+      r.hakuOid === hakuOid &&
+      (userPermissions.hasOphCRUD ||
+        hasOrganizationPermissionToValintaryhma(
+          r,
+          userPermissions.writeOrganizations,
+        )),
+  );
+  const muutRyhmat = (
+    hakuRyhma?.alavalintaryhmat.map((vr) =>
+      mapValintaryhma(vr, userPermissions),
+    ) ?? []
+  ).concat(
+    response.data
+      .filter(
+        (r) =>
+          r.hakuOid == null &&
+          (userPermissions.hasOphCRUD ||
+            hasOrganizationPermissionToValintaryhma(
+              r,
+              userPermissions.writeOrganizations,
+            )) &&
+          hasHakukohde(r, hakukohteet),
+      )
+      .map((vr) => mapValintaryhma(vr, userPermissions)),
+  );
   return {
-    hakuRyhma: hakuRyhma ? mapValintaryhma(hakuRyhma) : null,
+    hakuRyhma: hakuRyhma ? mapValintaryhma(hakuRyhma, userPermissions) : null,
     muutRyhmat: sortRyhmatByName(muutRyhmat),
   };
 };

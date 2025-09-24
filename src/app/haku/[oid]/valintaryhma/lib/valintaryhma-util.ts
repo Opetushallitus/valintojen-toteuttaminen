@@ -28,3 +28,12 @@ export function findHakukohteetRecursively(
     ),
   );
 }
+
+export function hasPermissionToValintaryhmaOrAlaValintaryhma(
+  ryhma: ValintaryhmaHakukohteilla,
+): boolean {
+  return (
+    ryhma.userHasWriteAccess ||
+    ryhma.alaValintaryhmat.some(hasPermissionToValintaryhmaOrAlaValintaryhma)
+  );
+}

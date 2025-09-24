@@ -58,4 +58,5 @@ export type ValintaryhmaHakukohteilla = {
   hakukohteet: Array<string>;
   alaValintaryhmat: Array<ValintaryhmaHakukohteilla>;
   parentOid: string | null;
+  userHasWriteAccess: boolean;
 };
