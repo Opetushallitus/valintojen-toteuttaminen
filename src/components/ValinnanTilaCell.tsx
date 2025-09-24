@@ -22,6 +22,7 @@ import {
   TranslatedName,
 } from '@/lib/localization/localization-types';
 import {
+  canHyvaksyPeruuntunut,
   getReadableHakemuksenTila,
   showHyvaksyPeruuntunut,
 } from '@/lib/sijoittelun-tulokset-utils';
@@ -410,7 +411,7 @@ export const ValinnanTilaCell = memo(function ValinnanTilaCell({
           checked={hyvaksyPeruuntunut}
           onChange={updateHyvaksyPeruuntunut}
           label={t('sijoittelun-tulokset.hyvaksy-peruuntunut')}
-          disabled={disabled}
+          disabled={disabled || !canHyvaksyPeruuntunut(hakemus)}
         />
       )}
       {mode === 'valinta' && valinnanTila === ValinnanTila.HYLATTY && (

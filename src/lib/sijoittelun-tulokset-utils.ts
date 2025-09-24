@@ -56,7 +56,7 @@ export const showHyvaksyPeruuntunut = (h: SijoittelunTilaKentat): boolean =>
 
 export const canHyvaksyPeruuntunut = (h: SijoittelunTilaKentat): boolean =>
   //TODO tarkista APP_SIJOITTELU_PERUUNTUNEIDEN_HYVAKSYNTA_1.2.246.562.10.00000000001"
-  isTruthy(h.julkaistavissa);
+  !h.julkaistavissa;
 
 export const isValintaesitysJulkaistavissa = (
   haku: Haku,
