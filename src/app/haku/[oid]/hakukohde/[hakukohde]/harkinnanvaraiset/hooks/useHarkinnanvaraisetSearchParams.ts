@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useHarkinnanvaraisetPaginationQueryParams } from './useHarkinnanvaraisetPaginated';
 import { HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY } from '@/lib/constants';
 import { useDebounce } from '@/hooks/useDebounce';
-import { useHasChanged } from '@/hooks/useHasChanged';
+import { useHasChangedForQueryState } from '@/hooks/useHasChanged';
 
 export const useHarkinnanvaraisetSearchParams = () => {
   const [searchPhrase, setSearchPhrase] = useQueryState(
@@ -14,7 +14,7 @@ export const useHarkinnanvaraisetSearchParams = () => {
 
   const { setPage } = useHarkinnanvaraisetPaginationQueryParams();
 
-  const searchPhraseChanged = useHasChanged(searchPhrase);
+  const searchPhraseChanged = useHasChangedForQueryState(searchPhrase);
 
   const setSearchDebounce = useDebounce(
     setSearchPhrase,

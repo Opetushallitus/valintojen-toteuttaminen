@@ -25,6 +25,7 @@ const config = ts.config(
       'cdk/*',
       './.lintstagedrc.mjs',
       'coverage',
+      'next-env.d.ts',
     ],
   },
   ...pluginQuery.configs['flat/recommended'],

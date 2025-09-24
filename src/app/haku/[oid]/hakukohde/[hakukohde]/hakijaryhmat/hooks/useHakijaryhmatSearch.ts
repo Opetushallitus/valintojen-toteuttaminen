@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { parseAsInteger, useQueryState } from 'nuqs';
-import { useHasChanged } from '@/hooks/useHasChanged';
+import { useHasChangedForQueryState } from '@/hooks/useHasChanged';
 import {
   byProp,
   getSortParts,
@@ -59,13 +59,13 @@ export const useHakijaryhmatSearchParams = (hakijaryhmaOid?: string) => {
 
   const [sort, setSort] = useState<string>('');
 
-  const searchPhraseChanged = useHasChanged(searchPhrase);
+  const searchPhraseChanged = useHasChangedForQueryState(searchPhrase);
 
-  const kuuluuChanged = useHasChanged(kuuluuRyhmaan);
+  const kuuluuChanged = useHasChangedForQueryState(kuuluuRyhmaan);
 
-  const hyvaksyttyChanged = useHasChanged(hyvaksyttyRyhmasta);
+  const hyvaksyttyChanged = useHasChangedForQueryState(hyvaksyttyRyhmasta);
 
-  const tilaChanged = useHasChanged(sijoittelunTila);
+  const tilaChanged = useHasChangedForQueryState(sijoittelunTila);
 
   useEffect(() => {
     if (

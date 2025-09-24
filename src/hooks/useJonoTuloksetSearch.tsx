@@ -2,7 +2,7 @@
 import { useEffect, useMemo } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { parseAsInteger, useQueryState } from 'nuqs';
-import { useHasChanged } from '@/hooks/useHasChanged';
+import { useHasChangedForQueryState } from '@/hooks/useHasChanged';
 import { byProp, getSortParts } from '../components/table/table-utils';
 import {
   DEFAULT_NUQS_OPTIONS,
@@ -39,7 +39,7 @@ export const useJonoTuloksetSearchParams = (id?: string) => {
 
   const [sort, setSort] = useQueryState(`sort-${id}`, DEFAULT_NUQS_OPTIONS);
 
-  const searchPhraseChanged = useHasChanged(searchPhrase);
+  const searchPhraseChanged = useHasChangedForQueryState(searchPhrase);
 
   useEffect(() => {
     if (searchPhraseChanged) {

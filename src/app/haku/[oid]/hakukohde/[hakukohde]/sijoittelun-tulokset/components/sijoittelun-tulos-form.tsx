@@ -7,10 +7,10 @@ import { useSijoittelunTulosActorRef } from '../lib/sijoittelun-tulokset-state';
 import { SijoitteluajonValintatapajonoValintatiedoilla } from '@/lib/types/sijoittelu-types';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import { SijoittelunTulosTable } from './sijoittelun-tulos-table';
-import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBeforeNavigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { useIsDirtyValinnanTulos } from '@/lib/state/valinnanTuloksetMachineUtils';
 import { refetchLatestSijoitteluajonTuloksetWithValintaEsitys } from '@/lib/valinta-tulos-service/valinta-tulos-queries';
+import { useNavigationBlockerWithWindowEvents } from '@/hooks/useNavigationBlocker';
 
 type SijoittelunTuloksetFormParams = {
   valintatapajono: SijoitteluajonValintatapajonoValintatiedoilla;
@@ -51,7 +51,7 @@ export const SijoittelunTulosForm = ({
 
   const isDirty = useIsDirtyValinnanTulos(sijoittelunTulosActorRef);
 
-  useConfirmChangesBeforeNavigation(isDirty);
+  useNavigationBlockerWithWindowEvents(isDirty);
 
   return (
     <Box

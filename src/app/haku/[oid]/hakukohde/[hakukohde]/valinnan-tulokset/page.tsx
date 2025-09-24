@@ -18,7 +18,6 @@ import { ValinnanTuloksetActions } from '@/components/ValinnanTuloksetActions';
 import { PageSizeSelector } from '@/components/table/page-size-selector';
 import { useValinnanTuloksetSearchParams } from './hooks/useValinnanTuloksetSearch';
 import { useIsDirtyValinnanTulos } from '@/lib/state/valinnanTuloksetMachineUtils';
-import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBeforeNavigation';
 import { useHakemuksetValinnanTuloksilla } from './hooks/useHakemuksetValinnanTuloksilla';
 import { ValinnanTuloksetSpinnerModal } from './components/ValinnanTuloksetSpinnerModal';
 import { queryOptionsGetHakukohteenValinnanTulokset } from '@/lib/valinta-tulos-service/valinta-tulos-queries';
@@ -27,6 +26,7 @@ import {
   queryOptionsGetHaku,
 } from '@/lib/kouta/kouta-queries';
 import { queryOptionsGetHakemukset } from '@/lib/ataru/ataru-queries';
+import { useNavigationBlockerWithWindowEvents } from '@/hooks/useNavigationBlocker';
 
 const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const { t } = useTranslations();
@@ -64,7 +64,7 @@ const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   });
 
   const isDirty = useIsDirtyValinnanTulos(valinnanTulosActorRef);
-  useConfirmChangesBeforeNavigation(isDirty);
+  useNavigationBlockerWithWindowEvents(isDirty);
 
   const { pageSize, setPageSize } = useValinnanTuloksetSearchParams();
 

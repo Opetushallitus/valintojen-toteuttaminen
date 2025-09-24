@@ -5,13 +5,14 @@ import { OphTypography } from '@opetushallitus/oph-design-system';
 import { useHenkiloSearchResults } from '../hooks/useHenkiloSearch';
 import { FullClientSpinner } from '@/components/client-spinner';
 import { ErrorView } from '@/components/error-view';
-import Link, { LinkProps } from 'next/link';
+import { LinkProps } from 'next/link';
 import { useParams, useSearchParams } from 'next/navigation';
 import { getHenkiloTitle } from '@/lib/henkilo-utils';
 import {
   NAV_LIST_SELECTED_ITEM_CLASS,
   NavigationList,
 } from '@/components/navigation-list';
+import { InternalLink } from '@/components/internal-link';
 
 export const HenkiloLink = ({
   hakuOid,
@@ -29,7 +30,7 @@ export const HenkiloLink = ({
   const henkiloSearchParam = searchParams.get('henkilosearch');
 
   return (
-    <Link
+    <InternalLink
       {...props}
       href={{
         pathname: `/haku/${hakuOid}/henkilo/${hakemusOid}`,
@@ -37,7 +38,7 @@ export const HenkiloLink = ({
       }}
     >
       {children}
-    </Link>
+    </InternalLink>
   );
 };
 

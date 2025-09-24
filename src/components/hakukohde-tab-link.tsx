@@ -1,6 +1,7 @@
 import { useHakukohdeSearchUrlParams } from '@/hooks/useHakukohdeSearch';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
-import Link, { type LinkProps } from 'next/link';
+import { type LinkProps } from 'next/link';
+import { InternalLink } from './internal-link';
 
 export const HakukohdeTabLink = ({
   hakuOid,
@@ -16,9 +17,9 @@ export const HakukohdeTabLink = ({
     tabIndex?: number;
   }) => {
   const hakukohdeSearchParams = useHakukohdeSearchUrlParams();
-
+  
   return (
-    <Link
+    <InternalLink
       {...props}
       href={{
         pathname: `/haku/${hakuOid}/hakukohde/${hakukohdeOid}/${tabRoute}`,
@@ -27,6 +28,6 @@ export const HakukohdeTabLink = ({
       prefetch={false}
     >
       {children}
-    </Link>
+    </InternalLink>
   );
 };

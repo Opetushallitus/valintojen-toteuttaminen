@@ -15,11 +15,11 @@ import { useCallback, useEffect, useState } from 'react';
 import { isEmpty } from 'remeda';
 import { HarkinnanvaraisetActionBar } from './harkinnanvaraiset-action-bar';
 import { HarkinnanvaraisetTable } from './harkinnanvaraiset-table';
-import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBeforeNavigation';
 import { useSelection } from '@/hooks/useSelection';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 import { refetchHarkinnanvaraisetTilat } from '@/lib/valintalaskenta/valintalaskenta-queries';
 import { useHasOnlyHakukohdeReadPermission } from '@/hooks/useHasOnlyHakukohdeReadPermission';
+import { useNavigationBlockerWithWindowEvents } from '@/hooks/useNavigationBlocker';
 
 const useTallennaMutation = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const { addToast } = useToaster();
@@ -83,7 +83,7 @@ export const HarkinnanvaraisetForm = ({
 
   const isDirty = !isEmpty(harkinnanvaraisetTilat);
 
-  useConfirmChangesBeforeNavigation(isDirty);
+  useNavigationBlockerWithWindowEvents(isDirty);
 
   const { mutate, isPending } = useTallennaMutation({ hakuOid, hakukohdeOid });
 

@@ -8,12 +8,12 @@ import useToaster, { Toast } from '@/hooks/useToaster';
 import { PisteSyottoActions } from './pistesyotto-actions';
 import { HakukohteenPistetiedot } from '@/lib/types/laskenta-types';
 import { FormBox } from '@/components/form-box';
-import { useConfirmChangesBeforeNavigation } from '@/hooks/useConfirmChangesBeforeNavigation';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 import { useHaunParametrit } from '@/lib/valintalaskentakoostepalvelu/useHaunParametrit';
 import { useQueryClient } from '@tanstack/react-query';
 import { refetchPisteetForHakukohde } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-queries';
 import { usePistesyottoState } from '../lib/hakukohde-pistesyotto-state';
+import { useNavigationBlockerWithWindowEvents } from '@/hooks/useNavigationBlocker';
 
 export const PisteSyottoForm = ({
   hakuOid,
@@ -52,7 +52,7 @@ export const PisteSyottoForm = ({
 
   const { data: haunParametrit } = useHaunParametrit({ hakuOid });
 
-  useConfirmChangesBeforeNavigation(isDirty);
+  useNavigationBlockerWithWindowEvents(isDirty);
 
   const {
     page,
