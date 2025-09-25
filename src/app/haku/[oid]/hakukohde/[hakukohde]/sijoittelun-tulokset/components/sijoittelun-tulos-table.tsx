@@ -31,6 +31,7 @@ import {
   ValinnanTulosState,
 } from '@/lib/state/valinnanTuloksetMachineTypes';
 import { useHasOnlyHakukohdeReadPermission } from '@/hooks/useHasOnlyHakukohdeReadPermission';
+import { useUserPermissions } from '@/hooks/useUserPermissions';
 
 export const makeEmptyCountColumn = <T extends Record<string, unknown>>({
   title,
@@ -74,6 +75,7 @@ const useColumns = ({
   const { send } = actorRef;
 
   const { t, translateEntity } = useTranslations();
+  const userPermissions = useUserPermissions();
 
   const disabled = !state.matches(ValinnanTulosState.IDLE);
 
@@ -119,6 +121,9 @@ const useColumns = ({
             updateForm={updateForm}
             disabled={readonly || disabled}
             mode="sijoittelu"
+            peruuntuneenHyvaksyminenAllowed={
+              userPermissions.sijoitteluPeruuntuneidenHyvaksyntaAllowed
+            }
             t={t}
             translateEntity={translateEntity}
           />
@@ -193,6 +198,7 @@ const useColumns = ({
     hasNegativePisteet,
     translateEntity,
     readonly,
+    userPermissions.sijoitteluPeruuntuneidenHyvaksyntaAllowed,
   ]);
 };
 

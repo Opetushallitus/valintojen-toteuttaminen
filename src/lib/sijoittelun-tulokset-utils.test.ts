@@ -1,13 +1,16 @@
 import { describe, expect, test } from 'vitest';
 import {
+  canHyvaksyPeruuntunut,
   isKirjeidenMuodostaminenAllowed,
   isSendVastaanottoPostiVisible,
   isValintaesitysJulkaistavissa,
+  showHyvaksyPeruuntunut,
 } from './sijoittelun-tulokset-utils';
 import { Haku, Tila } from '@/lib/kouta/kouta-types';
 import { UserPermissions } from '@/lib/permissions';
 import { add, sub } from 'date-fns';
 import { HaunAsetukset } from './ohjausparametrit/ohjausparametrit-types';
+import { ValinnanTila } from './types/sijoittelu-types';
 
 const mockHaku: Haku = {
   oid: 'mock-oid',
@@ -30,6 +33,7 @@ const mockPermissions: UserPermissions = {
   readOrganizations: [],
   writeOrganizations: [],
   crudOrganizations: [],
+  sijoitteluPeruuntuneidenHyvaksyntaAllowed: false,
 };
 
 describe('isKirjeidenMuodostaminenAllowed', () => {
@@ -184,6 +188,124 @@ describe('isValintaesitysJulkaistavissa', () => {
 
       expect(
         isValintaesitysJulkaistavissa(haku, permissions, haunAsetukset),
+      ).toBe(result);
+    },
+  );
+});
+
+describe('showHyvaksyPeruuntunut', () => {
+  test.each([
+    {
+      peruuntuneenHyvaksyminenAllowed: true,
+      valinnanTila: ValinnanTila.PERUUNTUNUT,
+      hyvaksyPeruuntunut: false,
+      result: true,
+    },
+    {
+      peruuntuneenHyvaksyminenAllowed: true,
+      valinnanTila: ValinnanTila.HYVAKSYTTY,
+      hyvaksyPeruuntunut: false,
+      result: false,
+    },
+    {
+      peruuntuneenHyvaksyminenAllowed: true,
+      valinnanTila: ValinnanTila.HYVAKSYTTY,
+      hyvaksyPeruuntunut: true,
+      result: true,
+    },
+    {
+      peruuntuneenHyvaksyminenAllowed: true,
+      valinnanTila: ValinnanTila.PERUNUT,
+      hyvaksyPeruuntunut: true,
+      result: false,
+    },
+    {
+      peruuntuneenHyvaksyminenAllowed: false,
+      valinnanTila: ValinnanTila.PERUUNTUNUT,
+      hyvaksyPeruuntunut: false,
+      result: false,
+    },
+    {
+      peruuntuneenHyvaksyminenAllowed: false,
+      valinnanTila: ValinnanTila.PERUUNTUNUT,
+      hyvaksyPeruuntunut: true,
+      result: true,
+    },
+    {
+      peruuntuneenHyvaksyminenAllowed: false,
+      valinnanTila: ValinnanTila.HYVAKSYTTY,
+      hyvaksyPeruuntunut: true,
+      result: true,
+    },
+    {
+      peruuntuneenHyvaksyminenAllowed: false,
+      valinnanTila: ValinnanTila.VARASIJALTA_HYVAKSYTTY,
+      hyvaksyPeruuntunut: true,
+      result: true,
+    },
+    {
+      peruuntuneenHyvaksyminenAllowed: false,
+      valinnanTila: ValinnanTila.HYLATTY,
+      hyvaksyPeruuntunut: true,
+      result: false,
+    },
+  ] as Array<{
+    peruuntuneenHyvaksyminenAllowed: boolean;
+    valinnanTila?: ValinnanTila;
+    hyvaksyPeruuntunut?: boolean;
+    result: boolean;
+  }>)(
+    'peruuntuneenHyvaksyminenAllowed = $peruuntuneenHyvaksyminenAllowed, valinnanTila = $valinnanTila, hyvaksyPeruuntunut = $hyvaksyPeruuntunut, result = $result',
+    async ({
+      peruuntuneenHyvaksyminenAllowed,
+      valinnanTila,
+      hyvaksyPeruuntunut,
+      result,
+    }) => {
+      expect(
+        showHyvaksyPeruuntunut(
+          { valinnanTila, hyvaksyPeruuntunut },
+          peruuntuneenHyvaksyminenAllowed,
+        ),
+      ).toBe(result);
+    },
+  );
+});
+
+describe('canHyvaksyPeruuntunut', () => {
+  test.each([
+    {
+      peruuntuneenHyvaksyminenAllowed: true,
+      julkaistavissa: false,
+      result: true,
+    },
+    {
+      peruuntuneenHyvaksyminenAllowed: true,
+      julkaistavissa: true,
+      result: false,
+    },
+    {
+      peruuntuneenHyvaksyminenAllowed: false,
+      julkaistavissa: true,
+      result: false,
+    },
+    {
+      peruuntuneenHyvaksyminenAllowed: false,
+      julkaistavissa: false,
+      result: false,
+    },
+  ] as Array<{
+    peruuntuneenHyvaksyminenAllowed: boolean;
+    julkaistavissa?: boolean;
+    result: boolean;
+  }>)(
+    'peruuntuneenHyvaksyminenAllowed = $peruuntuneenHyvaksyminenAllowed, valinnanTila = $valinnanTila, julkaistavissa = $julkaistavissa, result = $result',
+    async ({ peruuntuneenHyvaksyminenAllowed, julkaistavissa, result }) => {
+      expect(
+        canHyvaksyPeruuntunut(
+          { julkaistavissa },
+          peruuntuneenHyvaksyminenAllowed,
+        ),
       ).toBe(result);
     },
   );

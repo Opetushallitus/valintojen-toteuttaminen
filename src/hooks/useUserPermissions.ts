@@ -1,10 +1,8 @@
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import { client } from '@/lib/http-client';
 import {
-  VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY,
   Permission,
   selectUserPermissions,
-  UserPermissionsByService,
   UserPermissions,
   checkHasPermission,
   EMPTY_USER_PERMISSIONS,
@@ -18,7 +16,7 @@ import {
 } from '@/lib/organisaatio-service';
 import { useMemo } from 'react';
 
-const getUserPermissions = async (): Promise<UserPermissionsByService> => {
+const getUserPermissions = async (): Promise<UserPermissions> => {
   const configuration = getConfiguration();
   const response = await client.get<{
     organisaatiot: Array<{
@@ -29,12 +27,7 @@ const getUserPermissions = async (): Promise<UserPermissionsByService> => {
 
   const userPermissions = selectUserPermissions(response.data);
 
-  if (
-    isEmpty(
-      userPermissions[VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY]
-        ?.readOrganizations ?? [],
-    )
-  ) {
+  if (isEmpty(userPermissions?.readOrganizations ?? [])) {
     throw new PermissionError();
   }
 
@@ -91,6 +84,8 @@ export const useHierarchyUserPermissions = (
         organizationHierarchy,
         userPermissions.readOrganizations,
       ),
+      sijoitteluPeruuntuneidenHyvaksyntaAllowed:
+        userPermissions.sijoitteluPeruuntuneidenHyvaksyntaAllowed,
     }),
     [userPermissions, organizationHierarchy],
   );
@@ -105,9 +100,7 @@ export const userPermissionsQueryOptions = {
 export const useQueryUserPermissions = () =>
   useQuery({ ...userPermissionsQueryOptions, throwOnError: false });
 
-export const useUserPermissions = (
-  serviceKey: string = VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY,
-) => {
+export const useUserPermissions = () => {
   const { data } = useSuspenseQuery(userPermissionsQueryOptions);
-  return data[serviceKey] ?? EMPTY_USER_PERMISSIONS;
+  return data ?? EMPTY_USER_PERMISSIONS;
 };

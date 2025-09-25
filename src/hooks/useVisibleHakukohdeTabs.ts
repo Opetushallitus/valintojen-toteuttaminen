@@ -7,7 +7,6 @@ import {
 } from './useUserPermissions';
 import { checkIsValintalaskentaUsed } from '@/lib/valintaperusteet/valintaperusteet-utils';
 import { getVisibleHakukohdeTabs } from '@/lib/hakukohde-tab-utils';
-import { VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY } from '@/lib/permissions';
 import {
   queryOptionsGetHakukohde,
   queryOptionsGetHaku,
@@ -37,9 +36,7 @@ export const useVisibleHakukohdeTabs = ({
 
   const usesValintalaskenta = checkIsValintalaskentaUsed(valinnanvaiheet);
 
-  const hierarchyPermissions = useHierarchyUserPermissions(
-    permissions[VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY],
-  );
+  const hierarchyPermissions = useHierarchyUserPermissions(permissions);
 
   return getVisibleHakukohdeTabs({
     haku,
