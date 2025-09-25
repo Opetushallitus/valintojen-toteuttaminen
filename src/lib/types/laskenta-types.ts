@@ -76,6 +76,16 @@ export type SeurantaTiedot = {
   jonosija: number | null;
 };
 
+//TODO check if other attributes from endpoint like jonosija are required
+export type SeurantaTiedotLaajennettu = SeurantaTiedot & {
+  uuid: string;
+  userOid: string;
+  haunnimi: string;
+  nimi: string;
+  luotu: number;
+  valintakoelaskenta: boolean;
+};
+
 export type StartedLaskentaInfo = {
   startedNewLaskenta: boolean;
   loadingUrl: string;

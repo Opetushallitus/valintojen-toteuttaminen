@@ -8,7 +8,7 @@ import { useTranslations } from '@/lib/localization/useTranslations';
 import { useSelector } from '@xstate/react';
 import { SeurantaTiedot } from '@/lib/types/laskenta-types';
 
-const LaskentaProgressBar = ({
+export const LaskentaProgressBar = ({
   seurantaTiedot,
 }: {
   seurantaTiedot: SeurantaTiedot | null;

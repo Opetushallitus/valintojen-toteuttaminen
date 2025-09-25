@@ -56,6 +56,7 @@ export async function buildConfiguration() {
         lasketutHakukohteet: `${domain}/valintalaskenta-laskenta-service/resources/haku/{hakuOid}/lasketut-hakukohteet`,
         hakukohdeHakijaryhmatUrl: `${domain}/valintalaskenta-laskenta-service/resources/hakukohde/{hakukohdeOid}/hakijaryhma`,
         seurantaUrl: `${domain}/valintalaskenta-laskenta-service/resources/seuranta/yhteenveto/`,
+        seurantaKaikilleUrl: `${domain}/valintalaskenta-laskenta-service/resources/seuranta/yhteenvetokaikillelaskennoille`,
         valmisSijoiteltavaksiUrl: `${domain}/valintalaskenta-laskenta-service/resources/valintatapajono/{valintatapajonoOid}/valmissijoiteltavaksi?status={status}`,
         getHarkinnanvaraisetTilatUrl: `${domain}/valintalaskenta-laskenta-service/resources/harkinnanvarainenhyvaksynta/haku/{hakuOid}/hakukohde/{hakukohdeOid}`,
         setHarkinnanvaraisetTilatUrl: `${domain}/valintalaskenta-laskenta-service/resources/harkinnanvarainenhyvaksynta`,

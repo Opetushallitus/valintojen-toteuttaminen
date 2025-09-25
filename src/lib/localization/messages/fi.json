@@ -715,5 +715,10 @@
       "lahetetty": "lähetetty",
       "lahetyksessa-virhe": "lähetyksessä tapahtui virhe"
     }
+  },
+  "seuranta": {
+    "otsikko": "Valintojen toteuttaminen \u2013 Seuranta",
+    "laskennat-otsikko": "Valintalaskennat",
+    "hakukohteita": "Hakukohteita yhteensä: {total}"
   }
 }
