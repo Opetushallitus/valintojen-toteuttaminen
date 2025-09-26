@@ -5,6 +5,7 @@ import { Box } from '@mui/material';
 import { ophColors, styled } from '@/lib/theme';
 import { SeurantaItemStatus } from './seuranta-item-status';
 import { SeurantaItemDetails } from './seuranta-item-details';
+import { PersonDetails } from '@/lib/oppijanumerorekisteri/onr-types';
 
 const StyledItemContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(3),
@@ -20,12 +21,17 @@ const StyledItemContainer = styled(Box)(({ theme }) => ({
 
 export default function SeurantaItem({
   seurantaTiedot,
+  personDetails,
 }: {
   seurantaTiedot: SeurantaTiedotLaajennettu;
+  personDetails?: PersonDetails;
 }) {
   return (
     <StyledItemContainer>
-      <SeurantaItemStatus seurantaTiedot={seurantaTiedot} />
+      <SeurantaItemStatus
+        seurantaTiedot={seurantaTiedot}
+        personDetails={personDetails}
+      />
       <SeurantaItemDetails seurantaTiedot={seurantaTiedot} />
     </StyledItemContainer>
   );

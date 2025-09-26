@@ -19,6 +19,7 @@ export async function buildConfiguration() {
         sessionCookie: process.env.SESSION_COOKIE || 'JSESSIONID',
         kayttoikeusUrl: `${domain}/kayttooikeus-service/henkilo/current/omattiedot`,
         asiointiKieliUrl: `${domain}/oppijanumerorekisteri-service/henkilo/current/asiointiKieli`,
+        usersDetails: `${domain}/oppijanumerorekisteri-service/henkilo/henkiloPerustietosByHenkiloOidList`,
         lokalisointiUrl: `${domain}/lokalisointi/tolgee`,
         ohjausparametritUrl: `${domain}/ohjausparametrit-service/api/v1/rest/parametri/{hakuOid}`,
         organisaatioHierarkiaUrl: `${domain}/organisaatio-service/api/hierarkia/hae`,

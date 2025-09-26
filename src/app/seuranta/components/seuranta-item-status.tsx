@@ -6,16 +6,23 @@ import { Box, Typography } from '@mui/material';
 import { LaskentaProgressBar } from '@/components/ValintalaskentaStatus';
 import { toFormattedDateTimeString } from '@/lib/localization/translation-utils';
 import { timeFromNow } from '@/lib/time-utils';
-import { AccessTime } from '@mui/icons-material';
+import { AccessTime, Person } from '@mui/icons-material';
+import { PersonDetails } from '@/lib/oppijanumerorekisteri/onr-types';
+import { getHenkiloInitials } from '@/lib/henkilo-utils';
+import { ExternalLink } from '@/components/external-link';
+
+const buildLinkToPerson = (personDetails: PersonDetails): string =>
+  `henkilo-ui/virkailija/${personDetails.oidHenkilo}`;
 
 export const SeurantaItemStatus = ({
   seurantaTiedot,
+  personDetails,
 }: {
   seurantaTiedot: SeurantaTiedotLaajennettu;
+  personDetails?: PersonDetails;
 }) => {
   const { t } = useTranslations();
 
-  //TODO kuka teki
   return (
     <Box
       sx={{
@@ -44,6 +51,15 @@ export const SeurantaItemStatus = ({
             timeFromNow: timeFromNow(seurantaTiedot.luotu),
           })}
         </Typography>
+        <Person />
+        {personDetails && (
+          <ExternalLink
+            noIcon={true}
+            title={`${personDetails.etunimet} ${personDetails.sukunimi}`}
+            name={getHenkiloInitials(personDetails)}
+            href={buildLinkToPerson(personDetails)}
+          />
+        )}
       </Box>
       <LaskentaProgressBar seurantaTiedot={seurantaTiedot} />
     </Box>

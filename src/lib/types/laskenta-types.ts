@@ -79,7 +79,7 @@ export type SeurantaTiedot = {
 //TODO check if other attributes from endpoint like jonosija are required
 export type SeurantaTiedotLaajennettu = SeurantaTiedot & {
   uuid: string;
-  userOid: string;
+  userOID: string;
   haunnimi: string;
   nimi: string;
   luotu: number;
