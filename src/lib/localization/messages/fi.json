@@ -651,6 +651,12 @@
       "delete-success": "Valintalaskennan muokkauksen poistaminen onnistui",
       "ei-muokkausta": "Valintajonon järjestyskriteerejä ei ole muokattu",
       "tallenna-n-kriteeria": "{count, plural, one { 1 järjestyskriteeri} other { {count} järjestyskriteeriä}}"
+    },
+    "tila": {
+      "VALMIS": "Valmis",
+      "MENEILLAAN": "Käynnissä",
+      "ALOITTAMATTA": "Jonossa",
+      "PERUUTETTU": "Keskeytynyt"
     }
   },
   "yhteisvalinnan-hallinta": {
@@ -719,6 +725,7 @@
   "seuranta": {
     "otsikko": "Valintojen toteuttaminen \u2013 Seuranta",
     "laskennat-otsikko": "Valintalaskennat",
-    "hakukohteita": "Hakukohteita yhteensä: {total}"
+    "hakukohteita": "Hakukohteita yhteensä: {total}",
+    "valmistunut": "{timeFromNow} sitten"
   }
 }
