@@ -84,6 +84,7 @@ export type SeurantaTiedotLaajennettu = SeurantaTiedot & {
   nimi: string;
   luotu: number;
   valintakoelaskenta: boolean;
+  valinnanvaihe?: string | null;
 };
 
 export type StartedLaskentaInfo = {

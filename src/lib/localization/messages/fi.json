@@ -726,6 +726,9 @@
     "otsikko": "Valintojen toteuttaminen \u2013 Seuranta",
     "laskennat-otsikko": "Valintalaskennat",
     "hakukohteita": "Hakukohteita yhteensä: {total}",
-    "valmistunut": "{timeFromNow} sitten"
+    "valmistunut": "{timeFromNow} sitten",
+    "valinnanvaihe-kaikki": "Valinnanvaihe: Kaikki",
+    "valinnanvaihe-osa": "Valinnanvaihe: {valinnanvaihe}",
+    "valintakoelaskenta": "Valintakoelaskenta: "
   }
 }
