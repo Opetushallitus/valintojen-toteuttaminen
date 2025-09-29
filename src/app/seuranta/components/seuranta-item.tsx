@@ -6,16 +6,20 @@ import { ophColors, styled } from '@/lib/theme';
 import { SeurantaItemStatus } from './seuranta-item-status';
 import { SeurantaItemDetails } from './seuranta-item-details';
 import { PersonDetails } from '@/lib/oppijanumerorekisteri/onr-types';
+import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
+import { FullClientSpinner } from '@/components/client-spinner';
+import { SeurantaItemError } from './seuranta-item-error';
 
 const StyledItemContainer = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(3),
   maxWidth: '100%',
   borderColor: ophColors.grey300,
   borderWidth: '1px',
   borderStyle: 'solid',
   display: 'grid',
-  gridTemplateColumns: '[status] 35% 25px [details] 60%',
-  flexDirection: 'row',
+  gridTemplateColumns: '20% 20% 20% 20% 20%',
+  gridTemplateAreas: `"status status details details details"
+                      "error error error error error"`,
+  rowGap: theme.spacing(2),
   marginBottom: theme.spacing(1),
 }));
 
@@ -33,6 +37,11 @@ export default function SeurantaItem({
         personDetails={personDetails}
       />
       <SeurantaItemDetails seurantaTiedot={seurantaTiedot} />
+      {seurantaTiedot.tila === 'PERUUTETTU' && (
+        <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
+          <SeurantaItemError seurantaTiedot={seurantaTiedot} />
+        </QuerySuspenseBoundary>
+      )}
     </StyledItemContainer>
   );
 }

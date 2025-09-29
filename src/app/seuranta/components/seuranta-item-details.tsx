@@ -14,7 +14,7 @@ const StyledDetailsContainer = styled(Box)(({ theme }) => ({
   gridArea: 'details',
   borderLeft: '2px solid',
   borderColor: ophColors.grey300,
-  paddingLeft: theme.spacing(2),
+  padding: theme.spacing(2),
 }));
 
 export const SeurantaItemDetails = ({
@@ -23,7 +23,7 @@ export const SeurantaItemDetails = ({
   seurantaTiedot: SeurantaTiedotLaajennettu;
 }) => {
   const { t } = useTranslations();
-  //TODO: näytä valintakoelaskenta ja valinnanvaihe
+
   return (
     <StyledDetailsContainer>
       <Typography variant="body1">{seurantaTiedot.haunnimi}</Typography>

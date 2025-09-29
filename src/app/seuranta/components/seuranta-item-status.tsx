@@ -10,9 +10,19 @@ import { AccessTime, Person } from '@mui/icons-material';
 import { PersonDetails } from '@/lib/oppijanumerorekisteri/onr-types';
 import { getHenkiloInitials } from '@/lib/henkilo-utils';
 import { ExternalLink } from '@/components/external-link';
+import { styled } from '@/lib/theme';
 
 const buildLinkToPerson = (personDetails: PersonDetails): string =>
   `henkilo-ui/virkailija/${personDetails.oidHenkilo}`;
+
+const StyledStatusContainer = styled(Box)(({ theme }) => ({
+  flexGrow: 2,
+  display: 'flex',
+  flexDirection: 'column',
+  rowGap: '5px',
+  gridArea: 'status',
+  padding: theme.spacing(2),
+}));
 
 export const SeurantaItemStatus = ({
   seurantaTiedot,
@@ -24,15 +34,7 @@ export const SeurantaItemStatus = ({
   const { t } = useTranslations();
 
   return (
-    <Box
-      sx={{
-        flexGrow: 2,
-        display: 'flex',
-        flexDirection: 'column',
-        rowGap: '5px',
-        gridArea: 'status',
-      }}
-    >
+    <StyledStatusContainer>
       <Typography variant="h5">
         {t(`valintalaskenta.tila.${seurantaTiedot.tila}`)}{' '}
         {toFormattedDateTimeString(seurantaTiedot.luotu)}
@@ -61,7 +63,9 @@ export const SeurantaItemStatus = ({
           />
         )}
       </Box>
-      <LaskentaProgressBar seurantaTiedot={seurantaTiedot} />
-    </Box>
+      {seurantaTiedot.tila !== 'PERUUTETTU' && (
+        <LaskentaProgressBar seurantaTiedot={seurantaTiedot} />
+      )}
+    </StyledStatusContainer>
   );
 };
