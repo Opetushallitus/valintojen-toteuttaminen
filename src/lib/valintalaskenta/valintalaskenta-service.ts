@@ -255,7 +255,7 @@ export const getLaskennanSeurantaTiedotKaikille = async (): Promise<
   const response = await client.get<Array<SeurantaTiedotLaajennettu>>(
     configuration.routes.valintalaskentaLaskentaService.seurantaKaikilleUrl,
   );
-  return response.data;
+  return response.data.toSorted((a, b) => b.luotu - a.luotu);
 };
 
 type MuutaSijoitteluaResponse = {
