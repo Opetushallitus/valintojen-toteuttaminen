@@ -46,16 +46,23 @@ export const isIlmoittautuminenPossible = (h: SijoittelunTilaKentat): boolean =>
 export const showHyvaksyPeruuntunut = (
   h: SijoittelunTilaKentat,
   peruuntuneenHyvaksyminenAllowed: boolean,
-): boolean =>
-  (peruuntuneenHyvaksyminenAllowed &&
-    h.valinnanTila === ValinnanTila.PERUUNTUNUT) ||
-  (isTruthy(h.hyvaksyPeruuntunut) &&
+): boolean => {
+  const hyvaksyminenAllowedAndTilaPeruuntunut =
+    peruuntuneenHyvaksyminenAllowed &&
+    h.valinnanTila === ValinnanTila.PERUUNTUNUT;
+  const hyvaksyPeruuntunutIsSetWithAppropriateTila =
+    isTruthy(h.hyvaksyPeruuntunut) &&
     isDefined(h.valinnanTila) &&
     [
       ValinnanTila.HYVAKSYTTY,
       ValinnanTila.PERUUNTUNUT,
       ValinnanTila.VARASIJALTA_HYVAKSYTTY,
-    ].includes(h.valinnanTila));
+    ].includes(h.valinnanTila);
+  return (
+    hyvaksyminenAllowedAndTilaPeruuntunut ||
+    hyvaksyPeruuntunutIsSetWithAppropriateTila
+  );
+};
 
 export const canHyvaksyPeruuntunut = (
   h: SijoittelunTilaKentat,
