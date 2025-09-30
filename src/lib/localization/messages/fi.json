@@ -730,6 +730,8 @@
     "valmistunut": "{timeFromNow} sitten",
     "valinnanvaihe-kaikki": "Valinnanvaihe: Kaikki",
     "valinnanvaihe-osa": "Valinnanvaihe: {valinnanvaihe}",
-    "valintakoelaskenta": "Valintakoelaskenta: "
+    "valintakoelaskenta": "Valintakoelaskenta: ",
+    "kopioitu-leikepoydalle": "Kopioitu hakukohdetunnisteet leikepöydälle",
+    "kopioi-leikepoydalle": "Kopioi hakukohdetunnisteet leikepöydälle"
   }
 }
