@@ -30,7 +30,7 @@ export default function SeurantaItem({
   personDetails?: PersonDetails;
 }) {
   return (
-    <StyledItemContainer>
+    <StyledItemContainer className="seuranta-item">
       <SeurantaItemStatus
         seurantaTiedot={seurantaTiedot}
         personDetails={personDetails}

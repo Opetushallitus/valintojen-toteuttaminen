@@ -4,12 +4,19 @@ import { TRANSITION_DURATION } from '@/lib/constants';
 
 const PROGRESSBAR_HEIGHT = '42px';
 
-export const ProgressBar = ({ value }: { value: number }) => {
+export const ProgressBar = ({
+  value,
+  ariaLabel,
+}: {
+  value: number;
+  ariaLabel: string;
+}) => {
   const valuePercent = `${Math.round(value)}%`;
   const widthPercent = `${value}%`;
   return (
     <Box
       role="progressbar"
+      aria-label={ariaLabel}
       aria-valuenow={value}
       aria-valuetext={valuePercent}
       aria-valuemin={0}

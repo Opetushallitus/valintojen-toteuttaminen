@@ -13,13 +13,28 @@ export const LaskentaProgressBar = ({
 }: {
   seurantaTiedot: SeurantaTiedot | null;
 }) => {
+  const { t } = useTranslations();
   const laskentaPercent = seurantaTiedot
     ? (100 *
         (seurantaTiedot?.hakukohteitaValmiina +
           seurantaTiedot?.hakukohteitaKeskeytetty)) /
       seurantaTiedot?.hakukohteitaYhteensa
     : 0;
-  return <ProgressBar value={laskentaPercent} />;
+  const laskentaReady =
+    seurantaTiedot &&
+    seurantaTiedot?.hakukohteitaValmiina +
+      seurantaTiedot?.hakukohteitaKeskeytetty ===
+      seurantaTiedot?.hakukohteitaYhteensa;
+  return (
+    <ProgressBar
+      ariaLabel={t(
+        laskentaReady
+          ? 'valinnanhallinta.laskenta-valmis'
+          : 'valinnanhallinta.lasketaan',
+      )}
+      value={laskentaPercent}
+    />
+  );
 };
 
 export function ValintalaskentaStatus({

@@ -35,7 +35,7 @@ export const SeurantaItemStatus = ({
 
   return (
     <StyledStatusContainer>
-      <Typography variant="h5">
+      <Typography variant="body1" sx={{ fontWeight: 'bolder' }}>
         {t(`valintalaskenta.tila.${seurantaTiedot.tila}`)}{' '}
         {toFormattedDateTimeString(seurantaTiedot.luotu)}
       </Typography>
