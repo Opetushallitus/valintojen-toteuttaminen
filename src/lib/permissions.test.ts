@@ -2,12 +2,13 @@ import { describe, expect, test } from 'vitest';
 import {
   checkHasPermission,
   PermissionsResponseData,
+  PERUUNTUNEIDEN_HYVAKSYNTA_PERMISSION_KEY,
   selectUserPermissions,
+  SIJOITTELU_SERVICE_KEY,
   UserPermissions,
   VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY,
 } from './permissions';
 
-const MUU_PALVELU_SERVICE_KEY = 'muu-palvelu';
 const OPH_ORGANIZATION_OID = '1.2.246.562.10.00000000001';
 
 const permissionsResponse: PermissionsResponseData = {
@@ -16,6 +17,10 @@ const permissionsResponse: PermissionsResponseData = {
       organisaatioOid: 'crud',
       kayttooikeudet: [
         { palvelu: VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY, oikeus: 'CRUD' },
+        {
+          palvelu: SIJOITTELU_SERVICE_KEY,
+          oikeus: PERUUNTUNEIDEN_HYVAKSYNTA_PERMISSION_KEY,
+        },
       ],
     },
     {
@@ -33,23 +38,17 @@ const permissionsResponse: PermissionsResponseData = {
         { palvelu: VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY, oikeus: 'READ' },
       ],
     },
-    {
-      organisaatioOid: 'read_muu',
-      kayttooikeudet: [{ palvelu: MUU_PALVELU_SERVICE_KEY, oikeus: 'READ' }],
-    },
   ],
 };
 
-const DEFAULT_USER_PERMISSIONS =
-  selectUserPermissions(permissionsResponse)[
-    VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY
-  ]!;
+const DEFAULT_USER_PERMISSIONS = selectUserPermissions(permissionsResponse)!;
 
 const OPH_USER_PERMISSIONS = {
   readOrganizations: [OPH_ORGANIZATION_OID],
   writeOrganizations: [OPH_ORGANIZATION_OID],
   crudOrganizations: [OPH_ORGANIZATION_OID],
   hasOphCRUD: true,
+  sijoitteluPeruuntuneidenHyvaksyntaAllowed: true,
 };
 
 const EMPTY_PERMISSIONS: UserPermissions = {
@@ -57,6 +56,7 @@ const EMPTY_PERMISSIONS: UserPermissions = {
   writeOrganizations: [],
   readOrganizations: [],
   hasOphCRUD: false,
+  sijoitteluPeruuntuneidenHyvaksyntaAllowed: false,
 };
 
 describe('selectUserPermissions', () => {
@@ -68,17 +68,37 @@ describe('selectUserPermissions', () => {
     expect(DEFAULT_USER_PERMISSIONS.readOrganizations).toEqual(
       expect.arrayContaining(['crud', 'readwrite', 'read']),
     );
+    expect(
+      DEFAULT_USER_PERMISSIONS.sijoitteluPeruuntuneidenHyvaksyntaAllowed,
+    ).toBeFalsy();
   });
 
-  test('Muu palvelu permission', () => {
-    const valintaperusteetUserPermissions =
-      selectUserPermissions(permissionsResponse)[MUU_PALVELU_SERVICE_KEY]!;
+  test('does not have permission to sijoitteluPeruuntuneidenHyvaksynta if not OPH_ORG', () => {
+    expect(
+      DEFAULT_USER_PERMISSIONS.sijoitteluPeruuntuneidenHyvaksyntaAllowed,
+    ).toBeFalsy();
+  });
 
-    expect(valintaperusteetUserPermissions.crudOrganizations).toEqual([]);
-    expect(valintaperusteetUserPermissions.writeOrganizations).toEqual([]);
-    expect(valintaperusteetUserPermissions.readOrganizations).toEqual(
-      expect.arrayContaining(['read_muu']),
+  test('has permission to sijoitteluPeruuntuneidenHyvaksynta when OPH_ORG', () => {
+    const response = {
+      organisaatiot: [
+        {
+          organisaatioOid: OPH_ORGANIZATION_OID,
+          kayttooikeudet: [
+            { palvelu: VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY, oikeus: 'CRUD' },
+            {
+              palvelu: SIJOITTELU_SERVICE_KEY,
+              oikeus: PERUUNTUNEIDEN_HYVAKSYNTA_PERMISSION_KEY,
+            },
+          ],
+        },
+      ],
+    };
+    const permissions = selectUserPermissions(
+      response as PermissionsResponseData,
     );
+    expect(permissions.sijoitteluPeruuntuneidenHyvaksyntaAllowed).toBeTruthy();
+    expect(permissions.hasOphCRUD).toBeTruthy();
   });
 });
 

@@ -255,6 +255,7 @@ test('Valintaperusteet: getValintaryhmat', async () => {
       readOrganizations: [],
       writeOrganizations: [],
       crudOrganizations: [],
+      sijoitteluPeruuntuneidenHyvaksyntaAllowed: false,
     },
     ['hk-1', 'hk-2', 'hk-3'],
   );

@@ -35,6 +35,7 @@ const SIJOITTELUN_TULOS_EDITABLE_FIELDS: Array<ValinnanTulosEditableFieldNames> 
     'ehdollisenHyvaksymisenEhtoSV',
     'ehdollisenHyvaksymisenEhtoEN',
     'hyvaksyttyVarasijalta',
+    'hyvaksyPeruuntunut',
     'maksunTila',
   ] as const;
 

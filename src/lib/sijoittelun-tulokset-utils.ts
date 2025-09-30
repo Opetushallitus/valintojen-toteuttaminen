@@ -10,7 +10,7 @@ import {
   VastaanottoTila,
 } from '@/lib/types/sijoittelu-types';
 import { isAfter } from 'date-fns';
-import { isNonNullish } from 'remeda';
+import { isDefined, isNonNullish, isTruthy } from 'remeda';
 import { toFinnishDate } from './time-utils';
 import { UserPermissions } from './permissions';
 import { TFunction } from './localization/useTranslations';
@@ -22,7 +22,7 @@ export const VASTAANOTTOTILAT_JOISSA_VOI_ILMOITTAUTUA = [
 
 type SijoittelunTilaKentat = Pick<
   SijoittelunHakemusValintatiedoilla,
-  'julkaistavissa' | 'valinnanTila' | 'vastaanottoTila'
+  'julkaistavissa' | 'valinnanTila' | 'vastaanottoTila' | 'hyvaksyPeruuntunut'
 >;
 
 const isSijoittelunTilaVastaanotettavissa = (hakemuksenTila?: ValinnanTila) =>
@@ -42,6 +42,32 @@ export const isIlmoittautuminenPossible = (h: SijoittelunTilaKentat): boolean =>
   VASTAANOTTOTILAT_JOISSA_VOI_ILMOITTAUTUA.includes(
     h.vastaanottoTila as VastaanottoTila,
   );
+
+export const showHyvaksyPeruuntunut = (
+  h: SijoittelunTilaKentat,
+  peruuntuneenHyvaksyminenAllowed: boolean,
+): boolean => {
+  const hyvaksyminenAllowedAndTilaPeruuntunut =
+    peruuntuneenHyvaksyminenAllowed &&
+    h.valinnanTila === ValinnanTila.PERUUNTUNUT;
+  const hyvaksyPeruuntunutIsSetWithAppropriateTila =
+    isTruthy(h.hyvaksyPeruuntunut) &&
+    isDefined(h.valinnanTila) &&
+    [
+      ValinnanTila.HYVAKSYTTY,
+      ValinnanTila.PERUUNTUNUT,
+      ValinnanTila.VARASIJALTA_HYVAKSYTTY,
+    ].includes(h.valinnanTila);
+  return (
+    hyvaksyminenAllowedAndTilaPeruuntunut ||
+    hyvaksyPeruuntunutIsSetWithAppropriateTila
+  );
+};
+
+export const canHyvaksyPeruuntunut = (
+  h: SijoittelunTilaKentat,
+  peruuntuneenHyvaksyminenAllowed: boolean,
+): boolean => peruuntuneenHyvaksyminenAllowed && !h.julkaistavissa;
 
 export const isValintaesitysJulkaistavissa = (
   haku: Haku,

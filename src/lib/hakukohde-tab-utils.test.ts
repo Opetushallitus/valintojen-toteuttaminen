@@ -42,6 +42,7 @@ const OPH_PERMISSIONS: UserPermissions = {
   readOrganizations: [OPH_ORGANIZATION_OID],
   writeOrganizations: [OPH_ORGANIZATION_OID],
   crudOrganizations: [OPH_ORGANIZATION_OID],
+  sijoitteluPeruuntuneidenHyvaksyntaAllowed: false,
 };
 
 const CRUD_PERMISSIONS: UserPermissions = {
@@ -49,6 +50,7 @@ const CRUD_PERMISSIONS: UserPermissions = {
   readOrganizations: [HAKUKOHDE_BASE.tarjoajaOid],
   writeOrganizations: [HAKUKOHDE_BASE.tarjoajaOid],
   crudOrganizations: [HAKUKOHDE_BASE.tarjoajaOid],
+  sijoitteluPeruuntuneidenHyvaksyntaAllowed: false,
 };
 
 const WRITE_PERMISSIONS: UserPermissions = {
@@ -56,6 +58,7 @@ const WRITE_PERMISSIONS: UserPermissions = {
   readOrganizations: [HAKUKOHDE_BASE.tarjoajaOid],
   writeOrganizations: [HAKUKOHDE_BASE.tarjoajaOid],
   crudOrganizations: [],
+  sijoitteluPeruuntuneidenHyvaksyntaAllowed: false,
 };
 
 const READ_PERMISSIONS: UserPermissions = {
@@ -63,6 +66,7 @@ const READ_PERMISSIONS: UserPermissions = {
   readOrganizations: [HAKUKOHDE_BASE.tarjoajaOid],
   writeOrganizations: [],
   crudOrganizations: [],
+  sijoitteluPeruuntuneidenHyvaksyntaAllowed: false,
 };
 
 describe('getVisibleHakukohdeTabs', () => {

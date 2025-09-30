@@ -10,6 +10,7 @@ const NO_PERMISSION: UserPermissions = {
   writeOrganizations: [],
   crudOrganizations: [],
   hasOphCRUD: false,
+  sijoitteluPeruuntuneidenHyvaksyntaAllowed: false,
 } as UserPermissions;
 
 const READ_PERMISSION: UserPermissions = {
@@ -17,6 +18,7 @@ const READ_PERMISSION: UserPermissions = {
   writeOrganizations: [],
   crudOrganizations: [],
   hasOphCRUD: false,
+  sijoitteluPeruuntuneidenHyvaksyntaAllowed: false,
 } as UserPermissions;
 
 const CRUD_PERMISSION: UserPermissions = {
@@ -24,6 +26,7 @@ const CRUD_PERMISSION: UserPermissions = {
   writeOrganizations: [TARJOAJA_OID],
   crudOrganizations: [TARJOAJA_OID],
   hasOphCRUD: false,
+  sijoitteluPeruuntuneidenHyvaksyntaAllowed: false,
 } as UserPermissions;
 
 const OPH_PERMISSION: UserPermissions = {
@@ -31,6 +34,7 @@ const OPH_PERMISSION: UserPermissions = {
   writeOrganizations: [OPH_ORGANIZATION_OID],
   crudOrganizations: [OPH_ORGANIZATION_OID],
   hasOphCRUD: true,
+  sijoitteluPeruuntuneidenHyvaksyntaAllowed: false,
 } as UserPermissions;
 
 describe('getVisibleHakuTabs', () => {

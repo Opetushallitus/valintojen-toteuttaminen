@@ -21,7 +21,11 @@ import {
   Language,
   TranslatedName,
 } from '@/lib/localization/localization-types';
-import { getReadableHakemuksenTila } from '@/lib/sijoittelun-tulokset-utils';
+import {
+  canHyvaksyPeruuntunut,
+  getReadableHakemuksenTila,
+  showHyvaksyPeruuntunut,
+} from '@/lib/sijoittelun-tulokset-utils';
 import { entries, map, pipe } from 'remeda';
 import { styled } from '@/lib/theme';
 import { useCheckPermission } from '@/hooks/useUserPermissions';
@@ -324,6 +328,7 @@ export const ValinnanTilaCell = memo(function ValinnanTilaCell({
   disabled,
   updateForm,
   mode,
+  peruuntuneenHyvaksyminenAllowed = false,
   t,
   translateEntity,
 }: {
@@ -333,12 +338,14 @@ export const ValinnanTilaCell = memo(function ValinnanTilaCell({
   disabled: boolean;
   updateForm: (params: ValinnanTulosChangeParams) => void;
   mode: 'valinta' | 'sijoittelu';
+  peruuntuneenHyvaksyminenAllowed?: boolean;
   t: TFunction;
   translateEntity: (entity: TranslatedName) => string;
 }) {
   const {
     hakemusOid,
     hyvaksyttyVarasijalta,
+    hyvaksyPeruuntunut,
     siirtynytToisestaValintatapajonosta,
     valinnanTila,
     vastaanottoTila,
@@ -348,6 +355,13 @@ export const ValinnanTilaCell = memo(function ValinnanTilaCell({
     updateForm({
       hakemusOid,
       hyvaksyttyVarasijalta: !hyvaksyttyVarasijalta,
+    });
+  };
+
+  const updateHyvaksyPeruuntunut = () => {
+    updateForm({
+      hakemusOid,
+      hyvaksyPeruuntunut: !hyvaksyPeruuntunut,
     });
   };
 
@@ -394,6 +408,18 @@ export const ValinnanTilaCell = memo(function ValinnanTilaCell({
           disabled={disabled}
         />
       )}
+      {mode === 'sijoittelu' &&
+        showHyvaksyPeruuntunut(hakemus, peruuntuneenHyvaksyminenAllowed) && (
+          <OphCheckbox
+            checked={hyvaksyPeruuntunut}
+            onChange={updateHyvaksyPeruuntunut}
+            label={t('sijoittelun-tulokset.hyvaksy-peruuntunut')}
+            disabled={
+              disabled ||
+              !canHyvaksyPeruuntunut(hakemus, peruuntuneenHyvaksyminenAllowed)
+            }
+          />
+        )}
       {mode === 'valinta' && valinnanTila === ValinnanTila.HYLATTY && (
         <HylkayksenSyyFields
           hakemus={hakemus}

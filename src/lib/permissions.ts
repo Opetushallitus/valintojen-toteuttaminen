@@ -2,7 +2,16 @@ import { OPH_ORGANIZATION_OID } from './constants';
 
 export const VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY = 'VALINTOJENTOTEUTTAMINEN';
 
-export type Permission = 'CRUD' | 'READ' | 'READ_UPDATE';
+export const SIJOITTELU_SERVICE_KEY = 'SIJOITTELU';
+
+export const PERUUNTUNEIDEN_HYVAKSYNTA_PERMISSION_KEY =
+  'PERUUNTUNEIDEN_HYVAKSYNTA';
+
+export type Permission =
+  | 'CRUD'
+  | 'READ'
+  | 'READ_UPDATE'
+  | 'PERUUNTUNEIDEN_HYVAKSYNTA';
 
 export type OrganizationPermissions = {
   organizationOid: string;
@@ -15,13 +24,7 @@ export type UserPermissions = {
   writeOrganizations: Array<string>;
   crudOrganizations: Array<string>;
   hasOphCRUD: boolean;
-};
-
-export type UserPermissionsByService = {
-  // Sovellus ei käynnisty, jos käyttäjällä ei ole valintojen toteuttamisen käyttöoikeuksia,
-  // eli valintojen toteuttamisen käyttöoikeudet löytyy aina.
-  [VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY]: UserPermissions;
-  [key: string]: UserPermissions;
+  sijoitteluPeruuntuneidenHyvaksyntaAllowed: boolean;
 };
 
 export type PermissionsResponseData = {
@@ -33,7 +36,7 @@ export type PermissionsResponseData = {
 
 export const selectUserPermissions = (
   permissionsData: PermissionsResponseData,
-): UserPermissionsByService => {
+): UserPermissions => {
   const organizations = permissionsData.organisaatiot.flatMap((o) => {
     return o.kayttooikeudet.map((p) => {
       return {
@@ -44,42 +47,50 @@ export const selectUserPermissions = (
     });
   });
 
-  return organizations.reduce((result, org) => {
-    const { organisaatioOid, serviceKey, permission } = org;
-    if (!result[serviceKey]) {
-      result[serviceKey] = {
+  const canHyvaksyPeruuntunut =
+    organizations.find(
+      (o) =>
+        o.permission === PERUUNTUNEIDEN_HYVAKSYNTA_PERMISSION_KEY &&
+        o.serviceKey === SIJOITTELU_SERVICE_KEY,
+    )?.organisaatioOid === OPH_ORGANIZATION_OID;
+
+  return organizations
+    .filter((o) => o.serviceKey === VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY)
+    .reduce(
+      (result, org) => {
+        const { organisaatioOid, permission } = org;
+        if (
+          permission === 'CRUD' &&
+          !result.crudOrganizations.includes(organisaatioOid)
+        ) {
+          result.crudOrganizations.push(organisaatioOid);
+          if (organisaatioOid === OPH_ORGANIZATION_OID) {
+            result.hasOphCRUD = true;
+          }
+        }
+        if (
+          ['CRUD', 'READ_UPDATE'].includes(permission) &&
+          !result.writeOrganizations.includes(organisaatioOid)
+        ) {
+          result.writeOrganizations.push(organisaatioOid);
+        }
+        if (
+          ['CRUD', 'READ_UPDATE', 'READ'].includes(permission) &&
+          !result.readOrganizations.includes(organisaatioOid)
+        ) {
+          result.readOrganizations.push(organisaatioOid);
+        }
+
+        return result;
+      },
+      {
         readOrganizations: [],
         writeOrganizations: [],
         crudOrganizations: [],
         hasOphCRUD: false,
-      };
-    }
-    const serviceResult = result[serviceKey];
-
-    if (
-      permission === 'CRUD' &&
-      !serviceResult.crudOrganizations.includes(organisaatioOid)
-    ) {
-      serviceResult.crudOrganizations.push(organisaatioOid);
-      if (organisaatioOid === OPH_ORGANIZATION_OID) {
-        serviceResult.hasOphCRUD = true;
-      }
-    }
-    if (
-      ['CRUD', 'READ_UPDATE'].includes(permission) &&
-      !serviceResult.writeOrganizations.includes(organisaatioOid)
-    ) {
-      serviceResult.writeOrganizations.push(organisaatioOid);
-    }
-    if (
-      ['CRUD', 'READ_UPDATE', 'READ'].includes(permission) &&
-      !serviceResult.readOrganizations.includes(organisaatioOid)
-    ) {
-      serviceResult.readOrganizations.push(organisaatioOid);
-    }
-
-    return result;
-  }, {} as UserPermissionsByService);
+        sijoitteluPeruuntuneidenHyvaksyntaAllowed: canHyvaksyPeruuntunut,
+      } as UserPermissions,
+    );
 };
 
 const checkHasSomeOrganizationPermission = (
@@ -147,4 +158,5 @@ export const EMPTY_USER_PERMISSIONS: UserPermissions = {
   writeOrganizations: [],
   crudOrganizations: [],
   hasOphCRUD: false,
+  sijoitteluPeruuntuneidenHyvaksyntaAllowed: false,
 };
