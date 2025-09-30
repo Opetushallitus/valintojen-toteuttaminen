@@ -20,7 +20,6 @@ const StyledItemContainer = styled(Box)(({ theme }) => ({
   gridTemplateAreas: `"status status details details details"
                       "error error error error error"`,
   rowGap: theme.spacing(2),
-  marginBottom: theme.spacing(1),
 }));
 
 export default function SeurantaItem({

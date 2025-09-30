@@ -724,6 +724,7 @@
   },
   "seuranta": {
     "otsikko": "Valintojen toteuttaminen \u2013 Seuranta",
+    "laskennan-tila": "Laskennan tila",
     "laskennat-otsikko": "Valintalaskennat",
     "hakukohteita": "Hakukohteita yhteensä: {total}",
     "valmistunut": "{timeFromNow} sitten",
