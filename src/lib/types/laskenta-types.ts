@@ -101,7 +101,7 @@ export type LaskentaSummary = {
   tila: 'PERUUTETTU' | 'VALMIS';
   hakukohteet: Array<{
     hakukohdeOid: string;
-    tila: 'TEKEMATTA' | 'VALMIS' | 'VIRHE';
+    tila: 'TEKEMATTA' | 'VALMIS' | 'VIRHE' | 'KESKEYTETTY';
     ilmoitukset: Array<{ otsikko: string; tyyppi: string }>;
   }>;
   ilmoitus?: {

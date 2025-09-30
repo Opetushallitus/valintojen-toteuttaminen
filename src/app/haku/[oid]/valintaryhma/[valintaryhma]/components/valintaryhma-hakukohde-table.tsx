@@ -31,7 +31,7 @@ const HakukohdeError = ({
 }: {
   errorSummary?: {
     hakukohdeOid: string;
-    tila: 'TEKEMATTA' | 'VALMIS' | 'VIRHE';
+    tila: 'TEKEMATTA' | 'VALMIS' | 'VIRHE' | 'KESKEYTETTY';
     ilmoitukset: Array<{
       otsikko: string;
       tyyppi: string;
