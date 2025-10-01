@@ -733,6 +733,13 @@
     "valinnanvaihe-osa": "Valinnanvaihe: {valinnanvaihe}",
     "valintakoelaskenta": "Valintakoelaskenta: ",
     "kopioitu-leikepoydalle": "Kopioitu hakukohdetunnisteet leikepöydälle",
-    "kopioi-leikepoydalle": "Kopioi hakukohdetunnisteet leikepöydälle"
+    "kopioi-leikepoydalle": "Kopioi hakukohdetunnisteet leikepöydälle",
+    "info": {
+      "otsikko": "Laskentoja yhteensä {total}",
+      "valmiina": "Valmiina {total}",
+      "keskeytynyt": "Keskeytynyt {total}",
+      "kaynnissa": "Käynnissä {total}",
+      "jonossa": "Jonossa {total}"
+    }
   }
 }

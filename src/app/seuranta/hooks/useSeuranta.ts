@@ -52,5 +52,6 @@ export const useSeurantaResults = () => {
   return {
     results,
     usersMap,
+    totalResults: seurantatiedot,
   };
 };
