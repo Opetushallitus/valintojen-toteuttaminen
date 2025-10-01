@@ -21,6 +21,7 @@ const StyledMessageContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   rowGap: theme.spacing(1),
+  alignItems: 'flex-start',
 }));
 
 const StyledMessage = styled(Box)(({ theme }) => ({
@@ -34,8 +35,29 @@ const ErrorsChildren = ({
 }: {
   errorMessages: Array<ErrorMessage>;
 }) => {
+  const { t } = useTranslations();
+
+  const { addToast } = useToaster();
+
+  function copyToClipBoard(messages: Array<ErrorMessage>) {
+    const hakukohdeOids = unique(messages.map((e) => e.hakukohdeOid));
+    navigator.clipboard.writeText(hakukohdeOids.join('\n'));
+    addToast({
+      key: 'hakukohdeoids-copied-to-clipboard',
+      message: t('seuranta.kopioitu-leikepoydalle'),
+      type: 'success',
+    });
+  }
+
   return (
     <StyledMessageContainer>
+      <OphButton
+        sx={{ marginBottom: '5px', flexBasis: 'auto', paddingLeft: 0 }}
+        onClick={() => copyToClipBoard(errorMessages)}
+        variant="text"
+      >
+        {t('seuranta.kopioi-leikepoydalle')}
+      </OphButton>
       {errorMessages.map((errorMessage) => (
         <StyledMessage key={errorMessage.key}>
           <Typography variant="body1">{errorMessage.hakukohdeOid}</Typography>
@@ -52,7 +74,6 @@ export const SeurantaItemError = ({
   seurantaTiedot: SeurantaTiedotLaajennettu;
 }) => {
   const { t } = useTranslations();
-  const { addToast } = useToaster();
 
   const { data: summary } = useSuspenseQuery({
     queryKey: ['seuranta-virhe', seurantaTiedot.uuid],
@@ -72,16 +93,6 @@ export const SeurantaItemError = ({
     (m) => m.hakukohdeOid + m.message,
   );
 
-  function copyToClipBoard(errorMessages: Array<ErrorMessage>) {
-    const hakukohdeOids = unique(errorMessages.map((e) => e.hakukohdeOid));
-    navigator.clipboard.writeText(hakukohdeOids.join('\n'));
-    addToast({
-      key: 'hakukohdeoids-copied-to-clipboard',
-      message: t('seuranta.kopioitu-leikepoydalle'),
-      type: 'success',
-    });
-  }
-
   return (
     <Box sx={{ gridArea: 'error', backgroundColor: 'rgb(250, 238, 234)' }}>
       <ErrorAlert
@@ -89,12 +100,6 @@ export const SeurantaItemError = ({
         messageChildren={<ErrorsChildren errorMessages={summaryErrors} />}
         hasAccordion={summaryErrors?.length > 0}
       />
-      <OphButton
-        sx={{ marginBottom: '5px' }}
-        onClick={() => copyToClipBoard(summaryErrors)}
-      >
-        {t('seuranta.kopioi-leikepoydalle')}
-      </OphButton>
     </Box>
   );
 };

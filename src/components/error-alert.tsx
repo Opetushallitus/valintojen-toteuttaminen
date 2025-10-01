@@ -71,7 +71,6 @@ export const ErrorAlert = ({
           <Accordion sx={{ backgroundColor: 'transparent' }}>
             <StyledAccordionSummary
               expandIcon={<ArrowRight className="custom-expand-icon" />}
-              sx={{ flexDirection: 'row-reverse', padding: 0 }}
               onClick={() => setErrorVisible(!errorVisible)}
             >
               <Typography>
@@ -86,7 +85,10 @@ export const ErrorAlert = ({
             </AccordionDetails>
           </Accordion>
         ) : (
-          <ErrorContent message={message} />
+          <>
+            {messageChildren}
+            {!messageChildren && <ErrorContent message={message} />}
+          </>
         )}
       </Box>
     </Alert>
