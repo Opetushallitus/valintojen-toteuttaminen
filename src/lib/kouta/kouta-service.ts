@@ -11,7 +11,6 @@ import { addProp, pick, pipe } from 'remeda';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
 import { getConfigUrl } from '@/lib/configuration/configuration-utils';
 import { NDASH } from '@/lib/constants';
-import { HaunAsetukset } from '../ohjausparametrit/ohjausparametrit-types';
 
 type HakuResponseData = {
   oid: string;
@@ -60,14 +59,6 @@ export async function getHaut(userPermissions: UserPermissions) {
 
 export const isYhteishaku = (haku: Haku): boolean =>
   haku.hakutapaKoodiUri.startsWith('hakutapa_01');
-
-export const usesErillissijoittelu = ({
-  haku,
-  haunAsetukset,
-}: {
-  haku: Haku;
-  haunAsetukset: HaunAsetukset;
-}): boolean => !(isYhteishaku(haku) || haunAsetukset.sijoittelu);
 
 export function isToisenAsteenYhteisHaku(haku: Haku): boolean {
   return (

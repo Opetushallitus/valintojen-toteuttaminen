@@ -21,7 +21,6 @@ import {
 } from '@/lib/types/laskenta-types';
 import { isNumber } from 'remeda';
 import { useCallback, useMemo } from 'react';
-import { usesErillissijoittelu } from '@/lib/kouta/kouta-service';
 import { useActorRef, useSelector } from '@xstate/react';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { useTranslations } from '@/lib/localization/useTranslations';
@@ -455,10 +454,7 @@ const laskentaStateParamsToMachineParams = ({
       Array.isArray(hakukohteet) || hakukohteet == null
         ? hakukohteet
         : [hakukohteet],
-    erillissijoittelu: usesErillissijoittelu({
-      haku,
-      haunAsetukset,
-    }),
+    erillissijoittelu: !haunAsetukset.sijoittelu,
     valinnanvaiheNumber,
     ...(valintakoelaskenta
       ? {
