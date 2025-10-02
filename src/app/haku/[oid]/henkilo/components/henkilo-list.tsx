@@ -12,7 +12,7 @@ import {
   NAV_LIST_SELECTED_ITEM_CLASS,
   NavigationList,
 } from '@/components/navigation-list';
-import { InternalLink } from '@/components/internal-link';
+import { BlockerLink } from '@/components/blocker-link';
 
 export const HenkiloLink = ({
   hakuOid,
@@ -30,7 +30,7 @@ export const HenkiloLink = ({
   const henkiloSearchParam = searchParams.get('henkilosearch');
 
   return (
-    <InternalLink
+    <BlockerLink
       {...props}
       href={{
         pathname: `/haku/${hakuOid}/henkilo/${hakemusOid}`,
@@ -38,7 +38,7 @@ export const HenkiloLink = ({
       }}
     >
       {children}
-    </InternalLink>
+    </BlockerLink>
   );
 };
 

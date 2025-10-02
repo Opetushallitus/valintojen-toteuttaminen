@@ -5,10 +5,11 @@ import { showModal } from './modals/global-modal';
 import { ConfirmationGlobalModal } from './modals/confirmation-global-modal';
 import { useRouter } from 'next/navigation';
 
-export const InternalLink = ({
+export const BlockerLink = ({
   children,
+  useBlank = false,
   ...props
-}: LinkProps & { children: React.ReactNode }) => {
+}: LinkProps & { children: React.ReactNode; useBlank?: boolean }) => {
   const { isBlocked, unblock } = useNavigationBlocker();
   const router = useRouter();
 
@@ -35,8 +36,20 @@ export const InternalLink = ({
           });
         }
       }}
+      target={useBlank ? '_blank' : '_self'}
     >
       {children}
     </Link>
+  );
+};
+
+export const BlockerLinkWithBlank = ({
+  children,
+  ...props
+}: LinkProps & { children: React.ReactNode }) => {
+  return (
+    <BlockerLink {...props} useBlank={true}>
+      {children}
+    </BlockerLink>
   );
 };
