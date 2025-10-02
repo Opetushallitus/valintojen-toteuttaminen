@@ -96,7 +96,7 @@ const createLaskentaURL = async ({
         : '',
   );
   if (
-    valinnanvaiheNumero &&
+    isDefined(valinnanvaiheNumero) &&
     valinnanvaiheTyyppi !== ValinnanvaiheTyyppi.VALINTAKOE
   ) {
     laskentaUrl.searchParams.set('valinnanvaihe', '' + valinnanvaiheNumero);
