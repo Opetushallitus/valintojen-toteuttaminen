@@ -40,6 +40,7 @@ describe('Laskenta state', async () => {
         opetuskielet: new Set(['fi']),
       },
     ],
+    erillissijoittelu: false,
   };
 
   let actor = createActor(createLaskentaMachine(vi.fn()));

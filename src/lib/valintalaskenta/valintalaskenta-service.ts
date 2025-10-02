@@ -63,6 +63,7 @@ const createLaskentaURL = async ({
   laskentaTyyppi,
   haku,
   hakukohteet,
+  erillissijoittelu,
   valinnanvaiheTyyppi,
   valinnanvaiheNumero,
   valintaryhma,
@@ -70,6 +71,7 @@ const createLaskentaURL = async ({
   laskentaTyyppi: LaskentaTyyppi;
   haku: Haku;
   hakukohteet: Array<Hakukohde> | null;
+  erillissijoittelu: boolean;
   valinnanvaiheTyyppi?: ValinnanvaiheTyyppi;
   valinnanvaiheNumero?: number;
   valintaryhma?: ValintaryhmaHakukohteilla;
@@ -83,6 +85,7 @@ const createLaskentaURL = async ({
   const laskentaUrl = new URL(
     `${configuration.routes.valintalaskentaLaskentaService.valintalaskentakerrallaUrl}/haku/${haku.oid}/tyyppi/${laskentaTyyppi}${urlWhitelistPart}`,
   );
+  laskentaUrl.searchParams.set('erillishaku', '' + erillissijoittelu);
   laskentaUrl.searchParams.set('haunnimi', translateName(haku.nimi));
   laskentaUrl.searchParams.set(
     'nimi',
@@ -93,7 +96,7 @@ const createLaskentaURL = async ({
         : '',
   );
   if (
-    valinnanvaiheNumero &&
+    isDefined(valinnanvaiheNumero) &&
     valinnanvaiheTyyppi !== ValinnanvaiheTyyppi.VALINTAKOE
   ) {
     laskentaUrl.searchParams.set('valinnanvaihe', '' + valinnanvaiheNumero);
@@ -121,12 +124,14 @@ export const kaynnistaLaskenta = async ({
   hakukohteet,
   valintaryhma,
   valinnanvaiheTyyppi,
+  erillissijoittelu,
   valinnanvaiheNumero,
 }: {
   haku: Haku;
   hakukohteet: Array<Hakukohde> | null;
   valintaryhma?: ValintaryhmaHakukohteilla;
   valinnanvaiheTyyppi?: ValinnanvaiheTyyppi;
+  erillissijoittelu: boolean;
   valinnanvaiheNumero?: number;
 }): Promise<StartedLaskentaInfo> => {
   let laskentaTyyppi: LaskentaTyyppi = 'HAKU';
@@ -141,6 +146,7 @@ export const kaynnistaLaskenta = async ({
     haku,
     hakukohteet,
     valinnanvaiheTyyppi,
+    erillissijoittelu,
     valinnanvaiheNumero,
     valintaryhma,
   });
