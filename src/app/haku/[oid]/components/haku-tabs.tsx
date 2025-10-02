@@ -18,6 +18,7 @@ import React, { useEffect } from 'react';
 import { getVisibleHakuTabs } from '../lib/getVisibleHakuTabs';
 import { checkHasPermission } from '@/lib/permissions';
 import { queryOptionsGetHakukohteet } from '@/lib/kouta/kouta-queries';
+import { BlockerLink } from '@/components/blocker-link';
 
 const TAB_BUTTON_HEIGHT = '48px';
 
@@ -47,6 +48,7 @@ const TabButton = ({
 
   return (
     <StyledButton
+      LinkComponent={BlockerLink}
       variant={activeTabName === tabName ? 'contained' : 'text'}
       href={`/haku/${hakuOid}/${tabName}`}
     >
