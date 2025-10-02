@@ -21,6 +21,7 @@ import {
 } from '@/lib/types/laskenta-types';
 import { isNumber } from 'remeda';
 import { useCallback, useMemo } from 'react';
+import { usesErillissijoittelu } from '@/lib/kouta/kouta-service';
 import { useActorRef, useSelector } from '@xstate/react';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { useTranslations } from '@/lib/localization/useTranslations';
@@ -32,6 +33,7 @@ export type LaskentaParams = {
   hakukohteet: Array<Hakukohde> | null;
   valintaryhma?: ValintaryhmaHakukohteilla;
   valinnanvaiheTyyppi?: ValinnanvaiheTyyppi;
+  erillissijoittelu: boolean;
   valinnanvaiheNumber?: number;
   valinnanvaiheNimi?: string;
 };
@@ -157,6 +159,7 @@ export const createLaskentaMachine = (addToast: (toast: Toast) => void) => {
               hakukohteet: input.hakukohteet,
               valintaryhma: input.valintaryhma,
               valinnanvaiheTyyppi: input.valinnanvaiheTyyppi,
+              erillissijoittelu: input.erillissijoittelu,
               valinnanvaiheNumero: input.valinnanvaiheNumber,
             })
           : rejectWithError('Tried to start laskenta without params');
@@ -438,6 +441,7 @@ type LaskentaStartParams = {
 
 const laskentaStateParamsToMachineParams = ({
   haku,
+  haunAsetukset,
   hakukohteet,
   vaihe,
   valinnanvaiheNumber,
@@ -451,6 +455,10 @@ const laskentaStateParamsToMachineParams = ({
       Array.isArray(hakukohteet) || hakukohteet == null
         ? hakukohteet
         : [hakukohteet],
+    erillissijoittelu: usesErillissijoittelu({
+      haku,
+      haunAsetukset,
+    }),
     valinnanvaiheNumber,
     ...(valintakoelaskenta
       ? {
