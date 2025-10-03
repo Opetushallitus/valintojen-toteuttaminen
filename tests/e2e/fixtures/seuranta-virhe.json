@@ -1,0 +1,37 @@
+{
+  "uuid": "25bede6f-fd89-4bd2-a870-5e9846e6279c",
+  "userOID": "1.2.246.562.24.83767019241",
+  "haunnimi": "Korkeakoulujen yhteishaku syksy 2025",
+  "nimi": "Hämeen ammattikorkeakoulu, Riihimäki: Insinööri (AMK), konetekniikka, monimuotototeutus, syksyn yhteishaku",
+  "hakuOid": "1.2.246.562.29.00000000000000069585",
+  "luotu": 1759212652570,
+  "tila": "PERUUTETTU",
+  "tyyppi": "HAKUKOHDE",
+  "ilmoitus": null,
+  "hakukohteet": [
+    {
+      "hakukohdeOid": "1.2.246.562.20.00000000000000071798",
+      "organisaatioOid": "1.2.246.562.10.77463907491",
+      "tila": "KESKEYTETTY",
+      "ilmoitukset": [
+        {
+          "tyyppi": "VIRHE",
+          "otsikko": "Error calling url http://alb.testiopintopolku.fi/valintalaskentakoostepalvelu/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000069585/hakukohde/1.2.246.562.20.00000000000000071798/lahtotiedot?retryHakemuksetAndOppijat=false&valintakoelaskenta=false&withHakijaRyhmat=true&erillishaku=false&uuid=25bede6f-fd89-4bd2-a870-5e9846e6279c with method GET, response code 500, message: Odottamaton virhe laskennan tietojen hakemisessa! Hakemukset to hakemusDTO mappauksessa virhe hakukohteelle 1.2.246.562.20.00000000000000071798 ja hakemuksille [1.2.246.562.11.00000000000003030691]. Esimerkiksi Henkilöllä 1.2.246.562.24.40483869857 ei ole äidinkieltä!",
+          "paivamaara": 1759212694213,
+          "data": []
+        },
+        {
+          "tyyppi": "VIRHE",
+          "otsikko": "Error calling url http://alb.testiopintopolku.fi/valintalaskentakoostepalvelu/resources/valintalaskentakerralla/haku/1.2.246.562.29.00000000000000069585/hakukohde/1.2.246.562.20.00000000000000071798/lahtotiedot?retryHakemuksetAndOppijat=false&valintakoelaskenta=false&withHakijaRyhmat=true&erillishaku=false&uuid=25bede6f-fd89-4bd2-a870-5e9846e6279c with method GET, response code 500, message: Odottamaton virhe laskennan tietojen hakemisessa! Hakemukset to hakemusDTO mappauksessa virhe hakukohteelle 1.2.246.562.20.00000000000000071798 ja hakemuksille [1.2.246.562.11.00000000000003030691]. Esimerkiksi Henkilöllä 1.2.246.562.24.40483869857 ei ole äidinkieltä!",
+          "paivamaara": 1759212683556,
+          "data": []
+        }
+      ]
+    }
+  ],
+  "erillishaku": false,
+  "valinnanvaihe": null,
+  "valintakoelaskenta": false,
+  "jonosija": null,
+  "luotiinkoUusiLaskenta": true
+}

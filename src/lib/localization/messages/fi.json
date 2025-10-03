@@ -207,6 +207,7 @@
     "tyyppi": "Tyyppi",
     "laskenta": "Laskenta",
     "lasketaan": "Laskentaa suoritetaan",
+    "laskenta-valmis": "Laskenta valmis",
     "varmista": "Käynnistetäänkö laskenta?",
     "virhe": "Laskenta epäonnistui. Yritä myöhemmin uudelleen",
     "piilotavirhe": "Piilota virhe",
@@ -652,6 +653,12 @@
       "delete-success": "Valintalaskennan muokkauksen poistaminen onnistui",
       "ei-muokkausta": "Valintajonon järjestyskriteerejä ei ole muokattu",
       "tallenna-n-kriteeria": "{count, plural, one { 1 järjestyskriteeri} other { {count} järjestyskriteeriä}}"
+    },
+    "tila": {
+      "VALMIS": "Valmis",
+      "MENEILLAAN": "Käynnissä",
+      "ALOITTAMATTA": "Jonossa",
+      "PERUUTETTU": "Keskeytynyt"
     }
   },
   "yhteisvalinnan-hallinta": {
@@ -715,6 +722,25 @@
       "lahettamassa": "Olet lähettämässä",
       "lahetetty": "lähetetty",
       "lahetyksessa-virhe": "lähetyksessä tapahtui virhe"
+    }
+  },
+  "seuranta": {
+    "otsikko": "Valintojen toteuttaminen \u2013 Seuranta",
+    "laskennan-tila": "Laskennan tila",
+    "laskennat-otsikko": "Valintalaskennat",
+    "hakukohteita": "Hakukohteita yhteensä: {total}",
+    "valmistunut": "{timeFromNow} sitten",
+    "valinnanvaihe-kaikki": "Valinnanvaihe: Kaikki",
+    "valinnanvaihe-osa": "Valinnanvaihe: {valinnanvaihe}",
+    "valintakoelaskenta": "Valintakoelaskenta: ",
+    "kopioitu-leikepoydalle": "Kopioitu hakukohdetunnisteet leikepöydälle",
+    "kopioi-leikepoydalle": "Kopioi hakukohdetunnisteet leikepöydälle",
+    "info": {
+      "otsikko": "Laskentoja yhteensä {total}",
+      "valmiina": "Valmiina {total}",
+      "keskeytynyt": "Keskeytynyt {total}",
+      "kaynnissa": "Käynnissä {total}",
+      "jonossa": "Jonossa {total}"
     }
   }
 }

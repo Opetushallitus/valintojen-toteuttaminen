@@ -1,0 +1,76 @@
+[
+  {
+    "oidHenkilo": "1.2.246.562.24.44148542328",
+    "externalIds": null,
+    "identifications": null,
+    "hetu": null,
+    "etunimet": "Hui",
+    "kutsumanimi": "Hui",
+    "sukunimi": "Haamu",
+    "syntymaaika": null,
+    "turvakielto": false,
+    "aidinkieli": {
+      "kieliKoodi": "fi",
+      "kieliTyyppi": "suomi"
+    },
+    "asiointiKieli": null,
+    "kansalaisuus": null,
+    "sukupuoli": null,
+    "modified": 1753159726313,
+    "modifiedAt": "2025-07-22T07:48:46.313+03:00"
+  },
+  {
+    "oidHenkilo": "1.2.246.562.24.44182619622",
+    "externalIds": null,
+    "identifications": null,
+    "hetu": null,
+    "etunimet": "Kreivi",
+    "kutsumanimi": "Kreivi",
+    "sukunimi": "Dacula",
+    "syntymaaika": "1990-08-18",
+    "turvakielto": false,
+    "aidinkieli": {
+      "kieliKoodi": "fi",
+      "kieliTyyppi": "suomi"
+    },
+    "asiointiKieli": {
+      "kieliKoodi": "fi",
+      "kieliTyyppi": "suomi"
+    },
+    "kansalaisuus": [
+      {
+        "kansalaisuusKoodi": "246"
+      }
+    ],
+    "sukupuoli": "1",
+    "modified": 1707929270940,
+    "modifiedAt": "2024-02-14T18:47:50.940+02:00"
+  },
+  {
+    "oidHenkilo": "1.2.246.562.24.83767017241",
+    "externalIds": null,
+    "identifications": null,
+    "hetu": null,
+    "etunimet": "Ruhtinas",
+    "kutsumanimi": "Ruhtinas",
+    "sukunimi": "Nukettaja",
+    "syntymaaika": "2014-11-10",
+    "turvakielto": false,
+    "aidinkieli": {
+      "kieliKoodi": "fi",
+      "kieliTyyppi": "suomi"
+    },
+    "asiointiKieli": {
+      "kieliKoodi": "fi",
+      "kieliTyyppi": "suomi"
+    },
+    "kansalaisuus": [
+      {
+        "kansalaisuusKoodi": "246"
+      }
+    ],
+    "sukupuoli": "1",
+    "modified": 1759225007827,
+    "modifiedAt": "2025-09-30T12:36:47.827+03:00"
+  }
+]

@@ -14,6 +14,7 @@ import {
   ValintalaskennanTulosValinnanvaiheModel,
   SeurantaTiedot,
   LaskettuHakukohde,
+  SeurantaTiedotLaajennettu,
 } from '../types/laskenta-types';
 import {
   HenkilonValintaTulos,
@@ -251,6 +252,16 @@ export const getLaskennanSeurantaTiedot = async (loadingUrl: string) => {
     hakukohteitaKeskeytetty: response.data?.hakukohteitaKeskeytetty,
     jonosija: response.data?.jonosija,
   };
+};
+
+export const getLaskennanSeurantaTiedotKaikille = async (): Promise<
+  Array<SeurantaTiedotLaajennettu>
+> => {
+  const configuration = getConfiguration();
+  const response = await client.get<Array<SeurantaTiedotLaajennettu>>(
+    configuration.routes.valintalaskentaLaskentaService.seurantaKaikilleUrl,
+  );
+  return response.data.toSorted((a, b) => b.luotu - a.luotu);
 };
 
 type MuutaSijoitteluaResponse = {

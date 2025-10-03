@@ -41,11 +41,13 @@ const ErrorContent = ({
 export const ErrorAlert = ({
   title,
   message,
+  messageChildren,
   hasAccordion = false,
   retry,
 }: {
   title: string;
   message?: string | Array<string> | undefined;
+  messageChildren?: React.ReactNode;
   hasAccordion?: boolean;
   retry?: () => void;
 }) => {
@@ -69,7 +71,6 @@ export const ErrorAlert = ({
           <Accordion sx={{ backgroundColor: 'transparent' }}>
             <StyledAccordionSummary
               expandIcon={<ArrowRight className="custom-expand-icon" />}
-              sx={{ flexDirection: 'row-reverse', padding: 0 }}
               onClick={() => setErrorVisible(!errorVisible)}
             >
               <Typography>
@@ -79,11 +80,15 @@ export const ErrorAlert = ({
               </Typography>
             </StyledAccordionSummary>
             <AccordionDetails sx={{ paddingLeft: 0 }}>
-              <ErrorContent message={message} />
+              {messageChildren}
+              {!messageChildren && <ErrorContent message={message} />}
             </AccordionDetails>
           </Accordion>
         ) : (
-          <ErrorContent message={message} />
+          <>
+            {messageChildren}
+            {!messageChildren && <ErrorContent message={message} />}
+          </>
         )}
       </Box>
     </Alert>

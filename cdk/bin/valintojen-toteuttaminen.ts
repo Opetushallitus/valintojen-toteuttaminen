@@ -17,7 +17,10 @@ const domainName = `valintojen-toteuttaminen.${publicHostedZones[environmentName
 const hostedZoneStack = new HostedZoneStack(
   app,
   'HostedZoneStack',
-  { env: envEU },
+  {
+    env: envEU,
+    stackName: `${environmentName}-valintojen-toteuttaminen-hosted-zone`,
+  },
   environmentName,
 );
 

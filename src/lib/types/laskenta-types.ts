@@ -76,6 +76,16 @@ export type SeurantaTiedot = {
   jonosija: number | null;
 };
 
+export type SeurantaTiedotLaajennettu = SeurantaTiedot & {
+  uuid: string;
+  userOID: string;
+  haunnimi: string;
+  nimi: string;
+  luotu: number;
+  valintakoelaskenta: boolean;
+  valinnanvaihe?: string | null;
+};
+
 export type StartedLaskentaInfo = {
   startedNewLaskenta: boolean;
   loadingUrl: string;
@@ -90,7 +100,7 @@ export type LaskentaSummary = {
   tila: 'PERUUTETTU' | 'VALMIS';
   hakukohteet: Array<{
     hakukohdeOid: string;
-    tila: 'TEKEMATTA' | 'VALMIS' | 'VIRHE';
+    tila: 'TEKEMATTA' | 'VALMIS' | 'VIRHE' | 'KESKEYTETTY';
     ilmoitukset: Array<{ otsikko: string; tyyppi: string }>;
   }>;
   ilmoitus?: {
