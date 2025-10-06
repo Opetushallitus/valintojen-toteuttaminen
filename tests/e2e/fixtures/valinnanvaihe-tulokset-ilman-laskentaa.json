@@ -11,7 +11,7 @@
         "nimi": "Tutkintoon valmentava koulutus",
         "prioriteetti": 0,
         "aloituspaikat": 0,
-        "siirretaanSijoitteluun": false,
+        "siirretaanSijoitteluun": true,
         "tasasijasaanto": "ARVONTA",
         "eiVarasijatayttoa": false,
         "kaikkiEhdonTayttavatHyvaksytaan": false,

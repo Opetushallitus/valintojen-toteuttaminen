@@ -36,8 +36,15 @@ export const PureSijoitteluStatusChangeButton = ({
 
   const hasOrgCrud = checkHasPermission(tarjoajaOid, userPermissions, 'CRUD');
 
+  const { hasTulos, siirretaanSijoitteluun, valmisSijoiteltavaksi } = jono;
+
+  // Sijoittelu-tiedon muokkaaminen ennen tuloksen tallentamista aiheuttaisi virheen
+  if (!hasTulos) {
+    return null;
+  }
+
   switch (true) {
-    case !jono.valmisSijoiteltavaksi && jono.siirretaanSijoitteluun:
+    case !valmisSijoiteltavaksi && siirretaanSijoitteluun:
       return (
         <SijoitteluButton
           sx={{ marginBottom: 2 }}
@@ -50,7 +57,7 @@ export const PureSijoitteluStatusChangeButton = ({
           {t('valintalaskennan-tulokset.siirra-jono-sijoitteluun')}
         </SijoitteluButton>
       );
-    case jono.valmisSijoiteltavaksi && jono.siirretaanSijoitteluun:
+    case valmisSijoiteltavaksi && siirretaanSijoitteluun:
       return (
         <SijoitteluButton
           sx={{ marginBottom: 2 }}

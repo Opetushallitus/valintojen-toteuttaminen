@@ -41,6 +41,7 @@ const mockContextInput = ({
       oid: 'jono1',
       valintatapajonooid: 'jono1',
       nimi: 'jono1',
+      hasTulos: true,
       jonosijat: [
         {
           tuloksenTila: TuloksenTila.HYVAKSYTTAVISSA,

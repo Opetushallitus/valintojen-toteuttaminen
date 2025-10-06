@@ -19,6 +19,7 @@ const renderSijoitteluButton = ({
   jono?: {
     valmisSijoiteltavaksi?: boolean;
     siirretaanSijoitteluun?: boolean;
+    hasTulos?: boolean;
   };
   permissions?: Partial<UserPermissions>;
   statusMutation?: {
@@ -35,6 +36,7 @@ const renderSijoitteluButton = ({
         {
           valmisSijoiteltavaksi: true,
           siirretaanSijoitteluun: true,
+          hasTulos: true,
           ...jono,
         } as LaskennanValintatapajonoTulosWithHakijaInfo
       }
@@ -63,6 +65,7 @@ describe('SijoitteluStatusChangeButton', () => {
     const jono = {
       valmisSijoiteltavaksi: true,
       siirretaanSijoitteluun: true,
+      hasTulos: true,
     };
     renderSijoitteluButton({ jono, statusMutation: { mutate: mutateFn } });
 
@@ -73,11 +76,13 @@ describe('SijoitteluStatusChangeButton', () => {
     fireEvent.click(btn);
     expect(mutateFn).toBeCalledWith({ jono, jonoSijoitellaan: false });
   });
+
   test('Show "poista"-button when not valmis sijoiteltavaksi and call mutate with right args on click', () => {
     const mutateFn = vi.fn();
     const jono = {
       valmisSijoiteltavaksi: false,
       siirretaanSijoitteluun: true,
+      hasTulos: true,
     };
     renderSijoitteluButton({ jono, statusMutation: { mutate: mutateFn } });
 
@@ -89,7 +94,7 @@ describe('SijoitteluStatusChangeButton', () => {
     expect(mutateFn).toBeCalledWith({ jono, jonoSijoitellaan: true });
   });
 
-  test('Disable button when permissions only to other ogranization', () => {
+  test('Disable button when permissions only to other organization', () => {
     renderSijoitteluButton({
       tarjoajaOid: ORG_OID,
       permissions: {
@@ -104,7 +109,7 @@ describe('SijoitteluStatusChangeButton', () => {
     expect(btn).toBeDisabled();
   });
 
-  test('Disable "poista"-button even when has permimssions to organization (not OPH)"', () => {
+  test('Disable "Poista sijoittelusta"-button even when has permimssions to organization (not OPH)"', () => {
     renderSijoitteluButton({
       tarjoajaOid: ORG_OID,
       permissions: {
@@ -119,7 +124,7 @@ describe('SijoitteluStatusChangeButton', () => {
     expect(btn).toBeDisabled();
   });
 
-  test('Enable "Siirra"-button when user has permissions to organization"', () => {
+  test('Enable "Siirra sijoitteluun"-button when user has permissions to organization"', () => {
     renderSijoitteluButton({
       jono: {
         valmisSijoiteltavaksi: false,
@@ -157,5 +162,17 @@ describe('SijoitteluStatusChangeButton', () => {
       name: 'valintalaskennan-tulokset.poista-jono-sijoittelusta',
     });
     expect(btn).toBeDisabled();
+  });
+
+  test('Hide button when hasTulos=false', () => {
+    renderSijoitteluButton({
+      jono: {
+        valmisSijoiteltavaksi: true,
+        siirretaanSijoitteluun: true,
+        hasTulos: false,
+      },
+    });
+
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
 });

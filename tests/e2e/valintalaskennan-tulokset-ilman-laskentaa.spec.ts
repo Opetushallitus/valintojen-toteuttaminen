@@ -267,8 +267,8 @@ test('Lähettää muokatun pisteet-datan tallentaessa', async ({ page }) => {
         nimi: 'Tutkintoon valmentava koulutus',
         valintatapajonooid: '1679913593167-8093928466417053918',
         prioriteetti: 0,
-        valmisSijoiteltavaksi: true,
-        siirretaanSijoitteluun: false,
+        valmisSijoiteltavaksi: false,
+        siirretaanSijoitteluun: true,
         kaytetaanKokonaispisteita: true,
         jonosijat: [
           {
@@ -328,8 +328,8 @@ test('Lähettää muokatun jonosija-datan tallentaessa ja lataa tulokset uudelle
         nimi: 'Tutkintoon valmentava koulutus',
         valintatapajonooid: '1679913593167-8093928466417053918',
         prioriteetti: 0,
-        valmisSijoiteltavaksi: true,
-        siirretaanSijoitteluun: false,
+        valmisSijoiteltavaksi: false,
+        siirretaanSijoitteluun: true,
         kaytetaanKokonaispisteita: false,
         jonosijat: [
           {

@@ -15,6 +15,8 @@ export type Valintatapajono = {
   prioriteetti: number;
   kaytetaanValintalaskentaa: boolean;
   automaattinenSijoitteluunSiirto?: boolean;
+  siirretaanSijoitteluun?: boolean;
+  valmisSijoiteltavaksi?: boolean;
 };
 
 export type Valinnanvaihe = {
