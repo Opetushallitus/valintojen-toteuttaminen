@@ -16,7 +16,7 @@ export function applyKriteeriChange(
     (k) => k.prioriteetti == event.prioriteetti,
   );
   if (
-    originalKriteeri?.arvo.toString() === commaToPoint(event.arvo) &&
+    commaToPoint(originalKriteeri?.arvo) === commaToPoint(event.arvo) &&
     originalKriteeri?.kuvaus?.FI === event.selite &&
     originalKriteeri.tila === event.tila
   ) {

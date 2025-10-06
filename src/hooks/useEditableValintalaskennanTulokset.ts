@@ -27,19 +27,13 @@ import { queryOptionsGetHakukohteenValintalaskennanTulokset } from '@/lib/valint
 import { queryOptionsGetHakukohteenValinnanvaiheet } from '@/lib/valintaperusteet/valintaperusteet-queries';
 import { queryOptionsGetHakemukset } from '@/lib/ataru/ataru-queries';
 import { useMemo } from 'react';
-import { TranslatedName } from '@/lib/localization/localization-types';
+
+export type EditableJarjestyskriteeriTulos =
+  LaskennanJonosijaTulos['jarjestyskriteerit'][number];
 
 export type LaskennanJonosijaTulos<
   A extends Record<string, unknown> = Record<string, unknown>,
-> = Omit<Partial<ValintalaskennanValintatapaJonosijaModel>, 'jonosija'> & {
-  hakemusOid: string;
-  hakijaOid: string;
-  hakutoiveNumero?: number;
-  tuloksenTila?: TuloksenTila;
-  kuvaus?: TranslatedName;
-  pisteet: string;
-  jonosija: string;
-} & A;
+> = ReturnType<typeof selectEditableJonosijaFields> & A;
 
 type AdditionalHakemusFields = {
   hakijanNimi: Hakemus['hakijanNimi'];
