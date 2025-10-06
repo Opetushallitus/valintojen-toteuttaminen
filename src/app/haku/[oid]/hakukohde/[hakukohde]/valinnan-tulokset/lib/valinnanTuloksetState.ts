@@ -4,7 +4,7 @@ import { useActorRef } from '@xstate/react';
 import { createValinnanTuloksetMachine } from '@/lib/state/createValinnanTuloksetMachine';
 import useToaster from '@/hooks/useToaster';
 import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
-import { saveErillishakuValinnanTulokset } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
+import { saveValinnanTulokset } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import {
   getHakukohteenValinnanTulokset,
@@ -108,7 +108,7 @@ export const useValinnanTulosActorRef = ({
     valinnanTuloksetMachine.provide({
       actors: {
         updateHakemukset: fromPromise(async ({ input }) => {
-          await saveErillishakuValinnanTulokset({
+          await saveValinnanTulokset({
             haku,
             hakukohdeOid: hakukohde.oid,
             hakemukset: input.changed,
@@ -146,7 +146,7 @@ export const useValinnanTulosActorRef = ({
               'ValinnanTulosMachine.remove: Could not find hakemus',
             );
           }
-          await saveErillishakuValinnanTulokset({
+          await saveValinnanTulokset({
             haku,
             hakukohdeOid: hakukohde.oid,
             hakemukset: [
