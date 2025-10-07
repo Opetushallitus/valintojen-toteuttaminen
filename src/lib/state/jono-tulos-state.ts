@@ -282,12 +282,11 @@ export const jonoTulosMachine = createMachine({
                   );
                 })
                 .map((jonoTulos) => {
-                  const jarjestyskriteerit = jonoTulos.jarjestyskriteerit?.map(
-                    (kriteeri) => ({
+                  const jarjestyskriteerit =
+                    jonoTulos.jarjestyskriteerit?.map((kriteeri) => ({
                       ...kriteeri,
                       arvo: Number(commaToPoint(kriteeri.arvo)),
-                    }),
-                  );
+                    })) ?? [];
 
                   const changedJonoTulos = changedJonoTulokset.find(
                     (jt) => jt.hakemusOid === jonoTulos.hakemusOid,
