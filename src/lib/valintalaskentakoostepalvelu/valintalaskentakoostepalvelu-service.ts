@@ -1162,7 +1162,7 @@ export async function sendLetters(
   );
 }
 
-export async function saveErillishakuValinnanTulokset({
+export async function saveValinnanTulokset({
   haku,
   hakukohdeOid,
   hakemukset,
@@ -1178,7 +1178,7 @@ export async function saveErillishakuValinnanTulokset({
   lastModified?: string;
 }) {
   const configuration = getConfiguration();
-  const erillishakuHakemukset = hakemukset.map((hakemus) => ({
+  const hakemusTulokset = hakemukset.map((hakemus) => ({
     hakemusOid: hakemus.hakemusOid,
     personOid: hakemus.hakijaOid,
     hakemuksenTila: hakemus.valinnanTila,
@@ -1197,7 +1197,7 @@ export async function saveErillishakuValinnanTulokset({
   }));
 
   const urlWithQuery = new URL(
-    configuration.routes.valintalaskentakoostepalvelu.startImportErillishakuValinnanTulosUrl,
+    configuration.routes.valintalaskentakoostepalvelu.startImportValinnanTulosUrl,
   );
 
   urlWithQuery.searchParams.set('hakuOid', haku.oid);
@@ -1209,7 +1209,7 @@ export async function saveErillishakuValinnanTulokset({
 
   const { data } = await client.post<{ id: string }>(
     urlWithQuery,
-    { rivit: erillishakuHakemukset },
+    { rivit: hakemusTulokset },
     {
       headers: {
         'If-Unmodified-Since': (lastModified
@@ -1224,7 +1224,7 @@ export async function saveErillishakuValinnanTulokset({
   await processDocumentAndReturnDocumentId(processId, true);
 }
 
-export async function getErillishakuValinnanTulosExcel({
+export async function getValinnanTulosExcel({
   haku,
   hakukohdeOid,
   valintatapajonoOid,
@@ -1235,7 +1235,7 @@ export async function getErillishakuValinnanTulosExcel({
 }) {
   const configuration = getConfiguration();
   const urlWithQuery = new URL(
-    configuration.routes.valintalaskentakoostepalvelu.startExportErillishakuValinnanTulosExcelUrl,
+    configuration.routes.valintalaskentakoostepalvelu.startExportValinnanTulosExcelUrl,
   );
   urlWithQuery.searchParams.set('hakuOid', haku.oid);
   urlWithQuery.searchParams.set('hakukohdeOid', hakukohdeOid);

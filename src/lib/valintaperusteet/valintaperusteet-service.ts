@@ -32,18 +32,18 @@ type ValinnanvaiheModel = {
   aktiivinen: boolean;
   hasValisijoittelu: boolean;
   valinnanVaiheTyyppi: string;
-  jonot: [
-    {
-      nimi: string;
-      oid: string;
-      aktiivinen: boolean;
-      valisijoittelu: boolean;
-      eiLasketaPaivamaaranJalkeen: string;
-      prioriteetti: number;
-      kaytetaanValintalaskentaa: boolean;
-      automaattinenSijoitteluunSiirto: boolean;
-    },
-  ];
+  jonot: Array<{
+    nimi: string;
+    oid: string;
+    aktiivinen: boolean;
+    valisijoittelu: boolean;
+    eiLasketaPaivamaaranJalkeen: string;
+    prioriteetti: number;
+    kaytetaanValintalaskentaa: boolean;
+    automaattinenSijoitteluunSiirto: boolean;
+    siirretaanSijoitteluun: boolean;
+    valmisSijoiteltavaksi: boolean;
+  }>;
 };
 
 const convertValinnanvaihe = (vaihe: ValinnanvaiheModel): Valinnanvaihe => {
@@ -64,6 +64,8 @@ const convertValinnanvaihe = (vaihe: ValinnanvaiheModel): Valinnanvaihe => {
         eiLasketaPaivamaaranJalkeen,
         kaytetaanValintalaskentaa: jono.kaytetaanValintalaskentaa,
         automaattinenSijoitteluunSiirto: jono.automaattinenSijoitteluunSiirto,
+        siirretaanSijoitteluun: jono.siirretaanSijoitteluun,
+        valmisSijoiteltavaksi: jono.valmisSijoiteltavaksi,
       };
     })
     .sort((j1, j2) => j1.prioriteetti - j2.prioriteetti);

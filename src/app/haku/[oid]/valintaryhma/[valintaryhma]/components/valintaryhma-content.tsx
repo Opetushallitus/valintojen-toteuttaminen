@@ -2,7 +2,7 @@
 import { useUserPermissions } from '@/hooks/useUserPermissions';
 import { getHakukohdeFullName } from '@/lib/kouta/kouta-service';
 import { getValintaryhmat } from '@/lib/valintaperusteet/valintaperusteet-service';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useSuspenseQueries, useSuspenseQuery } from '@tanstack/react-query';
 import {
   HakukohdeWithLink,
   ValintaryhmaHakukohdeTable,
@@ -20,12 +20,14 @@ import {
   findParent,
 } from '@/app/haku/[oid]/valintaryhma/lib/valintaryhma-util';
 import { ValintaryhmanValintalaskenta } from './valintaryhma-valintalaskenta';
-import { useHaku } from '@/lib/kouta/useHaku';
-import { useHaunAsetukset } from '@/lib/ohjausparametrit/useHaunAsetukset';
 import { getLasketutHakukohteet } from '@/lib/valintalaskenta/valintalaskenta-service';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { useLaskentaState } from '@/lib/state/laskenta-state';
-import { queryOptionsGetHakukohteet } from '@/lib/kouta/kouta-queries';
+import {
+  queryOptionsGetHaku,
+  queryOptionsGetHakukohteet,
+} from '@/lib/kouta/kouta-queries';
+import { queryOptionsGetHaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-queries';
 
 const StyledContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -117,21 +119,29 @@ export const ValintaryhmaContent = ({
     queryOptionsGetHakukohteet(hakuOid, userPermissions),
   );
 
-  const { data: valintaryhmat } = useSuspenseQuery({
-    queryKey: ['getValintaryhmat', hakuOid, userPermissions, hakukohteet],
-    queryFn: () =>
-      getValintaryhmat(
-        hakuOid,
-        userPermissions,
-        hakukohteet.map((hk) => hk.oid),
-      ),
-  });
-
-  const { data: haku } = useHaku({ hakuOid });
-  const { data: haunAsetukset } = useHaunAsetukset({ hakuOid });
-  const { data: lasketutHakukohteet } = useSuspenseQuery({
-    queryKey: ['getLasketutHakukohteet', hakuOid],
-    queryFn: () => getLasketutHakukohteet(hakuOid),
+  const [
+    { data: haku },
+    { data: haunAsetukset },
+    { data: lasketutHakukohteet },
+    { data: valintaryhmat },
+  ] = useSuspenseQueries({
+    queries: [
+      queryOptionsGetHaku({ hakuOid }),
+      queryOptionsGetHaunAsetukset({ hakuOid }),
+      {
+        queryKey: ['getLasketutHakukohteet', hakuOid],
+        queryFn: () => getLasketutHakukohteet(hakuOid),
+      },
+      {
+        queryKey: ['getValintaryhmat', hakuOid, userPermissions, hakukohteet],
+        queryFn: () =>
+          getValintaryhmat(
+            hakuOid,
+            userPermissions,
+            hakukohteet.map((hk) => hk.oid),
+          ),
+      },
+    ],
   });
 
   const valittuRyhma = useMemo(() => {

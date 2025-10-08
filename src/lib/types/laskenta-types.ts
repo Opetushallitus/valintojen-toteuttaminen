@@ -25,7 +25,7 @@ export type HakukohteenHakijaryhma = {
   hakijat: Array<HakijaryhmanHakija>;
 };
 
-export type Jarjestyskriteeri = {
+export type JarjestyskriteeriModel = {
   arvo: number;
   tila: string;
   prioriteetti: number;
@@ -45,7 +45,7 @@ export type ValintalaskennanValintatapaJonosijaModel = {
   harkinnanvarainen: boolean;
   prioriteetti: number;
   muokattu?: boolean;
-  jarjestyskriteerit: Array<Jarjestyskriteeri>;
+  jarjestyskriteerit: Array<JarjestyskriteeriModel>;
 };
 
 export type ValintalaskennanValintatapajonoModel = {

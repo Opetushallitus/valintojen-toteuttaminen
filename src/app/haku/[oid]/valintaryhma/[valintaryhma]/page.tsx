@@ -11,7 +11,7 @@ export default function ValintaryhmaPage(props: {
   const params = use(props.params);
 
   return (
-    <Box sx={{ padding: 4 }}>
+    <Box sx={{ padding: 4, width: '100%' }}>
       <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
         <ValintaryhmaContent
           hakuOid={params.oid}

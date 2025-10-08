@@ -1,6 +1,5 @@
 'use client';
 import { useSuspenseQueries } from '@tanstack/react-query';
-import { TranslatedName } from '../lib/localization/localization-types';
 import {
   ValintalaskennanValintatapaJonosijaModel,
   ValintalaskennanTulosValinnanvaiheModel,
@@ -29,17 +28,12 @@ import { queryOptionsGetHakukohteenValinnanvaiheet } from '@/lib/valintaperustee
 import { queryOptionsGetHakemukset } from '@/lib/ataru/ataru-queries';
 import { useMemo } from 'react';
 
+export type EditableJarjestyskriteeriTulos =
+  LaskennanJonosijaTulos['jarjestyskriteerit'][number];
+
 export type LaskennanJonosijaTulos<
   A extends Record<string, unknown> = Record<string, unknown>,
-> = Omit<Partial<ValintalaskennanValintatapaJonosijaModel>, 'jonosija'> & {
-  hakemusOid: string;
-  hakijaOid: string;
-  hakutoiveNumero?: number;
-  tuloksenTila?: TuloksenTila;
-  kuvaus?: TranslatedName;
-  pisteet: string;
-  jonosija: string;
-} & A;
+> = ReturnType<typeof selectEditableJonosijaFields> & A;
 
 type AdditionalHakemusFields = {
   hakijanNimi: Hakemus['hakijanNimi'];
@@ -53,6 +47,7 @@ export type LaskennanJonosijaTulosWithHakijaInfo =
 export type LaskennanValintatapajonoTulos<
   A extends Record<string, unknown> = Record<string, unknown>,
 > = Omit<ValintalaskennanValintatapajonoModel, 'jonosijat'> & {
+  hasTulos: boolean;
   jonosijat: Array<LaskennanJonosijaTulos<A>>;
 };
 
@@ -78,8 +73,8 @@ export type LaskennanValinnanvaiheetWithHakijaInfo = Array<
   LaskennanValinnanvaiheTulos<AdditionalHakemusFields>
 >;
 
-const selectJonosijaFields = (
-  jonosijaData?: ValintalaskennanValintatapaJonosijaModel,
+const selectEditableJonosijaFields = (
+  jonosijaData: ValintalaskennanValintatapaJonosijaModel,
 ) => {
   const jarjestyskriteeri = jonosijaData?.jarjestyskriteerit?.[0];
 
@@ -95,6 +90,8 @@ const selectJonosijaFields = (
   }
 
   return {
+    hakemusOid: jonosijaData?.hakemusOid,
+    hakijaOid: jonosijaData?.hakijaOid,
     jonosija: jonosija?.toString() ?? '',
     harkinnanvarainen: jonosijaData?.harkinnanvarainen,
     prioriteetti: jonosijaData?.prioriteetti,
@@ -146,7 +143,7 @@ export const selectEditableValintalaskennanTulokset = <
   const laskennattomatVaiheet =
     selectLaskennattomatValinnanvaiheet(valinnanvaiheet);
 
-  const lasketutJonotByOid = pipe(
+  const jonoTuloksetByOid = pipe(
     valintalaskennanTulokset,
     flatMap((vaihe) => vaihe.valintatapajonot ?? []),
     groupBy(prop('oid')),
@@ -161,41 +158,38 @@ export const selectEditableValintalaskennanTulokset = <
         nimi: vaihe.nimi,
         createdAt: null,
         valintatapajonot: vaihe.jonot.map((jono) => {
-          const laskettuJono = lasketutJonotByOid?.[jono.oid]?.[0];
+          const jonoTulos = jonoTuloksetByOid?.[jono.oid]?.[0];
           return {
+            hasTulos: Boolean(jonoTulos),
             oid: jono.oid,
             nimi: jono.nimi,
             valintatapajonooid: jono.oid,
             prioriteetti: jono.prioriteetti,
             valmisSijoiteltavaksi: Boolean(
-              jono.automaattinenSijoitteluunSiirto ??
-                laskettuJono?.valmisSijoiteltavaksi,
+              jonoTulos?.valmisSijoiteltavaksi ??
+                jono?.automaattinenSijoitteluunSiirto,
             ),
-            siirretaanSijoitteluun: Boolean(
-              laskettuJono?.siirretaanSijoitteluun,
-            ),
+            siirretaanSijoitteluun: Boolean(jono.siirretaanSijoitteluun),
             kaytetaanKokonaispisteita: Boolean(
-              laskettuJono?.kaytetaanKokonaispisteita,
+              jonoTulos?.kaytetaanKokonaispisteita,
             ),
-            jonosijat: pipe(
+            jonosijat:
               // Valintalaskenta ei ole käytössä valinnanvaiheelle, joten käydään läpi kaikki hakemukset
               // täydentäen tuloksen puuttuessa "tyhjä" laskennan tulos, jotta voidaan näyttää
               // kaikki hakemukset ja mahdollistaa tulosten syöttäminen käsin.
-              hakemukset,
-              map((hakemus) => {
-                const jonosija = laskettuJono?.jonosijat?.find(
+              map(hakemukset, (hakemus) => {
+                const jonosija = jonoTulos?.jonosijat?.find(
                   (jonosijaCandidate) =>
                     jonosijaCandidate.hakemusOid === hakemus.hakemusOid,
                 );
                 return {
-                  ...selectJonosijaFields(jonosija),
+                  ...(jonosija ? selectEditableJonosijaFields(jonosija) : {}),
                   hakemusOid: hakemus.hakemusOid,
                   hakijaOid: hakemus.hakijaOid,
                   ...(selectHakemusFields?.(hakemus.hakemusOid) ??
                     ({} as HakemusOut)),
                 };
               }),
-            ),
           };
         }),
       };
@@ -214,14 +208,13 @@ export const selectEditableValintalaskennanTulokset = <
         valintatapajonot: valinnanVaihe?.valintatapajonot?.map(
           (valintatapajono) => {
             return {
+              hasTulos: true,
               ...valintatapajono,
               jonosijat: pipe(
                 valintatapajono.jonosijat,
                 map((jonosija) => {
                   return {
-                    ...selectJonosijaFields(jonosija),
-                    hakemusOid: jonosija.hakemusOid,
-                    hakijaOid: jonosija.hakijaOid,
+                    ...selectEditableJonosijaFields(jonosija),
                     ...(selectHakemusFields?.(jonosija.hakemusOid) ??
                       ({} as HakemusOut)),
                   };

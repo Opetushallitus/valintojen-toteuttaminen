@@ -1,16 +1,19 @@
-import { Jarjestyskriteeri, TuloksenTila } from '@/lib/types/laskenta-types';
 import { useMemo } from 'react';
 import { JarjestyskriteeriParams } from '../lib/types/jarjestyskriteeri-types';
 import { MuokattuJonosijaContext } from '@/lib/state/muokattuJonosijaMachineTypes';
+import { EditableJarjestyskriteeriTulos } from './useEditableValintalaskennanTulokset';
+import { TuloksenTila } from '@/lib/types/laskenta-types';
 
-const isJarjestyskriteeri = (x: unknown): x is Jarjestyskriteeri => {
-  return (x as Jarjestyskriteeri).kuvaus !== undefined;
+const isJarjestyskriteeriTulos = (
+  x: unknown,
+): x is EditableJarjestyskriteeriTulos => {
+  return (x as EditableJarjestyskriteeriTulos)?.kuvaus !== undefined;
 };
 
 const getSelite = (
-  jarjestyskriteeri?: Jarjestyskriteeri | JarjestyskriteeriParams,
+  jarjestyskriteeri?: EditableJarjestyskriteeriTulos | JarjestyskriteeriParams,
 ) => {
-  return isJarjestyskriteeri(jarjestyskriteeri)
+  return isJarjestyskriteeriTulos(jarjestyskriteeri)
     ? (jarjestyskriteeri?.kuvaus?.FI ?? '')
     : (jarjestyskriteeri?.selite ?? '');
 };

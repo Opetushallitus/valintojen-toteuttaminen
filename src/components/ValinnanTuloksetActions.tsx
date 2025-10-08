@@ -18,7 +18,7 @@ import {
 import { isEmpty, prop } from 'remeda';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import {
-  getErillishakuValinnanTulosExcel,
+  getValinnanTulosExcel,
   getMyohastyneetHakemukset,
 } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { showModal } from '@/components/modals/global-modal';
@@ -96,11 +96,11 @@ export const ValinnanTuloksetExcelDownloadButton = ({
     <FileDownloadButton
       variant="contained"
       defaultFileName={`valinnantulos-${hakukohdeOid}.xlsx`}
-      errorKey="get-erillishaku-valinnan-tulos-excel"
+      errorKey="get-valinnan-tulos-excel"
       errorMessage="valinnan-tulokset.virhe-vie-taulukkolaskentaan"
       disabled={!valintatapajonoOid}
       getFile={() =>
-        getErillishakuValinnanTulosExcel({
+        getValinnanTulosExcel({
           haku,
           hakukohdeOid,
           valintatapajonoOid,
