@@ -169,7 +169,6 @@ function buildDummyValinnanTulosResponse() {
         prioriteetti: 1,
         vastaanottotila: VastaanottoTila.VASTAANOTTANUT_SITOVASTI,
         ilmoittautumistila: IlmoittautumisTila.LASNA,
-        hyvaksyttyHarkinnanvaraisesti: false,
       },
       {
         valintatapajonoOid: 'jono1',
@@ -188,7 +187,6 @@ function buildDummyValinnanTulosResponse() {
         prioriteetti: 1,
         vastaanottotila: VastaanottoTila.KESKEN,
         ilmoittautumistila: IlmoittautumisTila.EI_TEHTY,
-        hyvaksyttyHarkinnanvaraisesti: false,
       },
       {
         valintatapajonoOid: 'jono1',
@@ -207,7 +205,6 @@ function buildDummyValinnanTulosResponse() {
         prioriteetti: 1,
         vastaanottotila: VastaanottoTila.KESKEN,
         ilmoittautumistila: IlmoittautumisTila.EI_TEHTY,
-        hyvaksyttyHarkinnanvaraisesti: false,
       },
     ],
     valintaesitys: [
@@ -239,6 +236,7 @@ function buildDummyValinnanTulosResponse() {
               prioriteetti: 1,
               siirtynytToisestaValintatapajonosta: false,
               onkoMuuttunutViimeSijoittelussa: false,
+              hyvaksyttyHarkinnanvaraisesti: false,
             },
             {
               hakijaOid: 'hakija2',
@@ -253,6 +251,7 @@ function buildDummyValinnanTulosResponse() {
               prioriteetti: 1,
               siirtynytToisestaValintatapajonosta: false,
               onkoMuuttunutViimeSijoittelussa: false,
+              hyvaksyttyHarkinnanvaraisesti: false,
             },
             {
               hakijaOid: 'hakija3',
@@ -267,6 +266,7 @@ function buildDummyValinnanTulosResponse() {
               prioriteetti: 1,
               siirtynytToisestaValintatapajonosta: false,
               onkoMuuttunutViimeSijoittelussa: false,
+              hyvaksyttyHarkinnanvaraisesti: false,
             },
           ],
         },
