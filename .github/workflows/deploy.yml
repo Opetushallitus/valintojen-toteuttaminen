@@ -1,4 +1,5 @@
-name: Valintojen toteuttaminen deploy
+name: Deploy valintojen-toteuttaminen
+run-name: Deploy valintojen-toteuttaminen build number ${{ inputs.build-number }} to environment ${{ inputs.environment }}
 env:
   HUSKY: 0
   NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
