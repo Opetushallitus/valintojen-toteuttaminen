@@ -42,7 +42,7 @@ export function createValinnanTuloksetMachine<
         | { type: 'successNotify'; params: { message: string } }
         | { type: 'errorModal'; params: { error: Error } }
         | { type: 'notifyMassStatusChange' }
-        | { type: 'refetchTulokset'; params?: { error?: Error } };
+        | { type: 'refetchTulokset' };
       actors:
         | {
             src: 'updateHakemukset';
@@ -202,12 +202,6 @@ export function createValinnanTuloksetMachine<
                   error: event.error as Error,
                 }),
               },
-              {
-                type: 'refetchTulokset',
-                params: ({ event }) => ({
-                  error: event.error as Error,
-                }),
-              },
             ],
           },
         },
@@ -260,12 +254,6 @@ export function createValinnanTuloksetMachine<
           onError: {
             target: ValinnanTulosState.IDLE,
             actions: [
-              {
-                type: 'refetchTulokset',
-                params: ({ event }) => ({
-                  error: event.error as Error,
-                }),
-              },
               {
                 type: 'alert',
                 params: {

@@ -13,8 +13,7 @@ import {
 import { ValinnanTulosErrorGlobalModal } from '@/components/modals/valinnan-tulos-error-global-modal';
 import { showModal } from '@/components/modals/global-modal';
 import { useQueryClient } from '@tanstack/react-query';
-import { isNullish } from 'remeda';
-import { isHakemusOid, rejectAndLog, OphProcessError } from '@/lib/common';
+import { rejectAndLog } from '@/lib/common';
 import { ValinnanTulosEventType } from '@/lib/state/valinnanTuloksetMachineTypes';
 import { refetchHakukohteenValinnanTulokset } from '@/lib/valinta-tulos-service/valinta-tulos-queries';
 
@@ -43,27 +42,8 @@ export const valinnanTuloksetMachine =
           messageParams: { amount: context.massChangeAmount ?? 0 },
         });
       },
-      refetchTulokset: ({ context }, params) => {
-        if (isNullish(params?.error)) {
-          context.onUpdated?.();
-        } else if (
-          params.error instanceof OphProcessError &&
-          Array.isArray(params.error?.processObject)
-        ) {
-          const erroredHakemusOids = params.error?.processObject?.reduce(
-            (acc, error) => {
-              return isHakemusOid(error.id) ? [...acc, error.id] : acc;
-            },
-            [] as Array<string>,
-          );
-
-          const someTulosUpdated = context.changedHakemukset.some(
-            (h) => !erroredHakemusOids.includes(h.hakemusOid),
-          );
-          if (someTulosUpdated) {
-            context.onUpdated?.();
-          }
-        }
+      refetchTulokset: ({ context }) => {
+        context.onUpdated?.();
       },
       errorModal: ({ context }, params) => {
         showModal(ValinnanTulosErrorGlobalModal, {

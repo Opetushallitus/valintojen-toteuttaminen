@@ -5,10 +5,9 @@ import {
   saveMaksunTilanMuutokset,
   saveSijoitteluAjonTulokset,
 } from '@/lib/valinta-tulos-service/valinta-tulos-service';
-import { isNullish } from 'remeda';
 import { ValinnanTulosErrorGlobalModal } from '@/components/modals/valinnan-tulos-error-global-modal';
 import { showModal } from '@/components/modals/global-modal';
-import { rejectAndLog, OphApiError } from '@/lib/common';
+import { rejectAndLog } from '@/lib/common';
 import { useEffect } from 'react';
 import { useActorRef } from '@xstate/react';
 import { createValinnanTuloksetMachine } from '@/lib/state/createValinnanTuloksetMachine';
@@ -43,23 +42,8 @@ export const sijoittelunTuloksetMachine =
           messageParams: { amount: context.massChangeAmount ?? 0 },
         });
       },
-      refetchTulokset: ({ context }, params) => {
-        if (isNullish(params?.error)) {
-          context.onUpdated?.();
-        } else if (
-          params.error instanceof OphApiError &&
-          Array.isArray(params.error?.response?.data)
-        ) {
-          const erroredHakemusOids = params.error?.response.data?.map(
-            (error) => error.hakemusOid as string,
-          );
-          const someTulosUpdated = context.changedHakemukset.some(
-            (h) => !erroredHakemusOids.includes(h.hakemusOid),
-          );
-          if (someTulosUpdated) {
-            context.onUpdated?.();
-          }
-        }
+      refetchTulokset: ({ context }) => {
+        context.onUpdated?.();
       },
       errorModal: ({ context }, params) => {
         showModal(ValinnanTulosErrorGlobalModal, {
