@@ -42,7 +42,7 @@ export function createValinnanTuloksetMachine<
         | { type: 'successNotify'; params: { message: string } }
         | { type: 'errorModal'; params: { error: Error } }
         | { type: 'notifyMassStatusChange' }
-        | { type: 'refetchTulokset'; params?: { error?: Error } };
+        | { type: 'refetchTulokset' };
       actors:
         | {
             src: 'updateHakemukset';
@@ -202,12 +202,6 @@ export function createValinnanTuloksetMachine<
                   error: event.error as Error,
                 }),
               },
-              {
-                type: 'refetchTulokset',
-                params: ({ event }) => ({
-                  error: event.error as Error,
-                }),
-              },
             ],
           },
         },
@@ -261,12 +255,6 @@ export function createValinnanTuloksetMachine<
             target: ValinnanTulosState.IDLE,
             actions: [
               {
-                type: 'refetchTulokset',
-                params: ({ event }) => ({
-                  error: event.error as Error,
-                }),
-              },
-              {
                 type: 'alert',
                 params: {
                   message: 'valinnan-tulokset.poistaminen-epaonnistui',
@@ -285,10 +273,13 @@ export function createValinnanTuloksetMachine<
           }),
           onDone: {
             target: ValinnanTulosState.IDLE,
-            actions: {
-              type: 'successNotify',
-              params: { message: 'sijoittelun-tulokset.hyvaksytty' },
-            },
+            actions: [
+              'refetchTulokset',
+              {
+                type: 'successNotify',
+                params: { message: 'sijoittelun-tulokset.hyvaksytty' },
+              },
+            ],
           },
           onError: {
             target: ValinnanTulosState.IDLE,

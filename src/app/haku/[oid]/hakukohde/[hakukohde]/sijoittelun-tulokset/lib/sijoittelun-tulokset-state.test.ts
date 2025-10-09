@@ -222,41 +222,4 @@ describe('Sijoittelun tulokset states', async () => {
       IlmoittautumisTila.EI_TEHTY,
     );
   });
-
-  test('Should call onUpdated when saving one hakemus succeeded and other failed', async () => {
-    const { actor, onUpdatedFn } = createActorLogic();
-    vi.spyOn(client, 'post').mockImplementationOnce(() =>
-      Promise.resolve({ headers: new Headers(), data: {} }),
-    );
-    vi.spyOn(client, 'patch').mockImplementationOnce(() =>
-      Promise.resolve({
-        headers: new Headers(),
-        data: [
-          {
-            // saving hakemus-1 fails
-            hakemusOid: 'hakemus-1',
-          },
-        ],
-      }),
-    );
-
-    actor.send({
-      type: ValinnanTulosEventType.CHANGE,
-      hakemusOid: 'hakemus-1',
-      vastaanottoTila: VastaanottoTila.EHDOLLISESTI_VASTAANOTTANUT,
-    });
-
-    actor.send({
-      type: ValinnanTulosEventType.CHANGE,
-      hakemusOid: 'hakemus-2',
-      vastaanottoTila: VastaanottoTila.VASTAANOTTANUT_SITOVASTI,
-    });
-
-    let state = await waitIdle(actor);
-    expect(state.context.changedHakemukset.length).toEqual(2);
-
-    actor.send({ type: ValinnanTulosEventType.UPDATE });
-    state = await waitIdle(actor);
-    expect(onUpdatedFn).toHaveBeenCalled();
-  });
 });
