@@ -273,10 +273,13 @@ export function createValinnanTuloksetMachine<
           }),
           onDone: {
             target: ValinnanTulosState.IDLE,
-            actions: {
-              type: 'successNotify',
-              params: { message: 'sijoittelun-tulokset.hyvaksytty' },
-            },
+            actions: [
+              'refetchTulokset',
+              {
+                type: 'successNotify',
+                params: { message: 'sijoittelun-tulokset.hyvaksytty' },
+              },
+            ],
           },
           onError: {
             target: ValinnanTulosState.IDLE,
