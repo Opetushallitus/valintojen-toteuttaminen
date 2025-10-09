@@ -78,6 +78,7 @@ export type SijoitteluajonTuloksetResponseData = {
       onkoMuuttunutViimeSijoittelussa: boolean;
       siirtynytToisestaValintatapajonosta: boolean;
       tilanKuvaukset?: { FI: string; SV: string; EN: string };
+      hyvaksyttyHarkinnanvaraisesti: boolean;
     }>;
   }>;
   sijoitteluajoId: string;
@@ -111,7 +112,6 @@ export type SijoitteluajonTuloksetWithValintaEsitysResponseData = {
     valinnantilanKuvauksenTekstiEN?: string;
     vastaanottoDeadlineMennyt?: boolean;
     vastaanottoDeadline?: string;
-    hyvaksyttyHarkinnanvaraisesti: boolean;
   }>;
   valintaesitys: Array<{
     hakukohdeOid: string;
