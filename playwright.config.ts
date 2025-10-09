@@ -36,7 +36,6 @@ export default defineConfig({
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
-      retries: process.env.CI ? 3 : 0,
     },
   ],
 });
