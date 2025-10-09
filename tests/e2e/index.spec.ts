@@ -13,7 +13,7 @@ test('Kotisivun saavutettavuus', async ({ page }) => {
 
 test('Sivulla on otsikko', async ({ page }) => {
   await page.goto('/');
-  await expect(page).toHaveTitle(/Valintojen Toteuttaminen/);
+  await expect(page).toHaveTitle(/asdfasdfdsfasdf/);
 });
 
 test('"Ei löydy"-sivun saavutettavuus', async ({ page }) => {

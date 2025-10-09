@@ -1,6 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 import nextConfig from './next.config.mjs';
 
+console.log(`CI: ${process.env.CI}`);
+
 export default defineConfig({
   testDir: './tests/e2e',
   globalSetup: './tests/e2e/playwright.setup.ts',
@@ -12,7 +14,7 @@ export default defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: Boolean(process.env.CI),
   /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
+  retries: 2,
   workers: process.env.CI ? 2 : undefined,
   reporter: 'list',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
