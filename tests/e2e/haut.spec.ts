@@ -89,7 +89,7 @@ test('Suodattaa hakutavalla', async ({ page }) => {
 test('Suodattaa alkamiskaudella', async ({ page }) => {
   const tableRows = getTableRows(page);
   await selectKausi(page, '2024 syksy');
-  await expect(tableRows).toHaveCount(1);
+  await expect(tableRows).toHaveCount(2);
   await selectKausi(page, '2020 syksy');
   await expect(tableRows).toHaveCount(0);
   await expectUrlParamToEqual(page, 'alkamiskausi', '2020_syksy');

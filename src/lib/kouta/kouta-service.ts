@@ -22,6 +22,23 @@ type HakuResponseData = {
   totalHakukohteet: number;
   kohdejoukkoKoodiUri: string;
   organisaatioOid: string;
+  metadata?: {
+    koulutuksenAlkamiskausi?:
+      | {
+          alkamiskausityyppi: 'alkamiskausi ja -vuosi';
+          koulutuksenAlkamiskausi: {
+            koodiUri: 'kausi_k' | 'kausi_s';
+          };
+          koulutuksenAlkamisvuosi: string;
+        }
+      | {
+          alkamiskausityyppi: 'tarkka alkamisajankohta';
+          koulutuksenAlkamispaivamaara: string;
+        }
+      | {
+          alkamiskausityyppi: 'henkilokohtainen suunnitelma';
+        };
+  };
 };
 
 const mapToHaku = (h: HakuResponseData) => {
@@ -32,8 +49,7 @@ const mapToHaku = (h: HakuResponseData) => {
     nimi: h.nimi,
     tila: haunTila,
     hakutapaKoodiUri: h.hakutapaKoodiUri,
-    alkamisVuosi: parseInt(h.hakuvuosi),
-    alkamisKausiKoodiUri: h.hakukausi,
+    koulutuksenAlkamiskausi: h?.metadata?.koulutuksenAlkamiskausi,
     hakukohteita: h?.totalHakukohteet ?? 0,
     kohdejoukkoKoodiUri: h.kohdejoukkoKoodiUri,
     organisaatioOid: h.organisaatioOid,

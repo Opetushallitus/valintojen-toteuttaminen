@@ -16,8 +16,15 @@
       "en": "https://untuvaopintopolku.fi/hakemus/haku/1.2.246.562.29.00000000000000046872?lang=en"
     },
     "hakuvuosi": 2024,
-    "hakukausi": "kausi_s#1",
+    "hakukausi": "kausi_k#1",
     "metadata": {
+      "koulutuksenAlkamiskausi": {
+        "alkamiskausityyppi": "alkamiskausi ja -vuosi",
+        "koulutuksenAlkamiskausi": {
+          "koodiUri": "kausi_s"
+        },
+        "koulutuksenAlkamisvuosi": "2024"
+      },
       "yhteyshenkilot": [
         {
           "nimi": {
@@ -126,7 +133,8 @@
       ],
       "tulevaisuudenAikataulu": [],
       "koulutuksenAlkamiskausi": {
-        "alkamiskausityyppi": "tarkka alkamisajankohta"
+        "alkamiskausityyppi": "tarkka alkamisajankohta",
+        "koulutuksenAlkamispaivamaara": "2022-08-15T00:00:00"
       }
     },
     "organisaatioOid": "1.2.246.562.10.44330177021",
@@ -266,7 +274,11 @@
       "yhteyshenkilot": [],
       "tulevaisuudenAikataulu": [],
       "koulutuksenAlkamiskausi": {
-        "alkamiskausityyppi": "tarkka alkamisajankohta"
+        "alkamiskausityyppi": "alkamiskausi ja -vuosi",
+        "koulutuksenAlkamiskausi": {
+          "koodiUri": "kausi_s"
+        },
+        "koulutuksenAlkamisvuosi": "2023"
       }
     },
     "organisaatioOid": "1.2.246.562.10.45698499378",
@@ -313,11 +325,8 @@
       "yhteyshenkilot": [],
       "tulevaisuudenAikataulu": [],
       "koulutuksenAlkamiskausi": {
-        "alkamiskausityyppi": "alkamiskausi ja -vuosi",
-        "koulutuksenAlkamiskausi": {
-          "koodiUri": "kausi_s"
-        },
-        "koulutuksenAlkamisvuosi": "2024"
+        "alkamiskausityyppi":"tarkka alkamisajankohta",
+        "koulutuksenAlkamispaivamaara": "2024-08-15T00:00:00"
       }
     },
     "organisaatioOid": "1.2.246.562.10.79559059674",

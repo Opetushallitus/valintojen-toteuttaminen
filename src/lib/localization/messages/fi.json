@@ -142,7 +142,8 @@
     "varasijataytto-paattamatta": "Varasijatäyttö päättämättä",
     "sijoittelematta": "Ei sijoittelun tuloksia",
     "julkaisematta": "Valintatapajono julkaisematta",
-    "koulutustyyppi": "Koulutustyyppi"
+    "koulutustyyppi": "Koulutustyyppi",
+    "alkamiskausi-henkilokohtainen-suunnitelma": "Henkilökohtainen suunnitelma"
   },
   "hakukohde": {
     "navigaatio": "Hakukohdevalitsin",

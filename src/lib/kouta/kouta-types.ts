@@ -33,8 +33,10 @@ export type Haku = {
   oid: string;
   nimi: TranslatedName;
   tila: Tila;
-  alkamisVuosi: number;
-  alkamisKausiKoodiUri: string;
+  alkamisVuosi?: number;
+  alkamisKausiKoodiUri?: string;
+  alkamiskausiNimi?: TranslatedName;
+  alkamiskausiTimestamp?: string;
   hakutapaKoodiUri: string;
   hakukohteita: number;
   kohdejoukkoKoodiUri: string;

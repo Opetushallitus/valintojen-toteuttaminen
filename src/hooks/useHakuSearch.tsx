@@ -21,16 +21,20 @@ import {
 import { useTranslations } from '../lib/localization/useTranslations';
 import { useUserPermissions } from './useUserPermissions';
 import { TranslatedName } from '../lib/localization/localization-types';
+import { toFormattedDateTimeString } from '@/lib/localization/translation-utils';
+import { isBefore, isValid } from 'date-fns';
 
 const alkamisKausiMatchesSelected = (
   haku: Haku,
   selectedAlkamisKausi?: HaunAlkaminen,
 ): boolean =>
   !selectedAlkamisKausi ||
-  (haku.alkamisVuosi === selectedAlkamisKausi.alkamisVuosi &&
-    haku.alkamisKausiKoodiUri.startsWith(
-      selectedAlkamisKausi.alkamisKausiKoodiUri,
-    ));
+  Boolean(
+    haku.alkamisVuosi === selectedAlkamisKausi?.alkamisVuosi &&
+      haku.alkamisKausiKoodiUri?.startsWith(
+        selectedAlkamisKausi.alkamisKausiKoodiUri,
+      ),
+  );
 
 const KAUSI_MAPPING = Object.freeze({
   kausi_s: {
@@ -157,22 +161,88 @@ export const useHakuSearchResults = () => {
   const userPermissions = useUserPermissions();
   const alkamiskaudet = useMemo(getHakuAlkamisKaudet, []);
   const { data: hakutavat } = useHakutavat();
-  const { translateEntity } = useTranslations();
+  const { t, translateEntity } = useTranslations();
 
   const { data: haut } = useSuspenseQuery({
     queryKey: ['getHaut', userPermissions],
     queryFn: () => getHaut(userPermissions),
     select: (data) =>
-      data.map((haku) => ({
-        ...haku,
-        hakutapaNimi: hakutavat.find(
-          (hakutapa) => hakutapa.koodiUri === haku.hakutapaKoodiUri,
-        )?.nimi,
-        alkamiskausiNimi: getKausiVuosiTranslation(
-          haku?.alkamisKausiKoodiUri?.split('#')?.[0],
-          haku.alkamisVuosi,
-        ),
-      })),
+      data.map((haku) => {
+        let vuosi: string | undefined;
+        let kausiKoodi: string | undefined;
+        let kausiNimi: TranslatedName | undefined;
+        let alkamiskausiTimestamp: string | undefined = ''; // Taulukon järjestämistä varten
+
+        const koulutuksenAlkamiskausi = haku.koulutuksenAlkamiskausi;
+
+        if (koulutuksenAlkamiskausi) {
+          if (
+            koulutuksenAlkamiskausi.alkamiskausityyppi ===
+            'alkamiskausi ja -vuosi'
+          ) {
+            vuosi = koulutuksenAlkamiskausi.koulutuksenAlkamisvuosi;
+            kausiKoodi =
+              koulutuksenAlkamiskausi.koulutuksenAlkamiskausi.koodiUri;
+            alkamiskausiTimestamp = `${vuosi}${
+              kausiKoodi === 'kausi_k' ? '-01-01T00:00' : '-08-01T00:00'
+            }`;
+
+            kausiNimi = getKausiVuosiTranslation(kausiKoodi, parseInt(vuosi));
+          } else if (
+            koulutuksenAlkamiskausi.alkamiskausityyppi ===
+            'tarkka alkamisajankohta'
+          ) {
+            const alkamiskausiDate = new Date(
+              koulutuksenAlkamiskausi.koulutuksenAlkamispaivamaara,
+            );
+            if (isValid(alkamiskausiDate)) {
+              alkamiskausiTimestamp = toFormattedDateTimeString(
+                alkamiskausiDate,
+                "yyyy-MM-dd'T'HH:mm",
+              );
+              vuosi = alkamiskausiDate.getFullYear().toString();
+              kausiKoodi = isBefore(
+                alkamiskausiDate,
+                new Date(`${vuosi}-08-01T00:00`),
+              )
+                ? 'kausi_k'
+                : 'kausi_s';
+              const nimi = toFormattedDateTimeString(
+                alkamiskausiDate,
+                'd.M.yyyy',
+              );
+              kausiNimi = { fi: nimi, sv: nimi, en: nimi };
+            }
+          } else if (
+            koulutuksenAlkamiskausi.alkamiskausityyppi ===
+            'henkilokohtainen suunnitelma'
+          ) {
+            alkamiskausiTimestamp = 'henkilokohtainen';
+            kausiNimi = {
+              fi: t('haku.alkamiskausi-henkilokohtainen-suunnitelma', {
+                language: 'fi',
+              }),
+              sv: t('haku.alkamiskausi-henkilokohtainen-suunnitelma', {
+                language: 'sv',
+              }),
+              en: t('haku.alkamiskausi-henkilokohtainen-suunnitelma', {
+                language: 'en',
+              }),
+            };
+          }
+        }
+
+        return {
+          ...haku,
+          hakutapaNimi: hakutavat.find(
+            (hakutapa) => hakutapa.koodiUri === haku.hakutapaKoodiUri,
+          )?.nimi,
+          alkamisKausiKoodiUri: kausiKoodi,
+          alkamiskausiTimestamp,
+          alkamisVuosi: vuosi ? parseInt(vuosi) : undefined,
+          alkamiskausiNimi: kausiNimi,
+        };
+      }),
   });
 
   const {
@@ -205,6 +275,31 @@ export const useHakuSearchResults = () => {
         ) &&
         haku.hakutapaKoodiUri.startsWith(selectedHakutapa ?? ''),
     );
+
+    if (orderBy === 'alkamiskausiNimi') {
+      return filtered.sort((a, b) => {
+        const aValue = a.alkamiskausiTimestamp ?? '';
+        const bValue = b.alkamiskausiTimestamp ?? '';
+
+        switch (true) {
+          case aValue === 'henkilokohtainen' && bValue !== '':
+            return 1;
+          case bValue === 'henkilokohtainen' && aValue !== '':
+            return -1;
+          case aValue === '':
+            return 1;
+          case bValue === '':
+            return -1;
+          case aValue > bValue:
+            return direction === 'asc' ? 1 : -1;
+          case aValue < bValue:
+            return direction === 'asc' ? -1 : 1;
+          default:
+            return 0;
+        }
+      });
+    }
+
     return orderBy && direction
       ? filtered.sort(byProp(orderBy, direction, translateEntity))
       : filtered;
