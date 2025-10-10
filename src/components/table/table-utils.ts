@@ -28,7 +28,7 @@ function getValueByPath<R extends Record<string, PropValue>>(
     pathOr(path as any, '' as any),
     when(isTranslatedName, translateEntity),
     when(isString, (value) => {
-      const numberValue = Number.parseFloat(commaToPoint(value) ?? '');
+      const numberValue = value === '' ? NaN : Number(commaToPoint(value));
       return isNumber(numberValue) ? numberValue : value;
     }),
   );
