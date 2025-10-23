@@ -130,7 +130,10 @@ const selectKokeenPisteet = (
       const osallistumisTiedot =
         pistetieto.hakukohteidenOsallistumistiedot?.[hakukohdeOid]
           ?.valintakokeidenOsallistumistiedot[k.tunniste]?.osallistumistieto;
-      if (isNullish(osallistumisTiedot)) {
+      if (
+        isNullish(osallistumisTiedot) ||
+        osallistumisTiedot === ValintakoeOsallistuminenTulos.EI_KUTSUTTU
+      ) {
         return null;
       }
       const arvo =
@@ -210,10 +213,18 @@ export const getPisteetForHakukohde = async ({
   return {
     lastModified: pistetiedot.lastmodified,
     valintakokeet: kokeet,
-    valintapisteet: pistetiedot.valintapisteet.map((p) => ({
-      hakemusOid: p.applicationAdditionalDataDTO.oid,
-      valintakokeenPisteet: selectKokeenPisteet(hakukohdeOid, p, kokeet),
-    })),
+    valintapisteet: pistetiedot.valintapisteet
+      .map((p) => {
+        const kokeenPisteet = selectKokeenPisteet(hakukohdeOid, p, kokeet);
+        if (isEmpty(kokeenPisteet)) {
+          return null;
+        }
+        return {
+          hakemusOid: p.applicationAdditionalDataDTO.oid,
+          valintakokeenPisteet: selectKokeenPisteet(hakukohdeOid, p, kokeet),
+        };
+      })
+      .filter(isNonNullish),
   };
 };
 
