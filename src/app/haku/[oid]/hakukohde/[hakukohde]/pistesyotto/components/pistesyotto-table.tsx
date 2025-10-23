@@ -1,8 +1,5 @@
 'use client';
-import {
-  HakemuksenPistetiedot,
-  ValintakoeOsallistuminenTulos,
-} from '@/lib/types/laskenta-types';
+import { HakemuksenPistetiedot } from '@/lib/types/laskenta-types';
 import { ValintakoeAvaimet } from '@/lib/valintaperusteet/valintaperusteet-types';
 import { ReadOnlyKoeCell } from './koe-readonly-cell';
 import { useTranslations } from '@/lib/localization/useTranslations';
@@ -47,9 +44,7 @@ export const PisteSyottoTable = ({
           const matchingKoePisteet = props.valintakokeenPisteet.find(
             (p) => p.tunniste === koe.tunniste,
           );
-          return isNullish(matchingKoePisteet) ||
-            matchingKoePisteet.osallistuminen ===
-              ValintakoeOsallistuminenTulos.EI_KUTSUTTU ? (
+          return isNullish(matchingKoePisteet) ? (
             <></>
           ) : isNotPartOfThisHakukohde(matchingKoePisteet) ? (
             <ReadOnlyKoeCell koe={koe} koePisteet={matchingKoePisteet} />

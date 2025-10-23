@@ -10,7 +10,6 @@ import { HakijaInfo } from '@/lib/ataru/ataru-types';
 import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
 import { Range } from '@/components/range';
 import { getHakukohdeFullName } from '@/lib/kouta/kouta-service';
-import { ValintakoeOsallistuminenTulos } from '@/lib/types/laskenta-types';
 import {
   HenkilonPistesyottoActorRef,
   useHenkilonKoePistetiedot,
@@ -72,10 +71,7 @@ export const KokeenPistesyotto = ({
   );
 
   const labelId = `${koe.tunniste}_label_${hakukohde.oid}`;
-  const hideInputs =
-    isNullish(matchingKoePisteet) ||
-    matchingKoePisteet.osallistuminen ===
-      ValintakoeOsallistuminenTulos.EI_KUTSUTTU;
+  const hideInputs = isNullish(matchingKoePisteet);
 
   return (
     <>
