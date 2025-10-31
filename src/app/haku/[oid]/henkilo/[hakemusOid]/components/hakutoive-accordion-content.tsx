@@ -10,7 +10,8 @@ import { showModal } from '@/components/modals/global-modal';
 import { ValintalaskentaEditGlobalModal } from '@/components/modals/valintalaskenta-edit-global-modal';
 import { HakijaInfo } from '@/lib/ataru/ataru-types';
 import { getHenkiloTitle } from '@/lib/henkilo-utils';
-import { ValinnanTulosCells } from './valinnan-tulos-cells';
+import { ValinnanTulosCellsFirst } from './valinnan-tulos-cells-first';
+import { ValinnanTulosCellsRest } from './valinnan-tulos-cells-rest';
 import { styled } from '@/lib/theme';
 import { EditButton } from '@/components/edit-button';
 import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
@@ -55,6 +56,10 @@ export const HakutoiveAccordionContent = ({
 
         // Jonosijoja pitäisi aina olla vain yksi
         const jonosija = jono.jonosijat[0];
+        const valintatapaJonoNimi = getValintatapaJonoNimi({
+          valinnanVaiheNimi: valinnanvaihe.nimi,
+          jonoNimi: jono.nimi,
+        });
 
         return (
           jonosija && (
@@ -62,10 +67,7 @@ export const HakutoiveAccordionContent = ({
               <TableCell />
               <TableCell>
                 <OphTypography variant="label">
-                  {getValintatapaJonoNimi({
-                    valinnanVaiheNimi: valinnanvaihe.nimi,
-                    jonoNimi: jono.nimi,
-                  })}
+                  {valintatapaJonoNimi}
                 </OphTypography>
                 <div>
                   {t('henkilo.taulukko.valintalaskenta-tehty')}
@@ -102,13 +104,16 @@ export const HakutoiveAccordionContent = ({
               {
                 /* Näytetään valinnan tiedot vain taulukon ensimmäiselle jonolle, joka siis järjestyksessä viimeinen jono, jonka perusteella valinta tehdään */
                 isFirstJono ? (
-                  <ValinnanTulosCells
+                  <ValinnanTulosCellsFirst
                     hakukohde={hakukohde}
                     hakutoiveNumero={hakutoiveNumero}
                     hakija={hakija}
                   />
                 ) : (
-                  <TableCell colSpan={4} />
+                  <ValinnanTulosCellsRest
+                    hakukohde={hakukohde}
+                    valintatapaJonoNimi={valintatapaJonoNimi}
+                  />
                 )
               }
             </HakutoiveInfoRow>
