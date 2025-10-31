@@ -20,7 +20,7 @@ const ValintaTableCell = styled(MuiTableCell)({
   textAlign: 'center',
 });
 
-export const ValinnanTulosCells = ({
+export const ValinnanTulosCellsFirst = ({
   hakukohde,
   hakija,
   hakutoiveNumero,
