@@ -344,6 +344,7 @@ test('Käyttäjä näkee muut hakutoiveet jos yksi hakukohteista on käyttäjän
     'Harkinnanvaraisten käsittelyvaiheen valintatapajonoValintalaskenta tehty: 12.11.2024 17:53:39',
     '',
     'HyväksyttävissäMuokkaa',
+    'Hyväksyttävissä',
     '',
   ]);
 
@@ -379,6 +380,7 @@ test('Käyttäjä näkee muut hakutoiveet jos yksi hakukohteista on käyttäjän
     '',
     'Jono 1Valintalaskenta tehty: 12.11.2024 17:54:48',
     '',
+    'Hyväksyttävissä',
     'Hyväksyttävissä',
     '',
   ]);
@@ -440,6 +442,7 @@ test('Näytetään henkilön hakutoiveet valintalaskennan ja sijoittelun tuloksi
     'Jono 1Valintalaskenta tehty: 12.11.2024 17:54:48',
     '',
     'HyväksyttävissäMuokkaa',
+    'Hyväksyttävissä',
     '',
   ]);
 });
@@ -496,6 +499,7 @@ test('Näytetään hakutoiveet valintalaskennan tuloksilla, ilman sijoittelun tu
     'Jono 1Valintalaskenta tehty: 12.11.2024 17:54:48',
     '',
     'HyväksyttävissäMuokkaa',
+    'Hyväksyttävissä',
     '',
   ]);
 });
