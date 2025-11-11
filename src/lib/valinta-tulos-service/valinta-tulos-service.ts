@@ -1,6 +1,6 @@
 'use client';
 
-import { indexBy, isNullish, pick, prop } from 'remeda';
+import { groupBy, indexBy, isNullish, pick, prop } from 'remeda';
 import { client } from '../http-client';
 import {
   SijoitteluajonTulokset,
@@ -340,7 +340,7 @@ export const getHakemuksenValinnanTulokset = async ({
   );
   return {
     lastModified: headers.get('X-Last-Modified'),
-    data: indexBy(data.map(prop('valinnantulos')), prop('hakukohdeOid')),
+    data: groupBy(data.map(prop('valinnantulos')), prop('hakukohdeOid')),
   };
 };
 

@@ -27,6 +27,17 @@ export enum ValinnanTila {
   PERUUTETTU = 'PERUUTETTU',
 }
 
+const HYVAKSYTTY_TAI_PERUTTU_TILAT = new Set<ValinnanTila>([
+  ValinnanTila.HYVAKSYTTY,
+  ValinnanTila.VARASIJALTA_HYVAKSYTTY,
+  ValinnanTila.HARKINNANVARAISESTI_HYVAKSYTTY,
+  ValinnanTila.PERUNUT,
+  ValinnanTila.PERUUTETTU,
+]);
+
+export const isHyvaksyttyTaiPeruttuTila = (tila?: ValinnanTila): boolean =>
+  !!tila && HYVAKSYTTY_TAI_PERUTTU_TILAT.has(tila);
+
 export const ValinnanTilaOrdinals: Record<string, number> = Object.keys(
   ValinnanTila,
 )

@@ -10,8 +10,7 @@ import { showModal } from '@/components/modals/global-modal';
 import { ValintalaskentaEditGlobalModal } from '@/components/modals/valintalaskenta-edit-global-modal';
 import { HakijaInfo } from '@/lib/ataru/ataru-types';
 import { getHenkiloTitle } from '@/lib/henkilo-utils';
-import { ValinnanTulosCellsFirst } from './valinnan-tulos-cells-first';
-import { ValinnanTulosCellsRest } from './valinnan-tulos-cells-rest';
+import { ValinnanTulosCells } from './valinnan-tulos-cells';
 import { styled } from '@/lib/theme';
 import { EditButton } from '@/components/edit-button';
 import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
@@ -50,10 +49,8 @@ export const HakutoiveAccordionContent = ({
       </TableCell>
     </HakutoiveInfoRow>
   ) : (
-    valinnanvaiheet?.map((valinnanvaihe, valinnanvaiheIndex) => {
-      return valinnanvaihe.valintatapajonot?.map((jono, jonoIndex) => {
-        const isFirstJono = valinnanvaiheIndex === 0 && jonoIndex === 0;
-
+    valinnanvaiheet?.map((valinnanvaihe) => {
+      return valinnanvaihe.valintatapajonot?.map((jono) => {
         // Jonosijoja pitäisi aina olla vain yksi
         const jonosija = jono.jonosijat[0];
         const valintatapaJonoNimi = getValintatapaJonoNimi({
@@ -102,19 +99,12 @@ export const HakutoiveAccordionContent = ({
                   )}
               </TableCell>
               {
-                /* Näytetään valinnan tiedot vain taulukon ensimmäiselle jonolle, joka siis järjestyksessä viimeinen jono, jonka perusteella valinta tehdään */
-                isFirstJono ? (
-                  <ValinnanTulosCellsFirst
-                    hakukohde={hakukohde}
-                    hakutoiveNumero={hakutoiveNumero}
-                    hakija={hakija}
-                  />
-                ) : (
-                  <ValinnanTulosCellsRest
-                    hakukohde={hakukohde}
-                    valintatapaJonoNimi={valintatapaJonoNimi}
-                  />
-                )
+                <ValinnanTulosCells
+                  hakukohde={hakukohde}
+                  valintatapaJono={jono}
+                  hakutoiveNumero={hakutoiveNumero}
+                  hakija={hakija}
+                />
               }
             </HakutoiveInfoRow>
           )

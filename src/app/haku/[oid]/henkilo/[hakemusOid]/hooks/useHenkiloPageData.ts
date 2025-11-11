@@ -122,13 +122,6 @@ export const useHenkiloPageData = ({
         const sijoittelunTulos =
           sijoittelunTuloksetByHakukohde?.[hakukohde.oid];
 
-        const sijoittelunJono =
-          sijoittelunTulos?.hakutoiveenValintatapajonot?.find(
-            (sijoitteluJono) =>
-              sijoitteluJono.valintatapajonoOid ===
-              valinnanTulos?.valintatapajonoOid,
-          );
-
         const readOnly = !checkEditPermission(hakukohde.tarjoajaOid);
 
         return {
@@ -142,16 +135,21 @@ export const useHenkiloPageData = ({
             // Henkilöittäin-näkymässä näytetään laskennattomat valinnanvaiheet vain, jos niille on tallennettu tuloksia
             valinnanvaiheet: [],
           }),
-          valinnanTulos: valinnanTulos
-            ? {
-                ...valinnanTulos,
-                lastModified: valinnanTuloksetResponse.lastModified,
-                varasijanNumero: sijoittelunJono?.varasijanNumero,
-                hyvaksyttyHarkinnanvaraisesti: Boolean(
-                  sijoittelunJono?.hyvaksyttyHarkinnanvaraisesti,
-                ),
-              }
-            : undefined,
+          valinnanTulokset: valinnanTulos?.map((t) => {
+            const sijoittelunJono =
+              sijoittelunTulos?.hakutoiveenValintatapajonot?.find(
+                (sijoitteluJono) =>
+                  sijoitteluJono.valintatapajonoOid === t?.valintatapajonoOid,
+              );
+            return {
+              ...t,
+              lastModified: valinnanTuloksetResponse.lastModified,
+              varasijanNumero: sijoittelunJono?.varasijanNumero,
+              hyvaksyttyHarkinnanvaraisesti: Boolean(
+                sijoittelunJono?.hyvaksyttyHarkinnanvaraisesti,
+              ),
+            };
+          }),
           kokeet: kokeetByHakukohde[hakukohde.oid],
           pisteet: pisteetByHakukohde.pisteet[hakukohde.oid],
         };

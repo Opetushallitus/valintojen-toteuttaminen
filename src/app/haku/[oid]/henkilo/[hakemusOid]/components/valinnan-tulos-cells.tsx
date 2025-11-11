@@ -14,25 +14,46 @@ import { EditButton } from '@/components/edit-button';
 import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
 import { useHaku } from '@/lib/kouta/useHaku';
 import { styled } from '@/lib/theme';
+import { LaskennanValintatapajonoTulos } from '@/hooks/useEditableValintalaskennanTulokset';
+import { isHyvaksyttyTaiPeruttuTila } from '@/lib/types/sijoittelu-types';
 
 const ValintaTableCell = styled(MuiTableCell)({
   verticalAlign: 'top',
   textAlign: 'center',
 });
 
-export const ValinnanTulosCellsFirst = ({
+export const ValinnanTulosCells = ({
   hakukohde,
+  valintatapaJono,
   hakija,
   hakutoiveNumero,
 }: {
   hakukohde: HenkilonHakukohdeTuloksilla;
+  valintatapaJono: LaskennanValintatapajonoTulos<Record<string, unknown>>;
   hakija: HakijaInfo;
   hakutoiveNumero: number;
 }) => {
-  const { valinnanTulos } = hakukohde;
+  const { valinnanTulokset } = hakukohde;
+  const valinnanTulos = valinnanTulokset?.find(
+    (vt) => vt.valintatapajonoOid === valintatapaJono.oid,
+  );
   const { t } = useTranslations();
 
   const { data: haku } = useHaku({ hakuOid: hakukohde.hakuOid });
+
+  const ValinnanTilaCell = () => (
+    <ValintaTableCell>
+      {getReadableHakemuksenTila(
+        {
+          valinnanTila: valinnanTulos?.valinnantila,
+          hyvaksyttyHarkinnanvaraisesti:
+            valinnanTulos?.hyvaksyttyHarkinnanvaraisesti,
+          varasijanNumero: valinnanTulos?.varasijanNumero,
+        },
+        t,
+      )}
+    </ValintaTableCell>
+  );
 
   const openValinnanTilatEditModal = () =>
     showModal(ValinnanTilatEditModal, {
@@ -47,22 +68,23 @@ export const ValinnanTulosCellsFirst = ({
       valinnanTulos,
     });
 
-  return valinnanTulos ? (
+  if (!valinnanTulos) {
+    return (
+      <>
+        <ValintaTableCell colSpan={1}>
+          {t('henkilo.taulukko.ei-valinnan-tulosta')}
+        </ValintaTableCell>
+        <ValintaTableCell colSpan={3} />
+      </>
+    );
+  }
+
+  return isHyvaksyttyTaiPeruttuTila(valinnanTulos.valinnantila) ? (
     <>
-      <ValintaTableCell>
-        {getReadableHakemuksenTila(
-          {
-            valinnanTila: valinnanTulos.valinnantila,
-            hyvaksyttyHarkinnanvaraisesti:
-              valinnanTulos?.hyvaksyttyHarkinnanvaraisesti,
-            varasijanNumero: valinnanTulos?.varasijanNumero,
-          },
-          t,
-        )}
-      </ValintaTableCell>
+      <ValinnanTilaCell />
       <ValintaTableCell>
         <div>
-          {valinnanTulos.julkaistavissa ? t('yleinen.kylla') : t('yleinen.ei')}
+          {valinnanTulos?.julkaistavissa ? t('yleinen.kylla') : t('yleinen.ei')}
         </div>
         {!hakukohde.readOnly && (
           <EditButton onClick={openValinnanTilatEditModal} />
@@ -73,15 +95,16 @@ export const ValinnanTulosCellsFirst = ({
       </ValintaTableCell>
       <ValintaTableCell>
         {isIlmoittautuminenPossible({
-          valinnanTila: valinnanTulos.valinnantila,
-          vastaanottoTila: valinnanTulos.vastaanottotila,
-          julkaistavissa: Boolean(valinnanTulos.julkaistavissa),
+          valinnanTila: valinnanTulos?.valinnantila,
+          vastaanottoTila: valinnanTulos?.vastaanottotila,
+          julkaistavissa: Boolean(valinnanTulos?.julkaistavissa),
         }) && t(`ilmoittautumistila.${valinnanTulos?.ilmoittautumistila}`)}
       </ValintaTableCell>
     </>
   ) : (
-    <ValintaTableCell colSpan={2}>
-      {t('henkilo.taulukko.ei-valinnan-tulosta')}
-    </ValintaTableCell>
+    <>
+      <ValinnanTilaCell />
+      <ValintaTableCell colSpan={3} />
+    </>
   );
 };
