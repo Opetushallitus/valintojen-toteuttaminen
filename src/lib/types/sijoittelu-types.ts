@@ -16,6 +16,9 @@ export type SijoittelunValintatapajonoTulos = {
   pisteraja?: string;
 };
 
+// Tätä enumia on käytetty sekä valinnan tilalle että sijoittelun tilalle.
+// Sijoittelun tilan vaihtoehdot on muuten samat kuin valinnan tilan, mutta HARKINNANVARAISESTI_HYVAKSYTTY ei ole käytössä.
+// Sijoittelun tuloksessa hyvaksyttyHarkinnanvaraisesti on erillinen boolean-kenttä ja tila on silloin HYVAKSYTTY.
 export enum ValinnanTila {
   HYVAKSYTTY = 'HYVAKSYTTY',
   VARASIJALTA_HYVAKSYTTY = 'VARASIJALTA_HYVAKSYTTY',
@@ -26,17 +29,6 @@ export enum ValinnanTila {
   PERUNUT = 'PERUNUT',
   PERUUTETTU = 'PERUUTETTU',
 }
-
-const HYVAKSYTTY_TAI_PERUTTU_TILAT = new Set<ValinnanTila>([
-  ValinnanTila.HYVAKSYTTY,
-  ValinnanTila.VARASIJALTA_HYVAKSYTTY,
-  ValinnanTila.HARKINNANVARAISESTI_HYVAKSYTTY,
-  ValinnanTila.PERUNUT,
-  ValinnanTila.PERUUTETTU,
-]);
-
-export const isHyvaksyttyTaiPeruttuTila = (tila?: ValinnanTila): boolean =>
-  !!tila && HYVAKSYTTY_TAI_PERUTTU_TILAT.has(tila);
 
 export const ValinnanTilaOrdinals: Record<string, number> = Object.keys(
   ValinnanTila,

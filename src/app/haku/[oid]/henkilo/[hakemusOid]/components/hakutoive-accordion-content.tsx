@@ -98,14 +98,12 @@ export const HakutoiveAccordionContent = ({
                     />
                   )}
               </TableCell>
-              {
-                <ValinnanTulosCells
-                  hakukohde={hakukohde}
-                  valintatapaJono={jono}
-                  hakutoiveNumero={hakutoiveNumero}
-                  hakija={hakija}
-                />
-              }
+              <ValinnanTulosCells
+                hakukohde={hakukohde}
+                valintatapaJono={jono}
+                hakutoiveNumero={hakutoiveNumero}
+                hakija={hakija}
+              />
             </HakutoiveInfoRow>
           )
         );

@@ -25,20 +25,24 @@ type SijoittelunTilaKentat = Pick<
   'julkaistavissa' | 'valinnanTila' | 'vastaanottoTila' | 'hyvaksyPeruuntunut'
 >;
 
-const isSijoittelunTilaVastaanotettavissa = (hakemuksenTila?: ValinnanTila) =>
+// Toimii myös sijoittelun tilalle, koska se on HYVAKSYTTY myös silloin kun hyvaksyttyHarkinnanvaraisesti on true
+export const isValinnanTilaVastaanotettavissa = (
+  hakemuksenTila?: ValinnanTila,
+) =>
   [
     ValinnanTila.HYVAKSYTTY,
+    ValinnanTila.HARKINNANVARAISESTI_HYVAKSYTTY,
     ValinnanTila.VARASIJALTA_HYVAKSYTTY,
     ValinnanTila.PERUNUT,
     ValinnanTila.PERUUTETTU,
   ].includes(hakemuksenTila as ValinnanTila);
 
 export const isVastaanottoPossible = (h: SijoittelunTilaKentat): boolean =>
-  isSijoittelunTilaVastaanotettavissa(h?.valinnanTila) &&
+  isValinnanTilaVastaanotettavissa(h?.valinnanTila) &&
   Boolean(h?.julkaistavissa);
 
 export const isIlmoittautuminenPossible = (h: SijoittelunTilaKentat): boolean =>
-  isSijoittelunTilaVastaanotettavissa(h.valinnanTila) &&
+  isValinnanTilaVastaanotettavissa(h.valinnanTila) &&
   VASTAANOTTOTILAT_JOISSA_VOI_ILMOITTAUTUA.includes(
     h.vastaanottoTila as VastaanottoTila,
   );

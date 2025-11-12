@@ -4,6 +4,7 @@ import { getHenkiloTitle } from '@/lib/henkilo-utils';
 import {
   getReadableHakemuksenTila,
   isIlmoittautuminenPossible,
+  isValinnanTilaVastaanotettavissa,
 } from '@/lib/sijoittelun-tulokset-utils';
 import { HakijaInfo } from '@/lib/ataru/ataru-types';
 import { HakutoiveTitle } from '@/components/hakutoive-title';
@@ -15,7 +16,6 @@ import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
 import { useHaku } from '@/lib/kouta/useHaku';
 import { styled } from '@/lib/theme';
 import { LaskennanValintatapajonoTulos } from '@/hooks/useEditableValintalaskennanTulokset';
-import { isHyvaksyttyTaiPeruttuTila } from '@/lib/types/sijoittelu-types';
 
 const ValintaTableCell = styled(MuiTableCell)({
   verticalAlign: 'top',
@@ -29,7 +29,7 @@ export const ValinnanTulosCells = ({
   hakutoiveNumero,
 }: {
   hakukohde: HenkilonHakukohdeTuloksilla;
-  valintatapaJono: LaskennanValintatapajonoTulos<Record<string, unknown>>;
+  valintatapaJono: LaskennanValintatapajonoTulos;
   hakija: HakijaInfo;
   hakutoiveNumero: number;
 }) => {
@@ -40,20 +40,6 @@ export const ValinnanTulosCells = ({
   const { t } = useTranslations();
 
   const { data: haku } = useHaku({ hakuOid: hakukohde.hakuOid });
-
-  const ValinnanTilaCell = () => (
-    <ValintaTableCell>
-      {getReadableHakemuksenTila(
-        {
-          valinnanTila: valinnanTulos?.valinnantila,
-          hyvaksyttyHarkinnanvaraisesti:
-            valinnanTulos?.hyvaksyttyHarkinnanvaraisesti,
-          varasijanNumero: valinnanTulos?.varasijanNumero,
-        },
-        t,
-      )}
-    </ValintaTableCell>
-  );
 
   const openValinnanTilatEditModal = () =>
     showModal(ValinnanTilatEditModal, {
@@ -79,32 +65,45 @@ export const ValinnanTulosCells = ({
     );
   }
 
-  return isHyvaksyttyTaiPeruttuTila(valinnanTulos.valinnantila) ? (
+  return (
     <>
-      <ValinnanTilaCell />
       <ValintaTableCell>
-        <div>
-          {valinnanTulos?.julkaistavissa ? t('yleinen.kylla') : t('yleinen.ei')}
-        </div>
-        {!hakukohde.readOnly && (
-          <EditButton onClick={openValinnanTilatEditModal} />
+        {getReadableHakemuksenTila(
+          {
+            valinnanTila: valinnanTulos?.valinnantila,
+            hyvaksyttyHarkinnanvaraisesti:
+              valinnanTulos?.hyvaksyttyHarkinnanvaraisesti,
+            varasijanNumero: valinnanTulos?.varasijanNumero,
+          },
+          t,
         )}
       </ValintaTableCell>
-      <ValintaTableCell>
-        <div>{t(`vastaanottotila.${valinnanTulos?.vastaanottotila}`)}</div>
-      </ValintaTableCell>
-      <ValintaTableCell>
-        {isIlmoittautuminenPossible({
-          valinnanTila: valinnanTulos?.valinnantila,
-          vastaanottoTila: valinnanTulos?.vastaanottotila,
-          julkaistavissa: Boolean(valinnanTulos?.julkaistavissa),
-        }) && t(`ilmoittautumistila.${valinnanTulos?.ilmoittautumistila}`)}
-      </ValintaTableCell>
-    </>
-  ) : (
-    <>
-      <ValinnanTilaCell />
-      <ValintaTableCell colSpan={3} />
+      {isValinnanTilaVastaanotettavissa(valinnanTulos.valinnantila) ? (
+        <>
+          <ValintaTableCell>
+            <div>
+              {valinnanTulos?.julkaistavissa
+                ? t('yleinen.kylla')
+                : t('yleinen.ei')}
+            </div>
+            {!hakukohde.readOnly && (
+              <EditButton onClick={openValinnanTilatEditModal} />
+            )}
+          </ValintaTableCell>
+          <ValintaTableCell>
+            <div>{t(`vastaanottotila.${valinnanTulos?.vastaanottotila}`)}</div>
+          </ValintaTableCell>
+          <ValintaTableCell>
+            {isIlmoittautuminenPossible({
+              valinnanTila: valinnanTulos?.valinnantila,
+              vastaanottoTila: valinnanTulos?.vastaanottotila,
+              julkaistavissa: Boolean(valinnanTulos?.julkaistavissa),
+            }) && t(`ilmoittautumistila.${valinnanTulos?.ilmoittautumistila}`)}
+          </ValintaTableCell>
+        </>
+      ) : (
+        <ValintaTableCell colSpan={3} />
+      )}
     </>
   );
 };

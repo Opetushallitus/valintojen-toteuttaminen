@@ -135,14 +135,15 @@ export const useHenkiloPageData = ({
             // Henkilöittäin-näkymässä näytetään laskennattomat valinnanvaiheet vain, jos niille on tallennettu tuloksia
             valinnanvaiheet: [],
           }),
-          valinnanTulokset: valinnanTulos?.map((t) => {
+          valinnanTulokset: valinnanTulos?.map((tulos) => {
             const sijoittelunJono =
               sijoittelunTulos?.hakutoiveenValintatapajonot?.find(
                 (sijoitteluJono) =>
-                  sijoitteluJono.valintatapajonoOid === t?.valintatapajonoOid,
+                  sijoitteluJono.valintatapajonoOid ===
+                  tulos?.valintatapajonoOid,
               );
             return {
-              ...t,
+              ...tulos,
               lastModified: valinnanTuloksetResponse.lastModified,
               varasijanNumero: sijoittelunJono?.varasijanNumero,
               hyvaksyttyHarkinnanvaraisesti: Boolean(
