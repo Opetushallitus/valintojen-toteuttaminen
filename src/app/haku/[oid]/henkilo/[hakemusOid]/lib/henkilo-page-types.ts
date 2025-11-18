@@ -14,7 +14,7 @@ export type HenkilonHakukohdeTuloksilla = Hakukohde & {
   hakutoiveNumero: number;
   readOnly: boolean;
   valinnanvaiheet?: LaskennanValinnanvaiheet;
-  valinnanTulos?: ValinnanTulosLisatiedoilla;
+  valinnanTulokset?: Array<ValinnanTulosLisatiedoilla>;
   kokeet?: Array<ValintakoeAvaimet>;
   pisteet?: Array<ValintakokeenPisteet>;
 };

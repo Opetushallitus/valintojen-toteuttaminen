@@ -330,9 +330,7 @@ test('Käyttäjä näkee muut hakutoiveet jos yksi hakukohteista on käyttäjän
     'Jono 2Valintalaskenta tehty: 12.11.2024 17:53:49',
     '15',
     'HyväksyttävissäMuokkaa',
-    'HYLÄTTY',
-    'KylläMuokkaa',
-    'Peruutettu',
+    'Ei valinnan tulosta',
     '',
   ]);
   let secondRowTextContents = await jonoRows
@@ -344,6 +342,7 @@ test('Käyttäjä näkee muut hakutoiveet jos yksi hakukohteista on käyttäjän
     'Harkinnanvaraisten käsittelyvaiheen valintatapajonoValintalaskenta tehty: 12.11.2024 17:53:39',
     '',
     'HyväksyttävissäMuokkaa',
+    'Ei valinnan tulosta',
     '',
   ]);
 
@@ -380,6 +379,7 @@ test('Käyttäjä näkee muut hakutoiveet jos yksi hakukohteista on käyttäjän
     'Jono 1Valintalaskenta tehty: 12.11.2024 17:54:48',
     '',
     'Hyväksyttävissä',
+    'Ei valinnan tulosta',
     '',
   ]);
 
@@ -440,6 +440,7 @@ test('Näytetään henkilön hakutoiveet valintalaskennan ja sijoittelun tuloksi
     'Jono 1Valintalaskenta tehty: 12.11.2024 17:54:48',
     '',
     'HyväksyttävissäMuokkaa',
+    'Ei valinnan tulosta',
     '',
   ]);
 });
@@ -486,6 +487,7 @@ test('Näytetään hakutoiveet valintalaskennan tuloksilla, ilman sijoittelun tu
     '13,3',
     'HyväksyttävissäMuokkaa',
     'Ei valinnan tulosta',
+    '',
   ]);
   const secondRowTextContents = await jonoRows
     .nth(1)
@@ -496,6 +498,7 @@ test('Näytetään hakutoiveet valintalaskennan tuloksilla, ilman sijoittelun tu
     'Jono 1Valintalaskenta tehty: 12.11.2024 17:54:48',
     '',
     'HyväksyttävissäMuokkaa',
+    'Ei valinnan tulosta',
     '',
   ]);
 });

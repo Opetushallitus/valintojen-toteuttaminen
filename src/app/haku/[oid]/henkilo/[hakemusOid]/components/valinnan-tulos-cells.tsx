@@ -4,6 +4,7 @@ import { getHenkiloTitle } from '@/lib/henkilo-utils';
 import {
   getReadableHakemuksenTila,
   isIlmoittautuminenPossible,
+  isValinnanTilaVastaanotettavissa,
 } from '@/lib/sijoittelun-tulokset-utils';
 import { HakijaInfo } from '@/lib/ataru/ataru-types';
 import { HakutoiveTitle } from '@/components/hakutoive-title';
@@ -14,6 +15,7 @@ import { EditButton } from '@/components/edit-button';
 import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
 import { useHaku } from '@/lib/kouta/useHaku';
 import { styled } from '@/lib/theme';
+import { LaskennanValintatapajonoTulos } from '@/hooks/useEditableValintalaskennanTulokset';
 
 const ValintaTableCell = styled(MuiTableCell)({
   verticalAlign: 'top',
@@ -22,14 +24,19 @@ const ValintaTableCell = styled(MuiTableCell)({
 
 export const ValinnanTulosCells = ({
   hakukohde,
+  valintatapaJono,
   hakija,
   hakutoiveNumero,
 }: {
   hakukohde: HenkilonHakukohdeTuloksilla;
+  valintatapaJono: LaskennanValintatapajonoTulos;
   hakija: HakijaInfo;
   hakutoiveNumero: number;
 }) => {
-  const { valinnanTulos } = hakukohde;
+  const { valinnanTulokset } = hakukohde;
+  const valinnanTulos = valinnanTulokset?.find(
+    (vt) => vt.valintatapajonoOid === valintatapaJono.oid,
+  );
   const { t } = useTranslations();
 
   const { data: haku } = useHaku({ hakuOid: hakukohde.hakuOid });
@@ -47,12 +54,23 @@ export const ValinnanTulosCells = ({
       valinnanTulos,
     });
 
-  return valinnanTulos ? (
+  if (!valinnanTulos) {
+    return (
+      <>
+        <ValintaTableCell colSpan={1}>
+          {t('henkilo.taulukko.ei-valinnan-tulosta')}
+        </ValintaTableCell>
+        <ValintaTableCell colSpan={3} />
+      </>
+    );
+  }
+
+  return (
     <>
       <ValintaTableCell>
         {getReadableHakemuksenTila(
           {
-            valinnanTila: valinnanTulos.valinnantila,
+            valinnanTila: valinnanTulos?.valinnantila,
             hyvaksyttyHarkinnanvaraisesti:
               valinnanTulos?.hyvaksyttyHarkinnanvaraisesti,
             varasijanNumero: valinnanTulos?.varasijanNumero,
@@ -60,28 +78,32 @@ export const ValinnanTulosCells = ({
           t,
         )}
       </ValintaTableCell>
-      <ValintaTableCell>
-        <div>
-          {valinnanTulos.julkaistavissa ? t('yleinen.kylla') : t('yleinen.ei')}
-        </div>
-        {!hakukohde.readOnly && (
-          <EditButton onClick={openValinnanTilatEditModal} />
-        )}
-      </ValintaTableCell>
-      <ValintaTableCell>
-        <div>{t(`vastaanottotila.${valinnanTulos?.vastaanottotila}`)}</div>
-      </ValintaTableCell>
-      <ValintaTableCell>
-        {isIlmoittautuminenPossible({
-          valinnanTila: valinnanTulos.valinnantila,
-          vastaanottoTila: valinnanTulos.vastaanottotila,
-          julkaistavissa: Boolean(valinnanTulos.julkaistavissa),
-        }) && t(`ilmoittautumistila.${valinnanTulos?.ilmoittautumistila}`)}
-      </ValintaTableCell>
+      {isValinnanTilaVastaanotettavissa(valinnanTulos.valinnantila) ? (
+        <>
+          <ValintaTableCell>
+            <div>
+              {valinnanTulos?.julkaistavissa
+                ? t('yleinen.kylla')
+                : t('yleinen.ei')}
+            </div>
+            {!hakukohde.readOnly && (
+              <EditButton onClick={openValinnanTilatEditModal} />
+            )}
+          </ValintaTableCell>
+          <ValintaTableCell>
+            <div>{t(`vastaanottotila.${valinnanTulos?.vastaanottotila}`)}</div>
+          </ValintaTableCell>
+          <ValintaTableCell>
+            {isIlmoittautuminenPossible({
+              valinnanTila: valinnanTulos?.valinnantila,
+              vastaanottoTila: valinnanTulos?.vastaanottotila,
+              julkaistavissa: Boolean(valinnanTulos?.julkaistavissa),
+            }) && t(`ilmoittautumistila.${valinnanTulos?.ilmoittautumistila}`)}
+          </ValintaTableCell>
+        </>
+      ) : (
+        <ValintaTableCell colSpan={3} />
+      )}
     </>
-  ) : (
-    <ValintaTableCell colSpan={2}>
-      {t('henkilo.taulukko.ei-valinnan-tulosta')}
-    </ValintaTableCell>
   );
 };

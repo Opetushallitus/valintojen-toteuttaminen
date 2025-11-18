@@ -49,12 +49,14 @@ export const HakutoiveAccordionContent = ({
       </TableCell>
     </HakutoiveInfoRow>
   ) : (
-    valinnanvaiheet?.map((valinnanvaihe, valinnanvaiheIndex) => {
-      return valinnanvaihe.valintatapajonot?.map((jono, jonoIndex) => {
-        const isFirstJono = valinnanvaiheIndex === 0 && jonoIndex === 0;
-
+    valinnanvaiheet?.map((valinnanvaihe) => {
+      return valinnanvaihe.valintatapajonot?.map((jono) => {
         // Jonosijoja pitäisi aina olla vain yksi
         const jonosija = jono.jonosijat[0];
+        const valintatapaJonoNimi = getValintatapaJonoNimi({
+          valinnanVaiheNimi: valinnanvaihe.nimi,
+          jonoNimi: jono.nimi,
+        });
 
         return (
           jonosija && (
@@ -62,10 +64,7 @@ export const HakutoiveAccordionContent = ({
               <TableCell />
               <TableCell>
                 <OphTypography variant="label">
-                  {getValintatapaJonoNimi({
-                    valinnanVaiheNimi: valinnanvaihe.nimi,
-                    jonoNimi: jono.nimi,
-                  })}
+                  {valintatapaJonoNimi}
                 </OphTypography>
                 <div>
                   {t('henkilo.taulukko.valintalaskenta-tehty')}
@@ -99,18 +98,12 @@ export const HakutoiveAccordionContent = ({
                     />
                   )}
               </TableCell>
-              {
-                /* Näytetään valinnan tiedot vain taulukon ensimmäiselle jonolle, joka siis järjestyksessä viimeinen jono, jonka perusteella valinta tehdään */
-                isFirstJono ? (
-                  <ValinnanTulosCells
-                    hakukohde={hakukohde}
-                    hakutoiveNumero={hakutoiveNumero}
-                    hakija={hakija}
-                  />
-                ) : (
-                  <TableCell colSpan={4} />
-                )
-              }
+              <ValinnanTulosCells
+                hakukohde={hakukohde}
+                valintatapaJono={jono}
+                hakutoiveNumero={hakutoiveNumero}
+                hakija={hakija}
+              />
             </HakutoiveInfoRow>
           )
         );

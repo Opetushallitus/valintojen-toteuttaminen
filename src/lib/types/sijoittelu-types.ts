@@ -16,6 +16,9 @@ export type SijoittelunValintatapajonoTulos = {
   pisteraja?: string;
 };
 
+// Tätä enumia on käytetty sekä valinnan tilalle että sijoittelun tilalle.
+// Sijoittelun tilan vaihtoehdot on muuten samat kuin valinnan tilan, mutta HARKINNANVARAISESTI_HYVAKSYTTY ei ole käytössä.
+// Sijoittelun tuloksessa hyvaksyttyHarkinnanvaraisesti on erillinen boolean-kenttä ja tila on silloin HYVAKSYTTY.
 export enum ValinnanTila {
   HYVAKSYTTY = 'HYVAKSYTTY',
   VARASIJALTA_HYVAKSYTTY = 'VARASIJALTA_HYVAKSYTTY',
