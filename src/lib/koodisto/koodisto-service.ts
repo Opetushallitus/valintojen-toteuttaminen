@@ -3,6 +3,7 @@ import { client } from '../http-client';
 import { Language, TranslatedName } from '../localization/localization-types';
 import { Koodi } from './koodisto-types';
 import { getConfigUrl } from '../configuration/configuration-utils';
+import { FetchError } from '../common';
 
 type CodeElement = {
   koodiUri: string;
@@ -49,14 +50,26 @@ export async function getKoulutustyypit(): Promise<Array<Koodi>> {
   return getKoodit('koulutustyyppi');
 }
 
+// temporary fallback solution for incorrect postal code feeded (not Finnish) to koodistopalvelu
+// ticket OY-5372
+const EMPTY_TRANSLATED_NAME: TranslatedName = { fi: '', sv: '', en: '' };
+
 export async function getPostitoimipaikka(
   postinumero: string,
 ): Promise<TranslatedName> {
   const configuration = getConfiguration();
-  const { data } = await client.get<CodeElement>(
-    getConfigUrl(configuration.routes.koodisto.koodiUrl, {
-      codeElementUri: `posti_${postinumero}`,
-    }),
-  );
-  return mapToKoodi(data).nimi;
+
+  try {
+    const { data } = await client.get<CodeElement>(
+      getConfigUrl(configuration.routes.koodisto.koodiUrl, {
+        codeElementUri: `posti_${postinumero}`,
+      }),
+    );
+    return mapToKoodi(data).nimi;
+  } catch (error) {
+    if (error instanceof FetchError && error.response.status === 404) {
+      return EMPTY_TRANSLATED_NAME;
+    }
+    throw error;
+  }
 }
