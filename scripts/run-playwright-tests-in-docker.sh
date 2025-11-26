@@ -13,6 +13,12 @@ fi
 
 echo "Running Playwright tests in Docker image mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}"
 
+# Normalize args: strip a leading standalone "--" (pnpm run ... -- --project=foo)
+ARGS=("$@")
+if [[ "${ARGS[0]:-}" == "--" ]]; then
+  ARGS=("${ARGS[@]:1}")
+fi
+
 docker run \
   -e CI \
   --mount type=bind,source="$PWD",target=/app \
@@ -22,4 +28,4 @@ docker run \
   --ipc=host \
   --net=host \
   mcr.microsoft.com/playwright:v"$PLAYWRIGHT_VERSION" \
-  npx playwright test "$@"
+  npx playwright test "${ARGS[@]}"
