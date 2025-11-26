@@ -28,11 +28,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-next-env
-      - name: Install CDK dependencies
-        run: |
-          cd cdk
-          npm ci --prefer-offline
-          npm install -g aws-cdk
       - name: Configure AWS utility-role credentials
         uses: aws-actions/configure-aws-credentials@v4.1.0
         with:
@@ -65,6 +60,6 @@ jobs:
           SKIP_OPENNEXT_BUILD: true
         run: |
           cd cdk
-          cdk deploy HostedZoneStack --require-approval never -c "environment=${{ inputs.environment }}"
-          cdk deploy ValintojenToteuttaminenCertificateStack --require-approval never -c "environment=${{ inputs.environment }}"
-          cdk deploy SovellusStack --require-approval never -c "environment=${{ inputs.environment }}"
+          pnpm exec cdk deploy HostedZoneStack --require-approval never -c "environment=${{ inputs.environment }}"
+          pnpm exec cdk deploy ValintojenToteuttaminenCertificateStack --require-approval never -c "environment=${{ inputs.environment }}"
+          pnpm exec cdk deploy SovellusStack --require-approval never -c "environment=${{ inputs.environment }}"

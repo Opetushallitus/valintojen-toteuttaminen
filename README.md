@@ -8,50 +8,50 @@ Valintojen toteuttamisen käyttöliittymä
 
 Voit käyttää lokaaliajossa [mkcert](https://github.com/FiloSottile/mkcert)-työkalulla luotuja sertifikaatteja. Luo sertifikaatit ajamalla komento:
 
-`npm run create-dev-certs`
+`pnpm run create-dev-certs`
 
 ja ota sertifikaatit käyttöön node.js:ssä
 
-`npm run node-extra-ca-certs`
+`pnpm run node-extra-ca-certs`
 
 Asenna riippuvuudet komennolla:
 
-`npm ci`
+`pnpm install --frozen-lockfile`
 
 Sen jälkeen käynnistä palvelu komennolla:
 
-`npm run dev`
+`pnpm dev`
 
 ## Testaus
 
 Aja yksikkötestit komennolla:
 
-`npm test`
+`pnpm test`
 
 ### Kälitestit
 
 Käynnistä sovelluskomennolla:
 
-`npm run dev-test`
+`pnpm run dev-test`
 
 Aja sen jälkeen testit komennolla:
 
-`npx playwright test`
+`pnpm exec playwright test`
 
 Jos haluat ajaa testit vain tietyllä selaimella niin se onnistuu komennolla:
 
-`npx playwright test --project=firefox`
+`pnpm exec playwright test --project=firefox`
 
 Jos haluat ajaa vain tietyn testitiedoston, se onnistuu komennolla:
 
-`npx playwright test --project=chromium tests/e2e/lokalisointi.spec.ts`
+`pnpm exec playwright test --project=chromium tests/e2e/lokalisointi.spec.ts`
 
 ## Deploy
 
 Asenna ensin sovelluksen riippuvuudet ja buildaa next.js sovellus:
 
-    npm ci
-    npm run build
+    pnpm install --frozen-lockfile
+    pnpm run build
 
 Deploy untuvalle onnistuu komennolla:
 
