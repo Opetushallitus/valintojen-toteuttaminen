@@ -56,13 +56,9 @@ const nameOverrides = (
 
 const envOverrides = {
   untuva: {},
-  hahtuva: {
-    FEATURE_VALINTALASKENTAKERRALLA_VANHA: 'true',
-  },
+  hahtuva: {},
   pallero: {},
-  sade: {
-    FEATURE_VALINTALASKENTAKERRALLA_VANHA: 'true',
-  },
+  sade: {},
 };
 
 export class ValintojenToteuttaminenSovellusStack extends cdk.Stack {

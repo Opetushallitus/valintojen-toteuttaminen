@@ -7,9 +7,6 @@ export async function buildConfiguration() {
     process.env.VIRKAILIJA_URL ??
     'https://localhost:3404';
 
-  const valintalaskentakerrallaVanha =
-    process.env.FEATURE_VALINTALASKENTAKERRALLA_VANHA === 'true';
-
   return {
     domain: domain,
     routes: {
@@ -49,9 +46,7 @@ export async function buildConfiguration() {
       valintalaskentaLaskentaService: {
         valintalaskentaServiceLogin: `${domain}/valintalaskenta-laskenta-service/auth/login`,
         valintalaskentaServiceUrl: `${domain}/valintalaskenta-laskenta-service/resources/`,
-        valintalaskentakerrallaUrl: valintalaskentakerrallaVanha
-          ? `${domain}/valintalaskentakoostepalvelu/resources/valintalaskentakerralla`
-          : `${domain}/valintalaskenta-laskenta-service/resources/valintalaskentakerralla`,
+        valintalaskentakerrallaUrl: `${domain}/valintalaskenta-laskenta-service/resources/valintalaskentakerralla`,
         hakemuksenValintalaskennanTuloksetUrl: `${domain}/valintalaskenta-laskenta-service/resources/hakemus/{hakuOid}/{hakemusOid}`,
         hakukohteenValintalaskennanTuloksetUrl: `${domain}/valintalaskenta-laskenta-service/resources/hakukohde/{hakukohdeOid}/valinnanvaihe`,
         lasketutHakukohteet: `${domain}/valintalaskenta-laskenta-service/resources/haku/{hakuOid}/lasketut-hakukohteet`,
