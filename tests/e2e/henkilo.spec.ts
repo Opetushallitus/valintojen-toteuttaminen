@@ -249,23 +249,21 @@ test('Näytetään valitun henkilön tiedot ja hakutoiveet ilman valintalaskenna
   const accordionHeadingText =
     'Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs)';
 
-  const accordionHeading = page.getByRole('cell', {
-    name: accordionHeadingText,
-  });
-
   await expect(
-    accordionHeading.getByRole('link', {
+    page.getByRole('table').getByRole('link', {
       name: 'Tampereen yliopisto, Rakennetun ympäristön tiedekunta',
     }),
   ).toBeVisible();
+
+  const accordionHeading = page
+    .getByRole('button', { name: 'Näytä hakutoiveen tiedot' })
+    .nth(1);
 
   const accordionContent = page.getByLabel(accordionHeadingText);
   await expect(
     accordionContent.getByText('Ei valintalaskennan tuloksia'),
   ).toBeHidden();
-  await accordionHeading
-    .getByRole('button', { name: 'Näytä hakutoiveen tiedot' })
-    .click();
+  await accordionHeading.click();
   await expect(
     accordionContent.getByText('Ei valintalaskennan tuloksia'),
   ).toBeVisible();
@@ -889,6 +887,10 @@ test.describe('Pistesyöttö', () => {
           status: 200,
         });
       }
+
+      return route.fulfill({
+        json: PISTETIEDOT_HAKEMUKSELLE,
+      });
     });
 
     const pistesyottoHeading = page.getByRole('heading', {
@@ -952,6 +954,10 @@ test.describe('Pistesyöttö', () => {
           status: 400,
         });
       }
+
+      return route.fulfill({
+        json: PISTETIEDOT_HAKEMUKSELLE,
+      });
     });
 
     const pisteSyottoHakukohde = page.getByTestId(
