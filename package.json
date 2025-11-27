@@ -33,8 +33,8 @@
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^6.4.7",
     "@mui/material": "^6.4.7",
-    "@mui/system": "^6.4.7",
     "@mui/material-nextjs": "^6.4.3",
+    "@mui/system": "^6.4.7",
     "@opetushallitus/oph-design-system": "^1.0.0",
     "@tanstack/react-query": "^5.68.0",
     "@tanstack/react-query-devtools": "^5.68.0",
@@ -95,6 +95,7 @@
     "start-server-and-test": "^2.0.11",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.26.1",
+    "vite": "^7.2.4",
     "vitest": "^3.0.8"
   }
 }
