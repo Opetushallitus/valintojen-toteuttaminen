@@ -23,7 +23,7 @@ on:
           - pallero
           - sade
 jobs:
-  deploy:
+  bundle:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -52,10 +52,26 @@ jobs:
           fi
       - name: Verify OpenNext bundle contains Next
         run: |
-          ls -la .open-next
-          find .open-next -maxdepth 6 -name package.json
           test -f .open-next/server-functions/default/node_modules/next/package.json \
             || test -f .open-next/server-functions/default/.next/standalone/node_modules/next/package.json
+      - name: Upload OpenNext bundle artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: open-next-bundle
+          path: .open-next
+          if-no-files-found: error
+
+  deploy:
+    needs: bundle
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-next-env
+      - name: Download OpenNext bundle artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: open-next-bundle
+          path: .open-next
       - name: Configure AWS dev-role credentials
         if: ${{ inputs.environment == 'hahtuva' || inputs.environment == 'untuva' || inputs.environment == 'pallero' }}
         uses: aws-actions/configure-aws-credentials@v4.1.0
