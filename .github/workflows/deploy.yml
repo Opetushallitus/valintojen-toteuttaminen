@@ -43,12 +43,19 @@ jobs:
           cp -R .next/standalone/.next/server .next/server # OpenNext v3 needs server-files also in .next/server
       - name: Build OpenNext bundle
         run: npx @opennextjs/aws@^3 build
+      - name: Install server function runtime deps (if missing)
+        run: |
+          if [ ! -f .open-next/server-functions/default/node_modules/next/package.json ]; then
+            echo "next not found under server-functions/default; installing runtime deps"
+            cd .open-next/server-functions/default
+            npm install --omit=dev
+          fi
       - name: Verify OpenNext bundle contains Next
         run: |
           ls -la .open-next
-          find .open-next -maxdepth 4 -name package.json
-          test -f .open-next/server-function/node_modules/next/package.json \
-            || test -f .open-next/server-function/default/node_modules/next/package.json
+          find .open-next -maxdepth 6 -name package.json
+          test -f .open-next/server-functions/default/node_modules/next/package.json \
+            || test -f .open-next/server-functions/default/.next/standalone/node_modules/next/package.json
       - name: Configure AWS dev-role credentials
         if: ${{ inputs.environment == 'hahtuva' || inputs.environment == 'untuva' || inputs.environment == 'pallero' }}
         uses: aws-actions/configure-aws-credentials@v4.1.0
