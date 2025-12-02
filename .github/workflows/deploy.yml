@@ -44,7 +44,11 @@ jobs:
       - name: Build OpenNext bundle
         run: npx @opennextjs/aws@^3 build
       - name: Verify OpenNext bundle contains Next
-        run: test -f .open-next/server-function/node_modules/next/package.json
+        run: |
+          ls -la .open-next
+          find .open-next -maxdepth 4 -name package.json
+          test -f .open-next/server-function/node_modules/next/package.json \
+            || test -f .open-next/server-function/default/node_modules/next/package.json
       - name: Configure AWS dev-role credentials
         if: ${{ inputs.environment == 'hahtuva' || inputs.environment == 'untuva' || inputs.environment == 'pallero' }}
         uses: aws-actions/configure-aws-credentials@v4.1.0
