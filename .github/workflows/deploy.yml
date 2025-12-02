@@ -47,8 +47,10 @@ jobs:
         run: |
           if [ ! -f .open-next/server-functions/default/node_modules/next/package.json ]; then
             echo "next not found under server-functions/default; installing runtime deps"
-            cd .open-next/server-functions/default
-            npm install --omit=dev
+            (
+              cd .open-next/server-functions/default
+              npm install --omit=dev
+            )
           fi
       - name: Verify OpenNext bundle contains Next
         run: |
