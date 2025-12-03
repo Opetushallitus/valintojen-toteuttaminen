@@ -3,26 +3,24 @@ description: 'Setup Next.js environment'
 runs:
   using: 'composite'
   steps:
+    - uses: pnpm/action-setup@v4
+      with:
+        version: 9.15.5
+        run_install: false
     - uses: actions/setup-node@v4
       with:
         node-version-file: '.nvmrc'
-        cache: 'npm'
-        cache-dependency-path: package-lock.json
+        cache: 'pnpm'
+        cache-dependency-path: pnpm-lock.yaml
         registry-url: 'https://npm.pkg.github.com'
         scope: '@opetushallitus'
-    - uses: actions/cache@v4
-      id: node_modules-cache
-      with:
-        path: ${{ github.workspace }}/node_modules
-        key: ${{ runner.os }}-modules-${{ hashFiles('package-lock.json') }}
     - name: Cache Next.js
       uses: actions/cache@v4
       with:
         path: ${{ github.workspace }}/.next/cache
-        key: ${{ runner.os }}-nextjs-${{ hashFiles('package-lock.json') }}-${{ hashFiles('next.config.*', './src/**/*.ts', './src/**/*.tsx') }}
+        key: ${{ runner.os }}-nextjs-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('next.config.*', './src/**/*.ts', './src/**/*.tsx') }}
         restore-keys: |
-          ${{ runner.os }}-nextjs-${{ hashFiles('package-lock.json') }}-
-    - name: Install npm dependencies
-      if: steps.node_modules-cache.outputs.cache-hit != 'true'
+          ${{ runner.os }}-nextjs-${{ hashFiles('pnpm-lock.yaml') }}-
+    - name: Install dependencies
       shell: bash
-      run: npm ci
+      run: pnpm install --frozen-lockfile

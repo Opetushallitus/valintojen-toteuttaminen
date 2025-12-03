@@ -2,16 +2,17 @@
   "name": "valintojen-toteuttaminen",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@9.15.5",
   "scripts": {
     "prepare": "husky",
     "dev": "touch .env.development.local && node --env-file=.env.development --env-file=.env.development.local dev-server.mjs",
-    "dev-test": "TEST=true APP_URL=https://localhost:3404 VIRKAILIJA_URL=http://localhost:3104 npm run dev",
+    "dev-test": "TEST=true APP_URL=https://localhost:3404 VIRKAILIJA_URL=http://localhost:3104 pnpm run dev",
     "build": "STANDALONE=true next build",
     "build-test": "TEST=true APP_URL=https://localhost:3404 VIRKAILIJA_URL=http://localhost:3104 next build",
-    "start": "NODE_ENV=production npm run dev",
-    "start-test": "TEST=true NODE_ENV=production npm run dev-test",
+    "start": "NODE_ENV=production pnpm run dev",
+    "start-test": "TEST=true NODE_ENV=production pnpm run dev-test",
     "lint": "eslint --max-warnings=0",
-    "lint:fix": "npm run lint -- --fix",
+    "lint:fix": "pnpm run lint -- --fix",
     "prettier": "prettier -u -c *",
     "prettier:fix": "prettier --write -u *",
     "test": "vitest",
@@ -21,7 +22,7 @@
     "create-self-signed-dev-certs": "mkdir -p certificates && openssl req -x509 -newkey rsa:4096 -keyout ./certificates/localhost-key.pem -out ./certificates/localhost.pem -sha256 -days 365 -nodes -subj \"/C=XX/ST=StateName/L=CityName/O=CompanyName/OU=CompanySectionName/CN=CommonNameOrHostname\"",
     "typecheck": "tsc",
     "test-playwright-docker": "./scripts/run-playwright-tests-in-docker.sh",
-    "start-and-test-playwright-docker": "START_SERVER_AND_TEST_INSECURE=1 start-server-and-test start-test https://localhost:3404 'npm run test-playwright-docker -- $PLAYWRIGHT_ARGS'",
+    "start-and-test-playwright-docker": "START_SERVER_AND_TEST_INSECURE=1 start-server-and-test start-test https://localhost:3404 'pnpm run test-playwright-docker -- $PLAYWRIGHT_ARGS'",
     "node-extra-ca-certs": "export NODE_EXTRA_CA_CERTS=\"$(mkcert -CAROOT)/rootCA.pem\""
   },
   "dependencies": {
@@ -33,6 +34,7 @@
     "@mui/icons-material": "^6.4.7",
     "@mui/material": "^6.4.7",
     "@mui/material-nextjs": "^6.4.3",
+    "@mui/system": "^6.4.7",
     "@opetushallitus/oph-design-system": "^1.0.0",
     "@tanstack/react-query": "^5.68.0",
     "@tanstack/react-query-devtools": "^5.68.0",
@@ -93,6 +95,7 @@
     "start-server-and-test": "^2.0.11",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.26.1",
+    "vite": "^7.2.4",
     "vitest": "^3.0.8"
   }
 }

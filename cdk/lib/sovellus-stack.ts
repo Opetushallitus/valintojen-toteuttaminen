@@ -93,7 +93,11 @@ export class ValintojenToteuttaminenSovellusStack extends cdk.Stack {
       overrides: {
         nextjsDistribution: {
           serverBehaviorOptions: {
-            cachePolicy: { cachePolicyId: OPEN_NEXT_SERVER_CACHE_POLICY_ID },
+            cachePolicy: CachePolicy.fromCachePolicyId(
+              this,
+              'OpenNextServerCachePolicy',
+              OPEN_NEXT_SERVER_CACHE_POLICY_ID,
+            ),
           },
           imageBehaviorOptions: {
             // We don't need image optimization, so doesn't matter what cache policy we use

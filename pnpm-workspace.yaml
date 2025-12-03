@@ -1,0 +1,4 @@
+packages:
+  - .
+  - cdk
+minimumReleaseAge: 4320
