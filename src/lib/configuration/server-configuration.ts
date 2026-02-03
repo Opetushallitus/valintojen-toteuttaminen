@@ -59,6 +59,9 @@ export async function buildConfiguration() {
         jarjestyskriteeritMuokkausUrl: `${domain}/valintalaskenta-laskenta-service/resources/valintatapajono/{valintatapajonoOid}/{hakemusOid}/jonosija/jarjestyskriteerit`,
         jarjestyskriteeriPoistoUrl: `${domain}/valintalaskenta-laskenta-service/resources/valintatapajono/{valintatapajonoOid}/{hakemusOid}/{jarjestyskriteeriPrioriteetti}/jonosija`,
       },
+      suorituspalvelu: {
+        harkinnanvaraisuudetHakemuksilleUrl: `${domain}/suorituspalvelu/api/v1/valinnat/harkinnanvaraisuus`,
+      },
       valintalaskentakoostepalvelu: {
         valintalaskentaKoostePalveluLogin: `${domain}/valintalaskentakoostepalvelu/cas/login`,
         valintalaskentaKoostePalveluUrl: `${domain}/valintalaskentakoostepalvelu/resources/`,
@@ -88,7 +91,6 @@ export async function buildConfiguration() {
         dokumenttiProsessiUrl: `${domain}/valintalaskentakoostepalvelu/resources/dokumenttiprosessi/{id}`,
         lataaDokumenttiUrl: `${domain}/valintalaskentakoostepalvelu/resources/dokumentit/lataa/{dokumenttiId}`,
         startImportPistesyottoUrl: `${domain}/valintalaskentakoostepalvelu/resources/pistesyotto/tuonti`,
-        harkinnanvaraisuudetHakemuksilleUrl: `${domain}/valintalaskentakoostepalvelu/resources/harkinnanvaraisuus/hakemuksille`,
         myohastyneetHakemuksetUrl: `${domain}/valintalaskentakoostepalvelu/resources/proxy/valintatulosservice/myohastyneet/haku/{hakuOid}/hakukohde/{hakukohdeOid}`,
         hakijanTilatValintatapajonolleUrl: `${domain}/valintalaskentakoostepalvelu/resources/proxy/valintatulosservice/tilahakijalle/haku/{hakuOid}/hakukohde/{hakukohdeOid}/valintatapajono/{valintatapajonoOid}`,
         startImportValinnanTulosUrl: `${domain}/valintalaskentakoostepalvelu/resources/erillishaku/tuonti/ui`,

@@ -4,7 +4,7 @@ import { queryOptionsGetHakemukset } from '@/lib/ataru/ataru-queries';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 import { HakemuksenHarkinnanvaraisuus } from '@/lib/types/harkinnanvaraiset-types';
 import { queryOptionsGetharkinnanvaraisetTilat } from '@/lib/valintalaskenta/valintalaskenta-queries';
-import { getHarkinnanvaraisuudetHakemuksille } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
+import { getHarkinnanvaraisuudetHakemuksille } from '@/lib/suorituspalvelu/suorituspalvelu-service';
 import { useSuspenseQueries, useSuspenseQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { indexBy, prop } from 'remeda';

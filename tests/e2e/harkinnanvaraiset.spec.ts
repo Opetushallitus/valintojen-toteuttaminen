@@ -23,7 +23,7 @@ test.beforeEach(async ({ page }) => {
   );
 
   await page.route(
-    '**/valintalaskentakoostepalvelu/resources/harkinnanvaraisuus/hakemuksille',
+    '**/suorituspalvelu/api/v1/valinnat/harkinnanvaraisuus',
     fixtureFromFile(
       'toisen-asteen-yhteishaku/harkinnanvaraisuudet-hakemuksille.json',
     ),

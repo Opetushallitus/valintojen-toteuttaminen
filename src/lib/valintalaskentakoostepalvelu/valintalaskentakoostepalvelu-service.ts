@@ -52,7 +52,6 @@ import {
   KirjepohjaNimi,
   LetterCounts,
 } from './valintalaskentakoostepalvelu-types';
-import { HarkinnanvaraisuudenSyy } from '../types/harkinnanvaraiset-types';
 import { ValintakoeAvaimet } from '../valintaperusteet/valintaperusteet-types';
 import { Haku, Hakukohde, KoutaOidParams } from '../kouta/kouta-types';
 import { getOpetuskieliCode, isKorkeakouluHaku } from '../kouta/kouta-service';
@@ -811,28 +810,6 @@ export const savePistesyottoExcel = async ({
     );
   }
   return data;
-};
-
-type HakemuksenHarkinnanvaraisuustiedot = {
-  hakemusOid: string;
-  hakutoiveet: Array<{
-    hakukohdeOid: string;
-    harkinnanvaraisuudenSyy: HarkinnanvaraisuudenSyy;
-  }>;
-};
-
-export const getHarkinnanvaraisuudetHakemuksille = async ({
-  hakemusOids,
-}: {
-  hakemusOids: Array<string>;
-}) => {
-  const configuration = getConfiguration();
-  const res = await client.post<Array<HakemuksenHarkinnanvaraisuustiedot>>(
-    configuration.routes.valintalaskentakoostepalvelu
-      .harkinnanvaraisuudetHakemuksilleUrl,
-    hakemusOids,
-  );
-  return res.data;
 };
 
 export const luoHyvaksymiskirjeetPDF = async ({
