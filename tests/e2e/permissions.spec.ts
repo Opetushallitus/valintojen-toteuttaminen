@@ -92,7 +92,7 @@ test.describe('Toiminnot on piilotettu tai poistettu käytöstä jos käyttäjä
 
   test('Harkinnanvaraiset välilehdellä', async ({ page }) => {
     await page.route(
-      '**/valintalaskentakoostepalvelu/resources/harkinnanvaraisuus/hakemuksille',
+      '**/suorituspalvelu/api/v1/valinnat/harkinnanvaraisuus',
       fixtureFromFile(
         'toisen-asteen-yhteishaku/harkinnanvaraisuudet-hakemuksille.json',
       ),
