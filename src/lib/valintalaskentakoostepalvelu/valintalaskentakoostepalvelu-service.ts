@@ -130,7 +130,9 @@ const selectKokeenPisteet = (
           ?.valintakokeidenOsallistumistiedot[k.tunniste]?.osallistumistieto;
       if (
         isNullish(osallistumisTiedot) ||
-        osallistumisTiedot === ValintakoeOsallistuminenTulos.EI_KUTSUTTU
+        osallistumisTiedot === ValintakoeOsallistuminenTulos.EI_KUTSUTTU ||
+        osallistumisTiedot === ValintakoeOsallistuminenTulos.TOISELLA_HAKEMUKSELLA ||
+        osallistumisTiedot === ValintakoeOsallistuminenTulos.TOISESSA_HAKUTOIVEESSA
       ) {
         return null;
       }
