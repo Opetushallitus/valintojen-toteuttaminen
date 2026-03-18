@@ -2,6 +2,7 @@
 
 import { groupBy, indexBy, isNullish, pick, prop } from 'remeda';
 import { client } from '../http-client';
+import { MaksunTila } from '../ataru/ataru-types';
 import {
   SijoitteluajonTulokset,
   SijoittelunHakemus,
@@ -13,6 +14,7 @@ import {
 import { nullWhen404, OphApiError, pointToComma } from '@/lib/common';
 import {
   HakemusChangeEvent,
+  HakemuksenValinnanTulos,
   SijoitteluajonTuloksetResponseData,
   SijoitteluajonTuloksetWithValintaEsitysResponseData,
   SijoittelunTulosBasicInfo,
@@ -163,8 +165,16 @@ export const getLatestSijoitteluajonTuloksetForHakemus = async ({
 
 export const saveMaksunTilanMuutokset = async (
   hakukohdeOid: string,
-  hakemukset: Array<SijoittelunHakemusValintatiedoilla>,
-  originalHakemukset: Array<SijoittelunHakemusValintatiedoilla>,
+  hakemukset: Array<{
+    hakemusOid: string;
+    hakijaOid: string;
+    maksunTila?: HakemuksenValinnanTulos['maksunTila'];
+  }>,
+  originalHakemukset: Array<{
+    hakemusOid: string;
+    hakijaOid: string;
+    maksunTila?: HakemuksenValinnanTulos['maksunTila'];
+  }>,
 ) => {
   const configuration = getConfiguration();
   const hakemuksetWithChangedMaksunTila = hakemukset
@@ -306,6 +316,11 @@ export type HakukohteenValinnanTuloksetData = {
   data: Record<string, ValinnanTulosModel>;
 };
 
+export type HakukohteenLukuvuosimaksut = Array<{
+  personOid: string;
+  maksuntila: MaksunTila;
+}>;
+
 export const getHakukohteenValinnanTulokset = async (
   params: KoutaOidParams,
 ): Promise<HakukohteenValinnanTuloksetData> => {
@@ -320,6 +335,19 @@ export const getHakukohteenValinnanTulokset = async (
     lastModified: headers.get('X-Last-Modified') ?? undefined,
     data: indexBy(data ?? [], prop('hakemusOid')),
   };
+};
+
+export const getHakukohteenLukuvuosimaksut = async (
+  hakukohdeOid: string,
+): Promise<HakukohteenLukuvuosimaksut> => {
+  const configuration = getConfiguration();
+  const response = await nullWhen404(
+    client.get<HakukohteenLukuvuosimaksut>(
+      `${configuration.routes.valintaTulosService.valintaTulosServiceUrl}lukuvuosimaksu/${hakukohdeOid}`,
+    ),
+  );
+
+  return response?.data ?? [];
 };
 
 export const getHakemuksenValinnanTulokset = async ({

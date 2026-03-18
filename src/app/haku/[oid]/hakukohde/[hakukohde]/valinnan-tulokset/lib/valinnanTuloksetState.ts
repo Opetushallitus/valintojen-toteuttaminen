@@ -9,13 +9,17 @@ import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import {
   getHakukohteenValinnanTulokset,
   hyvaksyValintaEsitys,
+  saveMaksunTilanMuutokset,
 } from '@/lib/valinta-tulos-service/valinta-tulos-service';
 import { ValinnanTulosErrorGlobalModal } from '@/components/modals/valinnan-tulos-error-global-modal';
 import { showModal } from '@/components/modals/global-modal';
 import { useQueryClient } from '@tanstack/react-query';
 import { rejectAndLog } from '@/lib/common';
 import { ValinnanTulosEventType } from '@/lib/state/valinnanTuloksetMachineTypes';
-import { refetchHakukohteenValinnanTulokset } from '@/lib/valinta-tulos-service/valinta-tulos-queries';
+import {
+  refetchHakukohteenLukuvuosimaksut,
+  refetchHakukohteenValinnanTulokset,
+} from '@/lib/valinta-tulos-service/valinta-tulos-queries';
 
 export const valinnanTuloksetMachine =
   createValinnanTuloksetMachine<HakemuksenValinnanTulos>('valinta').provide({
@@ -82,6 +86,10 @@ export const useValinnanTulosActorRef = ({
       hakuOid: haku.oid,
       hakukohdeOid: hakukohde.oid,
     });
+    refetchHakukohteenLukuvuosimaksut({
+      queryClient,
+      hakukohdeOid: hakukohde.oid,
+    });
   }, [queryClient, hakukohde.oid, haku.oid]);
 
   const valinnanTulosActorRef = useActorRef(
@@ -93,6 +101,11 @@ export const useValinnanTulosActorRef = ({
             hakukohdeOid: hakukohde.oid,
             hakemukset: input.changed,
           });
+          await saveMaksunTilanMuutokset(
+            hakukohde.oid,
+            input.changed,
+            input.original,
+          );
         }),
         publish: fromPromise(async ({ input }) => {
           let valintatapajonoOid = input.valintatapajonoOid;

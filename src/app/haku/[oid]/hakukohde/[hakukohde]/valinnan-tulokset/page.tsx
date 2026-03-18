@@ -5,7 +5,7 @@ import { TabContainer } from '../components/tab-container';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { Box, Stack } from '@mui/material';
-import { useSuspenseQueries } from '@tanstack/react-query';
+import { useSuspenseQueries, useSuspenseQuery } from '@tanstack/react-query';
 import { isEmpty } from '@/lib/common';
 import { NoResults } from '@/components/no-results';
 import { FullClientSpinner } from '@/components/client-spinner';
@@ -20,7 +20,10 @@ import { useValinnanTuloksetSearchParams } from './hooks/useValinnanTuloksetSear
 import { useIsDirtyValinnanTulos } from '@/lib/state/valinnanTuloksetMachineUtils';
 import { useHakemuksetValinnanTuloksilla } from './hooks/useHakemuksetValinnanTuloksilla';
 import { ValinnanTuloksetSpinnerModal } from './components/ValinnanTuloksetSpinnerModal';
-import { queryOptionsGetHakukohteenValinnanTulokset } from '@/lib/valinta-tulos-service/valinta-tulos-queries';
+import {
+  queryOptionsGetHakukohteenLukuvuosimaksut,
+  queryOptionsGetHakukohteenValinnanTulokset,
+} from '@/lib/valinta-tulos-service/valinta-tulos-queries';
 import {
   queryOptionsGetHakukohde,
   queryOptionsGetHaku,
@@ -51,9 +54,16 @@ const ValinnanTuloksetContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
     ],
   });
 
+  const { data: lukuvuosimaksut } = useSuspenseQuery(
+    queryOptionsGetHakukohteenLukuvuosimaksut({
+      hakukohdeOid,
+    }),
+  );
+
   const hakemuksetTuloksilla = useHakemuksetValinnanTuloksilla({
     hakemukset,
     valinnanTulokset,
+    lukuvuosimaksut,
   });
 
   const valinnanTulosActorRef = useValinnanTulosActorRef({
