@@ -88,6 +88,29 @@ async function goToValinnanTulokset(page: Page) {
   );
 
   await page.route(
+    `*/**/valinta-tulos-service/auth/lukuvuosimaksu/${hakukohdeOid}`,
+    async (route) => {
+      if (route.request().method() === 'POST') {
+        await route.fulfill({ json: [] });
+        return;
+      }
+
+      await route.fulfill({
+        json: [
+          {
+            personOid: '1.2.246.562.24.25732574711',
+            maksuntila: 'MAKSETTU',
+          },
+          {
+            personOid: '1.2.246.562.24.14598775927',
+            maksuntila: 'MAKSAMATTA',
+          },
+        ],
+      });
+    },
+  );
+
+  await page.route(
     '*/**/ohjausparametrit-service/api/v1/rest/parametri/1.2.246.562.29.00000000000000045102',
     async (route) =>
       route.fulfill({
@@ -175,6 +198,7 @@ test.describe('Valinnan tulokset', () => {
         'Valinnan tila',
         'Vastaanoton tila',
         'Ilmoittautumisen tila',
+        'Maksun tila',
         'Toiminnot',
       ],
       'th',
@@ -190,6 +214,7 @@ test.describe('Valinnan tulokset', () => {
         'Nukettaja Ruhtinas',
         'HYLÄTTYHakijalle näkyvä syy:',
         'JulkaistavissaKesken',
+        '',
         '',
         '',
       ],
@@ -219,6 +244,7 @@ test.describe('Valinnan tulokset', () => {
         'HYVÄKSYTTYEhdollinen valintaMuu',
         'JulkaistavissaVastaanottanut sitovasti',
         'Läsnä (koko lukuvuosi)',
+        'Maksettu',
         '',
       ],
       'td',
@@ -244,6 +270,7 @@ test.describe('Valinnan tulokset', () => {
         'HYVÄKSYTTYEhdollinen valinta',
         'JulkaistavissaKesken',
         '',
+        'Maksamatta',
         '',
       ],
       'td',
@@ -259,6 +286,7 @@ test.describe('Valinnan tulokset', () => {
         'JulkaistavissaValitse...',
         '',
         '',
+        '',
       ],
       'td',
       false,
@@ -271,6 +299,7 @@ test.describe('Valinnan tulokset', () => {
         'Ratsu Päätön',
         'Valitse...Ehdollinen valinta',
         'JulkaistavissaValitse...',
+        '',
         '',
         '',
       ],
@@ -536,6 +565,41 @@ test.describe('Tallennus', () => {
     });
 
     await page.getByRole('button', { name: 'Tallenna', exact: true }).click();
+    await expect(
+      page.getByText('Valintaesityksen muutokset tallennettu'),
+    ).toBeVisible();
+  });
+
+  test('Tallentaa maksun tilan muutokset', async ({ page }) => {
+    await mockDocumentProcess({
+      page,
+      urlMatcher: (url) =>
+        url.pathname.includes(
+          '/valintalaskentakoostepalvelu/resources/erillishaku/tuonti/ui',
+        ),
+    });
+    const rows = page.locator('tbody tr');
+    await selectOption({
+      page,
+      locator: rows.nth(1).getByRole('cell').nth(5),
+      option: 'Vapautettu',
+    });
+
+    const [request] = await Promise.all([
+      waitForMethodRequest(page, 'POST', (url) =>
+        url.includes(
+          `valinta-tulos-service/auth/lukuvuosimaksu/${hakukohdeOid}`,
+        ),
+      ),
+      page.getByRole('button', { name: 'Tallenna', exact: true }).click(),
+    ]);
+
+    expect(request.postDataJSON()).toEqual([
+      {
+        personOid: '1.2.246.562.24.25732574711',
+        maksuntila: 'VAPAUTETTU',
+      },
+    ]);
     await expect(
       page.getByText('Valintaesityksen muutokset tallennettu'),
     ).toBeVisible();
