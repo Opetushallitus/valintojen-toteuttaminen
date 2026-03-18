@@ -11,6 +11,7 @@ import {
 } from './playwright-utils';
 import { buildConfiguration } from '@/lib/configuration/server-configuration';
 import HAUT from './fixtures/haut.json';
+import HAKENEET from './fixtures/hakeneet.json';
 import {
   IlmoittautumisTila,
   VastaanottoTila,
@@ -23,6 +24,28 @@ const valintatapajonoOid = '1224656220000000000000000123456';
 async function goToValinnanTulokset(page: Page) {
   await page.clock.setFixedTime(new Date('2025-02-05T12:00:00'));
   const configuration = await buildConfiguration();
+  await page.route(
+    (url) => url.href.includes('lomake-editori/api/external/valinta-ui?'),
+    async (route) => {
+      const hakeneet = HAKENEET.map((hakemus) =>
+        hakemus.personOid === '1.2.246.562.24.14598775927'
+          ? {
+              ...hakemus,
+              hakutoiveet: hakemus.hakutoiveet.map((hakutoive) =>
+                hakutoive.hakukohdeOid === hakukohdeOid
+                  ? {
+                      ...hakutoive,
+                      paymentObligation: 'obligated',
+                    }
+                  : hakutoive,
+              ),
+            }
+          : hakemus,
+      );
+      await route.fulfill({ json: hakeneet });
+    },
+  );
+
   await page.route(
     getConfigUrl(
       configuration.routes.valintaTulosService.hakukohteenValinnanTulosUrl,
