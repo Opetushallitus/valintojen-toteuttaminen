@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { client } from '../http-client';
 import VALINTAKOKEET from '@tests/e2e/fixtures/valintakokeet.json';
 import VALINTAKOEOSALLISTUMISET from '@tests/e2e/fixtures/valintakoeosallistumiset.json';
-import HAKEMUKSET from '@tests/e2e/fixtures/hakeneet.json';
+import HAKENEET_FIXTURE from '@tests/e2e/fixtures/hakeneet.json';
 import {
   getValintakoekutsutData,
   luoEiHyvaksymiskirjeetPDF,
@@ -15,8 +15,8 @@ import { FetchError } from '../common';
 import { setConfiguration } from '@/lib/configuration/client-configuration';
 import { buildConfiguration } from '@/lib/configuration/server-configuration';
 
-const HAKEMUKSET_BY_OID = {
-  '1.2.246.562.11.00000000000001796027': {
+const HAKEMUKSET = [
+  {
     hakemusOid: '1.2.246.562.11.00000000000001796027',
     hakijaOid: '1.2.246.562.24.69259807406',
     etunimet: 'Ruhtinas',
@@ -27,7 +27,7 @@ const HAKEMUKSET_BY_OID = {
     lahiosoite: 'Kuoppamäki 905',
     postinumero: '00100',
   },
-  '1.2.246.562.11.00000000000001793706': {
+  {
     hakemusOid: '1.2.246.562.11.00000000000001793706',
     hakijaOid: '1.2.246.562.24.25732574711',
     etunimet: 'Kreivi',
@@ -38,7 +38,7 @@ const HAKEMUKSET_BY_OID = {
     lahiosoite: 'Rämsöönranta 183',
     postinumero: '00100',
   },
-  '1.2.246.562.11.00000000000001790371': {
+  {
     hakemusOid: '1.2.246.562.11.00000000000001790371',
     hakijaOid: '1.2.246.562.24.14598775927',
     etunimet: 'Puru',
@@ -49,7 +49,7 @@ const HAKEMUKSET_BY_OID = {
     lahiosoite: 'Kuoppamäki 992',
     postinumero: '00100',
   },
-  '1.2.246.562.11.00000000000001543832': {
+  {
     hakemusOid: '1.2.246.562.11.00000000000001543832',
     hakijaOid: '1.2.246.562.24.30476885816',
     etunimet: 'Haamu',
@@ -60,7 +60,7 @@ const HAKEMUKSET_BY_OID = {
     lahiosoite: 'Yläpääntie 875',
     postinumero: '00100',
   },
-  '1.2.246.562.11.00000000000001543857': {
+  {
     asiointikieliKoodi: 'sv',
     etunimet: 'Päätön',
     hakemusOid: '1.2.246.562.11.00000000000001543857',
@@ -71,7 +71,7 @@ const HAKEMUKSET_BY_OID = {
     postinumero: '02200',
     sukunimi: 'Ratsu',
   },
-};
+];
 
 const HAKUKOHDE: Hakukohde = {
   oid: '1.2.246.562.20.00000000000000045109',
@@ -111,7 +111,7 @@ describe('getValintakoekutsutData', () => {
     });
     expect(result).toEqual({
       valintakokeet: [],
-      hakemuksetByOid: {},
+      hakemukset: [],
       valintakoeOsallistumiset: [],
     });
   });
@@ -127,7 +127,7 @@ describe('getValintakoekutsutData', () => {
     });
     expect(result).toEqual({
       valintakokeet: [],
-      hakemuksetByOid: {},
+      hakemukset: [],
       valintakoeOsallistumiset: [],
     });
   });
@@ -158,7 +158,7 @@ describe('getValintakoekutsutData', () => {
         // hakemukset
         return Promise.resolve({
           headers: new Headers(),
-          data: HAKEMUKSET,
+          data: HAKENEET_FIXTURE,
         });
       }
       return Promise.reject();
@@ -170,7 +170,7 @@ describe('getValintakoekutsutData', () => {
     expect(result).toEqual(
       expect.objectContaining({
         valintakokeet: VALINTAKOKEET,
-        hakemuksetByOid: HAKEMUKSET_BY_OID,
+        hakemukset: HAKEMUKSET,
         valintakoeOsallistumiset: VALINTAKOEOSALLISTUMISET,
       }),
     );
@@ -205,14 +205,14 @@ describe('getValintakoekutsutData', () => {
         ) {
           return Promise.resolve({
             headers: new Headers(),
-            data: HAKEMUKSET.filter(
+            data: HAKENEET_FIXTURE.filter(
               (h) => h.oid === '1.2.246.562.11.00000000000001543832',
             ),
           });
         }
         return Promise.resolve({
           headers: new Headers(),
-          data: HAKEMUKSET.filter(
+          data: HAKENEET_FIXTURE.filter(
             (h) => h.oid !== '1.2.246.562.11.00000000000001543832',
           ),
         });
@@ -223,13 +223,10 @@ describe('getValintakoekutsutData', () => {
       hakuOid: '1.2.246.562.29.00000000000000045102',
       hakukohdeOid: '1.2.246.562.20.00000000000000045105',
     });
-    expect(result).toEqual(
-      expect.objectContaining({
-        valintakokeet: VALINTAKOKEET,
-        hakemuksetByOid: HAKEMUKSET_BY_OID,
-        valintakoeOsallistumiset: VALINTAKOEOSALLISTUMISET,
-      }),
-    );
+    expect(result.valintakokeet).toEqual(VALINTAKOKEET);
+    expect(result.valintakoeOsallistumiset).toEqual(VALINTAKOEOSALLISTUMISET);
+    expect(result.hakemukset).toHaveLength(HAKEMUKSET.length);
+    expect(result.hakemukset).toEqual(expect.arrayContaining(HAKEMUKSET));
   });
 });
 

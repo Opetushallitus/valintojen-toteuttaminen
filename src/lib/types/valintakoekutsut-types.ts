@@ -24,13 +24,12 @@ export type ValintakoeKutsuItem = {
   asiointiKieli: Language;
   osallistuminen: `osallistuminen.${ValintakoeOsallistuminen}`;
   lisatietoja: TranslatedName;
-  laskettuPvm: string;
+  laskettuPvm?: string;
 };
 
 export type ValintakoekutsutData = {
   valintakokeet: Array<Valintakoe>;
-  hakemuksetByOid: Record<
-    string,
+  hakemukset: Array<
     Pick<
       HakijaInfo,
       'hakijanNimi' | 'hakemusOid' | 'hakijaOid' | 'asiointikieliKoodi'
