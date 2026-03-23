@@ -45,7 +45,7 @@
       "hakukohteidenOsallistumistiedot": {
         "1.2.246.562.20.00000000000000045105": {
           "valintakokeidenOsallistumistiedot": {
-            "nakki": {"osallistumistieto": "MERKITSEMATTA"},
+            "nakki": {"osallistumistieto": "TOISELLA_HAKEMUKSELLA"},
             "koksa": {"osallistumistieto": "EI_OSALLISTUNUT"}
           }
         }
