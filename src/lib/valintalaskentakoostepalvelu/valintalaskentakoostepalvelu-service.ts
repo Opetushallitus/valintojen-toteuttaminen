@@ -29,7 +29,6 @@ import {
 import {
   OphApiError,
   EMPTY_ARRAY,
-  EMPTY_OBJECT,
   OphProcessError,
   OphProcessErrorData,
   nullWhen404,
@@ -338,7 +337,7 @@ const getValintakoeOsallistumiset = async ({
 
 const VALINTAKOKEET_EMPTY_RESPONSE = {
   valintakokeet: EMPTY_ARRAY,
-  hakemuksetByOid: EMPTY_OBJECT,
+  hakemukset: EMPTY_ARRAY,
   valintakoeOsallistumiset: EMPTY_ARRAY,
 } as const;
 
@@ -374,11 +373,9 @@ async function getAndCombineValintakoekutsutData({
     allHakemukset = hakukohdeHakemukset.concat(missingHakemukset);
   }
 
-  const hakemuksetByOid = indexBy(allHakemukset, prop('hakemusOid'));
-
   return {
     valintakokeet,
-    hakemuksetByOid,
+    hakemukset: allHakemukset,
     valintakoeOsallistumiset,
   };
 }
