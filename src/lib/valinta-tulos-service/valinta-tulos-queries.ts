@@ -2,6 +2,7 @@ import { QueryClient, queryOptions } from '@tanstack/react-query';
 import {
   getChangeHistoryForHakemus,
   getHakemuksenValinnanTulokset,
+  getHakukohteenLukuvuosimaksut,
   getHakukohteenValinnanTulokset,
   getLatestSijoitteluajonTuloksetForHakemus,
   getLatestSijoitteluajonTuloksetWithValintaEsitys,
@@ -56,6 +57,30 @@ export const queryOptionsGetHakukohteenValinnanTulokset = (
     queryKey: ['getHakukohteenValinnanTulokset', params],
     queryFn: () => getHakukohteenValinnanTulokset(params),
   });
+
+export const queryOptionsGetHakukohteenLukuvuosimaksut = ({
+  hakukohdeOid,
+}: {
+  hakukohdeOid: string;
+}) =>
+  queryOptions({
+    queryKey: ['getHakukohteenLukuvuosimaksut', hakukohdeOid],
+    queryFn: () => getHakukohteenLukuvuosimaksut(hakukohdeOid),
+  });
+
+export const refetchHakukohteenLukuvuosimaksut = ({
+  queryClient,
+  hakukohdeOid,
+}: {
+  queryClient: QueryClient;
+  hakukohdeOid: string;
+}) => {
+  const options = queryOptionsGetHakukohteenLukuvuosimaksut({
+    hakukohdeOid,
+  });
+  queryClient.resetQueries(options);
+  queryClient.invalidateQueries(options);
+};
 
 export const refetchHakukohteenValinnanTulokset = ({
   queryClient,
