@@ -1253,7 +1253,7 @@ export const saveValinnanTulosExcel = async ({
 }) => {
   const configuration = getConfiguration();
   const urlWithQuery = new URL(
-    configuration.routes.valintalaskentakoostepalvelu.importValinnanTulosUrl,
+    configuration.routes.valintalaskentakoostepalvelu.startImportValinnanTulosExcelUrl,
   );
   urlWithQuery.searchParams.append('hakuOid', haku.oid);
   urlWithQuery.searchParams.append('hakukohdeOid', hakukohdeOid);
