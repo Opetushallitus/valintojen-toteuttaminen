@@ -20,12 +20,16 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 import {
   getValinnanTulosExcel,
   getMyohastyneetHakemukset,
+  saveValinnanTulosExcel,
 } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
-import { showModal } from '@/components/modals/global-modal';
+import { hideModal, showModal } from '@/components/modals/global-modal';
 import { ConfirmationGlobalModal } from '@/components/modals/confirmation-global-modal';
+import { SpinnerGlobalModal } from '@/components/modals/spinner-global-modal';
 import { buildLinkToApplication } from '@/lib/ataru/ataru-service';
 import { ExternalLink } from '@/components/external-link';
 import { useSelector } from '@xstate/react';
+import { useMutation } from '@tanstack/react-query';
+import useToaster from '@/hooks/useToaster';
 import { styled } from '@/lib/theme';
 import { useIsValintaesitysJulkaistavissa } from '@/hooks/useIsValintaesitysJulkaistavissa';
 import { ValinnanTulosActorRef } from '@/lib/state/createValinnanTuloksetMachine';
@@ -38,6 +42,7 @@ import {
   ValinnanTulosState,
 } from '@/lib/state/valinnanTuloksetMachineTypes';
 import { useHasOnlyHakukohdeReadPermission } from '@/hooks/useHasOnlyHakukohdeReadPermission';
+import { FileSelectButton } from '@/components/file-select-button';
 
 const ActionsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -109,6 +114,64 @@ export const ValinnanTuloksetExcelDownloadButton = ({
     >
       {t('yleinen.vie-taulukkolaskentaan')}
     </FileDownloadButton>
+  );
+};
+
+export const ValinnanTuloksetExcelUploadButton = ({
+  haku,
+  hakukohdeOid,
+  valintatapajonoOid,
+  onUpdated,
+}: {
+  haku: Haku;
+  hakukohdeOid: string;
+  valintatapajonoOid?: string;
+  onUpdated?: () => void;
+}) => {
+  const { t } = useTranslations();
+  const { addToast } = useToaster();
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: async ({ file }: { file: File }) => {
+      showModal(SpinnerGlobalModal, {
+        title: t('valinnan-tulokset.tuodaan-tuloksia-taulukkolaskennasta'),
+      });
+      await saveValinnanTulosExcel({
+        haku,
+        hakukohdeOid,
+        valintatapajonoOid,
+        file,
+      });
+    },
+    onError: (error) => {
+      hideModal(SpinnerGlobalModal);
+      addToast({
+        key: 'upload-valinnan-tulos-excel-error',
+        message:
+          t('valinnan-tulokset.virhe-tuo-taulukkolaskennasta') +
+          (isEmpty(error?.message) ? '.' : `: \n${error.message}`),
+        type: 'error',
+      });
+    },
+    onSuccess: () => {
+      hideModal(SpinnerGlobalModal);
+      onUpdated?.();
+      addToast({
+        key: 'upload-valinnan-tulos-excel-success',
+        message: 'valinnan-tulokset.tuo-taulukkolaskennasta-onnistui',
+        type: 'success',
+      });
+    },
+  });
+
+  return (
+    <FileSelectButton
+      variant="contained"
+      loading={isPending}
+      onFileSelect={(file) => mutate({ file })}
+    >
+      {t('yleinen.tuo-taulukkolaskennasta')}
+    </FileSelectButton>
   );
 };
 
@@ -258,12 +321,13 @@ export const ValinnanTuloksetActions = ({
 
   const { send } = valinnanTulosActorRef;
 
-  const { state, hakemukset, valintatapajonoOid } = useSelector(
+  const { state, hakemukset, valintatapajonoOid, onUpdated } = useSelector(
     valinnanTulosActorRef,
     (s) => ({
       state: s,
       hakemukset: s.context.hakemukset,
       valintatapajonoOid: s.context.valintatapajonoOid,
+      onUpdated: s.context.onUpdated,
     }),
   );
 
@@ -290,6 +354,14 @@ export const ValinnanTuloksetActions = ({
           haku={haku}
           hakukohdeOid={hakukohde.oid}
           valintatapajonoOid={valintatapajonoOid}
+        />
+      )}
+      {mode === 'valinta' && (
+        <ValinnanTuloksetExcelUploadButton
+          haku={haku}
+          hakukohdeOid={hakukohde.oid}
+          valintatapajonoOid={valintatapajonoOid}
+          onUpdated={onUpdated}
         />
       )}
       <MerkitseMyohastyneeksiButton
