@@ -16,6 +16,8 @@ type HaunAsetuksetResponse = {
   PH_VEH?: { date?: string };
   // Varasijatäyttö päättyy
   PH_VSTP?: { date?: string };
+  // Harkinnanvaraisen valinnan päätösten tallennus päättyy
+  PH_HVVPTP?: { date?: string };
 };
 
 export const getHaunAsetukset = async (
@@ -33,10 +35,15 @@ export const getHaunAsetukset = async (
     ? new Date(response.data.PH_VSTP.date)
     : undefined;
 
+  const harkinnanvarainenTallennusPaattyy = response.data.PH_HVVPTP?.date
+    ? new Date(response.data.PH_HVVPTP.date)
+    : undefined;
+
   return {
     sijoittelu: response.data.sijoittelu,
     valinnatEstettyOppilaitosvirkailijoilta: response.data.PH_OLVVPKE,
     valintaEsityksenHyvaksyminen,
     varasijatayttoPaattyy,
+    harkinnanvarainenTallennusPaattyy,
   };
 };

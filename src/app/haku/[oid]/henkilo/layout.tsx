@@ -1,5 +1,6 @@
 import { Stack } from '@mui/material';
 import { HenkiloPanel } from './components/henkilo-panel';
+import { ValintojenToteuttaminenAccessGuard } from '../components/valintojen-toteuttaminen-access-guard';
 
 export default async function HenkiloLayout(props: {
   children: React.ReactNode;
@@ -10,14 +11,16 @@ export default async function HenkiloLayout(props: {
   const { children } = props;
 
   return (
-    <Stack
-      direction="row"
-      sx={{
-        alignItems: 'flex-start',
-      }}
-    >
-      <HenkiloPanel hakuOid={params.oid} />
-      {children}
-    </Stack>
+    <ValintojenToteuttaminenAccessGuard hakuOid={params.oid} tabName="henkilo">
+      <Stack
+        direction="row"
+        sx={{
+          alignItems: 'flex-start',
+        }}
+      >
+        <HenkiloPanel hakuOid={params.oid} />
+        {children}
+      </Stack>
+    </ValintojenToteuttaminenAccessGuard>
   );
 }

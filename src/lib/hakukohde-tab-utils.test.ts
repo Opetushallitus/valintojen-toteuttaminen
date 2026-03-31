@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { getVisibleHakukohdeTabs } from './hakukohde-tab-utils';
 import { Haku, Hakukohde, Tila } from '@/lib/kouta/kouta-types';
 import { toFinnishDate } from '@/lib/time-utils';
@@ -75,6 +75,10 @@ describe('getVisibleHakukohdeTabs', () => {
     vi.setSystemTime(
       toFinnishDate(new Date(Date.parse('2020-01-01T12:00:00.000Z'))),
     );
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   test('OPH permissions - korkeakoulutus', async () => {
@@ -219,21 +223,56 @@ describe('getVisibleHakukohdeTabs', () => {
     ]);
   });
 
-  test('CRUD permissions - use of valinnat disallowed via ohjausparametrit', () => {
+  test('CRUD permissions - valinnat blocked via ohjausparametrit during blocked window', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(
+      toFinnishDate(new Date(Date.parse('2021-01-01T12:00:00.000Z'))),
+    );
+
     const tabs = getVisibleHakukohdeTabs({
       haku: HAKU_BASE,
       hakukohde: HAKUKOHDE_BASE,
       haunAsetukset: {
         sijoittelu: true,
         valinnatEstettyOppilaitosvirkailijoilta: {
-          dateStart: Date.parse('2021-01-01T12:00:00.000Z'),
-          dateEnd: Date.parse('2021-01-02T12:00:00.000Z'),
+          dateStart: Date.parse('2021-01-01T00:00:00.000Z'),
+          dateEnd: Date.parse('2021-01-02T23:59:59.000Z'),
         },
       },
       usesValintalaskenta: true,
       hierarchyPermissions: CRUD_PERMISSIONS,
     });
     expect(tabs.map((t) => t.route)).toEqual(['perustiedot']);
+  });
+
+  test('CRUD permissions - valinnat allowed before blocked window', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(
+      toFinnishDate(new Date(Date.parse('2020-12-31T12:00:00.000Z'))),
+    );
+
+    const tabs = getVisibleHakukohdeTabs({
+      haku: HAKU_BASE,
+      hakukohde: HAKUKOHDE_BASE,
+      haunAsetukset: {
+        sijoittelu: true,
+        valinnatEstettyOppilaitosvirkailijoilta: {
+          dateStart: Date.parse('2021-01-01T00:00:00.000Z'),
+          dateEnd: Date.parse('2021-01-02T23:59:59.000Z'),
+        },
+      },
+      usesValintalaskenta: true,
+      hierarchyPermissions: CRUD_PERMISSIONS,
+    });
+    expect(tabs.map((t) => t.route)).toEqual([
+      'perustiedot',
+      'hakeneet',
+      'valinnan-hallinta',
+      'valintakoekutsut',
+      'pistesyotto',
+      'valintalaskennan-tulokset',
+      'sijoittelun-tulokset',
+    ]);
   });
 
   test('Read permissions, no valintalaskenta and no sijoittelu', () => {
@@ -327,20 +366,51 @@ describe('getVisibleHakukohdeTabs', () => {
     ]);
   });
 
-  test('CRUD permissions - no laskenta and no sijoittelu', () => {
+  test('CRUD permissions - "toisen asteen yhteishaku" should hide valinnan-hallinta tab for non-OPH users', () => {
     const tabs = getVisibleHakukohdeTabs({
-      haku: HAKU_BASE,
-      hakukohde: HAKUKOHDE_BASE,
-      haunAsetukset: {
-        sijoittelu: false,
+      haku: {
+        ...HAKU_BASE,
+        hakutapaKoodiUri: 'hakutapa_01#1', // Yhteishaku
+        kohdejoukkoKoodiUri: 'haunkohdejoukko_11#1', // Perusopetuksen jälkeisen koulutuksen yhteishaku
       },
-      usesValintalaskenta: false,
-      hierarchyPermissions: WRITE_PERMISSIONS,
+      hakukohde: HAKUKOHDE_BASE,
+      haunAsetukset: { sijoittelu: true },
+      usesValintalaskenta: true,
+      hierarchyPermissions: CRUD_PERMISSIONS,
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
       'hakeneet',
-      'valinnan-tulokset',
+      'valintakoekutsut',
+      'pistesyotto',
+      'valintalaskennan-tulokset',
+      'sijoittelun-tulokset',
     ]);
+  });
+
+  test('CRUD permissions - "toisen asteen yhteishaku" should hide all tabs during blocked window', () => {
+    vi.setSystemTime(
+      toFinnishDate(new Date(Date.parse('2021-01-01T12:00:00.000Z'))),
+    );
+
+    const tabs = getVisibleHakukohdeTabs({
+      haku: {
+        ...HAKU_BASE,
+        hakutapaKoodiUri: 'hakutapa_01#1',
+        kohdejoukkoKoodiUri: 'haunkohdejoukko_11#1',
+      },
+      hakukohde: HAKUKOHDE_BASE,
+      haunAsetukset: {
+        sijoittelu: true,
+        valinnatEstettyOppilaitosvirkailijoilta: {
+          dateStart: Date.parse('2021-01-01T00:00:00.000Z'),
+          dateEnd: Date.parse('2021-01-02T23:59:59.000Z'),
+        },
+      },
+      usesValintalaskenta: true,
+      hierarchyPermissions: CRUD_PERMISSIONS,
+    });
+
+    expect(tabs).toEqual([]);
   });
 });

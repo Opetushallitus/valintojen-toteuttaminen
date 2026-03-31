@@ -28,6 +28,7 @@ export const HarkinnanvaraisetTable = ({
   setSelection,
   onHarkinnanvaraisetTilatChange,
   harkinnanvaraisetTilat,
+  readOnly = false,
 }: {
   data: Array<HakemuksenHarkinnanvaraisuus>;
   selection: SelectionProps['selection'];
@@ -36,10 +37,12 @@ export const HarkinnanvaraisetTable = ({
     harkinnanvaraisetTilaChanges: HarkinnanvaraisetTilatByHakemusOids,
   ) => void;
   harkinnanvaraisetTilat: Record<string, HarkinnanvarainenTilaValue>;
+  readOnly?: boolean;
 }) => {
   const { t } = useTranslations();
 
-  const userHasOnlyReadPermission = useHasOnlyHakukohdeReadPermission();
+  const userHasOnlyReadPermission =
+    useHasOnlyHakukohdeReadPermission() || readOnly;
 
   const { results, sort, setSort, page, setPage, pageSize } =
     useHarkinanvaraisetPaginated(data);

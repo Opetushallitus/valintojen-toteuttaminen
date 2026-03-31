@@ -93,7 +93,8 @@ const useExcelUploadMutation = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
 export const PistesyottoExcelUploadButton = ({
   hakuOid,
   hakukohdeOid,
-}: KoutaOidParams) => {
+  disabled = false,
+}: KoutaOidParams & { disabled?: boolean }) => {
   const { t } = useTranslations();
 
   const { mutate, isPending } = useExcelUploadMutation({
@@ -103,6 +104,7 @@ export const PistesyottoExcelUploadButton = ({
 
   return (
     <FileSelectButton
+      disabled={disabled}
       loading={isPending}
       onFileSelect={(file) => mutate({ file })}
     >
