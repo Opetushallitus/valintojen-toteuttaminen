@@ -19,6 +19,9 @@ import { getVisibleHakuTabs } from '../lib/getVisibleHakuTabs';
 import { checkHasPermission } from '@/lib/permissions';
 import { queryOptionsGetHakukohteet } from '@/lib/kouta/kouta-queries';
 import { BlockerLink } from '@/components/blocker-link';
+import { queryOptionsGetHaku } from '@/lib/kouta/kouta-queries';
+import { queryOptionsGetHaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-queries';
+import { isValintojenToteuttaminenEstetty } from '@/lib/valintojen-toteuttaminen-access';
 
 const TAB_BUTTON_HEIGHT = '48px';
 
@@ -66,6 +69,8 @@ export const HakuTabs = ({ hakuOid }: { hakuOid: string }) => {
   const { addToast } = useToaster();
 
   const [
+    { data: haku, isLoading: isHakuLoading },
+    { data: haunAsetukset, isLoading: isHaunAsetuksetLoading },
     { data: hasValintaryhma },
     {
       data: hakukohteet,
@@ -74,6 +79,8 @@ export const HakuTabs = ({ hakuOid }: { hakuOid: string }) => {
     },
   ] = useQueries({
     queries: [
+      queryOptionsGetHaku({ hakuOid }),
+      queryOptionsGetHaunAsetukset({ hakuOid }),
       {
         queryKey: ['onkoHaullaValintaryhma', hakuOid],
         queryFn: () => onkoHaullaValintaryhma(hakuOid),
@@ -101,6 +108,15 @@ export const HakuTabs = ({ hakuOid }: { hakuOid: string }) => {
   );
 
   const hierarchyPermissions = useHierarchyUserPermissions(userPermissions);
+
+  const valintojenToteuttaminenAllowed =
+    !haku ||
+    !haunAsetukset ||
+    !isValintojenToteuttaminenEstetty({
+      haku,
+      haunAsetukset,
+      permissions: hierarchyPermissions,
+    });
 
   const hasValinnatRead = checkHasPermission(
     hakukohdeTarjoajaOids,
@@ -131,7 +147,8 @@ export const HakuTabs = ({ hakuOid }: { hakuOid: string }) => {
       }}
       aria-label={t('haku-tabs.navigaatio')}
     >
-      {!hasOphCRUD && isHakukohteetLoading ? (
+      {!hasOphCRUD &&
+      (isHakukohteetLoading || isHakuLoading || isHaunAsetuksetLoading) ? (
         <Box
           sx={{
             display: 'flex',
@@ -145,6 +162,7 @@ export const HakuTabs = ({ hakuOid }: { hakuOid: string }) => {
           hierarchyPermissions,
           tarjoajaOids: hakukohdeTarjoajaOids,
           hasValintaryhma: hasValintaryhma,
+          valintojenToteuttaminenAllowed,
         }).map((tabName) => {
           return (
             <React.Fragment key={tabName}>

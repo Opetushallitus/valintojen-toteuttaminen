@@ -14,6 +14,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { refetchPisteetForHakukohde } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-queries';
 import { usePistesyottoState } from '../lib/hakukohde-pistesyotto-state';
 import { useNavigationBlockerWithWindowEvents } from '@/hooks/useNavigationBlocker';
+import { useUserPermissions } from '@/hooks/useUserPermissions';
+import { isPistesyottoAllowed } from '@/lib/valintojen-toteuttaminen-access';
 
 export const PisteSyottoForm = ({
   hakuOid,
@@ -51,7 +53,12 @@ export const PisteSyottoForm = ({
   });
 
   const { data: haunParametrit } = useHaunParametrit({ hakuOid });
+  const userPermissions = useUserPermissions();
 
+  const pistesyottoDisabled = !isPistesyottoAllowed({
+    pistesyottoEnabled: haunParametrit.pistesyottoEnabled,
+    permissions: userPermissions,
+  });
   useNavigationBlockerWithWindowEvents(isDirty);
 
   const {
@@ -82,7 +89,7 @@ export const PisteSyottoForm = ({
         isUpdating={isUpdating}
         hakuOid={hakuOid}
         hakukohdeOid={hakukohdeOid}
-        pisteSyottoDisabled={!haunParametrit.pistesyottoEnabled}
+        pisteSyottoDisabled={pistesyottoDisabled}
       />
       <TablePaginationWrapper
         totalCount={results?.length ?? 0}
@@ -99,7 +106,7 @@ export const PisteSyottoForm = ({
           pistetiedot={pageResults}
           kokeet={koeResults}
           pistesyottoActorRef={pistesyottoActorRef}
-          pisteSyottoDisabled={!haunParametrit.pistesyottoEnabled}
+          pisteSyottoDisabled={pistesyottoDisabled}
           naytaVainLaskentaanVaikuttavat={naytaVainLaskentaanVaikuttavat}
         />
       </TablePaginationWrapper>

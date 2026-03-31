@@ -1,5 +1,6 @@
 import { Stack } from '@mui/material';
 import { HakukohdePanel } from './components/hakukohde-panel';
+import { ValintojenToteuttaminenAccessGuard } from '../components/valintojen-toteuttaminen-access-guard';
 
 export default async function HakuLayout(props: {
   children: React.ReactNode;
@@ -11,14 +12,19 @@ export default async function HakuLayout(props: {
   const { children } = props;
 
   return (
-    <Stack
-      direction="row"
-      sx={{
-        alignItems: 'flex-start',
-      }}
+    <ValintojenToteuttaminenAccessGuard
+      hakuOid={params.oid}
+      tabName="hakukohde"
     >
-      <HakukohdePanel hakuOid={params.oid} />
-      {children}
-    </Stack>
+      <Stack
+        direction="row"
+        sx={{
+          alignItems: 'flex-start',
+        }}
+      >
+        <HakukohdePanel hakuOid={params.oid} />
+        {children}
+      </Stack>
+    </ValintojenToteuttaminenAccessGuard>
   );
 }

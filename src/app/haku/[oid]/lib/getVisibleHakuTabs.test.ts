@@ -112,4 +112,14 @@ describe('getVisibleHakuTabs', () => {
     });
     expect(result).toEqual([]);
   });
+
+  it("hides 'hakukohde' and 'henkilo' when valintojen toteuttaminen is blocked", () => {
+    const result = getVisibleHakuTabs({
+      hierarchyPermissions: CRUD_PERMISSION,
+      tarjoajaOids,
+      hasValintaryhma: true,
+      valintojenToteuttaminenAllowed: false,
+    });
+    expect(result).toEqual(['valintaryhma', 'yhteisvalinnan-hallinta']);
+  });
 });

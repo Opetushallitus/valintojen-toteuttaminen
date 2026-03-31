@@ -5,10 +5,12 @@ export const getVisibleHakuTabs = ({
   hierarchyPermissions,
   tarjoajaOids = [],
   hasValintaryhma = false,
+  valintojenToteuttaminenAllowed = true,
 }: {
   hierarchyPermissions: UserPermissions;
   tarjoajaOids?: Array<string>;
   hasValintaryhma?: boolean;
+  valintojenToteuttaminenAllowed?: boolean;
 }) => {
   const hasValinnatRead = checkHasPermission(
     tarjoajaOids,
@@ -23,8 +25,8 @@ export const getVisibleHakuTabs = ({
   );
 
   return [
-    hasValinnatRead && 'hakukohde',
-    hasValinnatRead && 'henkilo',
+    hasValinnatRead && valintojenToteuttaminenAllowed && 'hakukohde',
+    hasValinnatRead && valintojenToteuttaminenAllowed && 'henkilo',
     hasValintaryhma && hasValinnatCRUD && 'valintaryhma',
     hasValinnatCRUD && 'yhteisvalinnan-hallinta',
   ].filter(isTruthy);

@@ -41,6 +41,7 @@ export const PisteSyottoActions = ({
       <PistesyottoExcelUploadButton
         hakuOid={hakuOid}
         hakukohdeOid={hakukohdeOid}
+        disabled={isUpdating || pisteSyottoDisabled}
       />
     </Stack>
   );

@@ -6,4 +6,5 @@ export type HaunAsetukset = {
     dateStart: number;
     dateEnd: number;
   };
+  harkinnanvarainenTallennusPaattyy?: Date;
 };

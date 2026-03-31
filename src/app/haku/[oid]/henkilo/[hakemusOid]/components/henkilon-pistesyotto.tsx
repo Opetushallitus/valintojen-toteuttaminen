@@ -27,6 +27,8 @@ import {
 } from '../lib/henkilon-pistesyotto-state';
 import { KokeenPistesyotto } from './kokeen-pistesyotto';
 import { useNavigationBlockerWithWindowEvents } from '@/hooks/useNavigationBlocker';
+import { useUserPermissions } from '@/hooks/useUserPermissions';
+import { isPistesyottoAllowed } from '@/lib/valintojen-toteuttaminen-access';
 
 const HakukohteenPisteSyotto = ({
   hakija,
@@ -96,6 +98,11 @@ export const HenkilonPistesyotto = ({
   const { data: haunParametrit } = useHaunParametrit({
     hakuOid: hakuOid,
   });
+  const userPermissions = useUserPermissions();
+  const pistesyottoAllowed = isPistesyottoAllowed({
+    pistesyottoEnabled: haunParametrit.pistesyottoEnabled,
+    permissions: userPermissions,
+  });
 
   const onEvent = useCallback(
     (event: GenericEvent) => {
@@ -159,7 +166,7 @@ export const HenkilonPistesyotto = ({
           sx={{ margin: '0.8rem 0' }}
           variant="contained"
           loading={isUpdating}
-          disabled={!haunParametrit.pistesyottoEnabled}
+          disabled={!pistesyottoAllowed}
           onClick={() => {
             savePistetiedot();
           }}
@@ -173,7 +180,7 @@ export const HenkilonPistesyotto = ({
           hakukohde={hakukohde}
           hakija={hakija}
           pistesyottoActorRef={pistesyottoActorRef}
-          disabled={hakukohde.readOnly || !haunParametrit.pistesyottoEnabled}
+          disabled={hakukohde.readOnly || !pistesyottoAllowed}
         />
       ))}
     </Box>
