@@ -14,12 +14,20 @@ export const LaskentaProgressBar = ({
   seurantaTiedot: SeurantaTiedot | null;
 }) => {
   const { t } = useTranslations();
-  const laskentaPercent = seurantaTiedot
-    ? (100 *
-        (seurantaTiedot?.hakukohteitaValmiina +
-          seurantaTiedot?.hakukohteitaKeskeytetty)) /
-      seurantaTiedot?.hakukohteitaYhteensa
-    : 0;
+
+  const getLaskentaPercent = (tiedot: SeurantaTiedot | null) => {
+    if (!tiedot) return 0;
+    else if (tiedot.tila === 'VALMIS' && tiedot.tyyppi === 'VALINTARYHMA')
+      return 100;
+    else
+      return (
+        100 *
+        ((tiedot?.hakukohteitaValmiina + tiedot?.hakukohteitaKeskeytetty) /
+          tiedot?.hakukohteitaYhteensa)
+      );
+  };
+
+  const laskentaPercent = getLaskentaPercent(seurantaTiedot);
   const laskentaReady =
     seurantaTiedot &&
     seurantaTiedot?.hakukohteitaValmiina +
