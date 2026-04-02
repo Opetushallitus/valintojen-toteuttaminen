@@ -281,7 +281,10 @@ export const ValinnanTuloksetActions = ({
         }}
         variant="contained"
         loading={state.matches(ValinnanTulosState.UPDATING)}
-        disabled={!state.matches(ValinnanTulosState.IDLE)}
+        disabled={
+          !state.matches(ValinnanTulosState.IDLE) ||
+          (mode === 'sijoittelu' && !isValintaesitysJulkaistavissa)
+        }
       >
         {t('yleinen.tallenna')}
       </OphButton>

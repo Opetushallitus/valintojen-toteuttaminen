@@ -1,8 +1,10 @@
 import {
   isHarkinnanvarainenHakukohde,
   isKorkeakouluHaku,
+  isToisenAsteenYhteisHaku,
 } from '@/lib/kouta/kouta-service';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
+import { isValintojenToteuttaminenEstetty } from '@/lib/valintojen-toteuttaminen-access';
 import {
   checkHasPermission,
   Permission,
@@ -29,14 +31,16 @@ const isValinnatAllowedForHaku = (
   haunAsetukset: HaunAsetukset,
   hierarchyPermissions: UserPermissions,
 ) => {
-  return (
-    hierarchyPermissions.hasOphCRUD ||
-    isInRange(
-      toFinnishDate(new Date()),
-      haunAsetukset?.valinnatEstettyOppilaitosvirkailijoilta?.dateStart,
-      haunAsetukset?.valinnatEstettyOppilaitosvirkailijoilta?.dateEnd,
-    )
-  );
+  const estoaika = haunAsetukset?.valinnatEstettyOppilaitosvirkailijoilta;
+  const dateStart = estoaika?.dateStart ?? undefined;
+  const dateEnd = estoaika?.dateEnd ?? undefined;
+  const hasBlockedWindow = dateStart !== undefined || dateEnd !== undefined;
+  // Valinnan palvelu estetty oppilaitosvirkailijoilta ajanjaksolla.
+  // Opetushallituksen käyttäjillä (hasOphCRUD) on aina pääsy.
+  const isEstetty =
+    hasBlockedWindow &&
+    isInRange(toFinnishDate(new Date()), dateStart, dateEnd);
+  return hierarchyPermissions.hasOphCRUD || !isEstetty;
 };
 
 const hasHakukohdePermission = (
@@ -69,6 +73,7 @@ export const HAKUKOHDE_TABS: ReadonlyArray<BasicTab> = [
     title: 'valinnanhallinta.otsikko',
     route: 'valinnan-hallinta',
     visibleFn: ({
+      haku,
       hakukohde,
       haunAsetukset,
       hierarchyPermissions,
@@ -76,7 +81,8 @@ export const HAKUKOHDE_TABS: ReadonlyArray<BasicTab> = [
     }) =>
       hasHakukohdePermission(hakukohde, hierarchyPermissions, 'CRUD') &&
       (haunAsetukset.sijoittelu || usesValintalaskenta) &&
-      isValinnatAllowedForHaku(haunAsetukset, hierarchyPermissions),
+      isValinnatAllowedForHaku(haunAsetukset, hierarchyPermissions) &&
+      (hierarchyPermissions.hasOphCRUD || !isToisenAsteenYhteisHaku(haku)),
   },
   {
     title: 'valintakoekutsut.otsikko',
@@ -185,6 +191,15 @@ export const isHakukohdeTabVisible = ({
 };
 
 export const getVisibleHakukohdeTabs = (visibleProps: VisibleFnProps) => {
+  if (
+    isValintojenToteuttaminenEstetty({
+      haku: visibleProps.haku,
+      haunAsetukset: visibleProps.haunAsetukset,
+      permissions: visibleProps.hierarchyPermissions,
+    })
+  ) {
+    return [];
+  }
   return HAKUKOHDE_TABS.filter((tab) =>
     isHakukohdeTabVisible({ tab, ...visibleProps }),
   );

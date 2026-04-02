@@ -20,6 +20,10 @@ import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 import { refetchHarkinnanvaraisetTilat } from '@/lib/valintalaskenta/valintalaskenta-queries';
 import { useHasOnlyHakukohdeReadPermission } from '@/hooks/useHasOnlyHakukohdeReadPermission';
 import { useNavigationBlockerWithWindowEvents } from '@/hooks/useNavigationBlocker';
+import { useHaunAsetukset } from '@/lib/ohjausparametrit/useHaunAsetukset';
+import { useHaku } from '@/lib/kouta/useHaku';
+import { useUserPermissions } from '@/hooks/useUserPermissions';
+import { isHarkinnanvaraistenTallennusAllowed } from '@/lib/valintojen-toteuttaminen-access';
 
 const useTallennaMutation = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const { addToast } = useToaster();
@@ -73,6 +77,18 @@ export const HarkinnanvaraisetForm = ({
   const { t } = useTranslations();
 
   const hasOnlyReadPermission = useHasOnlyHakukohdeReadPermission();
+  const userPermissions = useUserPermissions();
+  const { data: haku } = useHaku({ hakuOid });
+  const { data: haunAsetukset } = useHaunAsetukset({ hakuOid });
+  const isReadOnly =
+    hasOnlyReadPermission ||
+    (haku
+      ? !isHarkinnanvaraistenTallennusAllowed({
+          haku,
+          haunAsetukset,
+          permissions: userPermissions,
+        })
+      : false);
 
   const { selection, setSelection, resetSelection } = useSelection(
     harkinnanvaraisetHakemukset,
@@ -128,7 +144,7 @@ export const HarkinnanvaraisetForm = ({
       autoComplete="off"
       sx={{ display: 'flex', flexDirection: 'column', rowGap: 2 }}
     >
-      {!hasOnlyReadPermission && (
+      {!isReadOnly && (
         <OphButton
           variant="contained"
           type="submit"
@@ -138,7 +154,7 @@ export const HarkinnanvaraisetForm = ({
           {t('yleinen.tallenna')}
         </OphButton>
       )}
-      {!hasOnlyReadPermission && (
+      {!isReadOnly && (
         <HarkinnanvaraisetActionBar
           selection={selection}
           onHarkinnanvaraisetTilatChange={handleHarkinnanvaraisetTilatChange}
@@ -151,6 +167,7 @@ export const HarkinnanvaraisetForm = ({
         setSelection={setSelection}
         onHarkinnanvaraisetTilatChange={handleHarkinnanvaraisetTilatChange}
         harkinnanvaraisetTilat={harkinnanvaraisetTilat}
+        readOnly={isReadOnly}
       />
     </FormBox>
   );
