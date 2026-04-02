@@ -275,6 +275,87 @@ describe('getVisibleHakukohdeTabs', () => {
     ]);
   });
 
+  test('CRUD permissions - valinnat blocked when only blocked window start is set and current time is after it', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(
+      toFinnishDate(new Date(Date.parse('2021-01-02T12:00:00.000Z'))),
+    );
+
+    const tabs = getVisibleHakukohdeTabs({
+      haku: {
+        ...HAKU_BASE,
+        hakutapaKoodiUri: 'hakutapa_01#1',
+        kohdejoukkoKoodiUri: 'haunkohdejoukko_11#1',
+      },
+      hakukohde: HAKUKOHDE_BASE,
+      haunAsetukset: {
+        sijoittelu: true,
+        valinnatEstettyOppilaitosvirkailijoilta: {
+          dateStart: Date.parse('2021-01-01T00:00:00.000Z'),
+          dateEnd: null,
+        },
+      },
+      usesValintalaskenta: true,
+      hierarchyPermissions: CRUD_PERMISSIONS,
+    });
+
+    expect(tabs).toEqual([]);
+  });
+
+  test('CRUD permissions - valinnat blocked when only blocked window end is set and current time is before it', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(
+      toFinnishDate(new Date(Date.parse('2020-12-31T12:00:00.000Z'))),
+    );
+
+    const tabs = getVisibleHakukohdeTabs({
+      haku: {
+        ...HAKU_BASE,
+        hakutapaKoodiUri: 'hakutapa_01#1',
+        kohdejoukkoKoodiUri: 'haunkohdejoukko_11#1',
+      },
+      hakukohde: HAKUKOHDE_BASE,
+      haunAsetukset: {
+        sijoittelu: true,
+        valinnatEstettyOppilaitosvirkailijoilta: {
+          dateStart: null,
+          dateEnd: Date.parse('2021-01-01T00:00:00.000Z'),
+        },
+      },
+      usesValintalaskenta: true,
+      hierarchyPermissions: CRUD_PERMISSIONS,
+    });
+
+    expect(tabs).toEqual([]);
+  });
+
+  test('CRUD permissions - valinnat blocked when blocked window starts today', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(
+      toFinnishDate(new Date(Date.parse('2026-04-02T12:00:00.000Z'))),
+    );
+
+    const tabs = getVisibleHakukohdeTabs({
+      haku: {
+        ...HAKU_BASE,
+        hakutapaKoodiUri: 'hakutapa_01#1',
+        kohdejoukkoKoodiUri: 'haunkohdejoukko_11#1',
+      },
+      hakukohde: HAKUKOHDE_BASE,
+      haunAsetukset: {
+        sijoittelu: true,
+        valinnatEstettyOppilaitosvirkailijoilta: {
+          dateStart: Date.parse('2026-04-02T00:00:00.000Z'),
+          dateEnd: Date.parse('2026-04-03T00:00:00.000Z'),
+        },
+      },
+      usesValintalaskenta: true,
+      hierarchyPermissions: CRUD_PERMISSIONS,
+    });
+
+    expect(tabs).toEqual([]);
+  });
+
   test('Read permissions, no valintalaskenta and no sijoittelu', () => {
     const tabs = getVisibleHakukohdeTabs({
       haku: HAKU_BASE,
