@@ -63,3 +63,27 @@ test('does not map PH_OLVVPKE when blocked window dates are missing', async () =
 
   expect(result.valinnatEstettyOppilaitosvirkailijoilta).toBeUndefined();
 });
+
+test('maps PH_OLVVPKE when only one blocked window date is present', async () => {
+  const config = await buildConfiguration();
+  setConfiguration(config);
+
+  const clientSpy = vi.spyOn(client, 'get');
+  clientSpy.mockResolvedValueOnce({
+    headers: new Headers(),
+    data: {
+      sijoittelu: true,
+      PH_OLVVPKE: {
+        dateStart: 1781154000000,
+        dateEnd: null,
+      },
+    },
+  });
+
+  const result = await getHaunAsetukset('1.2.246.562.29.00000000000000075761');
+
+  expect(result.valinnatEstettyOppilaitosvirkailijoilta).toEqual({
+    dateStart: 1781154000000,
+    dateEnd: null,
+  });
+});

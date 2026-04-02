@@ -14,13 +14,14 @@ export const isValintojenToteuttaminenEstetty = ({
   permissions: UserPermissions;
 }) => {
   const estoaika = haunAsetukset?.valinnatEstettyOppilaitosvirkailijoilta;
+  const dateStart = estoaika?.dateStart ?? undefined;
+  const dateEnd = estoaika?.dateEnd ?? undefined;
 
   return (
     !permissions.hasOphCRUD &&
     isToisenAsteenYhteisHaku(haku) &&
-    estoaika?.dateStart != null &&
-    estoaika?.dateEnd != null &&
-    isInRange(toFinnishDate(new Date()), estoaika.dateStart, estoaika.dateEnd)
+    (dateStart !== undefined || dateEnd !== undefined) &&
+    isInRange(toFinnishDate(new Date()), dateStart, dateEnd)
   );
 };
 

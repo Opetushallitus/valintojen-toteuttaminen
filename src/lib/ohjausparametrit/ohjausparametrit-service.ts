@@ -40,7 +40,7 @@ export const getHaunAsetukset = async (
     : undefined;
 
   const valinnatEstettyOppilaitosvirkailijoilta =
-    response.data.PH_OLVVPKE?.dateStart != null &&
+    response.data.PH_OLVVPKE?.dateStart != null ||
     response.data.PH_OLVVPKE?.dateEnd != null
       ? response.data.PH_OLVVPKE
       : undefined;

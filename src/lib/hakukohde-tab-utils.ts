@@ -32,12 +32,14 @@ const isValinnatAllowedForHaku = (
   hierarchyPermissions: UserPermissions,
 ) => {
   const estoaika = haunAsetukset?.valinnatEstettyOppilaitosvirkailijoilta;
+  const dateStart = estoaika?.dateStart ?? undefined;
+  const dateEnd = estoaika?.dateEnd ?? undefined;
+  const hasBlockedWindow = dateStart !== undefined || dateEnd !== undefined;
   // Valinnan palvelu estetty oppilaitosvirkailijoilta ajanjaksolla.
   // Opetushallituksen käyttäjillä (hasOphCRUD) on aina pääsy.
   const isEstetty =
-    estoaika?.dateStart != null &&
-    estoaika?.dateEnd != null &&
-    isInRange(toFinnishDate(new Date()), estoaika.dateStart, estoaika.dateEnd);
+    hasBlockedWindow &&
+    isInRange(toFinnishDate(new Date()), dateStart, dateEnd);
   return hierarchyPermissions.hasOphCRUD || !isEstetty;
 };
 
