@@ -8,8 +8,10 @@ import { ListTable } from '@/components/table/list-table';
 import { useCallback, useMemo } from 'react';
 import { useSelection } from '@/hooks/useSelection';
 import { IlmoittautumisTilaSelect } from '@/components/IlmoittautumisTilaSelect';
+import { MaksuCell } from '@/components/MaksuCell';
 import { VastaanottoTilaCell } from '@/components/VastaanottoTilaCell';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
+import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
 import { useValinnanTuloksetSearch } from '../hooks/useValinnanTuloksetSearch';
 import { useSelector } from '@xstate/react';
 import { ValinnanTulosActorRef } from '@/lib/state/createValinnanTuloksetMachine';
@@ -117,6 +119,21 @@ const useColumns = ({
           );
         },
       }),
+      ...(isKorkeakouluHaku(haku)
+        ? [
+            makeColumnWithCustomRender<HakemuksenValinnanTulos>({
+              title: t(`${TRANSLATIONS_PREFIX}.maksuntila`),
+              key: 'maksunTila',
+              renderFn: (hakemus) => (
+                <MaksuCell
+                  hakemus={hakemus}
+                  updateForm={updateForm}
+                  disabled={disabled || readonly}
+                />
+              ),
+            }),
+          ]
+        : []),
       makeColumnWithCustomRender<HakemuksenValinnanTulos>({
         title: t(`${TRANSLATIONS_PREFIX}.toiminnot`),
         key: 'toiminnot',
