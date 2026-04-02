@@ -3,8 +3,8 @@ export type HaunAsetukset = {
   valintaEsityksenHyvaksyminen?: Date;
   varasijatayttoPaattyy?: Date;
   valinnatEstettyOppilaitosvirkailijoilta?: {
-    dateStart: number;
-    dateEnd: number;
+    dateStart: number | null;
+    dateEnd: number | null;
   };
   harkinnanvarainenTallennusPaattyy?: Date;
 };

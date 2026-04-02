@@ -18,8 +18,9 @@ export const isValintojenToteuttaminenEstetty = ({
   return (
     !permissions.hasOphCRUD &&
     isToisenAsteenYhteisHaku(haku) &&
-    Boolean(estoaika) &&
-    isInRange(toFinnishDate(new Date()), estoaika?.dateStart, estoaika?.dateEnd)
+    estoaika?.dateStart != null &&
+    estoaika?.dateEnd != null &&
+    isInRange(toFinnishDate(new Date()), estoaika.dateStart, estoaika.dateEnd)
   );
 };
 

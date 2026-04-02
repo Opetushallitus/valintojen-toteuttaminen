@@ -413,4 +413,33 @@ describe('getVisibleHakukohdeTabs', () => {
 
     expect(tabs).toEqual([]);
   });
+
+  test('CRUD permissions - "toisen asteen yhteishaku" should allow tabs when blocked window dates are missing', () => {
+    const tabs = getVisibleHakukohdeTabs({
+      haku: {
+        ...HAKU_BASE,
+        hakutapaKoodiUri: 'hakutapa_01#1',
+        kohdejoukkoKoodiUri: 'haunkohdejoukko_11#1',
+      },
+      hakukohde: HAKUKOHDE_BASE,
+      haunAsetukset: {
+        sijoittelu: true,
+        valinnatEstettyOppilaitosvirkailijoilta: {
+          dateStart: null,
+          dateEnd: null,
+        },
+      },
+      usesValintalaskenta: true,
+      hierarchyPermissions: CRUD_PERMISSIONS,
+    });
+
+    expect(tabs.map((t) => t.route)).toEqual([
+      'perustiedot',
+      'hakeneet',
+      'valintakoekutsut',
+      'pistesyotto',
+      'valintalaskennan-tulokset',
+      'sijoittelun-tulokset',
+    ]);
+  });
 });

@@ -35,12 +35,9 @@ const isValinnatAllowedForHaku = (
   // Valinnan palvelu estetty oppilaitosvirkailijoilta ajanjaksolla.
   // Opetushallituksen käyttäjillä (hasOphCRUD) on aina pääsy.
   const isEstetty =
-    Boolean(estoaika) &&
-    isInRange(
-      toFinnishDate(new Date()),
-      estoaika?.dateStart,
-      estoaika?.dateEnd,
-    );
+    estoaika?.dateStart != null &&
+    estoaika?.dateEnd != null &&
+    isInRange(toFinnishDate(new Date()), estoaika.dateStart, estoaika.dateEnd);
   return hierarchyPermissions.hasOphCRUD || !isEstetty;
 };
 
