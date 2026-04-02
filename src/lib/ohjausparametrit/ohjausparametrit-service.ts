@@ -9,8 +9,8 @@ type HaunAsetuksetResponse = {
   sijoittelu: boolean;
   // Oppilaitosten virkailijoiden valintapalvelun käyttö estetty
   PH_OLVVPKE?: {
-    dateStart: number;
-    dateEnd: number;
+    dateStart: number | null;
+    dateEnd: number | null;
   };
   // Valintaesityksen hyväksyminen
   PH_VEH?: { date?: string };
@@ -39,9 +39,15 @@ export const getHaunAsetukset = async (
     ? new Date(response.data.PH_HVVPTP.date)
     : undefined;
 
+  const valinnatEstettyOppilaitosvirkailijoilta =
+    response.data.PH_OLVVPKE?.dateStart != null &&
+    response.data.PH_OLVVPKE?.dateEnd != null
+      ? response.data.PH_OLVVPKE
+      : undefined;
+
   return {
     sijoittelu: response.data.sijoittelu,
-    valinnatEstettyOppilaitosvirkailijoilta: response.data.PH_OLVVPKE,
+    valinnatEstettyOppilaitosvirkailijoilta,
     valintaEsityksenHyvaksyminen,
     varasijatayttoPaattyy,
     harkinnanvarainenTallennusPaattyy,
