@@ -194,6 +194,14 @@ export default async function playwrightSetup() {
     ) {
       return modifyResponse(response, { sijoittelu: true });
     } else if (
+      request.method === 'GET' &&
+      request.url?.includes('valinta-tulos-service/auth/lukuvuosimaksu/')
+    ) {
+      return modifyResponse(
+        response,
+        SIJOITTELUN_TULOS_HAKUKOHTEELLE.lukuvuosimaksut,
+      );
+    } else if (
       request.method === 'POST' &&
       request.url?.includes('valinta-tulos-service/auth/lukuvuosimaksu/')
     ) {
