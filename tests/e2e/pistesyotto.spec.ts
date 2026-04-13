@@ -47,7 +47,7 @@ test('Näyttää pistesyotön', async ({ page }) => {
   await checkRow(rows.nth(0), ['Dacula Kreivi', '', 'EiOsallistui']);
   await checkRow(rows.nth(1), ['Hui Haamu', '', 'Valitse...Merkitsemättä']);
   await checkRow(rows.nth(2), ['Nukettaja Ruhtinas', '', 'KylläOsallistui']);
-  await checkRow(rows.nth(3), ['Purukumi Puru', '', 'Valitse...Merkitsemättä']);
+  await checkRow(rows.nth(3), ['Purukumi Puru', '', '']);
 });
 
 test('Pistesyötössä muokkaus ei ole sallittu jos koetulosten tallentaminen ei ole sallittu', async ({
@@ -94,7 +94,7 @@ test('Pistesyötössä muokkaus ei ole sallittu jos koetulosten tallentaminen ei
   await checkRow(rows.nth(0), ['Dacula Kreivi', '', 'EiOsallistui']);
   await checkRow(rows.nth(1), ['Hui Haamu', '', 'Valitse...Merkitsemättä']);
   await checkRow(rows.nth(2), ['Nukettaja Ruhtinas', '', 'KylläOsallistui']);
-  await checkRow(rows.nth(3), ['Purukumi Puru', '', 'Valitse...Merkitsemättä']);
+  await checkRow(rows.nth(3), ['Purukumi Puru', '', '']);
 
   await expect(
     page.getByRole('row', { name: 'Dacula Kreivi' }).getByLabel('Pisteet'),
@@ -139,11 +139,7 @@ test('Näyttää pistesyotöt kaikilla kokeilla', async ({ page }) => {
     .getByRole('textbox');
   await expect(arvosanaInput).toHaveValue('8,8');
 
-  await checkRow(rows.nth(3), [
-    'Purukumi Puru',
-    'Ei osallistunut',
-    'Valitse...Merkitsemättä',
-  ]);
+  await checkRow(rows.nth(3), ['Purukumi Puru', 'Ei osallistunut', '']);
 });
 
 test('Näyttää ilmoituksen ettei mitään tallennettavaa', async ({ page }) => {
@@ -319,11 +315,7 @@ test.describe('Suodattimet', () => {
     await hakuInput.fill('1.2.246.562.24.14598775927');
     const rows = page.getByTestId('pistesyotto-form').locator('tbody tr');
     await expect(rows).toHaveCount(1);
-    await checkRow(rows.nth(0), [
-      'Purukumi Puru',
-      '',
-      'Valitse...Merkitsemättä',
-    ]);
+    await checkRow(rows.nth(0), ['Purukumi Puru', '', '']);
   });
 
   test('Henkilötunnuksella', async ({ page }) => {
@@ -339,13 +331,8 @@ test.describe('Suodattimet', () => {
   test('Osallistumisentilalla Merkitsemättä', async ({ page }) => {
     await selectTila(page, 'Merkitsemättä');
     const rows = page.getByTestId('pistesyotto-form').locator('tbody tr');
-    await expect(rows).toHaveCount(2);
+    await expect(rows).toHaveCount(1);
     await checkRow(rows.nth(0), ['Hui Haamu', '', 'Valitse...Merkitsemättä']);
-    await checkRow(rows.nth(1), [
-      'Purukumi Puru',
-      '',
-      'Valitse...Merkitsemättä',
-    ]);
   });
 
   test('Osallistumisentilalla Osallistui', async ({ page }) => {
