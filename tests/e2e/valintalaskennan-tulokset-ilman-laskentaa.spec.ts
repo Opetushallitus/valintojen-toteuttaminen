@@ -276,7 +276,7 @@ test('Lähettää muokatun pisteet-datan tallentaessa', async ({ page }) => {
             hakijaOid: '1.2.246.562.24.69259807406',
             jonosija: 1,
             tuloksenTila: 'HYVAKSYTTAVISSA',
-            prioriteetti: 0,
+            prioriteetti: 2,
             jarjestyskriteerit: [
               {
                 arvo: 6.6,
@@ -337,7 +337,7 @@ test('Lähettää muokatun jonosija-datan tallentaessa ja lataa tulokset uudelle
             hakijaOid: '1.2.246.562.24.69259807406',
             jonosija: 1,
             tuloksenTila: 'HYVAKSYTTAVISSA',
-            prioriteetti: 0,
+            prioriteetti: 2,
             jarjestyskriteerit: [
               {
                 arvo: -2,

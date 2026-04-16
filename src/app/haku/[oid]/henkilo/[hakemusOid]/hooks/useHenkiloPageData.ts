@@ -123,15 +123,18 @@ export const useHenkiloPageData = ({
           sijoittelunTuloksetByHakukohde?.[hakukohde.oid];
 
         const readOnly = !checkEditPermission(hakukohde.tarjoajaOid);
+        const hakutoiveNumero = index + 1;
 
         return {
           ...hakukohde,
           readOnly,
-          hakutoiveNumero: index + 1,
+          hakutoiveNumero,
           valinnanvaiheet: selectEditableValintalaskennanTulokset({
             valintalaskennanTulokset:
               valinnanvaiheetByHakukohde?.[hakukohde.oid] ?? [],
-            hakemukset: [{ hakemusOid, hakijaOid: hakija.hakijaOid }],
+            hakemukset: [
+              { hakemusOid, hakijaOid: hakija.hakijaOid, hakutoiveNumero },
+            ],
             // Henkilöittäin-näkymässä näytetään laskennattomat valinnanvaiheet vain, jos niille on tallennettu tuloksia
             valinnanvaiheet: [],
           }),
