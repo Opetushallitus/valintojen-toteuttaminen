@@ -79,7 +79,7 @@ export type SijoittelunHakemusValintatiedoilla = {
   hakijanNimi: string;
   jonosija: number;
   tasasijaJonosija: number;
-  hakutoive: number;
+  hakutoive?: number;
   sija?: number;
   hyvaksyttyVarasijalta: boolean;
   onkoMuuttunutViimeSijoittelussa: boolean;

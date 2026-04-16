@@ -75,6 +75,7 @@ export type LaskennanValinnanvaiheetWithHakijaInfo = Array<
 
 const selectEditableJonosijaFields = (
   jonosijaData: ValintalaskennanValintatapaJonosijaModel,
+  hakutoiveNumero?: number,
 ) => {
   const jarjestyskriteeri = jonosijaData?.jarjestyskriteerit?.[0];
 
@@ -94,7 +95,7 @@ const selectEditableJonosijaFields = (
     hakijaOid: jonosijaData?.hakijaOid,
     jonosija: jonosija?.toString() ?? '',
     harkinnanvarainen: jonosijaData?.harkinnanvarainen,
-    prioriteetti: jonosijaData?.prioriteetti,
+    prioriteetti: hakutoiveNumero ?? jonosijaData?.prioriteetti,
     jarjestyskriteerit: jonosijaData?.jarjestyskriteerit.map((kriteeri) => ({
       ...kriteeri,
       arvo: pointToComma(kriteeri.arvo?.toString()) ?? '',
@@ -125,7 +126,11 @@ const selectEditableJonosijaFields = (
  */
 export const selectEditableValintalaskennanTulokset = <
   HakemusOut extends Record<string, unknown> = Record<string, unknown>,
-  HakemusIn extends { hakemusOid: string; hakijaOid: string } = {
+  HakemusIn extends {
+    hakemusOid: string;
+    hakijaOid: string;
+    hakutoiveNumero?: number;
+  } = {
     hakemusOid: string;
     hakijaOid: string;
   },
@@ -183,7 +188,12 @@ export const selectEditableValintalaskennanTulokset = <
                     jonosijaCandidate.hakemusOid === hakemus.hakemusOid,
                 );
                 return {
-                  ...(jonosija ? selectEditableJonosijaFields(jonosija) : {}),
+                  ...(jonosija
+                    ? selectEditableJonosijaFields(
+                        jonosija,
+                        hakemus.hakutoiveNumero,
+                      )
+                    : {}),
                   hakemusOid: hakemus.hakemusOid,
                   hakijaOid: hakemus.hakijaOid,
                   ...(selectHakemusFields?.(hakemus.hakemusOid) ??
