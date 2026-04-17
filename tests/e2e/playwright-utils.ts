@@ -19,8 +19,11 @@ export const expectPageAccessibilityOk = async (page: Page) => {
 };
 
 export const expectAllSpinnersHidden = async (page: Page) => {
-  const spinners = page.getByRole('progressbar');
-  await expect(spinners).toHaveCount(0);
+  const progressbars = page.getByRole('progressbar');
+  // Latausanimaatio saattaa kadota välillä ennen kuin toinen datan latauspyyntö alkaa. Ei siis voida vain odotella latausanimaatioiden piiloon menoa.
+  // eslint-disable-next-line playwright/no-networkidle
+  await page.waitForLoadState('networkidle');
+  await expect(progressbars).toHaveCount(0);
 };
 
 export const expectUrlParamToEqual = async (
