@@ -79,6 +79,7 @@ export class ValintojenToteuttaminenSovellusStack extends cdk.Stack {
     const nextjs = new Nextjs(this, 'Nextjs', {
       nextjsPath: '..', // relative path from your project root to NextJS
       basePath: '/valintojen-toteuttaminen',
+      buildCommand: 'pnpx @opennextjs/aws@^3 build',
       environment: {
         STANDALONE: 'true',
         VIRKAILIJA_URL: `https://virkailija.${publicHostedZones[props.environmentName]}`,

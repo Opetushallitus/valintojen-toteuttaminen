@@ -28,7 +28,7 @@ positional arguments:
 
 optional arguments:
   -h, --help            Show this help message and exit
-  -d, --dependencies    Clean and install dependencies before deployment (i.e. run pnpm install --frozen-lockfile)
+    -d, --dependencies    Clean and install app and cdk dependencies
   '''
     exit 0
     ;;
@@ -92,8 +92,10 @@ if [[ "${build}" == "true" ]]; then
 fi
 
 if [[ -n "${dependencies}" ]]; then
-    echo "Installing workspace dependencies.."
-    cd "${git_root}/" && pnpm install --frozen-lockfile
+    echo "Installing app dependencies.."
+    cd "${git_root}/" && pnpm install
+    echo "Installing cdk dependencies.."
+    cd "${git_root}/cdk" && pnpm install
 fi
 
 if [[ "${deploy}" == "true" ]]; then

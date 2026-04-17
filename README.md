@@ -16,7 +16,7 @@ ja ota sertifikaatit käyttöön node.js:ssä
 
 Asenna riippuvuudet komennolla:
 
-`pnpm install --frozen-lockfile`
+`pnpm install`
 
 Sen jälkeen käynnistä palvelu komennolla:
 
@@ -52,7 +52,7 @@ Jos haluat ajaa vain tietyn testitiedoston, se onnistuu komennolla:
 
 Asenna ensin sovelluksen riippuvuudet ja buildaa next.js sovellus:
 
-    pnpm install --frozen-lockfile
+    pnpm install
     pnpm run build
 
 Deploy untuvalle onnistuu komennolla:
