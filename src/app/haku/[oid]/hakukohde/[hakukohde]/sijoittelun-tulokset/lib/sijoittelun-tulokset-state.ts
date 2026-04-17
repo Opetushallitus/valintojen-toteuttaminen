@@ -14,6 +14,7 @@ import { createValinnanTuloksetMachine } from '@/lib/state/createValinnanTulokse
 import useToaster from '@/hooks/useToaster';
 import { useHasChanged } from '@/hooks/useHasChanged';
 import { ValinnanTulosEventType } from '@/lib/state/valinnanTuloksetMachineTypes';
+import { inspect } from '@/lib/xstate-utils';
 
 export const sijoittelunTuloksetMachine =
   createValinnanTuloksetMachine<SijoittelunHakemusValintatiedoilla>(
@@ -103,7 +104,9 @@ export const useSijoittelunTulosActorRef = ({
   lastModified,
   onUpdated,
 }: SijoittelunTulosStateParams) => {
-  const sijoittelunTuloksetActorRef = useActorRef(sijoittelunTuloksetMachine);
+  const sijoittelunTuloksetActorRef = useActorRef(sijoittelunTuloksetMachine, {
+    inspect,
+  });
   const { addToast } = useToaster();
 
   const hakemuksetChanged = useHasChanged(hakemukset);

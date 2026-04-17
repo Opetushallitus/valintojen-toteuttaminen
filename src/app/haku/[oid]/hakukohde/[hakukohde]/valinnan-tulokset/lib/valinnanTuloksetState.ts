@@ -20,6 +20,7 @@ import {
   refetchHakukohteenLukuvuosimaksut,
   refetchHakukohteenValinnanTulokset,
 } from '@/lib/valinta-tulos-service/valinta-tulos-queries';
+import { inspect } from '@/lib/xstate-utils';
 
 export const valinnanTuloksetMachine =
   createValinnanTuloksetMachine<HakemuksenValinnanTulos>('valinta').provide({
@@ -152,6 +153,7 @@ export const useValinnanTulosActorRef = ({
         }),
       },
     }),
+    { inspect },
   );
 
   const { addToast } = useToaster();
