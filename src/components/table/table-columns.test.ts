@@ -28,6 +28,6 @@ describe('createHakijaColumn', () => {
     );
     const rendered = screen.getByText('Hakija Kelpo');
     expect(rendered).not.toBeNull();
-    expect(rendered.getAttribute('href')).toContain('henkilo-ui/oppija2/4.5.6');
+    expect(rendered.getAttribute('href')).toContain('henkilo-ui/oppija/4.5.6');
   });
 });
