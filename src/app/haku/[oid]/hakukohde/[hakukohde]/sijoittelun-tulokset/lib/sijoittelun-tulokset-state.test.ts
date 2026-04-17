@@ -75,11 +75,8 @@ describe('Sijoittelun tulokset states', async () => {
   const createActorLogic = () => {
     const toastFn = vi.fn();
     const onUpdatedFn = vi.fn();
-    const actor = createActor(sijoittelunTuloksetMachine);
-    actor.start();
-    actor.send({
-      type: ValinnanTulosEventType.RESET,
-      params: {
+    const actor = createActor(sijoittelunTuloksetMachine, {
+      input: {
         hakukohdeOid: 'hakukohde-oid',
         valintatapajonoOid: 'jono-oid',
         hakemukset: hakemukset,
@@ -88,6 +85,7 @@ describe('Sijoittelun tulokset states', async () => {
         onUpdated: onUpdatedFn,
       },
     });
+    actor.start();
     return { actor, toastFn, onUpdatedFn };
   };
 

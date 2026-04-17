@@ -31,11 +31,11 @@ const SijoitteluContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const { pageSize, setPageSize } = useSijoittelunTulosSearchParams();
 
   const [
-    { data: haku },
-    { data: hakukohde },
-    { data: sijoittelunTulokset },
-    { data: valinnanvaiheet },
-    { data: hakemukset },
+    { data: haku, dataUpdatedAt: hakuUpdatedAt },
+    { data: hakukohde, dataUpdatedAt: hakukohdeUpdatedAt },
+    { data: sijoittelunTulokset, dataUpdatedAt: sijoittelunTuloksetUpdatedAt },
+    { data: valinnanvaiheet, dataUpdatedAt: valinnanvaiheetUpdatedAt },
+    { data: hakemukset, dataUpdatedAt: hakemuksetUpdatedAt },
   ] = useSuspenseQueries({
     queries: [
       queryOptionsGetHaku({ hakuOid }),
@@ -51,6 +51,14 @@ const SijoitteluContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
       }),
     ],
   });
+
+  const dataUpdatedAt = Math.max(
+    hakuUpdatedAt,
+    hakukohdeUpdatedAt,
+    sijoittelunTuloksetUpdatedAt,
+    valinnanvaiheetUpdatedAt,
+    hakemuksetUpdatedAt,
+  );
 
   const tuloksetValintatiedoilla = useSijoitteluajonTuloksetValintatiedoilla({
     hakemukset,
@@ -96,8 +104,9 @@ const SijoitteluContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
 
         return (
           <SijoittelunTulosContent
+            // Resetoidaan komponentti kun mikä tahansa data päivittyy. Tällä varmistetaan, että tilakone resetoituu kun data muuttuu.
+            key={jono.oid + dataUpdatedAt}
             valintatapajono={jono}
-            key={jono.oid}
             haku={haku}
             hakukohde={hakukohde}
             sijoitteluajoId={tuloksetValintatiedoilla.sijoitteluajoId}

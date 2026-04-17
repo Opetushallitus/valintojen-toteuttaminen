@@ -1,6 +1,7 @@
 {
   "name": "cdk-valintojen-toteuttaminen",
   "version": "0.1.0",
+  "packageManager": "pnpm@10.33.0",
   "bin": {},
   "scripts": {
     "build": "tsc",
@@ -15,6 +16,7 @@
     "typescript": "~5.8.2"
   },
   "dependencies": {
+    "@opennextjs/aws": "^3.10.1",
     "aws-cdk-lib": "^2.184.1",
     "cdk-nextjs-standalone": "^4.2.3",
     "constructs": "^10.4.2",
