@@ -17,7 +17,7 @@ jobs:
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-next-env
       - name: Check types
         run: pnpm run typecheck
@@ -33,7 +33,7 @@ jobs:
       matrix:
         browser: [chromium, firefox]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-next-env
       - name: Create self-signed dev certificates
         run: pnpm run create-self-signed-dev-certs
@@ -43,7 +43,7 @@ jobs:
         env:
           PLAYWRIGHT_ARGS: --project=${{ matrix.browser }}
         run: pnpm run start-and-test-playwright-docker
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: playwright-report
@@ -58,10 +58,10 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-next-env
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
+        uses: aws-actions/configure-aws-credentials@ec61189d14ec14c8efccab744f656cffd0e33f37 # v6
         with:
           role-to-assume: ${{ secrets.AWS_OPH_UTILITY_ROLE_ARN }}
           role-session-name: valintojen-toteuttaminen-deploy-zip

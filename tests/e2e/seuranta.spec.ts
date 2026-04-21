@@ -28,29 +28,29 @@ test('Seuranta saavutettavuus', async ({ page }) => {
 
 test('Näyttää seurantatiedot', async ({ page }) => {
   await initializeSeuranta(page);
-  const rows = await page.locator('.seuranta-item').all();
-  expect(rows.length).toEqual(4);
+  const rows = page.locator('.seuranta-item');
+  await expect(rows).toHaveCount(4);
   await assertSeurantaItem(
-    rows[0]!,
+    rows.nth(0),
     'Keskeytynyt',
     'KD',
     'Turun ammattikorkeakoulu, Kupittaan kampus',
     true,
   );
   await assertSeurantaItem(
-    rows[1]!,
+    rows.nth(1),
     'Valmis',
     'HH',
     'Metropolia Ammattikorkeakoulu, Arabian kampus',
   );
   await assertSeurantaItem(
-    rows[2]!,
+    rows.nth(2),
     'Valmis',
     'RN',
     'Tampereen ammattikorkeakoulu, TAMK Pääkampus',
   );
   await assertSeurantaItem(
-    rows[3]!,
+    rows.nth(3),
     'Keskeytynyt',
     'RN',
     'Hämeen ammattikorkeakoulu, Riihimäki',
@@ -62,16 +62,16 @@ test('Suodattaa seurantatiedot laskennan tilalla valmis', async ({ page }) => {
   await initializeSeuranta(page);
   await page.getByRole('combobox', { name: 'Laskennan tila Valitse' }).click();
   await page.getByRole('option', { name: 'Valmis' }).click();
-  const rows = await page.locator('.seuranta-item').all();
-  expect(rows.length).toEqual(2);
+  const rows = page.locator('.seuranta-item');
+  await expect(rows).toHaveCount(2);
   await assertSeurantaItem(
-    rows[0]!,
+    rows.nth(0),
     'Valmis',
     'HH',
     'Metropolia Ammattikorkeakoulu, Arabian kampus',
   );
   await assertSeurantaItem(
-    rows[1]!,
+    rows.nth(1),
     'Valmis',
     'RN',
     'Tampereen ammattikorkeakoulu, TAMK Pääkampus',
@@ -84,17 +84,17 @@ test('Suodattaa seurantatiedot laskennan tilalla keskeytynyt', async ({
   await initializeSeuranta(page);
   await page.getByRole('combobox', { name: 'Laskennan tila Valitse' }).click();
   await page.getByRole('option', { name: 'Keskeytynyt' }).click();
-  const rows = await page.locator('.seuranta-item').all();
-  expect(rows.length).toEqual(2);
+  const rows = page.locator('.seuranta-item');
+  await expect(rows).toHaveCount(2);
   await assertSeurantaItem(
-    rows[0]!,
+    rows.nth(0),
     'Keskeytynyt',
     'KD',
     'Turun ammattikorkeakoulu, Kupittaan kampus',
     true,
   );
   await assertSeurantaItem(
-    rows[1]!,
+    rows.nth(1),
     'Keskeytynyt',
     'RN',
     'Hämeen ammattikorkeakoulu, Riihimäki',

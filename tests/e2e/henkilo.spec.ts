@@ -3,6 +3,7 @@ import {
   expectAlertTextVisible,
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
+  expectTableValues,
   mockOneOrganizationHierarchy,
   mockValintalaskentaRun,
   selectOption,
@@ -315,33 +316,23 @@ test('Käyttäjä näkee muut hakutoiveet jos yksi hakukohteista on käyttäjän
 
   await expect(accordionContentEnabled).toBeVisible();
 
-  let jonoRows = accordionContentEnabled.getByRole('row');
-
-  await expect(jonoRows).toHaveCount(2);
-
-  let firstRowTextContents = await jonoRows
-    .nth(0)
-    .getByRole('cell')
-    .allTextContents();
-  expect(firstRowTextContents).toEqual([
-    '',
-    'Jono 2Valintalaskenta tehty: 12.11.2024 17:53:49',
-    '15',
-    'HyväksyttävissäMuokkaa',
-    'Ei valinnan tulosta',
-    '',
-  ]);
-  let secondRowTextContents = await jonoRows
-    .nth(1)
-    .getByRole('cell')
-    .allTextContents();
-  expect(secondRowTextContents).toEqual([
-    '',
-    'Harkinnanvaraisten käsittelyvaiheen valintatapajonoValintalaskenta tehty: 12.11.2024 17:53:39',
-    '',
-    'HyväksyttävissäMuokkaa',
-    'Ei valinnan tulosta',
-    '',
+  await expectTableValues(accordionContentEnabled, [
+    [
+      '',
+      'Jono 2Valintalaskenta tehty: 12.11.2024 17:53:49',
+      '15',
+      'HyväksyttävissäMuokkaa',
+      'Ei valinnan tulosta',
+      '',
+    ],
+    [
+      '',
+      'Harkinnanvaraisten käsittelyvaiheen valintatapajonoValintalaskenta tehty: 12.11.2024 17:53:39',
+      '',
+      'HyväksyttävissäMuokkaa',
+      'Ei valinnan tulosta',
+      '',
+    ],
   ]);
 
   const accordionContentDisabled = page.getByLabel(
@@ -350,35 +341,25 @@ test('Käyttäjä näkee muut hakutoiveet jos yksi hakukohteista on käyttäjän
 
   await expect(accordionContentDisabled).toBeVisible();
 
-  jonoRows = accordionContentDisabled.getByRole('row');
-
-  await expect(jonoRows).toHaveCount(2);
-
-  firstRowTextContents = await jonoRows
-    .nth(0)
-    .getByRole('cell')
-    .allTextContents();
-  expect(firstRowTextContents).toEqual([
-    '',
-    'Jono 2Valintalaskenta tehty: 12.11.2024 17:54:55',
-    '13,3',
-    'Hyväksyttävissä',
-    'HYVÄKSYTTY',
-    'Kyllä',
-    'Vastaanottanut sitovasti',
-    'Ei ilmoittautunut',
-  ]);
-  secondRowTextContents = await jonoRows
-    .nth(1)
-    .getByRole('cell')
-    .allTextContents();
-  expect(secondRowTextContents).toEqual([
-    '',
-    'Jono 1Valintalaskenta tehty: 12.11.2024 17:54:48',
-    '',
-    'Hyväksyttävissä',
-    'Ei valinnan tulosta',
-    '',
+  await expectTableValues(accordionContentDisabled, [
+    [
+      '',
+      'Jono 2Valintalaskenta tehty: 12.11.2024 17:54:55',
+      '13,3',
+      'Hyväksyttävissä',
+      'HYVÄKSYTTY',
+      'Kyllä',
+      'Vastaanottanut sitovasti',
+      'Ei ilmoittautunut',
+    ],
+    [
+      '',
+      'Jono 1Valintalaskenta tehty: 12.11.2024 17:54:48',
+      '',
+      'Hyväksyttävissä',
+      'Ei valinnan tulosta',
+      '',
+    ],
   ]);
 
   await expect(
@@ -411,35 +392,25 @@ test('Näytetään henkilön hakutoiveet valintalaskennan ja sijoittelun tuloksi
 
   await expect(accordionContent).toBeVisible();
 
-  const jonoRows = accordionContent.getByRole('row');
-
-  await expect(jonoRows).toHaveCount(2);
-
-  const firstRowTextContents = await jonoRows
-    .nth(0)
-    .getByRole('cell')
-    .allTextContents();
-  expect(firstRowTextContents).toEqual([
-    '',
-    'Jono 2Valintalaskenta tehty: 12.11.2024 17:54:55',
-    '13,3',
-    'HyväksyttävissäMuokkaa',
-    'HYVÄKSYTTY',
-    'KylläMuokkaa',
-    'Vastaanottanut sitovasti',
-    'Ei ilmoittautunut',
-  ]);
-  const secondRowTextContents = await jonoRows
-    .nth(1)
-    .getByRole('cell')
-    .allTextContents();
-  expect(secondRowTextContents).toEqual([
-    '',
-    'Jono 1Valintalaskenta tehty: 12.11.2024 17:54:48',
-    '',
-    'HyväksyttävissäMuokkaa',
-    'Ei valinnan tulosta',
-    '',
+  await expectTableValues(accordionContent, [
+    [
+      '',
+      'Jono 2Valintalaskenta tehty: 12.11.2024 17:54:55',
+      '13,3',
+      'HyväksyttävissäMuokkaa',
+      'HYVÄKSYTTY',
+      'KylläMuokkaa',
+      'Vastaanottanut sitovasti',
+      'Ei ilmoittautunut',
+    ],
+    [
+      '',
+      'Jono 1Valintalaskenta tehty: 12.11.2024 17:54:48',
+      '',
+      'HyväksyttävissäMuokkaa',
+      'Ei valinnan tulosta',
+      '',
+    ],
   ]);
 });
 
@@ -472,32 +443,23 @@ test('Näytetään hakutoiveet valintalaskennan tuloksilla, ilman sijoittelun tu
     'Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs)',
   );
 
-  const jonoRows = accordionContent.getByRole('row');
-  await expect(jonoRows).toHaveCount(2);
-
-  const firstRowTextContents = await jonoRows
-    .nth(0)
-    .getByRole('cell')
-    .allTextContents();
-  expect(firstRowTextContents).toEqual([
-    '',
-    'Jono 2Valintalaskenta tehty: 12.11.2024 17:54:55',
-    '13,3',
-    'HyväksyttävissäMuokkaa',
-    'Ei valinnan tulosta',
-    '',
-  ]);
-  const secondRowTextContents = await jonoRows
-    .nth(1)
-    .getByRole('cell')
-    .allTextContents();
-  expect(secondRowTextContents).toEqual([
-    '',
-    'Jono 1Valintalaskenta tehty: 12.11.2024 17:54:48',
-    '',
-    'HyväksyttävissäMuokkaa',
-    'Ei valinnan tulosta',
-    '',
+  await expectTableValues(accordionContent, [
+    [
+      '',
+      'Jono 2Valintalaskenta tehty: 12.11.2024 17:54:55',
+      '13,3',
+      'HyväksyttävissäMuokkaa',
+      'Ei valinnan tulosta',
+      '',
+    ],
+    [
+      '',
+      'Jono 1Valintalaskenta tehty: 12.11.2024 17:54:48',
+      '',
+      'HyväksyttävissäMuokkaa',
+      'Ei valinnan tulosta',
+      '',
+    ],
   ]);
 });
 

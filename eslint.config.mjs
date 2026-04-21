@@ -74,13 +74,13 @@ const config = ts.config(
     },
   },
   {
-    files: ['src/**/*.test.ts*'], // or any other pattern
+    files: ['src/**/*.test.ts*'],
     plugins: {
       vitest,
     },
     rules: {
-      ...vitest.configs.recommended.rules, // you can also use vitest.configs.all.rules to enable all rules
-      'vitest/max-nested-describe': ['error', { max: 2 }], // you can also modify rules' behavior using option like this
+      ...vitest.configs.recommended.rules,
+      'vitest/max-nested-describe': ['error', { max: 2 }],
     },
   },
 );

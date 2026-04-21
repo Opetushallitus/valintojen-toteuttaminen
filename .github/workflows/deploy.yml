@@ -26,10 +26,10 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-next-env
       - name: Configure AWS utility-role credentials
-        uses: aws-actions/configure-aws-credentials@v4.1.0
+        uses: aws-actions/configure-aws-credentials@ec61189d14ec14c8efccab744f656cffd0e33f37 # v6
         with:
           role-to-assume: ${{ secrets.AWS_OPH_UTILITY_ROLE_ARN }}
           role-session-name: valintojen-toteuttaminen-download-build-zip
@@ -43,14 +43,14 @@ jobs:
           cp -R .next/standalone/.next/server .next/server # OpenNext v3 needs server-files also in .next/server
       - name: Configure AWS dev-role credentials
         if: ${{ inputs.environment == 'hahtuva' || inputs.environment == 'untuva' || inputs.environment == 'pallero' }}
-        uses: aws-actions/configure-aws-credentials@v4.1.0
+        uses: aws-actions/configure-aws-credentials@ec61189d14ec14c8efccab744f656cffd0e33f37 # v6
         with:
           role-to-assume: ${{ secrets.AWS_OPINTOPOLKU_DEV_ROLE_ARN }}
           role-session-name: valintojen-toteuttaminen-deploy
           aws-region: eu-west-1
       - name: Configure AWS prod-role credentials
         if: ${{ inputs.environment == 'sade' }}
-        uses: aws-actions/configure-aws-credentials@v4.1.0
+        uses: aws-actions/configure-aws-credentials@ec61189d14ec14c8efccab744f656cffd0e33f37 # v6
         with:
           role-to-assume: ${{ secrets.AWS_OPINTOPOLKU_PROD_ROLE_ARN }}
           role-session-name: valintojen-toteuttaminen-deploy

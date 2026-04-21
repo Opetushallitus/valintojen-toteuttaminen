@@ -474,3 +474,16 @@ export const waitForMethodRequest = (
     return request.method() === method && isMatch;
   });
 };
+
+export const expectTableValues = async (
+  table: Locator,
+  expectedValues: Array<Array<string | ((cell: Locator) => Promise<void>)>>,
+) => {
+  const rows = table.getByRole('row');
+  await expect(rows).toHaveCount(expectedValues.length);
+
+  for (const [rowIndex, expectedRow] of expectedValues.entries()) {
+    const row = rows.nth(rowIndex);
+    await checkRow(row, expectedRow);
+  }
+};
