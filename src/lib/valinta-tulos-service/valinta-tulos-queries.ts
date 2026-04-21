@@ -7,7 +7,8 @@ import {
   getLatestSijoitteluajonTuloksetForHakemus,
   getLatestSijoitteluajonTuloksetWithValintaEsitys,
 } from './valinta-tulos-service';
-import { KoutaOidParams } from '@/lib/kouta/kouta-types';
+import { Haku, KoutaOidParams } from '@/lib/kouta/kouta-types';
+import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
 
 export const queryOptionsGetLatestSijoitteluajonTuloksetForHakemus = ({
   hakuOid,
@@ -60,23 +61,30 @@ export const queryOptionsGetHakukohteenValinnanTulokset = (
 
 export const queryOptionsGetHakukohteenLukuvuosimaksut = ({
   hakukohdeOid,
+  haku,
 }: {
   hakukohdeOid: string;
-}) =>
-  queryOptions({
-    queryKey: ['getHakukohteenLukuvuosimaksut', hakukohdeOid],
-    queryFn: () => getHakukohteenLukuvuosimaksut(hakukohdeOid),
+  haku: Haku;
+}) => {
+  const enabled = isKorkeakouluHaku(haku);
+  return queryOptions({
+    queryKey: ['getHakukohteenLukuvuosimaksut', hakukohdeOid, enabled],
+    queryFn: () => (enabled ? getHakukohteenLukuvuosimaksut(hakukohdeOid) : []),
   });
+};
 
 export const refetchHakukohteenLukuvuosimaksut = ({
   queryClient,
   hakukohdeOid,
+  haku,
 }: {
   queryClient: QueryClient;
   hakukohdeOid: string;
+  haku: Haku;
 }) => {
   const options = queryOptionsGetHakukohteenLukuvuosimaksut({
     hakukohdeOid,
+    haku,
   });
   queryClient.resetQueries(options);
   queryClient.invalidateQueries(options);

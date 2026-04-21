@@ -1,5 +1,4 @@
 import { fromPromise } from 'xstate';
-import { useCallback, useEffect } from 'react';
 import { useActorRef } from '@xstate/react';
 import { createValinnanTuloksetMachine } from '@/lib/state/createValinnanTuloksetMachine';
 import useToaster from '@/hooks/useToaster';
@@ -15,7 +14,6 @@ import { ValinnanTulosErrorGlobalModal } from '@/components/modals/valinnan-tulo
 import { showModal } from '@/components/modals/global-modal';
 import { useQueryClient } from '@tanstack/react-query';
 import { rejectAndLog } from '@/lib/common';
-import { ValinnanTulosEventType } from '@/lib/state/valinnanTuloksetMachineTypes';
 import {
   refetchHakukohteenLukuvuosimaksut,
   refetchHakukohteenValinnanTulokset,
@@ -80,8 +78,9 @@ export const useValinnanTulosActorRef = ({
   lastModified,
 }: ValinnanTulosStateParams) => {
   const queryClient = useQueryClient();
+  const { addToast } = useToaster();
 
-  const onUpdated = useCallback(() => {
+  const onUpdated = () => {
     refetchHakukohteenValinnanTulokset({
       queryClient,
       hakuOid: haku.oid,
@@ -90,8 +89,9 @@ export const useValinnanTulosActorRef = ({
     refetchHakukohteenLukuvuosimaksut({
       queryClient,
       hakukohdeOid: hakukohde.oid,
+      haku,
     });
-  }, [queryClient, hakukohde.oid, haku.oid]);
+  };
 
   const valinnanTulosActorRef = useActorRef(
     valinnanTuloksetMachine.provide({
@@ -153,31 +153,18 @@ export const useValinnanTulosActorRef = ({
         }),
       },
     }),
-    { inspect },
-  );
-
-  const { addToast } = useToaster();
-
-  useEffect(() => {
-    valinnanTulosActorRef.send({
-      type: ValinnanTulosEventType.RESET,
-      params: {
-        valintatapajonoOid: getValintatapajonoOidFromHakemukset(hakemukset),
+    {
+      inspect,
+      input: {
         hakukohdeOid: hakukohde.oid,
+        valintatapajonoOid: getValintatapajonoOidFromHakemukset(hakemukset),
         hakemukset,
         lastModified,
         onUpdated,
         addToast,
       },
-    });
-  }, [
-    valinnanTulosActorRef,
-    hakemukset,
-    hakukohde.oid,
-    lastModified,
-    onUpdated,
-    addToast,
-  ]);
+    },
+  );
 
   return valinnanTulosActorRef;
 };

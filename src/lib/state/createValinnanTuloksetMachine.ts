@@ -6,7 +6,6 @@ import {
   fromPromise,
   PromiseActorLogic,
 } from 'xstate';
-import { clone } from 'remeda';
 import {
   applyMassHakemusChanges,
   applySingleHakemusChange,
@@ -36,7 +35,16 @@ export function createValinnanTuloksetMachine<
     initial: ValinnanTulosState.IDLE,
     types: {} as {
       context: ValinnanTulosContext<T>;
-      events: ValinnanTuloksetEvents<T>;
+      input: Pick<
+        ValinnanTulosContext<T>,
+        | 'hakemukset'
+        | 'hakukohdeOid'
+        | 'valintatapajonoOid'
+        | 'lastModified'
+        | 'addToast'
+        | 'onUpdated'
+      >;
+      events: ValinnanTuloksetEvents;
       actions:
         | { type: 'alert'; params: { message: string } }
         | { type: 'successNotify'; params: { message: string } }
@@ -66,30 +74,16 @@ export function createValinnanTuloksetMachine<
             logic: PromiseActorLogic<void, { hakemus?: T }>;
           };
     },
-    context: {
-      hakemukset: [],
+    context: ({ input }) => ({
+      addToast: input.addToast,
+      onUpdated: input.onUpdated,
+      hakukohdeOid: input.hakukohdeOid,
+      valintatapajonoOid: input.valintatapajonoOid,
+      lastModified: input.lastModified,
+      hakemukset: input.hakemukset,
       changedHakemukset: [],
       mode,
-    },
-    on: {
-      [ValinnanTulosEventType.RESET]: {
-        target: '.IDLE',
-        actions: assign(({ event, context }) => {
-          return {
-            valintatapajonoOid: event.params.valintatapajonoOid,
-            hakukohdeOid: event.params.hakukohdeOid,
-            lastModified: event.params.lastModified,
-            hakemukset: clone(event.params.hakemukset),
-            changedHakemukset: [],
-            hakemuksetForMassUpdate: undefined,
-            addToast: event.params.addToast,
-            onUpdated: event.params.onUpdated,
-            massChangeAmount: undefined,
-            mode: context.mode,
-          };
-        }),
-      },
-    },
+    }),
     states: {
       [ValinnanTulosState.IDLE]: {
         entry: assign({
