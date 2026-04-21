@@ -1240,6 +1240,46 @@ export async function getValinnanTulosExcel({
   return downloadProcessDocument(processId, true);
 }
 
+export const saveValinnanTulosExcel = async ({
+  haku,
+  hakukohdeOid,
+  valintatapajonoOid,
+  file,
+}: {
+  haku: Haku;
+  hakukohdeOid: string;
+  valintatapajonoOid?: string;
+  file: File;
+}) => {
+  const configuration = getConfiguration();
+  const urlWithQuery = new URL(
+    configuration.routes.valintalaskentakoostepalvelu.startImportValinnanTulosExcelUrl,
+  );
+  urlWithQuery.searchParams.append('hakuOid', haku.oid);
+  urlWithQuery.searchParams.append('hakukohdeOid', hakukohdeOid);
+  if (valintatapajonoOid) {
+    urlWithQuery.searchParams.append('valintatapajonoOid', valintatapajonoOid);
+  }
+  urlWithQuery.searchParams.append(
+    'hakutyyppi',
+    isKorkeakouluHaku(haku) ? 'KORKEAKOULU' : 'TOISEN_ASTEEN_OPPILAITOS',
+  );
+
+  const {
+    data: { id: processId },
+  } = await client.post<{ id: string }>(
+    urlWithQuery,
+    await file.arrayBuffer(),
+    {
+      headers: {
+        'content-type': 'application/octet-stream',
+      },
+    },
+  );
+
+  await pollDocumentSeuranta(processId);
+};
+
 export const hakijoidenVastaanottotilatValintatapajonolle = async (
   hakuOid: string,
   hakukohdeOid: string,

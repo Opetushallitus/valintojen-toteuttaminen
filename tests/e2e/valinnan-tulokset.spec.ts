@@ -5,6 +5,7 @@ import {
   expectPageAccessibilityOk,
   mockDocumentProcess,
   selectOption,
+  startExcelImport,
   testMuodostaHakemusHyvaksymiskirje,
   testNaytaMuutoshistoria,
   waitForMethodRequest,
@@ -895,6 +896,50 @@ test.describe('Tallennus', () => {
       });
       await expect(page.getByText('Valinnan tulokset poistettu')).toBeVisible();
     });
+  });
+
+  test('Tuo valinnan tulokset taulukkolaskennasta', async ({ page }) => {
+    await page.route(
+      (url) => url.pathname.endsWith('/erillishaku/tuonti'),
+      async (route) => {
+        await route.fulfill({ json: { id: 'proc_uuid' } });
+      },
+    );
+    await page.route(
+      (url) => url.pathname.includes('/dokumentinseuranta/proc_uuid'),
+      async (route) => {
+        await route.fulfill({
+          json: {
+            uuid: 'proc_uuid',
+            valmis: true,
+            dokumenttiId: null,
+            virheilmoitukset: [],
+            virheita: false,
+          },
+        });
+      },
+    );
+
+    const [uploadRequest, seurantaRequest] = await Promise.all([
+      waitForMethodRequest(
+        page,
+        'POST',
+        (url) =>
+          url.includes('/erillishaku/tuonti') && !url.includes('/tuonti/ui'),
+      ),
+      waitForMethodRequest(page, 'GET', (url) =>
+        url.includes('/dokumentinseuranta/proc_uuid'),
+      ),
+      startExcelImport(page),
+    ]);
+
+    expect(uploadRequest).toBeDefined();
+    expect(seurantaRequest).toBeDefined();
+    await expect(
+      page.getByText(
+        'Valinnan tulosten tuominen taulukkolaskennasta onnistui!',
+      ),
+    ).toBeVisible();
   });
 
   test('Lähetä vastaanottoposti', async ({ page }) => {
