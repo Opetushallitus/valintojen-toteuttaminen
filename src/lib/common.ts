@@ -100,7 +100,7 @@ export const isHakukohdeOid = (value: string) =>
   /^1\.2\.246\.562\.20\.\d{20}$/.test(value);
 
 export const isHakemusOid = (value: string) =>
-  /^1\.2\.246\.562\.11\./.test(value);
+  value.startsWith('1.2.246.562.11.');
 
 export type GenericEvent = {
   key: string;
@@ -117,7 +117,7 @@ export const nullWhen404 = async <T>(
   } catch (e) {
     if (e instanceof FetchError && e?.response?.status === 404) {
       console.error('FetchError with 404', e);
-      return Promise.resolve(null);
+      return null;
     }
     throw e;
   }

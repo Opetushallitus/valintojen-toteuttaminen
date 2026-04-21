@@ -62,7 +62,7 @@ describe('Laskenta state', async () => {
       buildDummyLaskentaStart(),
     );
     vi.spyOn(client, 'get').mockImplementation(() => buildSeurantaTiedot());
-    await actor.send({ type: LaskentaEventType.START });
+    actor.send({ type: LaskentaEventType.START });
     actor.send({ type: LaskentaEventType.CONFIRM });
     const state = await waitFor(actor, (s) =>
       s.matches({
@@ -87,7 +87,7 @@ describe('Laskenta state', async () => {
       } else if (url.toString().includes('yhteenveto')) {
         return buildYhteenveto('VALMIS', 1);
       }
-      return Promise.reject();
+      return Promise.reject(new Error('Unknown url'));
     });
     actor.send({ type: LaskentaEventType.START });
     actor.send({ type: LaskentaEventType.CONFIRM });
