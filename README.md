@@ -22,6 +22,8 @@ Sen jälkeen käynnistä palvelu komennolla:
 
 `pnpm dev`
 
+Tiedostossa `.env.development` on asetettu ympäristömuuttujia, joiden avulla voi vaikuttaa lokaaliajon toimintaan. Voit muokata arvoja itsellesi sopiviksi luomalla `.env.development.local`-tiedoston, jonka arvot yliajavat `.env.development`-tiedostossa asetetut arvot. Alä muuta `.env.development`-tiedostoa, jos et halua muuttaa oletusarvoja, jotka tulevat käyttöön myös kaikille muille kehittäjille.
+
 ## Testaus
 
 Aja yksikkötestit komennolla:
