@@ -3,13 +3,15 @@ description: 'Setup Next.js environment'
 runs:
   using: 'composite'
   steps:
-    - uses: pnpm/action-setup@v4
-      with:
-        version: 9.15.5
-        run_install: false
-    - uses: actions/setup-node@v4
+    - name: Install Node.js
+      uses: actions/setup-node@v4
       with:
         node-version-file: '.nvmrc'
+    - name: Enable corepack
+      shell: bash
+      run: corepack enable pnpm
+    - uses: actions/setup-node@v4
+      with:
         cache: 'pnpm'
         cache-dependency-path: pnpm-lock.yaml
         registry-url: 'https://npm.pkg.github.com'
@@ -23,4 +25,4 @@ runs:
           ${{ runner.os }}-nextjs-${{ hashFiles('pnpm-lock.yaml') }}-
     - name: Install dependencies
       shell: bash
-      run: pnpm install --frozen-lockfile
+      run: pnpm install

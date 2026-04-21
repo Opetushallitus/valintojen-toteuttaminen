@@ -16,7 +16,7 @@ ja ota sertifikaatit käyttöön node.js:ssä
 
 Asenna riippuvuudet komennolla:
 
-`pnpm install --frozen-lockfile`
+`pnpm install`
 
 Sen jälkeen käynnistä palvelu komennolla:
 
@@ -48,11 +48,25 @@ Jos haluat ajaa vain tietyn testitiedoston, se onnistuu komennolla:
 
 `pnpm exec playwright test --project=chromium tests/e2e/lokalisointi.spec.ts`
 
-## Deploy
+## Asennus ympäristöön (deploy)
+
+### Asennus GitHub Actionilla
+
+Suositeltu tapa asentaa sovellus ympäristöön on [GitHub Actionilla](https://github.com/Opetushallitus/valintojen-toteuttaminen/actions/workflows/deploy.yml).
+
+1. Napsauta alasvetovalikko auki kohdasta "Run workflow from"
+2. Valitse "Use workflow from"-valikosta Git-haara, josta haluat ajaa deploy-workflown. Tätä tarvitsee muuttaa vain, jos olet tehnyt muutoksia deployn käyttämiin tiedostoihin.
+3. Kirjoita buildin numero (esim. 970) kohtaan "Github Actions build number".
+4. Valitse ympäristö, johon asennetaan kohdasta "Environment where to deploy "
+
+## Asennus deploy.sh-skriptillä
+
+Asentaminen on mahdollista myös deploy.sh-skriptillä, mutta ei suositeltua.
+Skriptillä asennettaessa kehittäjällä täytyy olla tarvittavat oikeudet AWS-infran muokkaukseen, joita etenkään tuotantoon ei kaikilla ole.
 
 Asenna ensin sovelluksen riippuvuudet ja buildaa next.js sovellus:
 
-    pnpm install --frozen-lockfile
+    pnpm install
     pnpm run build
 
 Deploy untuvalle onnistuu komennolla:

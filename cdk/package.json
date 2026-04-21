@@ -1,6 +1,7 @@
 {
   "name": "cdk-valintojen-toteuttaminen",
   "version": "0.1.0",
+  "packageManager": "pnpm@10.33.0",
   "bin": {},
   "scripts": {
     "build": "tsc",
