@@ -30,14 +30,12 @@ export const createFileResult = async (
 };
 
 const doFetch = async (request: Request) => {
-  try {
-    const response = await fetch(request);
-    return response.status >= 400
-      ? Promise.reject(new FetchError(response, (await response.text()) ?? ''))
-      : Promise.resolve(response);
-  } catch (e) {
-    return Promise.reject(e);
+  const response = await fetch(request);
+  if (response.status >= 400) {
+    const errorText = await response.text();
+    throw new FetchError(response, errorText ?? '');
   }
+  return response;
 };
 
 const isUnauthenticated = (response: Response) => {
@@ -117,7 +115,7 @@ const responseToData = async <Result = unknown>(
     };
   } catch (e) {
     console.error(`Parsing fetch response body as "${contentType}" failed!`);
-    return Promise.reject(e);
+    throw e;
   }
 };
 
@@ -171,7 +169,9 @@ const makeRequest = async <Result>(request: Request) => {
               const config = getConfiguration();
               const loginUrl: string = pathOr(config.routes, loginParam, '');
               if (isEmpty(loginUrl)) {
-                throw Error(`Login configuration not found for ${urlIncludes}`);
+                throw new Error(
+                  `Login configuration not found for ${urlIncludes}`,
+                );
               }
               const resp = await retryWithLogin(request, loginUrl);
               return responseToData<Result>(resp);
@@ -181,7 +181,7 @@ const makeRequest = async <Result>(request: Request) => {
           if (e instanceof FetchError && isUnauthenticated(e.response)) {
             redirectToLogin();
           }
-          return Promise.reject(e);
+          throw e;
         }
       } else if (
         isRedirected(error.response) &&
@@ -192,7 +192,7 @@ const makeRequest = async <Result>(request: Request) => {
         return responseToData<Result>(response);
       }
     }
-    return Promise.reject(error);
+    throw error;
   }
 };
 

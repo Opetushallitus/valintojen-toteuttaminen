@@ -3,6 +3,7 @@ import {
   checkRow,
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
+  findTableColumnIndexByTitle,
   mockDocumentProcess,
   selectOption,
   testMuodostaHakemusHyvaksymiskirje,
@@ -21,8 +22,59 @@ import { getConfigUrl } from '@/lib/configuration/configuration-utils';
 const hakukohdeOid = '1.2.246.562.20.00000000000000045105';
 const valintatapajonoOid = '1224656220000000000000000123456';
 
+const VALINNAN_TULOKSET = [
+  {
+    hakukohdeOid,
+    valintatapajonoOid,
+    hakemusOid: '1.2.246.562.11.00000000000001796027',
+    henkiloOid: '1.2.246.562.24.69259807406',
+    valinnantila: 'HYLATTY',
+    valinnantilanKuvauksenTekstiFI: 'syy fi',
+    valinnantilanKuvauksenTekstiSV: 'syy sv',
+    valinnantilanKuvauksenTekstiEN: 'syy en',
+    julkaistavissa: true,
+    hyvaksyttyVarasijalta: false,
+    hyvaksyPeruuntunut: false,
+    vastaanottotila: 'KESKEN',
+    ilmoittautumistila: 'EI_TEHTY',
+    valinnantilanViimeisinMuutos: '2025-04-08T09:36:52.346+03:00',
+  },
+  {
+    hakukohdeOid,
+    valintatapajonoOid,
+    hakemusOid: '1.2.246.562.11.00000000000001793706',
+    henkiloOid: '1.2.246.562.24.25732574711',
+    valinnantila: 'HYVAKSYTTY',
+    ehdollisestiHyvaksyttavissa: true,
+    ehdollisenHyvaksymisenEhtoKoodi: 'muu',
+    ehdollisenHyvaksymisenEhtoFI: 'test fi',
+    ehdollisenHyvaksymisenEhtoSV: 'test sv',
+    ehdollisenHyvaksymisenEhtoEN: 'test en',
+    julkaistavissa: true,
+    hyvaksyttyVarasijalta: false,
+    hyvaksyPeruuntunut: false,
+    vastaanottotila: 'VASTAANOTTANUT_SITOVASTI',
+    ilmoittautumistila: 'LASNA_KOKO_LUKUVUOSI',
+    valinnantilanViimeisinMuutos: '2025-04-08T09:36:52.346+03:00',
+  },
+  {
+    hakukohdeOid,
+    valintatapajonoOid,
+    hakemusOid: '1.2.246.562.11.00000000000001790371',
+    henkiloOid: '1.2.246.562.24.14598775927',
+    valinnantila: 'HYVAKSYTTY',
+    ehdollisestiHyvaksyttavissa: false,
+    julkaistavissa: true,
+    hyvaksyttyVarasijalta: false,
+    hyvaksyPeruuntunut: false,
+    vastaanottotila: 'KESKEN',
+    ilmoittautumistila: 'EI_TEHTY',
+    valinnantilanViimeisinMuutos: '2025-04-08T09:36:52.346+03:00',
+  },
+];
+
 async function goToValinnanTulokset(page: Page) {
-  await page.clock.setFixedTime(new Date('2025-02-05T12:00:00'));
+  await page.clock.setSystemTime(new Date('2025-02-05T12:00:00'));
   const configuration = await buildConfiguration();
   await page.route(
     (url) => url.href.includes('lomake-editori/api/external/valinta-ui?'),
@@ -55,58 +107,7 @@ async function goToValinnanTulokset(page: Page) {
       },
     ),
     async (route) => {
-      await route.fulfill({
-        json: [
-          {
-            hakukohdeOid,
-            valintatapajonoOid,
-            hakemusOid: '1.2.246.562.11.00000000000001796027',
-            henkiloOid: '1.2.246.562.24.69259807406',
-            valinnantila: 'HYLATTY',
-            valinnantilanKuvauksenTekstiFI: 'syy fi',
-            valinnantilanKuvauksenTekstiSV: 'syy sv',
-            valinnantilanKuvauksenTekstiEN: 'syy en',
-            julkaistavissa: true,
-            hyvaksyttyVarasijalta: false,
-            hyvaksyPeruuntunut: false,
-            vastaanottotila: 'KESKEN',
-            ilmoittautumistila: 'EI_TEHTY',
-            valinnantilanViimeisinMuutos: '2025-04-08T09:36:52.346+03:00',
-          },
-          {
-            hakukohdeOid,
-            valintatapajonoOid,
-            hakemusOid: '1.2.246.562.11.00000000000001793706',
-            henkiloOid: '1.2.246.562.24.25732574711',
-            valinnantila: 'HYVAKSYTTY',
-            ehdollisestiHyvaksyttavissa: true,
-            ehdollisenHyvaksymisenEhtoKoodi: 'muu',
-            ehdollisenHyvaksymisenEhtoFI: 'test fi',
-            ehdollisenHyvaksymisenEhtoSV: 'test sv',
-            ehdollisenHyvaksymisenEhtoEN: 'test en',
-            julkaistavissa: true,
-            hyvaksyttyVarasijalta: false,
-            hyvaksyPeruuntunut: false,
-            vastaanottotila: 'VASTAANOTTANUT_SITOVASTI',
-            ilmoittautumistila: 'LASNA_KOKO_LUKUVUOSI',
-            valinnantilanViimeisinMuutos: '2025-04-08T09:36:52.346+03:00',
-          },
-          {
-            hakukohdeOid,
-            valintatapajonoOid,
-            hakemusOid: '1.2.246.562.11.00000000000001790371',
-            henkiloOid: '1.2.246.562.24.14598775927',
-            valinnantila: 'HYVAKSYTTY',
-            ehdollisestiHyvaksyttavissa: false,
-            julkaistavissa: true,
-            hyvaksyttyVarasijalta: false,
-            hyvaksyPeruuntunut: false,
-            vastaanottotila: 'KESKEN',
-            ilmoittautumistila: 'EI_TEHTY',
-            valinnantilanViimeisinMuutos: '2025-04-08T09:36:52.346+03:00',
-          },
-        ],
-      });
+      await route.fulfill({ json: VALINNAN_TULOKSET });
     },
   );
 
@@ -147,8 +148,7 @@ async function goToValinnanTulokset(page: Page) {
     '*/**/kouta-internal/haku/1.2.246.562.29.00000000000000045102',
     async (route) => {
       const haku = {
-        ...(HAUT.find((h) => h.oid === '1.2.246.562.29.00000000000000045102') ??
-          {}),
+        ...HAUT.find((h) => h.oid === '1.2.246.562.29.00000000000000045102'),
         hakutapa: 'hakutapa_02',
       };
       await route.fulfill({ json: haku });
@@ -572,7 +572,7 @@ test.describe('Tallennus', () => {
     await expect(page.getByText('Ei muutoksia mitä tallentaa')).toBeVisible();
   });
 
-  test('Tallentaa muutokset', async ({ page }) => {
+  test('Tallentaa muutokset (korkeakouluhaku)', async ({ page }) => {
     await mockDocumentProcess({
       page,
       urlMatcher: (url) =>
@@ -587,10 +587,143 @@ test.describe('Tallennus', () => {
       option: 'HYVÄKSYTTY',
     });
 
-    await page.getByRole('button', { name: 'Tallenna', exact: true }).click();
+    const [request] = await Promise.all([
+      waitForMethodRequest(page, 'POST', (url) =>
+        url.includes(
+          '/valintalaskentakoostepalvelu/resources/erillishaku/tuonti/ui',
+        ),
+      ),
+      page.getByRole('button', { name: 'Tallenna', exact: true }).click(),
+    ]);
+
+    const postDataRivit = request.postDataJSON()?.rivit;
+    expect(postDataRivit).toHaveLength(1);
+    expect(postDataRivit[0]).toMatchObject({
+      hakemusOid: '1.2.246.562.11.00000000000001796027',
+      personOid: '1.2.246.562.24.69259807406',
+      hakemuksenTila: 'HYVAKSYTTY',
+      vastaanottoTila: VastaanottoTila.KESKEN,
+      ilmoittautumisTila: IlmoittautumisTila.EI_TEHTY,
+      julkaistaankoTiedot: true,
+    });
+
     await expect(
       page.getByText('Valintaesityksen muutokset tallennettu'),
     ).toBeVisible();
+  });
+
+  test('Tallentaa muutokset (ei korkeakouluhaku)', async ({ page }) => {
+    await page.route(
+      '*/**/kouta-internal/haku/1.2.246.562.29.00000000000000045102',
+      async (route) => {
+        const haku = {
+          ...HAUT.find((h) => h.oid === '1.2.246.562.29.00000000000000045102'),
+          hakutapa: 'hakutapa_02',
+          kohdejoukkoKoodiUri: 'haunkohdejoukko_13#1',
+        };
+        await route.fulfill({ json: haku });
+      },
+    );
+    await page.goto(
+      '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/valinnan-tulokset',
+    );
+    await expectAllSpinnersHidden(page);
+    await mockDocumentProcess({
+      page,
+      urlMatcher: (url) =>
+        url.pathname.includes(
+          '/valintalaskentakoostepalvelu/resources/erillishaku/tuonti/ui',
+        ),
+    });
+    const rows = page.locator('tbody tr');
+    await selectOption({
+      page,
+      locator: rows.nth(0).getByRole('cell').nth(2),
+      option: 'HYVÄKSYTTY',
+    });
+
+    const [request] = await Promise.all([
+      waitForMethodRequest(page, 'POST', (url) =>
+        url.includes(
+          '/valintalaskentakoostepalvelu/resources/erillishaku/tuonti/ui',
+        ),
+      ),
+      page.getByRole('button', { name: 'Tallenna', exact: true }).click(),
+    ]);
+
+    const postDataRivit = request.postDataJSON()?.rivit;
+    expect(postDataRivit).toHaveLength(1);
+    expect(postDataRivit[0]).toMatchObject({
+      hakemusOid: '1.2.246.562.11.00000000000001796027',
+      personOid: '1.2.246.562.24.69259807406',
+      hakemuksenTila: 'HYVAKSYTTY',
+      vastaanottoTila: VastaanottoTila.KESKEN,
+      ilmoittautumisTila: IlmoittautumisTila.EI_TEHTY,
+      julkaistaankoTiedot: true,
+    });
+
+    await expect(
+      page.getByText('Valintaesityksen muutokset tallennettu'),
+    ).toBeVisible();
+  });
+
+  test('Lataa ja näyttää uudet tiedot tallennuksen jälkeen', async ({
+    page,
+  }) => {
+    await mockDocumentProcess({
+      page,
+      urlMatcher: (url) =>
+        url.pathname.includes(
+          '/valintalaskentakoostepalvelu/resources/erillishaku/tuonti/ui',
+        ),
+    });
+    const configuration = await buildConfiguration();
+
+    const vastaanottoTilaColumnIndex = await findTableColumnIndexByTitle(
+      page,
+      'Vastaanoton tila',
+    );
+    const vastaanottoTilaCell = page
+      .getByRole('row', { name: 'Dacula Kreivi' })
+      .getByRole('cell')
+      .nth(vastaanottoTilaColumnIndex);
+    await expect(vastaanottoTilaCell).toContainText('Vastaanottanut sitovasti');
+
+    await selectOption({
+      page,
+      locator: vastaanottoTilaCell,
+      option: 'Perunut',
+    });
+
+    const refetchUrl = getConfigUrl(
+      configuration.routes.valintaTulosService.hakukohteenValinnanTulosUrl,
+      {
+        hakuOid: '1.2.246.562.29.00000000000000045102',
+        hakukohdeOid,
+      },
+    );
+    await page.route(refetchUrl, async (route) => {
+      await route.fulfill({
+        json: VALINNAN_TULOKSET.map((item) => ({
+          ...item,
+          valinnantilanViimeisinMuutos: '2025-04-09T09:36:52.346+03:00',
+          ...(item.hakemusOid === '1.2.246.562.11.00000000000001793706'
+            ? { vastaanottotila: VastaanottoTila.PERUNUT }
+            : {}),
+        })),
+      });
+    });
+
+    await Promise.all([
+      waitForMethodRequest(page, 'GET', (url) => url === refetchUrl),
+      page.getByRole('button', { name: 'Tallenna', exact: true }).click(),
+    ]);
+    await expect(
+      page.getByText('Valintaesityksen muutokset tallennettu'),
+    ).toBeVisible();
+    await expectAllSpinnersHidden(page);
+
+    await expect(vastaanottoTilaCell).toContainText('JulkaistavissaPerunut');
   });
 
   test('Tallentaa maksun tilan muutokset', async ({ page }) => {
@@ -707,6 +840,7 @@ test.describe('Tallennus', () => {
         async (route) => route.fulfill({ json: {} }),
       );
     });
+
     test('Hyväksy', async ({ page }) => {
       await mockDocumentProcess({
         page,

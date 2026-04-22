@@ -19,8 +19,14 @@ if [[ "${ARGS[0]:-}" == "--" ]]; then
   ARGS=("${ARGS[@]:1}")
 fi
 
+TTY_FLAG=()
+if [ -t 0 ]; then
+  TTY_FLAG=(-it)
+fi
+
 docker run \
   -e CI \
+  "${TTY_FLAG[@]}" \
   --mount type=bind,source="$PWD",target=/app \
   "${STORE_MOUNT[@]}" \
   --user "$(id -u):$(id -g)" \
@@ -28,4 +34,4 @@ docker run \
   --ipc=host \
   --net=host \
   mcr.microsoft.com/playwright:v"$PLAYWRIGHT_VERSION" \
-  npx playwright test "${ARGS[@]}"
+  sh -c "corepack pnpm exec playwright test ${ARGS[*]}"

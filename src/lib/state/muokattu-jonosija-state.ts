@@ -20,6 +20,7 @@ import {
   hasChangedKriteerit,
   isModifiedJonosija,
 } from './muokattuJonosijaMachineUtils';
+import { inspect } from '@/lib/xstate-utils';
 
 function createMuokattuJonosijaMachine(
   valintatapajonoOid: string,
@@ -223,7 +224,7 @@ export const useMuokattuJonosijaState = ({
       onSuccess,
     );
   }, [valintatapajonoOid, jonosija, addToast, onSuccess]);
-  const actorRef = useActorRef(machine);
+  const actorRef = useActorRef(machine, { inspect });
   const snapshot = useSelector(actorRef, (s) => s);
   return {
     actorRef,

@@ -24,6 +24,7 @@ import { useCallback, useMemo } from 'react';
 import { useActorRef, useSelector } from '@xstate/react';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { useTranslations } from '@/lib/localization/useTranslations';
+import { inspect } from '@/lib/xstate-utils';
 
 const POLLING_INTERVAL = 5000;
 
@@ -477,7 +478,7 @@ const useLaskentaActorRef = () => {
     return createLaskentaMachine(addToast);
   }, [addToast]);
 
-  return useActorRef(laskentaMachine);
+  return useActorRef(laskentaMachine, { inspect });
 };
 
 export const useLaskentaActorState = (actorRef: LaskentaActorRef) => {

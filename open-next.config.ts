@@ -1,10 +1,11 @@
-const skipOpennextBuild = Boolean(process.env.SKIP_OPENNEXT_BUILD);
+const skipOpennextBuild = Boolean(process.env.SKIP_NEXTJS_BUILD);
 
 const config = {
   default: {},
   ...(skipOpennextBuild
     ? {
-        buildCommand: 'echo "Skipping OpenNext build"',
+        // Tätä komentoa OpenNext kutsuu, kun se buildaa Next.js-sovelluksen
+        buildCommand: 'echo "Skipping Next.js build"',
       }
     : {}),
 };

@@ -19,6 +19,7 @@ import {
   PisteSyottoEvent,
   PisteSyottoStates,
 } from '@/lib/state/pistesyotto-state-common';
+import { inspect } from '@/lib/xstate-utils';
 
 export type HakukohdePisteSyottoContext = {
   pistetiedot: Array<HakemuksenPistetiedot>;
@@ -318,7 +319,7 @@ export const usePistesyottoState = ({
       ),
     [hakuOid, hakukohdeOid, pistetiedot, valintakokeet, onEvent, lastModified],
   );
-  const actorRef = useActorRef(machine);
+  const actorRef = useActorRef(machine, { inspect });
 
   return usePistesyottoActorRef(actorRef);
 };
