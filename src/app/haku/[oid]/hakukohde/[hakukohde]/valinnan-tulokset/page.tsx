@@ -75,9 +75,7 @@ const ValinnanTuloksetContent = ({
 
   const { pageSize, setPageSize } = useValinnanTuloksetSearchParams();
 
-  return isEmpty(hakemuksetTuloksilla) ? (
-    <NoResults text={t('valinnan-tulokset.ei-hakemuksia')} />
-  ) : (
+  return (
     <Box
       sx={{
         display: 'flex',
@@ -87,19 +85,21 @@ const ValinnanTuloksetContent = ({
       }}
     >
       <ValinnanTuloksetSpinnerModal actorRef={valinnanTulosActorRef} />
-      <Stack
-        flexDirection="row"
-        gap={2}
-        sx={{
-          width: '100%',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          alignItems: 'flex-end',
-        }}
-      >
-        <ValinnanTuloksetSearchControls />
-        <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
-      </Stack>
+      {!isEmpty(hakemuksetTuloksilla) && (
+        <Stack
+          flexDirection="row"
+          gap={2}
+          sx={{
+            width: '100%',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            alignItems: 'flex-end',
+          }}
+        >
+          <ValinnanTuloksetSearchControls />
+          <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
+        </Stack>
+      )}
       <FormBox sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <ValinnanTuloksetActions
           haku={haku}
@@ -107,11 +107,15 @@ const ValinnanTuloksetContent = ({
           valinnanTulosActorRef={valinnanTulosActorRef}
           mode="valinta"
         />
-        <ValinnanTuloksetTable
-          haku={haku}
-          hakukohde={hakukohde}
-          actorRef={valinnanTulosActorRef}
-        />
+        {isEmpty(hakemuksetTuloksilla) ? (
+          <NoResults text={t('valinnan-tulokset.ei-hakemuksia')} />
+        ) : (
+          <ValinnanTuloksetTable
+            haku={haku}
+            hakukohde={hakukohde}
+            actorRef={valinnanTulosActorRef}
+          />
+        )}
       </FormBox>
     </Box>
   );
