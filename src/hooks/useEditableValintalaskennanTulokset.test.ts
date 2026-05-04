@@ -352,6 +352,23 @@ describe('selectEditableValintalaskennanTulokset', () => {
     });
   });
 
+  it('should set prioriteetti from hakutoiveNumero when no jonosija exists (first save scenario)', () => {
+    const hakemuksetWithPriority = [
+      { ...mockHakemus1, hakutoiveNumero: 2 },
+      { ...mockHakemus2, hakutoiveNumero: 3 },
+    ];
+
+    const result = selectEditableValintalaskennanTulokset({
+      valintalaskennanTulokset: [],
+      valinnanvaiheet: [mockValintaperusteValinnanvaihe],
+      hakemukset: hakemuksetWithPriority,
+    });
+
+    const jonosijat = result[0]?.valintatapajonot?.[0]?.jonosijat;
+    expect(jonosijat?.[0]?.prioriteetti).toBe(2);
+    expect(jonosijat?.[1]?.prioriteetti).toBe(3);
+  });
+
   it('should handle automaattinenSijoitteluunSiirto=false for jono without laskenta and without tulos', () => {
     const result = selectEditableValintalaskennanTulokset({
       valintalaskennanTulokset: [],
