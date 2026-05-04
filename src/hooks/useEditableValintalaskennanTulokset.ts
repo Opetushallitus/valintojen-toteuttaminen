@@ -193,6 +193,9 @@ export const selectEditableValintalaskennanTulokset = <
                         hakemus.hakutoiveNumero,
                       )
                     : {}),
+                  ...(!jonosija
+                    ? { prioriteetti: hakemus.hakutoiveNumero }
+                    : {}),
                   hakemusOid: hakemus.hakemusOid,
                   hakijaOid: hakemus.hakijaOid,
                   ...(selectHakemusFields?.(hakemus.hakemusOid) ??
