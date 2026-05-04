@@ -19,6 +19,7 @@ import {
   PisteSyottoEvent,
   PisteSyottoStates,
 } from '@/lib/state/pistesyotto-state-common';
+import { inspect } from '@/lib/xstate-utils';
 
 type HenkilonPisteSyottoContext = {
   pistetiedot: Array<ValintakokeenPisteet>;
@@ -288,7 +289,7 @@ export const useHenkilonPistesyottoState = ({
     );
   }, [pistetiedot, valintakokeet, onEvent, hakija, lastModified]);
 
-  const actorRef = useActorRef(machine);
+  const actorRef = useActorRef(machine, { inspect });
   return useHenkilonPistesyottoActorRef(actorRef);
 };
 

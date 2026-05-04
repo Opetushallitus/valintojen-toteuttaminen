@@ -8,12 +8,10 @@ import {
 import { ValinnanTulosErrorGlobalModal } from '@/components/modals/valinnan-tulos-error-global-modal';
 import { showModal } from '@/components/modals/global-modal';
 import { rejectAndLog } from '@/lib/common';
-import { useEffect } from 'react';
 import { useActorRef } from '@xstate/react';
 import { createValinnanTuloksetMachine } from '@/lib/state/createValinnanTuloksetMachine';
 import useToaster from '@/hooks/useToaster';
-import { useHasChanged } from '@/hooks/useHasChanged';
-import { ValinnanTulosEventType } from '@/lib/state/valinnanTuloksetMachineTypes';
+import { inspect } from '@/lib/xstate-utils';
 
 export const sijoittelunTuloksetMachine =
   createValinnanTuloksetMachine<SijoittelunHakemusValintatiedoilla>(
@@ -103,35 +101,16 @@ export const useSijoittelunTulosActorRef = ({
   lastModified,
   onUpdated,
 }: SijoittelunTulosStateParams) => {
-  const sijoittelunTuloksetActorRef = useActorRef(sijoittelunTuloksetMachine);
   const { addToast } = useToaster();
-
-  const hakemuksetChanged = useHasChanged(hakemukset);
-
-  useEffect(() => {
-    if (hakemuksetChanged) {
-      sijoittelunTuloksetActorRef.send({
-        type: ValinnanTulosEventType.RESET,
-        params: {
-          hakukohdeOid,
-          valintatapajonoOid,
-          hakemukset,
-          lastModified,
-          onUpdated,
-          addToast,
-        },
-      });
-    }
-  }, [
-    hakemuksetChanged,
-    sijoittelunTuloksetActorRef,
-    hakemukset,
-    hakukohdeOid,
-    lastModified,
-    valintatapajonoOid,
-    onUpdated,
-    addToast,
-  ]);
-
-  return sijoittelunTuloksetActorRef;
+  return useActorRef(sijoittelunTuloksetMachine, {
+    inspect,
+    input: {
+      hakukohdeOid,
+      hakemukset,
+      valintatapajonoOid,
+      lastModified,
+      onUpdated,
+      addToast,
+    },
+  });
 };

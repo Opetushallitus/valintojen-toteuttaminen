@@ -29,6 +29,7 @@ import {
 } from 'remeda';
 import { Hakukohde } from '@/lib/kouta/kouta-types';
 import { saveValinnanvaiheTulokset } from '../valintalaskenta/valintalaskenta-service';
+import { inspect } from '@/lib/xstate-utils';
 
 export type JonoTulosContext = {
   jonoTulokset: Array<LaskennanJonosijaTulosWithHakijaInfo>;
@@ -442,6 +443,7 @@ export const useJonotulosState = ({
   onEvent,
 }: JonoTulosMachineParams) => {
   const actorRef = useActorRef(jonoTulosMachine, {
+    inspect,
     input: {
       hakukohde,
       valinnanvaihe,

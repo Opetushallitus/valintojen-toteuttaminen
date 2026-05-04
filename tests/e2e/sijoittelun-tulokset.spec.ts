@@ -13,6 +13,7 @@ import {
   IlmoittautumisTila,
   VastaanottoTila,
 } from '@/lib/types/sijoittelu-types';
+import SIJOITTELUN_TULOS from './fixtures/sijoittelun-tulos.json';
 
 const RUHTINAS_ROW = [
   '',
@@ -48,7 +49,7 @@ const PURUKUMI_ROW = [
 ];
 
 async function goToSijoittelunTulokset(page: Page) {
-  await page.clock.setFixedTime(new Date('2025-02-05T12:00:00'));
+  await page.clock.setSystemTime(new Date('2025-02-05T12:00:00'));
   await page.route(
     '**/valintalaskentakoostepalvelu/resources/proxy/valintatulosservice/myohastyneet/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105',
     async (route) => {
@@ -478,8 +479,39 @@ test.describe('Tallennus', () => {
   });
 
   test('Tallentaa muutokset ja lataa tulokset uudelleen', async ({ page }) => {
-    await page.getByText('Maksamatta').click();
+    const maksunTilaColumnIndex = await findTableColumnIndexByTitle(
+      page,
+      'Maksun tila',
+    );
+
+    const daculaRow = getYoValintatapajonoContent(page).getByRole('row', {
+      name: 'Dacula Kreivi',
+    });
+
+    await expect(
+      daculaRow.getByRole('cell').nth(maksunTilaColumnIndex),
+    ).toContainText('Maksamatta');
+
+    await daculaRow.getByText('Maksamatta').click();
     await page.getByRole('option', { name: 'Maksettu' }).click();
+
+    await page.route(
+      (url) =>
+        url.href.includes(
+          'sijoitteluntulos/1.2.246.562.29.00000000000000045102/sijoitteluajo/latest/hakukohde/1.2.246.562.20.00000000000000045105',
+        ),
+      async (route) => {
+        await route.fulfill({
+          json: {
+            ...SIJOITTELUN_TULOS,
+            lukuvuosimaksut: [
+              { personOid: '1.2.246.562.24.25732574711', maksuntila: 'MAKSETTU' },
+            ],
+          },
+        });
+      },
+    );
+
     await Promise.all([
       waitForMethodRequest(page, 'GET', (url) =>
         url.includes(
@@ -493,6 +525,12 @@ test.describe('Tallennus', () => {
     await expect(
       page.getByText('Valintaesityksen muutokset tallennettu'),
     ).toBeVisible();
+    await expectAllSpinnersHidden(page);
+
+    await expect(daculaRow
+        .getByRole('cell')
+        .nth(maksunTilaColumnIndex),
+    ).toContainText('Maksettu');
   });
 
   test('Tallennus epäonnistuu', async ({ page }) => {

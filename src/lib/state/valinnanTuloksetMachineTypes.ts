@@ -89,10 +89,6 @@ export enum ValinnanTulosEventType {
    */
   PUBLISH = 'PUBLISH',
   /**
-   * Nollaa tilakoneen tila. Kutsutaan kun ladataan hakemukset uudelleen palvelimelta.
-   */
-  RESET = 'RESET',
-  /**
    * Poista tallennettu tulos hakemukselta.
    */
   REMOVE = 'REMOVE',
@@ -112,11 +108,6 @@ export type ValinnanTulosMachineParams<T extends HakemuksenValinnanTulos> = {
    * Kutsutaan, jos ainakin osa hakemuksista saatiin päivitettyä onnistuneesti.
    */
   onUpdated?: () => void;
-};
-
-export type ValinnanTulosResetEvent<T extends HakemuksenValinnanTulos> = {
-  type: ValinnanTulosEventType.RESET;
-  params: ValinnanTulosMachineParams<T>;
 };
 
 /**
@@ -157,11 +148,10 @@ export type ValinnanTulosRemoveEvent = {
   hakemusOid: string;
 };
 
-export type ValinnanTuloksetEvents<T extends HakemuksenValinnanTulos> =
+export type ValinnanTuloksetEvents =
   | ValinnanTulosUpdateEvent
   | ValinnanTulosChangeEvent
   | ValinnanTulosMassChangeEvent
   | ValinnanTulosPublishEvent
   | ValinnanTulosMassUpdateEvent
-  | ValinnanTulosResetEvent<T>
   | ValinnanTulosRemoveEvent;

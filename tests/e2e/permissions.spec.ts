@@ -194,14 +194,9 @@ test.describe('Toiminnot on piilotettu tai poistettu käytöstä jos käyttäjä
       .getByRole('button', { name: 'Muut toiminnot' })
       .click();
     // Vain muutoshistoria näkyy hakemuksen toiminnot listassa
-    expect(
-      (
-        await page
-          .getByRole('menu', { name: 'Muut toiminnot' })
-          .getByRole('menuitem')
-          .all()
-      ).length,
-    ).toBe(1);
+    await expect(
+      page.getByRole('menu', { name: 'Muut toiminnot' }).getByRole('menuitem'),
+    ).toHaveCount(1);
     await expect(page.getByText('Muutoshistoria')).toBeVisible();
     await page.locator('.MuiPopover-root > .MuiBackdrop-root').click();
 
@@ -210,14 +205,11 @@ test.describe('Toiminnot on piilotettu tai poistettu käytöstä jos käyttäjä
     await page
       .getByRole('button', { name: 'Muut toiminnot hakukohteelle' })
       .click();
-    expect(
-      (
-        await page
-          .getByRole('menu', { name: 'Muut toiminnot hakukohteelle' })
-          .getByRole('menuitem')
-          .all()
-      ).length,
-    ).toBe(3);
+    await expect(
+      page
+        .getByRole('menu', { name: 'Muut toiminnot hakukohteelle' })
+        .getByRole('menuitem'),
+    ).toHaveCount(3);
     await expect(
       page.getByRole('menuitem', { name: 'Lataa hyväksymiskirjeet' }),
     ).toBeVisible();

@@ -5,7 +5,7 @@ import { TabContainer } from '../components/tab-container';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { Box, Stack } from '@mui/material';
-import { useQuery, useSuspenseQueries } from '@tanstack/react-query';
+import { useSuspenseQueries, useSuspenseQuery } from '@tanstack/react-query';
 import { isEmpty } from '@/lib/common';
 import { NoResults } from '@/components/no-results';
 import { FullClientSpinner } from '@/components/client-spinner';
@@ -20,17 +20,19 @@ import { useValinnanTuloksetSearchParams } from './hooks/useValinnanTuloksetSear
 import { useIsDirtyValinnanTulos } from '@/lib/state/valinnanTuloksetMachineUtils';
 import { useHakemuksetValinnanTuloksilla } from './hooks/useHakemuksetValinnanTuloksilla';
 import { ValinnanTuloksetSpinnerModal } from './components/ValinnanTuloksetSpinnerModal';
-import { queryOptionsGetHakukohteenValinnanTulokset } from '@/lib/valinta-tulos-service/valinta-tulos-queries';
+import {
+  queryOptionsGetHakukohteenLukuvuosimaksut,
+  queryOptionsGetHakukohteenValinnanTulokset,
+} from '@/lib/valinta-tulos-service/valinta-tulos-queries';
 import {
   queryOptionsGetHakukohde,
   queryOptionsGetHaku,
 } from '@/lib/kouta/kouta-queries';
-import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
 import { queryOptionsGetHakemukset } from '@/lib/ataru/ataru-queries';
 import { useNavigationBlockerWithWindowEvents } from '@/hooks/useNavigationBlocker';
 import { Hakemus } from '@/lib/ataru/ataru-types';
 import {
-  getHakukohteenLukuvuosimaksut,
+  HakukohteenLukuvuosimaksut,
   HakukohteenValinnanTuloksetData,
 } from '@/lib/valinta-tulos-service/valinta-tulos-service';
 
@@ -38,24 +40,18 @@ type ValinnanTuloksetContentProps = {
   haku: Haku;
   hakukohde: Hakukohde;
   hakemukset: Array<Hakemus>;
-  hakukohdeOid: string;
   valinnanTulokset: HakukohteenValinnanTuloksetData;
+  lukuvuosimaksut: HakukohteenLukuvuosimaksut;
 };
 
 const ValinnanTuloksetContent = ({
   haku,
   hakukohde,
-  hakukohdeOid,
   valinnanTulokset,
   hakemukset,
+  lukuvuosimaksut,
 }: ValinnanTuloksetContentProps) => {
   const { t } = useTranslations();
-  const korkeakouluHaku = isKorkeakouluHaku(haku);
-  const { data: lukuvuosimaksut = [] } = useQuery({
-    queryKey: ['getHakukohteenLukuvuosimaksut', hakukohdeOid],
-    queryFn: () => getHakukohteenLukuvuosimaksut(hakukohdeOid),
-    enabled: korkeakouluHaku,
-  });
 
   const hakemuksetTuloksilla = useHakemuksetValinnanTuloksilla({
     hakemukset,
@@ -117,6 +113,56 @@ const ValinnanTuloksetContent = ({
   );
 };
 
+const ValinnanTuloksetPageContent = ({
+  hakuOid,
+  hakukohdeOid,
+}: KoutaOidParams) => {
+  const [
+    { data: haku, dataUpdatedAt: hakuUpdatedAt },
+    { data: hakukohde, dataUpdatedAt: hakukohdeUpdatedAt },
+    { data: valinnanTulokset, dataUpdatedAt: valinnanTuloksetUpdatedAt },
+    { data: hakemukset, dataUpdatedAt: hakemuksetUpdatedAt },
+  ] = useSuspenseQueries({
+    queries: [
+      queryOptionsGetHaku({ hakuOid }),
+      queryOptionsGetHakukohde({ hakukohdeOid }),
+      queryOptionsGetHakukohteenValinnanTulokset({
+        hakuOid,
+        hakukohdeOid,
+      }),
+      queryOptionsGetHakemukset({
+        hakuOid,
+        hakukohdeOid,
+      }),
+    ],
+  });
+
+  const { data: lukuvuosimaksut, dataUpdatedAt: lukuvuosimaksutUpdatedAt } =
+    useSuspenseQuery(
+      queryOptionsGetHakukohteenLukuvuosimaksut({ hakukohdeOid, haku }),
+    );
+
+  const dataUpdatedAt = Math.max(
+    hakuUpdatedAt,
+    hakukohdeUpdatedAt,
+    valinnanTuloksetUpdatedAt,
+    hakemuksetUpdatedAt,
+    lukuvuosimaksutUpdatedAt,
+  );
+
+  return (
+    <ValinnanTuloksetContent
+      // Resetoidaan komponentti kun mikä tahansa data päivittyy. Tällä varmistetaan, että tilakone resetoituu kun data muuttuu.
+      key={dataUpdatedAt}
+      haku={haku}
+      hakukohde={hakukohde}
+      hakemukset={hakemukset}
+      valinnanTulokset={valinnanTulokset}
+      lukuvuosimaksut={lukuvuosimaksut}
+    />
+  );
+};
+
 export default function ValinnanTuloksetPage(props: {
   params: Promise<{ oid: string; hakukohde: string }>;
 }) {
@@ -133,38 +179,3 @@ export default function ValinnanTuloksetPage(props: {
     </TabContainer>
   );
 }
-
-const ValinnanTuloksetPageContent = ({
-  hakuOid,
-  hakukohdeOid,
-}: KoutaOidParams) => {
-  const [
-    { data: haku },
-    { data: hakukohde },
-    { data: valinnanTulokset },
-    { data: hakemukset },
-  ] = useSuspenseQueries({
-    queries: [
-      queryOptionsGetHaku({ hakuOid }),
-      queryOptionsGetHakukohde({ hakukohdeOid }),
-      queryOptionsGetHakukohteenValinnanTulokset({
-        hakuOid,
-        hakukohdeOid,
-      }),
-      queryOptionsGetHakemukset({
-        hakuOid,
-        hakukohdeOid,
-      }),
-    ],
-  });
-
-  return (
-    <ValinnanTuloksetContent
-      haku={haku}
-      hakukohde={hakukohde}
-      hakukohdeOid={hakukohdeOid}
-      hakemukset={hakemukset}
-      valinnanTulokset={valinnanTulokset}
-    />
-  );
-};
