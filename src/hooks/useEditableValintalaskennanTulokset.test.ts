@@ -1,11 +1,11 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { selectEditableValintalaskennanTulokset } from './useEditableValintalaskennanTulokset';
 import {
+  JarjestyskriteeriModel,
+  TuloksenTila,
   ValintalaskennanTulosValinnanvaiheModel,
   ValintalaskennanValintatapajonoModel,
   ValintalaskennanValintatapaJonosijaModel,
-  TuloksenTila,
-  JarjestyskriteeriModel,
 } from '../lib/types/laskenta-types';
 import {
   Valinnanvaihe,
@@ -128,8 +128,9 @@ describe('selectEditableValintalaskennanTulokset', () => {
     });
 
     expect(jonosija?.jarjestyskriteerit).toHaveLength(1);
-    const kriteeri = jonosija?.jarjestyskriteerit?.[0];
-    expect(kriteeri).toMatchObject({
+    expect(
+      (jonosija?.jarjestyskriteerit as Array<JarjestyskriteeriModel>)[0],
+    ).toMatchObject({
       arvo: '85,5',
       kuvaus: { FI: 'Pisteet', SV: 'Poäng', EN: 'Points' },
       tila: 'HYVAKSYTTAVISSA',
