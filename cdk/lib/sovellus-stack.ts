@@ -44,11 +44,6 @@ const nameOverrides = (
   appName: string,
 ): NextjsOverrides => {
   return {
-    nextjs: {
-      nextjsDistributionProps: {
-        functionUrlAuthType: lambda.FunctionUrlAuthType.AWS_IAM,
-      },
-    },
     nextjsServer: {
       functionProps: nameFunctionProps(
         scope,
@@ -98,6 +93,11 @@ export class ValintojenToteuttaminenSovellusStack extends cdk.Stack {
         hostedZone: props.hostedZone,
       },
       overrides: {
+        nextjs: {
+          nextjsDistributionProps: {
+            functionUrlAuthType: lambda.FunctionUrlAuthType.AWS_IAM,
+          },
+        },
         nextjsDistribution: {
           serverBehaviorOptions: {
             cachePolicy: CachePolicy.fromCachePolicyId(
