@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import {
   Nextjs,
@@ -43,6 +44,11 @@ const nameOverrides = (
   appName: string,
 ): NextjsOverrides => {
   return {
+    nextjs: {
+      nextjsDistributionProps: {
+        functionUrlAuthType: lambda.FunctionUrlAuthType.AWS_IAM,
+      },
+    },
     nextjsServer: {
       functionProps: nameFunctionProps(
         scope,
