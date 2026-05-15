@@ -115,6 +115,9 @@ export class ValintojenToteuttaminenSovellusStack extends cdk.Stack {
             priceClass: PriceClass.PRICE_CLASS_100,
             enableIpv6: false,
           },
+          edgeFunctionProps: {
+            stackId: `${props.env?.region}-${props.environmentName}-valintojen-toteuttaminen-edge-lambda`,
+          },
         },
         ...nameOverrides(
           this,
