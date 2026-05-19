@@ -16,7 +16,7 @@ const domainName = `valintojen-toteuttaminen.${publicHostedZones[environmentName
 
 const hostedZoneStack = new HostedZoneStack(
   app,
-  'HostedZoneStack',
+  'ValintojenToteuttaminenHostedZoneStack',
   {
     env: envEU,
     stackName: `${environmentName}-valintojen-toteuttaminen-hosted-zone`,
@@ -36,15 +36,19 @@ const certificateStack = new ValintojenToteuttaminenCertificateStack(
   },
 );
 
-new ValintojenToteuttaminenSovellusStack(app, 'SovellusStack', {
-  stackName: `${environmentName}-valintojen-toteuttaminen`,
-  environmentName,
-  env: {
-    account,
-    region: process.env.CDK_DEFAULT_REGION,
+new ValintojenToteuttaminenSovellusStack(
+  app,
+  'ValintojenToteuttaminenSovellusStack',
+  {
+    stackName: `${environmentName}-valintojen-toteuttaminen`,
+    environmentName,
+    env: {
+      account,
+      region: process.env.CDK_DEFAULT_REGION,
+    },
+    hostedZone: hostedZoneStack.hostedZone,
+    certificate: certificateStack.certificate,
+    crossRegionReferences: true,
+    domainName: domainName,
   },
-  hostedZone: hostedZoneStack.hostedZone,
-  certificate: certificateStack.certificate,
-  crossRegionReferences: true,
-  domainName: domainName,
-});
+);

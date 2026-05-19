@@ -62,6 +62,6 @@ jobs:
         run: |
           cd cdk
           pnpm install
-          pnpm exec cdk deploy HostedZoneStack --require-approval never -c "environment=${{ inputs.environment }}"
+          pnpm exec cdk deploy ValintojenToteuttaminenHostedZoneStack --require-approval never -c "environment=${{ inputs.environment }}"
           pnpm exec cdk deploy ValintojenToteuttaminenCertificateStack --require-approval never -c "environment=${{ inputs.environment }}"
-          pnpm exec cdk deploy SovellusStack --require-approval never -c "environment=${{ inputs.environment }}"
+          pnpm exec cdk deploy ValintojenToteuttaminenSovellusStack --require-approval never -c "environment=${{ inputs.environment }}"
