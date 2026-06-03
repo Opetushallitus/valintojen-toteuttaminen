@@ -31,9 +31,13 @@ import { ValinnanTulosLisatiedoilla } from '../lib/henkilo-page-types';
 import { LocalizedSelect } from '@/components/localized-select';
 import { Haku } from '@/lib/kouta/kouta-types';
 import { useIlmoittautumisTilaOptions } from '@/hooks/useIlmoittautumisTilaOptions';
-import { useVastaanottoTilaOptions } from '@/hooks/useVastaanottoTilaOptions';
+import {
+  getVastaanottoTilaLabelKey,
+  useVastaanottoTilaOptions,
+} from '@/hooks/useVastaanottoTilaOptions';
 import { useIsValintaesitysJulkaistavissa } from '@/hooks/useIsValintaesitysJulkaistavissa';
 import { refetchHakemuksenValinnanTulokset } from '@/lib/valinta-tulos-service/valinta-tulos-queries';
+import { useUserPermissions } from '@/hooks/useUserPermissions';
 
 const ModalActions = ({
   onClose,
@@ -129,7 +133,15 @@ export const ValinnanTilatEditModal = createModal<{
     () => valinnanTulos.ilmoittautumistila ?? '',
   );
 
-  const vastaanottoTilaOptions = useVastaanottoTilaOptions();
+  const { hasOphCRUD } = useUserPermissions();
+
+  const vastaanottoTilaOptions = useVastaanottoTilaOptions({
+    haku,
+    isRekisterinpitaja: hasOphCRUD,
+  });
+  const vastaanottoTilaIsSelectable = vastaanottoTilaOptions.some(
+    (option) => option.value === vastaanottoTila,
+  );
 
   const ilmoittautumisTilaOptions = useIlmoittautumisTilaOptions();
 
@@ -219,7 +231,18 @@ export const ValinnanTilatEditModal = createModal<{
             <LocalizedSelect
               sx={{ width: '100%' }}
               labelId={labelId}
-              value={vastaanottoTila}
+              value={vastaanottoTilaIsSelectable ? vastaanottoTila : ''}
+              renderValue={
+                !vastaanottoTilaIsSelectable && vastaanottoTila
+                  ? () =>
+                      t(
+                        getVastaanottoTilaLabelKey({
+                          tila: vastaanottoTila as VastaanottoTila,
+                          haku,
+                        }),
+                      )
+                  : undefined
+              }
               options={vastaanottoTilaOptions}
               onChange={(e) => setVastaanottoTila(e.target.value)}
             />

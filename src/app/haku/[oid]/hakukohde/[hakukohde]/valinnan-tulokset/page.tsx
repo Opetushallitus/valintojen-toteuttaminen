@@ -93,7 +93,7 @@ const ValinnanTuloksetContent = ({
           alignItems: 'flex-end',
         }}
       >
-        <ValinnanTuloksetSearchControls />
+        <ValinnanTuloksetSearchControls haku={haku} />
         <PageSizeSelector pageSize={pageSize} setPageSize={setPageSize} />
       </Stack>
       <FormBox sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>

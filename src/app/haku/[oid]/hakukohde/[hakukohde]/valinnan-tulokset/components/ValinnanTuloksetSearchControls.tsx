@@ -6,8 +6,10 @@ import { OphFormFieldWrapper } from '@opetushallitus/oph-design-system';
 import { SearchInput } from '@/components/search-input';
 import { useValinnanTuloksetSearchParams } from '../hooks/useValinnanTuloksetSearch';
 import { useVastaanottoTilaOptions } from '@/hooks/useVastaanottoTilaOptions';
+import { Haku } from '@/lib/kouta/kouta-types';
+import { useUserPermissions } from '@/hooks/useUserPermissions';
 
-export const ValinnanTuloksetSearchControls = () => {
+export const ValinnanTuloksetSearchControls = ({ haku }: { haku: Haku }) => {
   const {
     searchPhrase,
     setSearchPhrase,
@@ -18,6 +20,7 @@ export const ValinnanTuloksetSearchControls = () => {
   } = useValinnanTuloksetSearchParams();
 
   const { t } = useTranslations();
+  const { hasOphCRUD } = useUserPermissions();
 
   const changeValinnanTila = (e: SelectChangeEvent) => {
     setValinnanTila(e.target.value);
@@ -31,7 +34,10 @@ export const ValinnanTuloksetSearchControls = () => {
     return { value: tila as string, label: t(`sijoitteluntila.${tila}`) };
   });
 
-  const vastaanottoTilaOptions = useVastaanottoTilaOptions();
+  const vastaanottoTilaOptions = useVastaanottoTilaOptions({
+    haku,
+    isRekisterinpitaja: hasOphCRUD,
+  });
 
   return (
     <Stack
