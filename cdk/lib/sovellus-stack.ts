@@ -2,7 +2,6 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import {
   Nextjs,
@@ -93,11 +92,6 @@ export class ValintojenToteuttaminenSovellusStack extends cdk.Stack {
         hostedZone: props.hostedZone,
       },
       overrides: {
-        nextjs: {
-          nextjsDistributionProps: {
-            functionUrlAuthType: lambda.FunctionUrlAuthType.AWS_IAM,
-          },
-        },
         nextjsDistribution: {
           serverBehaviorOptions: {
             cachePolicy: CachePolicy.fromCachePolicyId(
