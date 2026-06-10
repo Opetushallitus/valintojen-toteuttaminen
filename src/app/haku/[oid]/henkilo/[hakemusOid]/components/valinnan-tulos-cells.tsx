@@ -16,6 +16,7 @@ import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
 import { useHaku } from '@/lib/kouta/useHaku';
 import { styled } from '@/lib/theme';
 import { LaskennanValintatapajonoTulos } from '@/hooks/useEditableValintalaskennanTulokset';
+import { getVastaanottoTilaLabel } from '@/hooks/useVastaanottoTilaOptions';
 
 const ValintaTableCell = styled(MuiTableCell)({
   verticalAlign: 'top',
@@ -91,7 +92,13 @@ export const ValinnanTulosCells = ({
             )}
           </ValintaTableCell>
           <ValintaTableCell>
-            <div>{t(`vastaanottotila.${valinnanTulos?.vastaanottotila}`)}</div>
+            <div>
+              {getVastaanottoTilaLabel({
+                tila: valinnanTulos.vastaanottotila,
+                haku,
+                t,
+              })}
+            </div>
           </ValintaTableCell>
           <ValintaTableCell>
             {isIlmoittautuminenPossible({

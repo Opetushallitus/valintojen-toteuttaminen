@@ -25,20 +25,37 @@ import { toFormattedDateTimeString } from '@/lib/localization/translation-utils'
 import { isTimestamp } from '@/lib/time-utils';
 import { ErrorAlert } from '../error-alert';
 import { queryOptionsGetChangeHistoryForHakemus } from '@/lib/valinta-tulos-service/valinta-tulos-queries';
+import { Haku } from '@/lib/kouta/kouta-types';
+import { getVastaanottoTilaLabel } from '@/hooks/useVastaanottoTilaOptions';
+import { VastaanottoTila } from '@/lib/types/sijoittelu-types';
 
 export const HistoryEvent = ({
   changes,
+  haku,
 }: {
   changes: Array<HakemusChangeDetail>;
+  haku?: Haku;
 }) => {
   const { t } = useTranslations();
-  const parseMuutos = (muutos: string | boolean) => {
+  const parseMuutos = ({
+    field,
+    muutos,
+  }: {
+    field: string;
+    muutos: string | boolean;
+  }) => {
     if (typeof muutos === 'boolean') {
       return !muutos ? t('yleinen.ei') : t('yleinen.kylla');
     } else if (isTimestamp(muutos)) {
       return toFormattedDateTimeString(muutos);
     } else if (isEmpty(muutos)) {
       return '';
+    } else if (field === 'vastaanottotila') {
+      return getVastaanottoTilaLabel({
+        tila: muutos as VastaanottoTila,
+        haku,
+        t,
+      });
     }
 
     return t(`sijoittelun-tulokset.muutoshistoria.muutokset.${muutos}`, {
@@ -58,7 +75,7 @@ export const HistoryEvent = ({
 
   return changes.map((c, index) => (
     <Box key={`change-detail-${index}`}>
-      {parseKey(c.field)}: {parseMuutos(c.to)}
+      {parseKey(c.field)}: {parseMuutos({ field: c.field, muutos: c.to })}
     </Box>
   ));
 };
@@ -66,9 +83,11 @@ export const HistoryEvent = ({
 const HistoryModalContent = ({
   hakemusOid,
   valintatapajonoOid,
+  haku,
 }: {
   hakemusOid: string;
   valintatapajonoOid: string;
+  haku: Haku;
 }) => {
   const { data: history } = useSuspenseQuery(
     queryOptionsGetChangeHistoryForHakemus({ hakemusOid, valintatapajonoOid }),
@@ -93,7 +112,7 @@ const HistoryModalContent = ({
     makeColumnWithCustomRender<HakemusChangeEvent>({
       title: 'sijoittelun-tulokset.muutoshistoria.muutos',
       key: 'changes',
-      renderFn: (props) => <HistoryEvent changes={props.changes} />,
+      renderFn: (props) => <HistoryEvent changes={props.changes} haku={haku} />,
       sortable: false,
     }),
   ];
@@ -110,8 +129,10 @@ const HistoryModalContent = ({
 
 export const ChangeHistoryGlobalModal = createModal(
   ({
+    haku,
     hakemus,
   }: {
+    haku: Haku;
     hakemus: {
       hakemusOid: string;
       hakijanNimi: string;
@@ -148,6 +169,7 @@ export const ChangeHistoryGlobalModal = createModal(
             <HistoryModalContent
               hakemusOid={hakemus.hakemusOid}
               valintatapajonoOid={hakemus.valintatapajonoOid}
+              haku={haku}
             />
           </QuerySuspenseBoundary>
         )}

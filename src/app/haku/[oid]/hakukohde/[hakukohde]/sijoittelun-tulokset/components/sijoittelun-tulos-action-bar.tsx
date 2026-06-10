@@ -21,6 +21,8 @@ import {
   ValinnanTulosEventType,
   ValinnanTulosMassChangeParams,
 } from '@/lib/state/valinnanTuloksetMachineTypes';
+import { Haku } from '@/lib/kouta/kouta-types';
+import { useUserPermissions } from '@/hooks/useUserPermissions';
 
 const IlmoittautumisSelect = ({
   hakemukset,
@@ -58,19 +60,25 @@ const IlmoittautumisSelect = ({
 };
 
 const VastaanOttoSelect = ({
+  haku,
   hakemukset,
   selection,
   massStatusChangeForm,
 }: {
+  haku: Haku;
   hakemukset: Array<HakemuksenValinnanTulos>;
   selection: Set<string>;
   massStatusChangeForm: (changeParams: ValinnanTulosMassChangeParams) => void;
 }) => {
   const { t } = useTranslations();
+  const { hasOphCRUD } = useUserPermissions();
 
   const [value, setValue] = useState<string>('');
 
-  const vastaanottotilaOptions = useVastaanottoTilaOptions();
+  const vastaanottotilaOptions = useVastaanottoTilaOptions({
+    haku,
+    isRekisterinpitaja: hasOphCRUD,
+  });
 
   const massUpdateVastaanOtto = (event: SelectChangeEvent<string>) => {
     massStatusChangeForm({
@@ -97,11 +105,13 @@ const VastaanOttoSelect = ({
 };
 
 export const SijoittelunTuloksetActionBar = ({
+  haku,
   hakemukset,
   selection,
   resetSelection,
   actorRef,
 }: {
+  haku: Haku;
   hakemukset: Array<HakemuksenValinnanTulos>;
   actorRef: ValinnanTulosActorRef | SijoittelunTulosActorRef;
   selection: Set<string>;
@@ -137,6 +147,7 @@ export const SijoittelunTuloksetActionBar = ({
         }}
       >
         <VastaanOttoSelect
+          haku={haku}
           hakemukset={hakemukset}
           selection={selection}
           massStatusChangeForm={massStatusChangeForm}

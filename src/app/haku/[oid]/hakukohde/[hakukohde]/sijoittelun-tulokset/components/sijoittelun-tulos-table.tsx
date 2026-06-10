@@ -274,6 +274,7 @@ export const SijoittelunTulosTable = ({
     <>
       {!userHasOnlyReadPermission && (
         <SijoittelunTuloksetActionBar
+          haku={haku}
           hakemukset={contextHakemukset}
           selection={selection}
           resetSelection={resetSelection}

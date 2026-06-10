@@ -498,6 +498,7 @@
   "vastaanottotila": {
     "KESKEN": "Kesken",
     "EHDOLLISESTI_VASTAANOTTANUT": "Ehdollisesti vastaanottanut",
+    "VASTAANOTTANUT": "Vastaanottanut",
     "VASTAANOTTANUT_SITOVASTI": "Vastaanottanut sitovasti",
     "EI_VASTAANOTETTU_MAARA_AIKANA": "Ei vastaanotettu määräaikana",
     "PERUNUT": "Perunut",

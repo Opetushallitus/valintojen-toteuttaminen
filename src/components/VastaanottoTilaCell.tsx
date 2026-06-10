@@ -13,16 +13,19 @@ import {
   isVastaanottoPossible,
 } from '@/lib/sijoittelun-tulokset-utils';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
-import { useVastaanottoTilaOptions } from '@/hooks/useVastaanottoTilaOptions';
+import {
+  getVastaanottoTilaLabel,
+  useVastaanottoTilaOptions,
+} from '@/hooks/useVastaanottoTilaOptions';
 import { useIsValintaesitysJulkaistavissa } from '@/hooks/useIsValintaesitysJulkaistavissa';
 import { useHakijanVastaanottotila } from '@/hooks/useHakijanVastaanottotila';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { ClientSpinner } from '@/components/client-spinner';
 import { isValidValinnanTila } from '@/lib/valinnan-tulokset-utils';
-import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
 import { memo } from 'react';
 import { ValinnanTulosChangeParams } from '@/lib/state/valinnanTuloksetMachineTypes';
 import { prop } from 'remeda';
+import { useUserPermissions } from '@/hooks/useUserPermissions';
 
 const HakijanVastaanottoTilaSection = ({
   haku,
@@ -55,7 +58,11 @@ const HakijanVastaanottoTilaSection = ({
       <Typography>
         {t('sijoittelun-tulokset.hakijalle-naytetaan')}
         &nbsp;
-        {t(`vastaanottotila.${hakijanVastaanottoTila}`)}
+        {getVastaanottoTilaLabel({
+          tila: hakijanVastaanottoTila,
+          haku,
+          t,
+        })}
       </Typography>
     );
   }
@@ -89,26 +96,15 @@ const ValinnanVastaanottoTila = ({
   t,
 }: Omit<VastaanOttoCellProps, 'mode' | 'valintatapajono'>) => {
   const { vastaanottoTila } = hakemus;
+  const { hasOphCRUD } = useUserPermissions();
 
-  const vastaanottotilaOptions = useVastaanottoTilaOptions((tila) => {
-    return isKorkeakouluHaku(haku)
-      ? [
-          VastaanottoTila.KESKEN,
-          VastaanottoTila.EHDOLLISESTI_VASTAANOTTANUT,
-          VastaanottoTila.VASTAANOTTANUT_SITOVASTI,
-          VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA,
-          VastaanottoTila.PERUNUT,
-          VastaanottoTila.PERUUTETTU,
-          VastaanottoTila.OTTANUT_VASTAAN_TOISEN_PAIKAN,
-        ].includes(tila)
-      : [
-          VastaanottoTila.KESKEN,
-          VastaanottoTila.VASTAANOTTANUT_SITOVASTI,
-          VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA,
-          VastaanottoTila.PERUNUT,
-          VastaanottoTila.PERUUTETTU,
-        ].includes(tila);
+  const vastaanottotilaOptions = useVastaanottoTilaOptions({
+    haku,
+    isRekisterinpitaja: hasOphCRUD,
   });
+  const vastaanottoTilaIsSelectable = vastaanottotilaOptions.some(
+    (option) => option.value === vastaanottoTila,
+  );
 
   const updateVastaanottoTila = (event: SelectChangeEvent<string>) => {
     updateForm({
@@ -121,7 +117,12 @@ const ValinnanVastaanottoTila = ({
     <>
       <LocalizedSelect
         ariaLabel={t('sijoittelun-tulokset.taulukko.vastaanottotieto')}
-        value={vastaanottoTila ?? ''}
+        value={vastaanottoTilaIsSelectable ? (vastaanottoTila ?? '') : ''}
+        renderValue={
+          !vastaanottoTilaIsSelectable && vastaanottoTila
+            ? () => getVastaanottoTilaLabel({ tila: vastaanottoTila, haku, t })
+            : undefined
+        }
         onChange={updateVastaanottoTila}
         options={vastaanottotilaOptions}
         disabled={disabled || !isVastaanottoPossible(hakemus)}
@@ -141,8 +142,15 @@ const SijoittelunVastaanottoTila = ({
   t,
 }: Omit<VastaanOttoCellProps, 'mode'>) => {
   const { vastaanottoTila } = hakemus;
+  const { hasOphCRUD } = useUserPermissions();
 
-  const vastaanottotilaOptions = useVastaanottoTilaOptions();
+  const vastaanottotilaOptions = useVastaanottoTilaOptions({
+    haku,
+    isRekisterinpitaja: hasOphCRUD,
+  });
+  const vastaanottoTilaIsSelectable = vastaanottotilaOptions.some(
+    (option) => option.value === vastaanottoTila,
+  );
 
   const updateVastaanottoTila = (event: SelectChangeEvent<string>) => {
     updateForm({
@@ -175,7 +183,13 @@ const SijoittelunVastaanottoTila = ({
         </QuerySuspenseBoundary>
         <LocalizedSelect
           ariaLabel={t('sijoittelun-tulokset.taulukko.vastaanottotieto')}
-          value={vastaanottoTila ?? ''}
+          value={vastaanottoTilaIsSelectable ? (vastaanottoTila ?? '') : ''}
+          renderValue={
+            !vastaanottoTilaIsSelectable && vastaanottoTila
+              ? () =>
+                  getVastaanottoTilaLabel({ tila: vastaanottoTila, haku, t })
+              : undefined
+          }
           onChange={updateVastaanottoTila}
           options={vastaanottotilaOptions}
           disabled={disabled}

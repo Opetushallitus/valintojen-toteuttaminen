@@ -23,6 +23,8 @@ import {
   ValinnanTulosEventType,
   ValinnanTulosMassChangeParams,
 } from '@/lib/state/valinnanTuloksetMachineTypes';
+import { Haku } from '@/lib/kouta/kouta-types';
+import { useUserPermissions } from '@/hooks/useUserPermissions';
 
 const ValinnanTilaDropdown = ({
   hakemukset,
@@ -101,17 +103,23 @@ const IlmoittautumisTilaDropdown = ({
 };
 
 const VastaanottoTilaDropdown = ({
+  haku,
   hakemukset,
   selection,
   massStatusChangeForm,
 }: {
+  haku: Haku;
   hakemukset: Array<HakemuksenValinnanTulos>;
   selection: Set<string>;
   massStatusChangeForm: (changeParams: ValinnanTulosMassChangeParams) => void;
 }) => {
   const { t } = useTranslations();
+  const { hasOphCRUD } = useUserPermissions();
 
-  const vastaanottotilaOptions = useVastaanottoTilaOptions();
+  const vastaanottotilaOptions = useVastaanottoTilaOptions({
+    haku,
+    isRekisterinpitaja: hasOphCRUD,
+  });
 
   const disabled =
     hakemukset.find(
@@ -140,11 +148,13 @@ const VastaanottoTilaDropdown = ({
 };
 
 export const ValinnanTuloksetActionBar = ({
+  haku,
   hakemukset,
   selection,
   resetSelection,
   actorRef,
 }: {
+  haku: Haku;
   hakemukset: Array<HakemuksenValinnanTulos>;
   actorRef: ValinnanTulosActorRef | SijoittelunTulosActorRef;
   selection: Set<string>;
@@ -181,6 +191,7 @@ export const ValinnanTuloksetActionBar = ({
       </Stack>
       <Stack direction="row" sx={{ alignItems: 'center', gap: 1 }}>
         <VastaanottoTilaDropdown
+          haku={haku}
           hakemukset={hakemukset}
           selection={selection}
           massStatusChangeForm={massStatusChangeForm}

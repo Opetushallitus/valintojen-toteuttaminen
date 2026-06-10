@@ -1,6 +1,18 @@
 import { render } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import { HistoryEvent } from './change-history-global-modal';
+import { Haku, Tila } from '@/lib/kouta/kouta-types';
+import { VastaanottoTila } from '@/lib/types/sijoittelu-types';
+
+const TOISEN_ASTEEN_YHTEISHAKU: Haku = {
+  oid: 'haku-oid',
+  nimi: { fi: 'Haku' },
+  tila: Tila.JULKAISTU,
+  hakutapaKoodiUri: 'hakutapa_01',
+  hakukohteita: 1,
+  kohdejoukkoKoodiUri: 'haunkohdejoukko_11#1',
+  organisaatioOid: 'organisaatio-oid',
+};
 
 describe('HistoryEvent', () => {
   it('renders tila change correctly', () => {
@@ -42,6 +54,23 @@ describe('HistoryEvent', () => {
       'Sähköpostilähetyksen syy: sijoittelun-tulokset.muutoshistoria.muutokset.VASTAANOTTOILMOITUS' +
         'Sähköposti merkitty lähetettäväksi: 11.4.2025 16:02:01' +
         'Sähköposti lähetetty:',
+    );
+  });
+  it('renders toisen asteen vastaanottanut without sitovasti suffix', () => {
+    const VASTAANOTTOTILA_CHANGES = [
+      {
+        field: 'vastaanottotila',
+        to: VastaanottoTila.VASTAANOTTANUT_SITOVASTI,
+      },
+    ];
+    const { container } = render(
+      <HistoryEvent
+        changes={VASTAANOTTOTILA_CHANGES}
+        haku={TOISEN_ASTEEN_YHTEISHAKU}
+      />,
+    );
+    expect(container).toHaveTextContent(
+      'sijoittelun-tulokset.muutoshistoria.muutokset.vastaanottotila: vastaanottotila.VASTAANOTTANUT',
     );
   });
 });

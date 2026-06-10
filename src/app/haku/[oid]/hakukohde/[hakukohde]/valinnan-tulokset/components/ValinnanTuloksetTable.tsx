@@ -218,6 +218,7 @@ export const ValinnanTuloksetTable = ({
     <>
       {!userHasOnlyReadPermission && (
         <ValinnanTuloksetActionBar
+          haku={haku}
           selection={selection}
           hakemukset={rows}
           actorRef={actorRef}
