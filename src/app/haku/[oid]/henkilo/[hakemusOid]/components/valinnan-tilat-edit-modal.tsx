@@ -32,7 +32,7 @@ import { LocalizedSelect } from '@/components/localized-select';
 import { Haku } from '@/lib/kouta/kouta-types';
 import { useIlmoittautumisTilaOptions } from '@/hooks/useIlmoittautumisTilaOptions';
 import {
-  getVastaanottoTilaLabelKey,
+  getVastaanottoTilaLabel,
   useVastaanottoTilaOptions,
 } from '@/hooks/useVastaanottoTilaOptions';
 import { useIsValintaesitysJulkaistavissa } from '@/hooks/useIsValintaesitysJulkaistavissa';
@@ -235,12 +235,11 @@ export const ValinnanTilatEditModal = createModal<{
               renderValue={
                 !vastaanottoTilaIsSelectable && vastaanottoTila
                   ? () =>
-                      t(
-                        getVastaanottoTilaLabelKey({
-                          tila: vastaanottoTila as VastaanottoTila,
-                          haku,
-                        }),
-                      )
+                      getVastaanottoTilaLabel({
+                        tila: vastaanottoTila as VastaanottoTila,
+                        haku,
+                        t,
+                      })
                   : undefined
               }
               options={vastaanottoTilaOptions}

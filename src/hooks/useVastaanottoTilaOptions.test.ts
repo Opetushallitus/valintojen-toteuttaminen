@@ -2,9 +2,11 @@ import { describe, expect, test } from 'vitest';
 import { Haku, Tila } from '@/lib/kouta/kouta-types';
 import { VastaanottoTila } from '@/lib/types/sijoittelu-types';
 import {
+  getVastaanottoTilaLabel,
   getSelectableVastaanottoTilat,
   getVastaanottoTilaLabelKey,
 } from './useVastaanottoTilaOptions';
+import { TFunction } from '@/lib/localization/useTranslations';
 
 const HAKU_BASE: Haku = {
   oid: 'haku-oid',
@@ -101,5 +103,21 @@ describe('getVastaanottoTilaLabelKey', () => {
         },
       }),
     ).toBe('vastaanottotila.VASTAANOTTANUT_SITOVASTI');
+  });
+});
+
+describe('getVastaanottoTilaLabel', () => {
+  test('uses default value for toisen asteen vastaanottanut when localization key is missing', () => {
+    const t = ((_key: string, params?: { defaultValue?: string }) => {
+      return params?.defaultValue ?? _key;
+    }) as TFunction;
+
+    expect(
+      getVastaanottoTilaLabel({
+        tila: VastaanottoTila.VASTAANOTTANUT_SITOVASTI,
+        haku: HAKU_BASE,
+        t,
+      }),
+    ).toBe('Vastaanottanut');
   });
 });

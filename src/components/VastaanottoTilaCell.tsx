@@ -14,7 +14,7 @@ import {
 } from '@/lib/sijoittelun-tulokset-utils';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import {
-  getVastaanottoTilaLabelKey,
+  getVastaanottoTilaLabel,
   useVastaanottoTilaOptions,
 } from '@/hooks/useVastaanottoTilaOptions';
 import { useIsValintaesitysJulkaistavissa } from '@/hooks/useIsValintaesitysJulkaistavissa';
@@ -58,7 +58,11 @@ const HakijanVastaanottoTilaSection = ({
       <Typography>
         {t('sijoittelun-tulokset.hakijalle-naytetaan')}
         &nbsp;
-        {t(getVastaanottoTilaLabelKey({ tila: hakijanVastaanottoTila, haku }))}
+        {getVastaanottoTilaLabel({
+          tila: hakijanVastaanottoTila,
+          haku,
+          t,
+        })}
       </Typography>
     );
   }
@@ -116,8 +120,7 @@ const ValinnanVastaanottoTila = ({
         value={vastaanottoTilaIsSelectable ? (vastaanottoTila ?? '') : ''}
         renderValue={
           !vastaanottoTilaIsSelectable && vastaanottoTila
-            ? () =>
-                t(getVastaanottoTilaLabelKey({ tila: vastaanottoTila, haku }))
+            ? () => getVastaanottoTilaLabel({ tila: vastaanottoTila, haku, t })
             : undefined
         }
         onChange={updateVastaanottoTila}
@@ -184,7 +187,7 @@ const SijoittelunVastaanottoTila = ({
           renderValue={
             !vastaanottoTilaIsSelectable && vastaanottoTila
               ? () =>
-                  t(getVastaanottoTilaLabelKey({ tila: vastaanottoTila, haku }))
+                  getVastaanottoTilaLabel({ tila: vastaanottoTila, haku, t })
               : undefined
           }
           onChange={updateVastaanottoTila}

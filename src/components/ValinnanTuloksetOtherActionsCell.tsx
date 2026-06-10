@@ -64,6 +64,7 @@ export const ValinnanTuloksetOtherActionsCell = ({
 
   const showChangeHistoryForHakemus = () => {
     showModal(ChangeHistoryGlobalModal, {
+      haku,
       hakemus: {
         ...hakemus,
         valintatapajonoOid: hakemus.valintatapajonoOid ?? valintatapajonoOid,

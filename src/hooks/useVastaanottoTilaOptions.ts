@@ -1,5 +1,8 @@
 import { VastaanottoTila } from '../lib/types/sijoittelu-types';
-import { useTranslations } from '../lib/localization/useTranslations';
+import {
+  TFunction,
+  useTranslations,
+} from '../lib/localization/useTranslations';
 import { Haku } from '@/lib/kouta/kouta-types';
 import {
   isKorkeakouluHaku,
@@ -68,6 +71,34 @@ export const getVastaanottoTilaLabelKey = ({
     ? 'vastaanottotila.VASTAANOTTANUT'
     : `vastaanottotila.${tila}`;
 
+const getVastaanottoTilaLabelDefaultValue = ({
+  tila,
+  haku,
+}: {
+  tila: VastaanottoTila;
+  haku?: Haku;
+}) =>
+  haku &&
+  isToisenAsteenYhteisHaku(haku) &&
+  tila === VastaanottoTila.VASTAANOTTANUT_SITOVASTI
+    ? 'Vastaanottanut'
+    : undefined;
+
+export const getVastaanottoTilaLabel = ({
+  tila,
+  haku,
+  t,
+}: {
+  tila: VastaanottoTila;
+  haku?: Haku;
+  t: TFunction;
+}) => {
+  const key = getVastaanottoTilaLabelKey({ tila, haku });
+  const defaultValue = getVastaanottoTilaLabelDefaultValue({ tila, haku });
+
+  return defaultValue ? t(key, { defaultValue }) : t(key);
+};
+
 type UseVastaanottoTilaOptionsConfig = {
   haku?: Haku;
   isRekisterinpitaja?: boolean;
@@ -92,6 +123,6 @@ export const useVastaanottoTilaOptions = (
     .filter(filterFn)
     .map((tila) => ({
       value: tila as string,
-      label: t(getVastaanottoTilaLabelKey({ tila, haku })),
+      label: getVastaanottoTilaLabel({ tila, haku, t }),
     }));
 };
