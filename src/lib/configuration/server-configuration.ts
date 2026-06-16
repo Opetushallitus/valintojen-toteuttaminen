@@ -94,6 +94,7 @@ export async function buildConfiguration() {
         myohastyneetHakemuksetUrl: `${domain}/valintalaskentakoostepalvelu/resources/proxy/valintatulosservice/myohastyneet/haku/{hakuOid}/hakukohde/{hakukohdeOid}`,
         hakijanTilatValintatapajonolleUrl: `${domain}/valintalaskentakoostepalvelu/resources/proxy/valintatulosservice/tilahakijalle/haku/{hakuOid}/hakukohde/{hakukohdeOid}/valintatapajono/{valintatapajonoOid}`,
         startImportValinnanTulosUrl: `${domain}/valintalaskentakoostepalvelu/resources/erillishaku/tuonti/ui`,
+        startImportValinnanTulosExcelUrl: `${domain}/valintalaskentakoostepalvelu/resources/erillishaku/tuonti`,
         startExportValinnanTulosExcelUrl: `${domain}/valintalaskentakoostepalvelu/resources/erillishaku/vienti`,
         hakukohteidenSuodatustiedotUrl: `${domain}/valintalaskentakoostepalvelu/resources/valintojen-toteuttaminen/haku/{hakuOid}/valintatiedot-hakukohteittain`,
         haunParametrit: `${domain}/valintalaskentakoostepalvelu/resources/parametrit/{hakuOid}`,
