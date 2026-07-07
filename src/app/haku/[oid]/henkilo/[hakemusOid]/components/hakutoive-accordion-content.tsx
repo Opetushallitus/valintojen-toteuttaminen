@@ -1,5 +1,3 @@
-'use client';
-
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { TableCell, TableRow } from '@mui/material';
 import { ophColors, OphTypography } from '@opetushallitus/oph-design-system';

@@ -1,4 +1,3 @@
-'use client';
 import { ListTable } from '@/components/table/list-table';
 import { createHakijaColumn } from '@/components/table/table-columns';
 import { ListTableColumn } from '@/components/table/table-types';

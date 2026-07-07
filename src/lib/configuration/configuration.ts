@@ -1,13 +1,15 @@
-import { buildConfiguration } from './server-configuration';
+import { buildConfiguration } from './build-configuration';
 
-export const isDev = process.env.NODE_ENV === 'development';
+export const isDev = import.meta.env.DEV;
 
-export const isProd = process.env.NODE_ENV === 'production';
+export const isProd = import.meta.env.PROD;
 
-export const isTesting = Boolean(process.env.TEST);
+export const isTesting =
+  import.meta.env.VITE_TEST === 'true' || import.meta.env.MODE === 'test';
 
-export const localTranslations = process.env.LOCAL_TRANSLATIONS === 'true';
+export const localTranslations =
+  import.meta.env.VITE_LOCAL_TRANSLATIONS === 'true';
 
-export const xstateInspect = process.env.XSTATE_INSPECT === 'true';
+export const xstateInspect = import.meta.env.VITE_XSTATE_INSPECT === 'true';
 
-export type Configuration = Awaited<ReturnType<typeof buildConfiguration>>;
+export type Configuration = ReturnType<typeof buildConfiguration>;

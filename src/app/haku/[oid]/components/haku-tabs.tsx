@@ -1,4 +1,3 @@
-'use client';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import {
   useHierarchyUserPermissions,
@@ -8,7 +7,7 @@ import { DEFAULT_BOX_BORDER, styled } from '@/lib/theme';
 import { Box, Stack } from '@mui/material';
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
 import { useQueries } from '@tanstack/react-query';
-import { usePathname } from 'next/navigation';
+import { usePathname } from '@/hooks/usePathname';
 import { onkoHaullaValintaryhma } from '@/lib/valintaperusteet/valintaperusteet-service';
 import { ClientSpinner } from '@/components/client-spinner';
 import { OphErrorWithTitle, PermissionError } from '@/lib/common';

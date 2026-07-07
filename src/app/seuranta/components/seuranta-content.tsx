@@ -1,5 +1,3 @@
-'use client';
-
 import { Box } from '@mui/material';
 import SeurantaItem from './seuranta-item';
 import { SeurantaControls } from './seuranta-controls';

@@ -13,7 +13,7 @@ import { Language } from '../localization/localization-types';
 import { Hakukohde } from '../kouta/kouta-types';
 import { FetchError } from '../common';
 import { setConfiguration } from '@/lib/configuration/client-configuration';
-import { buildConfiguration } from '@/lib/configuration/server-configuration';
+import { buildConfiguration } from '@/lib/configuration/build-configuration';
 
 const HAKEMUKSET = [
   {
@@ -85,7 +85,7 @@ const HAKUKOHDE: Hakukohde = {
   voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita: false,
 };
 
-buildConfiguration().then(setConfiguration);
+setConfiguration(buildConfiguration());
 
 describe('getValintakoekutsutData', () => {
   afterEach(() => {

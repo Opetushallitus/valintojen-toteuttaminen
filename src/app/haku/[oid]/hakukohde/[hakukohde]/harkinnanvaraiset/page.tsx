@@ -1,6 +1,3 @@
-'use client';
-import { use } from 'react';
-
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { TabContainer } from '../components/tab-container';
 import { FullClientSpinner } from '@/components/client-spinner';
@@ -14,6 +11,7 @@ import { NoResults } from '@/components/no-results';
 import { isEmpty } from 'remeda';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
+import { useRequiredParams } from '@/hooks/useRequiredParams';
 
 const HarkinnanvaraisetContent = ({
   hakuOid,
@@ -44,10 +42,8 @@ const HarkinnanvaraisetContent = ({
   );
 };
 
-export default function HarkinnanvaraisetPage(props: {
-  params: Promise<{ oid: string; hakukohde: string }>;
-}) {
-  const params = use(props.params);
+export default function HarkinnanvaraisetPage() {
+  const params = useRequiredParams<{ oid: string; hakukohde: string }>();
   return (
     <TabContainer>
       <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>

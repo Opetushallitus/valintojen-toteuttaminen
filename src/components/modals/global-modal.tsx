@@ -1,4 +1,3 @@
-'use client';
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 
 export const GlobalModalProvider = ({

@@ -1,6 +1,6 @@
-'use client';
 import { HomeOutlined as HomeOutlinedIcon } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
+import { Link } from 'react-router';
 import { PageContent } from './page-content';
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
 import { useTranslations } from '../lib/localization/useTranslations';
@@ -35,7 +35,8 @@ export function Header({ title, isHome = false }: HeaderProps) {
       <HeaderContent>
         {!isHome && (
           <OphButton
-            href="/"
+            component={Link}
+            to="/"
             variant="outlined"
             startIcon={<HomeOutlinedIcon />}
             aria-label={t('yleinen.palaa-etusivulle')}

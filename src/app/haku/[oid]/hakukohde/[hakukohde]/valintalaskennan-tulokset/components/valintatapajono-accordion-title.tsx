@@ -1,4 +1,3 @@
-'use client';
 import { TFunction, useTranslations } from '@/lib/localization/useTranslations';
 import { toFormattedDateTimeString } from '@/lib/localization/translation-utils';
 import {

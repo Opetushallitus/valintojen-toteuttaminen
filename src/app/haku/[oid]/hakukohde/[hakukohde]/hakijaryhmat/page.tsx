@@ -1,6 +1,3 @@
-'use client';
-import { use } from 'react';
-
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { TabContainer } from '../components/tab-container';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
@@ -15,6 +12,7 @@ import { HakijaryhmatControls } from './components/hakijaryhmat-controls';
 import { NoResults } from '@/components/no-results';
 import { FullClientSpinner } from '@/components/client-spinner';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
+import { useRequiredParams } from '@/hooks/useRequiredParams';
 
 const HakijaryhmatContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const { t } = useTranslations();
@@ -64,10 +62,8 @@ const HakijaryhmatContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   );
 };
 
-export default function HakijaryhmatPage(props: {
-  params: Promise<{ oid: string; hakukohde: string }>;
-}) {
-  const params = use(props.params);
+export default function HakijaryhmatPage() {
+  const params = useRequiredParams<{ oid: string; hakukohde: string }>();
   return (
     <TabContainer>
       <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>

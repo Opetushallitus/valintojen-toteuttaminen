@@ -1,8 +1,7 @@
-import { describe, expect, test, vi } from 'vitest';
+import { describe, expect, test } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router';
 import { createHakijaColumn, HakijaColumnLinkType } from './table-columns';
-
-vi.mock('next/navigation', () => ({ useRouter: () => null }));
 
 const HAKEMUS = {
   hakemusOid: '1.2.3',
@@ -12,7 +11,9 @@ const HAKEMUS = {
 
 describe('createHakijaColumn', () => {
   test('creates link to application by defaukt', () => {
-    render(createHakijaColumn({}).render(HAKEMUS));
+    render(createHakijaColumn({}).render(HAKEMUS), {
+      wrapper: MemoryRouter,
+    });
     const rendered = screen.getByText('Hakija Kelpo');
     expect(rendered).not.toBeNull();
     expect(rendered.getAttribute('href')).toContain(
@@ -25,6 +26,7 @@ describe('createHakijaColumn', () => {
       createHakijaColumn({
         hakijaLinkType: HakijaColumnLinkType.HAKIJA,
       }).render(HAKEMUS),
+      { wrapper: MemoryRouter },
     );
     const rendered = screen.getByText('Hakija Kelpo');
     expect(rendered).not.toBeNull();

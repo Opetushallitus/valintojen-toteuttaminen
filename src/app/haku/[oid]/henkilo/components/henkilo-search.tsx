@@ -1,4 +1,3 @@
-'use client';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { useHenkiloSearchParams } from '../hooks/useHenkiloSearch';
 import { SearchInput } from '@/components/search-input';

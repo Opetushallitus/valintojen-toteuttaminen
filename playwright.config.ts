@@ -1,5 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
-import nextConfig from './next.config.mjs';
+import { BASE_PATH } from './src/lib/base-path';
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -19,7 +19,7 @@ export default defineConfig({
   use: {
     testIdAttribute: 'data-test-id',
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: `https://localhost:3404${nextConfig.basePath}`,
+    baseURL: `https://localhost:3404${BASE_PATH}`,
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
     ignoreHTTPSErrors: true,

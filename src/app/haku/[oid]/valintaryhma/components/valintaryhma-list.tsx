@@ -1,8 +1,6 @@
-'use client';
-
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { ophColors, OphTypography } from '@opetushallitus/oph-design-system';
-import { useParams } from 'next/navigation';
+import { useParams } from 'react-router';
 import { NAV_LIST_SELECTED_ITEM_CLASS } from '@/components/navigation-list';
 import { useValintaryhmaSearchResults } from '../hooks/useValintaryhmaSearch';
 import { ValintaryhmaHakukohteilla } from '@/lib/valintaperusteet/valintaperusteet-types';

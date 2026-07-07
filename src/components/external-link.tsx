@@ -22,7 +22,6 @@ export const ExternalLink = ({
       iconVisible={noIcon == null ? true : !noIcon}
       href={`${configuration?.domain}/${href}`}
       title={title ?? ''}
-      prefetch={false}
     >
       {name}
     </OphLink>

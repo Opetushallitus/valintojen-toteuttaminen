@@ -14,9 +14,9 @@ import {
   Valintatapajono,
 } from './valintaperusteet-types';
 import { setConfiguration } from '@/lib/configuration/client-configuration';
-import { buildConfiguration } from '@/lib/configuration/server-configuration';
+import { buildConfiguration } from '@/lib/configuration/build-configuration';
 
-buildConfiguration().then(setConfiguration);
+setConfiguration(buildConfiguration());
 
 describe('Valintaperusteet: getValinnanvaiheet', () => {
   afterEach(() => {

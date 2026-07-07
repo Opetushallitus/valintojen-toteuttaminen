@@ -12,28 +12,15 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "incremental": true,
     "target": "ES6",
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
     "paths": {
       "@/*": ["./src/*"],
       "@tests/*": ["./tests/*"]
     },
-    "types": ["@testing-library/jest-dom"]
+    "types": ["vite/client", "@testing-library/jest-dom"]
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts",
-    "./*.mjs",
-    "./*.mts",
-    "./.*.mjs"
-  ],
-  "exclude": ["node_modules", "cdk", ".next"]
+  "include": ["**/*.ts", "**/*.tsx", "./*.mjs", "./*.mts", "./.*.mjs"],
+  "exclude": ["node_modules", "dist", "server"]
 }

@@ -1,41 +1,30 @@
-import { useNavigationBlocker } from '@/hooks/useNavigationBlocker';
-import { useTranslations } from '@/lib/localization/useTranslations';
-import Link, { type LinkProps } from 'next/link';
-import { showModal } from './modals/global-modal';
-import { ConfirmationGlobalModal } from './modals/confirmation-global-modal';
-import { useRouter } from 'next/navigation';
+import { Link, type LinkProps, type To } from 'react-router';
 
+type BlockerLinkProps = Omit<LinkProps, 'to'> & {
+  to?: To;
+  /** MUI:n LinkComponent/component-propit välittävät osoitteen href-propissa */
+  href?: To;
+  useBlank?: boolean;
+  children: React.ReactNode;
+};
+
+/**
+ * Linkki, jonka navigointi voidaan estää, kun lomakkeella on tallentamattomia
+ * muutoksia. Varsinainen esto tapahtuu react-routerin useBlocker-hookilla
+ * (ks. useNavigationBlockerWithWindowEvents), joka estää kaikki
+ * router-navigoinnit ja näyttää vahvistusmodaalin.
+ */
 export const BlockerLink = ({
   children,
   useBlank = false,
+  to,
+  href,
   ...props
-}: LinkProps & { children: React.ReactNode; useBlank?: boolean }) => {
-  const { isBlocked, unblock } = useNavigationBlocker();
-  const router = useRouter();
-
-  const { t } = useTranslations();
-  const { href } = props;
-
+}: BlockerLinkProps) => {
   return (
     <Link
       {...props}
-      onNavigate={(e) => {
-        if (isBlocked && href) {
-          e.preventDefault();
-          showModal(ConfirmationGlobalModal, {
-            title: t('lomake.tallentamattomia-muutoksia'),
-            content: t('lomake.tallentamaton'),
-            confirmLabel: t('lomake.jatka'),
-            cancelLabel: t('yleinen.peruuta'),
-            onConfirm: () => {
-              unblock();
-              router.replace(
-                typeof href === 'string' ? href : String(href.pathname ?? ''),
-              );
-            },
-          });
-        }
-      }}
+      to={to ?? href ?? ''}
       target={useBlank ? '_blank' : '_self'}
     >
       {children}
@@ -46,7 +35,7 @@ export const BlockerLink = ({
 export const BlockerLinkWithBlank = ({
   children,
   ...props
-}: LinkProps & { children: React.ReactNode }) => {
+}: BlockerLinkProps) => {
   return (
     <BlockerLink {...props} useBlank={true}>
       {children}

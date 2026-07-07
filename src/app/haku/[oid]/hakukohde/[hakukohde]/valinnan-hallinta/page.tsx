@@ -1,6 +1,3 @@
-'use client';
-import { use } from 'react';
-
 import HallintaTable from './components/hallinta-table';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { useSuspenseQueries } from '@tanstack/react-query';
@@ -12,6 +9,7 @@ import {
   queryOptionsGetHaku,
 } from '@/lib/kouta/kouta-queries';
 import { queryOptionsGetHaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-queries';
+import { useRequiredParams } from '@/hooks/useRequiredParams';
 
 const ValinnanHallintaContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const [hakuQuery, hakukohdeQuery, haunAsetuksetQuery] = useSuspenseQueries({
@@ -42,10 +40,8 @@ const ValinnanHallintaContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
     />
   );
 };
-export default function ValinnanHallintaPage(props: {
-  params: Promise<{ oid: string; hakukohde: string }>;
-}) {
-  const params = use(props.params);
+export default function ValinnanHallintaPage() {
+  const params = useRequiredParams<{ oid: string; hakukohde: string }>();
   return (
     <TabContainer>
       <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>

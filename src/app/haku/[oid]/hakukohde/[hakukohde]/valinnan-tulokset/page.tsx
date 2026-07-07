@@ -1,6 +1,3 @@
-'use client';
-import { use } from 'react';
-
 import { TabContainer } from '../components/tab-container';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
@@ -35,6 +32,7 @@ import {
   HakukohteenLukuvuosimaksut,
   HakukohteenValinnanTuloksetData,
 } from '@/lib/valinta-tulos-service/valinta-tulos-service';
+import { useRequiredParams } from '@/hooks/useRequiredParams';
 
 type ValinnanTuloksetContentProps = {
   haku: Haku;
@@ -163,10 +161,8 @@ const ValinnanTuloksetPageContent = ({
   );
 };
 
-export default function ValinnanTuloksetPage(props: {
-  params: Promise<{ oid: string; hakukohde: string }>;
-}) {
-  const params = use(props.params);
+export default function ValinnanTuloksetPage() {
+  const params = useRequiredParams<{ oid: string; hakukohde: string }>();
 
   return (
     <TabContainer>

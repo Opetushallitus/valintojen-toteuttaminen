@@ -1,4 +1,3 @@
-'use client';
 import { ValintakokeenPisteet } from '@/lib/types/laskenta-types';
 import { Box, Typography } from '@mui/material';
 import { useTranslations } from '@/lib/localization/useTranslations';

@@ -1,5 +1,3 @@
-'use client';
-
 import { NoResults } from '@/components/no-results';
 import { useHakukohdeTab } from '@/hooks/useHakukohdeTab';
 import { HakukohdeUseHasReadOnlyContext } from '@/hooks/useHasOnlyHakukohdeReadPermission';

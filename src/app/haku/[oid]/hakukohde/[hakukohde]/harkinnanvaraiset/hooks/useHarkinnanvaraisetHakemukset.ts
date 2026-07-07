@@ -1,5 +1,3 @@
-'use client';
-
 import { queryOptionsGetHakemukset } from '@/lib/ataru/ataru-queries';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 import { HakemuksenHarkinnanvaraisuus } from '@/lib/types/harkinnanvaraiset-types';

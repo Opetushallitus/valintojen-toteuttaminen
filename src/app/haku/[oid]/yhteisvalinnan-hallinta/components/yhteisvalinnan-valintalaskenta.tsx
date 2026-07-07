@@ -1,4 +1,3 @@
-'use client';
 import { useUserPermissions } from '@/hooks/useUserPermissions';
 import { Haku } from '@/lib/kouta/kouta-types';
 import { useTranslations } from '@/lib/localization/useTranslations';

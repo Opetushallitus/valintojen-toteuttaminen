@@ -1,4 +1,3 @@
-'use client';
 import { Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { SijoitteluStatusChangeButton } from './sijoittelu-status-change-button';
 import { useSijoitteluStatusMutation } from '../hooks/useSijoitteluStatusMutation';

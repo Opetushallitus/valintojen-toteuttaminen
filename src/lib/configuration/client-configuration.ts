@@ -1,5 +1,3 @@
-'use client';
-
 import { Configuration } from '@/lib/configuration/configuration';
 
 declare global {

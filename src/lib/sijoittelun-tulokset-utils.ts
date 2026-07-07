@@ -80,12 +80,12 @@ export const isValintaesitysJulkaistavissa = (
 ): boolean =>
   Boolean(
     permissions.hasOphCRUD ||
-      isKorkeakouluHaku(haku) ||
-      (haunAsetukset.valintaEsityksenHyvaksyminen &&
-        isAfter(
-          toFinnishDate(new Date()),
-          haunAsetukset.valintaEsityksenHyvaksyminen,
-        )),
+    isKorkeakouluHaku(haku) ||
+    (haunAsetukset.valintaEsityksenHyvaksyminen &&
+      isAfter(
+        toFinnishDate(new Date()),
+        haunAsetukset.valintaEsityksenHyvaksyminen,
+      )),
   );
 
 export const isVastaanottotilaJulkaistavissa = (h: {

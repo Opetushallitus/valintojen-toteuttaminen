@@ -1,5 +1,3 @@
-'use client';
-
 import { ActorRefFrom, assign, fromPromise, setup, SnapshotFrom } from 'xstate';
 import {
   Valinnanvaihe,

@@ -1,5 +1,3 @@
-'use client';
-
 import { FullClientSpinner } from '@/components/client-spinner';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { Box } from '@mui/material';

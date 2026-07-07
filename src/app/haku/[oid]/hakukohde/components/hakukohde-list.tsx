@@ -1,10 +1,8 @@
-'use client';
-
 import { useHakukohdeSearchResults } from '@/hooks/useHakukohdeSearch';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { Hakukohde } from '@/lib/kouta/kouta-types';
 import { OphTypography } from '@opetushallitus/oph-design-system';
-import { useParams } from 'next/navigation';
+import { useParams } from 'react-router';
 import { HakukohdeTabLink } from '@/components/hakukohde-tab-link';
 import { useHakukohdeTab } from '@/hooks/useHakukohdeTab';
 import {

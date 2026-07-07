@@ -267,7 +267,7 @@ export const mockValintalaskentaRun = async (
   const startUrlRegexp = new RegExp(
     regexpEscape(
       `/resources/valintalaskentakerralla/haku/${hakuOid}/tyyppi/${tyyppi}`,
-    ) + '($|\/)',
+    ) + '($|/)',
   );
 
   await page.route(

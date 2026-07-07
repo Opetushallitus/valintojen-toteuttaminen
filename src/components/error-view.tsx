@@ -1,10 +1,14 @@
-'use client';
 import { useEffect } from 'react';
-import { FetchError, OphErrorWithTitle, PermissionError } from '@/lib/common';
+import {
+  FetchError,
+  NotFoundError,
+  OphErrorWithTitle,
+  PermissionError,
+} from '@/lib/common';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { OphButton, OphTypography } from '@opetushallitus/oph-design-system';
 import { Stack } from '@mui/material';
-import { notFound } from 'next/navigation';
+import NotFound from '@/app/not-found';
 
 const ErrorComponent = ({
   title,
@@ -46,13 +50,15 @@ export function ErrorView({
 
   const { t } = useTranslations();
 
-  if (error instanceof FetchError) {
+  if (error instanceof NotFoundError) {
+    return <NotFound />;
+  } else if (error instanceof FetchError) {
     const { response } = error;
     if (
       response.status === 404 &&
       response.url.includes('/kouta-internal/haku/')
     ) {
-      notFound();
+      return <NotFound />;
     }
     return (
       <ErrorComponent
@@ -70,8 +76,6 @@ export function ErrorView({
         retry={reset}
       />
     );
-  } else if (error?.digest === 'NEXT_NOT_FOUND') {
-    notFound();
   } else if (error instanceof PermissionError) {
     return (
       <ErrorComponent

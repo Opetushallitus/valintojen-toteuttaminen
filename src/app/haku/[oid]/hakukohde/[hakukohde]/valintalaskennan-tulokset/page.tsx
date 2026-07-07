@@ -1,5 +1,3 @@
-'use client';
-
 import { TabContainer } from '../components/tab-container';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { Box, Stack } from '@mui/material';
@@ -9,7 +7,7 @@ import {
   useEditableValintalaskennanTulokset,
 } from '@/hooks/useEditableValintalaskennanTulokset';
 import { PageSizeSelector } from '@/components/table/page-size-selector';
-import React, { use, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { LaskennatonValintatapajonoContent } from './components/laskennaton-valintatapajono-content';
 import { useJonoTuloksetSearchParams } from '@/hooks/useJonoTuloksetSearch';
 import { FullClientSpinner } from '@/components/client-spinner';
@@ -26,6 +24,7 @@ import { LaskettuValintatapajonoContent } from './components/laskettu-valintatap
 import { ValintatapajonoContentProps } from './types/valintatapajono-types';
 import { AccordionBox } from '@/components/accordion-box';
 import { ValintatapajonoAccordionTitle } from './components/valintatapajono-accordion-title';
+import { useRequiredParams } from '@/hooks/useRequiredParams';
 
 const LaskennanTuloksetExcelDownloadButton = ({
   hakukohdeOid,
@@ -202,10 +201,8 @@ const ValintalaskennanTuloksetContent = ({
   );
 };
 
-export default function ValintalaskennanTuloksetPage(props: {
-  params: Promise<{ oid: string; hakukohde: string }>;
-}) {
-  const params = use(props.params);
+export default function ValintalaskennanTuloksetPage() {
+  const params = useRequiredParams<{ oid: string; hakukohde: string }>();
   return (
     <TabContainer>
       <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>

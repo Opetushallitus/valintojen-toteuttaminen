@@ -1,4 +1,3 @@
-'use client';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getKoulutustyypit } from '@/lib/koodisto/koodisto-service';
 

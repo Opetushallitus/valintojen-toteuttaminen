@@ -1,5 +1,3 @@
-'use client';
-
 import { useCallback } from 'react';
 import { Box } from '@mui/material';
 import { ValinnanTuloksetActions } from '@/components/ValinnanTuloksetActions';

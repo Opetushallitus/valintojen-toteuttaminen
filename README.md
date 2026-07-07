@@ -2,9 +2,13 @@
 
 [![Build](https://github.com/Opetushallitus/valintojen-toteuttaminen/actions/workflows/build.yml/badge.svg)](https://github.com/Opetushallitus/valintojen-toteuttaminen/actions/workflows/build.yml)
 
-Valintojen toteuttamisen käyttöliittymä
+Valintojen toteuttamisen käyttöliittymä.
 
-## Lokaaliajo
+Frontend on [Vite](https://vite.dev)- ja [React Router](https://reactrouter.com) -pohjainen SPA (repon juuressa).
+Käyttöliittymän tarjoilee tuotannossa Spring Boot -sovellus (`server/`-hakemistossa), joka paketoidaan
+fat-jariksi ja Docker-kontiksi.
+
+## Lokaaliajo (frontend)
 
 Voit käyttää lokaaliajossa [mkcert](https://github.com/FiloSottile/mkcert)-työkalulla luotuja sertifikaatteja. Luo sertifikaatit ajamalla komento:
 
@@ -22,7 +26,29 @@ Sen jälkeen käynnistä palvelu komennolla:
 
 `pnpm dev`
 
+Sovellus käynnistyy osoitteeseen <https://localhost:3404/valintojen-toteuttaminen>. Viten dev-serveri
+ohjaa base-polun ulkopuoliset pyynnöt (palvelukutsut) `VITE_VIRKAILIJA_URL`-ympäristömuuttujan
+osoittamaan ympäristöön (oletuksena untuva).
+
 Tiedostossa `.env.development` on asetettu ympäristömuuttujia, joiden avulla voi vaikuttaa lokaaliajon toimintaan. Voit muokata arvoja itsellesi sopiviksi luomalla `.env.development.local`-tiedoston, jonka arvot yliajavat `.env.development`-tiedostossa asetetut arvot. Alä muuta `.env.development`-tiedostoa, jos et halua muuttaa oletusarvoja, jotka tulevat käyttöön myös kaikille muille kehittäjille.
+
+## Lokaaliajo (Spring Boot -backend)
+
+Päivittäisessä frontend-kehityksessä Spring Boot -backendia ei tarvita. Tuotannonkaltaisen kokonaisuuden
+voi ajaa lokaalisti komennolla:
+
+    cd server
+    mvn spring-boot:run
+
+Tämä buildaa frontendin (`pnpm run build` → `dist/`), paketoi sen Spring Bootin tarjoiltavaksi ja
+käynnistää sovelluksen osoitteeseen <http://localhost:8080/valintojen-toteuttaminen> untuvan
+virkailija-palveluita vasten (ks. `server/valintojen-toteuttaminen-dev.yml`).
+
+Fat-jarin voi buildata ja ajaa komennoilla:
+
+    cd server
+    mvn clean package
+    java -Dspring.config.location=./valintojen-toteuttaminen-dev.yml -jar target/valintojen-toteuttaminen-0.1.0-SNAPSHOT.jar
 
 ## Testaus
 
@@ -48,27 +74,20 @@ Jos haluat ajaa vain tietyn testitiedoston, se onnistuu komennolla:
 
 `pnpm exec playwright test --project=chromium tests/e2e/lokalisointi.spec.ts`
 
+Testit voi ajaa myös Docker-kontissa (sama ympäristö kuin CI:ssä):
+
+`pnpm run test-playwright-docker -- --project=chromium`
+
 ## Asennus ympäristöön (deploy)
 
-### Asennus GitHub Actionilla
+GitHub Actions -workflow ([build.yml](.github/workflows/build.yml)) buildaa jokaisesta main-haaraan
+viedystä muutoksesta fat-jarin, paketoi sen Docker-imageksi OPH:n
+[ci-tools](https://github.com/Opetushallitus/ci-tools)-skripteillä (base-imagena
+`baseimage-fatjar-openjdk21`) ja työntää imagen OPH:n container registryyn.
 
-Suositeltu tapa asentaa sovellus ympäristöön on [GitHub Actionilla](https://github.com/Opetushallitus/valintojen-toteuttaminen/actions/workflows/deploy.yml).
+Asennus ympäristöihin (untuva/hahtuva/pallero/sade) tapahtuu OPH:n cloud-base-ympäristön
+normaalilla image-promootiolla, ei tästä reposta käsin.
 
-1. Napsauta alasvetovalikko auki kohdasta "Run workflow from"
-2. Valitse "Use workflow from"-valikosta Git-haara, josta haluat ajaa deploy-workflown. Tätä tarvitsee muuttaa vain, jos olet tehnyt muutoksia deployn käyttämiin tiedostoihin.
-3. Kirjoita buildin numero (esim. 970) kohtaan "Github Actions build number".
-4. Valitse ympäristö, johon asennetaan kohdasta "Environment where to deploy "
-
-## Asennus deploy.sh-skriptillä
-
-Asentaminen on mahdollista myös deploy.sh-skriptillä, mutta ei suositeltua.
-Skriptillä asennettaessa kehittäjällä täytyy olla tarvittavat oikeudet AWS-infran muokkaukseen, joita etenkään tuotantoon ei kaikilla ole.
-
-Asenna ensin sovelluksen riippuvuudet ja buildaa next.js sovellus:
-
-    pnpm install
-    pnpm run build
-
-Deploy untuvalle onnistuu komennolla:
-
-    ./deploy.sh untuva deploy -d
+Ympäristökohtainen konfiguraatio (mm. `host_virkailija`) täytetään konttiin
+`server/src/main/resources/oph-configuration/valintojen-toteuttaminen.yml.template`-tiedoston
+pohjalta OPH:n konfiguraatiokoneiston toimesta.

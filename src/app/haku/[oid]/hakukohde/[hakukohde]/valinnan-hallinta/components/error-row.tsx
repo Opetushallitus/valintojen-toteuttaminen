@@ -1,5 +1,3 @@
-'use client';
-
 import { TableCell, TableRow } from '@mui/material';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { ErrorAlert } from '@/components/error-alert';

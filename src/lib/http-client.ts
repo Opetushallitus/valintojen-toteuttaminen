@@ -1,6 +1,5 @@
 import { getCookies } from './cookie';
-import { redirect } from 'next/navigation';
-import { FetchError, isServer } from './common';
+import { FetchError } from './common';
 import { isEmpty, isPlainObject, pathOr } from 'remeda';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
 
@@ -53,11 +52,7 @@ const noContent = (response: Response) => {
 const redirectToLogin = () => {
   const loginUrl = new URL(getConfiguration().routes.yleiset.loginUrl);
   loginUrl.searchParams.set('service', window.location.href);
-  if (isServer) {
-    redirect(loginUrl.toString());
-  } else {
-    window.location.replace(loginUrl.toString());
-  }
+  window.location.replace(loginUrl.toString());
 };
 
 const makeBareRequest = (request: Request) => {

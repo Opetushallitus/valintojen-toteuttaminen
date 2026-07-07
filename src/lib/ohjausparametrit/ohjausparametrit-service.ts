@@ -1,5 +1,3 @@
-'use client';
-
 import { getConfiguration } from '@/lib/configuration/client-configuration';
 import { client } from '../http-client';
 import { HaunAsetukset } from './ohjausparametrit-types';

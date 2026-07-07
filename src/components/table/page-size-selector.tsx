@@ -1,4 +1,3 @@
-'use client';
 import { DEFAULT_PAGE_SIZE, PAGE_SIZES } from '@/lib/constants';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { LocalizedSelect } from '@/components/localized-select';

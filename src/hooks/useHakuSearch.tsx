@@ -1,4 +1,3 @@
-'use client';
 import { useEffect, useMemo } from 'react';
 import {
   Haku,
@@ -31,9 +30,9 @@ const alkamisKausiMatchesSelected = (
   !selectedAlkamisKausi ||
   Boolean(
     haku.alkamisVuosi === selectedAlkamisKausi?.alkamisVuosi &&
-      haku.alkamisKausiKoodiUri?.startsWith(
-        selectedAlkamisKausi.alkamisKausiKoodiUri,
-      ),
+    haku.alkamisKausiKoodiUri?.startsWith(
+      selectedAlkamisKausi.alkamisKausiKoodiUri,
+    ),
   );
 
 const KAUSI_MAPPING = Object.freeze({

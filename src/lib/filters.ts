@@ -11,13 +11,13 @@ export const hakemusFilter = (
     hakemus.hakijanNimi
       .toLowerCase()
       .includes(searchPhrase?.toLowerCase() ?? '') ||
-      hakemus.hakemusOid
-        .toLowerCase()
-        .includes(searchPhrase?.toLowerCase() ?? '') ||
-      hakemus.hakijaOid
-        .toLowerCase()
-        .includes(searchPhrase?.toLowerCase() ?? '') ||
-      hakemus.henkilotunnus
-        ?.toLowerCase()
-        .includes(searchPhrase?.toLowerCase() ?? ''),
+    hakemus.hakemusOid
+      .toLowerCase()
+      .includes(searchPhrase?.toLowerCase() ?? '') ||
+    hakemus.hakijaOid
+      .toLowerCase()
+      .includes(searchPhrase?.toLowerCase() ?? '') ||
+    hakemus.henkilotunnus
+      ?.toLowerCase()
+      .includes(searchPhrase?.toLowerCase() ?? ''),
   );

@@ -1,4 +1,4 @@
-import { usePathname } from 'next/navigation';
+import { usePathname } from '@/hooks/usePathname';
 import { BasicTab, HAKUKOHDE_TABS } from '@/lib/hakukohde-tab-utils';
 import { isEmpty } from 'remeda';
 

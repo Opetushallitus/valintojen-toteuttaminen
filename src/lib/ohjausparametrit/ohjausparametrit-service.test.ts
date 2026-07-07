@@ -1,11 +1,11 @@
 import { expect, test, vi } from 'vitest';
 import { client } from '../http-client';
 import { setConfiguration } from '@/lib/configuration/client-configuration';
-import { buildConfiguration } from '@/lib/configuration/server-configuration';
+import { buildConfiguration } from '@/lib/configuration/build-configuration';
 import { getHaunAsetukset } from './ohjausparametrit-service';
 
 test('maps PH_HVVPTP to harkinnanvarainenTallennusPaattyy', async () => {
-  const config = await buildConfiguration();
+  const config = buildConfiguration();
   setConfiguration(config);
 
   const clientSpy = vi.spyOn(client, 'get');
@@ -44,7 +44,7 @@ test('maps PH_HVVPTP to harkinnanvarainenTallennusPaattyy', async () => {
 });
 
 test('does not map PH_OLVVPKE when blocked window dates are missing', async () => {
-  const config = await buildConfiguration();
+  const config = buildConfiguration();
   setConfiguration(config);
 
   const clientSpy = vi.spyOn(client, 'get');
@@ -65,7 +65,7 @@ test('does not map PH_OLVVPKE when blocked window dates are missing', async () =
 });
 
 test('maps PH_OLVVPKE when only one blocked window date is present', async () => {
-  const config = await buildConfiguration();
+  const config = buildConfiguration();
   setConfiguration(config);
 
   const clientSpy = vi.spyOn(client, 'get');

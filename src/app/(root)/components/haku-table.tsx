@@ -1,4 +1,3 @@
-'use client';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { HakuListItem } from '@/hooks/useHakuSearch';
 import { useMemo } from 'react';

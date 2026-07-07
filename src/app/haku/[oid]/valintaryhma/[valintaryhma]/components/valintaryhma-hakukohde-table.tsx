@@ -1,5 +1,3 @@
-'use client';
-
 import { NoResults } from '@/components/no-results';
 import { ListTable } from '@/components/table/list-table';
 import {

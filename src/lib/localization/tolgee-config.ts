@@ -3,8 +3,6 @@ import { BackendFetch, DevTools, Tolgee } from '@tolgee/react';
 import { FormatIcu } from '@tolgee/format-icu';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
 
-const REVALIDATE_TIME_SECONDS = 10 * 60;
-
 const NAMESPACE = 'valintojen-toteuttaminen';
 
 export function TolgeeBase() {
@@ -28,9 +26,6 @@ export function TolgeeBase() {
       .use(
         BackendFetch({
           prefix: getConfiguration().routes.yleiset.lokalisointiUrl,
-          next: {
-            revalidate: REVALIDATE_TIME_SECONDS,
-          },
         }),
       )
       .use(DevTools())

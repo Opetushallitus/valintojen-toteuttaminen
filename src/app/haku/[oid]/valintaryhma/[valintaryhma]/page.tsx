@@ -1,14 +1,11 @@
-'use client';
 import { FullClientSpinner } from '@/components/client-spinner';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { Box } from '@mui/material';
-import { use } from 'react';
 import { ValintaryhmaContent } from './components/valintaryhma-content';
+import { useRequiredParams } from '@/hooks/useRequiredParams';
 
-export default function ValintaryhmaPage(props: {
-  params: Promise<{ oid: string; valintaryhma: string }>;
-}) {
-  const params = use(props.params);
+export default function ValintaryhmaPage() {
+  const params = useRequiredParams<{ oid: string; valintaryhma: string }>();
 
   return (
     <Box sx={{ padding: 4, width: '100%' }}>

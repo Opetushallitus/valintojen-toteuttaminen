@@ -1,4 +1,3 @@
-'use client';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { Box } from '@mui/material';
 import { useMemo } from 'react';

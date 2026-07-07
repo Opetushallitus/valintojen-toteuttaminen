@@ -1,4 +1,3 @@
-'use client';
 import { ConfirmationModal } from '@/components/modals/confirmation-modal';
 import { SuorittamattomatHakukohteet } from '@/components/suorittamattomat-hakukohteet';
 import { ValintalaskentaStatus } from '@/components/ValintalaskentaStatus';

@@ -24,11 +24,13 @@ if [ -t 0 ]; then
   TTY_FLAG=(-it)
 fi
 
+# Huom: ${ARRAY[@]+"${ARRAY[@]}"} on bash 3.2 -yhteensopiva tapa laajentaa
+# mahdollisesti tyhjä taulukko, kun "set -u" on käytössä.
 docker run \
   -e CI \
-  "${TTY_FLAG[@]}" \
+  ${TTY_FLAG[@]+"${TTY_FLAG[@]}"} \
   --mount type=bind,source="$PWD",target=/app \
-  "${STORE_MOUNT[@]}" \
+  ${STORE_MOUNT[@]+"${STORE_MOUNT[@]}"} \
   --user "$(id -u):$(id -g)" \
   -w /app \
   --ipc=host \

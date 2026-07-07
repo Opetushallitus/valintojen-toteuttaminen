@@ -1,5 +1,3 @@
-'use client';
-
 import { ExternalLink } from '@/components/external-link';
 import { getValintaryhma } from '@/lib/valintaperusteet/valintaperusteet-service';
 import { useSuspenseQuery } from '@tanstack/react-query';

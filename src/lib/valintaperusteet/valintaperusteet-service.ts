@@ -1,5 +1,3 @@
-'use client';
-
 import { client } from '../http-client';
 import {
   Valinnanvaihe,

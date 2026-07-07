@@ -1,35 +1,20 @@
 // @ts-check
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import js from '@eslint/js';
-import { FlatCompat } from '@eslint/eslintrc';
 import ts from 'typescript-eslint';
 import playwright from 'eslint-plugin-playwright';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import vitest from '@vitest/eslint-plugin';
 import pluginQuery from '@tanstack/eslint-plugin-query';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
-  allConfig: js.configs.all,
-});
+import reactHooks from 'eslint-plugin-react-hooks';
 
 const config = ts.config(
   {
-    ignores: [
-      '.next/*',
-      '.open-next/*',
-      'cdk/*',
-      './.lintstagedrc.mjs',
-      'coverage',
-      'next-env.d.ts',
-    ],
+    ignores: ['dist/*', 'server/*', './.lintstagedrc.mjs', 'coverage'],
   },
+  js.configs.recommended,
+  ...ts.configs.recommended,
   ...pluginQuery.configs['flat/recommended'],
-  ...compat.extends('next/core-web-vitals', 'next/typescript'),
+  reactHooks.configs['recommended-latest'],
   eslintConfigPrettier,
   {
     languageOptions: {

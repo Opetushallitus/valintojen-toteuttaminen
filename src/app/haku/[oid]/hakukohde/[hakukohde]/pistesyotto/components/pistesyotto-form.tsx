@@ -1,5 +1,3 @@
-'use client';
-
 import { TablePaginationWrapper } from '@/components/table/table-pagination-wrapper';
 import { PisteSyottoTable } from './pistesyotto-table';
 import { usePisteSyottoSearchResults } from '../hooks/usePisteSyottoSearch';

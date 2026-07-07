@@ -1,4 +1,3 @@
-'use client';
 import { Box } from '@mui/material';
 import { HakukohteenHakijaryhma } from '@/lib/types/laskenta-types';
 import { HakijaryhmaAccordionTitle } from './hakijaryhma-accordion-title';

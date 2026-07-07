@@ -1,4 +1,3 @@
-'use client';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useQueryState } from 'nuqs';
 import { useQuery } from '@tanstack/react-query';

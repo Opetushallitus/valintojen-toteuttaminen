@@ -2,6 +2,11 @@ packages:
   - .
 allowBuilds:
   esbuild: true
+# Estetään valinnaisten peer-riippuvuuksien (mm. next) automaattinen asennus
+autoInstallPeers: false
+peerDependencyRules:
+  ignoreMissing:
+    - next
 minimumReleaseAge: 4320
 overrides:
   'lodash-es': '4.18.1'

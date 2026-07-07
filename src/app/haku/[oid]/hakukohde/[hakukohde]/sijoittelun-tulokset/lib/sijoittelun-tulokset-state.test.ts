@@ -14,14 +14,14 @@ import {
   ValinnanTulosState,
 } from '@/lib/state/valinnanTuloksetMachineTypes';
 import { setConfiguration } from '@/lib/configuration/client-configuration';
-import { buildConfiguration } from '@/lib/configuration/server-configuration';
+import { buildConfiguration } from '@/lib/configuration/build-configuration';
 
 vi.mock('@/components/modals/global-modal', () => ({
   showModal: vi.fn(),
   createModal: vi.fn(),
 }));
 
-buildConfiguration().then(setConfiguration);
+setConfiguration(buildConfiguration());
 
 const waitIdle = (actor: SijoittelunTulosActorRef) =>
   waitFor(actor, (state) => state.matches(ValinnanTulosState.IDLE));

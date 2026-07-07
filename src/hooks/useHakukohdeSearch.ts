@@ -1,4 +1,3 @@
-'use client';
 import { useMemo } from 'react';
 import { Hakukohde } from '@/lib/kouta/kouta-types';
 import { useDebounce } from '@/hooks/useDebounce';
@@ -21,7 +20,7 @@ import {
   unique,
 } from 'remeda';
 import { isHakukohdeOid } from '@/lib/common';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'react-router';
 import { isBefore, min } from 'date-fns';
 import { toFinnishDate } from '@/lib/time-utils';
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
@@ -113,7 +112,7 @@ export const filterWithSuodatustiedot = ({
 };
 
 export const useHakukohdeSearchUrlParams = () => {
-  const searchParams = useSearchParams();
+  const [searchParams] = useSearchParams();
   const params: Record<string, string> = {};
   HAKUKOHDE_SEARCH_PARAMS.forEach((param) => {
     const value = searchParams.get(param);

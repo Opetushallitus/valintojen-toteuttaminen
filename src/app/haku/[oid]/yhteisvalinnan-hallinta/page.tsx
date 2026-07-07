@@ -1,4 +1,3 @@
-'use client';
 import { AccordionBox } from '@/components/accordion-box';
 import { AccordionBoxTitle } from '@/components/accordion-box-title';
 import { FullClientSpinner } from '@/components/client-spinner';
@@ -11,11 +10,11 @@ import { useTranslations } from '@/lib/localization/useTranslations';
 
 import { Stack } from '@mui/material';
 import { OphLink } from '@opetushallitus/oph-design-system';
-import { use } from 'react';
 import { YhteisvalinnanValintalaskenta } from './components/yhteisvalinnan-valintalaskenta';
 import { SijoitteluContainer } from './components/sijoittelu-container';
 import { LettersContainer } from './components/letters-container';
 import { useConfiguration } from '@/hooks/useConfiguration';
+import { useRequiredParams } from '@/hooks/useRequiredParams';
 
 const YhteisvalinnanHallintaContent = ({ hakuOid }: { hakuOid: string }) => {
   const { data: haku } = useHaku({ hakuOid });
@@ -72,10 +71,8 @@ const YhteisvalinnanHallintaContent = ({ hakuOid }: { hakuOid: string }) => {
   );
 };
 
-export default function YhteisvalinnanHallintaPage(props: {
-  params: Promise<{ oid: string }>;
-}) {
-  const params = use(props.params);
+export default function YhteisvalinnanHallintaPage() {
+  const params = useRequiredParams<{ oid: string }>();
   const hakuOid = params.oid;
 
   return (

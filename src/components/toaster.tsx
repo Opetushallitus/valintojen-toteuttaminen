@@ -1,5 +1,3 @@
-'use client';
-
 import { Alert, Box, Typography, Slide } from '@mui/material';
 import { Toast, useToaster } from '@/hooks/useToaster';
 import { useTranslations } from '@/lib/localization/useTranslations';

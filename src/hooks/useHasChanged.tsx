@@ -1,4 +1,3 @@
-'use client';
 import { usePrevious } from '@/hooks/usePrevious';
 import { isEmpty } from 'remeda';
 

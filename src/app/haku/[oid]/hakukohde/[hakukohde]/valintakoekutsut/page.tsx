@@ -1,6 +1,3 @@
-'use client';
-import { use } from 'react';
-
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { TabContainer } from '../components/tab-container';
 import { FullClientSpinner } from '@/components/client-spinner';
@@ -35,6 +32,7 @@ import { ValintakoekutsutHakijoittainTable } from './components/valintakoekutsut
 import { FormBox } from '@/components/form-box';
 import { ValintakoekutsutExcelDownloadButton } from './components/valintakoekutsut-excel-download-button';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
+import { useRequiredParams } from '@/hooks/useRequiredParams';
 
 const PaginatedValintakoekutsut = ({
   hakuOid,
@@ -251,10 +249,8 @@ function ValintakoekutsutContent({ hakuOid, hakukohdeOid }: KoutaOidParams) {
   );
 }
 
-export default function ValintakoekutsutPage(props: {
-  params: Promise<{ oid: string; hakukohde: string }>;
-}) {
-  const params = use(props.params);
+export default function ValintakoekutsutPage() {
+  const params = useRequiredParams<{ oid: string; hakukohde: string }>();
   return (
     <TabContainer>
       <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>

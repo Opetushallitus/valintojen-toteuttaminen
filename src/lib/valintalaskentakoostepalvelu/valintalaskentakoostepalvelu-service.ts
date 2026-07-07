@@ -60,7 +60,6 @@ import {
   toFormattedDateTimeString,
   translateName,
 } from '../localization/translation-utils';
-import { AssertionError } from 'assert';
 import { Language } from '../localization/localization-types';
 import {
   HakemuksenValinnanTulos,
@@ -131,8 +130,10 @@ const selectKokeenPisteet = (
       if (
         isNullish(osallistumisTiedot) ||
         osallistumisTiedot === ValintakoeOsallistuminenTulos.EI_KUTSUTTU ||
-        osallistumisTiedot === ValintakoeOsallistuminenTulos.TOISELLA_HAKEMUKSELLA ||
-        osallistumisTiedot === ValintakoeOsallistuminenTulos.TOISESSA_HAKUTOIVEESSA
+        osallistumisTiedot ===
+          ValintakoeOsallistuminenTulos.TOISELLA_HAKEMUKSELLA ||
+        osallistumisTiedot ===
+          ValintakoeOsallistuminenTulos.TOISESSA_HAKUTOIVEESSA
       ) {
         return null;
       }
@@ -475,9 +476,7 @@ const pollDocumentProcess = async (
     }
     await new Promise((resolve) => setTimeout(resolve, 2000));
   }
-  throw new AssertionError({
-    message: 'Dokumentin prosessoinnin pollaus päättyi ilman tulosta!',
-  });
+  throw new Error('Dokumentin prosessoinnin pollaus päättyi ilman tulosta!');
 };
 
 const processDocumentAndReturnDocumentId = async (
@@ -534,7 +533,8 @@ export const getValintakoeExcel = async ({
 }: GetValintakoeExcelParams & { valintakoeTunniste: Array<string> }) => {
   const configuration = getConfiguration();
   const urlWithQuery = new URL(
-    configuration.routes.valintalaskentakoostepalvelu.startExportValintakoeExcelUrl,
+    configuration.routes.valintalaskentakoostepalvelu
+      .startExportValintakoeExcelUrl,
   );
   urlWithQuery.searchParams.append('hakuOid', hakuOid);
   urlWithQuery.searchParams.append('hakukohdeOid', hakukohdeOid);
@@ -560,7 +560,8 @@ export const getValintakoeOsoitetarrat = async ({
 }: GetValintakoeOsoitetarratParams) => {
   const configuration = getConfiguration();
   const urlWithQuery = new URL(
-    configuration.routes.valintalaskentakoostepalvelu.startExportValintakoeOsoitetarratUrl,
+    configuration.routes.valintalaskentakoostepalvelu
+      .startExportValintakoeOsoitetarratUrl,
   );
   urlWithQuery.searchParams.append('hakuOid', hakuOid);
   urlWithQuery.searchParams.append('hakukohdeOid', hakukohdeOid);
@@ -637,7 +638,8 @@ export const getValintatapajonoTulosExcel = async ({
 }: ValintatapaJonoTulosExcelProps) => {
   const configuration = getConfiguration();
   const urlWithQuery = new URL(
-    configuration.routes.valintalaskentakoostepalvelu.startExportValintatapajonoTulosExcelUrl,
+    configuration.routes.valintalaskentakoostepalvelu
+      .startExportValintatapajonoTulosExcelUrl,
   );
   urlWithQuery.searchParams.append('hakuOid', hakuOid);
   urlWithQuery.searchParams.append('hakukohdeOid', hakukohdeOid);
@@ -687,9 +689,7 @@ const pollDocumentSeuranta = async (uuid: string) => {
     }
     await new Promise((resolve) => setTimeout(resolve, 2000));
   }
-  throw new AssertionError({
-    message: 'Dokumentin seurannan pollaus päättyi ilman tulosta!',
-  });
+  throw new Error('Dokumentin seurannan pollaus päättyi ilman tulosta!');
 };
 
 export const saveValintatapajonoTulosExcel = async ({
@@ -700,7 +700,8 @@ export const saveValintatapajonoTulosExcel = async ({
 }: ValintatapaJonoTulosExcelProps & { file: File }) => {
   const configuration = getConfiguration();
   const urlWithQuery = new URL(
-    configuration.routes.valintalaskentakoostepalvelu.startImportValintatapajonoTulosExcelUrl,
+    configuration.routes.valintalaskentakoostepalvelu
+      .startImportValintatapajonoTulosExcelUrl,
   );
   urlWithQuery.searchParams.append('hakuOid', hakuOid);
   urlWithQuery.searchParams.append('hakukohdeOid', hakukohdeOid);
@@ -725,7 +726,8 @@ export const getPistesyottoExcel = async ({
 }: KoutaOidParams) => {
   const configuration = getConfiguration();
   const urlWithQuery = new URL(
-    configuration.routes.valintalaskentakoostepalvelu.startExportPistesyottoExcelUrl,
+    configuration.routes.valintalaskentakoostepalvelu
+      .startExportPistesyottoExcelUrl,
   );
   urlWithQuery.searchParams.append('hakuOid', hakuOid);
   urlWithQuery.searchParams.append('hakukohdeOid', hakukohdeOid);
@@ -766,7 +768,8 @@ export const getSijoittelunTulosHaulleExcel = async (
 ): Promise<FileResult> => {
   const configuration = getConfiguration();
   const urlWithQuery = new URL(
-    configuration.routes.valintalaskentakoostepalvelu.sijoittelunTulosHaulleExcelUrl,
+    configuration.routes.valintalaskentakoostepalvelu
+      .sijoittelunTulosHaulleExcelUrl,
   );
   urlWithQuery.searchParams.append('hakuOid', hakuOid);
   const createResponse = await client.post<{ id: string }>(
@@ -967,7 +970,8 @@ export const luoOsoitetarratHakukohteessaHyvaksytyille = async ({
 }): Promise<string> => {
   const configuration = getConfiguration();
   const urlWithQuery = new URL(
-    configuration.routes.valintalaskentakoostepalvelu.startExportOsoitetarratSijoittelussaHyvaksytyilleUrl,
+    configuration.routes.valintalaskentakoostepalvelu
+      .startExportOsoitetarratSijoittelussaHyvaksytyilleUrl,
   );
   urlWithQuery.searchParams.append('sijoitteluajoId', sijoitteluajoId);
   urlWithQuery.searchParams.append('hakuOid', hakukohde.hakuOid);
@@ -1184,7 +1188,8 @@ export async function saveValinnanTulokset({
   }));
 
   const urlWithQuery = new URL(
-    configuration.routes.valintalaskentakoostepalvelu.startImportValinnanTulosUrl,
+    configuration.routes.valintalaskentakoostepalvelu
+      .startImportValinnanTulosUrl,
   );
 
   urlWithQuery.searchParams.set('hakuOid', haku.oid);
@@ -1222,7 +1227,8 @@ export async function getValinnanTulosExcel({
 }) {
   const configuration = getConfiguration();
   const urlWithQuery = new URL(
-    configuration.routes.valintalaskentakoostepalvelu.startExportValinnanTulosExcelUrl,
+    configuration.routes.valintalaskentakoostepalvelu
+      .startExportValinnanTulosExcelUrl,
   );
   urlWithQuery.searchParams.set('hakuOid', haku.oid);
   urlWithQuery.searchParams.set('hakukohdeOid', hakukohdeOid);
