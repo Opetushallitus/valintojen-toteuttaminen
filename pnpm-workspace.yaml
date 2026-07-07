@@ -4,6 +4,10 @@ allowBuilds:
   esbuild: true
 # Estetään valinnaisten peer-riippuvuuksien (mm. next) automaattinen asennus
 autoInstallPeers: false
+# Ei tarkisteta/asenneta riippuvuuksia automaattisesti "pnpm run"-komennoissa.
+# Frontend-maven-pluginin kautta ajettuna automaattinen asennus kaatuu (EACCES),
+# koska pnpm-binääri on symlink pnpm.cjs-tiedostoon.
+verifyDepsBeforeRun: false
 peerDependencyRules:
   ignoreMissing:
     - next
