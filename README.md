@@ -34,21 +34,59 @@ Tiedostossa `.env.development` on asetettu ympäristömuuttujia, joiden avulla v
 
 ## Lokaaliajo (Spring Boot -backend)
 
-Päivittäisessä frontend-kehityksessä Spring Boot -backendia ei tarvita. Tuotannonkaltaisen kokonaisuuden
-voi ajaa lokaalisti komennolla:
+Päivittäisessä frontend-kehityksessä Spring Boot -backendia **ei tarvita** — käytä siihen Viten
+dev-serveriä (`pnpm dev`). Spring Boot -ajo on tarkoitettu tuotannonkaltaisen kontin toiminnan
+varmistamiseen: staattisten tiedostojen tarjoilu, SPA-syvälinkkien fallback, konfiguraatiorajapinta,
+CSP-headerit ja health-endpoint.
+
+### Esivaatimukset
+
+- JDK 21 (esim. Corretto). Tarkista: `java -version`
+- Maven 3.9+ (`mvn -version`)
+- Node ja pnpm asennetaan automaattisesti `server/target/`-hakemistoon frontend-maven-pluginilla,
+  joten niitä ei tarvitse asentaa erikseen buildia varten.
+
+`pnpm install` tarvitsee `@opetushallitus`-pakettien lataamiseen GitHub Packages -autentikoinnin.
+Varmista, että `~/.npmrc`:ssä on `//npm.pkg.github.com/:_authToken=<token>` (token, jolla on
+`read:packages`-oikeus).
+
+### Ajo Mavenilla (suositeltu)
 
     cd server
     mvn spring-boot:run
 
-Tämä buildaa frontendin (`pnpm run build` → `dist/`), paketoi sen Spring Bootin tarjoiltavaksi ja
-käynnistää sovelluksen osoitteeseen <http://localhost:8080/valintojen-toteuttaminen> untuvan
-virkailija-palveluita vasten (ks. `server/valintojen-toteuttaminen-dev.yml`).
+Komento rakentaa frontendin (`pnpm run build` → repon juuren `dist/`), kopioi sen Spring Bootin
+tarjoiltavaksi ja käynnistää sovelluksen osoitteeseen
+<http://localhost:8080/valintojen-toteuttaminen>. Konfiguraatio luetaan tiedostosta
+`server/valintojen-toteuttaminen-dev.yml` (oletuksena untuvan virkailija-palvelut).
 
-Fat-jarin voi buildata ja ajaa komennoilla:
+Voit osoittaa eri ympäristöön tai porttiin ilman tiedoston muokkaamista antamalla arvot komennolla:
+
+    mvn spring-boot:run -Dspring-boot.run.arguments="--host.virkailija=virkailija.hahtuvaopintopolku.fi --server.port=8081"
+
+### Ajo fat-jarina
 
     cd server
     mvn clean package
     java -Dspring.config.location=./valintojen-toteuttaminen-dev.yml -jar target/valintojen-toteuttaminen-0.1.0-SNAPSHOT.jar
+
+### Tarkistukset
+
+Kun sovellus on käynnissä, voit varmistaa toiminnan:
+
+    curl http://localhost:8080/valintojen-toteuttaminen/actuator/health          # {"status":"UP"}
+    curl http://localhost:8080/valintojen-toteuttaminen/rest/config/frontProperties
+    curl -o /dev/null -w "%{http_code}\n" http://localhost:8080/valintojen-toteuttaminen/haku/x/hakukohde  # 200 (SPA-fallback)
+
+### Rajoitus: autentikointi ja API-kutsut
+
+Lokaalisti sovellus tarjoillaan osoitteesta `localhost:8080`, mutta selain tekee palvelukutsut
+suoraan virkailija-domainiin (esim. `https://virkailija.untuvaopintopolku.fi`). Nämä ovat
+cross-origin-kutsuja, joten CAS-kirjautuminen ja istuntoevästeet **eivät toimi** tässä ajossa —
+toisin kuin tuotannossa, jossa sovellus tarjoillaan samasta originista kuin virkailija-palvelut.
+
+Jos tarvitset toimivan kirjautumisen ja API-kutsut lokaalisti, käytä Viten dev-serveriä
+(`pnpm dev`), joka proxyttaa palvelukutsut samasta originista virkailija-ympäristöön.
 
 ## Testaus
 
