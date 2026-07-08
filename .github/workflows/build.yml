@@ -2,9 +2,9 @@ name: Valintojen toteuttaminen workflow
 on:
   workflow_dispatch:
   push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    paths-ignore:
+      - '**.md'
+
 env:
   HUSKY: 0
   NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
