@@ -15,10 +15,13 @@ export function TolgeeBase() {
 
   if (isTesting || localTranslations) {
     return tg.updateDefaults({
+      // Puretaan .default, koska Vite tarjoaa JSON-moduulin nimettyinä
+      // exportteina vain kelvollisille tunnisteille — väliviivalliset
+      // ylätason avaimet (esim. "haku-tabs") löytyvät vain default-exportista.
       staticData: {
-        fi: () => import('./messages/fi.json'),
-        sv: () => import('./messages/sv.json'),
-        en: () => import('./messages/en.json'),
+        fi: () => import('./messages/fi.json').then((m) => m.default),
+        sv: () => import('./messages/sv.json').then((m) => m.default),
+        en: () => import('./messages/en.json').then((m) => m.default),
       },
     });
   } else {

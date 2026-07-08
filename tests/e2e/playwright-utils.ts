@@ -14,6 +14,23 @@ import { styleText } from 'node:util';
 import { ProcessResponse } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 
 export const expectPageAccessibilityOk = async (page: Page) => {
+  // Poistetaan animaatiot ja siirtymät käytöstä ennen skannausta, jotta axe ei
+  // mittaa kesken fade-siirtymän olevaa (läpinäkyvää) modaalia väärillä
+  // kontrastiarvoilla.
+  await page.addStyleTag({
+    content:
+      '*, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; }',
+  });
+  // Varmistetaan että kaikki käynnissä olevat animaatiot/siirtymät ovat
+  // valmistuneet ennen skannausta (mm. modaalin fade), jotta axe ei mittaa
+  // läpinäkyviä elementtejä. Selaimet ajoittavat siirtymät hieman eri tavoin.
+  await page.evaluate(() =>
+    Promise.all(
+      document
+        .getAnimations()
+        .map((animation) => animation.finished.catch(() => undefined)),
+    ).then(() => undefined),
+  );
   const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
   expect(accessibilityScanResults.violations).toEqual([]);
 };
