@@ -9,13 +9,32 @@ import reactHooks from 'eslint-plugin-react-hooks';
 
 const config = ts.config(
   {
-    ignores: ['dist/*', 'server/*', './.lintstagedrc.mjs', 'coverage'],
+    ignores: [
+      'dist/*',
+      '.react-router/*',
+      'server/*',
+      './.lintstagedrc.mjs',
+      'coverage',
+    ],
   },
   js.configs.recommended,
   ...ts.configs.recommended,
   ...pluginQuery.configs['flat/recommended'],
   reactHooks.configs['recommended-latest'],
   eslintConfigPrettier,
+  {
+    // Node-ympäristön skriptit (esim. preview-server.mjs)
+    files: ['*.mjs', '*.cjs'],
+    languageOptions: {
+      globals: {
+        process: 'readonly',
+        console: 'readonly',
+        Buffer: 'readonly',
+        URL: 'readonly',
+        __dirname: 'readonly',
+      },
+    },
+  },
   {
     languageOptions: {
       parserOptions: {

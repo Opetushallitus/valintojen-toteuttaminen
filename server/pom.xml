@@ -142,7 +142,7 @@
                             <outputDirectory>${project.basedir}/target/classes/static</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${project.basedir}/../dist</directory>
+                                    <directory>${project.basedir}/../dist/client</directory>
                                     <filtering>false</filtering>
                                 </resource>
                             </resources>

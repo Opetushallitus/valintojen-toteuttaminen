@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import react from '@vitejs/plugin-react';
+import { reactRouter } from '@react-router/dev/vite';
 import {
   defineConfig,
   loadEnv,
@@ -81,7 +81,7 @@ export default defineConfig(({ mode }) => {
   return {
     base: `${BASE_PATH}/`,
     plugins: [
-      react(),
+      reactRouter(),
       optimizePackageImports(['@mui/icons-material']),
       redirectRootToBasePath(),
     ],
@@ -92,8 +92,17 @@ export default defineConfig(({ mode }) => {
       },
     },
     build: {
-      outDir: 'dist',
       sourcemap: true,
+    },
+    // SPA-buildin prerender ajaa server-bundlen Nodessa. Bundlataan
+    // selainkirjastot mukaan, jotta niiden hakemistoimportit (mm.
+    // @mui/system/createStyled) resolvoituvat Node-ESM:ssä.
+    ssr: {
+      noExternal: [
+        /^@mui\//,
+        '@opetushallitus/oph-design-system',
+        /^@emotion\//,
+      ],
     },
     server: serverOptions,
     preview: serverOptions,

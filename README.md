@@ -4,9 +4,14 @@
 
 Valintojen toteuttamisen käyttöliittymä.
 
-Frontend on [Vite](https://vite.dev)- ja [React Router](https://reactrouter.com) -pohjainen SPA (repon juuressa).
-Käyttöliittymän tarjoilee tuotannossa Spring Boot -sovellus (`server/`-hakemistossa), joka paketoidaan
-fat-jariksi ja Docker-kontiksi.
+Frontend on [React Router](https://reactrouter.com) -pohjainen SPA framework-moodissa
+(`@react-router/dev`, `ssr: false`), buildattuna [Vitellä](https://vite.dev) (repon juuressa).
+Reitit määritellään `src/app/routes.ts`:ssä, juurikomponentti on `src/app/root.tsx` ja
+selaimen entry `src/app/entry.client.tsx`. Käyttöliittymän tarjoilee tuotannossa Spring Boot
+-sovellus (`server/`-hakemistossa), joka paketoidaan fat-jariksi ja Docker-kontiksi.
+
+Buildi (`pnpm run build` = `react-router build`) tuottaa staattisen SPA:n hakemistoon `dist/client`,
+jonka Spring Boot kopioi jariin.
 
 ## Lokaaliajo (frontend)
 
@@ -96,9 +101,11 @@ Aja yksikkötestit komennolla:
 
 ### Kälitestit
 
-Käynnistä sovelluskomennolla:
+Kälitestit ajetaan buildattua SPA:ta vasten kevyellä esikatselupalvelimella
+(`preview-server.mjs`), joka tarjoilee `dist/client`-hakemiston ja proxyttaa palvelukutsut
+mock-backendille. Käynnistä palvelin (buildaa ja tarjoilee testimoodissa) komennolla:
 
-`pnpm run dev-test`
+`pnpm run start-test`
 
 Aja sen jälkeen testit komennolla:
 
@@ -112,7 +119,12 @@ Jos haluat ajaa vain tietyn testitiedoston, se onnistuu komennolla:
 
 `pnpm exec playwright test --project=chromium tests/e2e/lokalisointi.spec.ts`
 
-Testit voi ajaa myös Docker-kontissa (sama ympäristö kuin CI:ssä):
+Testit voi ajaa myös Docker-kontissa (sama ympäristö kuin CI:ssä) — tämä myös käynnistää
+palvelimen automaattisesti:
+
+`pnpm run start-and-test-playwright-docker`
+
+tai suoraan jo käynnissä olevaa palvelinta vasten:
 
 `pnpm run test-playwright-docker -- --project=chromium`
 

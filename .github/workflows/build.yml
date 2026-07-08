@@ -38,8 +38,7 @@ jobs:
       - uses: ./.github/actions/setup-frontend-env
       - name: Create self-signed dev certificates
         run: pnpm run create-self-signed-dev-certs
-      - name: Build app
-        run: pnpm run build-test
+      # e2e ajetaan react-router dev -serveriä vasten (start-test), ei erillistä buildia
       - name: Run Playwright tests
         env:
           PLAYWRIGHT_ARGS: --project=${{ matrix.browser }}

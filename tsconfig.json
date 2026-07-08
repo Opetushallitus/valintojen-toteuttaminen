@@ -15,12 +15,20 @@
     "jsx": "react-jsx",
     "incremental": true,
     "target": "ES6",
+    "rootDirs": [".", "./.react-router/types"],
     "paths": {
       "@/*": ["./src/*"],
       "@tests/*": ["./tests/*"]
     },
     "types": ["vite/client", "@testing-library/jest-dom"]
   },
-  "include": ["**/*.ts", "**/*.tsx", "./*.mjs", "./*.mts", "./.*.mjs"],
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "./*.mjs",
+    "./*.mts",
+    "./.*.mjs",
+    ".react-router/types/**/*"
+  ],
   "exclude": ["node_modules", "dist", "server"]
 }

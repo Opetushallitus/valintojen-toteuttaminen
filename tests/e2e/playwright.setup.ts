@@ -291,7 +291,10 @@ export default async function playwrightSetup() {
         request.method,
         request.url,
       );
-      return;
+      // Päätetään toteuttamattomat pyynnöt 404:llä, ettei yhteys jää roikkumaan
+      // ja estä networkidle-tilaa (aiheutti flakiä rinnakkaisajossa).
+      response.statusCode = 404;
+      return response.end();
     }
   });
   server.listen(port, () => {

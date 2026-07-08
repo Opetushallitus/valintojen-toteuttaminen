@@ -25,10 +25,15 @@ export function TolgeeBase() {
       },
     });
   } else {
+    // getConfiguration() on undefined selaimen ulkopuolella (SPA-buildin
+    // prerender): tolgeen backend-hakua ei silloin käytetä, joten tyhjä prefix
+    // riittää. Selaimessa konfiguraatio on asetettu ennen tämän evaluointia.
+    const lokalisointiUrl =
+      getConfiguration()?.routes.yleiset.lokalisointiUrl ?? '';
     return tg
       .use(
         BackendFetch({
-          prefix: getConfiguration().routes.yleiset.lokalisointiUrl,
+          prefix: lokalisointiUrl,
         }),
       )
       .use(DevTools())

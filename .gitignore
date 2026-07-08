@@ -20,8 +20,9 @@ node_modules
 /blob-report/
 /playwright/.cache/
 
-# vite
+# vite / react-router
 /dist/
+/.react-router/
 
 # spring boot
 /server/target/

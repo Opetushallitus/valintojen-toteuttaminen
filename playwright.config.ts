@@ -13,7 +13,10 @@ export default defineConfig({
   forbidOnly: Boolean(process.env.CI),
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 2 : undefined,
+  // Yksi worker CI:ssä: sovellus tarjoillaan yhden Node-preview-serverin ja
+  // yhden mock-backendin kautta, jolloin rinnakkaiset workerit aiheuttivat
+  // networkidle-flakiä.
+  workers: process.env.CI ? 1 : undefined,
   reporter: 'list',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
