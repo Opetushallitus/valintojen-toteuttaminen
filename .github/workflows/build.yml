@@ -69,9 +69,6 @@ jobs:
           node-version-file: '.nvmrc'
           registry-url: 'https://npm.pkg.github.com'
           scope: '@opetushallitus'
-      - uses: szenius/set-timezone@v2.0
-        with:
-          timezoneLinux: 'Europe/Helsinki'
       - name: Build with Maven
         working-directory: ./server
         run: mvn clean spotless:check package -B
