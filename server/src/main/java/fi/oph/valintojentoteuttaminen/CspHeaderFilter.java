@@ -21,7 +21,9 @@ public class CspHeaderFilter extends OncePerRequestFilter {
               + " https://cdn.jsdelivr.net/npm/@tolgee/web@prerelease/dist/tolgee-in-context-tools.umd.min.js;",
           "style-src 'self' 'unsafe-inline';",
           "img-src 'self' blob: data:;",
-          "font-src 'self';",
+          // data: sallitaan, koska Vite inlinettaa pienet fontit (mm.
+          // icomoon-ikonifontti) base64-data-URI:ksi.
+          "font-src 'self' data:;",
           "object-src 'none';",
           "base-uri 'self';",
           "form-action 'self';",
