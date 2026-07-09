@@ -5,6 +5,21 @@ import { getConfiguration } from '@/lib/configuration/client-configuration';
 
 const NAMESPACE = 'valintojen-toteuttaminen';
 
+// Rakennetaan lokalisointiosoite vasta hakuhetkellä, jotta konfiguraatio on
+// varmasti asetettu (framework-moodin latausjärjestys) eikä prefix jää tyhjäksi.
+function buildLokalisointiPath({
+  namespace,
+  language,
+}: {
+  namespace?: string;
+  language: string;
+}) {
+  const lokalisointiUrl = getConfiguration().routes.yleiset.lokalisointiUrl;
+  return namespace
+    ? `${lokalisointiUrl}/${namespace}/${language}.json`
+    : `${lokalisointiUrl}/${language}.json`;
+}
+
 export function TolgeeBase() {
   const tg = Tolgee()
     .use(FormatIcu())
@@ -24,23 +39,22 @@ export function TolgeeBase() {
         en: () => import('./messages/en.json').then((m) => m.default),
       },
     });
-  } else {
-    // getConfiguration() on undefined selaimen ulkopuolella (SPA-buildin
-    // prerender): tolgeen backend-hakua ei silloin käytetä, joten tyhjä prefix
-    // riittää. Selaimessa konfiguraatio on asetettu ennen tämän evaluointia.
-    const lokalisointiUrl =
-      getConfiguration()?.routes.yleiset.lokalisointiUrl ?? '';
-    return tg
-      .use(
-        BackendFetch({
-          prefix: lokalisointiUrl,
-        }),
-      )
-      .use(DevTools())
-      .updateDefaults({
-        defaultNs: NAMESPACE,
-        ns: [NAMESPACE],
-        projectId: 11100,
-      });
   }
+
+  return tg
+    .use(
+      BackendFetch({
+        // Eager property-read pitää tämän haaran mukana bundlaajan tree-shakingissa
+        // (SPA-buildin prerenderissä getConfiguration() on undefined → '').
+        // Varsinainen osoite rakennetaan getPath:ssa vasta hakuhetkellä.
+        prefix: getConfiguration()?.routes.yleiset.lokalisointiUrl ?? '',
+        getPath: buildLokalisointiPath,
+      }),
+    )
+    .use(DevTools())
+    .updateDefaults({
+      defaultNs: NAMESPACE,
+      ns: [NAMESPACE],
+      projectId: 11100,
+    });
 }
