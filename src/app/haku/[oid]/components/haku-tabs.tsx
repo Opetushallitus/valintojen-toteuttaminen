@@ -3,7 +3,7 @@ import {
   useHierarchyUserPermissions,
   useUserPermissions,
 } from '@/hooks/useUserPermissions';
-import { DEFAULT_BOX_BORDER, styled } from '@/lib/theme';
+import { DEFAULT_BOX_BORDER } from '@/lib/theme';
 import { Box, Stack } from '@mui/material';
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
 import { useQueries } from '@tanstack/react-query';
@@ -16,22 +16,15 @@ import useToaster from '@/hooks/useToaster';
 import React, { useEffect } from 'react';
 import { getVisibleHakuTabs } from '../lib/getVisibleHakuTabs';
 import { checkHasPermission } from '@/lib/permissions';
-import { queryOptionsGetHakukohteet } from '@/lib/kouta/kouta-queries';
-import { BlockerLink } from '@/components/blocker-link';
-import { queryOptionsGetHaku } from '@/lib/kouta/kouta-queries';
+import {
+  queryOptionsGetHakukohteet,
+  queryOptionsGetHaku,
+} from '@/lib/kouta/kouta-queries';
+import { Link } from 'react-router';
 import { queryOptionsGetHaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-queries';
 import { isValintojenToteuttaminenEstetty } from '@/lib/valintojen-toteuttaminen-access';
 
 const TAB_BUTTON_HEIGHT = '48px';
-
-const StyledButton = styled(OphButton)({
-  borderRadius: 0,
-  fontWeight: 'normal',
-  height: TAB_BUTTON_HEIGHT,
-  '&:hover': {
-    borderColor: ophColors.blue2,
-  },
-});
 
 const useActiveHakuTabName = () => {
   const pathName = usePathname();
@@ -49,13 +42,21 @@ const TabButton = ({
   const activeTabName = useActiveHakuTabName();
 
   return (
-    <StyledButton
-      LinkComponent={BlockerLink}
+    <OphButton
+      component={Link}
       variant={activeTabName === tabName ? 'contained' : 'text'}
-      href={`/haku/${hakuOid}/${tabName}`}
+      to={`/haku/${hakuOid}/${tabName}`}
+      sx={{
+        borderRadius: 0,
+        fontWeight: 'normal',
+        height: TAB_BUTTON_HEIGHT,
+        '&:hover': {
+          borderColor: ophColors.blue2,
+        },
+      }}
     >
       {t(`haku-tabs.${tabName}`)}
-    </StyledButton>
+    </OphButton>
   );
 };
 

@@ -3,13 +3,12 @@ import { OphTypography } from '@opetushallitus/oph-design-system';
 import { useHenkiloSearchResults } from '../hooks/useHenkiloSearch';
 import { FullClientSpinner } from '@/components/client-spinner';
 import { ErrorView } from '@/components/error-view';
-import { LinkProps, useParams, useSearchParams } from 'react-router';
+import { Link, LinkProps, useParams, useSearchParams } from 'react-router';
 import { getHenkiloTitle } from '@/lib/henkilo-utils';
 import {
   NAV_LIST_SELECTED_ITEM_CLASS,
   NavigationList,
 } from '@/components/navigation-list';
-import { BlockerLink } from '@/components/blocker-link';
 
 export const HenkiloLink = ({
   hakuOid,
@@ -27,7 +26,7 @@ export const HenkiloLink = ({
   const henkiloSearchParam = searchParams.get('henkilosearch');
 
   return (
-    <BlockerLink
+    <Link
       {...props}
       to={{
         pathname: `/haku/${hakuOid}/henkilo/${hakemusOid}`,
@@ -37,7 +36,7 @@ export const HenkiloLink = ({
       }}
     >
       {children}
-    </BlockerLink>
+    </Link>
   );
 };
 

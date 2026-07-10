@@ -1,6 +1,6 @@
 import { useConfiguration } from '@/hooks/useConfiguration';
 import { OphLink } from '@opetushallitus/oph-design-system';
-import { BlockerLinkWithBlank } from './blocker-link';
+import { Link } from 'react-router';
 
 export type ExternalLinkProps = {
   name: string;
@@ -18,9 +18,10 @@ export const ExternalLink = ({
   const { configuration } = useConfiguration();
   return (
     <OphLink
-      component={BlockerLinkWithBlank}
+      component={Link}
+      target="_blank"
       iconVisible={noIcon == null ? true : !noIcon}
-      href={`${configuration?.domain}/${href}`}
+      to={`${configuration?.domain}/${href}`}
       title={title ?? ''}
     >
       {name}
