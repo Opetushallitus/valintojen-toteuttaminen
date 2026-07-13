@@ -105,6 +105,16 @@ export default defineConfig(({ mode, command }) => {
       ],
     },
     server: serverOptions,
-    preview: serverOptions,
+    // react-router/dev käynnistää build-ajon prerender-vaiheessa oman
+    // preview-serverinsä, joka periytyy tästä asetuksesta, mutta sen
+    // sisäinen http-klientti ei osaa puhua https:ää (ks. RR#15077). Emme itse
+    // käytä `vite preview`a (ks. preview-server.mjs), niin https ei ole
+    // tarpeen: `undefined` ei riitä estämään periytymistä server.https:stä,
+    // koska Vite käyttää `??`-oletusarvoa, joten arvoksi on pakko antaa
+    // nimenomaan `false`.
+    preview: {
+      ...serverOptions,
+      https: false as unknown as ServerOptions['https'],
+    },
   };
 });
