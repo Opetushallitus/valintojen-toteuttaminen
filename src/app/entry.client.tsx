@@ -32,7 +32,12 @@ async function start() {
   injectRaamit(configuration.routes.yleiset.raamitUrl);
   checkAccessibility();
   startTransition(() => {
-    hydrateRoot(document, <HydratedRouter />);
+    // useTransitions={false}, koska oletusarvoisesti react-router kääri jokaisen
+    // reitityksen tilapäivityksen React.startTransition-kutsuun. Tämä saa Reactin
+    // pitämään edellisen sivun sisällön näkyvissä sen sijaan, että se näyttäisi
+    // heti Suspense-fallbackin (esim. spinnerin), kun jo näkyvissä ollut
+    // Suspense-rajapinta suspendoituu uudelleen navigoinnin yhteydessä.
+    hydrateRoot(document, <HydratedRouter useTransitions={false} />);
   });
 }
 
