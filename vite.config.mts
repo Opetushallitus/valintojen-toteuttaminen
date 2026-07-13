@@ -60,8 +60,8 @@ const readHttpsOptions = () => {
   return undefined;
 };
 
-export default defineConfig(({ mode }) => {
-  const env = Object.assign({}, process.env, loadEnv(mode, process.cwd(), ''));
+export default defineConfig(({ mode, command }) => {
+  const env = { ...process.env, ...loadEnv(mode, process.cwd(), '') };
 
   const virkailijaOrigin = env.VITE_VIRKAILIJA_URL;
 
@@ -82,7 +82,7 @@ export default defineConfig(({ mode }) => {
     base: `${BASE_PATH}/`,
     plugins: [
       reactRouter(),
-      optimizePackageImports(['@mui/icons-material']),
+      command !== 'build' && optimizePackageImports(['@mui/icons-material']),
       redirectRootToBasePath(),
     ],
     resolve: {
