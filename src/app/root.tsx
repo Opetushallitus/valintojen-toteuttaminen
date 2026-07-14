@@ -49,6 +49,10 @@ export default function App() {
   return (
     /* Initialisoidaan ensin lokalisoimaton teema, jotta ensimmäisten spinnereiden tyylit tulee oikein. */
     <OphThemeProvider variant="oph" overrides={THEME_OVERRIDES}>
+      <script
+        async
+        src={window.configuration.routes.yleiset.raamitUrl}
+      ></script>
       <ReactQueryClientProvider>
         <ConfigurationProvider>
           <MyTolgeeProvider>
@@ -74,7 +78,7 @@ export default function App() {
 export function HydrateFallback() {
   return (
     <OphThemeProvider variant="oph" overrides={THEME_OVERRIDES}>
-      <FullSpinner />
+      <FullSpinner ariaLabel="Ladataan..." />
     </OphThemeProvider>
   );
 }

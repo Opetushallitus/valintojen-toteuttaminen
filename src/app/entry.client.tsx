@@ -17,19 +17,12 @@ function stripCasTicket() {
   }
 }
 
-function injectRaamit(raamitUrl: string) {
-  const script = document.createElement('script');
-  script.src = raamitUrl;
-  document.body.appendChild(script);
-}
-
 async function start() {
   stripCasTicket();
   // Ladataan konfiguraatio ennen hydraatiota, jotta getConfiguration()-globaali
   // on asetettu ennen kuin reittimoduulit (ja mm. Tolgeen alustus) evaluoituvat.
   const configuration = await loadConfiguration();
   setConfiguration(configuration);
-  injectRaamit(configuration.routes.yleiset.raamitUrl);
   checkAccessibility();
   startTransition(() => {
     // useTransitions={false}, koska oletusarvoisesti react-router kääri jokaisen
