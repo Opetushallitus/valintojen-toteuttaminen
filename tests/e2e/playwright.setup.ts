@@ -30,11 +30,10 @@ const modifyResponse = (response: ServerResponse, body: unknown) => {
 };
 
 export default async function playwrightSetup() {
-  const server = await createServer(async (request, response) => {
+  const server = createServer(async (request, response) => {
     if (request.url?.endsWith('apply-raamit.js')) {
       response.write('');
-      response.end();
-      return;
+      return response.end();
     } else if (request.url?.endsWith(`favicon.ico`)) {
       response.writeHead(404);
       response.end();
@@ -292,7 +291,7 @@ export default async function playwrightSetup() {
         request.url,
       );
       // Päätetään toteuttamattomat pyynnöt 404:llä, ettei yhteys jää roikkumaan
-      // ja estä networkidle-tilaa (aiheutti flakiä rinnakkaisajossa).
+      // ja estä networkidle-tilaa
       response.statusCode = 404;
       return response.end();
     }
