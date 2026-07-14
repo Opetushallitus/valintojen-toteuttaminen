@@ -4,8 +4,8 @@ import {
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
 } from './playwright-utils';
-import VALINTAKOKEET from './fixtures/valintakokeet.json';
-import VALINTAKOEOSALLISTUMISET from './fixtures/valintakoeosallistumiset.json';
+import VALINTAKOKEET from './fixtures/valintakokeet.json' with { type: 'json' };
+import VALINTAKOEOSALLISTUMISET from './fixtures/valintakoeosallistumiset.json' with { type: 'json' };
 import { difference } from 'remeda';
 
 test.beforeEach(async ({ page }) => {

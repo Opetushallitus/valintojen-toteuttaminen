@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 
@@ -8,8 +8,8 @@ export default defineConfig({
   plugins: [react(), optimizePackageImports(['@mui/icons-material'])],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
-      '@tests': path.resolve(__dirname, './tests'),
+      '@': path.resolve(import.meta.dirname, './src'),
+      '@tests': path.resolve(import.meta.dirname, './tests'),
     },
   },
   test: {

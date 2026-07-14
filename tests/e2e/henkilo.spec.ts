@@ -9,11 +9,11 @@ import {
   selectOption,
   waitForMethodRequest,
 } from './playwright-utils';
-import HAKENEET from './fixtures/hakeneet.json';
-import POSTI_00100 from './fixtures/posti_00100.json';
-import HAKEMUKSEN_VALINTALASKENTA_TULOKSET from './fixtures/hakemuksen-valintalaskenta-tulokset.json';
-import HAKEMUKSEN_SIJOITTELU_TULOKSET from './fixtures/hakemuksen-sijoittelu-tulokset.json';
-import PISTETIEDOT_HAKEMUKSELLE from './fixtures/pistetiedot_hakemukselle.json';
+import HAKENEET from './fixtures/hakeneet.json' with { type: 'json' };
+import POSTI_00100 from './fixtures/posti_00100.json' with { type: 'json' };
+import HAKEMUKSEN_VALINTALASKENTA_TULOKSET from './fixtures/hakemuksen-valintalaskenta-tulokset.json' with { type: 'json' };
+import HAKEMUKSEN_SIJOITTELU_TULOKSET from './fixtures/hakemuksen-sijoittelu-tulokset.json' with { type: 'json' };
+import PISTETIEDOT_HAKEMUKSELLE from './fixtures/pistetiedot_hakemukselle.json' with { type: 'json' };
 import { hakemusValinnanTulosFixture } from './fixtures/hakemus-valinnan-tulos';
 import {
   IlmoittautumisTila,

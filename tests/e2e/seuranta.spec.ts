@@ -1,8 +1,8 @@
 import { test, Page, expect, Locator } from '@playwright/test';
 import { expectPageAccessibilityOk } from './playwright-utils';
-import SEURANTA_YHTEENVETO from './fixtures/seuranta-yhteenveto.json';
-import SEURANTA_HENKILOT from './fixtures/seuranta-henkilot.json';
-import SEURANTA_VIRHE from './fixtures/seuranta-virhe.json';
+import SEURANTA_YHTEENVETO from './fixtures/seuranta-yhteenveto.json' with { type: 'json' };
+import SEURANTA_HENKILOT from './fixtures/seuranta-henkilot.json' with { type: 'json' };
+import SEURANTA_VIRHE from './fixtures/seuranta-virhe.json' with { type: 'json' };
 
 async function initializeSeuranta(page: Page) {
   await page.route(

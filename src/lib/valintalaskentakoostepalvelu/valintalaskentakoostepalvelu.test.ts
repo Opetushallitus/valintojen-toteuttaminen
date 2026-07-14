@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { client } from '../http-client';
-import VALINTAKOKEET from '@tests/e2e/fixtures/valintakokeet.json';
-import VALINTAKOEOSALLISTUMISET from '@tests/e2e/fixtures/valintakoeosallistumiset.json';
-import HAKENEET_FIXTURE from '@tests/e2e/fixtures/hakeneet.json';
+import VALINTAKOKEET from '@tests/e2e/fixtures/valintakokeet.json' with { type: 'json' };
+import VALINTAKOEOSALLISTUMISET from '@tests/e2e/fixtures/valintakoeosallistumiset.json' with { type: 'json' };
+import HAKENEET_FIXTURE from '@tests/e2e/fixtures/hakeneet.json' with { type: 'json' };
 import {
   getValintakoekutsutData,
   luoEiHyvaksymiskirjeetPDF,

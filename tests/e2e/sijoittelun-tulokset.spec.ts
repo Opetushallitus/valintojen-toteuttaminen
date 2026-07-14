@@ -13,7 +13,7 @@ import {
   IlmoittautumisTila,
   VastaanottoTila,
 } from '@/lib/types/sijoittelu-types';
-import SIJOITTELUN_TULOS from './fixtures/sijoittelun-tulos.json';
+import SIJOITTELUN_TULOS from './fixtures/sijoittelun-tulos.json' with { type: 'json' };
 
 const RUHTINAS_ROW = [
   '',

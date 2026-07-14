@@ -11,8 +11,8 @@ import {
   waitForMethodRequest,
 } from './playwright-utils';
 import { buildConfiguration } from '@/lib/configuration/build-configuration';
-import HAUT from './fixtures/haut.json';
-import HAKENEET from './fixtures/hakeneet.json';
+import HAUT from './fixtures/haut.json' with { type: 'json' };
+import HAKENEET from './fixtures/hakeneet.json' with { type: 'json' };
 import {
   IlmoittautumisTila,
   VastaanottoTila,
