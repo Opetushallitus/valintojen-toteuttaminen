@@ -16,16 +16,18 @@ export const HakukohdePanel = ({ hakuOid }: { hakuOid: string }) => {
 
   return (
     <LeftPanel isOpen={isOpen} setIsOpen={setIsOpen}>
-      <HakukohdeSearchControls hakuOid={hakuOid} />
       <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
-        <HakukohdeList
-          hakuOid={hakuOid}
-          onItemClick={() => {
-            if (!isLarge) {
-              setIsOpen(true);
-            }
-          }}
-        />
+        <HakukohdeSearchControls hakuOid={hakuOid} />
+        <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
+          <HakukohdeList
+            hakuOid={hakuOid}
+            onItemClick={() => {
+              if (!isLarge) {
+                setIsOpen(true);
+              }
+            }}
+          />
+        </QuerySuspenseBoundary>
       </QuerySuspenseBoundary>
     </LeftPanel>
   );
