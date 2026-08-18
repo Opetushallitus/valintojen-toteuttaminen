@@ -1,5 +1,3 @@
-'use client';
-
 import { NoResults } from '@/components/no-results';
 import { useUserPermissions } from '@/hooks/useUserPermissions';
 import { useHaku } from '@/lib/kouta/useHaku';

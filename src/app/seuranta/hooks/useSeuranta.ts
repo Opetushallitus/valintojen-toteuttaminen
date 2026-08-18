@@ -1,4 +1,3 @@
-'use client';
 import { useMemo } from 'react';
 import { useQueryState } from 'nuqs';
 import { DEFAULT_NUQS_OPTIONS } from '@/lib/constants';

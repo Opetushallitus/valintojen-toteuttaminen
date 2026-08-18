@@ -1,4 +1,3 @@
-'use client';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { getHenkiloTitle } from '@/lib/henkilo-utils';
 import {

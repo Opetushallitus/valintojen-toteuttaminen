@@ -1,6 +1,6 @@
-'use client';
 import { Button, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
+import { Link } from 'react-router';
 import { useTranslations } from '@/lib/localization/useTranslations';
 
 export default function Custom404() {
@@ -44,7 +44,8 @@ export default function Custom404() {
               <Button
                 variant="contained"
                 aria-label={t('yleinen.palaa-etusivulle')}
-                href="/"
+                component={Link}
+                to="/"
               >
                 {t('yleinen.palaa-etusivulle')}
               </Button>

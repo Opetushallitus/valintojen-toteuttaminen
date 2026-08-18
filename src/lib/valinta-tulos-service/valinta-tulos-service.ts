@@ -1,5 +1,3 @@
-'use client';
-
 import { groupBy, indexBy, isNullish, pick, prop } from 'remeda';
 import { client } from '../http-client';
 import { MaksunTila } from '../ataru/ataru-types';

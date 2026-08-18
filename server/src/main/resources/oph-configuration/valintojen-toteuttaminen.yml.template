@@ -1,0 +1,10 @@
+server:
+  servlet:
+    context-path: /valintojen-toteuttaminen
+host:
+  virkailija: {{host_virkailija}}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

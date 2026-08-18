@@ -13,7 +13,7 @@ import {
   IlmoittautumisTila,
   VastaanottoTila,
 } from '@/lib/types/sijoittelu-types';
-import SIJOITTELUN_TULOS from './fixtures/sijoittelun-tulos.json';
+import SIJOITTELUN_TULOS from './fixtures/sijoittelun-tulos.json' with { type: 'json' };
 
 const RUHTINAS_ROW = [
   '',
@@ -505,7 +505,10 @@ test.describe('Tallennus', () => {
           json: {
             ...SIJOITTELUN_TULOS,
             lukuvuosimaksut: [
-              { personOid: '1.2.246.562.24.25732574711', maksuntila: 'MAKSETTU' },
+              {
+                personOid: '1.2.246.562.24.25732574711',
+                maksuntila: 'MAKSETTU',
+              },
             ],
           },
         });
@@ -527,9 +530,8 @@ test.describe('Tallennus', () => {
     ).toBeVisible();
     await expectAllSpinnersHidden(page);
 
-    await expect(daculaRow
-        .getByRole('cell')
-        .nth(maksunTilaColumnIndex),
+    await expect(
+      daculaRow.getByRole('cell').nth(maksunTilaColumnIndex),
     ).toContainText('Maksettu');
   });
 

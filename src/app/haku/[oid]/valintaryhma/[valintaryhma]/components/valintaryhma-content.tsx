@@ -1,4 +1,3 @@
-'use client';
 import { useUserPermissions } from '@/hooks/useUserPermissions';
 import { getHakukohdeFullName } from '@/lib/kouta/kouta-service';
 import { getValintaryhmat } from '@/lib/valintaperusteet/valintaperusteet-service';

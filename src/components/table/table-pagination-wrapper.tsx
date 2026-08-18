@@ -1,4 +1,3 @@
-'use client';
 import { Typography, Box } from '@mui/material';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { PageSizeSelector } from './page-size-selector';

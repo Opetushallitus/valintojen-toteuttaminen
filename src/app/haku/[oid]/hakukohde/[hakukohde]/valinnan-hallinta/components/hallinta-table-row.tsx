@@ -1,5 +1,3 @@
-'use client';
-
 import { Box, CircularProgress, TableCell, TableRow } from '@mui/material';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { OphButton } from '@opetushallitus/oph-design-system';

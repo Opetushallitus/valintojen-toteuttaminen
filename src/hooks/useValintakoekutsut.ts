@@ -1,4 +1,3 @@
-'use client';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getValintakoekutsutData } from '../lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import {

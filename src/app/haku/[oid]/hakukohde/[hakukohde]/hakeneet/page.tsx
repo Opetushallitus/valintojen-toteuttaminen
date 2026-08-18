@@ -1,6 +1,3 @@
-'use client';
-import { use } from 'react';
-
 import { TabContainer } from '../components/tab-container';
 import { TablePaginationWrapper } from '@/components/table/table-pagination-wrapper';
 import {
@@ -17,6 +14,7 @@ import { SearchInput } from '@/components/search-input';
 import { NoResults } from '@/components/no-results';
 import { isEmpty } from 'remeda';
 import { useTranslations } from '@/lib/localization/useTranslations';
+import { useRequiredParams } from '@/hooks/useRequiredParams';
 
 type HakeneetParams = {
   haku: Haku;
@@ -68,10 +66,8 @@ const HakeneetContent = ({ haku, hakukohdeOid }: HakeneetParams) => {
   );
 };
 
-export default function HakeneetPage(props: {
-  params: Promise<{ oid: string; hakukohde: string }>;
-}) {
-  const params = use(props.params);
+export default function HakeneetPage() {
+  const params = useRequiredParams<{ oid: string; hakukohde: string }>();
   const { data: haku } = useHaku({ hakuOid: params.oid });
 
   return (

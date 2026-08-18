@@ -1,5 +1,3 @@
-'use client';
-
 import { LaskennanValintatapajonoTulosWithHakijaInfo } from '@/hooks/useEditableValintalaskennanTulokset';
 import { client } from '../http-client';
 import { getHakemukset } from '../ataru/ataru-service';

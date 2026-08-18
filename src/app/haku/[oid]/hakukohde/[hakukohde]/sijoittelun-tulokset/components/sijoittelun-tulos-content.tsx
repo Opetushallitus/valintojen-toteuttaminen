@@ -1,4 +1,3 @@
-'use client';
 import { Box } from '@mui/material';
 import { AccordionBox } from '@/components/accordion-box';
 import { SijoitteluajonValintatapajonoValintatiedoilla } from '@/lib/types/sijoittelu-types';

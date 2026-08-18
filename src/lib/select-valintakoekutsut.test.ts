@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
-import VALINTAKOKEET from '@tests/e2e/fixtures/valintakokeet.json';
-import VALINTAKOEOSALLISTUMISET from '@tests/e2e/fixtures/valintakoeosallistumiset.json';
+import VALINTAKOKEET from '@tests/e2e/fixtures/valintakokeet.json' with { type: 'json' };
+import VALINTAKOEOSALLISTUMISET from '@tests/e2e/fixtures/valintakoeosallistumiset.json' with { type: 'json' };
 import {
   selectValintakoekutsutHakijoittain,
   selectValintakoekutsutKokeittain,

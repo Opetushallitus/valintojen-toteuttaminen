@@ -30,7 +30,6 @@ export const HakutoiveTitle = ({
           hakuOid={hakukohde.hakuOid}
           hakukohdeOid={hakukohde.oid}
           tabRoute="perustiedot"
-          prefetch={false}
           sx={{ textDecoration: 'underline' }}
         >
           {translateEntity(hakukohde.jarjestyspaikkaHierarkiaNimi)}

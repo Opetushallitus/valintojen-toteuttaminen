@@ -1,5 +1,3 @@
-'use client';
-
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { Box, Table, TableCell, TableHead, TableRow } from '@mui/material';
 import { HakijaInfo } from '@/lib/ataru/ataru-types';

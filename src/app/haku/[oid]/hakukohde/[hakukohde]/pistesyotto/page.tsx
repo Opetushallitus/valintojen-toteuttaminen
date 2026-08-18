@@ -1,5 +1,4 @@
-'use client';
-import { use, useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { TabContainer } from '../components/tab-container';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
@@ -16,6 +15,7 @@ import { augmentPisteetWithHakemukset } from './lib/pistesyotto-utils';
 import { HakukohteenPistetiedot } from '@/lib/types/laskenta-types';
 import { queryOptionsGetPisteetForHakukohde } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-queries';
 import { queryOptionsGetHakemukset } from '@/lib/ataru/ataru-queries';
+import { useRequiredParams } from '@/hooks/useRequiredParams';
 
 const PisteSyottoContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const { t } = useTranslations();
@@ -65,10 +65,8 @@ const PisteSyottoContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   );
 };
 
-export default function PisteSyottoPage(props: {
-  params: Promise<{ oid: string; hakukohde: string }>;
-}) {
-  const params = use(props.params);
+export default function PisteSyottoPage() {
+  const params = useRequiredParams<{ oid: string; hakukohde: string }>();
   const queryClient = useQueryClient();
   queryClient.prefetchQuery(
     queryOptionsGetPisteetForHakukohde({

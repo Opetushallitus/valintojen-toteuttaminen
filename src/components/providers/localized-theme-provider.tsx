@@ -1,7 +1,5 @@
-'use client';
-
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { OphNextJsThemeProvider } from '@opetushallitus/oph-design-system/next/theme';
+import { OphThemeProvider } from '@opetushallitus/oph-design-system/theme';
 import { THEME_OVERRIDES } from '@/lib/theme';
 
 export const LocalizedThemeProvider = ({
@@ -11,12 +9,12 @@ export const LocalizedThemeProvider = ({
 }) => {
   const { getLanguage } = useTranslations();
   return (
-    <OphNextJsThemeProvider
+    <OphThemeProvider
       lang={getLanguage()}
       variant="oph"
       overrides={THEME_OVERRIDES}
     >
       {children}
-    </OphNextJsThemeProvider>
+    </OphThemeProvider>
   );
 };

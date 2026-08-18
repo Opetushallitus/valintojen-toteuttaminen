@@ -1,5 +1,3 @@
-'use client';
-
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { buildLinkToApplication } from '@/lib/ataru/ataru-service';
 import { Stack, Typography } from '@mui/material';
@@ -10,11 +8,11 @@ import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { FullClientSpinner } from '@/components/client-spinner';
 import { HakutoiveetTable } from './components/hakutoiveet-table';
 import { useHenkiloPageData } from './hooks/useHenkiloPageData';
-import { use } from 'react';
 import { HenkilonPistesyotto } from './components/henkilon-pistesyotto';
 import { useHaunAsetukset } from '@/lib/ohjausparametrit/useHaunAsetukset';
 import { useHaku } from '@/lib/kouta/useHaku';
 import { HenkilonValintalaskenta } from './components/henkilon-valintalaskenta';
+import { useRequiredParams } from '@/hooks/useRequiredParams';
 
 const HenkiloContent = ({
   hakuOid,
@@ -79,10 +77,8 @@ const HenkiloContent = ({
   );
 };
 
-export default function HenkiloPage(props: {
-  params: Promise<{ oid: string; hakemusOid: string }>;
-}) {
-  const params = use(props.params);
+export default function HenkiloPage() {
+  const params = useRequiredParams<{ oid: string; hakemusOid: string }>();
   const hakuOid = params.oid;
   const hakemusOid = params.hakemusOid;
 

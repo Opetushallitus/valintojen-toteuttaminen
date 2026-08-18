@@ -21,7 +21,7 @@ export const checkIsValintalaskentaUsed = (
     const lastValinnanvaihe = last(aktiivisetVaiheet);
     return Boolean(
       !isEmpty(lastValinnanvaihe?.jonot ?? []) &&
-        lastValinnanvaihe?.jonot.some((jono) => jono.kaytetaanValintalaskentaa),
+      lastValinnanvaihe?.jonot.some((jono) => jono.kaytetaanValintalaskentaa),
     );
   }
 };

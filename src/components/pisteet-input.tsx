@@ -1,5 +1,3 @@
-'use client';
-
 import { InputValidator, numberValidator } from '@/lib/form/input-validators';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { useState, ChangeEvent } from 'react';

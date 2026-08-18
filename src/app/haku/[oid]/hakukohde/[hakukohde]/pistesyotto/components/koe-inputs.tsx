@@ -1,5 +1,3 @@
-'use client';
-
 import { ValintakoeAvaimet } from '@/lib/valintaperusteet/valintaperusteet-types';
 import {
   HakukohdePistesyottoActorRef,

@@ -1,6 +1,3 @@
-'use client';
-import { use } from 'react';
-
 import { TabContainer } from '../components/tab-container';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
@@ -24,6 +21,7 @@ import {
 import { queryOptionsGetHakukohteenValinnanvaiheet } from '@/lib/valintaperusteet/valintaperusteet-queries';
 import { queryOptionsGetHakemukset } from '@/lib/ataru/ataru-queries';
 import { queryOptionsGetDocumentIdForHakukohde } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-queries';
+import { useRequiredParams } from '@/hooks/useRequiredParams';
 
 const SijoitteluContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const { t } = useTranslations();
@@ -120,10 +118,8 @@ const SijoitteluContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   );
 };
 
-export default function SijoittelunTuloksetPage(props: {
-  params: Promise<{ oid: string; hakukohde: string }>;
-}) {
-  const params = use(props.params);
+export default function SijoittelunTuloksetPage() {
+  const params = useRequiredParams<{ oid: string; hakukohde: string }>();
 
   const queryClient = useQueryClient();
   queryClient.prefetchQuery(

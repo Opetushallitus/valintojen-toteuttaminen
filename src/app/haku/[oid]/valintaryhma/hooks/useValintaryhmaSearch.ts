@@ -1,4 +1,3 @@
-'use client';
 import { useMemo } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useQueryState } from 'nuqs';

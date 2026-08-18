@@ -7,7 +7,7 @@ import {
   selectOption,
   waitForMethodRequest,
 } from './playwright-utils';
-import LASKETUT_VALINNANVAIHEET from './fixtures/lasketut-valinnanvaiheet.json';
+import LASKETUT_VALINNANVAIHEET from './fixtures/lasketut-valinnanvaiheet.json' with { type: 'json' };
 import { TuloksenTila } from '@/lib/types/laskenta-types';
 import { NDASH } from '@/lib/constants';
 

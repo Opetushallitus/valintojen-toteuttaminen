@@ -1,25 +1,25 @@
-import { ServerResponse, createServer } from 'http';
-import HAUT from './fixtures/haut.json';
-import HAKUKOHTEET from './fixtures/hakukohteet.json';
-import HAKUTAPA_CODES from './fixtures/hakutapa.json';
-import SIJOITTELUN_YHTEENVETO from './fixtures/sijoittelun_yhteenveto.json';
-import VALINTARYHMA from './fixtures/valintaryhma.json';
-import HAKENEET from './fixtures/hakeneet.json';
-import VALINNANVAIHE from './fixtures/valinnanvaiheet.json';
-import LASKETUT_HAKIJARYHMAT from './fixtures/lasketut_hakijaryhmat.json';
-import SIJOITTELUAJON_TULOKSET from './fixtures/sijoitteluajon-tulokset.json';
-import SIJOITTELUN_TULOS_HAKUKOHTEELLE from './fixtures/sijoittelun-tulos.json';
-import HAKUKOHTEEN_VALINTATULOKSET from './fixtures/hakukohteen_valintatulokset.json';
+import { ServerResponse, createServer } from 'node:http';
+import HAUT from './fixtures/haut.json' with { type: 'json' };
+import HAKUKOHTEET from './fixtures/hakukohteet.json' with { type: 'json' };
+import HAKUTAPA_CODES from './fixtures/hakutapa.json' with { type: 'json' };
+import SIJOITTELUN_YHTEENVETO from './fixtures/sijoittelun_yhteenveto.json' with { type: 'json' };
+import VALINTARYHMA from './fixtures/valintaryhma.json' with { type: 'json' };
+import HAKENEET from './fixtures/hakeneet.json' with { type: 'json' };
+import VALINNANVAIHE from './fixtures/valinnanvaiheet.json' with { type: 'json' };
+import LASKETUT_HAKIJARYHMAT from './fixtures/lasketut_hakijaryhmat.json' with { type: 'json' };
+import SIJOITTELUAJON_TULOKSET from './fixtures/sijoitteluajon-tulokset.json' with { type: 'json' };
+import SIJOITTELUN_TULOS_HAKUKOHTEELLE from './fixtures/sijoittelun-tulos.json' with { type: 'json' };
+import HAKUKOHTEEN_VALINTATULOKSET from './fixtures/hakukohteen_valintatulokset.json' with { type: 'json' };
 import { VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY } from '@/lib/permissions';
-import PISTETIEDOT from './fixtures/pistetiedot.json';
-import KOKEET from './fixtures/valintakoe-avaimet.json';
-import EHDOT from './fixtures/hyvaksynnan_ehdot.json';
-import VALINTARYHMA_PUU from './fixtures/valintaryhma-puu.json';
-import VASTAANOTTOTILAT_HAKIJOILLE from './fixtures/valintatapajonon-hakijoiden-vastaanottotila.json';
+import PISTETIEDOT from './fixtures/pistetiedot.json' with { type: 'json' };
+import KOKEET from './fixtures/valintakoe-avaimet.json' with { type: 'json' };
+import EHDOT from './fixtures/hyvaksynnan_ehdot.json' with { type: 'json' };
+import VALINTARYHMA_PUU from './fixtures/valintaryhma-puu.json' with { type: 'json' };
+import VASTAANOTTOTILAT_HAKIJOILLE from './fixtures/valintatapajonon-hakijoiden-vastaanottotila.json' with { type: 'json' };
 import { OPH_ORGANIZATION_OID } from '@/lib/constants';
-import KIRJEIDEN_MUODOSTUKSEN_TILANNE from './fixtures/kirjeiden-muodostuksen-tilanne.json';
-import VALINTATIEDOT_HAKUKOHTEITTAIN from './fixtures/valintatiedot-hakukohteittain.json';
-import KOULUTUSTYYPIT from './fixtures/koulutustyypit.json';
+import KIRJEIDEN_MUODOSTUKSEN_TILANNE from './fixtures/kirjeiden-muodostuksen-tilanne.json' with { type: 'json' };
+import VALINTATIEDOT_HAKUKOHTEITTAIN from './fixtures/valintatiedot-hakukohteittain.json' with { type: 'json' };
+import KOULUTUSTYYPIT from './fixtures/koulutustyypit.json' with { type: 'json' };
 
 const port = 3104;
 
@@ -30,11 +30,10 @@ const modifyResponse = (response: ServerResponse, body: unknown) => {
 };
 
 export default async function playwrightSetup() {
-  const server = await createServer(async (request, response) => {
+  const server = createServer(async (request, response) => {
     if (request.url?.endsWith('apply-raamit.js')) {
       response.write('');
-      response.end();
-      return;
+      return response.end();
     } else if (request.url?.endsWith(`favicon.ico`)) {
       response.writeHead(404);
       response.end();
@@ -291,7 +290,10 @@ export default async function playwrightSetup() {
         request.method,
         request.url,
       );
-      return;
+      // Päätetään toteuttamattomat pyynnöt 404:llä, ettei yhteys jää roikkumaan
+      // ja estä networkidle-tilaa
+      response.statusCode = 404;
+      return response.end();
     }
   });
   server.listen(port, () => {

@@ -1,4 +1,3 @@
-'use client';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { HakukohteenHakijaryhma } from '@/lib/types/laskenta-types';
 import { AccordionBoxTitle } from '@/components/accordion-box-title';

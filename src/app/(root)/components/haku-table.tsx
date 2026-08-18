@@ -1,4 +1,3 @@
-'use client';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { HakuListItem } from '@/hooks/useHakuSearch';
 import { useMemo } from 'react';
@@ -7,6 +6,7 @@ import { makeCountColumn } from '@/components/table/table-columns';
 import { ListTable } from '@/components/table/list-table';
 import { OphLink } from '@opetushallitus/oph-design-system';
 import { isTranslatedName } from '@/lib/localization/translation-utils';
+import { Link } from 'react-router';
 
 export const HakuTable = ({
   haut,
@@ -25,7 +25,11 @@ export const HakuTable = ({
         title: 'yleinen.nimi',
         key: 'nimi',
         render: (haku) => (
-          <OphLink href={`/haku/${haku.oid}`} sx={{ textDecoration: 'none' }}>
+          <OphLink
+            component={Link}
+            to={`/haku/${haku.oid}`}
+            sx={{ textDecoration: 'none' }}
+          >
             {isTranslatedName(haku.nimi)
               ? translateEntity(haku.nimi)
               : haku.nimi}

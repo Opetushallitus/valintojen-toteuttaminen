@@ -6,14 +6,31 @@ import {
 import { LaskentaTyyppi } from '@/lib/valintalaskenta/valintalaskenta-service';
 import AxeBuilder from '@axe-core/playwright';
 import { Locator, Page, Route, expect } from '@playwright/test';
-import { readFile } from 'fs/promises';
-import path from 'path';
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
 import { isFunction, isNonNull } from 'remeda';
 import regexpEscape from 'regexp.escape';
 import { styleText } from 'node:util';
 import { ProcessResponse } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 
 export const expectPageAccessibilityOk = async (page: Page) => {
+  // Poistetaan animaatiot ja siirtymät käytöstä ennen skannausta, jotta axe ei
+  // mittaa kesken fade-siirtymän olevaa (läpinäkyvää) modaalia väärillä
+  // kontrastiarvoilla.
+  await page.addStyleTag({
+    content:
+      '*, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; }',
+  });
+  // Varmistetaan että kaikki käynnissä olevat animaatiot/siirtymät ovat
+  // valmistuneet ennen skannausta (mm. modaalin fade), jotta axe ei mittaa
+  // läpinäkyviä elementtejä. Selaimet ajoittavat siirtymät hieman eri tavoin.
+  await page.evaluate(() =>
+    Promise.all(
+      document
+        .getAnimations()
+        .map((animation) => animation.finished.catch(() => undefined)),
+    ).then(() => undefined),
+  );
   const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
   expect(accessibilityScanResults.violations).toEqual([]);
 };
@@ -33,7 +50,7 @@ export const expectUrlParamToEqual = async (
 ) => {
   await page.waitForURL(
     new RegExp(
-      `(&|\\?)${paramName}=${value}|${encodeURIComponent(value)}(&|$)`,
+      String.raw`(&|\?)${paramName}=${value}|${encodeURIComponent(value)}(&|$)`,
     ),
   );
   const pageURL = page.url();
@@ -79,7 +96,7 @@ export const getHakuNaviLinks = (page: Page) => {
 export const getMuiCloseButton = (page: Page) =>
   page.getByRole('button', { name: 'Sulje' });
 
-const FIXTURES_PATH = path.resolve(__dirname, './fixtures');
+const FIXTURES_PATH = path.resolve(import.meta.dirname, './fixtures');
 
 export const getFixturePath = (fileName: string) =>
   path.resolve(FIXTURES_PATH, fileName);
@@ -195,7 +212,9 @@ export async function mockDocumentExport(
         headers: {
           'content-type': 'application/octet-stream',
         },
-        body: await readFile(path.join(__dirname, './fixtures/empty.xls')),
+        body: await readFile(
+          path.join(import.meta.dirname, './fixtures/empty.xls'),
+        ),
       });
     },
   );
@@ -219,7 +238,9 @@ export const startExcelImport = async (page: Page, within?: Locator) => {
     .click();
 
   const fileChooser = await fileChooserPromise;
-  await fileChooser.setFiles(path.join(__dirname, './fixtures/empty.xls'));
+  await fileChooser.setFiles(
+    path.join(import.meta.dirname, './fixtures/empty.xls'),
+  );
 };
 
 export const findTableColumnIndexByTitle = async (
@@ -267,7 +288,7 @@ export const mockValintalaskentaRun = async (
   const startUrlRegexp = new RegExp(
     regexpEscape(
       `/resources/valintalaskentakerralla/haku/${hakuOid}/tyyppi/${tyyppi}`,
-    ) + '($|\/)',
+    ) + '($|/)',
   );
 
   await page.route(

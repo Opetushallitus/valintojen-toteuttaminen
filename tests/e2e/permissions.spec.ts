@@ -7,9 +7,9 @@ import {
   mockOneOrganizationHierarchy,
 } from './playwright-utils';
 import { NDASH } from '@/lib/constants';
-import LASKETUT_VALINNANVAIHEET from './fixtures/lasketut-valinnanvaiheet.json';
-import VALINNANVAIHE_TULOKSET_ILMAN_LASKENTAA from './fixtures/valinnanvaihe-tulokset-ilman-laskentaa.json';
-import VALINNANVAIHEET_ILMAN_LASKENTAA from './fixtures/valinnanvaiheet-ilman-laskentaa.json';
+import LASKETUT_VALINNANVAIHEET from './fixtures/lasketut-valinnanvaiheet.json' with { type: 'json' };
+import VALINNANVAIHE_TULOKSET_ILMAN_LASKENTAA from './fixtures/valinnanvaihe-tulokset-ilman-laskentaa.json' with { type: 'json' };
+import VALINNANVAIHEET_ILMAN_LASKENTAA from './fixtures/valinnanvaiheet-ilman-laskentaa.json' with { type: 'json' };
 
 const getTableRows = (loc: Page | Locator) => loc.locator('tbody tr');
 

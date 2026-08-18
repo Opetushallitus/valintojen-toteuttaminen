@@ -1,5 +1,3 @@
-'use client';
-
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { Box, Typography } from '@mui/material';
 import {

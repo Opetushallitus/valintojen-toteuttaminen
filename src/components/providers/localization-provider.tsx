@@ -1,4 +1,3 @@
-'use client';
 import { FullSpinner } from '@/components/full-spinner';
 import { useAsiointiKieli } from '@/hooks/useAsiointiKieli';
 import { changeLanguage, tolgee } from '@/lib/localization/localizations';

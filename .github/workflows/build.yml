@@ -1,9 +1,10 @@
 name: Valintojen toteuttaminen workflow
 on:
+  workflow_dispatch:
   push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+    paths-ignore:
+      - '**.md'
+
 env:
   HUSKY: 0
   NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -17,8 +18,8 @@ jobs:
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: ./.github/actions/setup-next-env
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: ./.github/actions/setup-frontend-env
       - name: Check types
         run: pnpm run typecheck
       - name: Run linter
@@ -33,43 +34,69 @@ jobs:
       matrix:
         browser: [chromium, firefox]
     steps:
-      - uses: actions/checkout@v6
-      - uses: ./.github/actions/setup-next-env
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: ./.github/actions/setup-frontend-env
       - name: Create self-signed dev certificates
         run: pnpm run create-self-signed-dev-certs
-      - name: Build app
-        run: pnpm run build-test
+      # e2e ajetaan react-router dev -serveriä vasten (start-test), ei erillistä buildia
       - name: Run Playwright tests
         env:
           PLAYWRIGHT_ARGS: --project=${{ matrix.browser }}
         run: pnpm run start-and-test-playwright-docker
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.browser }}
           path: playwright-report/
           retention-days: 10
           if-no-files-found: ignore
-  deploy-zip:
-    needs: [lint-and-test, e2e]
-    timeout-minutes: 10
+  build:
+    timeout-minutes: 20
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
     steps:
-      - uses: actions/checkout@v6
-      - uses: ./.github/actions/setup-next-env
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@ec61189d14ec14c8efccab744f656cffd0e33f37 # v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Set up JDK
+        uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a # v5.5.0
         with:
-          role-to-assume: ${{ secrets.AWS_OPH_UTILITY_ROLE_ARN }}
-          role-session-name: valintojen-toteuttaminen-deploy-zip
-          aws-region: eu-west-1
-      - name: Deploy zip to s3
-        env:
-          bucket: ${{ secrets.CDK_DEPLOYMENTS_BUCKET_NAME }}
+          java-version-file: .java-version
+          distribution: 'corretto'
+          cache: 'maven'
+      # frontend-maven-plugin ajaa pnpm installin, joka tarvitsee
+      # autentikoinnin npm.pkg.github.com-rekisteriin (@opetushallitus-paketit)
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version-file: '.nvmrc'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@opetushallitus'
+      - name: Build with Maven
+        working-directory: ./server
+        run: mvn clean spotless:check package -B
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: server/target
+          key: ${{ github.sha }}
+  deploy-container:
+    needs: [lint-and-test, e2e, build]
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: server/target
+          key: ${{ github.sha }}
+      - name: Build and upload Docker container
+        shell: bash
         run: |
-          pnpm run build
-          zip -r ga-${{github.run_number}}.zip .next/*.* .next/BUILD_ID .next/static .next/standalone public
-          aws s3 cp --no-progress ga-${{github.run_number}}.zip s3://"$bucket"/valintojen-toteuttaminen/ga-${{github.run_number}}.zip
+          git clone https://github.com/Opetushallitus/ci-tools.git
+          source ci-tools/common/setup-tools.sh
+          export ARTIFACT_NAME="valintojen-toteuttaminen"
+          mv server/target/valintojen-toteuttaminen-*.jar $DOCKER_BUILD_DIR/artifact/${ARTIFACT_NAME}.jar
+          cp -vr server/src/main/resources/* $DOCKER_BUILD_DIR/config/
+          export BASE_IMAGE="baseimage-fatjar-openjdk21:master"
+          ./ci-tools/common/pull-image.sh
+          ./ci-tools/github-build/build-fatjar.sh $ARTIFACT_NAME
+          ./ci-tools/github-build/upload-image.sh $ARTIFACT_NAME

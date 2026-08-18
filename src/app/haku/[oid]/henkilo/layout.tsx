@@ -1,25 +1,22 @@
+import { Outlet } from 'react-router';
 import { Stack } from '@mui/material';
 import { HenkiloPanel } from './components/henkilo-panel';
 import { ValintojenToteuttaminenAccessGuard } from '../components/valintojen-toteuttaminen-access-guard';
+import { useRequiredParams } from '@/hooks/useRequiredParams';
 
-export default async function HenkiloLayout(props: {
-  children: React.ReactNode;
-  params: Promise<{ oid: string }>;
-}) {
-  const params = await props.params;
-
-  const { children } = props;
+export default function HenkiloLayout() {
+  const { oid } = useRequiredParams<{ oid: string }>();
 
   return (
-    <ValintojenToteuttaminenAccessGuard hakuOid={params.oid} tabName="henkilo">
+    <ValintojenToteuttaminenAccessGuard hakuOid={oid} tabName="henkilo">
       <Stack
         direction="row"
         sx={{
           alignItems: 'flex-start',
         }}
       >
-        <HenkiloPanel hakuOid={params.oid} />
-        {children}
+        <HenkiloPanel hakuOid={oid} />
+        <Outlet />
       </Stack>
     </ValintojenToteuttaminenAccessGuard>
   );

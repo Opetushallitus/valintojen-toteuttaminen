@@ -1,4 +1,3 @@
-'use client';
 import { SpinnerModal } from '@/components/modals/spinner-modal';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { ValinnanTulosActorRef } from '@/lib/state/createValinnanTuloksetMachine';

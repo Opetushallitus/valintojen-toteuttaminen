@@ -1,5 +1,3 @@
-'use client';
-
 import { Haku, Hakukohde, Tila } from './kouta-types';
 import { client } from '@/lib/http-client';
 import {

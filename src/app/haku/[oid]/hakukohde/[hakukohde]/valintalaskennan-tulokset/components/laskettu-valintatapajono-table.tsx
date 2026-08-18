@@ -1,4 +1,3 @@
-'use client';
 import { EditButton } from '@/components/edit-button';
 import { showModal } from '@/components/modals/global-modal';
 import {

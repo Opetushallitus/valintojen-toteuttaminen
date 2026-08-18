@@ -1,5 +1,3 @@
-'use client';
-
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { DEFAULT_BOX_BORDER, ophColors, styled } from '@/lib/theme';
 import { useHakukohde } from '@/lib/kouta/useHakukohde';

@@ -1,4 +1,3 @@
-'use client';
 import { OphSelect } from '@opetushallitus/oph-design-system';
 import { useTranslations } from '@/lib/localization/useTranslations';
 

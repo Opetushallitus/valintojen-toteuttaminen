@@ -1,4 +1,3 @@
-'use client';
 import { withDefaultProps } from '../lib/mui-utils';
 import { ClientSpinner } from './client-spinner';
 

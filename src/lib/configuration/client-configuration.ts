@@ -1,5 +1,3 @@
-'use client';
-
 import { Configuration } from '@/lib/configuration/configuration';
 
 declare global {
@@ -13,5 +11,9 @@ export function setConfiguration(configuration: Configuration) {
 }
 
 export function getConfiguration(): Configuration {
-  return window.configuration;
+  // Palautetaan turvallisesti undefined selaimen ulkopuolella (mm. SPA-buildin
+  // prerender ajaa koodin Nodessa, jolloin window puuttuu).
+  return typeof window === 'undefined'
+    ? (undefined as unknown as Configuration)
+    : window.configuration;
 }

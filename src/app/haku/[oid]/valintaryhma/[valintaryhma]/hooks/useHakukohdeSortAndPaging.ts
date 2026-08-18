@@ -1,4 +1,3 @@
-'use client';
 import { useMemo, useState } from 'react';
 import { parseAsInteger, useQueryState } from 'nuqs';
 import {

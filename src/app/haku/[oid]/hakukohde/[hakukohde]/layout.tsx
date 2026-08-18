@@ -1,13 +1,14 @@
+import { Outlet } from 'react-router';
 import { Stack } from '@mui/material';
 import { HakukohdeTabs } from '../components/hakukohde-tabs';
 import { HakukohdeTabWrapper } from './components/hakukohde-tab-wrapper';
+import { useRequiredParams } from '@/hooks/useRequiredParams';
 
-export default async function HakuLayout(props: {
-  children: React.ReactNode;
-  params: Promise<{ oid: string; hakukohde: string }>;
-}) {
-  const params = await props.params;
-  const { children } = props;
+export default function HakukohdeTabsLayout() {
+  const { oid, hakukohde } = useRequiredParams<{
+    oid: string;
+    hakukohde: string;
+  }>();
 
   return (
     <Stack
@@ -16,9 +17,9 @@ export default async function HakuLayout(props: {
         overflow: 'hidden',
       }}
     >
-      <HakukohdeTabs hakuOid={params.oid} hakukohdeOid={params.hakukohde} />
-      <HakukohdeTabWrapper hakuOid={params.oid} hakukohdeOid={params.hakukohde}>
-        {children}
+      <HakukohdeTabs hakuOid={oid} hakukohdeOid={hakukohde} />
+      <HakukohdeTabWrapper hakuOid={oid} hakukohdeOid={hakukohde}>
+        <Outlet />
       </HakukohdeTabWrapper>
     </Stack>
   );

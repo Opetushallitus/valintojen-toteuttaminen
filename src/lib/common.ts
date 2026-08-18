@@ -63,6 +63,15 @@ export class PermissionError extends OphCustomError {
   }
 }
 
+/**
+ * Virhe, joka näytetään 404-näkymänä (korvaa Next.js:n notFound()-kutsun).
+ */
+export class NotFoundError extends OphCustomError {
+  constructor(message: string = 'Not found') {
+    super(message);
+  }
+}
+
 export function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
 }

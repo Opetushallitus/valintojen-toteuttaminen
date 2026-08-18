@@ -1,4 +1,3 @@
-'use client';
 import { ValintakoekutsutActionBar } from './valintakoekutsut-action-bar';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { Stack } from '@mui/material';

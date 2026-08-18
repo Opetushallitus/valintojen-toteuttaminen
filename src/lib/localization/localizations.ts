@@ -1,5 +1,3 @@
-'use client';
-
 import { registerLocale, setDefaultLocale } from 'react-datepicker';
 import { TolgeeBase } from './tolgee-config';
 import { Language } from './localization-types';

@@ -1,7 +1,6 @@
 import { useHakukohdeSearchUrlParams } from '@/hooks/useHakukohdeSearch';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
-import { type LinkProps } from 'next/link';
-import { BlockerLink } from './blocker-link';
+import { Link, type LinkProps } from 'react-router';
 
 export const HakukohdeTabLink = ({
   hakuOid,
@@ -9,7 +8,7 @@ export const HakukohdeTabLink = ({
   children,
   tabRoute,
   ...props
-}: Omit<LinkProps, 'href'> &
+}: Omit<LinkProps, 'to'> &
   KoutaOidParams & {
     children: React.ReactNode;
     className?: string;
@@ -19,15 +18,16 @@ export const HakukohdeTabLink = ({
   const hakukohdeSearchParams = useHakukohdeSearchUrlParams();
 
   return (
-    <BlockerLink
+    <Link
       {...props}
-      href={{
+      to={{
         pathname: `/haku/${hakuOid}/hakukohde/${hakukohdeOid}/${tabRoute}`,
-        query: hakukohdeSearchParams,
+        search: hakukohdeSearchParams
+          ? `?${new URLSearchParams(hakukohdeSearchParams)}`
+          : undefined,
       }}
-      prefetch={false}
     >
       {children}
-    </BlockerLink>
+    </Link>
   );
 };

@@ -1,8 +1,5 @@
-'use client';
-
 import { Box } from '@mui/material';
-import Link, { LinkProps } from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { Link, LinkProps, useSearchParams } from 'react-router';
 
 export const ValintaryhmaLink = ({
   hakuOid,
@@ -10,7 +7,7 @@ export const ValintaryhmaLink = ({
   children,
   disabled,
   ...props
-}: Omit<LinkProps, 'href'> & {
+}: Omit<LinkProps, 'to'> & {
   children: React.ReactNode;
   disabled?: boolean;
   className?: string;
@@ -18,7 +15,7 @@ export const ValintaryhmaLink = ({
   hakuOid: string;
   valintaryhmaOid: string;
 }) => {
-  const searchParams = useSearchParams();
+  const [searchParams] = useSearchParams();
   const vrSearchParam = searchParams.get('vrsearch');
 
   return disabled ? (
@@ -27,9 +24,11 @@ export const ValintaryhmaLink = ({
     <Link
       {...props}
       style={{ textDecoration: 'none', paddingLeft: '7px', width: '100%' }}
-      href={{
+      to={{
         pathname: `/haku/${hakuOid}/valintaryhma/${valintaryhmaOid}`,
-        query: vrSearchParam && { vrsearch: vrSearchParam },
+        search: vrSearchParam
+          ? `?${new URLSearchParams({ vrsearch: vrSearchParam })}`
+          : undefined,
       }}
     >
       {children}

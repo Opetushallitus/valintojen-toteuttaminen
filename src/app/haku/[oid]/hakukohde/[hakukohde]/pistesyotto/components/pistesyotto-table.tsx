@@ -1,4 +1,3 @@
-'use client';
 import { HakemuksenPistetiedot } from '@/lib/types/laskenta-types';
 import { ValintakoeAvaimet } from '@/lib/valintaperusteet/valintaperusteet-types';
 import { ReadOnlyKoeCell } from './koe-readonly-cell';

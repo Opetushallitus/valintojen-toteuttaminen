@@ -1,44 +1,42 @@
-'use client';
-
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { useHenkiloSearchResults } from '../hooks/useHenkiloSearch';
 import { FullClientSpinner } from '@/components/client-spinner';
 import { ErrorView } from '@/components/error-view';
-import { LinkProps } from 'next/link';
-import { useParams, useSearchParams } from 'next/navigation';
+import { Link, LinkProps, useParams, useSearchParams } from 'react-router';
 import { getHenkiloTitle } from '@/lib/henkilo-utils';
 import {
   NAV_LIST_SELECTED_ITEM_CLASS,
   NavigationList,
 } from '@/components/navigation-list';
-import { BlockerLink } from '@/components/blocker-link';
 
 export const HenkiloLink = ({
   hakuOid,
   hakemusOid,
   children,
   ...props
-}: Omit<LinkProps, 'href'> & {
+}: Omit<LinkProps, 'to'> & {
   children: React.ReactNode;
   className?: string;
   tabIndex?: number;
   hakuOid: string;
   hakemusOid: string;
 }) => {
-  const searchParams = useSearchParams();
+  const [searchParams] = useSearchParams();
   const henkiloSearchParam = searchParams.get('henkilosearch');
 
   return (
-    <BlockerLink
+    <Link
       {...props}
-      href={{
+      to={{
         pathname: `/haku/${hakuOid}/henkilo/${hakemusOid}`,
-        query: henkiloSearchParam && { henkilosearch: henkiloSearchParam },
+        search: henkiloSearchParam
+          ? `?${new URLSearchParams({ henkilosearch: henkiloSearchParam })}`
+          : undefined,
       }}
     >
       {children}
-    </BlockerLink>
+    </Link>
   );
 };
 

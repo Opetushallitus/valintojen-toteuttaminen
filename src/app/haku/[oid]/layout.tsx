@@ -1,19 +1,25 @@
+import { Suspense } from 'react';
+import { Outlet } from 'react-router';
 import { PageLayout } from '@/components/page-layout';
 import { HakuTabs } from './components/haku-tabs';
 import { Stack } from '@mui/material';
 import { ClientErrorBoundary } from '@/components/client-error-boundary';
+import { ClientSpinner } from '@/components/client-spinner';
+import { Header } from '@/components/header';
+import { HakuHeader } from './components/haku-header';
+import { useRequiredParams } from '@/hooks/useRequiredParams';
 
-export default async function HakuLayout(props: {
-  children: React.ReactNode;
-  header: React.ReactNode;
-  params: Promise<{ oid: string }>;
-}) {
-  const params = await props.params;
-
-  const { children, header } = props;
+export default function HakuLayout() {
+  const { oid } = useRequiredParams<{ oid: string }>();
 
   return (
-    <PageLayout header={header}>
+    <PageLayout
+      header={
+        <Suspense fallback={<Header title={<ClientSpinner />} isHome={true} />}>
+          <HakuHeader />
+        </Suspense>
+      }
+    >
       <Stack
         component="main"
         sx={{
@@ -21,8 +27,8 @@ export default async function HakuLayout(props: {
         }}
       >
         <ClientErrorBoundary>
-          <HakuTabs hakuOid={params.oid} />
-          {children}
+          <HakuTabs hakuOid={oid} />
+          <Outlet />
         </ClientErrorBoundary>
       </Stack>
     </PageLayout>

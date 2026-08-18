@@ -1,4 +1,3 @@
-'use client';
 import { FullSpinner } from '@/components/full-spinner';
 import { ErrorView } from '@/components/error-view';
 import { useQueryUserPermissions } from '@/hooks/useUserPermissions';

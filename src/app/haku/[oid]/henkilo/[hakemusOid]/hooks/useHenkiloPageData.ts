@@ -1,5 +1,3 @@
-'use client';
-
 import {
   getAtaruHakemukset,
   parseHakijaTiedot,
@@ -10,7 +8,7 @@ import { getAllHakukohteet } from '@/lib/kouta/kouta-service';
 import { useCheckPermission } from '@/hooks/useUserPermissions';
 import { filter, map, pipe, prop, sortBy } from 'remeda';
 import { selectEditableValintalaskennanTulokset } from '@/hooks/useEditableValintalaskennanTulokset';
-import { notFound } from 'next/navigation';
+import { NotFoundError } from '@/lib/common';
 import { useMemo } from 'react';
 import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
 import { getKoePisteetForHakemus } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
@@ -36,7 +34,7 @@ const useAtaruHakemus = ({
   const hakemus = hakemukset?.[0];
 
   if (!hakemus) {
-    notFound();
+    throw new NotFoundError();
   }
 
   return hakemus;

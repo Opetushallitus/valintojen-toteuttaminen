@@ -1,5 +1,3 @@
-'use client';
-
 import { Divider, Stack } from '@mui/material';
 import { useLaskentaState } from '@/lib/state/laskenta-state';
 import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';

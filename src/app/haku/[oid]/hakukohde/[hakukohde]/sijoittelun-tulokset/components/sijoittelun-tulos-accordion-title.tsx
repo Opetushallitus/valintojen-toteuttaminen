@@ -1,4 +1,3 @@
-'use client';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { AccordionBoxTitle } from '@/components/accordion-box-title';
 import { SijoitteluajonValintatapajonoValintatiedoilla } from '@/lib/types/sijoittelu-types';

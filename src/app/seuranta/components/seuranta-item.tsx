@@ -1,5 +1,3 @@
-'use client';
-
 import { SeurantaTiedotLaajennettu } from '@/lib/types/laskenta-types';
 import { Box } from '@mui/material';
 import { ophColors, styled } from '@/lib/theme';

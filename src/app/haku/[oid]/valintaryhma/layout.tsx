@@ -1,14 +1,10 @@
+import { Outlet } from 'react-router';
 import { Stack } from '@mui/material';
 import { ValintaryhmaPanel } from './components/valintaryhma-panel';
+import { useRequiredParams } from '@/hooks/useRequiredParams';
 
-export default async function ValintaryhmaLayout(props: {
-  children: React.ReactNode;
-  header: React.ReactNode;
-  params: Promise<{ oid: string }>;
-}) {
-  const params = await props.params;
-
-  const { children } = props;
+export default function ValintaryhmaLayout() {
+  const { oid } = useRequiredParams<{ oid: string }>();
 
   return (
     <Stack
@@ -17,8 +13,8 @@ export default async function ValintaryhmaLayout(props: {
         alignItems: 'flex-start',
       }}
     >
-      <ValintaryhmaPanel hakuOid={params.oid} />
-      {children}
+      <ValintaryhmaPanel hakuOid={oid} />
+      <Outlet />
     </Stack>
   );
 }

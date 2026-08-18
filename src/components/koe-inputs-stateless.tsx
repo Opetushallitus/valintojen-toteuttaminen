@@ -1,5 +1,3 @@
-'use client';
-
 import { TFunction } from '@/lib/localization/useTranslations';
 import { ValintakoeOsallistuminenTulos } from '@/lib/types/laskenta-types';
 import {

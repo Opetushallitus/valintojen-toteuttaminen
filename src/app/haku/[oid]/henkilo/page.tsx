@@ -1,5 +1,3 @@
-'use client';
-
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { ListAlt } from '@mui/icons-material';
 import { NoResults } from '@/components/no-results';

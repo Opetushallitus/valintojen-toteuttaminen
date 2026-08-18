@@ -1,6 +1,3 @@
-'use client';
-import { use } from 'react';
-
 import { getSijoittelunTulokset } from '@/lib/valinta-tulos-service/valinta-tulos-service';
 import { TabContainer } from '../components/tab-container';
 import { useSuspenseQueries } from '@tanstack/react-query';
@@ -10,6 +7,7 @@ import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { FullClientSpinner } from '@/components/client-spinner';
 import { BasicInfo } from './components/basic-info';
 import { queryOptionsGetHaku } from '@/lib/kouta/kouta-queries';
+import { useRequiredParams } from '@/hooks/useRequiredParams';
 
 type PerustiedotParams = {
   oid: string;
@@ -47,10 +45,8 @@ const PerustiedotContent = ({ oid, hakukohde }: PerustiedotParams) => {
   );
 };
 
-export default function PerustiedotTab(props: {
-  params: Promise<PerustiedotParams>;
-}) {
-  const params = use(props.params);
+export default function PerustiedotTab() {
+  const params = useRequiredParams<PerustiedotParams>();
   const { t } = useTranslations();
 
   return (

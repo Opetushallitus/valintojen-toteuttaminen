@@ -1,4 +1,3 @@
-'use client';
 import { useSuspenseQueries } from '@tanstack/react-query';
 import {
   ValintalaskennanValintatapaJonosijaModel,
@@ -172,7 +171,7 @@ export const selectEditableValintalaskennanTulokset = <
             prioriteetti: jono.prioriteetti,
             valmisSijoiteltavaksi: Boolean(
               jonoTulos?.valmisSijoiteltavaksi ??
-                jono?.automaattinenSijoitteluunSiirto,
+              jono?.automaattinenSijoitteluunSiirto,
             ),
             siirretaanSijoitteluun: Boolean(jono.siirretaanSijoitteluun),
             kaytetaanKokonaispisteita: Boolean(

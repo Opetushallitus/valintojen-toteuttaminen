@@ -1,5 +1,3 @@
-'use client';
-
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { SeurantaTiedotLaajennettu } from '@/lib/types/laskenta-types';
 import { Box, Typography } from '@mui/material';
