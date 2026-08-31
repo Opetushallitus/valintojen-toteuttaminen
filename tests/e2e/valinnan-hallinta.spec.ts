@@ -46,6 +46,7 @@ test('Käynnistää laskennan', async ({ page }) => {
         hakukohteitaYhteensa: 1,
         hakukohteitaValmiina: 0,
         hakukohteitaKeskeytetty: 0,
+        tyyppi: 'HAKUKOHDE',
       },
     },
   });
@@ -68,6 +69,7 @@ test('Näyttää ilmoituksen kun laskenta valmistuu', async ({ page }) => {
         hakukohteitaYhteensa: 1,
         hakukohteitaValmiina: 1,
         hakukohteitaKeskeytetty: 0,
+        tyyppi: 'HAKUKOHDE',
       },
     },
     yhteenvetoResponse: {

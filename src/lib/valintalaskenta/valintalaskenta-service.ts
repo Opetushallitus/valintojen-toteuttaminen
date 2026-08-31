@@ -249,6 +249,7 @@ export const getLaskennanSeurantaTiedot = async (loadingUrl: string) => {
     hakukohteitaValmiina: response.data?.hakukohteitaValmiina,
     hakukohteitaKeskeytetty: response.data?.hakukohteitaKeskeytetty,
     jonosija: response.data?.jonosija,
+    tyyppi: response.data.tyyppi,
   };
 };
 

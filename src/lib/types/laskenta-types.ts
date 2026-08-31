@@ -74,6 +74,7 @@ export type SeurantaTiedot = {
   hakukohteitaValmiina: number;
   hakukohteitaKeskeytetty: number;
   jonosija: number | null;
+  tyyppi: 'HAKU' | 'HAKUKOHDE' | 'VALINTARYHMA';
 };
 
 export type SeurantaTiedotLaajennettu = SeurantaTiedot & {
