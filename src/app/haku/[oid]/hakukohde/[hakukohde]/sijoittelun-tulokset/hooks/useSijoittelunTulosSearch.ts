@@ -9,6 +9,7 @@ import {
 } from '@/components/table/table-utils';
 import {
   DEFAULT_NUQS_OPTIONS,
+  DEFAULT_PAGE_SIZE,
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
 } from '@/lib/constants';
 import { useTranslations } from '@/lib/localization/useTranslations';
@@ -19,8 +20,6 @@ import {
 import { hakemusFilter } from '@/lib/filters';
 import { sortByValinnanTila } from '@/lib/sortByValinnanTila';
 import { isHyvaksyttyHarkinnanvaraisesti } from '@/lib/sijoittelun-tulokset-utils';
-
-const DEFAULT_PAGE_SIZE = 10;
 
 export const useSijoittelunTulosSearchParams = (
   valintatapajonoOid?: string,

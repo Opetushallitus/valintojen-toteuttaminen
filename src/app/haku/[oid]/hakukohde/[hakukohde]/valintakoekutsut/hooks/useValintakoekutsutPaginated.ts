@@ -9,8 +9,7 @@ import { byProp, getSortParts } from '@/components/table/table-utils';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { ValintakoeKutsuItem } from '@/lib/types/valintakoekutsut-types';
 import { uncapitalize } from 'remeda';
-
-const DEFAULT_PAGE_SIZE = 10;
+import { DEFAULT_PAGE_SIZE } from '@/lib/constants';
 
 const DEFAULT_NUQS_OPTIONS = {
   history: 'push',
