@@ -19,7 +19,7 @@
     </parent>
 
     <properties>
-        <!-- java.version asetetaan alempana pluginien avulla repon juuren .tool-versions-tiedostosta -->
+        <java.version>21</java.version>
     </properties>
 
     <dependencies>
@@ -80,7 +80,7 @@
                     </jvmArguments>
                 </configuration>
             </plugin>
-            <!-- Buildataan frontend (repon juuressa) pnpm:llä, joka tulee PATHiin mise:n kautta -->
+            <!-- Buildataan frontend (repon juuressa) pnpm:llä, jonka oletetaan olevan PATHissa -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
