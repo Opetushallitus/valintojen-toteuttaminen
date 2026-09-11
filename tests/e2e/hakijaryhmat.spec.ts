@@ -2,6 +2,7 @@ import { test, expect, Page, Locator } from '@playwright/test';
 import {
   checkRow,
   expectAllSpinnersHidden,
+  expectPageSizeSelectorValue,
   selectOption,
 } from './playwright-utils';
 
@@ -102,85 +103,89 @@ const assertRows = async (
   }
 };
 
-test('Näyttää hakijaryhmät', async ({ page }) => {
-  await page.goto(
-    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/hakijaryhmat',
-  );
-  await expectAllSpinnersHidden(page);
+test.describe('Hakijaryhmien näyttäminen', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto(
+      '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/hakijaryhmat',
+    );
+    await expectAllSpinnersHidden(page);
+  });
 
-  await expect(page.locator('h1')).toHaveText(
-    '> Tampere University Separate Admission/ Finnish MAOL Competition Route 2024',
-  );
+  test('Näyttää hakijaryhmät', async ({ page }) => {
+    await expect(page.locator('h1')).toHaveText(
+      '> Tampere University Separate Admission/ Finnish MAOL Competition Route 2024',
+    );
 
-  const accordion1Content = getYoAccordionContent(page);
-  const headrow = accordion1Content.locator('thead:first-child tr');
+    const accordion1Content = getYoAccordionContent(page);
+    const headrow = accordion1Content.locator('thead:first-child tr');
 
-  await checkRow(
-    headrow,
-    [
-      'Hakija',
-      'Kuuluu hakijaryhmään',
-      'Sijoittelun tila',
-      'Hyväksytty hakijaryhmästä',
-      'Pisteet',
-      'Vastaanottotila',
-    ],
-    'th',
-  );
+    await checkRow(
+      headrow,
+      [
+        'Hakija',
+        'Kuuluu hakijaryhmään',
+        'Sijoittelun tila',
+        'Hyväksytty hakijaryhmästä',
+        'Pisteet',
+        'Vastaanottotila',
+      ],
+      'th',
+    );
 
-  const rows = accordion1Content.locator(' tbody tr');
-  await assertRows(rows, [
-    ROWS.ruhtinas,
-    ROWS.kreiviTable1,
-    ROWS.purukumiTable1,
-    ROWS.haamuTable1,
-    ROWS.ratsuTable1,
-  ]);
+    const rows = accordion1Content.locator(' tbody tr');
+    await assertRows(rows, [
+      ROWS.ruhtinas,
+      ROWS.kreiviTable1,
+      ROWS.purukumiTable1,
+      ROWS.haamuTable1,
+      ROWS.ratsuTable1,
+    ]);
 
-  const accordion2Content = getAmmAccordionContent(page);
-  const rows2 = accordion2Content.locator('tbody tr');
-  await assertRows(rows2, [
-    ROWS.ruhtinas,
-    ROWS.kreiviTable2,
-    ROWS.purukumiTable2,
-    ROWS.haamuTable2,
-    ROWS.ratsuTable2,
-  ]);
-});
+    const accordion2Content = getAmmAccordionContent(page);
+    const rows2 = accordion2Content.locator('tbody tr');
+    await assertRows(rows2, [
+      ROWS.ruhtinas,
+      ROWS.kreiviTable2,
+      ROWS.purukumiTable2,
+      ROWS.haamuTable2,
+      ROWS.ratsuTable2,
+    ]);
+  });
 
-test('Järjestää listan sijoittelun tilan mukaan', async ({ page }) => {
-  await page.goto(
-    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/hakijaryhmat',
-  );
-  await expectAllSpinnersHidden(page);
-  const tilaHeader = page
-    .getByRole('columnheader', { name: 'Sijoittelun tila' })
-    .first();
-  await tilaHeader.getByRole('button').click();
-  await expect(tilaHeader).toHaveAttribute('aria-sort', 'ascending');
+  test('Sivukoon oletusarvo on 50', async ({ page }) => {
+    await expectPageSizeSelectorValue(page, '50');
+  });
 
-  const accordion1Content = getYoAccordionContent(page);
-  const rows = accordion1Content.locator('tbody tr');
+  test('Järjestää listan sijoittelun tilan mukaan', async ({ page }) => {
+    const tilaHeader = page
+      .getByRole('columnheader', { name: 'Sijoittelun tila' })
+      .first();
+    await tilaHeader.getByRole('button').click();
+    await expect(tilaHeader).toHaveAttribute('aria-sort', 'ascending');
 
-  await assertRows(rows, [
-    ROWS.ruhtinas,
-    ROWS.kreiviTable1,
-    ROWS.purukumiTable1,
-    ROWS.haamuTable1,
-    ROWS.ratsuTable1,
-  ]);
+    const accordion1Content = getYoAccordionContent(page);
+    const rows = accordion1Content.locator('tbody tr');
 
-  await tilaHeader.getByRole('button').click();
+    await assertRows(rows, [
+      ROWS.ruhtinas,
+      ROWS.kreiviTable1,
+      ROWS.purukumiTable1,
+      ROWS.haamuTable1,
+      ROWS.ratsuTable1,
+    ]);
 
-  await expect(tilaHeader).toHaveAttribute('aria-sort', 'descending');
+    await tilaHeader.getByRole('button').click();
 
-  await assertRows(rows, [
-    ROWS.haamuTable1,
-    ROWS.ratsuTable1,
-    ROWS.purukumiTable1,
-    ROWS.kreiviTable1,
-    ROWS.ruhtinas,
-  ]);
+    await expect(tilaHeader).toHaveAttribute('aria-sort', 'descending');
+
+    await assertRows(rows, [
+      ROWS.haamuTable1,
+      ROWS.ratsuTable1,
+      ROWS.purukumiTable1,
+      ROWS.kreiviTable1,
+      ROWS.ruhtinas,
+    ]);
+  });
 });
 
 test.describe('Suodattimet', () => {
