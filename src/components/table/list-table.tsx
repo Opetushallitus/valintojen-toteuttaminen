@@ -163,7 +163,7 @@ export const ListTable = <T extends Row>({
                     style={style}
                     sort={sort}
                     setSort={setSort}
-                    sortable={sortable != false}
+                    sortable={Boolean(sortable)}
                   />
                 );
               })}
