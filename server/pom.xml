@@ -19,10 +19,7 @@
     </parent>
 
     <properties>
-        <java.version>21</java.version>
-        <!-- Pidettävä synkassa .nvmrc:n ja package.json:n packageManager-kentän kanssa -->
-        <node.version>v24.11.1</node.version>
-        <pnpm.version>v11.7.0</pnpm.version>
+        <!-- java.version asetetaan alempana pluginien avulla repon juuren .tool-versions-tiedostosta -->
     </properties>
 
     <dependencies>
@@ -83,51 +80,51 @@
                     </jvmArguments>
                 </configuration>
             </plugin>
-            <!-- Buildataan frontend (repon juuressa) ja kopioidaan dist/ jariin -->
+            <!-- Buildataan frontend (repon juuressa) pnpm:llä, joka tulee PATHiin mise:n kautta -->
             <plugin>
-                <groupId>com.github.eirslett</groupId>
-                <artifactId>frontend-maven-plugin</artifactId>
-                <version>1.15.1</version>
-                <configuration>
-                    <nodeVersion>${node.version}</nodeVersion>
-                    <pnpmVersion>${pnpm.version}</pnpmVersion>
-                    <workingDirectory>${project.basedir}/..</workingDirectory>
-                    <installDirectory>${project.basedir}/target</installDirectory>
-                </configuration>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.5.0</version>
                 <executions>
                     <execution>
-                        <id>Install node and pnpm locally to the project</id>
-                        <goals>
-                            <goal>install-node-and-pnpm</goal>
-                        </goals>
-                    </execution>
-                    <execution>
                         <id>pnpm install</id>
+                        <phase>generate-resources</phase>
                         <goals>
-                            <goal>pnpm</goal>
+                            <goal>exec</goal>
                         </goals>
                         <configuration>
+                            <executable>pnpm</executable>
+                            <workingDirectory>${project.basedir}/..</workingDirectory>
                             <!-- CI=true, jotta pnpm ei kysy vahvistusta node_modulesin siivoukselle -->
                             <environmentVariables>
                                 <CI>true</CI>
                             </environmentVariables>
-                            <arguments>install</arguments>
+                            <arguments>
+                                <argument>install</argument>
+                            </arguments>
                         </configuration>
                     </execution>
                     <execution>
                         <id>Build frontend</id>
+                        <phase>generate-resources</phase>
                         <goals>
-                            <goal>pnpm</goal>
+                            <goal>exec</goal>
                         </goals>
                         <configuration>
+                            <executable>pnpm</executable>
+                            <workingDirectory>${project.basedir}/..</workingDirectory>
                             <environmentVariables>
                                 <CI>false</CI>
                             </environmentVariables>
-                            <arguments>run build</arguments>
+                            <arguments>
+                                <argument>run</argument>
+                                <argument>build</argument>
+                            </arguments>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+            <!-- Kopioidaan buildattu frontend jariin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
