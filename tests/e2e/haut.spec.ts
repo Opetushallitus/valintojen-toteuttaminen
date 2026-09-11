@@ -2,6 +2,7 @@ import { test, expect, Page, Locator } from '@playwright/test';
 import {
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
+  expectPageSizeSelectorValue,
   expectUrlParamToEqual,
   getHakukohdeNaviLinks,
   selectOption,
@@ -39,6 +40,11 @@ test('Hakusivun saavutettavuus', async ({ page }) => {
   await expectAllSpinnersHidden(page);
   await expect(page).toHaveTitle(/Valintojen Toteuttaminen/);
   await expectPageAccessibilityOk(page);
+});
+
+test('Sivukoon oletusarvo on 50', async ({ page }) => {
+  await expectAllSpinnersHidden(page);
+  await expectPageSizeSelectorValue(page, '50');
 });
 
 const getTableRows = (loc: Page | Locator) => loc.locator('tbody tr');

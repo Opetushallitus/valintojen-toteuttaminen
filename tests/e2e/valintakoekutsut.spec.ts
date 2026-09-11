@@ -3,6 +3,7 @@ import {
   checkRow,
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
+  expectPageSizeSelectorValue,
 } from './playwright-utils';
 import VALINTAKOKEET from './fixtures/valintakokeet.json' with { type: 'json' };
 import VALINTAKOEOSALLISTUMISET from './fixtures/valintakoeosallistumiset.json' with { type: 'json' };
@@ -32,6 +33,11 @@ test.beforeEach(async ({ page }) => {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105/valintakoekutsut',
   );
+});
+
+test('Sivukoon oletusarvo on 50', async ({ page }) => {
+  await expectAllSpinnersHidden(page);
+  await expectPageSizeSelectorValue(page, '50');
 });
 
 const testAccessibility = async ({ page }: { page: Page }) => {
