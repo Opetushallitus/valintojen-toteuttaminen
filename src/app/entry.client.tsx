@@ -17,7 +17,18 @@ function stripCasTicket() {
   }
 }
 
+/**
+ * Viten riippuvuuksien uudelleenoptimointi voi katkaista reittimoduulin
+ * importin kesken ja jättää navigoinnin jumiin. Korjataan uudelleenlatauksella.
+ */
+function registerPreloadErrorReload() {
+  window.addEventListener('vite:preloadError', () => {
+    window.location.reload();
+  });
+}
+
 async function start() {
+  registerPreloadErrorReload();
   stripCasTicket();
   // Ladataan konfiguraatio ennen hydraatiota, jotta getConfiguration()-globaali
   // on asetettu ennen kuin reittimoduulit (ja mm. Tolgeen alustus) evaluoituvat.

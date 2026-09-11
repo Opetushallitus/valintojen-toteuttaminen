@@ -76,6 +76,11 @@ export default defineConfig(({ mode, command }) => {
             proxyOptions(virkailijaOrigin),
         }
       : undefined,
+    // Esilämmitetään reittimoduulit serverin käynnistyessä, jotta ensimmäinen
+    // navigointi ei laukaise riippuvuuksien uudelleenoptimointia kesken importin.
+    warmup: {
+      clientFiles: ['./src/app/**/*.tsx'],
+    },
   };
 
   return {
