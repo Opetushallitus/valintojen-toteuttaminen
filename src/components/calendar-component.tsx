@@ -115,12 +115,14 @@ export type CalendarProps = {
   selectedValue?: Date | null;
   setDate: (value: Date | null) => void;
   label: string;
+  timeIntervals?: number;
 };
 
 export const CalendarComponent = ({
   selectedValue,
   setDate,
   label,
+  timeIntervals = 30,
 }: CalendarProps) => {
   const { t, getLanguage } = useTranslations();
 
@@ -158,6 +160,7 @@ export const CalendarComponent = ({
             customInput={<CustomInput ref={refCustomInput} />}
             calendarClassName={CALENDAR_CLASSNAME}
             showTimeSelect
+            timeIntervals={timeIntervals}
             timeCaption={t('kalenteri.aika')}
             dateFormat="dd.MM.yyyy HH:mm"
             strictParsing={true}
