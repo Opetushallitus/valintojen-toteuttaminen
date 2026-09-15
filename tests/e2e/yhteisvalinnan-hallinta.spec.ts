@@ -224,9 +224,9 @@ test.describe('Sijoittelu', () => {
     ).toBeVisible();
     await page.getByPlaceholder('pp.kk.vvvv hh.mm').click();
     await page.getByLabel('Choose maanantaina 17.').click();
-    await page.getByRole('option', { name: '16.30' }).click();
+    await page.getByRole('option', { name: '16.37' }).click();
     await expect(page.getByPlaceholder('pp.kk.vvvv hh.mm')).toHaveValue(
-      '17.02.2025 16:30',
+      '17.02.2025 16:37',
     );
     await page
       .getByRole('button', { name: 'Ota ajastettu sijoittelu kä' })
