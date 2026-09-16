@@ -62,6 +62,11 @@ export const expectUrlParamToEqual = async (
 export const expectTextboxValue = (value: string) => (locator: Locator) =>
   expect(locator.getByRole('textbox')).toHaveValue(value);
 
+export const expectPageSizeSelectorValue = (page: Page, value: string) =>
+  expect(page.getByRole('combobox', { name: /Näytä per sivu/ })).toHaveText(
+    value,
+  );
+
 export const checkRow = async (
   row: Locator,
   expectedValues: Array<string | ((cell: Locator) => Promise<void>)>,
@@ -73,12 +78,10 @@ export const checkRow = async (
     const cell = cells.nth(index);
     if (isFunction(expectedValue)) {
       await expectedValue(cell);
+    } else if (exact) {
+      await expect(cell).toHaveText(expectedValue);
     } else {
-      if (exact) {
-        await expect(cell).toHaveText(expectedValue);
-      } else {
-        await expect(cell).toContainText(expectedValue);
-      }
+      await expect(cell).toContainText(expectedValue);
     }
   }
 };

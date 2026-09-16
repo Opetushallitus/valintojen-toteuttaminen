@@ -4,6 +4,7 @@ import {
   expectAlertTextVisible,
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
+  expectPageSizeSelectorValue,
   fixtureFromFile,
   selectOption,
   waitForMethodRequest,
@@ -46,6 +47,11 @@ test.beforeEach(async ({ page }) => {
 test('Harkinnanvaraiset saavutettavuus', async ({ page }) => {
   await expectAllSpinnersHidden(page);
   await expectPageAccessibilityOk(page);
+});
+
+test('Sivukoon oletusarvo on 50', async ({ page }) => {
+  await expectAllSpinnersHidden(page);
+  await expectPageSizeSelectorValue(page, '50');
 });
 
 test('Näyttää harkinnanvaraiset', async ({ page }) => {

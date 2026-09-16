@@ -5,6 +5,7 @@ import { useHasChangedForQueryState } from '@/hooks/useHasChanged';
 import { byProp, getSortParts } from '@/components/table/table-utils';
 import {
   DEFAULT_NUQS_OPTIONS,
+  DEFAULT_PAGE_SIZE,
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
 } from '@/lib/constants';
 import { useTranslations } from '@/lib/localization/useTranslations';
@@ -12,8 +13,6 @@ import { hakemusFilter } from '@/lib/filters';
 import { isEmpty } from 'remeda';
 import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
 import { sortByValinnanTila } from '@/lib/sortByValinnanTila';
-
-const DEFAULT_PAGE_SIZE = 10;
 
 export const useValinnanTuloksetSearchParams = () => {
   const [searchPhrase, setSearchPhrase] = useQueryState(

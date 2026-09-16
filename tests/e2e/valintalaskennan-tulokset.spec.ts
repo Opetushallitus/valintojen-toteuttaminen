@@ -4,6 +4,7 @@ import {
   expectAlertTextVisible,
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
+  expectPageSizeSelectorValue,
   selectOption,
   waitForMethodRequest,
 } from './playwright-utils';
@@ -43,6 +44,10 @@ test('Valintalaskennan tulokset välilehti on saavutettava', async ({
 }) => {
   await page.locator('tbody tr').nth(1).hover();
   await expectPageAccessibilityOk(page);
+});
+
+test('Sivukoon oletusarvo on 50', async ({ page }) => {
+  await expectPageSizeSelectorValue(page, '50');
 });
 
 test('Näytetään valintalaskennan tulokset', async ({ page }) => {

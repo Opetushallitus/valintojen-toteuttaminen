@@ -2,6 +2,7 @@ import { test, expect, Page } from '@playwright/test';
 import {
   checkRow,
   expectAllSpinnersHidden,
+  expectPageSizeSelectorValue,
   findTableColumnIndexByTitle,
   mockDocumentProcess,
   selectOption,
@@ -90,6 +91,10 @@ const getYoValintatapajonoContent = (page: Page) => {
 const getAmmValintatapajonoContent = (page: Page) => {
   return page.getByRole('region', { name: 'Todistusvalinta (AMM)' });
 };
+
+test('Sivukoon oletusarvo on 50', async ({ page }) => {
+  await expectPageSizeSelectorValue(page, '50');
+});
 
 test('Näytä "Sijoittelun tulokset" -välilehti ja sisältö', async ({ page }) => {
   await expect(
