@@ -112,6 +112,7 @@ const ScheduleContent = ({
         <CalendarComponent
           setDate={setScheduledDate}
           selectedValue={scheduledDate}
+          timeIntervals={1}
           label={t(
             'yhteisvalinnan-hallinta.sijoittelu.ajastus.aloitusajankohta',
           )}
