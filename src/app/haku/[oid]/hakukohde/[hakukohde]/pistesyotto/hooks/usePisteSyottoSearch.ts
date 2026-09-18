@@ -6,11 +6,11 @@ import { byProp, getSortParts } from '@/components/table/table-utils';
 import {
   DEFAULT_PAGE_SIZE,
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
+  DEFAULT_NUQS_OPTIONS,
 } from '@/lib/constants';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { HakukohteenPistetiedot } from '@/lib/types/laskenta-types';
 import { hakemusFilter } from '@/lib/filters';
-import { DEFAULT_NUQS_OPTIONS } from '@/lib/constants';
 
 export const usePisteSyottoSearchParams = () => {
   const [searchPhrase, setSearchPhrase] = useQueryState(
