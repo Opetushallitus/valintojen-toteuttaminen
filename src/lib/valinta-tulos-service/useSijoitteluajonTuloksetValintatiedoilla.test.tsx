@@ -23,7 +23,7 @@ describe('selectSijoitteluajonTuloksetValintatiedoilla', () => {
     const tulokset: SijoitteluajonTuloksetValintatiedoilla | null =
       await getTuloksetValintatiedoilla();
     expect(tulokset).not.toBeNull();
-    expect(tulokset!.valintatapajonot.length).toEqual(1);
+    expect(tulokset!.valintatapajonot).toHaveLength(1);
     const jono = tulokset!.valintatapajonot[0]!;
     expect(jono).toBeDefined();
     expect(jono.nimi).toEqual('Todistusvalinta (YO)');
@@ -32,7 +32,7 @@ describe('selectSijoitteluajonTuloksetValintatiedoilla', () => {
     expect(jono.prioriteetti).toEqual(0);
     expect(jono.tasasijasaanto).toEqual('ARVONTA');
     expect(jono.varasijataytto).toBeTruthy();
-    expect(jono.hakemukset.length).toEqual(3);
+    expect(jono.hakemukset).toHaveLength(3);
     assertHakemus(
       jono.hakemukset[0]!,
       2,

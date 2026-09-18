@@ -33,6 +33,7 @@ const StyledHeaderCell = styled(TableCell)(({ theme }) => ({
   },
 }));
 
+// eslint-disable-next-line no-shadow -- named for React DevTools display name
 export const TableHeaderCell = memo(function TableHeaderCell({
   colId,
   title,
@@ -62,7 +63,7 @@ export const TableHeaderCell = memo(function TableHeaderCell({
             lineHeight: 1.3,
           }}
           onClick={() => {
-            let newSortValue = '';
+            let newSortValue: string;
             if (sort === `${colId}:asc`) {
               newSortValue = `${colId}:desc`;
             } else if (sort === `${colId}:desc`) {

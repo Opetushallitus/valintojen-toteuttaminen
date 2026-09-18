@@ -60,6 +60,7 @@ export const TableHeaderCheckbox = function <R>({
   );
 };
 
+// eslint-disable-next-line no-shadow -- named for React DevTools display name
 export const TableRowCheckbox = memo(function TableRowCheckbox({
   checked,
   setSelection,

@@ -21,7 +21,7 @@ const config = defineConfig(
   js.configs.recommended,
   ...ts.configs.recommended,
   ...pluginQuery.configs['flat/recommended'],
-  reactHooks.configs['recommended-latest'],
+  reactHooks.configs.flat['recommended-latest'],
   eslintConfigPrettier,
   {
     // Node-ympäristön skriptit (esim. preview-server.mjs)

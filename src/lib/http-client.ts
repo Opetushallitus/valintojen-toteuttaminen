@@ -185,6 +185,7 @@ const makeRequest = async <Result>(request: Request) => {
               if (isEmpty(loginUrl)) {
                 throw new Error(
                   `Login configuration not found for ${urlIncludes}`,
+                  { cause: error },
                 );
               }
               const resp = await retryWithLogin(request, loginUrl);
