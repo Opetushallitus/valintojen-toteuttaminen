@@ -252,7 +252,7 @@ test.describe('Toiminnot on piilotettu tai poistettu käytöstä jos käyttäjä
     await checkRow(jono1Rows.nth(0), [
       '1',
       'Dacula Kreivi',
-      '10 Lisätietoja',
+      '10 LisätietojaTulosta on muokattu käsin',
       '2',
       'Hyväksyttävissä',
       'muutoksen syy',

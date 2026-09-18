@@ -1,4 +1,5 @@
 // @ts-check
+import { defineConfig } from 'eslint/config';
 import js from '@eslint/js';
 import ts from 'typescript-eslint';
 import playwright from 'eslint-plugin-playwright';
@@ -7,7 +8,7 @@ import vitest from '@vitest/eslint-plugin';
 import pluginQuery from '@tanstack/eslint-plugin-query';
 import reactHooks from 'eslint-plugin-react-hooks';
 
-const config = ts.config(
+const config = defineConfig(
   {
     ignores: [
       'dist/*',
@@ -20,7 +21,7 @@ const config = ts.config(
   js.configs.recommended,
   ...ts.configs.recommended,
   ...pluginQuery.configs['flat/recommended'],
-  reactHooks.configs['recommended-latest'],
+  reactHooks.configs.flat['recommended-latest'],
   eslintConfigPrettier,
   {
     // Node-ympäristön skriptit (esim. preview-server.mjs)
@@ -64,6 +65,7 @@ const config = ts.config(
           default: 'generic',
         },
       ],
+      '@typescript-eslint/no-deprecated': 'warn',
     },
   },
   {

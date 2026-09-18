@@ -452,7 +452,10 @@ export const useJonotulosState = ({
     },
   });
 
-  const onEventCb = useCallback(onEvent, [onEvent]);
+  const onEventCb = useCallback(
+    (toast: GenericEvent) => onEvent(toast),
+    [onEvent],
+  );
 
   // Resetoidaan konteksti kun data muuttuu. Aktoria ei käynnistetä uudelleen automaattisesti kun input muuttuu.
   // https://stately.ai/docs/input#passing-new-data-to-an-actor

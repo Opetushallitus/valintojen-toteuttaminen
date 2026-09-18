@@ -41,7 +41,7 @@ export function ErrorView({
   error,
   reset,
 }: {
-  error: (Error & { digest?: string }) | FetchError;
+  error: unknown;
   reset?: () => void;
 }) {
   useEffect(() => {

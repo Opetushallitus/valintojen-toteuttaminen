@@ -73,6 +73,7 @@ const ArvoSelect = ({
   />
 );
 
+// eslint-disable-next-line no-shadow -- named for React DevTools display name
 export const KoeInputsStateless = memo(function KoeInputsStateless({
   hakemusOid,
   koe,

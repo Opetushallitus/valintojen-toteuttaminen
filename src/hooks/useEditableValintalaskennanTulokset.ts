@@ -73,7 +73,9 @@ export type LaskennanValinnanvaiheetWithHakijaInfo = Array<
 >;
 
 const selectEditableJonosijaFields = (
-  jonosijaData: ValintalaskennanValintatapaJonosijaModel,
+  jonosijaData: ValintalaskennanValintatapaJonosijaModel | undefined,
+  hakemusOid: string,
+  hakijaOid: string,
   hakutoiveNumero?: number,
 ) => {
   const jarjestyskriteeri = jonosijaData?.jarjestyskriteerit?.[0];
@@ -89,17 +91,28 @@ const selectEditableJonosijaFields = (
     jonosija = -arvo;
   }
 
+  // Laskennan ajohetkellä tallentama hakutoivenumero jonosijalle, jos laskenta on ajettu.
+  const laskennanHakutoiveNumero = jonosijaData?.prioriteetti;
+  // Hakemuksen nykyinen hakutoivenumero (Ataru), joka voi poiketa laskennan
+  // tallentamasta, jos hakija on sittemmin vaihtanut hakutoiveiden järjestystä.
+  const nykyinenHakutoiveNumero = hakutoiveNumero;
+
   return {
-    hakemusOid: jonosijaData?.hakemusOid,
-    hakijaOid: jonosijaData?.hakijaOid,
+    hakemusOid,
+    hakijaOid,
     jonosija: jonosija?.toString() ?? '',
     harkinnanvarainen: jonosijaData?.harkinnanvarainen,
-    prioriteetti: hakutoiveNumero ?? jonosijaData?.prioriteetti,
-    jarjestyskriteerit: jonosijaData?.jarjestyskriteerit.map((kriteeri) => ({
-      ...kriteeri,
-      arvo: pointToComma(kriteeri.arvo?.toString()) ?? '',
-    })),
-    hakutoiveNumero: jonosijaData?.prioriteetti,
+    // Tallennetaan takaisin laskentaan: suositaan nykyistä hakutoivenumeroa, jos laskentaa ei vielä ole ajettu tälle jonosijalle.
+    prioriteetti: nykyinenHakutoiveNumero ?? laskennanHakutoiveNumero,
+    jarjestyskriteerit: (jonosijaData?.jarjestyskriteerit ?? []).map(
+      (kriteeri) => ({
+        ...kriteeri,
+        arvo: pointToComma(kriteeri.arvo?.toString()) ?? '',
+      }),
+    ),
+    // Näytetään käyttäjälle laskennan ajohetken hakutoive, jotta
+    // nähdään mihin tulos perustui, vaikka hakija olisi sittemmin vaihtanut järjestystä.
+    hakutoiveNumero: laskennanHakutoiveNumero,
     pisteet: pointToComma(jarjestyskriteeri?.arvo?.toString()) ?? '',
     tuloksenTila: jonosijaData?.tuloksenTila as TuloksenTila | undefined,
     muokattu: Boolean(jonosijaData?.muokattu),
@@ -187,14 +200,12 @@ export const selectEditableValintalaskennanTulokset = <
                     jonosijaCandidate.hakemusOid === hakemus.hakemusOid,
                 );
                 return {
-                  ...(jonosija
-                    ? selectEditableJonosijaFields(
-                        jonosija,
-                        hakemus.hakutoiveNumero,
-                      )
-                    : {}),
-                  hakemusOid: hakemus.hakemusOid,
-                  hakijaOid: hakemus.hakijaOid,
+                  ...selectEditableJonosijaFields(
+                    jonosija,
+                    hakemus.hakemusOid,
+                    hakemus.hakijaOid,
+                    hakemus.hakutoiveNumero,
+                  ),
                   ...(selectHakemusFields?.(hakemus.hakemusOid) ??
                     ({} as HakemusOut)),
                 };
@@ -223,7 +234,11 @@ export const selectEditableValintalaskennanTulokset = <
                 valintatapajono.jonosijat,
                 map((jonosija) => {
                   return {
-                    ...selectEditableJonosijaFields(jonosija),
+                    ...selectEditableJonosijaFields(
+                      jonosija,
+                      jonosija.hakemusOid,
+                      jonosija.hakijaOid,
+                    ),
                     ...(selectHakemusFields?.(jonosija.hakemusOid) ??
                       ({} as HakemusOut)),
                   };

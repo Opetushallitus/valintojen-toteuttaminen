@@ -74,7 +74,7 @@ describe('SijoitteluStatusChangeButton', () => {
     });
     expect(btn).toBeEnabled();
     fireEvent.click(btn);
-    expect(mutateFn).toBeCalledWith({ jono, jonoSijoitellaan: false });
+    expect(mutateFn).toHaveBeenCalledWith({ jono, jonoSijoitellaan: false });
   });
 
   test('Show "poista"-button when not valmis sijoiteltavaksi and call mutate with right args on click', () => {
@@ -91,7 +91,7 @@ describe('SijoitteluStatusChangeButton', () => {
     });
     expect(btn).toBeEnabled();
     fireEvent.click(btn);
-    expect(mutateFn).toBeCalledWith({ jono, jonoSijoitellaan: true });
+    expect(mutateFn).toHaveBeenCalledWith({ jono, jonoSijoitellaan: true });
   });
 
   test('Disable button when permissions only to other organization', () => {

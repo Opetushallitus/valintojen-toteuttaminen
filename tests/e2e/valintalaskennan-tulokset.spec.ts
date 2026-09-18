@@ -1,4 +1,4 @@
-import { test, expect, Page } from '@playwright/test';
+import { test, expect, Locator, Page } from '@playwright/test';
 import {
   checkRow,
   expectAlertTextVisible,
@@ -89,7 +89,15 @@ test('Näytetään valintalaskennan tulokset', async ({ page }) => {
   await checkRow(jono1Rows.nth(0), [
     '1',
     'Dacula Kreivi',
-    '10 Lisätietoja',
+    async (cell: Locator) => {
+      await expect(cell).toContainText('10');
+      await expect(
+        cell.getByRole('link', { name: 'Lisätietoja' }),
+      ).toBeVisible();
+      await expect(
+        cell.getByRole('img', { name: 'Tulosta on muokattu käsin' }),
+      ).toBeVisible();
+    },
     '2',
     'Hyväksyttävissä',
     'muutoksen syy',
@@ -215,7 +223,7 @@ test.describe('Valintalaskennan muokkausmodaali', () => {
       valintalaskentaMuokkausModal.getByRole('button', {
         name: 'Poista muokkaus',
       }),
-    ).toBeDisabled();
+    ).toBeEnabled();
   });
 
   test('Lähetetään laskennan tulosten tallennuspyyntö oikeilla arvoilla, näytetään ilmoitus ja ladataan tulokset uudelleen', async ({
@@ -306,6 +314,48 @@ test.describe('Valintalaskennan muokkausmodaali', () => {
     await expectAlertTextVisible(
       page,
       'Valintalaskennan tietojen tallentaminen epäonnistui',
+    );
+  });
+
+  test('Lähetetään muokkauksen poistopyyntö, näytetään ilmoitus ja ladataan tulokset uudelleen', async ({
+    page,
+  }) => {
+    const poistoUrl = `/valintalaskenta-laskenta-service/resources/valintatapajono/1679913592869-3133925962577840128/${DACULA_HAKEMUS_OID}/0/jonosija`;
+    await page.route(
+      (url) => url.pathname.includes(poistoUrl),
+      (route) => {
+        return route.fulfill({
+          status: 200,
+        });
+      },
+    );
+
+    await initSaveModal(page);
+    const valintalaskentaMuokkausModal = page.getByRole('dialog', {
+      name: 'Muokkaa valintalaskentaa',
+    });
+
+    const poistaMuokkausButton = valintalaskentaMuokkausModal.getByRole(
+      'button',
+      { name: 'Poista muokkaus' },
+    );
+    await expect(poistaMuokkausButton).toBeEnabled();
+
+    const [request] = await Promise.all([
+      waitForMethodRequest(page, 'DELETE', (url) => url.includes(poistoUrl)),
+      waitForMethodRequest(
+        page,
+        'GET',
+        /valintalaskenta-laskenta-service\/resources\/hakukohde\/\S+\/valinnanvaihe/,
+      ),
+      poistaMuokkausButton.click(),
+    ]);
+
+    expect(request.url()).toContain(poistoUrl);
+
+    await expectAlertTextVisible(
+      page,
+      'Valintalaskennan muokkauksen poistaminen onnistui',
     );
   });
 });

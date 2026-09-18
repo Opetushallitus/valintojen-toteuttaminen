@@ -1,7 +1,7 @@
 import { TablePaginationWrapper } from '@/components/table/table-pagination-wrapper';
 import { PisteSyottoTable } from './pistesyotto-table';
 import { usePisteSyottoSearchResults } from '../hooks/usePisteSyottoSearch';
-import { FormEvent, useCallback } from 'react';
+import { useCallback, type SubmitEvent } from 'react';
 import useToaster, { Toast } from '@/hooks/useToaster';
 import { PisteSyottoActions } from './pistesyotto-actions';
 import { HakukohteenPistetiedot } from '@/lib/types/laskenta-types';
@@ -72,7 +72,7 @@ export const PisteSyottoForm = ({
     naytaVainLaskentaanVaikuttavat,
   } = usePisteSyottoSearchResults(pistetiedot);
 
-  const submitChanges = (event: FormEvent) => {
+  const submitChanges = (event: SubmitEvent<HTMLFormElement>) => {
     savePistetiedot();
     event.preventDefault();
   };

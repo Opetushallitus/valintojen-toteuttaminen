@@ -28,7 +28,7 @@ describe('Valintaperusteet: getValinnanvaiheet', () => {
     clientSpy.mockImplementationOnce(() => buildDummyValinnanvaiheResponse());
     const vaiheet: Array<Valinnanvaihe> =
       await getHakukohteenValinnanvaiheet('hakukohdeOid');
-    expect(vaiheet.length).toEqual(1);
+    expect(vaiheet).toHaveLength(1);
     const vaihe = vaiheet[0] as NonNullable<Valinnanvaihe>;
     assertValinnanvaihe(vaihe);
     const jono = vaihe.jonot[0] as NonNullable<Valintatapajono>;
@@ -53,10 +53,10 @@ describe('Valintaperusteet: getValinnanvaiheet', () => {
     );
     const vaiheet: Array<Valinnanvaihe> =
       await getHakukohteenValinnanvaiheet('hakukohdeOid');
-    expect(vaiheet.length).toEqual(1);
+    expect(vaiheet).toHaveLength(1);
     const vaihe = vaiheet[0] as NonNullable<Valinnanvaihe>;
     assertValinnanvaihe(vaihe);
-    expect(vaihe.jonot.length).toEqual(0);
+    expect(vaihe.jonot).toHaveLength(0);
   });
 
   test('retuns valintatapajonot sorted by prioriteetti', async () => {
@@ -91,10 +91,10 @@ describe('Valintaperusteet: getValinnanvaiheet', () => {
     );
     const vaiheet: Array<Valinnanvaihe> =
       await getHakukohteenValinnanvaiheet('hakukohdeOid');
-    expect(vaiheet.length).toEqual(1);
+    expect(vaiheet).toHaveLength(1);
     const vaihe = vaiheet[0] as NonNullable<Valinnanvaihe>;
     assertValinnanvaihe(vaihe);
-    expect(vaihe?.jonot?.length).toEqual(3);
+    expect(vaihe?.jonot).toHaveLength(3);
     expect(vaihe?.jonot?.[0]?.nimi).toEqual('Ammatillinen koulutus');
     expect(vaihe?.jonot?.[1]?.nimi).toEqual('Muu koulutus');
     expect(vaihe?.jonot?.[2]?.nimi).toEqual('Lukiokoulutus');
@@ -153,7 +153,7 @@ describe('Valintaperusteet: getValintakokeet', () => {
     clientSpy.mockImplementationOnce(() => buildDummyValinkoeResponse());
     const kokeet: Array<ValintakoeAvaimet> =
       await getValintakoeAvaimetHakukohteelle('hakukohdeOid');
-    expect(kokeet.length).toEqual(1);
+    expect(kokeet).toHaveLength(1);
   });
 
   test('returns valintakokeet with appropriate inputTyyppi', async () => {
@@ -196,7 +196,7 @@ describe('Valintaperusteet: getValintakokeet', () => {
     );
     const kokeet: Array<ValintakoeAvaimet> =
       await getValintakoeAvaimetHakukohteelle('hakukohdeOid');
-    expect(kokeet.length).toEqual(4);
+    expect(kokeet).toHaveLength(4);
     expect(kokeet?.[0]?.inputTyyppi).toEqual(ValintakoeInputTyyppi.INPUT);
     expect(kokeet?.[1]?.inputTyyppi).toEqual(ValintakoeInputTyyppi.BOOLEAN);
     expect(kokeet?.[2]?.inputTyyppi).toEqual(
