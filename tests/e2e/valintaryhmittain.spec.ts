@@ -2,6 +2,7 @@ import { test, expect, Page } from '@playwright/test';
 import {
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
+  expectPageSizeSelectorValue,
   mockOneOrganizationHierarchy,
   mockValintalaskentaRun,
 } from './playwright-utils';
@@ -42,24 +43,33 @@ const HAKUKOHTEET = [
   },
 ] as const;
 
-test('Valintaryhmittäin saavutettavuus', async ({ page }) => {
-  await page.route(
-    '**/valintalaskenta-laskenta-service/resources/haku/1.2.246.562.29.00000000000000017683/lasketut-hakukohteet',
-    async (route) => {
-      await route.fulfill({ json: [] });
-    },
-  );
-  await page.route(
-    '*/**/kouta-internal/hakukohde/search?all=false&haku=1.2.246.562.29.00000000000000017683*',
-    async (route) => {
-      await route.fulfill({ json: HAKUKOHTEET });
-    },
-  );
-  await page.goto(
-    '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000017683/valintaryhma/2234567-3234567',
-  );
-  await expectAllSpinnersHidden(page);
-  await expectPageAccessibilityOk(page);
+test.describe('Valintaryhmän hakukohdetaulukko', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.route(
+      '**/valintalaskenta-laskenta-service/resources/haku/1.2.246.562.29.00000000000000017683/lasketut-hakukohteet',
+      async (route) => {
+        await route.fulfill({ json: [] });
+      },
+    );
+    await page.route(
+      '*/**/kouta-internal/hakukohde/search?all=false&haku=1.2.246.562.29.00000000000000017683*',
+      async (route) => {
+        await route.fulfill({ json: HAKUKOHTEET });
+      },
+    );
+    await page.goto(
+      '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000017683/valintaryhma/2234567-3234567',
+    );
+    await expectAllSpinnersHidden(page);
+  });
+
+  test('Valintaryhmittäin saavutettavuus', async ({ page }) => {
+    await expectPageAccessibilityOk(page);
+  });
+
+  test('Sivukoon oletusarvo on 50', async ({ page }) => {
+    await expectPageSizeSelectorValue(page, '50');
+  });
 });
 
 test.describe('Valintaryhmillä hakeminen', () => {

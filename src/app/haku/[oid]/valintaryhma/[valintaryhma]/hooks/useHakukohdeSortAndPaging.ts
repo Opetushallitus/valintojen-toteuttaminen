@@ -5,11 +5,9 @@ import {
   getSortParts,
   SortDirection,
 } from '@/components/table/table-utils';
-import { DEFAULT_NUQS_OPTIONS } from '@/lib/constants';
+import { DEFAULT_NUQS_OPTIONS, DEFAULT_PAGE_SIZE } from '@/lib/constants';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { HakukohdeWithLink } from '../components/valintaryhma-hakukohde-table';
-
-const DEFAULT_PAGE_SIZE = 10;
 
 export const useHakukohdeSortAndPagingParams = () => {
   const [page, setPage] = useQueryState<number>(

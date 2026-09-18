@@ -25,8 +25,8 @@ export const PageSizeSelector = ({
           labelId={labelId}
           value={pageSize.toString()}
           onChange={(e) => {
-            const newValue = parseInt(e.target.value, 10);
-            setPageSize(isNaN(newValue) ? DEFAULT_PAGE_SIZE : newValue);
+            const newValue = Number.parseInt(e.target.value, 10);
+            setPageSize(Number.isNaN(newValue) ? DEFAULT_PAGE_SIZE : newValue);
           }}
           options={PAGE_SIZE_OPTIONS}
         />

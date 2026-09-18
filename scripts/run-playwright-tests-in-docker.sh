@@ -2,6 +2,7 @@
 set -euo pipefail
 
 PLAYWRIGHT_VERSION=$(node -e "console.log(require('@playwright/test/package.json').version)")
+PNPM_VERSION=$(awk '$1 == "pnpm" { print $2; exit }' .tool-versions)
 
 # Ensure pnpm store is available inside the container (pnpm node_modules symlink to it)
 STORE_PATH=$(pnpm store path 2>/dev/null || true)
@@ -36,4 +37,4 @@ docker run \
   --ipc=host \
   --net=host \
   mcr.microsoft.com/playwright:v"$PLAYWRIGHT_VERSION" \
-  sh -c "corepack pnpm exec playwright test ${ARGS[*]}"
+  sh -c "cd /tmp && npx --yes pnpm@${PNPM_VERSION} -C /app exec playwright test ${ARGS[*]}"

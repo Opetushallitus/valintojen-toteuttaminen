@@ -3,6 +3,7 @@ import {
   checkRow,
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
+  expectPageSizeSelectorValue,
   findTableColumnIndexByTitle,
   mockDocumentProcess,
   selectOption,
@@ -209,6 +210,10 @@ test.describe('Valinnan tulokset', () => {
   test('Saavutettavuus', async ({ page }) => {
     await expectAllSpinnersHidden(page);
     await expectPageAccessibilityOk(page);
+  });
+
+  test('Sivukoon oletusarvo on 50', async ({ page }) => {
+    await expectPageSizeSelectorValue(page, '50');
   });
 
   test('Näyttää valinnan tulokset', async ({ page }) => {

@@ -3,6 +3,7 @@ import {
   checkRow,
   mockDocumentExport,
   expectAllSpinnersHidden,
+  expectPageSizeSelectorValue,
   getMuiCloseButton,
   selectOption,
   expectAlertTextVisible,
@@ -30,6 +31,10 @@ async function selectTila(page: Page, option: string) {
     option,
   });
 }
+
+test('Sivukoon oletusarvo on 50', async ({ page }) => {
+  await expectPageSizeSelectorValue(page, '50');
+});
 
 test('Näyttää pistesyotön', async ({ page }) => {
   const headrow = page.getByTestId('pistesyotto-form').locator('thead tr');
