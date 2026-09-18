@@ -178,8 +178,8 @@ importers:
         specifier: ^6.6.0
         version: 6.6.0(react@19.3.0)
       '@xstate/react':
-        specifier: ^5.0.3
-        version: 5.0.5(@types/react@19.3.0)(react@19.3.0)(xstate@5.32.6)
+        specifier: ^6.1.0
+        version: 6.1.0(@types/react@19.3.0)(react@19.3.0)(xstate@5.32.6)
       date-fns:
         specifier: ^4.4.0
         version: 4.4.0
@@ -1985,14 +1985,14 @@ packages:
         integrity: sha512-uy+luWBAPw9XfthoHi5AkfHUnuPYEESjl0p/r+meoBnU8bxg5GDQ3Ey8MjcJ6sqahkL4PFyrvfMJJBw7LbU06g==,
       }
 
-  '@xstate/react@5.0.5':
+  '@xstate/react@6.1.0':
     resolution:
       {
-        integrity: sha512-MfF/cPHa3lNKJmGFpUycMbNP25qBXyZXrxc8VYNroAu0Nnk0DV5WzAkTcQXma0xEC4dSwsoA+YQuKbZATtqvgg==,
+        integrity: sha512-ep9F0jGTI63B/jE8GHdMpUqtuz7yRebNaKv8EMUaiSi29NOglywc2X2YSOV/ygbIK+LtmgZ0q9anoEA2iBSEOw==,
       }
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-      xstate: ^5.19.4
+      xstate: ^5.28.0
     peerDependenciesMeta:
       xstate:
         optional: true
@@ -6029,7 +6029,7 @@ snapshots:
 
   '@vitest/spy@5.0.0': {}
 
-  '@xstate/react@5.0.5(@types/react@19.3.0)(react@19.3.0)(xstate@5.32.6)':
+  '@xstate/react@6.1.0(@types/react@19.3.0)(react@19.3.0)(xstate@5.32.6)':
     dependencies:
       react: 19.3.0
       use-isomorphic-layout-effect: 1.2.1(@types/react@19.3.0)(react@19.3.0)
