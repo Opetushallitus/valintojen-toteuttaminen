@@ -312,7 +312,8 @@
       "toiminnot": "Toiminnot",
       "kuvaus-fi": "Kuvaus suomeksi",
       "kuvaus-sv": "Kuvaus ruotsiksi",
-      "kuvaus-en": "Kuvaus englanniksi"
+      "kuvaus-en": "Kuvaus englanniksi",
+      "muokattu-kasin": "Tulosta on muokattu käsin"
     },
     "virhe-vie-kaikki-taulukkolaskentaan": "Taulukkolaskentaan viemisessä tapahtui virhe!",
     "valinnanvaiheet-ilman-laskentaa": "Valinnanvaiheet, joissa ei käytetä laskentaa",

@@ -1,5 +1,4 @@
 import { FormBox } from '@/components/form-box';
-import { useHasChanged } from '@/hooks/useHasChanged';
 import useToaster from '@/hooks/useToaster';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { EMPTY_OBJECT } from '@/lib/common';
@@ -11,7 +10,7 @@ import {
 import { saveHarkinnanvaraisetTilat } from '@/lib/valintalaskenta/valintalaskenta-service';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { isEmpty } from 'remeda';
 import { HarkinnanvaraisetActionBar } from './harkinnanvaraiset-action-bar';
 import { HarkinnanvaraisetTable } from './harkinnanvaraiset-table';
@@ -125,15 +124,12 @@ export const HarkinnanvaraisetForm = ({
     ],
   );
 
-  const harkinnanvaraisetHakemuksetChanged = useHasChanged(
-    harkinnanvaraisetHakemukset,
-  );
-
-  useEffect(() => {
-    if (harkinnanvaraisetHakemuksetChanged) {
-      handleHarkinnanvaraisetTilatChange({});
-    }
-  }, [harkinnanvaraisetHakemuksetChanged, handleHarkinnanvaraisetTilatChange]);
+  const [prevHarkinnanvaraisetHakemukset, setPrevHarkinnanvaraisetHakemukset] =
+    useState(harkinnanvaraisetHakemukset);
+  if (harkinnanvaraisetHakemukset !== prevHarkinnanvaraisetHakemukset) {
+    setPrevHarkinnanvaraisetHakemukset(harkinnanvaraisetHakemukset);
+    handleHarkinnanvaraisetTilatChange({});
+  }
 
   return (
     <FormBox

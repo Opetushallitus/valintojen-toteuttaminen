@@ -1,5 +1,4 @@
-import { Button, Typography } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import { Button, Typography, Grid } from '@mui/material';
 import { Link } from 'react-router';
 import { useTranslations } from '@/lib/localization/useTranslations';
 

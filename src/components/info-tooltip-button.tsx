@@ -4,32 +4,12 @@ import { Backdrop, Box, Button, Tooltip } from '@mui/material';
 
 import { OphButton, ophColors } from '@opetushallitus/oph-design-system';
 import { Close as CloseIcon, InfoOutlined } from '@mui/icons-material';
-import { styled } from '@/lib/theme';
 import { useTranslations } from '@/lib/localization/useTranslations';
+import { TooltipStyleWrapper as StyleWrapper } from '@/components/tooltip-style-wrapper';
 
 type Props = {
   title: React.JSX.Element | string;
 };
-
-const TOOLTIP_BORDER = `1px solid ${ophColors.grey200}`;
-
-const StyleWrapper = styled('span')(({ theme }) => ({
-  '& .MuiTooltip-tooltip': {
-    ...theme.typography.body1,
-    backgroundColor: ophColors.white,
-    cursor: 'auto',
-    userSelect: 'all',
-    color: ophColors.grey900,
-    border: TOOLTIP_BORDER,
-    borderRadius: '2px',
-    padding: 0,
-    boxShadow: `2px 2px 2px ${ophColors.grey400}55`,
-  },
-  '& .MuiTooltip-arrow::before': {
-    backgroundColor: ophColors.white,
-    border: TOOLTIP_BORDER,
-  },
-}));
 
 export const InfoTooltipButton = ({ title }: Props) => {
   const { t } = useTranslations();

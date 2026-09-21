@@ -12,8 +12,8 @@ import {
   type ServerOptions,
 } from 'vite';
 
-import { BASE_PATH } from './src/lib/base-path';
-import { optimizePackageImports } from './vite-plugin-optimize-package-imports';
+import { BASE_PATH } from './src/lib/base-path.ts';
+import { optimizePackageImports } from './vite-plugin-optimize-package-imports.ts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -76,6 +76,11 @@ export default defineConfig(({ mode, command }) => {
             proxyOptions(virkailijaOrigin),
         }
       : undefined,
+    // Esilämmitetään reittimoduulit serverin käynnistyessä, jotta ensimmäinen
+    // navigointi ei laukaise riippuvuuksien uudelleenoptimointia kesken importin.
+    warmup: {
+      clientFiles: ['./src/app/**/*.tsx'],
+    },
   };
 
   return {

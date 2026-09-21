@@ -1,9 +1,11 @@
 import { useDebounce } from '@/hooks/useDebounce';
 import { useQueryState } from 'nuqs';
 import { useQuery } from '@tanstack/react-query';
-import { HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY } from '@/lib/constants';
+import {
+  DEFAULT_NUQS_OPTIONS,
+  HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
+} from '@/lib/constants';
 import { getHakijat } from '@/lib/ataru/ataru-service';
-import { DEFAULT_NUQS_OPTIONS } from '@/lib/constants';
 import { EMPTY_ARRAY } from '@/lib/common';
 
 export const useHenkiloSearchParams = () => {
