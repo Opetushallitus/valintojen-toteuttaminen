@@ -317,9 +317,17 @@ export const ValinnanTuloksetActions = ({
           (!isValintaesitysJulkaistavissa ||
             !state.matches(ValinnanTulosState.IDLE))
         }
-        onClick={() => {
-          send({ type: ValinnanTulosEventType.PUBLISH });
-        }}
+        onClick={() =>
+          showModal(ConfirmationGlobalModal, {
+            title: t('sijoittelun-tulokset.hyvaksy-modal-title'),
+            content: t('sijoittelun-tulokset.hyvaksy-modal-text'),
+            confirmLabel: t('sijoittelun-tulokset.hyvaksy'),
+            cancelLabel: t('yleinen.peruuta'),
+            onConfirm: () => {
+              send({ type: ValinnanTulosEventType.PUBLISH });
+            },
+          })
+        }
         loading={state.matches(ValinnanTulosState.PUBLISHING)}
       >
         {t('sijoittelun-tulokset.hyvaksy')}
