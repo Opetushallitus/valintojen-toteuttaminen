@@ -191,7 +191,7 @@ describe('Hyväksymiskirje lähetetty checkbox', () => {
     expect(getHyvaksymiskirjeCheckbox()).not.toBeInTheDocument();
   });
 
-  test('Hide in valinta mode even when valinnanTila is HYVAKSYTTY', () => {
+  test('Show in valinta mode too when valinnanTila is HYVAKSYTTY', () => {
     renderValinnanTilaCell({
       tarjoajaOid: TARJOAJA_OID,
       kohdejoukko: 'haunkohdejoukko_12',
@@ -199,7 +199,7 @@ describe('Hyväksymiskirje lähetetty checkbox', () => {
       hakemus: { valinnanTila: ValinnanTila.HYVAKSYTTY },
     });
 
-    expect(getHyvaksymiskirjeCheckbox()).not.toBeInTheDocument();
+    expect(getHyvaksymiskirjeCheckbox()).toBeInTheDocument();
   });
 
   test('Reflects hakemus.hyvaksymiskirjeLahetetty checked state', () => {

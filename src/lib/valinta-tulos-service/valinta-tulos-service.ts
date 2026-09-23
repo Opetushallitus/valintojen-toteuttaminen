@@ -250,6 +250,23 @@ export const saveValinnanTulokset = async ({
   return data;
 };
 
+export type HakukohteenHyvaksymiskirjeetLahetettyResult = Array<{
+  henkiloOid: string;
+  lahetetty: string;
+}>;
+
+export const getHakukohteenHyvaksymiskirjeetLahetetty = async (
+  hakukohdeOid: string,
+): Promise<HakukohteenHyvaksymiskirjeetLahetettyResult> => {
+  const configuration = getConfiguration();
+  const response = await nullWhen404(
+    client.get<HakukohteenHyvaksymiskirjeetLahetettyResult>(
+      `${configuration.routes.valintaTulosService.valintaTulosServiceUrl}hyvaksymiskirje?hakukohdeOid=${hakukohdeOid}`,
+    ),
+  );
+  return response?.data ?? [];
+};
+
 export const saveHyvaksymiskirjeLahetetty = async ({
   hakukohdeOid,
   hakemukset,
