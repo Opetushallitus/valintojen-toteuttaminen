@@ -3,6 +3,8 @@ import { render, screen } from '@testing-library/react';
 import { ValinnanTilaCell } from './ValinnanTilaCell';
 import { Haku, Hakukohde, Tila } from '@/lib/kouta/kouta-types';
 import { TranslatedName } from '@/lib/localization/localization-types';
+import { ValinnanTila } from '@/lib/types/sijoittelu-types';
+import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
 
 const HAKUKOHDE_ORG_OID = '1.2.3.4.5';
 const TARJOAJA_OID = 'tarjoaja-oid';
@@ -40,9 +42,13 @@ const mockUpdateForm = vi.fn();
 const renderValinnanTilaCell = ({
   tarjoajaOid,
   kohdejoukko,
+  mode = 'valinta',
+  hakemus,
 }: {
   tarjoajaOid: string;
   kohdejoukko: string;
+  mode?: 'valinta' | 'sijoittelu';
+  hakemus?: Partial<HakemuksenValinnanTulos>;
 }) => {
   vi.mock('@/hooks/useUserPermissions', () => ({
     useCheckPermission: () => {
@@ -89,10 +95,11 @@ const renderValinnanTilaCell = ({
         hakijaOid: 'mock-hakija-oid',
         hakemusOid: 'mock-hakemus-oid',
         ehdollisestiHyvaksyttavissa: true,
+        ...hakemus,
       }}
       disabled={false}
       updateForm={mockUpdateForm}
-      mode="valinta"
+      mode={mode}
       t={(x) => x as string}
       translateEntity={(x: TranslatedName) => x.fi ?? ''}
     />,
@@ -142,5 +149,81 @@ describe('Ehdollisesti hyväksyttävissä checkbox', () => {
 
     const checkbox = getEhdollinenCheckbox();
     expect(checkbox).toBeDisabled();
+  });
+});
+
+const getHyvaksymiskirjeCheckbox = () =>
+  screen.queryByRole('checkbox', {
+    name: 'sijoittelun-tulokset.hyvaksymiskirje-lahetetty',
+  });
+
+describe('Hyväksymiskirje lähetetty checkbox', () => {
+  test('Show in sijoittelu mode when valinnanTila is HYVAKSYTTY', () => {
+    renderValinnanTilaCell({
+      tarjoajaOid: TARJOAJA_OID,
+      kohdejoukko: 'haunkohdejoukko_12',
+      mode: 'sijoittelu',
+      hakemus: { valinnanTila: ValinnanTila.HYVAKSYTTY },
+    });
+
+    expect(getHyvaksymiskirjeCheckbox()).toBeInTheDocument();
+  });
+
+  test('Show in sijoittelu mode when valinnanTila is VARASIJALTA_HYVAKSYTTY', () => {
+    renderValinnanTilaCell({
+      tarjoajaOid: TARJOAJA_OID,
+      kohdejoukko: 'haunkohdejoukko_12',
+      mode: 'sijoittelu',
+      hakemus: { valinnanTila: ValinnanTila.VARASIJALTA_HYVAKSYTTY },
+    });
+
+    expect(getHyvaksymiskirjeCheckbox()).toBeInTheDocument();
+  });
+
+  test('Hide in sijoittelu mode for other valinnanTila values', () => {
+    renderValinnanTilaCell({
+      tarjoajaOid: TARJOAJA_OID,
+      kohdejoukko: 'haunkohdejoukko_12',
+      mode: 'sijoittelu',
+      hakemus: { valinnanTila: ValinnanTila.VARALLA },
+    });
+
+    expect(getHyvaksymiskirjeCheckbox()).not.toBeInTheDocument();
+  });
+
+  test('Hide in valinta mode even when valinnanTila is HYVAKSYTTY', () => {
+    renderValinnanTilaCell({
+      tarjoajaOid: TARJOAJA_OID,
+      kohdejoukko: 'haunkohdejoukko_12',
+      mode: 'valinta',
+      hakemus: { valinnanTila: ValinnanTila.HYVAKSYTTY },
+    });
+
+    expect(getHyvaksymiskirjeCheckbox()).not.toBeInTheDocument();
+  });
+
+  test('Reflects hakemus.hyvaksymiskirjeLahetetty checked state', () => {
+    renderValinnanTilaCell({
+      tarjoajaOid: TARJOAJA_OID,
+      kohdejoukko: 'haunkohdejoukko_12',
+      mode: 'sijoittelu',
+      hakemus: {
+        valinnanTila: ValinnanTila.HYVAKSYTTY,
+        hyvaksymiskirjeLahetetty: true,
+      },
+    });
+
+    expect(getHyvaksymiskirjeCheckbox()).toBeChecked();
+  });
+
+  test('Is enabled regardless of update permissions to hakukohde tarjoaja organization', () => {
+    renderValinnanTilaCell({
+      tarjoajaOid: HAKUKOHDE_ORG_OID,
+      kohdejoukko: 'haunkohdejoukko_12',
+      mode: 'sijoittelu',
+      hakemus: { valinnanTila: ValinnanTila.HYVAKSYTTY },
+    });
+
+    expect(getHyvaksymiskirjeCheckbox()).toBeEnabled();
   });
 });

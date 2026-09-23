@@ -91,8 +91,9 @@ export const selectSijoitteluajonTuloksetValintatiedoilla = ({
             vastaanottoDeadline: valintatulos?.vastaanottoDeadline,
             hyvaksyttyHarkinnanvaraisesti: h?.hyvaksyttyHarkinnanvaraisesti,
             hyvaksyPeruuntunut: Boolean(valintatulos?.hyvaksyPeruuntunut),
-            hyvaksymiskirjeLahetetty:
-              lahetetytKirjeetIndexed[h.hakijaOid]?.kirjeLahetetty,
+            hyvaksymiskirjeLahetetty: Boolean(
+              lahetetytKirjeetIndexed[h.hakijaOid]?.lahetetty,
+            ),
             siirtynytToisestaValintatapajonosta:
               h.siirtynytToisestaValintatapajonosta,
             tilanKuvaukset,

@@ -62,6 +62,20 @@ describe('selectSijoitteluajonTuloksetValintatiedoilla', () => {
     );
   });
 
+  test('maps hyvaksymiskirjeLahetetty from the kirjeLahetetty list', async () => {
+    const tulokset: SijoitteluajonTuloksetValintatiedoilla | null =
+      await getTuloksetValintatiedoilla();
+    const hakemukset = tulokset!.valintatapajonot[0]!.hakemukset;
+    expect(
+      hakemukset.find((h) => h.hakijaOid === 'hakija2')
+        ?.hyvaksymiskirjeLahetetty,
+    ).toBe(true);
+    expect(
+      hakemukset.find((h) => h.hakijaOid === 'hakija1')
+        ?.hyvaksymiskirjeLahetetty,
+    ).toBe(false);
+  });
+
   test('tulokset are sorted by sija', async () => {
     const tulokset: SijoitteluajonTuloksetValintatiedoilla | null =
       await getTuloksetValintatiedoilla();
@@ -273,7 +287,9 @@ function buildDummyValinnanTulosResponse() {
       ],
     },
     lukuvuosimaksut: [],
-    kirjeLahetetty: [],
+    kirjeLahetetty: [
+      { henkiloOid: 'hakija2', lahetetty: '2025-01-02T03:04:05.000Z' },
+    ],
   };
 
   return Promise.resolve({
