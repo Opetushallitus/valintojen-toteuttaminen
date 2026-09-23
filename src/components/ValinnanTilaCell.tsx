@@ -434,6 +434,7 @@ export const ValinnanTilaCell = memo(function ValinnanTilaCell({
           checked={Boolean(hakemus.hyvaksymiskirjeLahetetty)}
           onChange={updateHyvaksyttyKirjeLahetetty}
           label={t('sijoittelun-tulokset.hyvaksymiskirje-lahetetty')}
+          disabled={disabled}
         />
       )}
       {mode === 'valinta' && valinnanTila === ValinnanTila.HYLATTY && (
