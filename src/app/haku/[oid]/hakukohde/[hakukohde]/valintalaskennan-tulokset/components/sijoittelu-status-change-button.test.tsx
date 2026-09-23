@@ -5,6 +5,7 @@ import { useSijoitteluStatusMutation } from '../hooks/useSijoitteluStatusMutatio
 import { UserPermissions } from '@/lib/permissions';
 import { OPH_ORGANIZATION_OID } from '@/lib/constants';
 import { LaskennanValintatapajonoTulosWithHakijaInfo } from '@/hooks/useEditableValintalaskennanTulokset';
+import { GlobalModalProvider } from '@/components/modals/global-modal';
 
 const ORG_OID = '1.2.3.4.5.6';
 const ORG_OID2 = '6.5.4.3.2.1';
@@ -30,37 +31,39 @@ const renderSijoitteluButton = ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const tFn: any = vi.fn().mockImplementation((x) => x);
   return render(
-    <PureSijoitteluStatusChangeButton
-      tarjoajaOid={tarjoajaOid ?? ORG_OID}
-      jono={
-        {
-          valmisSijoiteltavaksi: true,
-          siirretaanSijoitteluun: true,
-          hasTulos: true,
-          ...jono,
-        } as LaskennanValintatapajonoTulosWithHakijaInfo
-      }
-      userPermissions={
-        {
-          writeOrganizations: [OPH_ORGANIZATION_OID],
-          crudOrganizations: [OPH_ORGANIZATION_OID],
-          ...permissions,
-        } as UserPermissions
-      }
-      statusMutation={
-        {
-          mutate: vi.fn(),
-          isPending: false,
-          ...statusMutation,
-        } as ReturnType<typeof useSijoitteluStatusMutation>
-      }
-      t={tFn}
-    />,
+    <GlobalModalProvider>
+      <PureSijoitteluStatusChangeButton
+        tarjoajaOid={tarjoajaOid ?? ORG_OID}
+        jono={
+          {
+            valmisSijoiteltavaksi: true,
+            siirretaanSijoitteluun: true,
+            hasTulos: true,
+            ...jono,
+          } as LaskennanValintatapajonoTulosWithHakijaInfo
+        }
+        userPermissions={
+          {
+            writeOrganizations: [OPH_ORGANIZATION_OID],
+            crudOrganizations: [OPH_ORGANIZATION_OID],
+            ...permissions,
+          } as UserPermissions
+        }
+        statusMutation={
+          {
+            mutate: vi.fn(),
+            isPending: false,
+            ...statusMutation,
+          } as ReturnType<typeof useSijoitteluStatusMutation>
+        }
+        t={tFn}
+      />
+    </GlobalModalProvider>,
   );
 };
 
 describe('SijoitteluStatusChangeButton', () => {
-  test('Show "poista"-button when already in sijoittelu and call mutate with right args on click', () => {
+  test('Show "poista"-button when already in sijoittelu, ask for confirmation and call mutate with right args once confirmed', async () => {
     const mutateFn = vi.fn();
     const jono = {
       valmisSijoiteltavaksi: true,
@@ -74,10 +77,18 @@ describe('SijoitteluStatusChangeButton', () => {
     });
     expect(btn).toBeEnabled();
     fireEvent.click(btn);
+
+    expect(mutateFn).not.toHaveBeenCalled();
+
+    const confirmBtn = await screen.findByRole('button', {
+      name: 'yleinen.kylla',
+    });
+    fireEvent.click(confirmBtn);
+
     expect(mutateFn).toBeCalledWith({ jono, jonoSijoitellaan: false });
   });
 
-  test('Show "poista"-button when not valmis sijoiteltavaksi and call mutate with right args on click', () => {
+  test('Show "poista"-button when not valmis sijoiteltavaksi, ask for confirmation and call mutate with right args once confirmed', async () => {
     const mutateFn = vi.fn();
     const jono = {
       valmisSijoiteltavaksi: false,
@@ -91,7 +102,35 @@ describe('SijoitteluStatusChangeButton', () => {
     });
     expect(btn).toBeEnabled();
     fireEvent.click(btn);
+
+    expect(mutateFn).not.toHaveBeenCalled();
+
+    const confirmBtn = await screen.findByRole('button', {
+      name: 'yleinen.kylla',
+    });
+    fireEvent.click(confirmBtn);
+
     expect(mutateFn).toBeCalledWith({ jono, jonoSijoitellaan: true });
+  });
+
+  test('Do not call mutate when confirmation is cancelled', async () => {
+    const mutateFn = vi.fn();
+    const jono = {
+      valmisSijoiteltavaksi: true,
+      siirretaanSijoitteluun: true,
+      hasTulos: true,
+    };
+    renderSijoitteluButton({ jono, statusMutation: { mutate: mutateFn } });
+
+    const btn = screen.getByRole('button', {
+      name: 'valintalaskennan-tulokset.poista-jono-sijoittelusta',
+    });
+    fireEvent.click(btn);
+
+    const cancelBtn = await screen.findByRole('button', { name: 'yleinen.ei' });
+    fireEvent.click(cancelBtn);
+
+    expect(mutateFn).not.toHaveBeenCalled();
   });
 
   test('Disable button when permissions only to other organization', () => {
