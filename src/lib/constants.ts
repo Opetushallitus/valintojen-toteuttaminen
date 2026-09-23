@@ -12,6 +12,7 @@ export const DEFAULT_NUQS_OPTIONS = {
   history: 'push',
   clearOnDefault: true,
   defaultValue: '',
+  shallow: false,
 } as const;
 
 export const NDASH = '\u2013';

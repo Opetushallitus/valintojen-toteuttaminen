@@ -3,6 +3,7 @@ import {
   getHakukohdeNaviLinks,
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
+  expectUrlParamToEqual,
 } from './playwright-utils';
 
 type Tab = {
@@ -45,6 +46,16 @@ const TABS_TO_TEST: Array<Tab> = [
   },
 ] as const;
 
+const checkTabContent = async (page: Page, tab: Tab) => {
+  if (tab.textLocator) {
+    await expect(page.locator('main').getByText(tab.textLocator)).toBeVisible();
+  } else {
+    await expect(
+      page.getByRole('heading', { level: 3, name: tab.title, exact: true }),
+    ).toBeVisible();
+  }
+};
+
 test('Navigoi hakukohde välilehdille', async ({ page }) => {
   await page.goto(
     '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102',
@@ -64,15 +75,25 @@ test('Navigoi hakukohde välilehdille', async ({ page }) => {
   await expect(page.locator('h3')).toHaveText('Valintatapajonot');
 });
 
-const checkTabContent = async (page: Page, tab: Tab) => {
-  if (tab.textLocator) {
-    await expect(page.locator('main').getByText(tab.textLocator)).toBeVisible();
-  } else {
-    await expect(
-      page.getByRole('heading', { level: 3, name: tab.title, exact: true }),
-    ).toBeVisible();
-  }
-};
+test('Sijoittelematta-suodatin säilyy siirryttäessä hakukohteelle', async ({
+    page,
+  }) => {
+    await page.goto(
+      '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102',
+    );
+
+    await page.getByRole('button', { name: 'Lisää hakuehtoja' }).click();
+    await page.getByLabel('Ei sijoittelun tuloksia').click();
+
+    await expectUrlParamToEqual(page, 'sijoittelematta', 'true');
+
+    await getHakukohdeNaviLinks(page).first().click();
+
+    await expect(page.getByRole('heading', { name: 'Tampereen yliopisto, Tekniikan ja luonnontieteiden tiedekunta' })).toBeVisible();
+
+    await expectUrlParamToEqual(page, 'sijoittelematta', 'true');
+    await expect(page.getByLabel('Ei sijoittelun tuloksia')).toBeChecked();
+  });
 
 test.describe('Hakukohde välilehdet', () => {
   for (const tab of TABS_TO_TEST) {
