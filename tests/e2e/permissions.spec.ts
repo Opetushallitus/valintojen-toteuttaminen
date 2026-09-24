@@ -181,18 +181,16 @@ test.describe('Toiminnot on piilotettu tai poistettu käytöstä jos käyttäjä
 
     // Hakemus listauksen piilotetut ja disabloinut toiminnot
     await expect(yoContent.getByText('Kesken', { exact: true })).toBeDisabled();
+
+    const nukettajaRow = page.getByRole('row', { name: 'Nukettaja Ruhtinas' });
+    await expect(nukettajaRow.getByLabel('Julkaistavissa')).toBeDisabled();
     await expect(
-      page
-        .getByRole('row', { name: '1 Nukettaja Ruhtinas 0 100' })
-        .locator('label'),
+      nukettajaRow.getByLabel('Hyväksymiskirje lähetetty'),
     ).toBeDisabled();
     await expect(
       page.getByRole('combobox', { name: 'Ilmoittautumistieto' }),
     ).toBeDisabled();
-    await page
-      .getByRole('row', { name: 'Nukettaja Ruhtinas' })
-      .getByRole('button', { name: 'Muut toiminnot' })
-      .click();
+    await nukettajaRow.getByRole('button', { name: 'Muut toiminnot' }).click();
     // Vain muutoshistoria näkyy hakemuksen toiminnot listassa
     await expect(
       page.getByRole('menu', { name: 'Muut toiminnot' }).getByRole('menuitem'),

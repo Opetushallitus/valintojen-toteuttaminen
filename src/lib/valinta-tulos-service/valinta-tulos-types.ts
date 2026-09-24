@@ -122,7 +122,7 @@ export type SijoitteluajonTuloksetWithValintaEsitysResponseData = {
   sijoittelunTulokset: Omit<SijoitteluajonTuloksetResponseData, 'hakijaryhmat'>;
   kirjeLahetetty: Array<{
     henkiloOid: string;
-    kirjeLahetetty: string;
+    lahetetty: string;
   }>;
   lukuvuosimaksut: Array<{ personOid: string; maksuntila: MaksunTila }>;
 };
@@ -156,4 +156,5 @@ export type HakemuksenValinnanTulos = {
   vastaanottoDeadline?: string;
   vastaanottoDeadlineMennyt?: boolean;
   tilanKuvaukset?: TranslatedName;
+  hyvaksymiskirjeLahetetty?: boolean;
 };

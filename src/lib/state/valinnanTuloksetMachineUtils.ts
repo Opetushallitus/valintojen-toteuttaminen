@@ -37,6 +37,7 @@ const SIJOITTELUN_TULOS_EDITABLE_FIELDS: Array<ValinnanTulosEditableFieldNames> 
     'hyvaksyttyVarasijalta',
     'hyvaksyPeruuntunut',
     'maksunTila',
+    'hyvaksymiskirjeLahetetty',
   ] as const;
 
 export const isUnchanged = (

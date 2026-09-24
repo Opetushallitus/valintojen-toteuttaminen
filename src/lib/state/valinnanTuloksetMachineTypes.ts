@@ -16,7 +16,8 @@ export type ValinnanTulosEditableFieldNames =
   | 'ehdollisenHyvaksymisenEhtoEN'
   | 'hyvaksyttyVarasijalta'
   | 'hyvaksyPeruuntunut'
-  | 'maksunTila';
+  | 'maksunTila'
+  | 'hyvaksymiskirjeLahetetty';
 
 export type ValinnanTulosEditableFields = Partial<
   Pick<HakemuksenValinnanTulos, ValinnanTulosEditableFieldNames>

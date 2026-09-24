@@ -349,6 +349,7 @@ export const ValinnanTilaCell = memo(function ValinnanTilaCell({
     siirtynytToisestaValintatapajonosta,
     valinnanTila,
     vastaanottoTila,
+    hyvaksymiskirjeLahetetty,
   } = hakemus;
 
   const updateHyvaksyttyVarasijalta = () => {
@@ -362,6 +363,13 @@ export const ValinnanTilaCell = memo(function ValinnanTilaCell({
     updateForm({
       hakemusOid,
       hyvaksyPeruuntunut: !hyvaksyPeruuntunut,
+    });
+  };
+
+  const updateHyvaksyttyKirjeLahetetty = () => {
+    updateForm({
+      hakemusOid,
+      hyvaksymiskirjeLahetetty: !hyvaksymiskirjeLahetetty,
     });
   };
 
@@ -420,6 +428,15 @@ export const ValinnanTilaCell = memo(function ValinnanTilaCell({
             }
           />
         )}
+      {(valinnanTila === ValinnanTila.HYVAKSYTTY ||
+        valinnanTila === ValinnanTila.VARASIJALTA_HYVAKSYTTY) && (
+        <OphCheckbox
+          checked={Boolean(hakemus.hyvaksymiskirjeLahetetty)}
+          onChange={updateHyvaksyttyKirjeLahetetty}
+          label={t('sijoittelun-tulokset.hyvaksymiskirje-lahetetty')}
+          disabled={disabled}
+        />
+      )}
       {mode === 'valinta' && valinnanTila === ValinnanTila.HYLATTY && (
         <HylkayksenSyyFields
           hakemus={hakemus}

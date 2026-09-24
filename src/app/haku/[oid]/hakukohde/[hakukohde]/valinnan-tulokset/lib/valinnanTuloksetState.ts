@@ -8,6 +8,7 @@ import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import {
   getHakukohteenValinnanTulokset,
   hyvaksyValintaEsitys,
+  saveHyvaksymiskirjeLahetetty,
   saveMaksunTilanMuutokset,
 } from '@/lib/valinta-tulos-service/valinta-tulos-service';
 import { ValinnanTulosErrorGlobalModal } from '@/components/modals/valinnan-tulos-error-global-modal';
@@ -15,6 +16,7 @@ import { showModal } from '@/components/modals/global-modal';
 import { useQueryClient } from '@tanstack/react-query';
 import { rejectAndLog } from '@/lib/common';
 import {
+  refetchHakukohteenKirjeLahetetty,
   refetchHakukohteenLukuvuosimaksut,
   refetchHakukohteenValinnanTulokset,
 } from '@/lib/valinta-tulos-service/valinta-tulos-queries';
@@ -91,6 +93,10 @@ export const useValinnanTulosActorRef = ({
       hakukohdeOid: hakukohde.oid,
       haku,
     });
+    refetchHakukohteenKirjeLahetetty({
+      queryClient,
+      hakukohdeOid: hakukohde.oid,
+    });
   };
 
   const valinnanTulosActorRef = useActorRef(
@@ -107,6 +113,10 @@ export const useValinnanTulosActorRef = ({
             input.changed,
             input.original,
           );
+          await saveHyvaksymiskirjeLahetetty({
+            hakukohdeOid: hakukohde.oid,
+            hakemukset: input.changed,
+          });
         }),
         publish: fromPromise(async ({ input }) => {
           let valintatapajonoOid = input.valintatapajonoOid;
