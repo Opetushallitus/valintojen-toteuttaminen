@@ -22,7 +22,10 @@ import { queryClient } from '@/components/providers/react-query-client-provider'
 const PisteSyottoContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const { t } = useTranslations();
 
-  const [{ data: pistetulokset }, { data: hakemukset }] = useSuspenseQueries({
+  const [
+    { data: pistetulokset, dataUpdatedAt: pisteTuloksetUpdatedAt },
+    { data: hakemukset, dataUpdatedAt: hakemuksetUpdatedAt },
+  ] = useSuspenseQueries({
     queries: [
       queryOptionsGetPisteetForHakukohde({
         hakuOid,
@@ -45,12 +48,15 @@ const PisteSyottoContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
       ),
     }),
     [
-      pistetulokset.lastModified,
+      pistetulokset.lastModified, // FIXME: Tämä näyttäisi palautuvan rajapinnasta aina nullina
       pistetulokset.valintakokeet,
       pistetulokset.valintapisteet,
       hakemukset,
     ],
   );
+
+  // lastModified olisi parempi, mutta koska se on aina null, käytetään tätä
+  const updatedAt = Math.max(pisteTuloksetUpdatedAt, hakemuksetUpdatedAt);
 
   return isEmpty(pistetiedot.valintakokeet) ? (
     <NoResults text={t('pistesyotto.ei-tuloksia')} />
@@ -58,7 +64,8 @@ const PisteSyottoContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
     <Box sx={{ width: '100%', position: 'relative' }}>
       <PisteSyottoControls kokeet={pistetiedot.valintakokeet} />
       <PisteSyottoForm
-        key={`pistesyotto-content-${pistetiedot.lastModified}`}
+        // Resetoidaan komponentti kun mikä tahansa data päivittyy. Tällä varmistetaan, että tilakone resetoituu kun data muuttuu.
+        key={`${hakukohdeOid}_${updatedAt}`}
         hakuOid={hakuOid}
         hakukohdeOid={hakukohdeOid}
         pistetiedot={pistetiedot}

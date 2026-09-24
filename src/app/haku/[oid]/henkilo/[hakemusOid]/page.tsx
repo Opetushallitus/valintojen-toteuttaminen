@@ -67,6 +67,8 @@ const HenkiloContent = ({
       </Stack>
       <HakutoiveetTable hakukohteet={hakukohteet} hakija={hakija} />
       <HenkilonPistesyotto
+        // Resetoidaan komponentti kun pistesyötön data muuttuu (lastModified). Tällä varmistetaan, että tilakone resetoituu kun data muuttuu.
+        key={`${hakemusOid}_${lastModified}`}
         hakuOid={hakuOid}
         hakija={hakija}
         hakukohteet={hakukohteet}

@@ -91,7 +91,6 @@ export const PisteSyottoForm = ({
         countTranslationKey="hakeneet.hakija-maara"
       >
         <PisteSyottoTable
-          key={`pistesyotto-table-${pistesyottoActorRef.getSnapshot().machine.id}`}
           setSort={setSort}
           sort={sort}
           pistetiedot={pageResults}
