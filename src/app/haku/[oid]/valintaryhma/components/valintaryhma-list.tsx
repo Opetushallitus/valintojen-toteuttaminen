@@ -11,6 +11,8 @@ import { hasPermissionToValintaryhmaOrAlaValintaryhma } from '../lib/valintaryhm
 
 const useSelectedValintaryhmaOid = () => useParams().valintaryhma;
 
+const DARKER_ROW_CLASS = 'darker-row';
+
 const ValintaryhmaNavigationList = styled('nav')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
@@ -21,7 +23,7 @@ const ValintaryhmaNavigationList = styled('nav')(({ theme }) => ({
   height: 'auto',
   paddingRight: theme.spacing(0.5),
   gap: theme.spacing(0.5),
-  [`.zepra:nth-child(even)`]: {
+  [`.${DARKER_ROW_CLASS}`]: {
     backgroundColor: ophColors.grey50,
   },
   a: {
@@ -31,10 +33,7 @@ const ValintaryhmaNavigationList = styled('nav')(({ theme }) => ({
     color: ophColors.blue2,
     textDecoration: 'none',
     borderRadius: '0',
-    [`&.${NAV_LIST_SELECTED_ITEM_CLASS}`]: {
-      backgroundColor: ophColors.lightBlue2,
-    },
-    '&:hover': {
+    [`&.${NAV_LIST_SELECTED_ITEM_CLASS}, &:hover`]: {
       backgroundColor: ophColors.lightBlue2,
     },
     '&:focus-visible': {
@@ -47,11 +46,13 @@ const Content = ({
   valintaryhma,
   hakuOid,
   visibleValintaryhmat,
+  index,
   onItemClick,
 }: {
   valintaryhma: ValintaryhmaHakukohteilla;
   hakuOid: string;
   visibleValintaryhmat: Array<string>;
+  index: number;
   onItemClick?: () => void;
 }) => {
   const { t } = useTranslations();
@@ -68,6 +69,8 @@ const Content = ({
       ? NAV_LIST_SELECTED_ITEM_CLASS
       : '';
 
+  const rowClassName = `${selectedClassName} ${index % 2 === 1 ? DARKER_ROW_CLASS : ''}`;
+
   const alaValintaryhmatUserHasPermission =
     valintaryhma.alaValintaryhmat.filter(
       hasPermissionToValintaryhmaOrAlaValintaryhma,
@@ -82,7 +85,7 @@ const Content = ({
           valintaryhmaOid={valintaryhma.oid}
           onClick={onItemClick}
           tabIndex={0}
-          className={selectedClassName}
+          className={rowClassName}
           disabled={!valintaryhma.userHasWriteAccess}
         >
           <OphTypography title={valintaryhma.nimi} color="inherit">
@@ -90,7 +93,6 @@ const Content = ({
           </OphTypography>
         </ValintaryhmaLink>
       }
-      className="zepra"
     >
       <ValintaryhmaNavigationList
         tabIndex={0}
@@ -99,12 +101,13 @@ const Content = ({
       >
         {alaValintaryhmatUserHasPermission
           .filter((vr) => visibleValintaryhmat.includes(vr.oid))
-          .map((vr: ValintaryhmaHakukohteilla) => (
+          .map((vr: ValintaryhmaHakukohteilla, subIndex: number) => (
             <Content
               key={vr.oid}
               valintaryhma={vr}
               hakuOid={hakuOid}
               visibleValintaryhmat={visibleValintaryhmat}
+              index={index + 1 + subIndex}
               onItemClick={onItemClick}
             />
           ))}
@@ -115,7 +118,7 @@ const Content = ({
       key={key}
       hakuOid={hakuOid}
       valintaryhmaOid={valintaryhma.oid}
-      className={`${selectedClassName} zepra`}
+      className={rowClassName}
       onClick={onItemClick}
       tabIndex={0}
       disabled={!valintaryhma.userHasWriteAccess}
@@ -161,23 +164,24 @@ export const ValintaryhmaList = ({
             valintaryhmaOid={ryhmat.hakuRyhma.oid}
             tabIndex={0}
             disabled={!ryhmat?.hakuRyhma.userHasWriteAccess}
-            className={`${
+            className={
               selectedValintaryhmaOid === ryhmat.hakuRyhma.oid
                 ? NAV_LIST_SELECTED_ITEM_CLASS
                 : ''
-            } zepra`}
+            }
           >
             <OphTypography title={ryhmat.hakuRyhma.nimi} color="inherit">
               {t('valintaryhmittain.haun-ryhma')}
             </OphTypography>
           </ValintaryhmaLink>
         )}
-        {topResults?.map((vr: ValintaryhmaHakukohteilla) => (
+        {topResults?.map((vr: ValintaryhmaHakukohteilla, index: number) => (
           <Content
             key={vr.oid}
             valintaryhma={vr}
             hakuOid={hakuOid}
             visibleValintaryhmat={results.map((r) => r.oid)}
+            index={ryhmat?.hakuRyhma ? index + 1 : index}
             onItemClick={onItemClick}
           />
         ))}

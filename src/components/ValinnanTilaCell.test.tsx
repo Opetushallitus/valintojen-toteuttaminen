@@ -37,6 +37,36 @@ const ORGS_WITH_UPDATE = [TARJOAJA_OID];
 
 const mockUpdateForm = vi.fn();
 
+vi.mock('@/hooks/useUserPermissions', () => ({
+  useCheckPermission: () => {
+    return (oid: string) => ORGS_WITH_UPDATE.includes(oid);
+  },
+}));
+
+vi.mock('@/lib/koodisto/useHyvaksynnanEhdot', () => ({
+  useHyvaksynnanEhdot: () => {
+    return {
+      data: [
+        {
+          koodiUri: 'hyvaksynnanehto_muu#1',
+          nimi: { fi: 'muu fi' },
+          koodiArvo: 'muu',
+        },
+        {
+          koodiUri: 'hyvaksynnanehto_sora#1',
+          nimi: { fi: 'sora fi' },
+          koodiArvo: 'sora',
+        },
+        {
+          koodiUri: 'hyvaksynnanehto_ltt#1',
+          nimi: { fi: 'ltt fi' },
+          koodiArvo: 'ltt',
+        },
+      ],
+    };
+  },
+}));
+
 const renderValinnanTilaCell = ({
   tarjoajaOid,
   kohdejoukko,
@@ -44,36 +74,6 @@ const renderValinnanTilaCell = ({
   tarjoajaOid: string;
   kohdejoukko: string;
 }) => {
-  vi.mock('@/hooks/useUserPermissions', () => ({
-    useCheckPermission: () => {
-      return (oid: string) => ORGS_WITH_UPDATE.includes(oid);
-    },
-  }));
-
-  vi.mock('@/lib/koodisto/useHyvaksynnanEhdot', () => ({
-    useHyvaksynnanEhdot: () => {
-      return {
-        data: [
-          {
-            koodiUri: 'hyvaksynnanehto_muu#1',
-            nimi: { fi: 'muu fi' },
-            koodiArvo: 'muu',
-          },
-          {
-            koodiUri: 'hyvaksynnanehto_sora#1',
-            nimi: { fi: 'sora fi' },
-            koodiArvo: 'sora',
-          },
-          {
-            koodiUri: 'hyvaksynnanehto_ltt#1',
-            nimi: { fi: 'ltt fi' },
-            koodiArvo: 'ltt',
-          },
-        ],
-      };
-    },
-  }));
-
   return render(
     <ValinnanTilaCell
       haku={{

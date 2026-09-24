@@ -9,7 +9,11 @@ import { PisteSyottoForm } from './components/pistesyotto-form';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { isEmpty } from '@/lib/common';
 import { NoResults } from '@/components/no-results';
-import { useQueryClient, useSuspenseQueries } from '@tanstack/react-query';
+import {
+  noop,
+  useQueryClient,
+  useSuspenseQueries,
+} from '@tanstack/react-query';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 import { augmentPisteetWithHakemukset } from './lib/pistesyotto-utils';
 import { HakukohteenPistetiedot } from '@/lib/types/laskenta-types';
@@ -68,12 +72,14 @@ const PisteSyottoContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
 export default function PisteSyottoPage() {
   const params = useRequiredParams<{ oid: string; hakukohde: string }>();
   const queryClient = useQueryClient();
-  queryClient.prefetchQuery(
-    queryOptionsGetPisteetForHakukohde({
-      hakuOid: params.oid,
-      hakukohdeOid: params.hakukohde,
-    }),
-  );
+  queryClient
+    .query(
+      queryOptionsGetPisteetForHakukohde({
+        hakuOid: params.oid,
+        hakukohdeOid: params.hakukohde,
+      }),
+    )
+    .catch(noop);
   return (
     <TabContainer>
       <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>

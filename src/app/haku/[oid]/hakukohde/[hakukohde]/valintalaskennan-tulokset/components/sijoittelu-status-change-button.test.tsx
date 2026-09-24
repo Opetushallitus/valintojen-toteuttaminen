@@ -85,7 +85,7 @@ describe('SijoitteluStatusChangeButton', () => {
     });
     fireEvent.click(confirmBtn);
 
-    expect(mutateFn).toBeCalledWith({ jono, jonoSijoitellaan: false });
+    expect(mutateFn).toHaveBeenCalledWith({ jono, jonoSijoitellaan: false });
   });
 
   test('Show "poista"-button when not valmis sijoiteltavaksi, ask for confirmation and call mutate with right args once confirmed', async () => {
@@ -110,7 +110,7 @@ describe('SijoitteluStatusChangeButton', () => {
     });
     fireEvent.click(confirmBtn);
 
-    expect(mutateFn).toBeCalledWith({ jono, jonoSijoitellaan: true });
+    expect(mutateFn).toHaveBeenCalledWith({ jono, jonoSijoitellaan: true });
   });
 
   test('Do not call mutate when confirmation is cancelled', async () => {

@@ -154,7 +154,7 @@ export const ListTable = <T extends Row>({
                 />
               )}
               {columns.map((columnProps) => {
-                const { key, title, style, sortable } = columnProps;
+                const { key, title, style, sortable = true } = columnProps;
                 return (
                   <TableHeaderCell
                     key={key.toString()}
@@ -163,7 +163,7 @@ export const ListTable = <T extends Row>({
                     style={style}
                     sort={sort}
                     setSort={setSort}
-                    sortable={sortable != false}
+                    sortable={sortable}
                   />
                 );
               })}

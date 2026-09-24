@@ -321,6 +321,7 @@ const ValinnanTilaKuvaus = ({
   );
 };
 
+// eslint-disable-next-line no-shadow -- named for React DevTools display name
 export const ValinnanTilaCell = memo(function ValinnanTilaCell({
   hakemus,
   haku,

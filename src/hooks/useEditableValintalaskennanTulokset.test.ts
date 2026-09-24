@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { selectEditableValintalaskennanTulokset } from './useEditableValintalaskennanTulokset';
+import {
+  EditableJarjestyskriteeriTulos,
+  selectEditableValintalaskennanTulokset,
+} from './useEditableValintalaskennanTulokset';
 import {
   JarjestyskriteeriModel,
   TuloksenTila,
@@ -129,7 +132,9 @@ describe('selectEditableValintalaskennanTulokset', () => {
 
     expect(jonosija?.jarjestyskriteerit).toHaveLength(1);
     expect(
-      (jonosija?.jarjestyskriteerit as Array<JarjestyskriteeriModel>)[0],
+      (
+        jonosija?.jarjestyskriteerit as Array<EditableJarjestyskriteeriTulos>
+      )[0],
     ).toMatchObject({
       arvo: '85,5',
       kuvaus: { FI: 'Pisteet', SV: 'Poäng', EN: 'Points' },

@@ -2,7 +2,11 @@ import { TabContainer } from '../components/tab-container';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { Box } from '@mui/material';
-import { useQueryClient, useSuspenseQueries } from '@tanstack/react-query';
+import {
+  noop,
+  useQueryClient,
+  useSuspenseQueries,
+} from '@tanstack/react-query';
 import { isEmpty } from '@/lib/common';
 import { PageSizeSelector } from '@/components/table/page-size-selector';
 import { NoResults } from '@/components/no-results';
@@ -122,24 +126,30 @@ export default function SijoittelunTuloksetPage() {
   const params = useRequiredParams<{ oid: string; hakukohde: string }>();
 
   const queryClient = useQueryClient();
-  queryClient.prefetchQuery(
-    queryOptionsGetDocumentIdForHakukohde({
-      hakukohdeOid: params.hakukohde,
-      documentType: 'osoitetarrat',
-    }),
-  );
-  queryClient.prefetchQuery(
-    queryOptionsGetDocumentIdForHakukohde({
-      hakukohdeOid: params.hakukohde,
-      documentType: 'hyvaksymiskirjeet',
-    }),
-  );
-  queryClient.prefetchQuery(
-    queryOptionsGetDocumentIdForHakukohde({
-      hakukohdeOid: params.hakukohde,
-      documentType: 'sijoitteluntulokset',
-    }),
-  );
+  queryClient
+    .query(
+      queryOptionsGetDocumentIdForHakukohde({
+        hakukohdeOid: params.hakukohde,
+        documentType: 'osoitetarrat',
+      }),
+    )
+    .catch(noop);
+  queryClient
+    .query(
+      queryOptionsGetDocumentIdForHakukohde({
+        hakukohdeOid: params.hakukohde,
+        documentType: 'hyvaksymiskirjeet',
+      }),
+    )
+    .catch(noop);
+  queryClient
+    .query(
+      queryOptionsGetDocumentIdForHakukohde({
+        hakukohdeOid: params.hakukohde,
+        documentType: 'sijoitteluntulokset',
+      }),
+    )
+    .catch(noop);
 
   return (
     <TabContainer>
