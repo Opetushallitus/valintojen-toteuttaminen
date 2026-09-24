@@ -82,11 +82,17 @@ export const getLatestSijoitteluajonTuloksetWithValintaEsitys = async (
 export const getLatestSijoitteluAjonTuloksetForHakukohde = async (
   hakuOid: string,
   hakukohdeOid: string,
-): Promise<SijoitteluajonTulokset> => {
+): Promise<SijoitteluajonTulokset | null> => {
   const configuration = getConfiguration();
-  const { data } = await client.get<SijoitteluajonTuloksetResponseData>(
-    `${configuration.routes.valintaTulosService.valintaTulosServiceUrl}sijoittelu/${hakuOid}/sijoitteluajo/latest/hakukohde/${hakukohdeOid}`,
+  const response = await nullWhen404(
+    client.get<SijoitteluajonTuloksetResponseData>(
+      `${configuration.routes.valintaTulosService.valintaTulosServiceUrl}sijoittelu/${hakuOid}/sijoitteluajo/latest/hakukohde/${hakukohdeOid}`,
+    ),
   );
+  if (!response) {
+    return null;
+  }
+  const { data } = response;
 
   const sijoitteluajonTulokset = data.valintatapajonot.map((jono) => {
     const hakemukset: Array<SijoittelunHakemus> = jono.hakemukset.map((h) => {
