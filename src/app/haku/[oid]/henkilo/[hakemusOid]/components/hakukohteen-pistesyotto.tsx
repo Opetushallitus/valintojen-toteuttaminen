@@ -4,6 +4,8 @@ import { HenkilonHakukohdeTuloksilla } from '../lib/henkilo-page-types';
 import { HakutoiveTitle } from '@/components/hakutoive-title';
 import { HenkilonPistesyottoActorRef } from '../lib/henkilon-pistesyotto-state';
 import { KokeenPistesyotto } from './kokeen-pistesyotto';
+import { useTranslations } from '@/lib/localization/useTranslations';
+import { getHakukohdeFullName } from '@/lib/kouta/kouta-service';
 
 export const HakukohteenPisteSyotto = ({
   hakija,
@@ -16,8 +18,16 @@ export const HakukohteenPisteSyotto = ({
   pistesyottoActorRef: HenkilonPistesyottoActorRef;
   disabled: boolean;
 }) => {
+  const { t, translateEntity } = useTranslations();
+
   return (
-    <Box data-test-id={`henkilo-pistesyotto-hakukohde-${hakukohde.oid}`}>
+    <Box
+      component="section"
+      aria-label={t('henkilo.pistesyotto-hakukohteelle', {
+        hakukohde: getHakukohdeFullName(hakukohde, translateEntity),
+      })}
+      data-test-id={`henkilo-pistesyotto-hakukohde-${hakukohde.oid}`}
+    >
       <Typography
         variant="h4"
         component="h3"
