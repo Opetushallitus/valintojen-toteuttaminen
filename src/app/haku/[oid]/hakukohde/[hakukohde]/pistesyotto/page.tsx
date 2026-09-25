@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { ClientLoaderFunctionArgs } from 'react-router';
 
 import { TabContainer } from '../components/tab-container';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
@@ -9,18 +10,22 @@ import { PisteSyottoForm } from './components/pistesyotto-form';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { isEmpty } from '@/lib/common';
 import { NoResults } from '@/components/no-results';
-import { useQueryClient, useSuspenseQueries } from '@tanstack/react-query';
+import { useSuspenseQueries } from '@tanstack/react-query';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 import { augmentPisteetWithHakemukset } from './lib/pistesyotto-utils';
 import { HakukohteenPistetiedot } from '@/lib/types/laskenta-types';
 import { queryOptionsGetPisteetForHakukohde } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-queries';
 import { queryOptionsGetHakemukset } from '@/lib/ataru/ataru-queries';
 import { useRequiredParams } from '@/hooks/useRequiredParams';
+import { queryClient } from '@/components/providers/react-query-client-provider';
 
 const PisteSyottoContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const { t } = useTranslations();
 
-  const [{ data: pistetulokset }, { data: hakemukset }] = useSuspenseQueries({
+  const [
+    { data: pistetulokset, dataUpdatedAt: pisteTuloksetUpdatedAt },
+    { data: hakemukset, dataUpdatedAt: hakemuksetUpdatedAt },
+  ] = useSuspenseQueries({
     queries: [
       queryOptionsGetPisteetForHakukohde({
         hakuOid,
@@ -43,12 +48,15 @@ const PisteSyottoContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
       ),
     }),
     [
-      pistetulokset.lastModified,
+      pistetulokset.lastModified, // FIXME: Tämä näyttäisi palautuvan rajapinnasta aina nullina
       pistetulokset.valintakokeet,
       pistetulokset.valintapisteet,
       hakemukset,
     ],
   );
+
+  // lastModified olisi parempi, mutta koska se on aina null, käytetään tätä
+  const updatedAt = Math.max(pisteTuloksetUpdatedAt, hakemuksetUpdatedAt);
 
   return isEmpty(pistetiedot.valintakokeet) ? (
     <NoResults text={t('pistesyotto.ei-tuloksia')} />
@@ -56,7 +64,8 @@ const PisteSyottoContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
     <Box sx={{ width: '100%', position: 'relative' }}>
       <PisteSyottoControls kokeet={pistetiedot.valintakokeet} />
       <PisteSyottoForm
-        key={`pistesyotto-content-${pistetiedot.lastModified}`}
+        // Resetoidaan komponentti kun mikä tahansa data päivittyy. Tällä varmistetaan, että tilakone resetoituu kun data muuttuu.
+        key={`${hakukohdeOid}_${updatedAt}`}
         hakuOid={hakuOid}
         hakukohdeOid={hakukohdeOid}
         pistetiedot={pistetiedot}
@@ -65,15 +74,18 @@ const PisteSyottoContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   );
 };
 
-export default function PisteSyottoPage() {
-  const params = useRequiredParams<{ oid: string; hakukohde: string }>();
-  const queryClient = useQueryClient();
+export const clientLoader = ({ params }: ClientLoaderFunctionArgs) => {
+  const { oid, hakukohde } = params as { oid: string; hakukohde: string };
   queryClient.prefetchQuery(
     queryOptionsGetPisteetForHakukohde({
-      hakuOid: params.oid,
-      hakukohdeOid: params.hakukohde,
+      hakuOid: oid,
+      hakukohdeOid: hakukohde,
     }),
   );
+};
+
+export default function PisteSyottoPage() {
+  const params = useRequiredParams<{ oid: string; hakukohde: string }>();
   return (
     <TabContainer>
       <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>

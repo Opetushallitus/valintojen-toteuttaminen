@@ -1,8 +1,7 @@
-import { createBrowserInspector } from '@statelyai/inspect';
 import { isServer } from '@tanstack/react-query';
-import { isTesting, xstateInspect } from './configuration/configuration';
+import { isTesting } from './configuration/configuration';
 
 export const inspect =
-  xstateInspect && !isServer && !isTesting
-    ? (createBrowserInspector()?.inspect ?? undefined)
+  import.meta.env.VITE_XSTATE_INSPECT === 'true' && !isServer && !isTesting
+    ? (await import('@statelyai/inspect')).createBrowserInspector()?.inspect
     : undefined;

@@ -3,7 +3,7 @@ import {
   TuloksenTila,
 } from '@/lib/types/laskenta-types';
 import { useActorRef, useSelector } from '@xstate/react';
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { ActorRefFrom, assign, createMachine, fromPromise } from 'xstate';
 import { TranslatedName } from '../localization/localization-types';
 import {
@@ -37,7 +37,6 @@ export type JonoTulosContext = {
   jarjestysPeruste: JarjestysPeruste;
   valinnanvaihe: LaskennanValinnanvaiheInfo;
   valintatapajono: LaskennanValintatapajonoTulos;
-  onEvent: (event: GenericEvent) => void;
   hakukohde: HakukohdeJonoTulosProps;
 };
 
@@ -52,14 +51,12 @@ export enum JonoTulosEventType {
   UPDATE = 'UPDATE',
   JONOTULOS_CHANGED = 'JONOTULOS_CHANGED',
   JARJESTYSPERUSTE_CHANGED = 'JARJESTYSPERUSTE_CHANGED',
-  RESET = 'RESET',
 }
 
 type JonoTulosAnyEvent =
   | JonoTulosUpdateEvent
   | JonoTulosChangeEvent
-  | JarjestysperusteChangeEvent
-  | JonoTulosResetEvent;
+  | JarjestysperusteChangeEvent;
 
 export type JonoTulosUpdateEvent = {
   type: JonoTulosEventType.UPDATE;
@@ -69,12 +66,6 @@ export type JonoTulosContextInput = {
   hakukohde: HakukohdeJonoTulosProps;
   valinnanvaihe: LaskennanValinnanvaiheInfo;
   valintatapajono: LaskennanValintatapajonoTulosWithHakijaInfo;
-  onEvent: (toast: GenericEvent) => void;
-};
-
-export type JonoTulosResetEvent = {
-  type: JonoTulosEventType.RESET;
-  input: JonoTulosContextInput;
 };
 
 export type JonoTulosChangeParams = {
@@ -172,33 +163,34 @@ const jonoTulosChangeReducer = ({
   }
 };
 
-const resetContext = (input: JonoTulosContextInput) => {
-  return {
-    onEvent: input.onEvent,
-    hakukohde: input.hakukohde,
-    valintatapajono: input.valintatapajono,
-    valinnanvaihe: input.valinnanvaihe,
-    jonoTulokset: input.valintatapajono.jonosijat,
-    changedJonoTulokset: [],
-    jarjestysPeruste: (input.valintatapajono.kaytetaanKokonaispisteita
-      ? 'kokonaispisteet'
-      : 'jonosija') as JarjestysPeruste,
-  };
-};
+const errorEvent = (
+  context: JonoTulosContext,
+  message: string,
+): GenericEvent => ({
+  key: `jonotulos-update-failed-for-${context.hakukohde.oid}`,
+  message,
+  type: 'error',
+});
 
 export const jonoTulosMachine = createMachine({
   /** @xstate-layout N4IgpgJg5mDOIC5QCkD2A7VAVArgG1VgFkBDAYwAsBLdMAOgEkARAGQFEBiZAeQDlusAVRbcAygH0AwgAkAgrwDibJgG0ADAF1EoAA6EqAFyoZtIAB6IAtAGYAjNboBOZwCYAbNYAca+47VqAFgAaEABPK1tPOjcAtTdbF2cAgFYXaxiAdgBfLJC0TFwCYnJqWkZWTgAlNlE2LHUtJBA9WENjdFMLBFtHNzpvfzVrNWTbDOSMzxDwhEtenLyMbHxCUkoaemZ2LllK5BqsAE1RAAU2SsFRLDYpOUVlBtMWtpMmrp6+gf9h0fHJ6YiAQCCxA+WWRTWpU2FQ4ghOTFk10eTWeRleoC6MVsTkcdkcngJGTcLk81gBs1ssToARi+ICLhJjkSnmBuVBS0KqxKG3K2zhCKRtkaun0aI6b0QH36gyGIzGEymYSsLliILBnOK6zK-MRDEUHAgGHoNAAbqgANb0dUrTVQug6rB6hQIU2oMgkMUNZEi1pizqIax2Ogk8ZxWxDUbJNzk5JRNzEgJ0jIBBLhxysxYFG2QnkOp0cMAAJ0LqELdB0eA9ADNSwBbOjWiHc7Xw3WKF3oM3uz2ab3NUXtf0IQPYkPJMMR2xR8m2MZ0dIq1zWDJxEbJNUc7PN+jnSrcSocPuowcShAuNRReXfOV-RUzAKk6WDH7yyYbrNNrX0B03STcIgnOw1xMIemhPAO6LmAGc5qMmzhuOmngqgyM5EnQcQuOuIKYBAcCmI2XJfuBvonhiVjpNizhMh43i+P4wRKrM1guBk84yg+hLOFhmbgoRdpbGwxEvOKZEIGo5Iqmo768bauato6ihCX6p7iYxy4BHQ3Hsh+fE8ru+5KaRUFiTGyTJE+16-Aq0kajmLYCr+-6AXUyiGZBXSqTMCFqGxz43tZORZEAA */
   id: 'JonoTulosMachine',
   initial: JonoTulosState.IDLE,
-  context: ({ input }: { input: JonoTulosContextInput }) => {
-    return resetContext(input);
-  },
+  context: ({ input }) => ({
+    hakukohde: input.hakukohde,
+    valintatapajono: input.valintatapajono,
+    valinnanvaihe: input.valinnanvaihe,
+    jonoTulokset: input.valintatapajono.jonosijat,
+    changedJonoTulokset: [],
+    jarjestysPeruste: input.valintatapajono.kaytetaanKokonaispisteita
+      ? 'kokonaispisteet'
+      : 'jonosija',
+  }),
   types: {} as {
     context: JonoTulosContext;
+    input: JonoTulosContextInput;
     events: JonoTulosAnyEvent;
-    actions:
-      | { type: 'alert'; params: { message: string } }
-      | { type: 'successNotify' };
+    actions: { type: 'notify'; params: GenericEvent };
   },
   states: {
     [JonoTulosState.IDLE]: {
@@ -206,11 +198,6 @@ export const jonoTulosMachine = createMachine({
         [JonoTulosEventType.JONOTULOS_CHANGED]: {
           actions: assign({
             changedJonoTulokset: jonoTulosChangeReducer,
-          }),
-        },
-        [JonoTulosEventType.RESET]: {
-          actions: assign(({ event }) => {
-            return resetContext(event.input);
           }),
         },
         [JonoTulosEventType.JARJESTYSPERUSTE_CHANGED]: {
@@ -239,8 +226,8 @@ export const jonoTulosMachine = createMachine({
           {
             target: JonoTulosState.IDLE,
             actions: {
-              type: 'alert',
-              params: { message: 'virhe.eimuutoksia' },
+              type: 'notify',
+              params: ({ context }) => errorEvent(context, 'virhe.eimuutoksia'),
             },
           },
         ],
@@ -371,8 +358,8 @@ export const jonoTulosMachine = createMachine({
         {
           target: JonoTulosState.IDLE,
           actions: {
-            type: 'alert',
-            params: { message: 'virhe.tallennus' },
+            type: 'notify',
+            params: ({ context }) => errorEvent(context, 'virhe.tallennus'),
           },
         },
       ],
@@ -381,7 +368,14 @@ export const jonoTulosMachine = createMachine({
       always: [
         {
           target: JonoTulosState.IDLE,
-          actions: 'successNotify',
+          actions: {
+            type: 'notify',
+            params: ({ context }) => ({
+              key: `jonotulos-updated-for-${context.hakukohde.oid}`,
+              message: 'valintalaskennan-tulokset.jonotulos-update-success',
+              type: 'success',
+            }),
+          },
         },
       ],
     },
@@ -392,18 +386,8 @@ export const jonoTulosMachine = createMachine({
       !isEmpty(context.changedJonoTulokset),
   },
   actions: {
-    alert: ({ context }, params) =>
-      context.onEvent({
-        key: `jonotulos-update-failed-for-${context.hakukohde.oid}`,
-        message: (params as { message: string }).message,
-        type: 'error',
-      }),
-    successNotify: ({ context }) =>
-      context.onEvent({
-        key: `jonotulos-updated-for-${context.hakukohde.oid}`,
-        message: 'valintalaskennan-tulokset.jonotulos-update-success',
-        type: 'success',
-      }),
+    // Toteutus annetaan useJonotulosState-hookissa .provide()-kutsulla
+    notify: () => {},
   },
   actors: {
     updateJonoTulos: fromPromise(
@@ -442,31 +426,22 @@ export const useJonotulosState = ({
   laskettuJono,
   onEvent,
 }: JonoTulosMachineParams) => {
-  const actorRef = useActorRef(jonoTulosMachine, {
-    inspect,
-    input: {
-      hakukohde,
-      valinnanvaihe,
-      valintatapajono: laskettuJono,
-      onEvent,
-    },
-  });
-
-  const onEventCb = useCallback(onEvent, [onEvent]);
-
-  // Resetoidaan konteksti kun data muuttuu. Aktoria ei käynnistetä uudelleen automaattisesti kun input muuttuu.
-  // https://stately.ai/docs/input#passing-new-data-to-an-actor
-  useEffect(() => {
-    actorRef.send({
-      type: JonoTulosEventType.RESET,
+  // Input luetaan vain aktorin luonnissa. Kutsuvan komponentin täytyy vaihtaa key-attribuuttia, kun data muuttuu.
+  const actorRef = useActorRef(
+    jonoTulosMachine.provide({
+      actions: {
+        notify: (_, event) => onEvent(event),
+      },
+    }),
+    {
+      inspect,
       input: {
         hakukohde,
         valinnanvaihe,
         valintatapajono: laskettuJono,
-        onEvent: onEventCb,
       },
-    });
-  }, [actorRef, hakukohde, valinnanvaihe, laskettuJono, onEventCb]);
+    },
+  );
   return useJonoTulosActorRef(actorRef);
 };
 
