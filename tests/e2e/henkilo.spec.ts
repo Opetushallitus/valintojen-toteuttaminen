@@ -584,6 +584,7 @@ test.describe('Muokkausmodaalit', () => {
       page,
       'Valintalaskennan tietojen tallentaminen onnistui',
     );
+    await expect(valintalaskentaMuokkausModal).toBeHidden();
   });
 
   test('Näytetään ilmoitus valintalaskennan tallennusvirheestä', async ({
