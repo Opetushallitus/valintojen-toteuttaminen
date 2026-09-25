@@ -14,6 +14,7 @@ import {
 
 import { BASE_PATH } from './src/lib/base-path';
 import { optimizePackageImports } from './vite-plugin-optimize-package-imports';
+import { removeUseClient } from './vite-plugin-remove-use-client';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -83,6 +84,7 @@ export default defineConfig(({ mode, command }) => {
     plugins: [
       reactRouter(),
       command !== 'build' && optimizePackageImports(['@mui/icons-material']),
+      removeUseClient(),
       redirectRootToBasePath(),
     ],
     resolve: {
