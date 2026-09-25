@@ -186,6 +186,8 @@ export const selectEditableValintalaskennanTulokset = <
                   (jonosijaCandidate) =>
                     jonosijaCandidate.hakemusOid === hakemus.hakemusOid,
                 );
+                // Tyyppi annetaan eksplisiittisesti, koska ehdollinen spread tekee kentistä valinnaisia.
+                // Tuloksettomilla hakemuksilla laskennan kentät (esim. jonosija) ovat ajonaikaisesti undefined.
                 return {
                   ...(jonosija
                     ? selectEditableJonosijaFields(
@@ -197,7 +199,7 @@ export const selectEditableValintalaskennanTulokset = <
                   hakijaOid: hakemus.hakijaOid,
                   ...(selectHakemusFields?.(hakemus.hakemusOid) ??
                     ({} as HakemusOut)),
-                };
+                } as LaskennanJonosijaTulos<HakemusOut>;
               }),
           };
         }),
@@ -243,11 +245,20 @@ export const selectEditableValintalaskennanTulokset = <
 export const useEditableValintalaskennanTulokset = ({
   hakuOid,
   hakukohdeOid,
-}: KoutaOidParams): LaskennanValinnanvaiheet<AdditionalHakemusFields> => {
+}: KoutaOidParams): {
+  valinnanvaiheet: LaskennanValinnanvaiheet<AdditionalHakemusFields>;
+  /**
+   * Viimeisimmän datan noutohetki. Käytetään komponenttien key-attribuutissa, jotta muokkaustila alustetaan uudelleen, kun data noudetaan uudelleen.
+   */
+  dataUpdatedAt: number;
+} => {
   const [
-    { data: hakemukset },
-    { data: hakukohteenLaskennanTulokset },
-    { data: valinnanvaiheet },
+    { data: hakemukset, dataUpdatedAt: hakemuksetUpdatedAt },
+    {
+      data: hakukohteenLaskennanTulokset,
+      dataUpdatedAt: laskennanTuloksetUpdatedAt,
+    },
+    { data: valinnanvaiheet, dataUpdatedAt: valinnanvaiheetUpdatedAt },
   ] = useSuspenseQueries({
     queries: [
       queryOptionsGetHakemukset({
@@ -259,7 +270,7 @@ export const useEditableValintalaskennanTulokset = ({
     ],
   });
 
-  return useMemo(() => {
+  const editableValinnanvaiheet = useMemo(() => {
     const notFoundHakemukset: Array<string> = [];
     const hakemuksetByOid = indexBy(hakemukset ?? [], prop('hakemusOid'));
     const result =
@@ -291,4 +302,13 @@ export const useEditableValintalaskennanTulokset = ({
 
     return result;
   }, [hakukohteenLaskennanTulokset, valinnanvaiheet, hakemukset]);
+
+  return {
+    valinnanvaiheet: editableValinnanvaiheet,
+    dataUpdatedAt: Math.max(
+      hakemuksetUpdatedAt,
+      laskennanTuloksetUpdatedAt,
+      valinnanvaiheetUpdatedAt,
+    ),
+  };
 };
