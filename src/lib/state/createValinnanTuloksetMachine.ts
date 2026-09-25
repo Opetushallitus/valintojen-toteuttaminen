@@ -21,6 +21,7 @@ import {
   ValinnanTulosEventType,
   ValinnanTulosState,
 } from './valinnanTuloksetMachineTypes';
+import { Toast } from '@/hooks/useToaster';
 
 export type ValinnanTulosActorRef<
   T extends HakemuksenValinnanTulos = HakemuksenValinnanTulos,
@@ -29,6 +30,30 @@ export type ValinnanTulosActorRef<
 export function createValinnanTuloksetMachine<
   T extends HakemuksenValinnanTulos,
 >(mode: 'sijoittelu' | 'valinta') {
+  const toastPrefix =
+    mode === 'sijoittelu' ? 'sijoittelun-tulokset' : 'valinnan-tulokset';
+
+  const toastKeySuffix = (context: ValinnanTulosContext<T>) =>
+    `${context.hakukohdeOid}-${context.valintatapajonoOid}`;
+
+  const errorToast = (
+    context: ValinnanTulosContext<T>,
+    message: string,
+  ): Toast => ({
+    key: `${toastPrefix}-update-failed-for-${toastKeySuffix(context)}`,
+    message,
+    type: 'error',
+  });
+
+  const successToast = (
+    context: ValinnanTulosContext<T>,
+    message: string,
+  ): Toast => ({
+    key: `${toastPrefix}-updated-for-${toastKeySuffix(context)}`,
+    message,
+    type: 'success',
+  });
+
   return createMachine({
     /** @xstate-layout N4IgpgJg5mDOIC5QDUCGAbAlgO267AKgK7oD2A1rGAC4CyqAxgBY5gDEASgKIDKXBAbQAMAXUSgADqViZqmUtnEgAHogAcAdgBsAOgAsavQGZjATiNqhAJgCsegDQgAnogCMVgL4fHaLLnzEZJQ09MysOgCSACIAMlxsAMIAEgCCAHIA4lzCYkggUjJyCkqqCK5CrjpGQnpaahYaQkauGq6OLgimWno6VlYaeu6WVnp62l4+GDh4hCQUVHSMLNhgkbHxtCk8PAD6yelZOUoFsvKKeaU2VjquRlZqI6Y2jaZqNjbt6oM6D66uWn1TKZXHp7hMQL5pgE5sFFmEVms4mxNtsdgBVAAKURSBGyomO0lOxQuiCMFiqxgGTT+Jn+Wk+CG0ulamlcalMrRaajU4Mh-lmQQWoWWq2iSMx2NxRzyJyK51ApTJagpRipzVugy09Oc6gBOi0LKMWmsqrUAN5U35gXmISW4TF8QlOOyrlykkJcpKiFqOiBfv9-rNDIGNh+dSatTsRnMRgtfhm1thwvt6zYGLRACEYhEeElpe7CmcvQglSq1TTNdqOsCjDcWc93gMtXo41CBTa4SLEfF01mc3nXQTC8SFaTySZVXpqRq6QyTKGtDYAVpqpZulYja2rTChXaEU6CBFMmwIApVjgAG4UVZ8hM723w1YHo8ZBCX0gMVBynL5-Ieoskp0Vi6K8xhkiCrjmMBDJvBoNxWGydg2NUoy1Fud6Cg+XbPseYAAE54aQeE6BI6BfgAZkRAC2Oi3tCmGduEOGvu+n7fqIv6ygBo4IMYyoIZooLmBoG73EYDIAkIPw2MJphWBUtiDOh9Edsm+5Ys6ewAPK0BicS4lEbCcf+I4qG4RqmPoyFCAaqrWMYVgwQhOgiWaRh2IuG4rsp7ZJnuT4abi2m6fpXCGQIg4yiZ8pmZ05g6DZIwaE80ZCNYDK1LoU4AlcWrNK8tg+Ymu6PjovbZrmL4nmeOjvuQN6Whhqn+WVmYVUkL5vtgV5sWcP74lFw4xaUIIri5ehAjYtxvEIuUMuUNjKiChg2dG5gPLG3gQo1Kl+aV5X9lV+GEcRpEUdRtE7b5JVdgdlWZF1PVfn1HEDQWRLDW4Yw9BuxhCBohiyfNDxWc0k7AeUJpeFt2CkBAcBKHR11YawQ4fcWAC0lRpTjuO4yCjk6p0PQpbcVimFODw1BoRX3oxCIOmjnqAeUlQGmyrQ2YYqrIfNNmhmys2QcB5PuKYtMMWpAWSi+TPcbFBqhnJbKTv9ri80T9TXACiGNHY2hAhLzWlQeXDBXp-BhXLpkjerujTuy7gaLlGgwZBvRC1B0aKS2W1I8VKMIndHWZNbn1lCuzJslqQgcu5GgiTBsc3O8kETRNFMTdDHhAA */
     id: 'ValinnanTulosMachine',
@@ -37,19 +62,12 @@ export function createValinnanTuloksetMachine<
       context: ValinnanTulosContext<T>;
       input: Pick<
         ValinnanTulosContext<T>,
-        | 'hakemukset'
-        | 'hakukohdeOid'
-        | 'valintatapajonoOid'
-        | 'lastModified'
-        | 'addToast'
-        | 'onUpdated'
+        'hakemukset' | 'hakukohdeOid' | 'valintatapajonoOid' | 'lastModified'
       >;
       events: ValinnanTuloksetEvents;
       actions:
-        | { type: 'alert'; params: { message: string } }
-        | { type: 'successNotify'; params: { message: string } }
+        | { type: 'notify'; params: Toast }
         | { type: 'errorModal'; params: { error: Error } }
-        | { type: 'notifyMassStatusChange' }
         | { type: 'refetchTulokset' };
       actors:
         | {
@@ -75,8 +93,6 @@ export function createValinnanTuloksetMachine<
           };
     },
     context: ({ input }) => ({
-      addToast: input.addToast,
-      onUpdated: input.onUpdated,
       hakukohdeOid: input.hakukohdeOid,
       valintatapajonoOid: input.valintatapajonoOid,
       lastModified: input.lastModified,
@@ -105,7 +121,15 @@ export function createValinnanTuloksetMachine<
               assign(({ context, event }) => {
                 return applyMassHakemusChanges(context, event);
               }),
-              'notifyMassStatusChange',
+              {
+                type: 'notify',
+                params: ({ context }) => ({
+                  key: `${toastPrefix}-mass-status-change-for-${toastKeySuffix(context)}`,
+                  message: `${toastPrefix}.mass-status-change-done`,
+                  type: 'success',
+                  messageParams: { amount: context.massChangeAmount ?? 0 },
+                }),
+              },
             ],
           },
           [ValinnanTulosEventType.MASS_UPDATE]: {
@@ -137,8 +161,9 @@ export function createValinnanTuloksetMachine<
             },
             {
               actions: {
-                type: 'alert',
-                params: { message: 'virhe.eimuutoksia' },
+                type: 'notify',
+                params: ({ context }) =>
+                  errorToast(context, 'virhe.eimuutoksia'),
               },
             },
           ],
@@ -181,8 +206,9 @@ export function createValinnanTuloksetMachine<
               actions: [
                 'refetchTulokset',
                 {
-                  type: 'successNotify',
-                  params: { message: 'sijoittelun-tulokset.valmis' },
+                  type: 'notify',
+                  params: ({ context }) =>
+                    successToast(context, 'sijoittelun-tulokset.valmis'),
                 },
               ],
             },
@@ -222,8 +248,9 @@ export function createValinnanTuloksetMachine<
             target: ValinnanTulosState.IDLE,
             actions: [
               {
-                type: 'successNotify',
-                params: { message: 'valinnan-tulokset.poistettu' },
+                type: 'notify',
+                params: ({ context }) =>
+                  successToast(context, 'valinnan-tulokset.poistettu'),
               },
               assign({
                 hakemukset: ({ context }) => {
@@ -249,10 +276,12 @@ export function createValinnanTuloksetMachine<
             target: ValinnanTulosState.IDLE,
             actions: [
               {
-                type: 'alert',
-                params: {
-                  message: 'valinnan-tulokset.poistaminen-epaonnistui',
-                },
+                type: 'notify',
+                params: ({ context }) =>
+                  errorToast(
+                    context,
+                    'valinnan-tulokset.poistaminen-epaonnistui',
+                  ),
               },
             ],
           },
@@ -270,8 +299,9 @@ export function createValinnanTuloksetMachine<
             actions: [
               'refetchTulokset',
               {
-                type: 'successNotify',
-                params: { message: 'sijoittelun-tulokset.hyvaksytty' },
+                type: 'notify',
+                params: ({ context }) =>
+                  successToast(context, 'sijoittelun-tulokset.hyvaksytty'),
               },
             ],
           },
@@ -286,6 +316,11 @@ export function createValinnanTuloksetMachine<
       },
     },
   }).provide({
+    actions: {
+      // Toteutukset annetaan React-hookissa .provide()-kutsulla
+      notify: () => {},
+      refetchTulokset: () => {},
+    },
     guards: {
       hasChangedHakemukset,
       shouldPublishAfterUpdate: ({ context }) =>
