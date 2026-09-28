@@ -5,11 +5,19 @@ import {
 import { updatePisteetForHakemus } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { useActorRef, useSelector } from '@xstate/react';
 import { useCallback, useMemo } from 'react';
-import { clone, indexBy, isNonNullish, isNumber, prop } from 'remeda';
+import {
+  clone,
+  flatMap,
+  indexBy,
+  isNonNullish,
+  isNumber,
+  pipe,
+  prop,
+  uniqueBy,
+} from 'remeda';
 import { ActorRefFrom, assign, createMachine, fromPromise } from 'xstate';
 import { ValintakoeAvaimet } from '@/lib/valintaperusteet/valintaperusteet-types';
-import { commaToPoint, FetchError } from '@/lib/common';
-import { GenericEvent } from '@/lib/common';
+import { commaToPoint, FetchError, GenericEvent } from '@/lib/common';
 import { HakijaInfo } from '@/lib/ataru/ataru-types';
 import {
   isKoeValuesEqual,
@@ -20,6 +28,7 @@ import {
   PisteSyottoStates,
 } from '@/lib/state/pistesyotto-state-common';
 import { inspect } from '@/lib/xstate-utils';
+import { HenkilonHakukohdeTuloksilla } from './henkilo-page-types';
 
 type HenkilonPisteSyottoContext = {
   pistetiedot: Array<ValintakokeenPisteet>;
@@ -219,9 +228,11 @@ export const createHenkilonPisteSyottoMachine = (
               Number.parseFloat(matchingKoe.min);
             const invalid: boolean =
               (isNumber(minVal) &&
-                (isNaN(Number(arvo)) || (minVal as number) > Number(arvo))) ||
+                (Number.isNaN(Number(arvo)) ||
+                  (minVal as number) > Number(arvo))) ||
               (isNumber(maxVal) &&
-                (isNaN(Number(arvo)) || (maxVal as number) < Number(arvo)));
+                (Number.isNaN(Number(arvo)) ||
+                  (maxVal as number) < Number(arvo)));
             return invalid;
           }),
         ),
@@ -266,19 +277,33 @@ export const createHenkilonPisteSyottoMachine = (
 
 type HenkiloPistesyottoMachineParams = {
   hakija: HakijaInfo;
-  pistetiedot: Array<ValintakokeenPisteet>;
-  valintakokeet: Array<ValintakoeAvaimet>;
+  hakukohteet: Array<HenkilonHakukohdeTuloksilla>;
   lastModified?: string;
   onEvent: (event: GenericEvent) => void;
 };
 
 export const useHenkilonPistesyottoState = ({
   hakija,
-  pistetiedot,
-  valintakokeet,
+  hakukohteet,
   lastModified,
   onEvent,
 }: HenkiloPistesyottoMachineParams) => {
+  const pistetiedot = useMemo(() => {
+    return pipe(
+      hakukohteet,
+      flatMap((hakukohde) => hakukohde.pisteet),
+      uniqueBy(prop('tunniste')),
+    );
+  }, [hakukohteet]);
+
+  const valintakokeet = useMemo(() => {
+    return pipe(
+      hakukohteet,
+      flatMap((hakukohde) => hakukohde.kokeet),
+      uniqueBy(prop('tunniste')),
+    );
+  }, [hakukohteet]);
+
   const machine = useMemo(() => {
     return createHenkilonPisteSyottoMachine(
       hakija,
