@@ -11,6 +11,7 @@ import {
   mockOneOrganizationHierarchy,
 } from './playwright-utils';
 import { VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY } from '@/lib/permissions';
+import PISTETIEDOT from './fixtures/pistetiedot.json' with { type: 'json' };
 
 async function goToPisteSyotto(page: Page) {
   await page.goto(
@@ -233,6 +234,45 @@ test('Näyttää ilmoituksen kun tallennus onnistuu, lähetetään oikeat pistee
   await expect(page.getByText('Tiedot tallennettu.')).toBeVisible();
   await getMuiCloseButton(page).click();
   await expect(page.getByText('Tiedot tallennettu.')).toBeHidden();
+});
+
+test('Näyttää uudelleen noudetut pistetiedot tallennuksen jälkeen', async ({
+  page,
+}) => {
+  const updatedPistetiedot = structuredClone(PISTETIEDOT);
+  const nukettajaPisteet = updatedPistetiedot.valintapisteet.find(
+    (p) =>
+      p.applicationAdditionalDataDTO.oid ===
+      '1.2.246.562.11.00000000000001796027',
+  )!;
+  nukettajaPisteet.applicationAdditionalDataDTO.additionalData.koksa = '9.1';
+
+  let saved = false;
+  await page.route(
+    '*/**/valintalaskentakoostepalvelu/resources/pistesyotto/koostetutPistetiedot/haku/1.2.246.562.29.00000000000000045102/hakukohde/1.2.246.562.20.00000000000000045105',
+    async (route) => {
+      if (route.request().method() === 'PUT') {
+        saved = true;
+        return route.fulfill({ status: 204 });
+      }
+      return saved
+        ? route.fulfill({ status: 200, json: updatedPistetiedot })
+        : route.fallback();
+    },
+  );
+
+  const arvosanaInput = page
+    .getByRole('row', { name: 'Nukettaja Ruhtinas' })
+    .getByRole('cell')
+    .nth(1)
+    .getByRole('textbox');
+  await expect(arvosanaInput).toHaveValue('8,8');
+  await arvosanaInput.fill('8,7');
+
+  await page.getByRole('button', { name: 'Tallenna' }).click();
+  await expect(page.getByText('Tiedot tallennettu.')).toBeVisible();
+
+  await expect(arvosanaInput).toHaveValue('9,1');
 });
 
 test('Näyttää ilmoituksen kun tallennus epäonnistuu', async ({ page }) => {

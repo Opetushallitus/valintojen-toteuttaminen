@@ -188,7 +188,7 @@ export const getPisteetForHakukohde = async ({
   const configuration = getConfiguration();
   const kokeetPromise = getValintakoeAvaimetHakukohteelle(hakukohdeOid);
   const pisteTiedotFetch = abortableClient.get<{
-    lastmodified?: string;
+    lastmodified?: string | null;
     valintapisteet: Array<PistetietoItem>;
   }>(
     getConfigUrl(
@@ -212,7 +212,7 @@ export const getPisteetForHakukohde = async ({
   const { data: pistetiedot } = await pisteTiedotFetch.promise;
 
   return {
-    lastModified: pistetiedot.lastmodified,
+    lastModified: pistetiedot.lastmodified ?? undefined,
     valintakokeet: kokeet,
     valintapisteet: pistetiedot.valintapisteet
       .map((p) => {
