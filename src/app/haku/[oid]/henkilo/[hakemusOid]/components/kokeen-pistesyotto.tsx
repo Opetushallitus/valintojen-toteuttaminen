@@ -68,13 +68,12 @@ export const KokeenPistesyotto = ({
     (p) => p.tunniste === koe.tunniste,
   );
 
-  const labelId = `${koe.tunniste}_label_${hakukohde.oid}`;
   const hideInputs = isNullish(matchingKoePisteet);
 
   return (
     <>
       <Box sx={{ paddingLeft: 1, paddingBottom: 1 }}>
-        <OphTypography variant="label" id={labelId}>
+        <OphTypography variant="label" component="h4">
           {koe.kuvaus} <Range min={koe.min} max={koe.max} />
         </OphTypography>
       </Box>

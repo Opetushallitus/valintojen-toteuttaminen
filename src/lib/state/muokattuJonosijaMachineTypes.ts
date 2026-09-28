@@ -26,9 +26,14 @@ export type MuokattuJonosijaDeleteEvent = {
 } & { jarjestyskriteeriPrioriteetti: number };
 
 export type MuokattuJonosijaContext = {
+  valintatapajonoOid: string;
   jonosija: LaskennanJonosijaTulos;
   changedKriteerit: Array<JarjestyskriteeriParams>;
-  onSuccess: () => void;
+};
+
+export type MuokattuJonosijaMachineInput = {
+  valintatapajonoOid: string;
+  jonosija: LaskennanJonosijaTulos;
 };
 
 export type MuokattuJonosijaEvents =

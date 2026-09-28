@@ -4,12 +4,20 @@ import {
 } from '@/lib/types/laskenta-types';
 import { updatePisteetForHakemus } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { useActorRef, useSelector } from '@xstate/react';
-import { useCallback, useMemo } from 'react';
-import { clone, indexBy, isNonNullish, isNumber, prop } from 'remeda';
+import { useCallback } from 'react';
+import {
+  clone,
+  flatMap,
+  indexBy,
+  isNonNullish,
+  isNumber,
+  pipe,
+  prop,
+  uniqueBy,
+} from 'remeda';
 import { ActorRefFrom, assign, createMachine, fromPromise } from 'xstate';
 import { ValintakoeAvaimet } from '@/lib/valintaperusteet/valintaperusteet-types';
-import { commaToPoint, FetchError } from '@/lib/common';
-import { GenericEvent } from '@/lib/common';
+import { commaToPoint, FetchError, GenericEvent } from '@/lib/common';
 import { HakijaInfo } from '@/lib/ataru/ataru-types';
 import {
   isKoeValuesEqual,
@@ -20,16 +28,26 @@ import {
   PisteSyottoStates,
 } from '@/lib/state/pistesyotto-state-common';
 import { inspect } from '@/lib/xstate-utils';
+import { HenkilonHakukohdeTuloksilla } from './henkilo-page-types';
 
 type HenkilonPisteSyottoContext = {
+  hakija: HakijaInfo;
+  lastModified?: string;
   pistetiedot: Array<ValintakokeenPisteet>;
   changedPistetiedot: Array<ValintakokeenPisteet>;
   kokeetByTunniste: Record<string, ValintakoeAvaimet>;
   error?: Error | FetchError | null;
 };
 
+type HenkilonPistesyottoMachineInput = {
+  hakija: HakijaInfo;
+  pistetiedot: Array<ValintakokeenPisteet>;
+  valintakokeet: Array<ValintakoeAvaimet>;
+  lastModified?: string;
+};
+
 export type HenkilonPistesyottoActorRef = ActorRefFrom<
-  ReturnType<typeof createHenkilonPisteSyottoMachine>
+  typeof henkilonPisteSyottoMachine
 >;
 
 const pistetietoChangeReducer = ({
@@ -96,200 +114,227 @@ const mergePistetiedot = (context: HenkilonPisteSyottoContext) => {
   });
 };
 
-export const createHenkilonPisteSyottoMachine = (
-  hakija: HakijaInfo,
-  pistetiedot: Array<ValintakokeenPisteet>,
-  valintakokeet: Array<ValintakoeAvaimet>,
-  onEvent: (event: GenericEvent) => void,
-  lastModified?: string,
-) => {
-  const kokeetByTunniste = indexBy(valintakokeet, prop('tunniste'));
-  return createMachine({
-    id: `HenkiloPistesyottoMachine-${hakija.hakemusOid}-${lastModified}`,
-    initial: PisteSyottoStates.IDLE,
-    context: {
-      pistetiedot,
-      changedPistetiedot: [],
-      kokeetByTunniste,
-    },
-    types: {} as {
-      context: HenkilonPisteSyottoContext;
-      events: PistesyottoAnyEvent;
-      actions:
-        | { type: 'alert' }
-        | { type: 'warn'; params: { message: string } }
-        | { type: 'successNotify' };
-    },
-    states: {
-      [PisteSyottoStates.IDLE]: {
-        always: {},
-        on: {
-          [PisteSyottoEvent.PISTETIETO_CHANGED]: {
-            actions: assign({
-              changedPistetiedot: pistetietoChangeReducer,
-            }),
-          },
-          [PisteSyottoEvent.UPDATE]: [
-            {
-              guard: 'hasUnchangedPistetiedot',
-              target: PisteSyottoStates.IDLE,
-              actions: {
-                type: 'warn',
-                params: { message: 'virhe.eimuutoksia' },
-              },
-            },
-            {
-              guard: 'hasInvalidPisteet',
-              target: PisteSyottoStates.IDLE,
-              actions: {
-                type: 'warn',
-                params: { message: 'virhe.tarkistasyote' },
-              },
-            },
-            {
-              target: PisteSyottoStates.UPDATING,
-            },
-          ],
-        },
-      },
-      [PisteSyottoStates.UPDATING]: {
-        invoke: {
-          src: 'updatePistetiedot',
-          input: ({ context }) => mergePistetiedot(context),
-          onDone: {
-            target: PisteSyottoStates.UPDATE_COMPLETED,
-          },
-          onError: {
-            target: PisteSyottoStates.ERROR,
-            actions: assign({
-              error: ({ event }) => event.error as Error,
-            }),
-          },
-        },
-      },
-      [PisteSyottoStates.ERROR]: {
-        entry: {
-          type: 'alert',
-          params: { message: 'virhe.tallennus' },
-        },
-        always: [
-          {
-            target: PisteSyottoStates.IDLE,
-          },
-        ],
-        exit: assign({ error: null }),
-      },
-      [PisteSyottoStates.UPDATE_COMPLETED]: {
-        always: [
-          {
-            target: PisteSyottoStates.IDLE,
-            actions: 'successNotify',
-          },
-        ],
-        entry: [
-          assign({
-            pistetiedot: ({ context }) =>
-              context.pistetiedot.map((p) => {
-                const changed = context.changedPistetiedot.find(
-                  (c) => c.tunniste === p.tunniste,
-                );
-                return changed ?? p;
-              }),
-          }),
-          assign({
-            changedPistetiedot: [],
-          }),
-        ],
-      },
-    },
-  }).provide({
-    guards: {
-      hasUnchangedPistetiedot: ({ context }) =>
-        context.changedPistetiedot.length === 0,
-      hasInvalidPisteet: ({ context }) =>
-        isNonNullish(
-          context.changedPistetiedot.find((p) => {
-            const arvo = commaToPoint(p.arvo);
-            const matchingKoe = context.kokeetByTunniste[p.tunniste];
-            const maxVal =
-              isNonNullish(matchingKoe?.max) &&
-              Number.parseFloat(matchingKoe.max);
-            const minVal =
-              isNonNullish(matchingKoe?.min) &&
-              Number.parseFloat(matchingKoe.min);
-            const invalid: boolean =
-              (isNumber(minVal) &&
-                (isNaN(Number(arvo)) || (minVal as number) > Number(arvo))) ||
-              (isNumber(maxVal) &&
-                (isNaN(Number(arvo)) || (maxVal as number) < Number(arvo)));
-            return invalid;
-          }),
-        ),
-    },
-    actions: {
-      alert: ({ context }) => {
-        const conflictError =
-          context.error instanceof FetchError &&
-          context.error.response.status === 412;
-        const message = conflictError
-          ? 'henkilo.virhe.pistesyotto-tallennus-konflikti'
-          : 'virhe.tallennus';
-        onEvent({
-          key: `pistetiedot-update-failed-for-${hakija.hakemusOid}`,
-          message,
-          type: 'error',
-        });
-      },
-      warn: (_, params) => {
-        onEvent({
-          key: `pistetiedot-warning-for-${hakija.hakemusOid}`,
-          message: params.message,
-          type: 'error',
-        });
-      },
-      successNotify: () =>
-        onEvent({
-          key: `pistetiedot-updated-for-${hakija.hakemusOid}`,
-          message: 'pistesyotto.valmis',
-          type: 'success',
-        }),
-    },
-    actors: {
-      updatePistetiedot: fromPromise(
-        ({ input }: { input: Array<ValintakokeenPisteet> }) => {
-          return updatePisteetForHakemus(hakija, input, lastModified);
-        },
-      ),
-    },
-  });
+const warningEvent = (
+  context: HenkilonPisteSyottoContext,
+  message: string,
+): GenericEvent => ({
+  key: `pistetiedot-warning-for-${context.hakija.hakemusOid}`,
+  message,
+  type: 'error',
+});
+
+const saveErrorEvent = (context: HenkilonPisteSyottoContext): GenericEvent => {
+  const conflictError =
+    context.error instanceof FetchError &&
+    context.error.response.status === 412;
+  return {
+    key: `pistetiedot-update-failed-for-${context.hakija.hakemusOid}`,
+    message: conflictError
+      ? 'henkilo.virhe.pistesyotto-tallennus-konflikti'
+      : 'virhe.tallennus',
+    type: 'error',
+  };
 };
 
-type HenkiloPistesyottoMachineParams = {
+export const henkilonPisteSyottoMachine = createMachine({
+  id: 'HenkiloPistesyottoMachine',
+  initial: PisteSyottoStates.IDLE,
+  context: ({ input }) => ({
+    hakija: input.hakija,
+    lastModified: input.lastModified,
+    pistetiedot: input.pistetiedot,
+    changedPistetiedot: [],
+    kokeetByTunniste: indexBy(input.valintakokeet, prop('tunniste')),
+  }),
+  types: {} as {
+    context: HenkilonPisteSyottoContext;
+    input: HenkilonPistesyottoMachineInput;
+    events: PistesyottoAnyEvent;
+    actions: { type: 'notify'; params: GenericEvent };
+  },
+  states: {
+    [PisteSyottoStates.IDLE]: {
+      always: {},
+      on: {
+        [PisteSyottoEvent.PISTETIETO_CHANGED]: {
+          actions: assign({
+            changedPistetiedot: pistetietoChangeReducer,
+          }),
+        },
+        [PisteSyottoEvent.UPDATE]: [
+          {
+            guard: 'hasUnchangedPistetiedot',
+            target: PisteSyottoStates.IDLE,
+            actions: {
+              type: 'notify',
+              params: ({ context }) =>
+                warningEvent(context, 'virhe.eimuutoksia'),
+            },
+          },
+          {
+            guard: 'hasInvalidPisteet',
+            target: PisteSyottoStates.IDLE,
+            actions: {
+              type: 'notify',
+              params: ({ context }) =>
+                warningEvent(context, 'virhe.tarkistasyote'),
+            },
+          },
+          {
+            target: PisteSyottoStates.UPDATING,
+          },
+        ],
+      },
+    },
+    [PisteSyottoStates.UPDATING]: {
+      invoke: {
+        src: 'updatePistetiedot',
+        input: ({ context }) => ({
+          hakija: context.hakija,
+          lastModified: context.lastModified,
+          pistetiedot: mergePistetiedot(context),
+        }),
+        onDone: {
+          target: PisteSyottoStates.UPDATE_COMPLETED,
+        },
+        onError: {
+          target: PisteSyottoStates.ERROR,
+          actions: assign({
+            error: ({ event }) => event.error as Error,
+          }),
+        },
+      },
+    },
+    [PisteSyottoStates.ERROR]: {
+      entry: {
+        type: 'notify',
+        params: ({ context }) => saveErrorEvent(context),
+      },
+      always: [
+        {
+          target: PisteSyottoStates.IDLE,
+        },
+      ],
+      exit: assign({ error: null }),
+    },
+    [PisteSyottoStates.UPDATE_COMPLETED]: {
+      always: [
+        {
+          target: PisteSyottoStates.IDLE,
+          actions: {
+            type: 'notify',
+            params: ({ context }) => ({
+              key: `pistetiedot-updated-for-${context.hakija.hakemusOid}`,
+              message: 'pistesyotto.valmis',
+              type: 'success',
+            }),
+          },
+        },
+      ],
+      entry: [
+        assign({
+          pistetiedot: ({ context }) =>
+            context.pistetiedot.map((p) => {
+              const changed = context.changedPistetiedot.find(
+                (c) => c.tunniste === p.tunniste,
+              );
+              return changed ?? p;
+            }),
+        }),
+        assign({
+          changedPistetiedot: [],
+        }),
+      ],
+    },
+  },
+}).provide({
+  guards: {
+    hasUnchangedPistetiedot: ({ context }) =>
+      context.changedPistetiedot.length === 0,
+    hasInvalidPisteet: ({ context }) =>
+      isNonNullish(
+        context.changedPistetiedot.find((p) => {
+          const arvo = commaToPoint(p.arvo);
+          const matchingKoe = context.kokeetByTunniste[p.tunniste];
+          const maxVal =
+            isNonNullish(matchingKoe?.max) &&
+            Number.parseFloat(matchingKoe.max);
+          const minVal =
+            isNonNullish(matchingKoe?.min) &&
+            Number.parseFloat(matchingKoe.min);
+          const invalid: boolean =
+            (isNumber(minVal) &&
+              (Number.isNaN(Number(arvo)) ||
+                (minVal as number) > Number(arvo))) ||
+            (isNumber(maxVal) &&
+              (Number.isNaN(Number(arvo)) ||
+                (maxVal as number) < Number(arvo)));
+          return invalid;
+        }),
+      ),
+  },
+  actions: {
+    // Toteutus annetaan useHenkilonPistesyottoState-hookissa .provide()-kutsulla
+    notify: () => {},
+  },
+  actors: {
+    updatePistetiedot: fromPromise(
+      ({
+        input,
+      }: {
+        input: {
+          hakija: HakijaInfo;
+          lastModified?: string;
+          pistetiedot: Array<ValintakokeenPisteet>;
+        };
+      }) => {
+        return updatePisteetForHakemus(
+          input.hakija,
+          input.pistetiedot,
+          input.lastModified,
+        );
+      },
+    ),
+  },
+});
+
+type HenkiloPistesyottoStateParams = {
   hakija: HakijaInfo;
-  pistetiedot: Array<ValintakokeenPisteet>;
-  valintakokeet: Array<ValintakoeAvaimet>;
+  hakukohteet: Array<HenkilonHakukohdeTuloksilla>;
   lastModified?: string;
   onEvent: (event: GenericEvent) => void;
 };
 
 export const useHenkilonPistesyottoState = ({
   hakija,
-  pistetiedot,
-  valintakokeet,
+  hakukohteet,
   lastModified,
   onEvent,
-}: HenkiloPistesyottoMachineParams) => {
-  const machine = useMemo(() => {
-    return createHenkilonPisteSyottoMachine(
-      hakija,
-      pistetiedot,
-      valintakokeet,
-      onEvent,
-      lastModified,
-    );
-  }, [pistetiedot, valintakokeet, onEvent, hakija, lastModified]);
-
-  const actorRef = useActorRef(machine, { inspect });
+}: HenkiloPistesyottoStateParams) => {
+  const actorRef = useActorRef(
+    henkilonPisteSyottoMachine.provide({
+      actions: {
+        notify: (_, event) => onEvent(event),
+      },
+    }),
+    {
+      inspect,
+      input: {
+        hakija,
+        lastModified,
+        pistetiedot: pipe(
+          hakukohteet,
+          flatMap((hakukohde) => hakukohde.pisteet),
+          uniqueBy(prop('tunniste')),
+        ),
+        valintakokeet: pipe(
+          hakukohteet,
+          flatMap((hakukohde) => hakukohde.kokeet),
+          uniqueBy(prop('tunniste')),
+        ),
+      },
+    },
+  );
   return useHenkilonPistesyottoActorRef(actorRef);
 };
 

@@ -152,8 +152,11 @@ export const useHenkiloPageData = ({
               ),
             };
           }),
-          kokeet: kokeetByHakukohde[hakukohde.oid],
-          pisteet: pisteetByHakukohde.pisteet[hakukohde.oid],
+          kokeet: sortBy(
+            kokeetByHakukohde[hakukohde.oid] ?? [],
+            prop('kuvaus'),
+          ),
+          pisteet: pisteetByHakukohde.pisteet[hakukohde.oid] ?? [],
         };
       }),
     );

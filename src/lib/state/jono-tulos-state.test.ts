@@ -75,7 +75,6 @@ const mockContextInput = ({
       valmisSijoiteltavaksi: false,
       siirretaanSijoitteluun: false,
     },
-    onEvent: () => {},
   } as JonoTulosContextInput;
 };
 
