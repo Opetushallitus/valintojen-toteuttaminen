@@ -7,7 +7,7 @@ import {
   mapLetterCountsToLetterStats,
   translateLetter,
 } from '../lib/letter-options';
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import {
   makeColumnWithCustomRender,
   makeCountColumn,
@@ -31,11 +31,10 @@ export const LettersTable = ({
 }) => {
   const { t } = useTranslations();
 
-  const [letterStats, setLetterStats] = useState<Array<LetterStats>>([]);
-
-  useEffect(() => {
-    setLetterStats(mapLetterCountsToLetterStats(letterCounts));
-  }, [letterCounts]);
+  const letterStats = useMemo(
+    () => mapLetterCountsToLetterStats(letterCounts),
+    [letterCounts],
+  );
 
   const columns = [
     makeColumnWithCustomRender<LetterStats>({

@@ -73,7 +73,7 @@ const HakutapaInput = ({
 };
 
 export default function HakuControls() {
-  const alkamiskaudet = useMemo(getHakuAlkamisKaudet, []);
+  const alkamiskaudet = useMemo(() => getHakuAlkamisKaudet(), []);
 
   const {
     searchPhrase,

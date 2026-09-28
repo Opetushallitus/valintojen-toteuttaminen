@@ -2,7 +2,7 @@ import path from 'node:path';
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 
-import { optimizePackageImports } from './vite-plugin-optimize-package-imports';
+import { optimizePackageImports } from './vite-plugin-optimize-package-imports.ts';
 
 export default defineConfig({
   plugins: [react(), optimizePackageImports(['@mui/icons-material'])],

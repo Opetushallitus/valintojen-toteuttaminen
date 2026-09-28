@@ -16,7 +16,7 @@ describe('Configuration: getConfigUrl', () => {
         marja: 'mansikka',
         vihanns: 'kurkku',
       }),
-    ).toThrowError(
+    ).toThrow(
       'Not all placeholders were replaced in route vaihdaparametrit/{marja}/ja/{vihannes}. Result: vaihdaparametrit/mansikka/ja/{vihannes}',
     );
   });
