@@ -258,11 +258,17 @@ export const selectEditableValintalaskennanTulokset = <
 export const useEditableValintalaskennanTulokset = ({
   hakuOid,
   hakukohdeOid,
-}: KoutaOidParams): LaskennanValinnanvaiheet<AdditionalHakemusFields> => {
+}: KoutaOidParams): {
+  valinnanvaiheet: LaskennanValinnanvaiheet<AdditionalHakemusFields>;
+  dataUpdatedAt: number;
+} => {
   const [
-    { data: hakemukset },
-    { data: hakukohteenLaskennanTulokset },
-    { data: valinnanvaiheet },
+    { data: hakemukset, dataUpdatedAt: hakemuksetUpdatedAt },
+    {
+      data: hakukohteenLaskennanTulokset,
+      dataUpdatedAt: laskennanTuloksetUpdatedAt,
+    },
+    { data: valinnanvaiheet, dataUpdatedAt: valinnanvaiheetUpdatedAt },
   ] = useSuspenseQueries({
     queries: [
       queryOptionsGetHakemukset({
@@ -274,7 +280,7 @@ export const useEditableValintalaskennanTulokset = ({
     ],
   });
 
-  return useMemo(() => {
+  const editableValinnanvaiheet = useMemo(() => {
     const notFoundHakemukset: Array<string> = [];
     const hakemuksetByOid = indexBy(hakemukset ?? [], prop('hakemusOid'));
     const result =
@@ -306,4 +312,13 @@ export const useEditableValintalaskennanTulokset = ({
 
     return result;
   }, [hakukohteenLaskennanTulokset, valinnanvaiheet, hakemukset]);
+
+  return {
+    valinnanvaiheet: editableValinnanvaiheet,
+    dataUpdatedAt: Math.max(
+      hakemuksetUpdatedAt,
+      laskennanTuloksetUpdatedAt,
+      valinnanvaiheetUpdatedAt,
+    ),
+  };
 };
