@@ -280,7 +280,7 @@ export const updatePisteetForHakemus = async (
   lastModified?: string,
 ) => {
   if (!pistetiedot || pistetiedot.length < 1) {
-    throw 'Yritys päivittää hakemus ilman pistetietoja';
+    throw new Error('Yritettiin päivittää hakemus ilman pistetietoja');
   }
 
   const configuration = getConfiguration();
