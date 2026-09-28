@@ -1,4 +1,5 @@
 import { EditButton } from '@/components/edit-button';
+import { InfoTooltipIcon } from '@/components/info-tooltip-icon';
 import { showModal } from '@/components/modals/global-modal';
 import {
   ListTable,
@@ -74,7 +75,7 @@ export const LaskettuValintatapajonoTable = ({
         {
           title: `${TRANSLATIONS_PREFIX}.pisteet`,
           key: 'pisteet',
-          render: ({ pisteet, hakemusOid }) => (
+          render: ({ pisteet, hakemusOid, muokattu }) => (
             <span>
               {pisteet}{' '}
               {configuration && (
@@ -91,6 +92,11 @@ export const LaskettuValintatapajonoTable = ({
                   {t('yleinen.lisatietoja')}
                 </OphLink>
               )}
+              {muokattu && (
+                <InfoTooltipIcon
+                  title={t(`${TRANSLATIONS_PREFIX}.muokattu-kasin`)}
+                />
+              )}{' '}
             </span>
           ),
         },
