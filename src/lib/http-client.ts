@@ -1,7 +1,8 @@
 import { getCookies } from './cookie';
 import { FetchError } from './common';
-import { isEmpty, isPlainObject, pathOr } from 'remeda';
+import { defaultTo, isEmpty, isPlainObject, prop } from 'remeda';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
+import { Configuration } from '@/lib/configuration/configuration';
 
 export type HttpClientResponse<D> = {
   headers: Headers;
@@ -114,6 +115,14 @@ const responseToData = async <Result = unknown>(
   }
 };
 
+type Routes = Configuration['routes'];
+
+type RoutePath = {
+  [Group in keyof Routes]: Routes[Group] extends Record<string, string>
+    ? readonly [Group, Extract<keyof Routes[Group], string>]
+    : never;
+}[keyof Routes];
+
 const LOGIN_MAP = [
   {
     urlIncludes: '/kouta-internal',
@@ -141,7 +150,10 @@ const LOGIN_MAP = [
       'valintalaskentaKoostePalveluLogin',
     ],
   },
-] as const;
+] as const satisfies ReadonlyArray<{
+  urlIncludes: string;
+  loginParam: RoutePath;
+}>;
 
 const makeRequest = async <Result>(request: Request) => {
   const originalRequest = request.clone();
@@ -162,7 +174,14 @@ const makeRequest = async <Result>(request: Request) => {
           for (const { urlIncludes, loginParam } of LOGIN_MAP) {
             if (request?.url?.includes(urlIncludes)) {
               const config = getConfiguration();
-              const loginUrl: string = pathOr(config.routes, loginParam, '');
+              const loginUrl = defaultTo(
+                prop<
+                  typeof config.routes,
+                  (typeof loginParam)[0],
+                  (typeof loginParam)[1]
+                >(config.routes, loginParam[0], loginParam[1]),
+                '',
+              );
               if (isEmpty(loginUrl)) {
                 throw new Error(
                   `Login configuration not found for ${urlIncludes}`,
@@ -212,7 +231,7 @@ const modRequest = <Result = unknown>(
       ...options,
       headers: {
         ...(isJson(body) ? { 'content-type': 'application/json' } : {}),
-        ...(options.headers ?? {}),
+        ...options.headers,
       },
     }),
   );
