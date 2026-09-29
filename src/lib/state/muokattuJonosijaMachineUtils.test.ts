@@ -40,7 +40,7 @@ describe('applyKriteeriChange', () => {
       kuvaus: { FI: 'Testikuvaus' },
     },
     changedKriteerit: [],
-    onSuccess: () => null,
+    valintatapajonoOid: 'jono-oid',
   };
 
   beforeEach(() => (context.changedKriteerit = []));

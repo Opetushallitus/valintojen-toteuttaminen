@@ -188,7 +188,7 @@ export const getPisteetForHakukohde = async ({
   const configuration = getConfiguration();
   const kokeetPromise = getValintakoeAvaimetHakukohteelle(hakukohdeOid);
   const pisteTiedotFetch = abortableClient.get<{
-    lastmodified?: string;
+    lastmodified?: string | null;
     valintapisteet: Array<PistetietoItem>;
   }>(
     getConfigUrl(
@@ -212,7 +212,7 @@ export const getPisteetForHakukohde = async ({
   const { data: pistetiedot } = await pisteTiedotFetch.promise;
 
   return {
-    lastModified: pistetiedot.lastmodified,
+    lastModified: pistetiedot.lastmodified ?? undefined,
     valintakokeet: kokeet,
     valintapisteet: pistetiedot.valintapisteet
       .map((p) => {
@@ -280,7 +280,7 @@ export const updatePisteetForHakemus = async (
   lastModified?: string,
 ) => {
   if (!pistetiedot || pistetiedot.length < 1) {
-    throw 'Yritys päivittää hakemus ilman pistetietoja';
+    throw new Error('Yritettiin päivittää hakemus ilman pistetietoja');
   }
 
   const configuration = getConfiguration();
@@ -1259,7 +1259,8 @@ export const saveValinnanTulosExcel = async ({
 }) => {
   const configuration = getConfiguration();
   const urlWithQuery = new URL(
-    configuration.routes.valintalaskentakoostepalvelu.startImportValinnanTulosExcelUrl,
+    configuration.routes.valintalaskentakoostepalvelu
+      .startImportValinnanTulosExcelUrl,
   );
   urlWithQuery.searchParams.append('hakuOid', haku.oid);
   urlWithQuery.searchParams.append('hakukohdeOid', hakukohdeOid);
