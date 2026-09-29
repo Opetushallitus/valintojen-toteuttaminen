@@ -17,8 +17,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { rejectAndLog } from '@/lib/common';
 import {
   refetchHakukohteenKirjeLahetetty,
-  refetchHakukohteenLukuvuosimaksut,
-  refetchHakukohteenValinnanTulokset,
+  refetchHakukohteenValinnanTuloksetData,
 } from '@/lib/valinta-tulos-service/valinta-tulos-queries';
 import { inspect } from '@/lib/xstate-utils';
 
@@ -58,15 +57,10 @@ export const useValinnanTulosActorRef = ({
   const { addToast } = useToaster();
 
   const onUpdated = () => {
-    refetchHakukohteenValinnanTulokset({
+    refetchHakukohteenValinnanTuloksetData({
       queryClient,
-      hakuOid: haku.oid,
-      hakukohdeOid: hakukohde.oid,
-    });
-    refetchHakukohteenLukuvuosimaksut({
-      queryClient,
-      hakukohdeOid: hakukohde.oid,
       haku,
+      hakukohdeOid: hakukohde.oid,
     });
     refetchHakukohteenKirjeLahetetty({
       queryClient,
