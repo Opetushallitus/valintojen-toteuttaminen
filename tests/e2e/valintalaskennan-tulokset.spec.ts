@@ -1,6 +1,7 @@
 import { test, expect, Page } from '@playwright/test';
 import {
   checkRow,
+  confirmDialog,
   expectAlertTextVisible,
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
@@ -151,6 +152,9 @@ test('Näytetään virheviesti, jos jonon poistaminen sijoittelusta epäonnistuu
   await jono1Content
     .getByRole('button', { name: 'Poista jono sijoittelusta' })
     .click();
+  await confirmDialog(page, {
+    title: 'Vahvista jonon poistaminen sijoittelusta',
+  });
 
   await expect(
     page.getByText('Jonon sijoittelun tilan muuttamisessa tapahtui virhe!'),

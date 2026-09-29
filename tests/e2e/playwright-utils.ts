@@ -99,6 +99,16 @@ export const getHakuNaviLinks = (page: Page) => {
 export const getMuiCloseButton = (page: Page) =>
   page.getByRole('button', { name: 'Sulje' });
 
+export const confirmDialog = async (
+  page: Page,
+  { title, buttonName = 'Kyllä' }: { title: string; buttonName?: string },
+) => {
+  await page
+    .getByRole('dialog', { name: title })
+    .getByRole('button', { name: buttonName })
+    .click();
+};
+
 const FIXTURES_PATH = path.resolve(import.meta.dirname, './fixtures');
 
 export const getFixturePath = (fileName: string) =>

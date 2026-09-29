@@ -1,6 +1,7 @@
 import { test, expect, Page } from '@playwright/test';
 import {
   checkRow,
+  confirmDialog,
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
   expectPageSizeSelectorValue,
@@ -855,6 +856,10 @@ test.describe('Tallennus', () => {
           ),
       });
       await page.getByRole('button', { name: 'Hyväksy ja tallenna' }).click();
+      await confirmDialog(page, {
+        title: 'Vahvista valintaesityksen hyväksyminen',
+        buttonName: 'Hyväksy ja tallenna',
+      });
       await expect(page.getByText('Valintaesitys hyväksytty')).toBeVisible();
     });
 
@@ -873,6 +878,10 @@ test.describe('Tallennus', () => {
         option: 'HYVÄKSYTTY',
       });
       await page.getByRole('button', { name: 'Hyväksy ja tallenna' }).click();
+      await confirmDialog(page, {
+        title: 'Vahvista valintaesityksen hyväksyminen',
+        buttonName: 'Hyväksy ja tallenna',
+      });
       await expect(page.getByText('Valintaesitys hyväksytty')).toBeVisible();
     });
 
@@ -895,6 +904,10 @@ test.describe('Tallennus', () => {
         option: 'HYVÄKSYTTY',
       });
       await page.getByRole('button', { name: 'Hyväksy ja tallenna' }).click();
+      await confirmDialog(page, {
+        title: 'Vahvista valintaesityksen hyväksyminen',
+        buttonName: 'Hyväksy ja tallenna',
+      });
       await expect(
         page.getByText('Tietojen tallentamisessa tapahtui virhe'),
       ).toBeVisible();
@@ -907,6 +920,10 @@ test.describe('Tallennus', () => {
         async (route) => route.fulfill({ status: 500, body: 'Räjähti' }),
       );
       await page.getByRole('button', { name: 'Hyväksy ja tallenna' }).click();
+      await confirmDialog(page, {
+        title: 'Vahvista valintaesityksen hyväksyminen',
+        buttonName: 'Hyväksy ja tallenna',
+      });
       await expect(
         page.getByText('Tietojen tallentamisessa tapahtui virhe'),
       ).toBeVisible();

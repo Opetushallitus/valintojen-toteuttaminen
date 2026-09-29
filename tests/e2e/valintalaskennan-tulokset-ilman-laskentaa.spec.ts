@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import {
   checkRow,
+  confirmDialog,
   expectAlertTextVisible,
   expectAllSpinnersHidden,
   expectPageAccessibilityOk,
@@ -108,7 +109,7 @@ test('Näyttää valintalaskennan tulokset', async ({ page }) => {
   ]);
 
   await jonoContent.getByRole('button', { name: 'Kokonaispisteet' }).click();
-  await page.getByRole('dialog').getByRole('button', { name: 'Kyllä' }).click();
+  await confirmDialog(page, { title: 'Vaihdetaanko järjestysperustetta?' });
 
   await checkRow(jonoHeadingRow, PISTEET_TABLE_HEADINGS, 'th');
 });
@@ -235,7 +236,7 @@ test('Lähettää muokatun pisteet-datan tallentaessa', async ({ page }) => {
   const jonoContent = page.getByRole('region', { name: jonoHeadingText });
 
   await jonoContent.getByRole('button', { name: 'Kokonaispisteet' }).click();
-  await page.getByRole('dialog').getByRole('button', { name: 'Kyllä' }).click();
+  await confirmDialog(page, { title: 'Vaihdetaanko järjestysperustetta?' });
 
   const firstRow = jonoContent.locator('tbody tr').first();
   await firstRow.getByRole('textbox', { name: 'pisteet' }).fill('6,6');

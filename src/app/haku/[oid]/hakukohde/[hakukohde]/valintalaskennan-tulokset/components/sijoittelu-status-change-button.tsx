@@ -10,6 +10,8 @@ import {
   useUserPermissions,
 } from '@/hooks/useUserPermissions';
 import { useHasOnlyHakukohdeReadPermission } from '@/hooks/useHasOnlyHakukohdeReadPermission';
+import { ConfirmationGlobalModal } from '@/components/modals/confirmation-global-modal';
+import { showModal } from '@/components/modals/global-modal';
 
 const SijoitteluButton = ({ ...props }: ButtonProps) => {
   return <OphButton {...props} variant="outlined" />;
@@ -51,7 +53,17 @@ export const PureSijoitteluStatusChangeButton = ({
           loading={statusMutation.isPending}
           disabled={!hasOphUpdate && !hasOrgCrud}
           onClick={() =>
-            statusMutation.mutate({ jono, jonoSijoitellaan: true })
+            showModal(ConfirmationGlobalModal, {
+              title: t(
+                'valintalaskennan-tulokset.siirra-jono-sijoitteluun-vahvistus-otsikko',
+              ),
+              content: t(
+                'valintalaskennan-tulokset.siirra-jono-sijoitteluun-vahvistus-teksti',
+                { jonoNimi: jono.nimi },
+              ),
+              onConfirm: () =>
+                statusMutation.mutate({ jono, jonoSijoitellaan: true }),
+            })
           }
         >
           {t('valintalaskennan-tulokset.siirra-jono-sijoitteluun')}
@@ -64,7 +76,17 @@ export const PureSijoitteluStatusChangeButton = ({
           loading={statusMutation.isPending}
           disabled={!hasOphUpdate}
           onClick={() =>
-            statusMutation.mutate({ jono, jonoSijoitellaan: false })
+            showModal(ConfirmationGlobalModal, {
+              title: t(
+                'valintalaskennan-tulokset.poista-jono-sijoittelusta-vahvistus-otsikko',
+              ),
+              content: t(
+                'valintalaskennan-tulokset.poista-jono-sijoittelusta-vahvistus-teksti',
+                { jonoNimi: jono.nimi },
+              ),
+              onConfirm: () =>
+                statusMutation.mutate({ jono, jonoSijoitellaan: false }),
+            })
           }
         >
           {t('valintalaskennan-tulokset.poista-jono-sijoittelusta')}

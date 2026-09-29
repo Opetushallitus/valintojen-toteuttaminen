@@ -1,6 +1,7 @@
 import { test, expect, Page } from '@playwright/test';
 import {
   checkRow,
+  confirmDialog,
   expectAllSpinnersHidden,
   expectPageSizeSelectorValue,
   findTableColumnIndexByTitle,
@@ -597,6 +598,10 @@ test.describe('Valintaesityksen hyväksyminen', () => {
     await getYoValintatapajonoContent(page)
       .getByRole('button', { name: 'Hyväksy ja tallenna' })
       .click();
+    await confirmDialog(page, {
+      title: 'Vahvista valintaesityksen hyväksyminen',
+      buttonName: 'Hyväksy ja tallenna',
+    });
     await expect(page.getByText('Valintaesitys hyväksytty')).toBeVisible();
   });
 
@@ -609,6 +614,10 @@ test.describe('Valintaesityksen hyväksyminen', () => {
     await getYoValintatapajonoContent(page)
       .getByRole('button', { name: 'Hyväksy ja tallenna' })
       .click();
+    await confirmDialog(page, {
+      title: 'Vahvista valintaesityksen hyväksyminen',
+      buttonName: 'Hyväksy ja tallenna',
+    });
     await expect(page.getByText('Valintaesitys hyväksytty')).toBeVisible();
   });
 
@@ -627,6 +636,10 @@ test.describe('Valintaesityksen hyväksyminen', () => {
     await getYoValintatapajonoContent(page)
       .getByRole('button', { name: 'Hyväksy ja tallenna' })
       .click();
+    await confirmDialog(page, {
+      title: 'Vahvista valintaesityksen hyväksyminen',
+      buttonName: 'Hyväksy ja tallenna',
+    });
     await expect(
       page.getByText('Tietojen tallentamisessa tapahtui virhe'),
     ).toBeVisible();
@@ -645,6 +658,10 @@ test.describe('Valintaesityksen hyväksyminen', () => {
     await getYoValintatapajonoContent(page)
       .getByRole('button', { name: 'Hyväksy ja tallenna' })
       .click();
+    await confirmDialog(page, {
+      title: 'Vahvista valintaesityksen hyväksyminen',
+      buttonName: 'Hyväksy ja tallenna',
+    });
     await expect(
       page.getByText('Tietojen tallentamisessa tapahtui virhe'),
     ).toBeVisible();
