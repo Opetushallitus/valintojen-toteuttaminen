@@ -10,12 +10,11 @@ const HeaderBox = styled(Box)(() => ({
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'space-between',
-  alignItems: 'flex-start',
+  alignItems: 'stretch',
   height: '100%',
   width: '100%',
   '.MuiButtonBase-root': {
     borderLeft: `1px solid ${ophColors.grey200}`,
-    height: '100%',
     '&.emphasize': {
       backgroundColor: ophColors.grey50,
     },
@@ -37,11 +36,9 @@ const ContextBox = styled(Box)(({ theme }) => ({
 export const ValintaryhmaAccordion = ({
   title,
   children,
-  className,
 }: {
   title: React.ReactNode;
   children: React.ReactNode;
-  className: string;
 }) => {
   const { t } = useTranslations();
   const [isOpen, setIsOpen] = useState(true);
@@ -57,7 +54,6 @@ export const ValintaryhmaAccordion = ({
         flexDirection: 'column',
         alignItems: 'flex-start',
       }}
-      className={className}
     >
       <HeaderBox>
         {title}

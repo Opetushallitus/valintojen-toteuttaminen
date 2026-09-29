@@ -128,9 +128,8 @@ describe('selectEditableValintalaskennanTulokset', () => {
     });
 
     expect(jonosija?.jarjestyskriteerit).toHaveLength(1);
-    expect(
-      (jonosija?.jarjestyskriteerit as Array<JarjestyskriteeriModel>)[0],
-    ).toMatchObject({
+    const kriteeri = jonosija?.jarjestyskriteerit?.[0];
+    expect(kriteeri).toMatchObject({
       arvo: '85,5',
       kuvaus: { FI: 'Pisteet', SV: 'Poäng', EN: 'Points' },
       tila: 'HYVAKSYTTAVISSA',

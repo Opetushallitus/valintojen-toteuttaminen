@@ -117,10 +117,10 @@ describe('Sijoittelun tulokset states', async () => {
       hakemusOid: 'hakemus-2',
       vastaanottoTila: VastaanottoTila.EHDOLLISESTI_VASTAANOTTANUT,
     });
-    let state = await waitIdle(actor);
-    expect(state.context.changedHakemukset.length).toEqual(1);
+    const state = await waitIdle(actor);
+    expect(state.context.changedHakemukset).toHaveLength(1);
     actor.send({ type: ValinnanTulosEventType.UPDATE });
-    state = await waitIdle(actor);
+    await waitIdle(actor);
     expect(toastFn).toHaveBeenCalledOnce();
     expect(onUpdatedFn).toHaveBeenCalled();
   });
@@ -134,7 +134,7 @@ describe('Sijoittelun tulokset states', async () => {
     });
 
     let state = await waitIdle(actor);
-    expect(state.context.changedHakemukset.length).toEqual(1);
+    expect(state.context.changedHakemukset).toHaveLength(1);
 
     actor.send({
       type: ValinnanTulosEventType.CHANGE,
@@ -143,7 +143,7 @@ describe('Sijoittelun tulokset states', async () => {
     });
 
     state = await waitIdle(actor);
-    expect(state.context.changedHakemukset.length).toEqual(0);
+    expect(state.context.changedHakemukset).toHaveLength(0);
   });
 
   test('mass update calls onUpdated on success', async () => {
@@ -160,8 +160,8 @@ describe('Sijoittelun tulokset states', async () => {
       ehdollisestiHyvaksyttavissa: true,
     });
 
-    let state = await waitIdle(actor);
-    expect(state.context.changedHakemukset.length).toEqual(1);
+    const state = await waitIdle(actor);
+    expect(state.context.changedHakemukset).toHaveLength(1);
 
     actor.send({
       type: ValinnanTulosEventType.MASS_UPDATE,
@@ -169,7 +169,7 @@ describe('Sijoittelun tulokset states', async () => {
       vastaanottoTila: VastaanottoTila.EI_VASTAANOTETTU_MAARA_AIKANA,
     });
 
-    state = await waitIdle(actor);
+    await waitIdle(actor);
     expect(onUpdatedFn).toHaveBeenCalled();
   });
 
@@ -194,10 +194,10 @@ describe('Sijoittelun tulokset states', async () => {
       hakemusOid: 'hakemus-1',
       vastaanottoTila: VastaanottoTila.EHDOLLISESTI_VASTAANOTTANUT,
     });
-    let state = await waitIdle(actor);
-    expect(state.context.changedHakemukset.length).toEqual(1);
+    const state = await waitIdle(actor);
+    expect(state.context.changedHakemukset).toHaveLength(1);
     actor.send({ type: ValinnanTulosEventType.UPDATE });
-    state = await waitIdle(actor);
+    await waitIdle(actor);
     expect(onUpdatedFn).not.toHaveBeenCalled();
   });
 
@@ -212,7 +212,7 @@ describe('Sijoittelun tulokset states', async () => {
 
     const state = await waitIdle(actor);
 
-    expect(state.context.changedHakemukset.length).toEqual(1);
+    expect(state.context.changedHakemukset).toHaveLength(1);
     expect(state.context.changedHakemukset?.[0]?.vastaanottoTila).toEqual(
       VastaanottoTila.KESKEN,
     );
