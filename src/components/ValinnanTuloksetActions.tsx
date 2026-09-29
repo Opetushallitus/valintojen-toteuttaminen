@@ -107,7 +107,6 @@ export const ValinnanTuloksetExcelDownloadButton = ({
       defaultFileName={`valinnantulos-${hakukohdeOid}.xlsx`}
       errorKey="get-valinnan-tulos-excel"
       errorMessage="valinnan-tulokset.virhe-vie-taulukkolaskentaan"
-      disabled={!valintatapajonoOid}
       getFile={() =>
         getValinnanTulosExcel({
           haku,
