@@ -16,7 +16,11 @@ import {
   VastaanottoTila,
 } from '@/lib/types/sijoittelu-types';
 import { isEmpty, prop } from 'remeda';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import {
+  useQueryClient,
+  useSuspenseQuery,
+  useMutation,
+} from '@tanstack/react-query';
 import {
   getValinnanTulosExcel,
   getMyohastyneetHakemukset,
@@ -28,7 +32,6 @@ import { SpinnerGlobalModal } from '@/components/modals/spinner-global-modal';
 import { buildLinkToApplication } from '@/lib/ataru/ataru-service';
 import { ExternalLink } from '@/components/external-link';
 import { useSelector } from '@xstate/react';
-import { useMutation } from '@tanstack/react-query';
 import useToaster from '@/hooks/useToaster';
 import { styled } from '@/lib/theme';
 import { useIsValintaesitysJulkaistavissa } from '@/hooks/useIsValintaesitysJulkaistavissa';
@@ -43,6 +46,7 @@ import {
 } from '@/lib/state/valinnanTuloksetMachineTypes';
 import { useHasOnlyHakukohdeReadPermission } from '@/hooks/useHasOnlyHakukohdeReadPermission';
 import { FileSelectButton } from '@/components/file-select-button';
+import { refetchHakukohteenValinnanTuloksetData } from '@/lib/valinta-tulos-service/valinta-tulos-queries';
 
 const ActionsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -121,15 +125,15 @@ export const ValinnanTuloksetExcelUploadButton = ({
   haku,
   hakukohdeOid,
   valintatapajonoOid,
-  onUpdated,
 }: {
   haku: Haku;
   hakukohdeOid: string;
   valintatapajonoOid?: string;
-  onUpdated?: () => void;
 }) => {
   const { t } = useTranslations();
   const { addToast } = useToaster();
+
+  const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
     mutationFn: async ({ file }: { file: File }) => {
@@ -155,7 +159,11 @@ export const ValinnanTuloksetExcelUploadButton = ({
     },
     onSuccess: () => {
       hideModal(SpinnerGlobalModal);
-      onUpdated?.();
+      refetchHakukohteenValinnanTuloksetData({
+        queryClient,
+        haku,
+        hakukohdeOid,
+      });
       addToast({
         key: 'upload-valinnan-tulos-excel-success',
         message: 'valinnan-tulokset.tuo-taulukkolaskennasta-onnistui',
@@ -321,13 +329,12 @@ export const ValinnanTuloksetActions = ({
 
   const { send } = valinnanTulosActorRef;
 
-  const { state, hakemukset, valintatapajonoOid, onUpdated } = useSelector(
+  const { state, hakemukset, valintatapajonoOid } = useSelector(
     valinnanTulosActorRef,
     (s) => ({
       state: s,
       hakemukset: s.context.hakemukset,
       valintatapajonoOid: s.context.valintatapajonoOid,
-      onUpdated: s.context.onUpdated,
     }),
   );
 
@@ -364,7 +371,6 @@ export const ValinnanTuloksetActions = ({
           haku={haku}
           hakukohdeOid={hakukohde.oid}
           valintatapajonoOid={valintatapajonoOid}
-          onUpdated={onUpdated}
         />
       )}
       <MerkitseMyohastyneeksiButton
