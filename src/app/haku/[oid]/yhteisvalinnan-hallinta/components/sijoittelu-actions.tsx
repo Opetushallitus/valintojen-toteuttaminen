@@ -43,7 +43,6 @@ const SijoitteluButton = ({
   const [sijoitteluInProgress, setSijoitteluInProgress] =
     useState<boolean>(sijoitteluRunning);
 
-  // eslint-disable-next-line @tanstack/query/exhaustive-deps
   useQuery({
     queryKey: ['sijoitteluStatusPolling', hakuOid],
     queryFn: async () => {

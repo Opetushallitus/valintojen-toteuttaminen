@@ -19,7 +19,12 @@ export const ValintaryhmaLink = ({
   const vrSearchParam = searchParams.get('vrsearch');
 
   return disabled ? (
-    <Box style={{ paddingLeft: '7px', width: '100%' }}>{children}</Box>
+    <Box
+      className={props.className}
+      style={{ paddingLeft: '7px', width: '100%' }}
+    >
+      {children}
+    </Box>
   ) : (
     <Link
       {...props}

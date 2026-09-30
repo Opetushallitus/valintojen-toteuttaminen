@@ -104,6 +104,7 @@ export const makeExternalLinkColumn = <T extends Record<string, unknown>>({
   key,
   linkName,
   nameProp,
+  nameFallbackProp,
   linkProp,
   style = {},
 }: {
@@ -112,7 +113,8 @@ export const makeExternalLinkColumn = <T extends Record<string, unknown>>({
   key: string;
   linkName?: string;
   nameProp?: KeysMatching<T, string>;
-  linkProp: KeysMatching<T, string | unknown>;
+  nameFallbackProp?: KeysMatching<T, string>;
+  linkProp: KeysMatching<T, string | number | null | undefined>;
   style?: React.CSSProperties;
 }): ListTableColumn<T> => ({
   title,
@@ -121,7 +123,11 @@ export const makeExternalLinkColumn = <T extends Record<string, unknown>>({
     isNullish(props[linkProp]) ? null : (
       <ExternalLink
         noIcon={true}
-        name={linkName ?? (props[nameProp ?? linkProp] as string)}
+        name={
+          linkName ??
+          ((props[nameProp ?? linkProp] as string) ||
+            (nameFallbackProp ? (props[nameFallbackProp] as string) : ''))
+        }
         href={linkBuilder(props[linkProp] as string)}
       />
     ),
@@ -155,6 +161,7 @@ export const createHakijaColumn = ({
     title: 'hakeneet.taulukko.hakija',
     key: 'hakijanNimi',
     nameProp: 'hakijanNimi',
+    nameFallbackProp: 'hakijaOid', // jos nimi tyhjä, näytetään oid, että saadaan linkki näkyviin
     linkProp: hakijaLinkType,
   });
 
