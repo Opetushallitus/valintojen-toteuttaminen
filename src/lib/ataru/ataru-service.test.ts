@@ -14,7 +14,7 @@ test('returns hakemukset', async () => {
     hakuOid: 'haku1',
     hakukohdeOid: 'hakukohde1',
   });
-  expect(hakemukset.length).toEqual(3);
+  expect(hakemukset).toHaveLength(3);
   assertHakemus(hakemukset[0]!, 1, 'Ruhtinas', 'Nukettaja', 1);
   assertHakemus(hakemukset[1]!, 2, 'Kreivi', 'Dacula', 2);
   assertHakemus(hakemukset[2]!, 3, 'Puru', 'Purukumi', 1);

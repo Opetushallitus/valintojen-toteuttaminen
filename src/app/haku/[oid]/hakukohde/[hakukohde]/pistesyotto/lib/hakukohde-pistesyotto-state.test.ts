@@ -226,7 +226,7 @@ describe('createPisteSyottoMachine', () => {
     });
 
     let changedPistetiedot = actor.getSnapshot().context.changedPistetiedot;
-    expect(changedPistetiedot.length).toEqual(0);
+    expect(changedPistetiedot).toHaveLength(0);
     actor.send({
       type: PisteSyottoEvent.PISTETIETO_CHANGED,
       hakemusOid: '1',
@@ -235,7 +235,7 @@ describe('createPisteSyottoMachine', () => {
     });
 
     changedPistetiedot = actor.getSnapshot().context.changedPistetiedot;
-    expect(changedPistetiedot.length).toEqual(1);
+    expect(changedPistetiedot).toHaveLength(1);
     expect(changedPistetiedot[0]).toMatchObject(
       generatePistetiedot([
         {
@@ -275,7 +275,7 @@ describe('createPisteSyottoMachine', () => {
 
     let changedPistetiedot = actor.getSnapshot().context.changedPistetiedot;
 
-    expect(changedPistetiedot.length).toEqual(1);
+    expect(changedPistetiedot).toHaveLength(1);
     expect(changedPistetiedot[0]).toMatchObject(
       generatePistetiedot([
         {
@@ -300,7 +300,7 @@ describe('createPisteSyottoMachine', () => {
 
     changedPistetiedot = actor.getSnapshot().context.changedPistetiedot;
 
-    expect(changedPistetiedot.length).toEqual(1);
+    expect(changedPistetiedot).toHaveLength(1);
     expect(changedPistetiedot[0]).toMatchObject(
       generatePistetiedot([
         {

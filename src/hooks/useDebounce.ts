@@ -23,7 +23,12 @@ export function useDebounce(callback: any, delay: number) {
     callbackRef.current = callback;
   });
   return useMemo(
-    () => debounce((...args) => callbackRef.current(...args), delay),
+    () =>
+      debounce(
+        // eslint-disable-next-line react-hooks/refs -- intentional: ref is only read when the debounced function is later invoked, not during render
+        (...args) => callbackRef.current(...args),
+        delay,
+      ),
     [delay],
   );
 }

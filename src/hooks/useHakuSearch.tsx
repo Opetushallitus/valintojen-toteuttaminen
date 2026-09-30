@@ -158,7 +158,7 @@ export const useHakuSearchParams = () => {
 
 export const useHakuSearchResults = () => {
   const userPermissions = useUserPermissions();
-  const alkamiskaudet = useMemo(getHakuAlkamisKaudet, []);
+  const alkamiskaudet = useMemo(() => getHakuAlkamisKaudet(), []);
   const { data: hakutavat } = useHakutavat();
   const { t, translateEntity } = useTranslations();
 
