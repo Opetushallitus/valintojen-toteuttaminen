@@ -51,7 +51,7 @@
     "nuqs": "^2.10.1",
     "quill": "^2.0.3",
     "react": "^19.3.0",
-    "react-datepicker": "^8.10.0",
+    "react-datepicker": "^9.1.0",
     "react-dom": "^19.3.0",
     "react-error-boundary": "^5.0.0",
     "react-router": "^8.3.1",
