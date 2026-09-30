@@ -1,11 +1,11 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { selectEditableValintalaskennanTulokset } from './useEditableValintalaskennanTulokset';
 import {
+  JarjestyskriteeriModel,
+  TuloksenTila,
   ValintalaskennanTulosValinnanvaiheModel,
   ValintalaskennanValintatapajonoModel,
   ValintalaskennanValintatapaJonosijaModel,
-  TuloksenTila,
-  JarjestyskriteeriModel,
 } from '../lib/types/laskenta-types';
 import {
   Valinnanvaihe,
@@ -128,8 +128,9 @@ describe('selectEditableValintalaskennanTulokset', () => {
     });
 
     expect(jonosija?.jarjestyskriteerit).toHaveLength(1);
-    const kriteeri = jonosija?.jarjestyskriteerit?.[0];
-    expect(kriteeri).toMatchObject({
+    expect(
+      (jonosija?.jarjestyskriteerit as Array<JarjestyskriteeriModel>)[0],
+    ).toMatchObject({
       arvo: '85,5',
       kuvaus: { FI: 'Pisteet', SV: 'Poäng', EN: 'Points' },
       tila: 'HYVAKSYTTAVISSA',
@@ -350,6 +351,23 @@ describe('selectEditableValintalaskennanTulokset', () => {
       siirretaanSijoitteluun: true, // value from valintaperusteet (base definition)
       kaytetaanKokonaispisteita: false,
     });
+  });
+
+  it('should set prioriteetti from hakutoiveNumero when no jonosija exists (first save scenario)', () => {
+    const hakemuksetWithPriority = [
+      { ...mockHakemus1, hakutoiveNumero: 2 },
+      { ...mockHakemus2, hakutoiveNumero: 3 },
+    ];
+
+    const result = selectEditableValintalaskennanTulokset({
+      valintalaskennanTulokset: [],
+      valinnanvaiheet: [mockValintaperusteValinnanvaihe],
+      hakemukset: hakemuksetWithPriority,
+    });
+
+    const jonosijat = result[0]?.valintatapajonot?.[0]?.jonosijat;
+    expect(jonosijat?.[0]?.prioriteetti).toBe(2);
+    expect(jonosijat?.[1]?.prioriteetti).toBe(3);
   });
 
   it('should handle automaattinenSijoitteluunSiirto=false for jono without laskenta and without tulos', () => {
