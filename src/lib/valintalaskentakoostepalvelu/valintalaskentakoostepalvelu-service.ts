@@ -45,6 +45,7 @@ import {
 import { ValintakoekutsutData } from '../types/valintakoekutsut-types';
 import {
   DokumenttiTyyppi,
+  HakemuksenVastaanottoTilat,
   HakukohteidenSuodatustiedot,
   HakutoiveValintakoeOsallistumiset,
   Kirjepohja,
@@ -1321,4 +1322,22 @@ export async function getHaunParametrit(hakuOid: string) {
     ),
   );
   return { pistesyottoEnabled: response?.data?.koetulostentallennus };
+}
+
+export async function getSijoittelunVastaanottoTilat({
+  hakuOid,
+  hakemusOid,
+}: {
+  hakuOid: string;
+  hakemusOid: string;
+}) {
+  const configuration = getConfiguration();
+  const response = await client.get<HakemuksenVastaanottoTilat>(
+    getConfigUrl(
+      configuration.routes.valintalaskentakoostepalvelu
+        .sijoittelunVastaanottoTilatUrl,
+      { hakuOid, hakemusOid },
+    ),
+  );
+  return response.data;
 }

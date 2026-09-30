@@ -398,7 +398,8 @@
       "hyvaksymiskirje-hakemukselle-luotu": "Muodostettu hyväksymiskirje hakemukselle",
       "hyvaksymiskirje-hakemukselle-luotu-epaonnistui": "Hyväksymiskirjeen muodostaminen hakemukselle epäonnistui",
       "muutoshistoria-virhe": "Muutoshistorian lataus epäonnistui",
-      "palautuksen-erapaiva": "Palautuksen eräpäivä vastaanottajalle"
+      "palautuksen-erapaiva": "Palautuksen eräpäivä vastaanottajalle",
+      "valintatilanne": "Valintatilanne"
     },
     "muutoshistoria": {
       "otsikko": "Muutoshistoria",
@@ -751,6 +752,35 @@
       "keskeytynyt": "Keskeytynyt {total}",
       "kaynnissa": "Käynnissä {total}",
       "jonossa": "Jonossa {total}"
+    }
+  },
+  "valintatilanne": {
+    "otsikko": "Valintatilanne",
+    "hakemus-oid": "Hakemuksen tekninen tunniste (OID)",
+    "oppijanumero": "Oppijanumero",
+    "lopullinen": "(lopullinen)",
+    "kesken": "(kesken)",
+    "hakutoive": "Hakutoive",
+    "tila": "Tila",
+    "virhe": "Valintatilanteen lataus epäonnistui",
+    "ehdollinen": "ehdollinen",
+    "varalla": "{varasija}. varasijalla",
+    "varalla-pvm": "{varasija}. varasijalla. Varasijoja täytetään {varasijaPvm} asti.",
+    "valintatila": {
+      "HYVAKSYTTY": "Hyväksytty",
+      "HYVAKSYTTY_KESKEN": "Hyväksytty (odottaa ylempien hakukohteiden tuloksia)",
+      "HARKINNANVARAISESTI_HYVAKSYTTY": "Hyväksytty",
+      "VARASIJALTA_HYVAKSYTTY": "Hyväksytty varasijalta",
+      "KESKEN": "Opiskelijavalinta kesken",
+      "PERUUTETTU": "Peruutettu",
+      "PERUNUT": "Perunut opiskelupaikan",
+      "PERUUNTUNUT": "Peruuntunut",
+      "HYLATTY": "Ei saanut opiskelupaikkaa."
+    },
+    "vastaanottotila": {
+      "VASTAANOTTANUT_SITOVASTI": "Opiskelupaikka vastaanotettu",
+      "EHDOLLISESTI_VASTAANOTTANUT": "Opiskelupaikka vastaanotettu ehdollisesti",
+      "EI_VASTAANOTETTU_MAARA_AIKANA": "Opiskelupaikkaa ei otettu vastaan määräaikaan mennessä"
     }
   }
 }

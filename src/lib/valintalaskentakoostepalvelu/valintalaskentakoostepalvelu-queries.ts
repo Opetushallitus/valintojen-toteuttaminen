@@ -5,6 +5,7 @@ import {
   getHaunParametrit,
   getKirjepohjatHakukohteelle,
   getPisteetForHakukohde,
+  getSijoittelunVastaanottoTilat,
 } from './valintalaskentakoostepalvelu-service';
 import {
   DokumenttiTyyppi,
@@ -81,4 +82,16 @@ export const queryOptionsGetHakukohteidenSuodatustiedot = ({
   queryOptions({
     queryKey: ['getHakukohteidenSuodatustiedot', hakuOid],
     queryFn: () => getHakukohteidenSuodatustiedot({ hakuOid }),
+  });
+
+export const queryOptionsGetSijoittelunVastaanottoTilat = ({
+  hakuOid,
+  hakemusOid,
+}: {
+  hakuOid: string;
+  hakemusOid: string;
+}) =>
+  queryOptions({
+    queryKey: ['getSijoittelunVastaanottoTilat', hakuOid, hakemusOid],
+    queryFn: () => getSijoittelunVastaanottoTilat({ hakuOid, hakemusOid }),
   });
