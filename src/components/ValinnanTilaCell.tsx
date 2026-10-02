@@ -429,15 +429,14 @@ export const ValinnanTilaCell = memo(function ValinnanTilaCell({
             }
           />
         )}
-      {mode === 'sijoittelu' &&
-        (valinnanTila === ValinnanTila.HYVAKSYTTY ||
-          valinnanTila === ValinnanTila.VARASIJALTA_HYVAKSYTTY) && (
-          <OphCheckbox
-            checked={Boolean(hakemus.hyvaksymiskirjeLahetetty)}
-            onChange={updateHyvaksyttyKirjeLahetetty}
-            label={t('sijoittelun-tulokset.hyvaksymiskirje-lahetetty')}
-          />
-        )}
+      {(valinnanTila === ValinnanTila.HYVAKSYTTY ||
+        valinnanTila === ValinnanTila.VARASIJALTA_HYVAKSYTTY) && (
+        <OphCheckbox
+          checked={Boolean(hakemus.hyvaksymiskirjeLahetetty)}
+          onChange={updateHyvaksyttyKirjeLahetetty}
+          label={t('sijoittelun-tulokset.hyvaksymiskirje-lahetetty')}
+        />
+      )}
       {mode === 'valinta' && valinnanTila === ValinnanTila.HYLATTY && (
         <HylkayksenSyyFields
           hakemus={hakemus}

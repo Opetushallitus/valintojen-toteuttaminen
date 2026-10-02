@@ -206,6 +206,11 @@ export default async function playwrightSetup() {
     ) {
       return modifyResponse(response, []);
     } else if (
+      request.method === 'GET' &&
+      request.url?.includes('valinta-tulos-service/auth/hyvaksymiskirje')
+    ) {
+      return modifyResponse(response, []);
+    } else if (
       request.method === 'POST' &&
       request.url?.endsWith('valinta-tulos-service/auth/hyvaksymiskirje')
     ) {

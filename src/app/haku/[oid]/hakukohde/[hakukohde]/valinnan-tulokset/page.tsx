@@ -18,6 +18,7 @@ import { useIsDirtyValinnanTulos } from '@/lib/state/valinnanTuloksetMachineUtil
 import { useHakemuksetValinnanTuloksilla } from './hooks/useHakemuksetValinnanTuloksilla';
 import { ValinnanTuloksetSpinnerModal } from './components/ValinnanTuloksetSpinnerModal';
 import {
+  queryOptionsGetHakukohteenKirjeLahetetty,
   queryOptionsGetHakukohteenLukuvuosimaksut,
   queryOptionsGetHakukohteenValinnanTulokset,
 } from '@/lib/valinta-tulos-service/valinta-tulos-queries';
@@ -29,6 +30,7 @@ import { queryOptionsGetHakemukset } from '@/lib/ataru/ataru-queries';
 import { useNavigationBlockerWithWindowEvents } from '@/hooks/useNavigationBlocker';
 import { Hakemus } from '@/lib/ataru/ataru-types';
 import {
+  HakukohteenHyvaksymiskirjeetLahetettyResult,
   HakukohteenLukuvuosimaksut,
   HakukohteenValinnanTuloksetData,
 } from '@/lib/valinta-tulos-service/valinta-tulos-service';
@@ -40,6 +42,7 @@ type ValinnanTuloksetContentProps = {
   hakemukset: Array<Hakemus>;
   valinnanTulokset: HakukohteenValinnanTuloksetData;
   lukuvuosimaksut: HakukohteenLukuvuosimaksut;
+  kirjeLahetetty: HakukohteenHyvaksymiskirjeetLahetettyResult;
 };
 
 const ValinnanTuloksetContent = ({
@@ -48,6 +51,7 @@ const ValinnanTuloksetContent = ({
   valinnanTulokset,
   hakemukset,
   lukuvuosimaksut,
+  kirjeLahetetty,
 }: ValinnanTuloksetContentProps) => {
   const { t } = useTranslations();
 
@@ -55,6 +59,7 @@ const ValinnanTuloksetContent = ({
     hakemukset,
     valinnanTulokset,
     lukuvuosimaksut,
+    kirjeLahetetty,
   });
 
   const valinnanTulosActorRef = useValinnanTulosActorRef({
@@ -140,12 +145,18 @@ const ValinnanTuloksetPageContent = ({
       queryOptionsGetHakukohteenLukuvuosimaksut({ hakukohdeOid, haku }),
     );
 
+  const { data: kirjeLahetetty, dataUpdatedAt: kirjeLahetettyUpdatedAt } =
+    useSuspenseQuery(
+      queryOptionsGetHakukohteenKirjeLahetetty({ hakukohdeOid }),
+    );
+
   const dataUpdatedAt = Math.max(
     hakuUpdatedAt,
     hakukohdeUpdatedAt,
     valinnanTuloksetUpdatedAt,
     hakemuksetUpdatedAt,
     lukuvuosimaksutUpdatedAt,
+    kirjeLahetettyUpdatedAt,
   );
 
   return (
@@ -157,6 +168,7 @@ const ValinnanTuloksetPageContent = ({
       hakemukset={hakemukset}
       valinnanTulokset={valinnanTulokset}
       lukuvuosimaksut={lukuvuosimaksut}
+      kirjeLahetetty={kirjeLahetetty}
     />
   );
 };

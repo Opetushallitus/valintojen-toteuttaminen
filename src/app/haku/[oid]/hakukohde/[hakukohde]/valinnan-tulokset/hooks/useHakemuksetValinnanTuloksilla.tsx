@@ -4,6 +4,7 @@ import {
   Maksuvelvollisuus,
 } from '@/lib/ataru/ataru-types';
 import {
+  HakukohteenHyvaksymiskirjeetLahetettyResult,
   HakukohteenLukuvuosimaksut,
   HakukohteenValinnanTuloksetData,
 } from '@/lib/valinta-tulos-service/valinta-tulos-service';
@@ -15,13 +16,16 @@ export const useHakemuksetValinnanTuloksilla = ({
   hakemukset,
   valinnanTulokset,
   lukuvuosimaksut,
+  kirjeLahetetty,
 }: {
   hakemukset: Array<Hakemus>;
   valinnanTulokset: HakukohteenValinnanTuloksetData;
   lukuvuosimaksut: HakukohteenLukuvuosimaksut;
+  kirjeLahetetty: HakukohteenHyvaksymiskirjeetLahetettyResult;
 }): Array<HakemuksenValinnanTulos> => {
   return useMemo(() => {
     const lukuvuosimaksutIndexed = indexBy(lukuvuosimaksut, (m) => m.personOid);
+    const kirjeLahetettyIndexed = indexBy(kirjeLahetetty, (k) => k.henkiloOid);
 
     return hakemukset.map((hakemus) => {
       const valinnanTulos = valinnanTulokset.data[hakemus.hakemusOid];
@@ -35,6 +39,9 @@ export const useHakemuksetValinnanTuloksilla = ({
         hakemusOid: hakemus.hakemusOid,
         hakijanNimi: hakemus.hakijanNimi,
         maksunTila: maksunTila || undefined,
+        hyvaksymiskirjeLahetetty: Boolean(
+          kirjeLahetettyIndexed[hakemus.hakijaOid]?.lahetetty,
+        ),
         ...(valinnanTulos
           ? {
               hakukohdeOid: valinnanTulos.hakukohdeOid,
@@ -68,5 +75,5 @@ export const useHakemuksetValinnanTuloksilla = ({
           : {}),
       };
     });
-  }, [hakemukset, lukuvuosimaksut, valinnanTulokset]);
+  }, [hakemukset, lukuvuosimaksut, kirjeLahetetty, valinnanTulokset]);
 };
