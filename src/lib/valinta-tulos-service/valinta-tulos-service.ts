@@ -250,6 +250,30 @@ export const saveValinnanTulokset = async ({
   return data;
 };
 
+export const saveHyvaksymiskirjeLahetetty = async ({
+  hakukohdeOid,
+  hakemukset,
+}: {
+  hakukohdeOid: string;
+  hakemukset: Array<{
+    hakijaOid: string;
+    hyvaksymiskirjeLahetetty?: boolean;
+  }>;
+}) => {
+  const configuration = getConfiguration();
+  const muuttuneetKirjeet = hakemukset.map((h) => {
+    return {
+      henkiloOid: h.hakijaOid,
+      hakukohdeOid: hakukohdeOid,
+      lahetetty: h.hyvaksymiskirjeLahetetty ? new Date().toISOString() : null,
+    };
+  });
+  await client.post<unknown>(
+    `${configuration.routes.valintaTulosService.valintaTulosServiceUrl}hyvaksymiskirje`,
+    muuttuneetKirjeet,
+  );
+};
+
 export const saveSijoitteluAjonTulokset = async ({
   valintatapajonoOid,
   hakukohdeOid,
@@ -261,7 +285,6 @@ export const saveSijoitteluAjonTulokset = async ({
   lastModified?: string | null;
   hakemukset: Array<SijoittelunHakemusValintatiedoilla>;
 }) => {
-  const configuration = getConfiguration();
   const valintaTulokset = hakemukset.map((h) => {
     return {
       hakukohdeOid,
@@ -288,17 +311,7 @@ export const saveSijoitteluAjonTulokset = async ({
     tulokset: valintaTulokset,
   });
 
-  const muuttuneetKirjeet = hakemukset.map((h) => {
-    return {
-      henkiloOid: h.hakijaOid,
-      hakukohdeOid: hakukohdeOid,
-      lahetetty: h.hyvaksymiskirjeLahetetty ?? null,
-    };
-  });
-  await client.post<unknown>(
-    `${configuration.routes.valintaTulosService.valintaTulosServiceUrl}hyvaksymiskirje`,
-    muuttuneetKirjeet,
-  );
+  await saveHyvaksymiskirjeLahetetty({ hakukohdeOid, hakemukset });
 };
 
 export const hyvaksyValintaEsitys = async (valintatapajonoOid: string) => {
