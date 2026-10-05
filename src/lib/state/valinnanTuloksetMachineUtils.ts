@@ -66,6 +66,17 @@ const VASTAANOTTOTILA_TO_VALINNAN_TILA = Object.freeze({
 });
 
 /**
+ * Säilytetään alkuperäinen lähetysaika, jos täppä poistetaan ja lisätään uudelleen.
+ */
+const getHyvaksymiskirjeLahetetty = (
+  tulos: HakemuksenValinnanTulos,
+  originalHakemus: HakemuksenValinnanTulos,
+) =>
+  tulos.hyvaksymiskirjeLahetetty && originalHakemus.hyvaksymiskirjeLahetetty
+    ? originalHakemus.hyvaksymiskirjeLahetetty
+    : tulos.hyvaksymiskirjeLahetetty;
+
+/**
  * Tekee eventin mukaiset muokkaukset changedHakemukset-taulukkoon ja palauttaa muokatun taulukon.
  */
 function applyEditsToChangedHakemukset<T extends HakemuksenValinnanTulos>({
@@ -87,9 +98,14 @@ function applyEditsToChangedHakemukset<T extends HakemuksenValinnanTulos>({
 
   for (const fieldName of SIJOITTELUN_TULOS_EDITABLE_FIELDS) {
     if (event?.[fieldName] !== undefined) {
-      (tulos[fieldName] as string | boolean) = event?.[fieldName];
+      (tulos[fieldName] as string | boolean | null) = event?.[fieldName];
     }
   }
+
+  tulos.hyvaksymiskirjeLahetetty = getHyvaksymiskirjeLahetetty(
+    tulos,
+    originalHakemus,
+  );
 
   if (
     event.vastaanottoTila &&

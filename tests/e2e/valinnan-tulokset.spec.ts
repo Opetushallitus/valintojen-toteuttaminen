@@ -10,6 +10,7 @@ import {
   selectOption,
   testMuodostaHakemusHyvaksymiskirje,
   testNaytaMuutoshistoria,
+  TIMESTAMP_REGEX,
   waitForMethodRequest,
 } from './playwright-utils';
 import { buildConfiguration } from '@/lib/configuration/build-configuration';
@@ -682,12 +683,18 @@ test.describe('Tallennus', () => {
         ),
     });
 
-    const hyvaksymiskirjeCheckbox = page
-      .getByRole('row', { name: 'Purukumi Puru' })
-      .getByRole('checkbox', { name: 'Hyväksymiskirje lähetetty' });
+    const puruRow = page.getByRole('row', { name: 'Purukumi Puru' });
+    const hyvaksymiskirjeCheckbox = puruRow.getByRole('checkbox', {
+      name: 'Hyväksymiskirje lähetetty',
+    });
+    const lahetettyIcon = puruRow.getByRole('img', {
+      name: TIMESTAMP_REGEX,
+    });
     await expect(hyvaksymiskirjeCheckbox).not.toBeChecked();
+    await expect(lahetettyIcon).toBeHidden();
     await hyvaksymiskirjeCheckbox.click();
     await expect(hyvaksymiskirjeCheckbox).toBeChecked();
+    await expect(lahetettyIcon).toBeVisible();
 
     await page.route(
       `*/**/valinta-tulos-service/auth/hyvaksymiskirje?hakukohdeOid=${hakukohdeOid}`,
@@ -723,6 +730,7 @@ test.describe('Tallennus', () => {
     ).toBeVisible();
     await expectAllSpinnersHidden(page);
     await expect(hyvaksymiskirjeCheckbox).toBeChecked();
+    await expect(lahetettyIcon).toHaveAccessibleName('5.2.2025 12:00:00');
   });
 
   test('Lataa ja näyttää uudet tiedot tallennuksen jälkeen', async ({

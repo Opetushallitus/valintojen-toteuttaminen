@@ -9,6 +9,7 @@ import {
   selectOption,
   testMuodostaHakemusHyvaksymiskirje,
   testNaytaMuutoshistoria,
+  TIMESTAMP_REGEX,
   waitForMethodRequest,
 } from './playwright-utils';
 import {
@@ -566,9 +567,14 @@ test.describe('Tallennus', () => {
     const hyvaksymiskirjeCheckbox = nukettajaRow.getByRole('checkbox', {
       name: 'Hyväksymiskirje lähetetty',
     });
+    const lahetettyIcon = nukettajaRow.getByRole('img', {
+      name: TIMESTAMP_REGEX,
+    });
     await expect(hyvaksymiskirjeCheckbox).not.toBeChecked();
+    await expect(lahetettyIcon).toBeHidden();
     await hyvaksymiskirjeCheckbox.click();
     await expect(hyvaksymiskirjeCheckbox).toBeChecked();
+    await expect(lahetettyIcon).toBeVisible();
 
     await page.route(
       (url) =>
@@ -611,6 +617,7 @@ test.describe('Tallennus', () => {
     ).toBeVisible();
     await expectAllSpinnersHidden(page);
     await expect(hyvaksymiskirjeCheckbox).toBeChecked();
+    await expect(lahetettyIcon).toHaveAccessibleName('5.2.2025 12:00:00');
   });
 
   test('Tallennus epäonnistuu osittain', async ({ page }) => {

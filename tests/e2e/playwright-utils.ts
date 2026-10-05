@@ -13,6 +13,8 @@ import regexpEscape from 'regexp.escape';
 import { styleText } from 'node:util';
 import { ProcessResponse } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 
+export const TIMESTAMP_REGEX = /^\d{1,2}\.\d{1,2}\.\d{4} \d{2}:\d{2}:\d{2}$/;
+
 export const expectPageAccessibilityOk = async (page: Page) => {
   // Poistetaan animaatiot ja siirtymät käytöstä ennen skannausta, jotta axe ei
   // mittaa kesken fade-siirtymän olevaa (läpinäkyvää) modaalia väärillä

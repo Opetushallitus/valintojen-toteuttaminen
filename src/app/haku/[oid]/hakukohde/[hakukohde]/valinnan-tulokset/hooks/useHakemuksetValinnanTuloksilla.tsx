@@ -39,9 +39,8 @@ export const useHakemuksetValinnanTuloksilla = ({
         hakemusOid: hakemus.hakemusOid,
         hakijanNimi: hakemus.hakijanNimi,
         maksunTila: maksunTila || undefined,
-        hyvaksymiskirjeLahetetty: Boolean(
-          kirjeLahetettyIndexed[hakemus.hakijaOid]?.lahetetty,
-        ),
+        hyvaksymiskirjeLahetetty:
+          kirjeLahetettyIndexed[hakemus.hakijaOid]?.lahetetty ?? null,
         ...(valinnanTulos
           ? {
               hakukohdeOid: valinnanTulos.hakukohdeOid,

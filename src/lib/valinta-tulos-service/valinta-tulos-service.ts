@@ -274,7 +274,7 @@ export const saveHyvaksymiskirjeLahetetty = async ({
   hakukohdeOid: string;
   hakemukset: Array<{
     hakijaOid: string;
-    hyvaksymiskirjeLahetetty?: boolean;
+    hyvaksymiskirjeLahetetty?: string | null;
   }>;
 }) => {
   const configuration = getConfiguration();
@@ -282,7 +282,7 @@ export const saveHyvaksymiskirjeLahetetty = async ({
     return {
       henkiloOid: h.hakijaOid,
       hakukohdeOid: hakukohdeOid,
-      lahetetty: h.hyvaksymiskirjeLahetetty ? new Date().toISOString() : null,
+      lahetetty: h.hyvaksymiskirjeLahetetty ?? null,
     };
   });
   await client.post<unknown>(

@@ -69,11 +69,11 @@ describe('selectSijoitteluajonTuloksetValintatiedoilla', () => {
     expect(
       hakemukset.find((h) => h.hakijaOid === 'hakija2')
         ?.hyvaksymiskirjeLahetetty,
-    ).toBe(true);
+    ).toBe('2025-01-02T03:04:05.000Z');
     expect(
       hakemukset.find((h) => h.hakijaOid === 'hakija1')
         ?.hyvaksymiskirjeLahetetty,
-    ).toBe(false);
+    ).toBeNull();
   });
 
   test('tulokset are sorted by sija', async () => {

@@ -209,7 +209,7 @@ describe('Hyväksymiskirje lähetetty checkbox', () => {
       mode: 'sijoittelu',
       hakemus: {
         valinnanTila: ValinnanTila.HYVAKSYTTY,
-        hyvaksymiskirjeLahetetty: true,
+        hyvaksymiskirjeLahetetty: '2025-01-02T03:04:05.000Z',
       },
     });
 

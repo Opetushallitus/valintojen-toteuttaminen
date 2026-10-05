@@ -156,5 +156,5 @@ export type HakemuksenValinnanTulos = {
   vastaanottoDeadline?: string;
   vastaanottoDeadlineMennyt?: boolean;
   tilanKuvaukset?: TranslatedName;
-  hyvaksymiskirjeLahetetty?: boolean;
+  hyvaksymiskirjeLahetetty?: string | null;
 };
