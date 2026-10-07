@@ -9,9 +9,11 @@ export const PisteSyottoActions = ({
   hakuOid,
   hakukohdeOid,
   isUpdating,
+  isDirty,
   pisteSyottoDisabled,
 }: KoutaOidParams & {
   isUpdating: boolean;
+  isDirty: boolean;
   pisteSyottoDisabled: boolean;
 }) => {
   const { t } = useTranslations();
@@ -42,6 +44,7 @@ export const PisteSyottoActions = ({
         hakuOid={hakuOid}
         hakukohdeOid={hakukohdeOid}
         disabled={isUpdating || pisteSyottoDisabled}
+        isDirty={isDirty}
       />
     </Stack>
   );

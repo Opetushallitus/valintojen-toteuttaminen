@@ -490,4 +490,69 @@ test.describe('Excel tietojen tuonti', () => {
 
     await modalContent.getByRole('button', { name: 'Sulje' }).first().click();
   });
+
+  test('Kysyy vahvistuksen ennen tuontia, jos lomakkeella on tallentamattomia muutoksia, ja peruttaessa säilyttää muutokset', async ({
+    page,
+  }) => {
+    let tuontiCalled = false;
+    await page.route(
+      (url) =>
+        url.pathname.includes(
+          'valintalaskentakoostepalvelu/resources/pistesyotto/tuonti',
+        ),
+      async (route) => {
+        tuontiCalled = true;
+        await route.fulfill({ status: 204 });
+      },
+    );
+    const arvosanaInput = page
+      .getByRole('row', { name: 'Nukettaja Ruhtinas' })
+      .getByRole('cell')
+      .nth(1)
+      .getByRole('textbox');
+    await arvosanaInput.fill('8,7');
+
+    await startExcelImport(page);
+
+    const confirmModal = page.getByRole('dialog', {
+      name: 'Tallentamattomia muutoksia',
+    });
+    await expect(confirmModal).toBeVisible();
+    await confirmModal.getByRole('button', { name: 'Peruuta' }).click();
+    await expect(confirmModal).toBeHidden();
+
+    expect(tuontiCalled).toBe(false);
+    await expect(arvosanaInput).toHaveValue('8,7');
+  });
+
+  test('Tuo tiedot vahvistuksen jälkeen, jos lomakkeella on tallentamattomia muutoksia', async ({
+    page,
+  }) => {
+    await page.route(
+      (url) =>
+        url.pathname.includes(
+          'valintalaskentakoostepalvelu/resources/pistesyotto/tuonti',
+        ),
+      async (route) => await route.fulfill({ status: 204 }),
+    );
+    await page
+      .getByRole('row', { name: 'Nukettaja Ruhtinas' })
+      .getByRole('cell')
+      .nth(1)
+      .getByRole('textbox')
+      .fill('8,7');
+
+    await startExcelImport(page);
+
+    const confirmModal = page.getByRole('dialog', {
+      name: 'Tallentamattomia muutoksia',
+    });
+    await confirmModal.getByRole('button', { name: 'Jatka' }).click();
+
+    await expectAllSpinnersHidden(page);
+    await expectAlertTextVisible(
+      page,
+      'Pistetietojen tuominen taulukkolaskennasta onnistui!',
+    );
+  });
 });
