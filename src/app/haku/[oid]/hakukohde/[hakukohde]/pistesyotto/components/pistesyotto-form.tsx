@@ -7,13 +7,11 @@ import { PisteSyottoActions } from './pistesyotto-actions';
 import { HakukohteenPistetiedot } from '@/lib/types/laskenta-types';
 import { FormBox } from '@/components/form-box';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
-import { useHaunParametrit } from '@/lib/valintalaskentakoostepalvelu/useHaunParametrit';
 import { useQueryClient } from '@tanstack/react-query';
 import { refetchPisteetForHakukohde } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-queries';
 import { usePistesyottoState } from '../lib/hakukohde-pistesyotto-state';
 import { useNavigationBlockerWithWindowEvents } from '@/hooks/useNavigationBlocker';
-import { useUserPermissions } from '@/hooks/useUserPermissions';
-import { isPistesyottoAllowed } from '@/lib/valintojen-toteuttaminen-access';
+import { useIsPistesyottoAllowedForHaku } from '@/hooks/usePistesyottoAllowedForHaku';
 
 export const PisteSyottoForm = ({
   hakuOid,
@@ -50,13 +48,8 @@ export const PisteSyottoForm = ({
     lastModified: pistetiedot.lastModified,
   });
 
-  const { data: haunParametrit } = useHaunParametrit({ hakuOid });
-  const userPermissions = useUserPermissions();
+  const pistesyottoDisabled = !useIsPistesyottoAllowedForHaku(hakuOid);
 
-  const pistesyottoDisabled = !isPistesyottoAllowed({
-    pistesyottoEnabled: haunParametrit.pistesyottoEnabled,
-    permissions: userPermissions,
-  });
   useNavigationBlockerWithWindowEvents(isDirty);
 
   const {
