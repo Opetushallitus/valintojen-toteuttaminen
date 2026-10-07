@@ -75,28 +75,30 @@ export const HenkilonPistesyotto = ({
   useNavigationBlockerWithWindowEvents(isDirty);
 
   return (
-    <Box sx={{ marginTop: 3 }}>
-      <Typography variant="h3">{t('henkilo.pistesyotto')}</Typography>
-      <OphButton
-        sx={{ margin: '0.8rem 0' }}
-        variant="contained"
-        loading={isUpdating}
-        disabled={!isPistesyottoAllowedForHaku || !isPisteetSaveAllowed}
-        onClick={() => {
-          savePistetiedot();
-        }}
-      >
-        {t('yleinen.tallenna')}
-      </OphButton>
-      {hakukohteetKokeilla.map((hakukohde) => (
-        <HakukohteenPisteSyotto
-          key={hakukohde.oid}
-          hakukohde={hakukohde}
-          hakija={hakija}
-          pistesyottoActorRef={pistesyottoActorRef}
-          disabled={hakukohde.readOnly || !isPistesyottoAllowedForHaku}
-        />
-      ))}
-    </Box>
+    !isEmpty(hakukohteetKokeilla) && (
+      <Box sx={{ marginTop: 3 }}>
+        <Typography variant="h3">{t('henkilo.pistesyotto')}</Typography>
+        <OphButton
+          sx={{ margin: '0.8rem 0' }}
+          variant="contained"
+          loading={isUpdating}
+          disabled={!isPistesyottoAllowedForHaku || !isPisteetSaveAllowed}
+          onClick={() => {
+            savePistetiedot();
+          }}
+        >
+          {t('yleinen.tallenna')}
+        </OphButton>
+        {hakukohteetKokeilla.map((hakukohde) => (
+          <HakukohteenPisteSyotto
+            key={hakukohde.oid}
+            hakukohde={hakukohde}
+            hakija={hakija}
+            pistesyottoActorRef={pistesyottoActorRef}
+            disabled={hakukohde.readOnly || !isPistesyottoAllowedForHaku}
+          />
+        ))}
+      </Box>
+    )
   );
 };
