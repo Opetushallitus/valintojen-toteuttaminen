@@ -15,6 +15,6 @@ export type HenkilonHakukohdeTuloksilla = Hakukohde & {
   readOnly: boolean;
   valinnanvaiheet?: LaskennanValinnanvaiheet;
   valinnanTulokset?: Array<ValinnanTulosLisatiedoilla>;
-  kokeet?: Array<ValintakoeAvaimet>;
-  pisteet?: Array<ValintakokeenPisteet>;
+  kokeet: Array<ValintakoeAvaimet>;
+  pisteet: Array<ValintakokeenPisteet>;
 };
