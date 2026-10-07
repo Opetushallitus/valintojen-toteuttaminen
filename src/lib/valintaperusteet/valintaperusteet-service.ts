@@ -128,7 +128,7 @@ export const getValintakoeAvaimetHakukohteelle = async (
   >(
     `${configuration.routes.valintaperusteetService.valintaperusteetUrl}hakukohde/avaimet/${hakukohdeOid}`,
   );
-  return data.map((koe) => {
+  const kokeet = data.map((koe) => {
     const inputTyyppi = determineValintaKoeInputTyyppi(
       koe.tunniste,
       koe.funktiotyyppi,
@@ -145,6 +145,8 @@ export const getValintakoeAvaimetHakukohteelle = async (
       inputTyyppi,
     };
   });
+  // Järjestetään kokeet kuvauksen mukaan, jotta järjestys on sama kaikissa näkymissä
+  return sort(kokeet, (a, b) => a.kuvaus.localeCompare(b.kuvaus));
 };
 
 export const getValintakoeAvaimetHakukohteille = async ({
