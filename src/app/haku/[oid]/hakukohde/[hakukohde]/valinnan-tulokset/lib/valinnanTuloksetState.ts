@@ -8,6 +8,7 @@ import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import {
   getHakukohteenValinnanTulokset,
   hyvaksyValintaEsitys,
+  saveHyvaksymiskirjeLahetetty,
   saveMaksunTilanMuutokset,
 } from '@/lib/valinta-tulos-service/valinta-tulos-service';
 import { ValinnanTulosErrorGlobalModal } from '@/components/modals/valinnan-tulos-error-global-modal';
@@ -99,6 +100,10 @@ export const useValinnanTulosActorRef = ({
             input.changed,
             input.original,
           );
+          await saveHyvaksymiskirjeLahetetty({
+            hakukohdeOid: hakukohde.oid,
+            hakemukset: input.changed,
+          });
         }),
         publish: fromPromise(async ({ input }) => {
           let valintatapajonoOid = input.valintatapajonoOid;

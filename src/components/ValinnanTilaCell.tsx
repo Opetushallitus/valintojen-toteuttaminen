@@ -30,6 +30,8 @@ import { entries, map, pipe } from 'remeda';
 import { styled } from '@/lib/theme';
 import { useCheckPermission } from '@/hooks/useUserPermissions';
 import { InfoTooltipButton } from '@/components/info-tooltip-button';
+import { InfoTooltipIcon } from '@/components/info-tooltip-icon';
+import { toFormattedDateTimeString } from '@/lib/localization/translation-utils';
 import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
 import { useValinnanTilaOptions } from '@/hooks/useValinnanTilaOptions';
 import { isValidValinnanTila } from '@/lib/valinnan-tulokset-utils';
@@ -350,6 +352,7 @@ export const ValinnanTilaCell = memo(function ValinnanTilaCell({
     siirtynytToisestaValintatapajonosta,
     valinnanTila,
     vastaanottoTila,
+    hyvaksymiskirjeLahetetty,
   } = hakemus;
 
   const updateHyvaksyttyVarasijalta = () => {
@@ -363,6 +366,15 @@ export const ValinnanTilaCell = memo(function ValinnanTilaCell({
     updateForm({
       hakemusOid,
       hyvaksyPeruuntunut: !hyvaksyPeruuntunut,
+    });
+  };
+
+  const updateHyvaksyttyKirjeLahetetty = () => {
+    updateForm({
+      hakemusOid,
+      hyvaksymiskirjeLahetetty: hyvaksymiskirjeLahetetty
+        ? null
+        : new Date().toISOString(),
     });
   };
 
@@ -421,6 +433,22 @@ export const ValinnanTilaCell = memo(function ValinnanTilaCell({
             }
           />
         )}
+      {(valinnanTila === ValinnanTila.HYVAKSYTTY ||
+        valinnanTila === ValinnanTila.VARASIJALTA_HYVAKSYTTY) && (
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <OphCheckbox
+            checked={Boolean(hyvaksymiskirjeLahetetty)}
+            onChange={updateHyvaksyttyKirjeLahetetty}
+            label={t('sijoittelun-tulokset.hyvaksymiskirje-lahetetty')}
+            disabled={disabled}
+          />
+          {hyvaksymiskirjeLahetetty && (
+            <InfoTooltipIcon
+              title={toFormattedDateTimeString(hyvaksymiskirjeLahetetty)}
+            />
+          )}
+        </Box>
+      )}
       {mode === 'valinta' && valinnanTila === ValinnanTila.HYLATTY && (
         <HylkayksenSyyFields
           hakemus={hakemus}

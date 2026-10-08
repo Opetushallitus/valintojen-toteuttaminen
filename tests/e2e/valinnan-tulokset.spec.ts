@@ -11,6 +11,7 @@ import {
   startExcelImport,
   testMuodostaHakemusHyvaksymiskirje,
   testNaytaMuutoshistoria,
+  TIMESTAMP_REGEX,
   waitForMethodRequest,
 } from './playwright-utils';
 import { buildConfiguration } from '@/lib/configuration/build-configuration';
@@ -271,7 +272,7 @@ test.describe('Valinnan tulokset', () => {
       [
         '',
         'Dacula Kreivi',
-        'HYVÄKSYTTYEhdollinen valintaMuu',
+        'HYVÄKSYTTYHyväksymiskirje lähetettyEhdollinen valintaMuuFISVEN',
         'JulkaistavissaVastaanottanut sitovasti',
         'Läsnä (koko lukuvuosi)',
         'Maksettu',
@@ -297,7 +298,7 @@ test.describe('Valinnan tulokset', () => {
       [
         '',
         'Purukumi Puru',
-        'HYVÄKSYTTYEhdollinen valinta',
+        'HYVÄKSYTTYHyväksymiskirje lähetettyEhdollinen valinta',
         'JulkaistavissaKesken',
         '',
         'Maksamatta',
@@ -672,6 +673,65 @@ test.describe('Tallennus', () => {
     await expect(
       page.getByText('Valintaesityksen muutokset tallennettu'),
     ).toBeVisible();
+  });
+
+  test('Tallentaa hyväksymiskirje lähetetty -tiedon', async ({ page }) => {
+    await mockDocumentProcess({
+      page,
+      urlMatcher: (url) =>
+        url.pathname.includes(
+          '/valintalaskentakoostepalvelu/resources/erillishaku/tuonti/ui',
+        ),
+    });
+
+    const puruRow = page.getByRole('row', { name: 'Purukumi Puru' });
+    const hyvaksymiskirjeCheckbox = puruRow.getByRole('checkbox', {
+      name: 'Hyväksymiskirje lähetetty',
+    });
+    const lahetettyIcon = puruRow.getByRole('img', {
+      name: TIMESTAMP_REGEX,
+    });
+    await expect(hyvaksymiskirjeCheckbox).not.toBeChecked();
+    await expect(lahetettyIcon).toBeHidden();
+    await hyvaksymiskirjeCheckbox.click();
+    await expect(hyvaksymiskirjeCheckbox).toBeChecked();
+    await expect(lahetettyIcon).toBeVisible();
+
+    await page.route(
+      `*/**/valinta-tulos-service/auth/hyvaksymiskirje?hakukohdeOid=${hakukohdeOid}`,
+      async (route) => {
+        await route.fulfill({
+          json: [
+            {
+              henkiloOid: '1.2.246.562.24.14598775927',
+              hakukohdeOid,
+              lahetetty: '2025-02-05T10:00:00.000Z',
+            },
+          ],
+        });
+      },
+    );
+
+    const [request] = await Promise.all([
+      waitForMethodRequest(page, 'POST', (url) =>
+        url.endsWith('valinta-tulos-service/auth/hyvaksymiskirje'),
+      ),
+      page.getByRole('button', { name: 'Tallenna', exact: true }).click(),
+    ]);
+
+    const postData = request.postDataJSON();
+    expect(postData).toContainEqual({
+      henkiloOid: '1.2.246.562.24.14598775927',
+      hakukohdeOid,
+      lahetetty: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T/),
+    });
+
+    await expect(
+      page.getByText('Valintaesityksen muutokset tallennettu'),
+    ).toBeVisible();
+    await expectAllSpinnersHidden(page);
+    await expect(hyvaksymiskirjeCheckbox).toBeChecked();
+    await expect(lahetettyIcon).toHaveAccessibleName('5.2.2025 12:00:00');
   });
 
   test('Lataa ja näyttää uudet tiedot tallennuksen jälkeen', async ({

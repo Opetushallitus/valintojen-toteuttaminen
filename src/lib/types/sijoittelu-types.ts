@@ -87,7 +87,6 @@ export type SijoittelunHakemusValintatiedoilla = {
   vastaanottoDeadline?: string;
   hyvaksyttyHarkinnanvaraisesti?: boolean;
   hyvaksyPeruuntunut?: boolean;
-  hyvaksymiskirjeLahetetty?: string;
   tilanKuvaukset?: TranslatedName;
 } & HakemuksenValinnanTulos;
 

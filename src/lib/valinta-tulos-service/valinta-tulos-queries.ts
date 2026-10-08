@@ -2,6 +2,7 @@ import { QueryClient, queryOptions } from '@tanstack/react-query';
 import {
   getChangeHistoryForHakemus,
   getHakemuksenValinnanTulokset,
+  getHakukohteenHyvaksymiskirjeetLahetetty,
   getHakukohteenLukuvuosimaksut,
   getHakukohteenValinnanTulokset,
   getLatestSijoitteluajonTuloksetForHakemus,
@@ -73,7 +74,29 @@ export const queryOptionsGetHakukohteenLukuvuosimaksut = ({
   });
 };
 
-const refetchHakukohteenLukuvuosimaksut = ({
+export const queryOptionsGetHakukohteenKirjeLahetetty = ({
+  hakukohdeOid,
+}: {
+  hakukohdeOid: string;
+}) =>
+  queryOptions({
+    queryKey: ['getHakukohteenKirjeLahetetty', hakukohdeOid],
+    queryFn: () => getHakukohteenHyvaksymiskirjeetLahetetty(hakukohdeOid),
+  });
+
+export const refetchHakukohteenKirjeLahetetty = ({
+  queryClient,
+  hakukohdeOid,
+}: {
+  queryClient: QueryClient;
+  hakukohdeOid: string;
+}) => {
+  const options = queryOptionsGetHakukohteenKirjeLahetetty({ hakukohdeOid });
+  queryClient.resetQueries(options);
+  queryClient.invalidateQueries(options);
+};
+
+export const refetchHakukohteenLukuvuosimaksut = ({
   queryClient,
   hakukohdeOid,
   haku,
@@ -123,6 +146,10 @@ export const refetchHakukohteenValinnanTuloksetData = ({
     queryClient,
     hakukohdeOid,
     haku,
+  });
+  refetchHakukohteenKirjeLahetetty({
+    queryClient,
+    hakukohdeOid,
   });
 };
 
