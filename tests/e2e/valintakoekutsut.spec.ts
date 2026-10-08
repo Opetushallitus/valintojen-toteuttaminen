@@ -73,19 +73,19 @@ test.describe('Valintakoekutsut kokeittain', () => {
       expect(rows).toHaveCount(3),
       checkRow(rows.nth(0), [
         '',
-        'Nukettaja Ruhtinas',
-        'Kutsutaan',
-        '',
-        '9.1.2024 09:50:59',
-        'suomi',
-      ]),
-      checkRow(rows.nth(1), [
-        '',
         'Dacula Kreivi',
         'Kutsutaan',
         '',
         '9.1.2024 09:51:00',
         'ruotsi',
+      ]),
+      checkRow(rows.nth(1), [
+        '',
+        'Nukettaja Ruhtinas',
+        'Kutsutaan',
+        '',
+        '9.1.2024 09:50:59',
+        'suomi',
       ]),
 
       checkRow(rows.nth(2), [
@@ -102,7 +102,7 @@ test.describe('Valintakoekutsut kokeittain', () => {
 
     await expect(rows).toHaveCount(4);
 
-    await checkRow(rows.nth(3), [
+    await checkRow(rows.nth(1), [
       '',
       'Hui Haamu',
       'Ei kutsuta',
@@ -206,13 +206,13 @@ test.describe('Valintakoekutsut hakijoittain', () => {
 
     await Promise.all([
       expect(rows).toHaveCount(3),
-      checkRow(rows.nth(0), ['Nukettaja Ruhtinas', 'Kutsutaan']),
-      checkRow(rows.nth(1), ['Dacula Kreivi', 'Kutsutaan']),
+      checkRow(rows.nth(0), ['Dacula Kreivi', 'Kutsutaan']),
+      checkRow(rows.nth(1), ['Nukettaja Ruhtinas', 'Kutsutaan']),
       checkRow(rows.nth(2), ['Purukumi Puru', 'Kutsutaan']),
     ]);
 
     await vainKutsuttavat.click();
     await expect(rows).toHaveCount(4);
-    await checkRow(rows.nth(3), ['Hui Haamu', 'Ei kutsuta']);
+    await checkRow(rows.nth(1), ['Hui Haamu', 'Ei kutsuta']);
   });
 });

@@ -134,20 +134,20 @@ test.describe('Hakijaryhmien näyttäminen', () => {
 
     const rows = accordion1Content.locator(' tbody tr');
     await assertRows(rows, [
-      ROWS.ruhtinas,
       ROWS.kreiviTable1,
-      ROWS.purukumiTable1,
       ROWS.haamuTable1,
+      ROWS.ruhtinas,
+      ROWS.purukumiTable1,
       ROWS.ratsuTable1,
     ]);
 
     const accordion2Content = getAmmAccordionContent(page);
     const rows2 = accordion2Content.locator('tbody tr');
     await assertRows(rows2, [
-      ROWS.ruhtinas,
       ROWS.kreiviTable2,
-      ROWS.purukumiTable2,
       ROWS.haamuTable2,
+      ROWS.ruhtinas,
+      ROWS.purukumiTable2,
       ROWS.ratsuTable2,
     ]);
   });

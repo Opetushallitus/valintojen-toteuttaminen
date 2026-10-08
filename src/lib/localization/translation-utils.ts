@@ -51,3 +51,14 @@ export function toFormattedDateTimeString(
     return '';
   }
 }
+
+export function byLocaleCompare<K extends PropertyKey>(
+  prop: K,
+  direction: 'asc' | 'desc' = 'asc',
+  locale: string = 'fi',
+) {
+  return <T extends Record<K, string>>(a: T, b: T) => {
+    const comparison = a[prop].localeCompare(b[prop], locale);
+    return direction === 'asc' ? comparison : -comparison;
+  };
+}

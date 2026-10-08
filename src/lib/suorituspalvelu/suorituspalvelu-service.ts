@@ -18,7 +18,7 @@ export const getHarkinnanvaraisuudetHakemuksille = async ({
   const configuration = getConfiguration();
   const res = await client.post<Array<HakemuksenHarkinnanvaraisuustiedot>>(
     configuration.routes.suorituspalvelu.harkinnanvaraisuudetHakemuksilleUrl,
-    { hakemusOids: hakemusOids },
+    { hakemusOids },
   );
   return res.data;
 };
