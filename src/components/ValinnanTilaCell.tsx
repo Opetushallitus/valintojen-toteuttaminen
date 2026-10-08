@@ -429,7 +429,7 @@ export const ValinnanTilaCell = memo(function ValinnanTilaCell({
           t={t}
         />
       )}
-      {valinnanTila !== ValinnanTila.HYLATTY && isKorkeakouluHaku(haku) && (
+      {isKorkeakouluHaku(haku) && (
         <EhdollinenFields
           hakukohde={hakukohde}
           hakemus={hakemus}

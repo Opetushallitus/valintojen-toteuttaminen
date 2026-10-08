@@ -191,13 +191,6 @@ export function prepareChangedHakemuksetForSave<
     const { valinnanTila } = hakemus;
     const result = clone(hakemus);
 
-    if (valinnanTila === ValinnanTila.HYLATTY) {
-      result.ehdollisestiHyvaksyttavissa = false;
-      result.ehdollisenHyvaksymisenEhtoKoodi = '';
-      result.ehdollisenHyvaksymisenEhtoEN = '';
-      result.ehdollisenHyvaksymisenEhtoEN = '';
-      result.ehdollisenHyvaksymisenEhtoEN = '';
-    }
     if (valinnanTila !== ValinnanTila.HYLATTY) {
       result.valinnanTilanKuvausFI = '';
       result.valinnanTilanKuvausSV = '';
