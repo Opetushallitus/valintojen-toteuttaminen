@@ -74,11 +74,13 @@ const renderValinnanTilaCell = ({
   kohdejoukko,
   mode = 'valinta',
   hakemus,
+  valinnanTila,
 }: {
   tarjoajaOid: string;
   kohdejoukko: string;
   mode?: 'valinta' | 'sijoittelu';
   hakemus?: Partial<HakemuksenValinnanTulos>;
+  valinnanTila?: ValinnanTila;
 }) => {
   return render(
     <ValinnanTilaCell
@@ -96,6 +98,7 @@ const renderValinnanTilaCell = ({
         hakemusOid: 'mock-hakemus-oid',
         ehdollisestiHyvaksyttavissa: true,
         ...hakemus,
+        valinnanTila,
       }}
       disabled={false}
       updateForm={mockUpdateForm}
@@ -110,26 +113,34 @@ const getEhdollinenCheckbox = () =>
   screen.queryByRole('checkbox', { name: 'sijoittelun-tulokset.ehdollinen' });
 
 describe('Ehdollisesti hyväksyttävissä checkbox', () => {
-  test('Show when korkeakoulutus', () => {
-    renderValinnanTilaCell({
-      tarjoajaOid: TARJOAJA_OID,
-      kohdejoukko: 'haunkohdejoukko_12',
-    });
+  test.each([undefined, ValinnanTila.HYLATTY])(
+    'Show when korkeakoulutus, tila %s',
+    (valinnanTila) => {
+      renderValinnanTilaCell({
+        tarjoajaOid: TARJOAJA_OID,
+        kohdejoukko: 'haunkohdejoukko_12',
+        valinnanTila,
+      });
 
-    const checkbox = getEhdollinenCheckbox();
-    expect(checkbox).toBeInTheDocument();
-  });
+      const checkbox = getEhdollinenCheckbox();
+      expect(checkbox).toBeInTheDocument();
+    },
+  );
 
-  test('Hide when not korkeakoulutus', () => {
-    renderValinnanTilaCell({
-      tarjoajaOid: TARJOAJA_OID,
-      kohdejoukko: 'haunkohdejoukko_01',
-    });
+  test.each([undefined, ValinnanTila.HYLATTY])(
+    'Hide when not korkeakoulutus, tila %s',
+    (valinnanTila) => {
+      renderValinnanTilaCell({
+        tarjoajaOid: TARJOAJA_OID,
+        kohdejoukko: 'haunkohdejoukko_01',
+        valinnanTila,
+      });
 
-    const checkbox = getEhdollinenCheckbox();
+      const checkbox = getEhdollinenCheckbox();
 
-    expect(checkbox).not.toBeInTheDocument();
-  });
+      expect(checkbox).not.toBeInTheDocument();
+    },
+  );
 
   test('Enable when update permissions to hakukohde tarjoaja organization', () => {
     renderValinnanTilaCell({
