@@ -16,16 +16,23 @@ import {
   VastaanottoTila,
 } from '@/lib/types/sijoittelu-types';
 import { isEmpty, prop } from 'remeda';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import {
+  useQueryClient,
+  useSuspenseQuery,
+  useMutation,
+} from '@tanstack/react-query';
 import {
   getValinnanTulosExcel,
   getMyohastyneetHakemukset,
+  saveValinnanTulosExcel,
 } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
-import { showModal } from '@/components/modals/global-modal';
+import { hideModal, showModal } from '@/components/modals/global-modal';
 import { ConfirmationGlobalModal } from '@/components/modals/confirmation-global-modal';
+import { SpinnerGlobalModal } from '@/components/modals/spinner-global-modal';
 import { buildLinkToApplication } from '@/lib/ataru/ataru-service';
 import { ExternalLink } from '@/components/external-link';
 import { useSelector } from '@xstate/react';
+import useToaster from '@/hooks/useToaster';
 import { styled } from '@/lib/theme';
 import { useIsValintaesitysJulkaistavissa } from '@/hooks/useIsValintaesitysJulkaistavissa';
 import { ValinnanTulosActorRef } from '@/lib/state/createValinnanTuloksetMachine';
@@ -38,6 +45,8 @@ import {
   ValinnanTulosState,
 } from '@/lib/state/valinnanTuloksetMachineTypes';
 import { useHasOnlyHakukohdeReadPermission } from '@/hooks/useHasOnlyHakukohdeReadPermission';
+import { FileSelectButton } from '@/components/file-select-button';
+import { refetchHakukohteenValinnanTuloksetData } from '@/lib/valinta-tulos-service/valinta-tulos-queries';
 
 const ActionsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -98,7 +107,6 @@ export const ValinnanTuloksetExcelDownloadButton = ({
       defaultFileName={`valinnantulos-${hakukohdeOid}.xlsx`}
       errorKey="get-valinnan-tulos-excel"
       errorMessage="valinnan-tulokset.virhe-vie-taulukkolaskentaan"
-      disabled={!valintatapajonoOid}
       getFile={() =>
         getValinnanTulosExcel({
           haku,
@@ -109,6 +117,68 @@ export const ValinnanTuloksetExcelDownloadButton = ({
     >
       {t('yleinen.vie-taulukkolaskentaan')}
     </FileDownloadButton>
+  );
+};
+
+export const ValinnanTuloksetExcelUploadButton = ({
+  haku,
+  hakukohdeOid,
+  valintatapajonoOid,
+}: {
+  haku: Haku;
+  hakukohdeOid: string;
+  valintatapajonoOid?: string;
+}) => {
+  const { t } = useTranslations();
+  const { addToast } = useToaster();
+
+  const queryClient = useQueryClient();
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: async ({ file }: { file: File }) => {
+      showModal(SpinnerGlobalModal, {
+        title: t('valinnan-tulokset.tuodaan-tuloksia-taulukkolaskennasta'),
+      });
+      await saveValinnanTulosExcel({
+        haku,
+        hakukohdeOid,
+        valintatapajonoOid,
+        file,
+      });
+    },
+    onError: (error) => {
+      hideModal(SpinnerGlobalModal);
+      addToast({
+        key: 'upload-valinnan-tulos-excel-error',
+        message:
+          t('valinnan-tulokset.virhe-tuo-taulukkolaskennasta') +
+          (isEmpty(error?.message) ? '.' : `: \n${error.message}`),
+        type: 'error',
+      });
+    },
+    onSuccess: () => {
+      hideModal(SpinnerGlobalModal);
+      refetchHakukohteenValinnanTuloksetData({
+        queryClient,
+        haku,
+        hakukohdeOid,
+      });
+      addToast({
+        key: 'upload-valinnan-tulos-excel-success',
+        message: 'valinnan-tulokset.tuo-taulukkolaskennasta-onnistui',
+        type: 'success',
+      });
+    },
+  });
+
+  return (
+    <FileSelectButton
+      variant="contained"
+      loading={isPending}
+      onFileSelect={(file) => mutate({ file })}
+    >
+      {t('yleinen.tuo-taulukkolaskennasta')}
+    </FileSelectButton>
   );
 };
 
@@ -290,6 +360,13 @@ export const ValinnanTuloksetActions = ({
       </OphButton>
       {mode === 'valinta' && (
         <ValinnanTuloksetExcelDownloadButton
+          haku={haku}
+          hakukohdeOid={hakukohde.oid}
+          valintatapajonoOid={valintatapajonoOid}
+        />
+      )}
+      {mode === 'valinta' && (
+        <ValinnanTuloksetExcelUploadButton
           haku={haku}
           hakukohdeOid={hakukohde.oid}
           valintatapajonoOid={valintatapajonoOid}
