@@ -324,14 +324,17 @@ export const getHakijaryhmat = async (
     getLatestSijoitteluAjonTuloksetForHakukohde(hakuOid, hakukohdeOid),
     getHakukohteenValintatuloksetIlmanHakijanTilaa(hakuOid, hakukohdeOid),
   ]);
+  if (!tulokset) {
+    return [];
+  }
   const sijoittelunHakemukset = pipe(
-    tulokset?.valintatapajonot,
+    tulokset.valintatapajonot,
     filter(isDefined),
     flatMap((jono) => jono.hakemukset),
     groupBy(prop('hakemusOid')),
   );
   const valintatapajonotSijoittelusta = pipe(
-    tulokset?.valintatapajonot,
+    tulokset.valintatapajonot,
     filter(isDefined),
     indexBy(prop('oid')),
   );

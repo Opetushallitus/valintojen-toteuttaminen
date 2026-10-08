@@ -17,12 +17,37 @@ function stripCasTicket() {
   }
 }
 
+const PRELOAD_ERROR_RELOAD_KEY = 'vite-preload-error-reload-at';
+const PRELOAD_ERROR_RELOAD_INTERVAL_MS = 10_000;
+
 /**
  * Viten riippuvuuksien uudelleenoptimointi voi katkaista reittimoduulin
  * importin kesken ja jättää navigoinnin jumiin. Korjataan uudelleenlatauksella.
+ * Jos lataus epäonnistuu uudelleen heti latauksen jälkeen (esim. moduuli
+ * puuttuu pysyvästi), ei ladata uudelleen, jotta vältetään ikuinen silmukka,
+ * vaan annetaan virheen edetä virhenäkymään.
  */
 function registerPreloadErrorReload() {
-  window.addEventListener('vite:preloadError', () => {
+  window.addEventListener('vite:preloadError', (event) => {
+    let lastReloadAt = 0;
+    try {
+      lastReloadAt = Number(
+        window.sessionStorage.getItem(PRELOAD_ERROR_RELOAD_KEY) ?? 0,
+      );
+    } catch {
+      // sessionStorage ei käytettävissä
+    }
+    const now = Date.now();
+    if (now - lastReloadAt < PRELOAD_ERROR_RELOAD_INTERVAL_MS) {
+      return;
+    }
+    try {
+      window.sessionStorage.setItem(PRELOAD_ERROR_RELOAD_KEY, String(now));
+    } catch {
+      // Ilman sessionStoragea ei voida estää silmukkaa, joten ei ladata uudelleen
+      return;
+    }
+    event.preventDefault();
     window.location.reload();
   });
 }

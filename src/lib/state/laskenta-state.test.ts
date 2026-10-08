@@ -1,6 +1,6 @@
 import { expect, test, vi, describe, afterEach, beforeEach } from 'vitest';
 import {
-  createLaskentaMachine,
+  laskentaMachine,
   LaskentaEventType,
   LaskentaState,
   LaskentaParams,
@@ -43,7 +43,7 @@ describe('Laskenta state', async () => {
     erillissijoittelu: false,
   };
 
-  let actor = createActor(createLaskentaMachine(vi.fn()));
+  let actor = createActor(laskentaMachine);
 
   beforeEach(async () => {
     const conf = buildConfiguration();
@@ -54,7 +54,7 @@ describe('Laskenta state', async () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
-    actor = createActor(createLaskentaMachine(vi.fn()));
+    actor = createActor(laskentaMachine);
   });
 
   test('starts calculation and initializes polling', async () => {

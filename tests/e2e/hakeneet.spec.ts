@@ -44,14 +44,6 @@ test.describe('Hakeneiden näyttäminen', () => {
     const rows = page.locator('tbody tr');
     await expect(rows).toHaveCount(5);
     await checkRow(rows.nth(0), [
-      'Nukettaja Ruhtinas',
-      'Hakukelpoinen',
-      '2',
-      'Ei maksuvelvollinen',
-      '1.2.246.562.11.00000000000001796027',
-      '1.2.246.562.24.69259807406',
-    ]);
-    await checkRow(rows.nth(1), [
       'Dacula Kreivi',
       'Hakukelpoinen',
       '1',
@@ -59,21 +51,29 @@ test.describe('Hakeneiden näyttäminen', () => {
       '1.2.246.562.11.00000000000001793706',
       '1.2.246.562.24.25732574711',
     ]);
-    await checkRow(rows.nth(2), [
-      'Purukumi Puru',
-      'Ehdollisesti hakukelpoinen',
-      '1',
-      'Tarkastamatta',
-      '1.2.246.562.11.00000000000001790371',
-      '1.2.246.562.24.14598775927',
-    ]);
-    await checkRow(rows.nth(3), [
+    await checkRow(rows.nth(1), [
       'Hui Haamu',
       'Ei hakukelpoinen',
       '1',
       'Tarkastamatta',
       '1.2.246.562.11.00000000000001543832',
       '1.2.246.562.24.30476885816',
+    ]);
+    await checkRow(rows.nth(2), [
+      'Nukettaja Ruhtinas',
+      'Hakukelpoinen',
+      '2',
+      'Ei maksuvelvollinen',
+      '1.2.246.562.11.00000000000001796027',
+      '1.2.246.562.24.69259807406',
+    ]);
+    await checkRow(rows.nth(3), [
+      'Purukumi Puru',
+      'Ehdollisesti hakukelpoinen',
+      '1',
+      'Tarkastamatta',
+      '1.2.246.562.11.00000000000001790371',
+      '1.2.246.562.24.14598775927',
     ]);
     await checkRow(rows.nth(4), [
       'Ratsu Päätön',
@@ -117,10 +117,10 @@ test('Ei näytä maksuvelvollisuutta ja hakukelpoisuutta kun kyseessä ei ole ko
   const rows = page.locator('tbody tr');
   await expect(rows).toHaveCount(5);
   await checkRow(rows.nth(0), [
-    'Nukettaja Ruhtinas',
-    '2',
-    '1.2.246.562.11.00000000000001796027',
-    '1.2.246.562.24.69259807406',
+    'Dacula Kreivi',
+    '1',
+    '1.2.246.562.11.00000000000001793706',
+    '1.2.246.562.24.25732574711',
   ]);
 });
 

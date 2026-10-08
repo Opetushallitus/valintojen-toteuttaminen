@@ -3,6 +3,7 @@ import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 import { HakemuksenHarkinnanvaraisuus } from '@/lib/types/harkinnanvaraiset-types';
 import { queryOptionsGetharkinnanvaraisetTilat } from '@/lib/valintalaskenta/valintalaskenta-queries';
 import { getHarkinnanvaraisuudetHakemuksille } from '@/lib/suorituspalvelu/suorituspalvelu-service';
+import { byLocaleCompare } from '@/lib/localization/translation-utils';
 import { useSuspenseQueries, useSuspenseQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { indexBy, prop } from 'remeda';
@@ -62,7 +63,7 @@ export const useHarkinnanvaraisetHakemukset = ({
         }
       }
     });
-    return result;
+    return result.sort(byLocaleCompare('hakijanNimi'));
   }, [
     harkinnanvaraisuudetHakemuksille,
     hakemuksetByOid,

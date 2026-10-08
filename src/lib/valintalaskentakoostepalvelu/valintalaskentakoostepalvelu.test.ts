@@ -15,18 +15,8 @@ import { FetchError } from '../common';
 import { setConfiguration } from '@/lib/configuration/client-configuration';
 import { buildConfiguration } from '@/lib/configuration/build-configuration';
 
+// Hakemukset järjestetään hakijan nimen mukaan
 const HAKEMUKSET = [
-  {
-    hakemusOid: '1.2.246.562.11.00000000000001796027',
-    hakijaOid: '1.2.246.562.24.69259807406',
-    etunimet: 'Ruhtinas',
-    sukunimi: 'Nukettaja',
-    hakijanNimi: 'Nukettaja Ruhtinas',
-    asiointikieliKoodi: 'fi',
-    henkilotunnus: undefined,
-    lahiosoite: 'Kuoppamäki 905',
-    postinumero: '00100',
-  },
   {
     hakemusOid: '1.2.246.562.11.00000000000001793706',
     hakijaOid: '1.2.246.562.24.25732574711',
@@ -39,17 +29,6 @@ const HAKEMUKSET = [
     postinumero: '00100',
   },
   {
-    hakemusOid: '1.2.246.562.11.00000000000001790371',
-    hakijaOid: '1.2.246.562.24.14598775927',
-    etunimet: 'Puru',
-    sukunimi: 'Purukumi',
-    hakijanNimi: 'Purukumi Puru',
-    asiointikieliKoodi: 'fi',
-    henkilotunnus: '210988-9151',
-    lahiosoite: 'Kuoppamäki 992',
-    postinumero: '00100',
-  },
-  {
     hakemusOid: '1.2.246.562.11.00000000000001543832',
     hakijaOid: '1.2.246.562.24.30476885816',
     etunimet: 'Haamu',
@@ -58,6 +37,28 @@ const HAKEMUKSET = [
     asiointikieliKoodi: 'en',
     henkilotunnus: '021016A934L',
     lahiosoite: 'Yläpääntie 875',
+    postinumero: '00100',
+  },
+  {
+    hakemusOid: '1.2.246.562.11.00000000000001796027',
+    hakijaOid: '1.2.246.562.24.69259807406',
+    etunimet: 'Ruhtinas',
+    sukunimi: 'Nukettaja',
+    hakijanNimi: 'Nukettaja Ruhtinas',
+    asiointikieliKoodi: 'fi',
+    henkilotunnus: undefined,
+    lahiosoite: 'Kuoppamäki 905',
+    postinumero: '00100',
+  },
+  {
+    hakemusOid: '1.2.246.562.11.00000000000001790371',
+    hakijaOid: '1.2.246.562.24.14598775927',
+    etunimet: 'Puru',
+    sukunimi: 'Purukumi',
+    hakijanNimi: 'Purukumi Puru',
+    asiointikieliKoodi: 'fi',
+    henkilotunnus: '210988-9151',
+    lahiosoite: 'Kuoppamäki 992',
     postinumero: '00100',
   },
   {
@@ -225,8 +226,8 @@ describe('getValintakoekutsutData', () => {
     });
     expect(result.valintakokeet).toEqual(VALINTAKOKEET);
     expect(result.valintakoeOsallistumiset).toEqual(VALINTAKOEOSALLISTUMISET);
-    expect(result.hakemukset).toHaveLength(HAKEMUKSET.length);
-    expect(result.hakemukset).toEqual(expect.arrayContaining(HAKEMUKSET));
+    // Puuttuva hakemus järjestetään muiden joukkoon nimen mukaan
+    expect(result.hakemukset).toEqual(HAKEMUKSET);
   });
 });
 

@@ -1,4 +1,5 @@
 import { Hakemus } from '@/lib/ataru/ataru-types';
+import { byLocaleCompare } from '@/lib/localization/translation-utils';
 import {
   HakemuksenPistetiedot,
   ValintakoeOsallistuminenTulos,
@@ -62,5 +63,6 @@ export const augmentPisteetWithHakemukset = (
         valintakokeenPisteet: p.valintakokeenPisteet,
       };
     })
-    .filter(isNonNullish);
+    .filter(isNonNullish)
+    .sort(byLocaleCompare('hakijanNimi'));
 };

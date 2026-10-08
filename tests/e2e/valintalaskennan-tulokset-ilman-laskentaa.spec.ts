@@ -99,7 +99,7 @@ test('Näyttää valintalaskennan tulokset', async ({ page }) => {
 
   await expect(jonoRows).toHaveCount(5);
 
-  await checkRow(jonoRows.first(), [
+  await checkRow(jonoRows.filter({ hasText: 'Nukettaja Ruhtinas' }), [
     expectTextboxValue('1'),
     'Nukettaja Ruhtinas',
     'Hyväksyttävissä',
@@ -238,15 +238,17 @@ test('Lähettää muokatun pisteet-datan tallentaessa', async ({ page }) => {
   await jonoContent.getByRole('button', { name: 'Kokonaispisteet' }).click();
   await confirmDialog(page, { title: 'Vaihdetaanko järjestysperustetta?' });
 
-  const firstRow = jonoContent.locator('tbody tr').first();
-  await firstRow.getByRole('textbox', { name: 'pisteet' }).fill('6,6');
-  await firstRow
+  const nukettajaRow = jonoContent
+    .locator('tbody tr')
+    .filter({ hasText: 'Nukettaja Ruhtinas' });
+  await nukettajaRow.getByRole('textbox', { name: 'pisteet' }).fill('6,6');
+  await nukettajaRow
     .getByRole('textbox', { name: 'Kuvaus suomeksi' })
     .fill('Kuvaus FI');
-  await firstRow
+  await nukettajaRow
     .getByRole('textbox', { name: 'Kuvaus ruotsiksi' })
     .fill('Kuvaus SV');
-  await firstRow
+  await nukettajaRow
     .getByRole('textbox', { name: 'Kuvaus englanniksi' })
     .fill('Kuvaus EN');
 
@@ -308,8 +310,10 @@ test('Lähettää muokatun jonosija-datan tallentaessa ja lataa tulokset uudelle
 
   const jonoContent = page.getByRole('region', { name: jonoHeadingText });
 
-  const firstRow = jonoContent.locator('tbody tr').first();
-  await firstRow.getByRole('textbox', { name: 'jonosija' }).fill('2');
+  const nukettajaRow = jonoContent
+    .locator('tbody tr')
+    .filter({ hasText: 'Nukettaja Ruhtinas' });
+  await nukettajaRow.getByRole('textbox', { name: 'jonosija' }).fill('2');
 
   const [request] = await Promise.all([
     waitForMethodRequest(page, 'POST', (url) => url.includes(tuloksetPath)),
