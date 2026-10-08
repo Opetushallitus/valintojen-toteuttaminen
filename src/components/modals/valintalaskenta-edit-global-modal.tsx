@@ -23,7 +23,6 @@ import { useMuokkausParams } from '@/hooks/useJarjestyskriteeriMuokkausParams';
 import { JarjestyskriteeriParams } from '@/lib/types/jarjestyskriteeri-types';
 import { useTuloksenTilaOptions } from '@/hooks/useTuloksenTilaOptions';
 import { useMuokattuJonosijaState } from '@/lib/state/muokattu-jonosija-state';
-import { useHasChanged } from '@/hooks/useHasChanged';
 
 const ModalActions = ({
   onClose,
@@ -156,14 +155,10 @@ export const ValintalaskentaEditGlobalModal = createModal<{
         label: `${prioriteetti + 1}. ${nimi}`,
       })) ?? [];
 
-    const jonosijaChanged = useHasChanged(jonosija.hakemusOid);
-
     const successCallback = useCallback(() => {
-      if (jonosijaChanged) {
-        hideModal(ValintalaskentaEditGlobalModal);
-        onSuccess();
-      }
-    }, [jonosijaChanged, onSuccess]);
+      hideModal(ValintalaskentaEditGlobalModal);
+      onSuccess();
+    }, [onSuccess]);
 
     const {
       snapshot,

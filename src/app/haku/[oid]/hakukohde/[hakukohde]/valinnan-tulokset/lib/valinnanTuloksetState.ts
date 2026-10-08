@@ -21,31 +21,6 @@ import { inspect } from '@/lib/xstate-utils';
 export const valinnanTuloksetMachine =
   createValinnanTuloksetMachine<HakemuksenValinnanTulos>('valinta').provide({
     actions: {
-      alert: ({ context }, params) =>
-        context.addToast?.({
-          key: `valinnan-tulokset-update-failed-for-${context.hakukohdeOid}-${context.valintatapajonoOid}`,
-          message: params.message,
-          type: 'error',
-        }),
-
-      successNotify: ({ context }, params) => {
-        context.addToast?.({
-          key: `valinnan-tulokset-updated-for-${context.hakukohdeOid}-${context.valintatapajonoOid}`,
-          message: params.message,
-          type: 'success',
-        });
-      },
-      notifyMassStatusChange: ({ context }) => {
-        context.addToast?.({
-          key: `valinnan-tulokset-mass-status-change-for-${context.hakukohdeOid}-${context.valintatapajonoOid}`,
-          message: 'valinnan-tulokset.mass-status-change-done',
-          type: 'success',
-          messageParams: { amount: context.massChangeAmount ?? 0 },
-        });
-      },
-      refetchTulokset: ({ context }) => {
-        context.onUpdated?.();
-      },
       errorModal: ({ context }, params) => {
         showModal(ValinnanTulosErrorGlobalModal, {
           error: params.error,
@@ -88,6 +63,10 @@ export const useValinnanTulosActorRef = ({
 
   const valinnanTulosActorRef = useActorRef(
     valinnanTuloksetMachine.provide({
+      actions: {
+        notify: (_, toast) => addToast(toast),
+        refetchTulokset: onUpdated,
+      },
       actors: {
         updateHakemukset: fromPromise(async ({ input }) => {
           await saveValinnanTulokset({
@@ -157,8 +136,6 @@ export const useValinnanTulosActorRef = ({
         valintatapajonoOid: getValintatapajonoOidFromHakemukset(hakemukset),
         hakemukset,
         lastModified,
-        onUpdated,
-        addToast,
       },
     },
   );

@@ -43,6 +43,7 @@ const HakutapaSelect = ({
 const SelectFallback = () => (
   <Select
     disabled={true}
+    value=""
     startAdornment={
       <InputAdornment position="start">
         <SpinnerIcon />

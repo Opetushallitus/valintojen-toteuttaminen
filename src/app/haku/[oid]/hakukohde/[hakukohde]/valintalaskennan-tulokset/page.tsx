@@ -50,12 +50,14 @@ const ValinnanvaiheGroupResults = ({
   hakukohdeOid,
   haku,
   vaiheet,
+  dataUpdatedAt,
   JonoContentComponent,
 }: {
   title: string;
   haku: Haku;
   hakukohdeOid: string;
   vaiheet?: LaskennanValinnanvaiheetWithHakijaInfo;
+  dataUpdatedAt: number;
   JonoContentComponent: React.ComponentType<ValintatapajonoContentProps>;
 }) => {
   return (
@@ -84,7 +86,8 @@ const ValinnanvaiheGroupResults = ({
                   }
                 >
                   <JonoContentComponent
-                    key={jono.oid}
+                    // Muokkaustila alustetaan uudelleen, kun data noudetaan uudelleen (esim. tallennuksen jälkeen)
+                    key={`${jono.oid}_${dataUpdatedAt}`}
                     haku={haku}
                     hakukohdeOid={hakukohdeOid}
                     jono={jono}
@@ -104,10 +107,12 @@ const ValinnanvaiheetContent = ({
   hakukohdeOid,
   haku,
   valinnanvaiheet,
+  dataUpdatedAt,
 }: {
   hakukohdeOid: string;
   haku: Haku;
   valinnanvaiheet: LaskennanValinnanvaiheetWithHakijaInfo;
+  dataUpdatedAt: number;
 }) => {
   const { t } = useTranslations();
 
@@ -128,6 +133,7 @@ const ValinnanvaiheetContent = ({
         haku={haku}
         hakukohdeOid={hakukohdeOid}
         vaiheet={valinnanvaiheetIlmanLaskentaa}
+        dataUpdatedAt={dataUpdatedAt}
         JonoContentComponent={LaskennatonValintatapajonoContent}
       />
       <ValinnanvaiheGroupResults
@@ -135,6 +141,7 @@ const ValinnanvaiheetContent = ({
         haku={haku}
         hakukohdeOid={hakukohdeOid}
         vaiheet={lasketutValinnanvaiheet}
+        dataUpdatedAt={dataUpdatedAt}
         JonoContentComponent={LaskettuValintatapajonoContent}
       />
     </Stack>
@@ -145,10 +152,11 @@ const ValintalaskennanTuloksetContent = ({
   hakuOid,
   hakukohdeOid,
 }: KoutaOidParams) => {
-  const valinnanvaiheet = useEditableValintalaskennanTulokset({
-    hakuOid,
-    hakukohdeOid,
-  });
+  const { valinnanvaiheet, dataUpdatedAt } =
+    useEditableValintalaskennanTulokset({
+      hakuOid,
+      hakukohdeOid,
+    });
 
   const { data: haku } = useHaku({ hakuOid });
 
@@ -196,6 +204,7 @@ const ValintalaskennanTuloksetContent = ({
         haku={haku}
         hakukohdeOid={hakukohdeOid}
         valinnanvaiheet={valinnanvaiheet}
+        dataUpdatedAt={dataUpdatedAt}
       />
     </Box>
   );
