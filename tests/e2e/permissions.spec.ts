@@ -127,23 +127,23 @@ test.describe('Toiminnot on piilotettu tai poistettu käytöstä jos käyttäjä
     await expect(contentRows).toHaveCount(4);
 
     await checkRow(contentRows.nth(0), [
-      'Nukettaja Ruhtinas',
-      'Ei päättötodistusta (ATARU)',
-      'Hyväksytty',
-    ]);
-    await checkRow(contentRows.nth(1), [
       'Dacula Kreivi',
       'Sosiaaliset syyt',
       NDASH,
     ]);
-    await checkRow(contentRows.nth(2), [
-      'Purukumi Puru',
-      'Oppimisvaikeudet',
-      NDASH,
-    ]);
-    await checkRow(contentRows.nth(3), [
+    await checkRow(contentRows.nth(1), [
       'Hui Haamu',
       'Riittämätön tutkintokielen taito',
+      NDASH,
+    ]);
+    await checkRow(contentRows.nth(2), [
+      'Nukettaja Ruhtinas',
+      'Ei päättötodistusta (ATARU)',
+      'Hyväksytty',
+    ]);
+    await checkRow(contentRows.nth(3), [
+      'Purukumi Puru',
+      'Oppimisvaikeudet',
       NDASH,
     ]);
   });
@@ -310,7 +310,7 @@ test.describe('Toiminnot on piilotettu tai poistettu käytöstä jos käyttäjä
 
     await expect(jonoRows).toHaveCount(4);
 
-    await checkRow(jonoRows.first(), [
+    await checkRow(jonoRows.filter({ hasText: 'Nukettaja Ruhtinas' }), [
       expectTextboxValue('1'),
       'Nukettaja Ruhtinas',
       'Hyväksyttävissä',
