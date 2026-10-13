@@ -74,13 +74,11 @@ const renderValinnanTilaCell = ({
   kohdejoukko,
   mode = 'valinta',
   hakemus,
-  valinnanTila,
 }: {
   tarjoajaOid: string;
   kohdejoukko: string;
   mode?: 'valinta' | 'sijoittelu';
   hakemus?: Partial<HakemuksenValinnanTulos>;
-  valinnanTila?: ValinnanTila;
 }) => {
   return render(
     <ValinnanTilaCell
@@ -98,7 +96,6 @@ const renderValinnanTilaCell = ({
         hakemusOid: 'mock-hakemus-oid',
         ehdollisestiHyvaksyttavissa: true,
         ...hakemus,
-        valinnanTila,
       }}
       disabled={false}
       updateForm={mockUpdateForm}
@@ -119,7 +116,7 @@ describe('Ehdollisesti hyväksyttävissä checkbox', () => {
       renderValinnanTilaCell({
         tarjoajaOid: TARJOAJA_OID,
         kohdejoukko: 'haunkohdejoukko_12',
-        valinnanTila,
+        hakemus: { valinnanTila },
       });
 
       const checkbox = getEhdollinenCheckbox();
@@ -133,7 +130,7 @@ describe('Ehdollisesti hyväksyttävissä checkbox', () => {
       renderValinnanTilaCell({
         tarjoajaOid: TARJOAJA_OID,
         kohdejoukko: 'haunkohdejoukko_01',
-        valinnanTila,
+        hakemus: { valinnanTila },
       });
 
       const checkbox = getEhdollinenCheckbox();
