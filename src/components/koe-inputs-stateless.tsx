@@ -106,12 +106,11 @@ export const KoeInputsStateless = memo(function KoeInputsStateless({
         display: 'flex',
         flexDirection: 'row',
         columnGap: 1,
-        minWidth: '220px',
         alignItems: 'flex-start',
       }}
     >
       {koe.inputTyyppi === ValintakoeInputTyyppi.INPUT ? (
-        <Box sx={{ width: '80px' }}>
+        <Box sx={{ width: '80px', flexShrink: 0 }}>
           {osallistuminen !== ValintakoeOsallistuminenTulos.EI_OSALLISTUNUT && (
             <PisteetInput
               min={koe.min}
