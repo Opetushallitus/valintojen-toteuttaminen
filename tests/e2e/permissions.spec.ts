@@ -193,10 +193,13 @@ test.describe('Toiminnot on piilotettu tai poistettu käytöstä jos käyttäjä
       .getByRole('row', { name: 'Nukettaja Ruhtinas' })
       .getByRole('button', { name: 'Muut toiminnot' })
       .click();
-    // Vain muutoshistoria näkyy hakemuksen toiminnot listassa
+    // Vain valintatilanne ja muutoshistoria näkyvät hakemuksen toiminnot listassa
     await expect(
       page.getByRole('menu', { name: 'Muut toiminnot' }).getByRole('menuitem'),
-    ).toHaveCount(1);
+    ).toHaveCount(2);
+    await expect(
+      page.getByRole('menuitem', { name: 'Valintatilanne' }),
+    ).toBeVisible();
     await expect(page.getByText('Muutoshistoria')).toBeVisible();
     await page.locator('.MuiPopover-root > .MuiBackdrop-root').click();
 
