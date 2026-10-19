@@ -1,4 +1,3 @@
-import { Toast } from '@/hooks/useToaster';
 import { HakemuksenValinnanTulos } from '../valinta-tulos-service/valinta-tulos-types';
 
 export type ValinnanTulosEditableFieldNames =
@@ -24,8 +23,6 @@ export type ValinnanTulosEditableFields = Partial<
 >;
 
 export type ValinnanTulosContext<T extends HakemuksenValinnanTulos> = {
-  addToast?: (toast: Toast) => void;
-  onUpdated?: () => void;
   hakukohdeOid?: string;
   valintatapajonoOid?: string;
   lastModified?: string;
@@ -104,11 +101,6 @@ export type ValinnanTulosMachineParams<T extends HakemuksenValinnanTulos> = {
   valintatapajonoOid?: string;
   hakemukset: Array<T>;
   lastModified?: string;
-  addToast: (toast: Toast) => void;
-  /**
-   * Kutsutaan, jos ainakin osa hakemuksista saatiin päivitettyä onnistuneesti.
-   */
-  onUpdated?: () => void;
 };
 
 /**

@@ -18,31 +18,6 @@ export const sijoittelunTuloksetMachine =
     'sijoittelu',
   ).provide({
     actions: {
-      alert: ({ context }, params) =>
-        context.addToast?.({
-          key: `sijoittelun-tulokset-update-failed-for-${context.hakukohdeOid}-${context.valintatapajonoOid}`,
-          message: params.message,
-          type: 'error',
-        }),
-
-      successNotify: ({ context }, params) => {
-        context.addToast?.({
-          key: `sijoittelun-tulokset-updated-for-${context.hakukohdeOid}-${context.valintatapajonoOid}`,
-          message: params.message,
-          type: 'success',
-        });
-      },
-      notifyMassStatusChange: ({ context }) => {
-        context.addToast?.({
-          key: `sijoittelun-tulokset-mass-status-change-for-${context.hakukohdeOid}-${context.valintatapajonoOid}`,
-          message: 'sijoittelun-tulokset.mass-status-change-done',
-          type: 'success',
-          messageParams: { amount: context.massChangeAmount ?? 0 },
-        });
-      },
-      refetchTulokset: ({ context }) => {
-        context.onUpdated?.();
-      },
       errorModal: ({ context }, params) => {
         showModal(ValinnanTulosErrorGlobalModal, {
           error: params.error,
@@ -102,15 +77,21 @@ export const useSijoittelunTulosActorRef = ({
   onUpdated,
 }: SijoittelunTulosStateParams) => {
   const { addToast } = useToaster();
-  return useActorRef(sijoittelunTuloksetMachine, {
-    inspect,
-    input: {
-      hakukohdeOid,
-      hakemukset,
-      valintatapajonoOid,
-      lastModified,
-      onUpdated,
-      addToast,
+  return useActorRef(
+    sijoittelunTuloksetMachine.provide({
+      actions: {
+        notify: (_, toast) => addToast(toast),
+        refetchTulokset: () => onUpdated?.(),
+      },
+    }),
+    {
+      inspect,
+      input: {
+        hakukohdeOid,
+        hakemukset,
+        valintatapajonoOid,
+        lastModified,
+      },
     },
-  });
+  );
 };
