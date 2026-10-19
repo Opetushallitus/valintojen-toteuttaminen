@@ -112,9 +112,9 @@ const useColumns = ({
       makeColumnWithCustomRender<SijoittelunHakemusValintatiedoilla>({
         title: t(`${TRANSLATIONS_PREFIX}.tila`),
         key: 'sijoittelunTila',
-        renderFn: (props) => (
+        renderFn: (hakemus) => (
           <ValinnanTilaCell
-            hakemus={props}
+            hakemus={hakemus}
             haku={haku}
             hakukohde={hakukohde}
             updateForm={updateForm}
@@ -131,12 +131,12 @@ const useColumns = ({
       makeColumnWithCustomRender<SijoittelunHakemusValintatiedoilla>({
         title: t(`${TRANSLATIONS_PREFIX}.vastaanottotieto`),
         key: 'vastaanottotila',
-        renderFn: (props) => (
+        renderFn: (hakemus) => (
           <VastaanottoTilaCell
             haku={haku}
             hakukohde={hakukohde}
             valintatapajono={valintatapajono}
-            hakemus={props}
+            hakemus={hakemus}
             updateForm={updateForm}
             disabled={readonly || disabled}
             mode="sijoittelu"
@@ -147,9 +147,9 @@ const useColumns = ({
       makeColumnWithCustomRender<SijoittelunHakemusValintatiedoilla>({
         title: t(`${TRANSLATIONS_PREFIX}.ilmoittautumistieto`),
         key: 'ilmoittautumisTila',
-        renderFn: (props) => (
+        renderFn: (hakemus) => (
           <IlmoittautumisTilaSelect
-            hakemus={props}
+            hakemus={hakemus}
             updateForm={updateForm}
             disabled={readonly || disabled}
           />
@@ -159,9 +159,9 @@ const useColumns = ({
         ? makeColumnWithCustomRender<SijoittelunHakemusValintatiedoilla>({
             title: t(`${TRANSLATIONS_PREFIX}.maksuntila`),
             key: 'maksunTila',
-            renderFn: (props) => (
+            renderFn: (hakemus) => (
               <MaksuCell
-                hakemus={props}
+                hakemus={hakemus}
                 updateForm={updateForm}
                 disabled={readonly || disabled}
               />
@@ -171,10 +171,10 @@ const useColumns = ({
       makeColumnWithCustomRender<SijoittelunHakemusValintatiedoilla>({
         title: t(`${TRANSLATIONS_PREFIX}.toiminnot`),
         key: 'toiminnot',
-        renderFn: (props) => (
+        renderFn: (hakemus) => (
           <ValinnanTuloksetOtherActionsCell
             haku={haku}
-            hakemus={props}
+            hakemus={hakemus}
             hakukohde={hakukohde}
             disabled={disabled}
             sijoitteluajoId={sijoitteluajoId}

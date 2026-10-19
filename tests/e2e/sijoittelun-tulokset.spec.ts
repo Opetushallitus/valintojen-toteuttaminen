@@ -9,6 +9,7 @@ import {
   selectOption,
   testMuodostaHakemusHyvaksymiskirje,
   testNaytaMuutoshistoria,
+  TIMESTAMP_REGEX,
   waitForMethodRequest,
 } from './playwright-utils';
 import {
@@ -557,6 +558,66 @@ test.describe('Tallennus', () => {
       page.getByText('Tietojen tallentamisessa tapahtui virhe'),
     ).toBeVisible();
     await expect(page.getByText('Unknown error')).toBeVisible();
+  });
+
+  test('Tallentaa hyväksymiskirje lähetetty -tiedon', async ({ page }) => {
+    const nukettajaRow = getYoValintatapajonoContent(page).getByRole('row', {
+      name: 'Nukettaja Ruhtinas',
+    });
+    const hyvaksymiskirjeCheckbox = nukettajaRow.getByRole('checkbox', {
+      name: 'Hyväksymiskirje lähetetty',
+    });
+    const lahetettyIcon = nukettajaRow.getByRole('img', {
+      name: TIMESTAMP_REGEX,
+    });
+    await expect(hyvaksymiskirjeCheckbox).not.toBeChecked();
+    await expect(lahetettyIcon).toBeHidden();
+    await hyvaksymiskirjeCheckbox.click();
+    await expect(hyvaksymiskirjeCheckbox).toBeChecked();
+    await expect(lahetettyIcon).toBeVisible();
+
+    await page.route(
+      (url) =>
+        url.href.includes(
+          'sijoitteluntulos/1.2.246.562.29.00000000000000045102/sijoitteluajo/latest/hakukohde/1.2.246.562.20.00000000000000045105',
+        ),
+      async (route) => {
+        await route.fulfill({
+          json: {
+            ...SIJOITTELUN_TULOS,
+            kirjeLahetetty: [
+              {
+                henkiloOid: '1.2.246.562.24.69259807406',
+                lahetetty: '2025-02-05T10:00:00.000Z',
+              },
+            ],
+          },
+        });
+      },
+    );
+
+    const [request] = await Promise.all([
+      waitForMethodRequest(page, 'POST', (url) =>
+        url.endsWith('valinta-tulos-service/auth/hyvaksymiskirje'),
+      ),
+      getYoValintatapajonoContent(page)
+        .getByRole('button', { name: 'Tallenna', exact: true })
+        .click(),
+    ]);
+
+    const postData = request.postDataJSON();
+    expect(postData).toContainEqual({
+      henkiloOid: '1.2.246.562.24.69259807406',
+      hakukohdeOid: '1.2.246.562.20.00000000000000045105',
+      lahetetty: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T/),
+    });
+
+    await expect(
+      page.getByText('Valintaesityksen muutokset tallennettu'),
+    ).toBeVisible();
+    await expectAllSpinnersHidden(page);
+    await expect(hyvaksymiskirjeCheckbox).toBeChecked();
+    await expect(lahetettyIcon).toHaveAccessibleName('5.2.2025 12:00:00');
   });
 
   test('Tallennus epäonnistuu osittain', async ({ page }) => {
