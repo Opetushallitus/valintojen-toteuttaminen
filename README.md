@@ -93,6 +93,55 @@ toisin kuin tuotannossa, jossa sovellus tarjoillaan samasta originista kuin virk
 Jos tarvitset toimivan kirjautumisen ja API-kutsut lokaalisti, käytä Viten dev-serveriä
 (`pnpm dev`), joka proxyttaa palvelukutsut samasta originista virkailija-ympäristöön.
 
+## Arkkitehtuuripäätös: React Query ja XState -tilakoneet
+
+Data haetaan React Queryllä (`useSuspenseQuery`/`useSuspenseQueries`, esiladataan tarvittaessa
+reittien `clientLoader`-funktioissa) ja lomakkeiden muokkaustila hallitaan XState-tilakoneilla.
+Näiden rakenteessa noudatetaan seuraavaa yhtenäistä mallia (ks. esim. `src/lib/state/jono-tulos-state.ts`):
+
+- **Data annetaan tilakoneelle `input`-parametrina.** XStaten React-hookit lukevat `input`:n vain kerran, aktorin luonnissa, eikä tilakone synkronoi dataa React Queryn kanssa jälkikäteen.
+- **Tilakone resetoidaan vaihtamalla komponentin `key`-attribuuttia, kun data muuttuu.** Tilakonetta
+  käyttävälle komponentille annetaan key-attribuutti, joka sisältää datan tunnisteen ja päivitysajan, esim.
+  ``key={`${hakukohdeOid}_${dataUpdatedAt}`}`` (React Queryn `dataUpdatedAt`). Kun query päivittyy
+  (esim. tallennuksen jälkeisen invalidoinnin seurauksena), React tuhoaa komponentin ja luo sen
+  uudelleen, jolloin myös tilakone alustetaan tuoreella datalla.
+- **React-riippuvaiset funktiot annetaan `.provide()`-kutsulla.** Tilakoneen määrittelyssä
+  toiminnoille (esim. toastit näyttävä `notify`) annetaan tyhjät oletustoteutukset, ja
+  varsinaiset toteutukset annetaan hookissa `machine.provide({ actions: ... })`-kutsulla. Näin tilakone käyttää aina viimeisimmän renderöinnin funktioviittauksia eikä
+  aktorin luontihetkellä kaapattuja vanhentuneita sulkeumia.
+
+### Miksi tämä malli?
+
+Vaihtoehtoja, joita mallia valittaessa harkittiin:
+
+- **Datan haku tilakoneen sisällä (`fromPromise`-aktorit).** Tällöin menetettäisiin React Queryn
+  välimuisti, pyyntöjen yhdistäminen, Suspense-tuki ja esilataus `clientLoader`-funktioissa, ja
+  samaa dataa käyttävät näkymät hakisivat sen kukin erikseen. React Query on siksi ainoa
+  palvelindatan lähde, ja tilakoneet hallitsevat vain muokkaustilaa ja tallennuksen kulkua.
+- **Datan synkronointi käynnissä olevaan tilakoneeseen** (esim. `useEffect`, joka lähettää
+  `DATA_UPDATED`-eventin). Jokaiseen tilakoneeseen tarvittaisiin oma logiikka uuden datan
+  yhdistämiseen keskeneräisiin muutoksiin sekä myös sen varmistamiseksi, ettei tilakonetta alusteta jatkuvasti uudelleen, jos dataa epähuomoissa päivitetään jatkuvasti (esim. unohtunut `useMemo`). Lisäksi komponentti renderöityisi ainakin kerran
+  vanhalla tilalla ennen kuin efekti ajetaan. Key-attribuutin vaihdolla alustus tapahtuu aina samalla tavalla, eikä tilakoneiden tarvitse tietää datan päivittymisestä mitään.
+- **Uuden tilakoneen luominen renderissä (esim. `useMemo`, joka riippuu datasta).** Tämä ei
+  toimi: XStaten React-hookit luovat kyllä uuden aktorin,
+  jos koneen `config` muuttuu, mutta palauttavat sen edellisen aktorin tallennetusta snapshotista.
+  Tila ja context säilyvät, eikä `input`:ia lueta uudelleen.
+- **Callbackien välittäminen `input`:ssa tai contextissa.** Funktiot kaapattaisiin aktorin
+  luontihetkellä, joten ne vanhenisivat renderöintien välillä. Lisäksi context täyttyisi
+  arvoilla, joita ei voi sarjallistaa, mikä sotkee mm. XState-inspectorin näkymää. `.provide()`
+  pitää koneen määrittelyn Reactista riippumattomana, joten konetta voi testata yksikkötesteissä
+  omilla toteutuksilla.
+- **Pelkkä Reactin tila (`useState`/`useReducer`) ilman XStatea.** Tallennuksen, validoinnin ja
+  vahvistusdialogien monivaiheiset asynkroniset kulut ovat selkeämpiä ja paremmin testattavissa
+  tilakoneina. Yhtenäinen malli tekee lisäksi kaikista sovelluksen tilakoneista samalla tavalla
+  luettavia.
+
+Mallin rajoitus on se, että key-vaihto tuhoaa komponentin koko paikallisen tilan (myös
+tallentamattomat muutokset). Siksi queryjä ei haeta automaattisesti uudelleen taustalla
+(`refetchOnWindowFocus: false` ja `refetchOnReconnect: false` tiedostossa
+`src/components/providers/react-query-client-provider.tsx`), vaan data päivittyy vain
+käyttäjän omien toimintojen, kuten tallennuksen, seurauksena.
+
 ## Testaus
 
 Aja yksikkötestit komennolla:

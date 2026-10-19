@@ -30,7 +30,7 @@ export const LettersSendCell = ({
     setSending(true);
     try {
       if (isNullish(letterStats.letterBatchId)) {
-        throw 'No letterBatchId provided';
+        throw new Error('No letterBatchId provided');
       }
       await sendLetters(
         haku.oid,

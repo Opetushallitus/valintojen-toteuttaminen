@@ -79,26 +79,26 @@ test('Näyttää harkinnanvaraiset', async ({ page }) => {
 
   await checkRow(contentRows.nth(0), [
     '',
-    'Nukettaja Ruhtinas',
-    'Ei päättötodistusta (ATARU)',
-    'Hyväksytty',
-  ]);
-  await checkRow(contentRows.nth(1), [
-    '',
     'Dacula Kreivi',
     'Sosiaaliset syyt',
     NDASH,
   ]);
-  await checkRow(contentRows.nth(2), [
-    '',
-    'Purukumi Puru',
-    'Oppimisvaikeudet',
-    NDASH,
-  ]);
-  await checkRow(contentRows.nth(3), [
+  await checkRow(contentRows.nth(1), [
     '',
     'Hui Haamu',
     'Riittämätön tutkintokielen taito',
+    NDASH,
+  ]);
+  await checkRow(contentRows.nth(2), [
+    '',
+    'Nukettaja Ruhtinas',
+    'Ei päättötodistusta (ATARU)',
+    'Hyväksytty',
+  ]);
+  await checkRow(contentRows.nth(3), [
+    '',
+    'Purukumi Puru',
+    'Oppimisvaikeudet',
     NDASH,
   ]);
 });

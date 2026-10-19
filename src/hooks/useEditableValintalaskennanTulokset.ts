@@ -123,6 +123,20 @@ const selectEditableJonosijaFields = (
 };
 
 /**
+ * Järjestää jonosijat jonosijan mukaan. Jonosijattomat järjestetään loppuun.
+ * Samalla jonosijalla olevat (ja jonosijattomat) järjestetään hakemusten järjestyksen (hakijan nimen) mukaan.
+ */
+const sortJonosijat = <T extends { hakemusOid: string; jonosija: string }>(
+  jonosijat: Array<T>,
+  hakemusIndexes: Map<string, number>,
+) =>
+  sortBy(
+    jonosijat,
+    (js) => (js.jonosija === '' ? Infinity : Number(js.jonosija)),
+    (js) => hakemusIndexes.get(js.hakemusOid) ?? Infinity,
+  );
+
+/**
  * Valitsee muokattavissa olevat valintalaskennan tulokset. Valinnanvaiheille, jotka ei käytä valintalaskentaa luodaan tyhjät tulokset
  * niille hakemuksille, joille ei löydy tuloksia valintalaskennasta.
  *
@@ -160,6 +174,10 @@ export const selectEditableValintalaskennanTulokset = <
   const laskennattomatVaiheet =
     selectLaskennattomatValinnanvaiheet(valinnanvaiheet);
 
+  const hakemusIndexes = new Map(
+    hakemukset.map((hakemus, index) => [hakemus.hakemusOid, index]),
+  );
+
   const jonoTuloksetByOid = pipe(
     valintalaskennanTulokset,
     flatMap((vaihe) => vaihe.valintatapajonot ?? []),
@@ -194,22 +212,25 @@ export const selectEditableValintalaskennanTulokset = <
               // Valintalaskenta ei ole käytössä valinnanvaiheelle, joten käydään läpi kaikki hakemukset
               // täydentäen tuloksen puuttuessa "tyhjä" laskennan tulos, jotta voidaan näyttää
               // kaikki hakemukset ja mahdollistaa tulosten syöttäminen käsin.
-              map(hakemukset, (hakemus) => {
-                const jonosija = jonoTulos?.jonosijat?.find(
-                  (jonosijaCandidate) =>
-                    jonosijaCandidate.hakemusOid === hakemus.hakemusOid,
-                );
-                return {
-                  ...selectEditableJonosijaFields(
-                    jonosija,
-                    hakemus.hakemusOid,
-                    hakemus.hakijaOid,
-                    hakemus.hakutoiveNumero,
-                  ),
-                  ...(selectHakemusFields?.(hakemus.hakemusOid) ??
-                    ({} as HakemusOut)),
-                };
-              }),
+              sortJonosijat(
+                map(hakemukset, (hakemus) => {
+                  const jonosija = jonoTulos?.jonosijat?.find(
+                    (jonosijaCandidate) =>
+                      jonosijaCandidate.hakemusOid === hakemus.hakemusOid,
+                  );
+                  return {
+                    ...selectEditableJonosijaFields(
+                      jonosija,
+                      hakemus.hakemusOid,
+                      hakemus.hakijaOid,
+                      hakemus.hakutoiveNumero,
+                    ),
+                    ...(selectHakemusFields?.(hakemus.hakemusOid) ??
+                      ({} as HakemusOut)),
+                  };
+                }),
+                hakemusIndexes,
+              ),
           };
         }),
       };
@@ -243,6 +264,7 @@ export const selectEditableValintalaskennanTulokset = <
                       ({} as HakemusOut)),
                   };
                 }),
+                (jonosijat) => sortJonosijat(jonosijat, hakemusIndexes),
               ),
             };
           },
@@ -258,11 +280,17 @@ export const selectEditableValintalaskennanTulokset = <
 export const useEditableValintalaskennanTulokset = ({
   hakuOid,
   hakukohdeOid,
-}: KoutaOidParams): LaskennanValinnanvaiheet<AdditionalHakemusFields> => {
+}: KoutaOidParams): {
+  valinnanvaiheet: LaskennanValinnanvaiheet<AdditionalHakemusFields>;
+  dataUpdatedAt: number;
+} => {
   const [
-    { data: hakemukset },
-    { data: hakukohteenLaskennanTulokset },
-    { data: valinnanvaiheet },
+    { data: hakemukset, dataUpdatedAt: hakemuksetUpdatedAt },
+    {
+      data: hakukohteenLaskennanTulokset,
+      dataUpdatedAt: laskennanTuloksetUpdatedAt,
+    },
+    { data: valinnanvaiheet, dataUpdatedAt: valinnanvaiheetUpdatedAt },
   ] = useSuspenseQueries({
     queries: [
       queryOptionsGetHakemukset({
@@ -274,7 +302,7 @@ export const useEditableValintalaskennanTulokset = ({
     ],
   });
 
-  return useMemo(() => {
+  const editableValinnanvaiheet = useMemo(() => {
     const notFoundHakemukset: Array<string> = [];
     const hakemuksetByOid = indexBy(hakemukset ?? [], prop('hakemusOid'));
     const result =
@@ -306,4 +334,13 @@ export const useEditableValintalaskennanTulokset = ({
 
     return result;
   }, [hakukohteenLaskennanTulokset, valinnanvaiheet, hakemukset]);
+
+  return {
+    valinnanvaiheet: editableValinnanvaiheet,
+    dataUpdatedAt: Math.max(
+      hakemuksetUpdatedAt,
+      laskennanTuloksetUpdatedAt,
+      valinnanvaiheetUpdatedAt,
+    ),
+  };
 };

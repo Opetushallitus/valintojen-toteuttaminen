@@ -6,6 +6,7 @@ import {
 } from './ataru-types';
 import { client } from '../http-client';
 import { Language } from '../localization/localization-types';
+import { byLocaleCompare } from '../localization/translation-utils';
 import { KoutaOidParams } from '../kouta/kouta-types';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
 
@@ -158,7 +159,9 @@ type GetHakijatParams = Partial<GetHakemuksetParams>;
 
 export const getHakijat = async (params: GetHakijatParams) => {
   const ataruHakemukset = await getAtaruHakemukset(params);
-  return ataruHakemukset.map(parseHakijaTiedot);
+  return ataruHakemukset
+    .map(parseHakijaTiedot)
+    .sort(byLocaleCompare('hakijanNimi'));
 };
 
 export async function getHakemukset({
@@ -178,12 +181,14 @@ export async function getHakemukset({
     henkilotunnus,
   });
 
-  return data.map((h) => {
-    return {
-      ...parseHakijaTiedot(h),
-      ...parseHakutoiveTiedot(hakukohdeOid, h.hakutoiveet),
-    };
-  });
+  return data
+    .map((h) => {
+      return {
+        ...parseHakijaTiedot(h),
+        ...parseHakutoiveTiedot(hakukohdeOid, h.hakutoiveet),
+      };
+    })
+    .sort(byLocaleCompare('hakijanNimi'));
 }
 
 const LINK_TO_APPLICATION = 'lomake-editori/applications/search?term=';

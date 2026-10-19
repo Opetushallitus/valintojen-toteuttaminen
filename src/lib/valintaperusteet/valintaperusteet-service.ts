@@ -11,8 +11,9 @@ import {
 } from './valintaperusteet-types';
 import { isDefined, sort } from 'remeda';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
-import { getConfigUrl } from '../configuration/configuration-utils';
-import { UserPermissions } from '../permissions';
+import { getConfigUrl } from '@/lib/configuration/configuration-utils';
+import { UserPermissions } from '@/lib/permissions';
+import { byLocaleCompare } from '@/lib/localization/translation-utils';
 
 export const getValintaryhma = async (
   hakukohdeOid: string,
@@ -128,7 +129,7 @@ export const getValintakoeAvaimetHakukohteelle = async (
   >(
     `${configuration.routes.valintaperusteetService.valintaperusteetUrl}hakukohde/avaimet/${hakukohdeOid}`,
   );
-  return data.map((koe) => {
+  const kokeet = data.map((koe) => {
     const inputTyyppi = determineValintaKoeInputTyyppi(
       koe.tunniste,
       koe.funktiotyyppi,
@@ -145,6 +146,8 @@ export const getValintakoeAvaimetHakukohteelle = async (
       inputTyyppi,
     };
   });
+  // Järjestetään kokeet kuvauksen mukaan, jotta järjestys on sama kaikissa näkymissä
+  return sort(kokeet, byLocaleCompare('kuvaus'));
 };
 
 export const getValintakoeAvaimetHakukohteille = async ({
@@ -190,7 +193,7 @@ type ValintaryhmaHakukohteillaResponse = {
 function sortRyhmatByName(
   ryhmat: Array<ValintaryhmaHakukohteilla>,
 ): Array<ValintaryhmaHakukohteilla> {
-  return sort(ryhmat, (a, b) => a.nimi.localeCompare(b.nimi, 'fi'));
+  return sort(ryhmat, byLocaleCompare('nimi'));
 }
 
 function mapValintaryhma(

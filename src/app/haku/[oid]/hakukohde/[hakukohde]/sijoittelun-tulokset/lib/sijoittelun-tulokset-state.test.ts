@@ -75,16 +75,22 @@ describe('Sijoittelun tulokset states', async () => {
   const createActorLogic = (initialHakemukset = hakemukset) => {
     const toastFn = vi.fn();
     const onUpdatedFn = vi.fn();
-    const actor = createActor(sijoittelunTuloksetMachine, {
-      input: {
-        hakukohdeOid: 'hakukohde-oid',
-        valintatapajonoOid: 'jono-oid',
-        hakemukset: initialHakemukset,
-        lastModified: '',
-        addToast: toastFn,
-        onUpdated: onUpdatedFn,
+    const actor = createActor(
+      sijoittelunTuloksetMachine.provide({
+        actions: {
+          notify: (_, toast) => toastFn(toast),
+          refetchTulokset: onUpdatedFn,
+        },
+      }),
+      {
+        input: {
+          hakukohdeOid: 'hakukohde-oid',
+          valintatapajonoOid: 'jono-oid',
+          hakemukset: initialHakemukset,
+          lastModified: '',
+        },
       },
-    });
+    );
     actor.start();
     return { actor, toastFn, onUpdatedFn };
   };
