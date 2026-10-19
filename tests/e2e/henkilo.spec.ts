@@ -832,6 +832,29 @@ test.describe('Pistesyöttö', () => {
     ).toBeEnabled();
   });
 
+  test('Pistesyötön kokeet näytetään kokeiden nimien mukaisessa aakkosjärjestyksessä', async ({
+    page,
+  }) => {
+    await page.goto(
+      '/valintojen-toteuttaminen/haku/1.2.246.562.29.00000000000000045102/henkilo/1.2.246.562.11.00000000000001796027',
+    );
+
+    const pisteSyottoHakukohde = page.getByRole('region', {
+      name: /Pistesyöttö hakukohteelle.*Rakennetun ympäristön tiedekunta/,
+    });
+
+    // Backendin palauttamassa järjestyksessä "Nakkikoe" tulee ennen "Köksäkoetta",
+    // mutta pistesyötössä kokeet järjestetään niiden kuvauksen (nimen) mukaan.
+    const koeOtsikot = pisteSyottoHakukohde.getByRole('heading', {
+      level: 4,
+    });
+    await expect(koeOtsikot).toHaveCount(2);
+
+    const otsikkoTekstit = await koeOtsikot.allTextContents();
+    expect(otsikkoTekstit[0]).toContain('Köksäkokeen arvosana');
+    expect(otsikkoTekstit[1]).toContain('Nakkikoe, oletko nakkisuojassa?');
+  });
+
   test('Pistesyötön tallennus lähettää muokatut ja muokkaamattomat arvot ja näyttää ilmoituksen tallennuksen onnistumisesta', async ({
     page,
   }) => {
