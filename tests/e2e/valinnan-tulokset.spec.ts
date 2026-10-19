@@ -236,7 +236,7 @@ test.describe('Valinnan tulokset', () => {
     const rows = page.locator('tbody tr');
     await expect(rows).toHaveCount(5);
 
-    const nukettajaRow = rows.nth(0);
+    const nukettajaRow = rows.nth(2);
     await checkRow(
       nukettajaRow,
       [
@@ -267,7 +267,7 @@ test.describe('Valinnan tulokset', () => {
       nukettajaValinnanTilaCell.getByLabel('Hylkäyksen syy englanniksi'),
     ).toHaveValue('syy en');
 
-    const daculaRow = rows.nth(1);
+    const daculaRow = rows.nth(0);
 
     await checkRow(
       daculaRow,
@@ -296,7 +296,7 @@ test.describe('Valinnan tulokset', () => {
     ).toHaveValue('test en');
 
     await checkRow(
-      rows.nth(2),
+      rows.nth(3),
       [
         '',
         'Purukumi Puru',
@@ -311,7 +311,7 @@ test.describe('Valinnan tulokset', () => {
     );
 
     await checkRow(
-      rows.nth(3),
+      rows.nth(1),
       [
         '',
         'Hui Haamu',
@@ -460,7 +460,7 @@ test.describe('Valinnan tulokset', () => {
       await page.addStyleTag({
         content: '.MuiMenu-paper { transition-duration: 0s !important}',
       });
-      const row = page.locator('tbody tr').nth(3);
+      const row = page.locator('tbody tr').filter({ hasText: 'Hui Haamu' });
       const valinnanTilaCell = row.locator('td').nth(2);
       const vastaanottoTilaCell = row.locator('td').nth(3);
       await vastaanottoTilaCell.getByLabel('Julkaistavissa').click();
@@ -518,7 +518,7 @@ test.describe('Valinnan tulokset', () => {
       await page.addStyleTag({
         content: '.MuiMenu-paper { transition-duration: 0s !important}',
       });
-      const row = page.locator('tbody tr').nth(3);
+      const row = page.locator('tbody tr').filter({ hasText: 'Hui Haamu' });
       const valinnanTilaCell = row.locator('td').nth(2);
       const vastaanottoTilaCell = row.locator('td').nth(3);
       await vastaanottoTilaCell.getByLabel('Julkaistavissa').click();
@@ -593,7 +593,10 @@ test.describe('Tallennus', () => {
     const rows = page.locator('tbody tr');
     await selectOption({
       page,
-      locator: rows.nth(0).getByRole('cell').nth(2),
+      locator: rows
+        .filter({ hasText: 'Nukettaja Ruhtinas' })
+        .getByRole('cell')
+        .nth(2),
       option: 'HYVÄKSYTTY',
     });
 
@@ -648,7 +651,10 @@ test.describe('Tallennus', () => {
     const rows = page.locator('tbody tr');
     await selectOption({
       page,
-      locator: rows.nth(0).getByRole('cell').nth(2),
+      locator: rows
+        .filter({ hasText: 'Nukettaja Ruhtinas' })
+        .getByRole('cell')
+        .nth(2),
       option: 'HYVÄKSYTTY',
     });
 
@@ -806,7 +812,10 @@ test.describe('Tallennus', () => {
     const rows = page.locator('tbody tr');
     await selectOption({
       page,
-      locator: rows.nth(1).getByRole('cell').nth(5),
+      locator: rows
+        .filter({ hasText: 'Dacula Kreivi' })
+        .getByRole('cell')
+        .nth(5),
       option: 'Vapautettu',
     });
 
@@ -845,7 +854,10 @@ test.describe('Tallennus', () => {
     const rows = page.locator('tbody tr');
     await selectOption({
       page,
-      locator: rows.nth(0).getByRole('cell').nth(2),
+      locator: rows
+        .filter({ hasText: 'Nukettaja Ruhtinas' })
+        .getByRole('cell')
+        .nth(2),
       option: 'HYVÄKSYTTY',
     });
     await page.getByRole('button', { name: 'Tallenna', exact: true }).click();
@@ -937,7 +949,10 @@ test.describe('Tallennus', () => {
       const rows = page.locator('tbody tr');
       await selectOption({
         page,
-        locator: rows.nth(0).getByRole('cell').nth(2),
+        locator: rows
+          .filter({ hasText: 'Nukettaja Ruhtinas' })
+          .getByRole('cell')
+          .nth(2),
         option: 'HYVÄKSYTTY',
       });
       await page.getByRole('button', { name: 'Hyväksy ja tallenna' }).click();
@@ -963,7 +978,10 @@ test.describe('Tallennus', () => {
       const rows = page.locator('tbody tr');
       await selectOption({
         page,
-        locator: rows.nth(0).getByRole('cell').nth(2),
+        locator: rows
+          .filter({ hasText: 'Nukettaja Ruhtinas' })
+          .getByRole('cell')
+          .nth(2),
         option: 'HYVÄKSYTTY',
       });
       await page.getByRole('button', { name: 'Hyväksy ja tallenna' }).click();

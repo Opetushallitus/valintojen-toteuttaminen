@@ -59,6 +59,7 @@ import {
   INPUT_TIME_FORMAT,
   toFormattedDateTimeString,
   translateName,
+  byLocaleCompare,
 } from '../localization/translation-utils';
 import { Language } from '../localization/localization-types';
 import {
@@ -372,7 +373,9 @@ async function getAndCombineValintakoekutsutData({
     const missingHakemukset = await getHakijat({
       hakemusOids: missingHakemusOids,
     });
-    allHakemukset = hakukohdeHakemukset.concat(missingHakemukset);
+    allHakemukset = hakukohdeHakemukset
+      .concat(missingHakemukset)
+      .sort(byLocaleCompare('hakijanNimi'));
   }
 
   return {
