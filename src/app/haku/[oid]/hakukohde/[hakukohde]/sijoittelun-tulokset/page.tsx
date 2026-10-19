@@ -1,12 +1,9 @@
+import { ClientLoaderFunctionArgs } from 'react-router';
 import { TabContainer } from '../components/tab-container';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { Box } from '@mui/material';
-import {
-  noop,
-  useQueryClient,
-  useSuspenseQueries,
-} from '@tanstack/react-query';
+import { noop, useSuspenseQueries } from '@tanstack/react-query';
 import { isEmpty } from '@/lib/common';
 import { PageSizeSelector } from '@/components/table/page-size-selector';
 import { NoResults } from '@/components/no-results';
@@ -26,6 +23,7 @@ import { queryOptionsGetHakukohteenValinnanvaiheet } from '@/lib/valintaperustee
 import { queryOptionsGetHakemukset } from '@/lib/ataru/ataru-queries';
 import { queryOptionsGetDocumentIdForHakukohde } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-queries';
 import { useRequiredParams } from '@/hooks/useRequiredParams';
+import { queryClient } from '@/components/providers/react-query-client-provider';
 
 const SijoitteluContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const { t } = useTranslations();
@@ -122,14 +120,12 @@ const SijoitteluContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   );
 };
 
-export default function SijoittelunTuloksetPage() {
-  const params = useRequiredParams<{ oid: string; hakukohde: string }>();
-
-  const queryClient = useQueryClient();
+export const clientLoader = ({ params }: ClientLoaderFunctionArgs) => {
+  const { hakukohde } = params as { hakukohde: string };
   queryClient
     .query(
       queryOptionsGetDocumentIdForHakukohde({
-        hakukohdeOid: params.hakukohde,
+        hakukohdeOid: hakukohde,
         documentType: 'osoitetarrat',
       }),
     )
@@ -137,7 +133,7 @@ export default function SijoittelunTuloksetPage() {
   queryClient
     .query(
       queryOptionsGetDocumentIdForHakukohde({
-        hakukohdeOid: params.hakukohde,
+        hakukohdeOid: hakukohde,
         documentType: 'hyvaksymiskirjeet',
       }),
     )
@@ -145,11 +141,15 @@ export default function SijoittelunTuloksetPage() {
   queryClient
     .query(
       queryOptionsGetDocumentIdForHakukohde({
-        hakukohdeOid: params.hakukohde,
+        hakukohdeOid: hakukohde,
         documentType: 'sijoitteluntulokset',
       }),
     )
     .catch(noop);
+};
+
+export default function SijoittelunTuloksetPage() {
+  const params = useRequiredParams<{ oid: string; hakukohde: string }>();
 
   return (
     <TabContainer>
