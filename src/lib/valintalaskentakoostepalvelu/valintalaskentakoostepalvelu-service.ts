@@ -202,7 +202,6 @@ export const getPisteetForHakukohde = async ({
   );
 
   const kokeet = await kokeetPromise;
-  kokeet.sort((a, b) => a.kuvaus.localeCompare(b.kuvaus));
 
   if (isEmpty(kokeet)) {
     pisteTiedotFetch.abort('Ei kokeita, perutaan pistetietojen haku');

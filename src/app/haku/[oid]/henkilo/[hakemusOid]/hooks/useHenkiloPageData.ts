@@ -152,10 +152,7 @@ export const useHenkiloPageData = ({
               ),
             };
           }),
-          kokeet: sortBy(
-            kokeetByHakukohde[hakukohde.oid] ?? [],
-            prop('kuvaus'),
-          ),
+          kokeet: kokeetByHakukohde[hakukohde.oid] ?? [],
           pisteet: pisteetByHakukohde.pisteet[hakukohde.oid] ?? [],
         };
       }),
