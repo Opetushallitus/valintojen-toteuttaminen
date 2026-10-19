@@ -10,6 +10,4 @@ export const isTesting =
 export const localTranslations =
   import.meta.env.VITE_LOCAL_TRANSLATIONS === 'true';
 
-export const xstateInspect = import.meta.env.VITE_XSTATE_INSPECT === 'true';
-
 export type Configuration = ReturnType<typeof buildConfiguration>;
