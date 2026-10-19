@@ -3,7 +3,7 @@ import {
   ValintakoeOsallistuminenTulos,
 } from '@/lib/types/laskenta-types';
 import { describe, expect, test } from 'vitest';
-import { createHakukohdePisteSyottoMachine } from './hakukohde-pistesyotto-state';
+import { hakukohdePisteSyottoMachine } from './hakukohde-pistesyotto-state';
 import { createActor } from 'xstate';
 import { PisteSyottoEvent } from '@/lib/state/pistesyotto-state-common';
 
@@ -28,14 +28,14 @@ const generatePistetiedot = (pisteet: Array<GeneratePistetiedotProps>) => ({
 });
 
 const initPistesyottoState = (pistetiedot: HakemuksenPistetiedot) => {
-  const machine = createHakukohdePisteSyottoMachine(
-    'haku-oid',
-    'hakukohde-oid',
-    [pistetiedot],
-    [],
-    () => {},
-  );
-  const actor = createActor(machine);
+  const actor = createActor(hakukohdePisteSyottoMachine, {
+    input: {
+      hakuOid: 'haku-oid',
+      hakukohdeOid: 'hakukohde-oid',
+      pistetiedot: [pistetiedot],
+      valintakokeet: [],
+    },
+  });
   actor.start();
   return actor;
 };
