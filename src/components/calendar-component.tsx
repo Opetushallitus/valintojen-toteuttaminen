@@ -5,8 +5,9 @@ import {
   OphInput,
   OphFormFieldWrapper,
 } from '@opetushallitus/oph-design-system';
-import DatePicker from 'react-datepicker';
+import DatePicker, { registerLocale } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { fi, sv, enGB } from 'date-fns/locale';
 import { forwardRef, ReactNode, useRef } from 'react';
 import {
   CalendarTodayOutlined,
@@ -15,6 +16,12 @@ import {
 } from '@mui/icons-material';
 import { capitalize } from 'remeda';
 import { styled } from '../lib/theme';
+
+// Rekisteröidään täällä eikä lokalisaation alustuksessa, jotta react-datepicker
+// ladataan vain kalenteria käyttävien sivujen mukana.
+registerLocale('fi', fi);
+registerLocale('sv', sv);
+registerLocale('en', enGB);
 
 const CALENDAR_CLASSNAME = 'oph-calendar';
 
