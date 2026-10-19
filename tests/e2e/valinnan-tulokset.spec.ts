@@ -251,6 +251,9 @@ test.describe('Valinnan tulokset', () => {
       'td',
       false,
     );
+    await expect(
+      nukettajaRow.getByRole('checkbox', { name: 'Ehdollinen valinta' }),
+    ).toBeVisible();
 
     const nukettajaValinnanTilaCell = nukettajaRow.getByRole('cell').nth(2);
 

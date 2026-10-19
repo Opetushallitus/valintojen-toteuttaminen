@@ -72,14 +72,14 @@ describe('Sijoittelun tulokset states', async () => {
     },
   ];
 
-  const createActorLogic = () => {
+  const createActorLogic = (initialHakemukset = hakemukset) => {
     const toastFn = vi.fn();
     const onUpdatedFn = vi.fn();
     const actor = createActor(sijoittelunTuloksetMachine, {
       input: {
         hakukohdeOid: 'hakukohde-oid',
         valintatapajonoOid: 'jono-oid',
-        hakemukset: hakemukset,
+        hakemukset: initialHakemukset,
         lastModified: '',
         addToast: toastFn,
         onUpdated: onUpdatedFn,
@@ -91,6 +91,50 @@ describe('Sijoittelun tulokset states', async () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+  });
+
+  test('saves conditional acceptance and all reasons for a rejected applicant', async () => {
+    const { actor } = createActorLogic(
+      hakemukset.map((hakemus) => ({
+        ...hakemus,
+        valinnanTila: ValinnanTila.HYLATTY,
+      })),
+    );
+    vi.spyOn(client, 'post').mockResolvedValueOnce({
+      headers: new Headers(),
+      data: {},
+    });
+    const patch = vi.spyOn(client, 'patch').mockResolvedValueOnce({
+      headers: new Headers(),
+      data: [],
+    });
+    const ehdollisuus = {
+      ehdollisestiHyvaksyttavissa: true,
+      ehdollisenHyvaksymisenEhtoKoodi: 'muu',
+      ehdollisenHyvaksymisenEhtoFI: 'suomeksi',
+      ehdollisenHyvaksymisenEhtoSV: 'ruotsiksi',
+      ehdollisenHyvaksymisenEhtoEN: 'englanniksi',
+    };
+    actor.send({
+      type: ValinnanTulosEventType.CHANGE,
+      hakemusOid: 'hakemus-2',
+      ...ehdollisuus,
+    });
+    actor.send({ type: ValinnanTulosEventType.UPDATE });
+    await waitIdle(actor);
+
+    expect(patch).toHaveBeenCalledExactlyOnceWith(
+      expect.any(String),
+      [
+        expect.objectContaining({
+          hakemusOid: 'hakemus-2',
+          valinnantila: ValinnanTila.HYLATTY,
+          ...ehdollisuus,
+        }),
+      ],
+      expect.any(Object),
+    );
+    actor.stop();
   });
 
   test('saving without changes creates error toast', async () => {

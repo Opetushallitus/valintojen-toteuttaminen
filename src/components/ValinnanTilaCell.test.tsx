@@ -110,26 +110,34 @@ const getEhdollinenCheckbox = () =>
   screen.queryByRole('checkbox', { name: 'sijoittelun-tulokset.ehdollinen' });
 
 describe('Ehdollisesti hyväksyttävissä checkbox', () => {
-  test('Show when korkeakoulutus', () => {
-    renderValinnanTilaCell({
-      tarjoajaOid: TARJOAJA_OID,
-      kohdejoukko: 'haunkohdejoukko_12',
-    });
+  test.each([undefined, ValinnanTila.HYLATTY])(
+    'Show when korkeakoulutus, tila %s',
+    (valinnanTila) => {
+      renderValinnanTilaCell({
+        tarjoajaOid: TARJOAJA_OID,
+        kohdejoukko: 'haunkohdejoukko_12',
+        hakemus: { valinnanTila },
+      });
 
-    const checkbox = getEhdollinenCheckbox();
-    expect(checkbox).toBeInTheDocument();
-  });
+      const checkbox = getEhdollinenCheckbox();
+      expect(checkbox).toBeInTheDocument();
+    },
+  );
 
-  test('Hide when not korkeakoulutus', () => {
-    renderValinnanTilaCell({
-      tarjoajaOid: TARJOAJA_OID,
-      kohdejoukko: 'haunkohdejoukko_01',
-    });
+  test.each([undefined, ValinnanTila.HYLATTY])(
+    'Hide when not korkeakoulutus, tila %s',
+    (valinnanTila) => {
+      renderValinnanTilaCell({
+        tarjoajaOid: TARJOAJA_OID,
+        kohdejoukko: 'haunkohdejoukko_01',
+        hakemus: { valinnanTila },
+      });
 
-    const checkbox = getEhdollinenCheckbox();
+      const checkbox = getEhdollinenCheckbox();
 
-    expect(checkbox).not.toBeInTheDocument();
-  });
+      expect(checkbox).not.toBeInTheDocument();
+    },
+  );
 
   test('Enable when update permissions to hakukohde tarjoaja organization', () => {
     renderValinnanTilaCell({
