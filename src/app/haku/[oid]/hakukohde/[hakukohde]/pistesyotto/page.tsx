@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { ClientLoaderFunctionArgs } from 'react-router';
 
 import { TabContainer } from '../components/tab-container';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
@@ -11,7 +12,6 @@ import { isEmpty } from '@/lib/common';
 import { NoResults } from '@/components/no-results';
 import {
   noop,
-  useQueryClient,
   useSuspenseQueries,
 } from '@tanstack/react-query';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
@@ -20,6 +20,7 @@ import { HakukohteenPistetiedot } from '@/lib/types/laskenta-types';
 import { queryOptionsGetPisteetForHakukohde } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-queries';
 import { queryOptionsGetHakemukset } from '@/lib/ataru/ataru-queries';
 import { useRequiredParams } from '@/hooks/useRequiredParams';
+import { queryClient } from '@/components/providers/react-query-client-provider';
 
 const PisteSyottoContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const { t } = useTranslations();
@@ -69,17 +70,20 @@ const PisteSyottoContent = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   );
 };
 
-export default function PisteSyottoPage() {
-  const params = useRequiredParams<{ oid: string; hakukohde: string }>();
-  const queryClient = useQueryClient();
+export const clientLoader = ({ params }: ClientLoaderFunctionArgs) => {
+  const { oid, hakukohde } = params as { oid: string; hakukohde: string };
   queryClient
     .query(
       queryOptionsGetPisteetForHakukohde({
-        hakuOid: params.oid,
-        hakukohdeOid: params.hakukohde,
+        hakuOid: oid,
+        hakukohdeOid: hakukohde,
       }),
     )
     .catch(noop);
+};
+
+export default function PisteSyottoPage() {
+  const params = useRequiredParams<{ oid: string; hakukohde: string }>();
   return (
     <TabContainer>
       <QuerySuspenseBoundary suspenseFallback={<FullClientSpinner />}>
