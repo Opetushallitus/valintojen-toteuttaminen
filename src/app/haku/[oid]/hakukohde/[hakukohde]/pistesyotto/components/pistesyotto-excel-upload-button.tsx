@@ -12,6 +12,7 @@ import {
   useOphModalProps,
 } from '@/components/modals/global-modal';
 import { SpinnerGlobalModal } from '@/components/modals/spinner-global-modal';
+import { ConfirmationGlobalModal } from '@/components/modals/confirmation-global-modal';
 import { FileSelectButton } from '@/components/file-select-button';
 import { ErrorTable } from '@/components/error-table';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
@@ -94,7 +95,8 @@ export const PistesyottoExcelUploadButton = ({
   hakuOid,
   hakukohdeOid,
   disabled = false,
-}: KoutaOidParams & { disabled?: boolean }) => {
+  isDirty = false,
+}: KoutaOidParams & { disabled?: boolean; isDirty?: boolean }) => {
   const { t } = useTranslations();
 
   const { mutate, isPending } = useExcelUploadMutation({
@@ -102,11 +104,28 @@ export const PistesyottoExcelUploadButton = ({
     hakukohdeOid,
   });
 
+  // Tuonnin jälkeinen datan uudelleenlataus resetoi lomakkeen, joten varmistetaan ettei tallentamattomia muutoksia menetetä huomaamatta
+  const onFileSelect = (file: File) => {
+    if (isDirty) {
+      showModal(ConfirmationGlobalModal, {
+        title: t('lomake.tallentamattomia-muutoksia'),
+        content: t(
+          'pistesyotto.tuo-taulukkolaskennasta-tallentamattomia-muutoksia',
+        ),
+        confirmLabel: t('lomake.jatka'),
+        cancelLabel: t('yleinen.peruuta'),
+        onConfirm: () => mutate({ file }),
+      });
+    } else {
+      mutate({ file });
+    }
+  };
+
   return (
     <FileSelectButton
       disabled={disabled}
       loading={isPending}
-      onFileSelect={(file) => mutate({ file })}
+      onFileSelect={onFileSelect}
     >
       {t('yleinen.tuo-taulukkolaskennasta')}
     </FileSelectButton>

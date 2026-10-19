@@ -78,6 +78,7 @@ export const PisteSyottoForm = ({
     >
       <PisteSyottoActions
         isUpdating={isUpdating}
+        isDirty={isDirty}
         hakuOid={hakuOid}
         hakukohdeOid={hakukohdeOid}
         pisteSyottoDisabled={pistesyottoDisabled}

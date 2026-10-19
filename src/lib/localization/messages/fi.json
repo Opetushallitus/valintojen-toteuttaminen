@@ -253,6 +253,7 @@
     "virhe-tuo-taulukkolaskennasta": "Pistetietojen tuominen taulukkolaskennasta epäonnistui!",
     "tuo-taulukkolaskennasta-onnistui": "Pistetietojen tuominen taulukkolaskennasta onnistui!",
     "tuodaan-pistetietoja-taulukkolaskennasta": "Tuodaan pistetietoja taulukkolaskennasta",
+    "tuo-taulukkolaskennasta-tallentamattomia-muutoksia": "Lomakkeella on tallentamattomia muutoksia, jotka menetetään, kun pistetiedot tuodaan taulukkolaskennasta. Jatketaanko silti?",
     "virhe-tuo-taulukkolaskennasta-epaonnistui-osittain": "Pistetietojen tuominen taulukkolaskennasta epäonnistui osittain!",
     "osallistumisen-tila": "Osallistumisen tila",
     "tuonti-tulos-taulukko": {
