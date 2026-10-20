@@ -81,6 +81,7 @@ export const LaskettuValintatapajonoTable = ({
               {configuration && (
                 <OphLink
                   iconVisible={false}
+                  underline="always"
                   href={getConfigUrl(
                     configuration.routes.valintalaskentahistoriaLinkUrl,
                     {

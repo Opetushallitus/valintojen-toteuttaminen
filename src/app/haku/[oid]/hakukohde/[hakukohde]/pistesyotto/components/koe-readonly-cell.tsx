@@ -10,7 +10,6 @@ const StyledCell = styled(Box)({
   display: 'flex',
   flexDirection: 'row',
   columnGap: '0.6rem',
-  minWidth: '220px',
 });
 
 export const ReadOnlyKoeCell = ({
