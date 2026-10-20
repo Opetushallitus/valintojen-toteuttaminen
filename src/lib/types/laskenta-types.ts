@@ -152,3 +152,21 @@ export type LaskettuHakukohde = {
   hakukohdeOid: string;
   laskentaValmistunut: string;
 };
+
+export type ValintalaskentahistoriaTila = {
+  tilatyyppi: 'HYLATTY' | 'HYVAKSYTTAVISSA' | 'VIRHE';
+  kuvaus?: Record<string, string>;
+  tekninenKuvaus?: string;
+  metatieto?: { metatietotyyppi: string } & Record<string, unknown>;
+};
+
+export type ValintalaskentahistoriaArvo = string | number | boolean | null;
+
+// Valintalaskennan funktiokutsupuu yhdelle järjestyskriteerille
+export type Valintalaskentahistoria = {
+  funktio: string;
+  tulos?: ValintalaskentahistoriaArvo;
+  tilat: Array<ValintalaskentahistoriaTila>;
+  historiat?: Array<Valintalaskentahistoria>;
+  avaimet?: Record<string, ValintalaskentahistoriaArvo>;
+};

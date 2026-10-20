@@ -138,10 +138,7 @@ const LOGIN_MAP = [
   },
   {
     urlIncludes: '/valintalaskenta-laskenta-service',
-    loginParam: [
-      'valintalaskentaLaskentaService',
-      'valintalaskentaServiceLogin',
-    ],
+    loginParam: ['valintalaskentaService', 'valintalaskentaServiceLogin'],
   },
   {
     urlIncludes: '/valintalaskentakoostepalvelu',

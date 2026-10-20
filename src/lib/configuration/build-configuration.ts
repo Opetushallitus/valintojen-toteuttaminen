@@ -48,7 +48,7 @@ export function buildConfiguration({
         ataruEditoriLogin: `${domain}/lomake-editori/auth/cas`,
         hakemuksetUrl: `${domain}/lomake-editori/api/external/valinta-ui`,
       },
-      valintalaskentaLaskentaService: {
+      valintalaskentaService: {
         valintalaskentaServiceLogin: `${domain}/valintalaskenta-laskenta-service/auth/login`,
         valintalaskentaServiceUrl: `${domain}/valintalaskenta-laskenta-service/resources/`,
         valintalaskentakerrallaUrl: `${domain}/valintalaskenta-laskenta-service/resources/valintalaskentakerralla`,
@@ -63,6 +63,7 @@ export function buildConfiguration({
         setHarkinnanvaraisetTilatUrl: `${domain}/valintalaskenta-laskenta-service/resources/harkinnanvarainenhyvaksynta`,
         jarjestyskriteeritMuokkausUrl: `${domain}/valintalaskenta-laskenta-service/resources/valintatapajono/{valintatapajonoOid}/{hakemusOid}/jonosija/jarjestyskriteerit`,
         jarjestyskriteeriPoistoUrl: `${domain}/valintalaskenta-laskenta-service/resources/valintatapajono/{valintatapajonoOid}/{hakemusOid}/{jarjestyskriteeriPrioriteetti}/jonosija`,
+        jonosijaHistoriaUrl: `${domain}/valintalaskenta-laskenta-service/resources/jonosijahistoria/{valintatapajonoOid}/{hakemusOid}`,
       },
       suorituspalvelu: {
         harkinnanvaraisuudetHakemuksilleUrl: `${domain}/suorituspalvelu/api/v1/valinnat/harkinnanvaraisuus`,
