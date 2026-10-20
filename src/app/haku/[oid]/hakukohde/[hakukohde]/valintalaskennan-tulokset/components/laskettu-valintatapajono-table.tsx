@@ -23,7 +23,8 @@ import { TuloksenTila } from '@/lib/types/laskenta-types';
 import { OphLink } from '@opetushallitus/oph-design-system';
 import { useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { useConfiguration } from '@/hooks/useConfiguration';
+import { Link } from 'react-router';
+import { buildLinkToValintalaskentahistoria } from '@/lib/app-links';
 import { refetchHakukohteenValintalaskennanTulokset } from '@/lib/valintalaskenta/valintalaskenta-queries';
 import { isNonNull } from 'remeda';
 import { useHasOnlyHakukohdeReadPermission } from '@/hooks/useHasOnlyHakukohdeReadPermission';
@@ -61,8 +62,6 @@ export const LaskettuValintatapajonoTable = ({
 }) => {
   const { t, translateEntity } = useTranslations();
 
-  const { configuration, getConfigUrl } = useConfiguration();
-
   const userHasOnlyReadPermission = useHasOnlyHakukohdeReadPermission();
 
   const queryClient = useQueryClient();
@@ -78,20 +77,16 @@ export const LaskettuValintatapajonoTable = ({
           render: ({ pisteet, hakemusOid, muokattu }) => (
             <span>
               {pisteet}{' '}
-              {configuration && (
-                <OphLink
-                  iconVisible={false}
-                  href={getConfigUrl(
-                    configuration.routes.valintalaskentahistoriaLinkUrl,
-                    {
-                      hakemusOid,
-                      valintatapajonoOid: jono.oid,
-                    },
-                  )}
-                >
-                  {t('yleinen.lisatietoja')}
-                </OphLink>
-              )}
+              <OphLink
+                component={Link}
+                iconVisible={false}
+                to={buildLinkToValintalaskentahistoria({
+                  valintatapajonoOid: jono.oid,
+                  hakemusOid,
+                })}
+              >
+                {t('yleinen.lisatietoja')}
+              </OphLink>
               {muokattu && (
                 <InfoTooltipIcon
                   title={t(`${TRANSLATIONS_PREFIX}.muokattu-kasin`)}
@@ -151,8 +146,6 @@ export const LaskettuValintatapajonoTable = ({
         translateEntity,
         hakukohde,
         queryClient,
-        configuration,
-        getConfigUrl,
         userHasOnlyReadPermission,
       ],
     ).filter(isNonNull);
