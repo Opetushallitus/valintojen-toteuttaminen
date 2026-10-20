@@ -755,5 +755,9 @@
       "kaynnissa": "Käynnissä {total}",
       "jonossa": "Jonossa {total}"
     }
+  },
+  "valintalaskentahistoria": {
+    "otsikko": "Valintojen toteuttaminen – Valintalaskentahistoria",
+    "historia-otsikko": "Valintalaskentahistoria"
   }
 }
