@@ -77,15 +77,6 @@ export const PisteSyottoTable = ({
       sort={sort}
       setSort={setSort}
       translateHeader={false}
-      sx={{
-        '& .MuiTableHead-root .MuiTableCell-root': {
-          paddingLeft: 1,
-        },
-        '& .MuiTableBody-root .MuiTableCell-root': {
-          height: 'auto',
-          padding: (theme) => theme.spacing(0.5, 0, 0.5, 1),
-        },
-      }}
     />
   );
 };
