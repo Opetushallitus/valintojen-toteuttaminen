@@ -1,12 +1,14 @@
 import { Outlet } from 'react-router';
-import { HistoryOutlined } from '@mui/icons-material';
 import { PageLayout } from '@/components/page-layout';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { Header } from '@/components/header';
-import { IconHeaderBlock } from '@/components/icon-header-block';
+import { Box, useTheme } from '@mui/material';
+import { responsivePadding } from '@/lib/responsive-padding';
 
 export default function ValintalaskentahistoriaLayout() {
   const { t } = useTranslations();
+
+  const theme = useTheme();
 
   return (
     <PageLayout
@@ -14,12 +16,9 @@ export default function ValintalaskentahistoriaLayout() {
         <Header isHome={true} title={t('valintalaskentahistoria.otsikko')} />
       }
     >
-      <IconHeaderBlock
-        title={t('valintalaskentahistoria.historia-otsikko')}
-        icon={<HistoryOutlined />}
-      >
+      <Box component="main" sx={responsivePadding(theme)}>
         <Outlet />
-      </IconHeaderBlock>
+      </Box>
     </PageLayout>
   );
 }

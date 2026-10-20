@@ -71,6 +71,7 @@ type AtaruHakemus = {
   sukunimi: string;
   personOid: string;
   oid: string;
+  hakuOid: string;
   henkilotunnus: string;
   lahiosoite: string;
   postinumero: string;
@@ -123,6 +124,7 @@ export async function getAtaruHakemukset({
 export const parseHakijaTiedot = (hakemus: AtaruHakemus) => {
   return {
     hakemusOid: hakemus.oid,
+    hakuOid: hakemus.hakuOid,
     hakijaOid: hakemus.personOid,
     etunimet: hakemus.etunimet,
     sukunimi: hakemus.sukunimi,
@@ -155,7 +157,7 @@ const parseHakutoiveTiedot = (
   };
 };
 
-type GetHakijatParams = Partial<GetHakemuksetParams>;
+export type GetHakijatParams = Partial<GetHakemuksetParams>;
 
 export const getHakijat = async (params: GetHakijatParams) => {
   const ataruHakemukset = await getAtaruHakemukset(params);
