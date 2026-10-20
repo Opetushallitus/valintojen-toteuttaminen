@@ -160,7 +160,8 @@ export type ValintalaskentahistoriaTila = {
   metatieto?: { metatietotyyppi: string } & Record<string, unknown>;
 };
 
-export type ValintalaskentahistoriaArvo = string | number | boolean | null;
+export type ValintalaskentahistoriaArvo =
+  string | number | boolean | object | null;
 
 // Valintalaskennan funktiokutsupuu yhdelle järjestyskriteerille
 export type Valintalaskentahistoria = {
