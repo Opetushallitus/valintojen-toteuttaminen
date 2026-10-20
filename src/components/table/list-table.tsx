@@ -27,10 +27,10 @@ const StyledTable = styled(Table)({
 
 const StyledTableBody = styled(TableBody)(({ theme }) => ({
   '& .MuiTableCell-root': {
-    padding: theme.spacing(1, 0, 1, 2),
+    padding: theme.spacing(0.5, 0, 0.5, 1),
     textAlign: 'left',
     whiteSpace: 'pre-wrap',
-    height: '64px',
+    height: 'auto',
     borderWidth: 0,
   },
   '& .MuiTableRow-root': {
