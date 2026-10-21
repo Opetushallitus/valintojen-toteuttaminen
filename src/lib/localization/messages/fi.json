@@ -461,6 +461,7 @@
     "tuo-taulukkolaskennasta-onnistui": "Valinnan tulosten tuominen taulukkolaskennasta onnistui!",
     "tuodaan-tuloksia-taulukkolaskennasta": "Tuodaan valinnan tuloksia taulukkolaskennasta...",
     "virhe-tuo-taulukkolaskennasta": "Valinnan tulosten tuominen taulukkolaskennasta epäonnistui",
+    "tuo-taulukkolaskennasta-tallentamattomia-muutoksia": "Lomakkeella on tallentamattomia muutoksia, jotka menetetään, kun valinnan tulokset tuodaan taulukkolaskennasta. Jatketaanko silti?",
     "poistettu": "Valinnan tulokset poistettu",
     "hyvaksytaan-valintaesitysta": "Hyväksytään valintaesitystä...",
     "varasijalta": "Hyväksytään varasijalta",

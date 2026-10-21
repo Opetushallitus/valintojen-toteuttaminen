@@ -49,6 +49,9 @@ import { FileSelectButton } from '@/components/file-select-button';
 import { refetchHakukohteenValinnanTuloksetData } from '@/lib/valinta-tulos-service/valinta-tulos-queries';
 import { useHaunAsetukset } from '@/lib/ohjausparametrit/useHaunAsetukset';
 import { refetchHakemukset } from '@/lib/ataru/ataru-queries';
+import { OphProcessError } from '@/lib/common';
+import { ValinnanTulosErrorGlobalModal } from '@/components/modals/valinnan-tulos-error-global-modal';
+import { hasChangedHakemukset } from '@/lib/state/valinnanTuloksetMachineUtils';
 
 const ActionsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -127,16 +130,32 @@ export const ValinnanTuloksetExcelUploadButton = ({
   hakukohdeOid,
   valintatapajonoOid,
   lastModified,
+  hakemukset,
+  disabled,
+  isDirty,
 }: {
   haku: Haku;
   hakukohdeOid: string;
   valintatapajonoOid?: string;
   lastModified?: string;
+  hakemukset: Array<HakemuksenValinnanTulos>;
+  disabled: boolean;
+  isDirty: boolean;
 }) => {
   const { t } = useTranslations();
   const { addToast } = useToaster();
 
   const queryClient = useQueryClient();
+
+  const refetchTuodutTiedot = () => {
+    refetchHakukohteenValinnanTuloksetData({
+      queryClient,
+      haku,
+      hakukohdeOid,
+    });
+    // Tuonti voi luoda uusia (synteettisiä) hakemuksia
+    refetchHakemukset({ queryClient, hakuOid: haku.oid, hakukohdeOid });
+  };
 
   const { mutate, isPending } = useMutation({
     mutationFn: async ({ file }: { file: File }) => {
@@ -153,23 +172,29 @@ export const ValinnanTuloksetExcelUploadButton = ({
     },
     onError: (error) => {
       hideModal(SpinnerGlobalModal);
-      addToast({
-        key: 'upload-valinnan-tulos-excel-error',
-        message:
-          t('valinnan-tulokset.virhe-tuo-taulukkolaskennasta') +
-          (isEmpty(error?.message) ? '.' : `: \n${error.message}`),
-        type: 'error',
-      });
+      if (error instanceof OphProcessError) {
+        // Tuonti on voinut onnistua osittain -> ladataan muuttuneet tiedot
+        refetchTuodutTiedot();
+        showModal(ValinnanTulosErrorGlobalModal, {
+          error: new OphProcessError(
+            error.processObject,
+            'valinnan-tulokset.virhe-tuo-taulukkolaskennasta',
+          ),
+          hakemukset,
+        });
+      } else {
+        addToast({
+          key: 'upload-valinnan-tulos-excel-error',
+          message:
+            t('valinnan-tulokset.virhe-tuo-taulukkolaskennasta') +
+            (isEmpty(error?.message) ? '.' : `: \n${error.message}`),
+          type: 'error',
+        });
+      }
     },
     onSuccess: () => {
       hideModal(SpinnerGlobalModal);
-      refetchHakukohteenValinnanTuloksetData({
-        queryClient,
-        haku,
-        hakukohdeOid,
-      });
-      // Tuonti voi luoda uusia (synteettisiä) hakemuksia
-      refetchHakemukset({ queryClient, hakuOid: haku.oid, hakukohdeOid });
+      refetchTuodutTiedot();
       addToast({
         key: 'upload-valinnan-tulos-excel-success',
         message: 'valinnan-tulokset.tuo-taulukkolaskennasta-onnistui',
@@ -178,11 +203,29 @@ export const ValinnanTuloksetExcelUploadButton = ({
     },
   });
 
+  // Tuonnin jälkeinen datan uudelleenlataus resetoi lomakkeen, joten varmistetaan ettei tallentamattomia muutoksia menetetä huomaamatta
+  const onFileSelect = (file: File) => {
+    if (isDirty) {
+      showModal(ConfirmationGlobalModal, {
+        title: t('lomake.tallentamattomia-muutoksia'),
+        content: t(
+          'valinnan-tulokset.tuo-taulukkolaskennasta-tallentamattomia-muutoksia',
+        ),
+        confirmLabel: t('lomake.jatka'),
+        cancelLabel: t('yleinen.peruuta'),
+        onConfirm: () => mutate({ file }),
+      });
+    } else {
+      mutate({ file });
+    }
+  };
+
   return (
     <FileSelectButton
       variant="contained"
+      disabled={disabled}
       loading={isPending}
-      onFileSelect={(file) => mutate({ file })}
+      onFileSelect={onFileSelect}
     >
       {t('yleinen.tuo-taulukkolaskennasta')}
     </FileSelectButton>
@@ -335,15 +378,14 @@ export const ValinnanTuloksetActions = ({
 
   const { send } = valinnanTulosActorRef;
 
-  const { state, hakemukset, valintatapajonoOid, lastModified } = useSelector(
-    valinnanTulosActorRef,
-    (s) => ({
+  const { state, hakemukset, valintatapajonoOid, lastModified, isDirty } =
+    useSelector(valinnanTulosActorRef, (s) => ({
       state: s,
       hakemukset: s.context.hakemukset,
       valintatapajonoOid: s.context.valintatapajonoOid,
       lastModified: s.context.lastModified,
-    }),
-  );
+      isDirty: hasChangedHakemukset(s),
+    }));
 
   const isValintaesitysJulkaistavissa = useIsValintaesitysJulkaistavissa({
     haku,
@@ -382,6 +424,9 @@ export const ValinnanTuloksetActions = ({
           hakukohdeOid={hakukohde.oid}
           valintatapajonoOid={valintatapajonoOid}
           lastModified={lastModified}
+          hakemukset={hakemukset}
+          disabled={!state.matches(ValinnanTulosState.IDLE)}
+          isDirty={isDirty}
         />
       )}
       <MerkitseMyohastyneeksiButton

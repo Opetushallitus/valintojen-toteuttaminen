@@ -1175,6 +1175,80 @@ test.describe('Tallennus', () => {
     ).toBeVisible();
   });
 
+  test('Tuonti taulukkolaskennasta näyttää rivikohtaiset virheet ja lataa tiedot uudelleen', async ({
+    page,
+  }) => {
+    await mockDocumentProcess({
+      page,
+      urlMatcher: (url) =>
+        url.pathname.endsWith(
+          '/valintalaskentakoostepalvelu/resources/erillishaku/tuonti',
+        ),
+      processResponse: {
+        json: {
+          dokumenttiId: 'doc_id',
+          kasittelyssa: false,
+          keskeytetty: true,
+          kokonaistyo: { valmis: true },
+          poikkeukset: [
+            {
+              tunnisteet: [{ tunniste: 'Rivi 3: testi-virhe', tyyppi: 'rivi' }],
+              palvelu: 'testi-palvelu',
+              viesti: 'testi-virheviesti',
+              palvelukutsu: 'testi-palvelukutsu',
+            },
+          ],
+          varoitukset: [],
+        },
+      },
+    });
+
+    await Promise.all([
+      waitForMethodRequest(page, 'GET', (url) =>
+        url.includes('/lomake-editori/api/external/valinta-ui'),
+      ),
+      startExcelImport(page),
+    ]);
+
+    const errorModal = page.getByRole('dialog', {
+      name: 'Valinnan tulosten tuominen taulukkolaskennasta epäonnistui',
+    });
+    await expect(errorModal).toBeVisible();
+    await expect(
+      errorModal.getByRole('cell', { name: 'Rivi 3: testi-virhe' }),
+    ).toBeVisible();
+  });
+
+  test('Tuonti taulukkolaskennasta varmistaa tallentamattomien muutosten menettämisen', async ({
+    page,
+  }) => {
+    const isTuontiUrl = (url: URL) =>
+      url.pathname.endsWith(
+        '/valintalaskentakoostepalvelu/resources/erillishaku/tuonti',
+      );
+    await mockDocumentProcess({ page, urlMatcher: isTuontiUrl });
+
+    await selectOption({
+      page,
+      locator: page
+        .locator('tbody tr')
+        .filter({ hasText: 'Nukettaja Ruhtinas' })
+        .getByRole('cell')
+        .nth(2),
+      option: 'HYVÄKSYTTY',
+    });
+    await startExcelImport(page);
+
+    const confirmModal = page.getByRole('dialog', {
+      name: 'Tallentamattomia muutoksia',
+    });
+    await expect(confirmModal).toBeVisible();
+    await Promise.all([
+      waitForMethodRequest(page, 'POST', (url) => isTuontiUrl(new URL(url))),
+      confirmModal.getByRole('button', { name: 'Jatka' }).click(),
+    ]);
+  });
+
   test('Ei näytä tuontia taulukkolaskennasta, jos haulla ei ole synteettisiä hakemuksia', async ({
     page,
   }) => {
