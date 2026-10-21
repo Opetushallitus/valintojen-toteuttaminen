@@ -15,10 +15,7 @@ import { ValinnanTulosErrorGlobalModal } from '@/components/modals/valinnan-tulo
 import { showModal } from '@/components/modals/global-modal';
 import { useQueryClient } from '@tanstack/react-query';
 import { rejectAndLog } from '@/lib/common';
-import {
-  refetchHakukohteenKirjeLahetetty,
-  refetchHakukohteenValinnanTuloksetData,
-} from '@/lib/valinta-tulos-service/valinta-tulos-queries';
+import { refetchHakukohteenValinnanTuloksetData } from '@/lib/valinta-tulos-service/valinta-tulos-queries';
 import { inspect } from '@/lib/xstate-utils';
 
 export const valinnanTuloksetMachine =
@@ -60,10 +57,6 @@ export const useValinnanTulosActorRef = ({
     refetchHakukohteenValinnanTuloksetData({
       queryClient,
       haku,
-      hakukohdeOid: hakukohde.oid,
-    });
-    refetchHakukohteenKirjeLahetetty({
-      queryClient,
       hakukohdeOid: hakukohde.oid,
     });
   };

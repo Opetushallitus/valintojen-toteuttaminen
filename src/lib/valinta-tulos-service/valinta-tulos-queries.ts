@@ -84,7 +84,7 @@ export const queryOptionsGetHakukohteenKirjeLahetetty = ({
     queryFn: () => getHakukohteenHyvaksymiskirjeetLahetetty(hakukohdeOid),
   });
 
-export const refetchHakukohteenKirjeLahetetty = ({
+const refetchHakukohteenKirjeLahetetty = ({
   queryClient,
   hakukohdeOid,
 }: {
@@ -146,6 +146,10 @@ export const refetchHakukohteenValinnanTuloksetData = ({
     queryClient,
     hakukohdeOid,
     haku,
+  });
+  refetchHakukohteenKirjeLahetetty({
+    queryClient,
+    hakukohdeOid,
   });
 };
 
