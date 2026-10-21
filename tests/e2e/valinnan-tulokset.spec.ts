@@ -1136,42 +1136,33 @@ test.describe('Tallennus', () => {
   });
 
   test('Tuo valinnan tulokset taulukkolaskennasta', async ({ page }) => {
-    await page.route(
-      (url) => url.pathname.endsWith('/erillishaku/tuonti'),
-      async (route) => {
-        await route.fulfill({ json: { id: 'proc_uuid' } });
-      },
-    );
-    await page.route(
-      (url) => url.pathname.includes('/dokumentinseuranta/proc_uuid'),
-      async (route) => {
-        await route.fulfill({
-          json: {
-            uuid: 'proc_uuid',
-            valmis: true,
-            dokumenttiId: null,
-            virheilmoitukset: [],
-            virheita: false,
-          },
-        });
-      },
-    );
+    const isTuontiUrl = (url: URL) =>
+      url.pathname.endsWith(
+        '/valintalaskentakoostepalvelu/resources/erillishaku/tuonti',
+      );
+    await mockDocumentProcess({ page, urlMatcher: isTuontiUrl });
 
-    const [uploadRequest, seurantaRequest] = await Promise.all([
-      waitForMethodRequest(
-        page,
-        'POST',
-        (url) =>
-          url.includes('/erillishaku/tuonti') && !url.includes('/tuonti/ui'),
-      ),
+    const [uploadRequest] = await Promise.all([
+      waitForMethodRequest(page, 'POST', (url) => isTuontiUrl(new URL(url))),
       waitForMethodRequest(page, 'GET', (url) =>
-        url.includes('/dokumentinseuranta/proc_uuid'),
+        url.includes(
+          '/valintalaskentakoostepalvelu/resources/dokumenttiprosessi/proc_id',
+        ),
       ),
       startExcelImport(page),
     ]);
 
-    expect(uploadRequest).toBeDefined();
-    expect(seurantaRequest).toBeDefined();
+    const uploadUrl = new URL(uploadRequest.url());
+    expect(Object.fromEntries(uploadUrl.searchParams)).toEqual({
+      hakuOid: '1.2.246.562.29.00000000000000045102',
+      hakukohdeOid,
+      valintatapajonoOid,
+      hakutyyppi: 'KORKEAKOULU',
+    });
+    const ifUnmodifiedSince = await uploadRequest.headerValue(
+      'if-unmodified-since',
+    );
+    expect(Date.parse(ifUnmodifiedSince ?? '')).not.toBeNaN();
     await expect(
       page.getByText(
         'Valinnan tulosten tuominen taulukkolaskennasta onnistui!',

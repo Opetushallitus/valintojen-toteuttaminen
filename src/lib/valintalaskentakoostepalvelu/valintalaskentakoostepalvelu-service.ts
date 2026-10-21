@@ -1253,22 +1253,25 @@ export const saveValinnanTulosExcel = async ({
   hakukohdeOid,
   valintatapajonoOid,
   file,
+  lastModified,
 }: {
   haku: Haku;
   hakukohdeOid: string;
   valintatapajonoOid?: string;
   file: File;
+  lastModified?: string;
 }) => {
   const configuration = getConfiguration();
   const urlWithQuery = new URL(
-    configuration.routes.valintalaskentakoostepalvelu.startImportValinnanTulosExcelUrl,
+    configuration.routes.valintalaskentakoostepalvelu
+      .startImportValinnanTulosExcelUrl,
   );
-  urlWithQuery.searchParams.append('hakuOid', haku.oid);
-  urlWithQuery.searchParams.append('hakukohdeOid', hakukohdeOid);
+  urlWithQuery.searchParams.set('hakuOid', haku.oid);
+  urlWithQuery.searchParams.set('hakukohdeOid', hakukohdeOid);
   if (valintatapajonoOid) {
-    urlWithQuery.searchParams.append('valintatapajonoOid', valintatapajonoOid);
+    urlWithQuery.searchParams.set('valintatapajonoOid', valintatapajonoOid);
   }
-  urlWithQuery.searchParams.append(
+  urlWithQuery.searchParams.set(
     'hakutyyppi',
     isKorkeakouluHaku(haku) ? 'KORKEAKOULU' : 'TOISEN_ASTEEN_OPPILAITOS',
   );
@@ -1281,11 +1284,15 @@ export const saveValinnanTulosExcel = async ({
     {
       headers: {
         'content-type': 'application/octet-stream',
+        'If-Unmodified-Since': (lastModified
+          ? new Date(lastModified)
+          : new Date()
+        ).toUTCString(),
       },
     },
   );
 
-  await pollDocumentSeuranta(processId);
+  await processDocumentAndReturnDocumentId(processId, true);
 };
 
 export const hakijoidenVastaanottotilatValintatapajonolle = async (

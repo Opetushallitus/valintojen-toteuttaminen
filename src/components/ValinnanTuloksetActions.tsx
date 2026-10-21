@@ -124,10 +124,12 @@ export const ValinnanTuloksetExcelUploadButton = ({
   haku,
   hakukohdeOid,
   valintatapajonoOid,
+  lastModified,
 }: {
   haku: Haku;
   hakukohdeOid: string;
   valintatapajonoOid?: string;
+  lastModified?: string;
 }) => {
   const { t } = useTranslations();
   const { addToast } = useToaster();
@@ -144,6 +146,7 @@ export const ValinnanTuloksetExcelUploadButton = ({
         hakukohdeOid,
         valintatapajonoOid,
         file,
+        lastModified,
       });
     },
     onError: (error) => {
@@ -328,12 +331,13 @@ export const ValinnanTuloksetActions = ({
 
   const { send } = valinnanTulosActorRef;
 
-  const { state, hakemukset, valintatapajonoOid } = useSelector(
+  const { state, hakemukset, valintatapajonoOid, lastModified } = useSelector(
     valinnanTulosActorRef,
     (s) => ({
       state: s,
       hakemukset: s.context.hakemukset,
       valintatapajonoOid: s.context.valintatapajonoOid,
+      lastModified: s.context.lastModified,
     }),
   );
 
@@ -370,6 +374,7 @@ export const ValinnanTuloksetActions = ({
           haku={haku}
           hakukohdeOid={hakukohde.oid}
           valintatapajonoOid={valintatapajonoOid}
+          lastModified={lastModified}
         />
       )}
       <MerkitseMyohastyneeksiButton
