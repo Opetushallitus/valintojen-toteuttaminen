@@ -1249,6 +1249,41 @@ test.describe('Tallennus', () => {
     ]);
   });
 
+  test('Näyttää hakukohteelle ilman hakemuksia vain taulukkolaskennan toiminnot', async ({
+    page,
+  }) => {
+    await page.route(
+      (url) => url.href.includes('lomake-editori/api/external/valinta-ui?'),
+      async (route) => route.fulfill({ json: [] }),
+    );
+    await page.route(
+      (url) =>
+        url.href.includes('/valinta-tulos-service/auth/valinnan-tulos?') &&
+        url.searchParams.get('hakukohdeOid') === hakukohdeOid,
+      async (route) => route.fulfill({ json: [] }),
+    );
+    await page.reload();
+    await expectAllSpinnersHidden(page);
+
+    await expect(page.getByText('Ei hakemuksia')).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: 'Vie taulukkolaskentaan' }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: 'Tuo taulukkolaskennasta' }),
+    ).toBeVisible();
+    for (const name of [
+      'Tallenna',
+      'Merkitse myöhästyneeksi',
+      'Hyväksy ja tallenna valintaesitys',
+      'Lähetä vastaanottoposti hakukohteelle',
+    ]) {
+      await expect(
+        page.getByRole('button', { name, exact: true }),
+      ).toBeHidden();
+    }
+  });
+
   test('Ei näytä tuontia taulukkolaskennasta, jos haulla ei ole synteettisiä hakemuksia', async ({
     page,
   }) => {

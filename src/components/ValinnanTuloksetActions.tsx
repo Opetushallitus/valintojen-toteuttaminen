@@ -395,21 +395,26 @@ export const ValinnanTuloksetActions = ({
 
   const { data: haunAsetukset } = useHaunAsetukset({ hakuOid: haku.oid });
 
+  // Ilman hakemuksia voi vain viedä ja tuoda tuloksia taulukkolaskennan kautta
+  const hasHakemukset = !isEmpty(hakemukset);
+
   return userHasOnlyReadPermission ? null : (
     <ActionsContainer>
-      <OphButton
-        onClick={() => {
-          send({ type: ValinnanTulosEventType.UPDATE });
-        }}
-        variant="contained"
-        loading={state.matches(ValinnanTulosState.UPDATING)}
-        disabled={
-          !state.matches(ValinnanTulosState.IDLE) ||
-          (mode === 'sijoittelu' && !isValintaesitysJulkaistavissa)
-        }
-      >
-        {t('yleinen.tallenna')}
-      </OphButton>
+      {hasHakemukset && (
+        <OphButton
+          onClick={() => {
+            send({ type: ValinnanTulosEventType.UPDATE });
+          }}
+          variant="contained"
+          loading={state.matches(ValinnanTulosState.UPDATING)}
+          disabled={
+            !state.matches(ValinnanTulosState.IDLE) ||
+            (mode === 'sijoittelu' && !isValintaesitysJulkaistavissa)
+          }
+        >
+          {t('yleinen.tallenna')}
+        </OphButton>
+      )}
       {mode === 'valinta' && (
         <ValinnanTuloksetExcelDownloadButton
           haku={haku}
@@ -429,49 +434,53 @@ export const ValinnanTuloksetActions = ({
           isDirty={isDirty}
         />
       )}
-      <MerkitseMyohastyneeksiButton
-        hakuOid={haku.oid}
-        hakukohdeOid={hakukohde.oid}
-        hakemukset={hakemukset}
-        disabled={
-          !isValintaesitysJulkaistavissa ||
-          !state.matches(ValinnanTulosState.IDLE)
-        }
-        massUpdateForm={(changeParams: ValinnanTulosMassChangeParams) => {
-          send({
-            type: ValinnanTulosEventType.MASS_UPDATE,
-            ...changeParams,
-          });
-        }}
-      />
-      <OphButton
-        variant="contained"
-        disabled={
-          mode !== 'valinta' &&
-          (!isValintaesitysJulkaistavissa ||
-            !state.matches(ValinnanTulosState.IDLE))
-        }
-        onClick={() =>
-          showModal(ConfirmationGlobalModal, {
-            title: t('sijoittelun-tulokset.hyvaksy-modal-title'),
-            content: t('sijoittelun-tulokset.hyvaksy-modal-text'),
-            confirmLabel: t('sijoittelun-tulokset.hyvaksy'),
-            cancelLabel: t('yleinen.peruuta'),
-            onConfirm: () => {
-              send({ type: ValinnanTulosEventType.PUBLISH });
-            },
-          })
-        }
-        loading={state.matches(ValinnanTulosState.PUBLISHING)}
-      >
-        {t('sijoittelun-tulokset.hyvaksy')}
-      </OphButton>
-      <SendVastaanottopostiButton
-        disabled={!state.matches(ValinnanTulosState.IDLE)}
-        hakukohdeOid={hakukohde.oid}
-        mode={mode}
-        valintatapajonoOid={valintatapajonoOid}
-      />
+      {hasHakemukset && (
+        <>
+          <MerkitseMyohastyneeksiButton
+            hakuOid={haku.oid}
+            hakukohdeOid={hakukohde.oid}
+            hakemukset={hakemukset}
+            disabled={
+              !isValintaesitysJulkaistavissa ||
+              !state.matches(ValinnanTulosState.IDLE)
+            }
+            massUpdateForm={(changeParams: ValinnanTulosMassChangeParams) => {
+              send({
+                type: ValinnanTulosEventType.MASS_UPDATE,
+                ...changeParams,
+              });
+            }}
+          />
+          <OphButton
+            variant="contained"
+            disabled={
+              mode !== 'valinta' &&
+              (!isValintaesitysJulkaistavissa ||
+                !state.matches(ValinnanTulosState.IDLE))
+            }
+            onClick={() =>
+              showModal(ConfirmationGlobalModal, {
+                title: t('sijoittelun-tulokset.hyvaksy-modal-title'),
+                content: t('sijoittelun-tulokset.hyvaksy-modal-text'),
+                confirmLabel: t('sijoittelun-tulokset.hyvaksy'),
+                cancelLabel: t('yleinen.peruuta'),
+                onConfirm: () => {
+                  send({ type: ValinnanTulosEventType.PUBLISH });
+                },
+              })
+            }
+            loading={state.matches(ValinnanTulosState.PUBLISHING)}
+          >
+            {t('sijoittelun-tulokset.hyvaksy')}
+          </OphButton>
+          <SendVastaanottopostiButton
+            disabled={!state.matches(ValinnanTulosState.IDLE)}
+            hakukohdeOid={hakukohde.oid}
+            mode={mode}
+            valintatapajonoOid={valintatapajonoOid}
+          />
+        </>
+      )}
     </ActionsContainer>
   );
 };
