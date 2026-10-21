@@ -1,0 +1,91 @@
+{
+  "hakuOid": "1.2.246.562.29.00000000000000045102",
+  "hakemusOid": "1.2.246.562.11.00000000000001796027",
+  "hakijaOid": "1.2.246.562.24.69259807406",
+  "hakutoiveet": [
+    {
+      "hakukohdeOid": "1.2.246.562.20.00000000000000045105",
+      "hakukohdeNimi": "Finnish MAOL Competition Route 2024",
+      "tarjoajaOid": "1.2.246.562.10.00000000001",
+      "tarjoajaNimi": "Tampereen yliopisto",
+      "valintatapajonoOid": "valintatapajono-yo",
+      "valintatila": "VARALLA",
+      "vastaanottotila": "KESKEN",
+      "ilmoittautumistila": {
+        "ilmoittautumisaika": {},
+        "ilmoittautumistila": "EI_TEHTY",
+        "ilmoittauduttavissa": false
+      },
+      "vastaanotettavuustila": "EI_VASTAANOTETTAVISSA",
+      "varasijanumero": 2,
+      "varasijojaTaytetaanAsti": "2025-07-31T12:00:00.000Z",
+      "julkaistavissa": true,
+      "ehdollisestiHyvaksyttavissa": false,
+      "tilanKuvaukset": {},
+      "jonokohtaisetTulostiedot": [],
+      "naytetytPaatettavatOpiskeluoikeudet": []
+    },
+    {
+      "hakukohdeOid": "1.2.246.562.20.00000000000000045106",
+      "hakukohdeNimi": "Tietojenkäsittelytiede",
+      "tarjoajaOid": "1.2.246.562.10.00000000001",
+      "tarjoajaNimi": "Tampereen yliopisto",
+      "valintatapajonoOid": "valintatapajono-2",
+      "valintatila": "HYVAKSYTTY",
+      "vastaanottotila": "KESKEN",
+      "ilmoittautumistila": {
+        "ilmoittautumisaika": {},
+        "ilmoittautumistila": "EI_TEHTY",
+        "ilmoittauduttavissa": false
+      },
+      "vastaanotettavuustila": "EI_VASTAANOTETTAVISSA",
+      "julkaistavissa": true,
+      "ehdollisestiHyvaksyttavissa": false,
+      "tilanKuvaukset": {},
+      "jonokohtaisetTulostiedot": [],
+      "naytetytPaatettavatOpiskeluoikeudet": []
+    },
+    {
+      "hakukohdeOid": "1.2.246.562.20.00000000000000045107",
+      "hakukohdeNimi": "Kauppatieteet",
+      "tarjoajaOid": "1.2.246.562.10.00000000002",
+      "tarjoajaNimi": "Helsingin yliopisto",
+      "valintatapajonoOid": "valintatapajono-3",
+      "valintatila": "HYLATTY",
+      "vastaanottotila": "KESKEN",
+      "ilmoittautumistila": {
+        "ilmoittautumisaika": {},
+        "ilmoittautumistila": "EI_TEHTY",
+        "ilmoittauduttavissa": false
+      },
+      "vastaanotettavuustila": "EI_VASTAANOTETTAVISSA",
+      "julkaistavissa": true,
+      "ehdollisestiHyvaksyttavissa": false,
+      "tilanKuvaukset": {
+        "FI": "Et saavuttanut alinta hyväksyttyä pistemäärää."
+      },
+      "jonokohtaisetTulostiedot": [],
+      "naytetytPaatettavatOpiskeluoikeudet": []
+    },
+    {
+      "hakukohdeOid": "1.2.246.562.20.00000000000000045108",
+      "hakukohdeNimi": "Matematiikka",
+      "tarjoajaOid": "1.2.246.562.10.00000000002",
+      "tarjoajaNimi": "Helsingin yliopisto",
+      "valintatapajonoOid": "valintatapajono-4",
+      "valintatila": "PERUUNTUNUT",
+      "vastaanottotila": "KESKEN",
+      "ilmoittautumistila": {
+        "ilmoittautumisaika": {},
+        "ilmoittautumistila": "EI_TEHTY",
+        "ilmoittauduttavissa": false
+      },
+      "vastaanotettavuustila": "EI_VASTAANOTETTAVISSA",
+      "julkaistavissa": true,
+      "ehdollisestiHyvaksyttavissa": false,
+      "tilanKuvaukset": {},
+      "jonokohtaisetTulostiedot": [],
+      "naytetytPaatettavatOpiskeluoikeudet": []
+    }
+  ]
+}
