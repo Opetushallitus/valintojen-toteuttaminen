@@ -48,6 +48,7 @@ import { useHasOnlyHakukohdeReadPermission } from '@/hooks/useHasOnlyHakukohdeRe
 import { FileSelectButton } from '@/components/file-select-button';
 import { refetchHakukohteenValinnanTuloksetData } from '@/lib/valinta-tulos-service/valinta-tulos-queries';
 import { useHaunAsetukset } from '@/lib/ohjausparametrit/useHaunAsetukset';
+import { refetchHakemukset } from '@/lib/ataru/ataru-queries';
 
 const ActionsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -167,6 +168,8 @@ export const ValinnanTuloksetExcelUploadButton = ({
         haku,
         hakukohdeOid,
       });
+      // Tuonti voi luoda uusia (synteettisiä) hakemuksia
+      refetchHakemukset({ queryClient, hakuOid: haku.oid, hakukohdeOid });
       addToast({
         key: 'upload-valinnan-tulos-excel-success',
         message: 'valinnan-tulokset.tuo-taulukkolaskennasta-onnistui',

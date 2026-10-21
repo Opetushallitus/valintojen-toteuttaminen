@@ -1150,6 +1150,10 @@ test.describe('Tallennus', () => {
           '/valintalaskentakoostepalvelu/resources/dokumenttiprosessi/proc_id',
         ),
       ),
+      // Tuonti voi luoda uusia hakemuksia, joten hakemukset ladataan uudelleen
+      waitForMethodRequest(page, 'GET', (url) =>
+        url.includes('/lomake-editori/api/external/valinta-ui'),
+      ),
       startExcelImport(page),
     ]);
 
