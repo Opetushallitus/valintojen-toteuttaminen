@@ -8,6 +8,7 @@ import {
   Valintaryhma,
   Valintatapajono,
   ValintaryhmaHakukohteilla,
+  ValintaperusteetJarjestyskriteeri,
 } from './valintaperusteet-types';
 import { isDefined, sort } from 'remeda';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
@@ -329,3 +330,29 @@ export async function siirraTaiPoistaValintatapajonoAutomaattisestaSijoittelusta
   );
   return updatedJono;
 }
+
+// Palauttaa valintatapajonon aktiiviset järjestyskriteerit prioriteettijärjestyksessä.
+// Laskenta ohittaa ei-aktiiviset järjestyskriteerit, joten n:s aktiivinen järjestyskriteeri
+// vastaa valintalaskennan n:ttä järjestyskriteeriä (esim. valintalaskentahistoriassa).
+export const getValintatapajononAktiivisetJarjestyskriteerit = async (
+  valintatapajonoOid: string,
+): Promise<Array<ValintaperusteetJarjestyskriteeri>> => {
+  const configuration = getConfiguration();
+  const { data } = await client.get<Array<ValintaperusteetJarjestyskriteeri>>(
+    `${configuration.routes.valintaperusteetService.valintaperusteetUrl}valintatapajono/${valintatapajonoOid}/jarjestyskriteeri`,
+  );
+  return data.filter((jarjestyskriteeri) => jarjestyskriteeri.aktiivinen);
+};
+
+export const buildLinkToJarjestyskriteeri = ({
+  hakukohdeOid,
+  valinnanvaiheOid,
+  valintatapajonoOid,
+  jarjestyskriteeriOid,
+}: {
+  hakukohdeOid: string;
+  valinnanvaiheOid: string;
+  valintatapajonoOid: string;
+  jarjestyskriteeriOid: string;
+}) =>
+  `valintaperusteet-ui/app/index.html#/hakukohde/${hakukohdeOid}/valinnanvaihe/${valinnanvaiheOid}/valintatapajono/${valintatapajonoOid}/jarjestyskriteeri/${jarjestyskriteeriOid}`;
