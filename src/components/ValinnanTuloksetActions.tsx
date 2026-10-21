@@ -47,6 +47,7 @@ import {
 import { useHasOnlyHakukohdeReadPermission } from '@/hooks/useHasOnlyHakukohdeReadPermission';
 import { FileSelectButton } from '@/components/file-select-button';
 import { refetchHakukohteenValinnanTuloksetData } from '@/lib/valinta-tulos-service/valinta-tulos-queries';
+import { useHaunAsetukset } from '@/lib/ohjausparametrit/useHaunAsetukset';
 
 const ActionsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -347,6 +348,8 @@ export const ValinnanTuloksetActions = ({
 
   const userHasOnlyReadPermission = useHasOnlyHakukohdeReadPermission();
 
+  const { data: haunAsetukset } = useHaunAsetukset({ hakuOid: haku.oid });
+
   return userHasOnlyReadPermission ? null : (
     <ActionsContainer>
       <OphButton
@@ -369,7 +372,8 @@ export const ValinnanTuloksetActions = ({
           valintatapajonoOid={valintatapajonoOid}
         />
       )}
-      {mode === 'valinta' && (
+      {/* Tuonti voi luoda synteettisiä hakemuksia, joten sallitaan se vain hauille, joissa ne ovat käytössä */}
+      {mode === 'valinta' && haunAsetukset.synteettisetHakemukset && (
         <ValinnanTuloksetExcelUploadButton
           haku={haku}
           hakukohdeOid={hakukohde.oid}

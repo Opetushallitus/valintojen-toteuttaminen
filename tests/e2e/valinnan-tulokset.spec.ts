@@ -144,6 +144,7 @@ async function goToValinnanTulokset(page: Page) {
       route.fulfill({
         json: {
           sijoittelu: false,
+          synteettisetHakemukset: true,
         },
       }),
   );
@@ -1168,6 +1169,29 @@ test.describe('Tallennus', () => {
         'Valinnan tulosten tuominen taulukkolaskennasta onnistui!',
       ),
     ).toBeVisible();
+  });
+
+  test('Ei näytä tuontia taulukkolaskennasta, jos haulla ei ole synteettisiä hakemuksia', async ({
+    page,
+  }) => {
+    await page.route(
+      '*/**/ohjausparametrit-service/api/v1/rest/parametri/1.2.246.562.29.00000000000000045102',
+      async (route) =>
+        route.fulfill({
+          json: {
+            sijoittelu: false,
+            synteettisetHakemukset: false,
+          },
+        }),
+    );
+    await page.reload();
+    await expectAllSpinnersHidden(page);
+    await expect(
+      page.getByRole('button', { name: 'Vie taulukkolaskentaan' }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: 'Tuo taulukkolaskennasta' }),
+    ).toBeHidden();
   });
 
   test('Lähetä vastaanottoposti', async ({ page }) => {
