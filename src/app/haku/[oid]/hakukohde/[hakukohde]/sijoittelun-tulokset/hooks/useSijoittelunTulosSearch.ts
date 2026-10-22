@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
 import {
   parseAsBoolean,
@@ -38,6 +38,7 @@ export const useSijoittelunTulosSearchParams = (
       showOnlyMuuttuneetViimeSijoittelussa,
       page,
       pageSize,
+      sort,
     },
     setSearchParams,
   ] = useQueryStates(
@@ -48,6 +49,7 @@ export const useSijoittelunTulosSearchParams = (
       showOnlyMuuttuneetViimeSijoittelussa: parseAsBoolean.withDefault(false),
       page: parseAsInteger.withDefault(1),
       pageSize: parseAsInteger.withDefault(DEFAULT_PAGE_SIZE),
+      sort: parseAsString.withDefault(''),
     },
     {
       ...DEFAULT_NUQS_OPTIONS,
@@ -58,11 +60,10 @@ export const useSijoittelunTulosSearchParams = (
         showOnlyMuuttuneetViimeSijoittelussa: 'muuttuneetViimeSijoittelussa',
         page: `page-${valintatapajonoOid}`,
         pageSize: 'page_size',
+        sort: `sort-${valintatapajonoOid}`,
       },
     },
   );
-
-  const [sort, setSort] = useState<string>('');
 
   const setSearchDebounce = useDebounce(
     (value: string) => setSearchParams({ searchPhrase: value, page: 1 }),
@@ -77,7 +78,7 @@ export const useSijoittelunTulosSearchParams = (
     pageSize,
     setPageSize: (value: number) => setSearchParams({ pageSize: value }),
     sort,
-    setSort,
+    setSort: (value: string) => setSearchParams({ sort: value }),
     sijoittelunTila,
     setSijoittelunTila: (value: string) =>
       setSearchParams({ sijoittelunTila: value, page: 1 }),

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { parseAsInteger, parseAsString, useQueryStates } from 'nuqs';
 import {
@@ -27,6 +27,7 @@ export const useHakijaryhmatSearchParams = (hakijaryhmaOid?: string) => {
       sijoittelunTila,
       page,
       pageSize,
+      sort,
     },
     setSearchParams,
   ] = useQueryStates(
@@ -37,6 +38,7 @@ export const useHakijaryhmatSearchParams = (hakijaryhmaOid?: string) => {
       sijoittelunTila: parseAsString.withDefault(''),
       page: parseAsInteger.withDefault(1),
       pageSize: parseAsInteger.withDefault(DEFAULT_PAGE_SIZE),
+      sort: parseAsString.withDefault(''),
     },
     {
       ...DEFAULT_NUQS_OPTIONS,
@@ -47,11 +49,10 @@ export const useHakijaryhmatSearchParams = (hakijaryhmaOid?: string) => {
         sijoittelunTila: 'tila',
         page: `page-${hakijaryhmaOid}`,
         pageSize: 'page_size',
+        sort: `sort-${hakijaryhmaOid}`,
       },
     },
   );
-
-  const [sort, setSort] = useState<string>('');
 
   const setSearchDebounce = useDebounce(
     (value: string) => setSearchParams({ searchPhrase: value, page: 1 }),
@@ -66,7 +67,7 @@ export const useHakijaryhmatSearchParams = (hakijaryhmaOid?: string) => {
     pageSize,
     setPageSize: (value: number) => setSearchParams({ pageSize: value }),
     sort,
-    setSort,
+    setSort: (value: string) => setSearchParams({ sort: value }),
     kuuluuRyhmaan,
     setKuuluuRyhmaan: (value: string) =>
       setSearchParams({ kuuluuRyhmaan: value, page: 1 }),

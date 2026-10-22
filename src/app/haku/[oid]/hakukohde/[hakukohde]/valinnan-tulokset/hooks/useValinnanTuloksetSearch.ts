@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { parseAsInteger, parseAsString, useQueryStates } from 'nuqs';
 import { byProp, getSortParts } from '@/components/table/table-utils';
@@ -17,7 +17,7 @@ export const useValinnanTuloksetSearchParams = () => {
   // Kaikki URL-parametrit samassa useQueryStatesissa, jotta hakuehdon muutos ja sivun nollaus päivittyvät
   // URL:iin yhdellä päivityksellä
   const [
-    { searchPhrase, valinnanTila, vastaanottoTila, page, pageSize },
+    { searchPhrase, valinnanTila, vastaanottoTila, page, pageSize, sort },
     setSearchParams,
   ] = useQueryStates(
     {
@@ -26,6 +26,7 @@ export const useValinnanTuloksetSearchParams = () => {
       vastaanottoTila: parseAsString.withDefault(''),
       page: parseAsInteger.withDefault(1),
       pageSize: parseAsInteger.withDefault(DEFAULT_PAGE_SIZE),
+      sort: parseAsString.withDefault(''),
     },
     {
       ...DEFAULT_NUQS_OPTIONS,
@@ -37,8 +38,6 @@ export const useValinnanTuloksetSearchParams = () => {
       },
     },
   );
-
-  const [sort, setSort] = useState<string>('');
 
   const setSearchDebounce = useDebounce(
     (value: string) => setSearchParams({ searchPhrase: value, page: 1 }),
@@ -53,7 +52,7 @@ export const useValinnanTuloksetSearchParams = () => {
     pageSize,
     setPageSize: (value: number) => setSearchParams({ pageSize: value }),
     sort,
-    setSort,
+    setSort: (value: string) => setSearchParams({ sort: value }),
     valinnanTila,
     setValinnanTila: (value: string) =>
       setSearchParams({ valinnanTila: value, page: 1 }),
