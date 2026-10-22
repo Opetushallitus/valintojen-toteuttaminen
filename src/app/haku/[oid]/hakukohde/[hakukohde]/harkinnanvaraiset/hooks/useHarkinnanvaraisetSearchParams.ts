@@ -1,36 +1,46 @@
 import {
   DEFAULT_NUQS_OPTIONS,
+  DEFAULT_PAGE_SIZE,
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
 } from '@/lib/constants';
-import { useQueryState } from 'nuqs';
-import { useEffect } from 'react';
-import { useHarkinnanvaraisetPaginationQueryParams } from './useHarkinnanvaraisetPaginated';
+import { parseAsInteger, parseAsString, useQueryStates } from 'nuqs';
 import { useDebounce } from '@/hooks/useDebounce';
-import { useHasChangedForQueryState } from '@/hooks/useHasChanged';
 
 export const useHarkinnanvaraisetSearchParams = () => {
-  const [searchPhrase, setSearchPhrase] = useQueryState(
-    'search-harkinnanvaraiset',
-    DEFAULT_NUQS_OPTIONS,
-  );
-
-  const { setPage } = useHarkinnanvaraisetPaginationQueryParams();
-
-  const searchPhraseChanged = useHasChangedForQueryState(searchPhrase);
+  // Kaikki URL-parametrit samassa useQueryStatesissa, jotta hakutermin muutos ja sivun nollaus päivittyvät
+  // URL:iin yhdellä päivityksellä
+  const [{ searchPhrase, page, pageSize, sort }, setSearchParams] =
+    useQueryStates(
+      {
+        searchPhrase: parseAsString.withDefault(''),
+        page: parseAsInteger.withDefault(1),
+        pageSize: parseAsInteger.withDefault(DEFAULT_PAGE_SIZE),
+        sort: parseAsString.withDefault(''),
+      },
+      {
+        ...DEFAULT_NUQS_OPTIONS,
+        urlKeys: {
+          searchPhrase: 'search-harkinnanvaraiset',
+          page: 'page-harkinnanvaraiset',
+          pageSize: 'page_size-harkinnanvaraiset',
+          sort: 'sort-harkinnanvaraiset',
+        },
+      },
+    );
 
   const setSearchDebounce = useDebounce(
-    setSearchPhrase,
+    (value: string) => setSearchParams({ searchPhrase: value, page: 1 }),
     HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
   );
-
-  useEffect(() => {
-    if (searchPhraseChanged) {
-      setPage(1);
-    }
-  }, [searchPhraseChanged, setPage]);
 
   return {
     searchPhrase,
     setSearchPhrase: setSearchDebounce,
+    page,
+    setPage: (value: number) => setSearchParams({ page: value }),
+    pageSize,
+    setPageSize: (value: number) => setSearchParams({ pageSize: value }),
+    sort,
+    setSort: (value: string) => setSearchParams({ sort: value }),
   };
 };

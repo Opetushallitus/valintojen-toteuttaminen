@@ -1,7 +1,6 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
-import { parseAsInteger, useQueryState } from 'nuqs';
-import { useHasChangedForQueryState } from '@/hooks/useHasChanged';
+import { parseAsInteger, parseAsString, useQueryStates } from 'nuqs';
 import { byProp, getSortParts } from '../components/table/table-utils';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import {
@@ -14,47 +13,36 @@ import { hakemusFilter } from '../lib/filters';
 import { queryOptionsGetHakemukset } from '@/lib/ataru/ataru-queries';
 
 export const useHakeneetSearchParams = () => {
-  const [searchPhrase, setSearchPhrase] = useQueryState(
-    'hakeneetSearch',
-    DEFAULT_NUQS_OPTIONS,
-  );
+  // Kaikki URL-parametrit samassa useQueryStatesissa, jotta hakutermin muutos ja sivun nollaus päivittyvät
+  // URL:iin yhdellä päivityksellä
+  const [{ searchPhrase, page, pageSize, sort }, setSearchParams] =
+    useQueryStates(
+      {
+        searchPhrase: parseAsString.withDefault(''),
+        page: parseAsInteger.withDefault(1),
+        pageSize: parseAsInteger.withDefault(DEFAULT_PAGE_SIZE),
+        sort: parseAsString.withDefault(''),
+      },
+      {
+        ...DEFAULT_NUQS_OPTIONS,
+        urlKeys: { searchPhrase: 'hakeneetSearch', pageSize: 'page_size' },
+      },
+    );
 
   const setSearchDebounce = useDebounce(
-    setSearchPhrase,
+    (value: string) => setSearchParams({ searchPhrase: value, page: 1 }),
     HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
   );
-
-  const [page, setPage] = useQueryState<number>(
-    'page',
-    parseAsInteger.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(1),
-  );
-
-  const [pageSize, setPageSize] = useQueryState(
-    'page_size',
-    parseAsInteger
-      .withOptions(DEFAULT_NUQS_OPTIONS)
-      .withDefault(DEFAULT_PAGE_SIZE),
-  );
-
-  const [sort, setSort] = useQueryState('sort', DEFAULT_NUQS_OPTIONS);
-
-  const searchPhraseChanged = useHasChangedForQueryState(searchPhrase);
-
-  useEffect(() => {
-    if (searchPhraseChanged) {
-      setPage(1);
-    }
-  }, [searchPhraseChanged, setPage]);
 
   return {
     searchPhrase,
     setSearchPhrase: setSearchDebounce,
     page,
-    setPage,
+    setPage: (value: number) => setSearchParams({ page: value }),
     pageSize,
-    setPageSize,
+    setPageSize: (value: number) => setSearchParams({ pageSize: value }),
     sort,
-    setSort,
+    setSort: (value: string) => setSearchParams({ sort: value }),
   };
 };
 

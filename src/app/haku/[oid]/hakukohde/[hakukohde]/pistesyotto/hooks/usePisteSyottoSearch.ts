@@ -1,7 +1,11 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
-import { parseAsBoolean, parseAsInteger, useQueryState } from 'nuqs';
-import { useHasChangedForQueryState } from '@/hooks/useHasChanged';
+import {
+  parseAsBoolean,
+  parseAsInteger,
+  parseAsString,
+  useQueryStates,
+} from 'nuqs';
 import { byProp, getSortParts } from '@/components/table/table-utils';
 import {
   DEFAULT_PAGE_SIZE,
@@ -13,94 +17,63 @@ import { HakukohteenPistetiedot } from '@/lib/types/laskenta-types';
 import { hakemusFilter } from '@/lib/filters';
 
 export const usePisteSyottoSearchParams = () => {
-  const [searchPhrase, setSearchPhrase] = useQueryState(
-    'pisteSyottoSearch',
-    DEFAULT_NUQS_OPTIONS,
+  // Kaikki URL-parametrit samassa useQueryStatesissa, jotta hakuehdon muutos ja sivun nollaus päivittyvät
+  // URL:iin yhdellä päivityksellä
+  const [
+    {
+      searchPhrase,
+      valittuKoe,
+      osallistumisenTila,
+      naytaVainLaskentaanVaikuttavat,
+      page,
+      pageSize,
+      sort,
+    },
+    setSearchParams,
+  ] = useQueryStates(
+    {
+      searchPhrase: parseAsString.withDefault(''),
+      valittuKoe: parseAsString.withDefault(''),
+      osallistumisenTila: parseAsString.withDefault(''),
+      naytaVainLaskentaanVaikuttavat: parseAsBoolean.withDefault(true),
+      page: parseAsInteger.withDefault(1),
+      pageSize: parseAsInteger.withDefault(DEFAULT_PAGE_SIZE),
+      sort: parseAsString.withDefault('hakijanNimi:asc'),
+    },
+    {
+      ...DEFAULT_NUQS_OPTIONS,
+      urlKeys: {
+        searchPhrase: 'pisteSyottoSearch',
+        valittuKoe: 'koe',
+        naytaVainLaskentaanVaikuttavat: 'vainLaskentaanVaikuttavat',
+        pageSize: 'page_size',
+      },
+    },
   );
-
-  const [valittuKoe, setValittukoe] = useQueryState(
-    'koe',
-    DEFAULT_NUQS_OPTIONS,
-  );
-
-  const [osallistumisenTila, setOsallistumisenTila] = useQueryState(
-    'osallistumisenTila',
-    DEFAULT_NUQS_OPTIONS,
-  );
-
-  const [naytaVainLaskentaanVaikuttavat, setNaytaVainLaskentaanVaikuttavat] =
-    useQueryState<boolean>(
-      'vainLaskentaanVaikuttavat',
-      parseAsBoolean.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(true),
-    );
 
   const setSearchDebounce = useDebounce(
-    setSearchPhrase,
+    (value: string) => setSearchParams({ searchPhrase: value, page: 1 }),
     HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
   );
-
-  const [page, setPage] = useQueryState<number>(
-    'page',
-    parseAsInteger.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(1),
-  );
-
-  const [pageSize, setPageSize] = useQueryState(
-    'page_size',
-    parseAsInteger
-      .withOptions(DEFAULT_NUQS_OPTIONS)
-      .withDefault(DEFAULT_PAGE_SIZE),
-  );
-
-  const [sort, setSort] = useQueryState(
-    'sort',
-    Object.assign({}, DEFAULT_NUQS_OPTIONS, {
-      defaultValue: 'hakijanNimi:asc',
-    }),
-  );
-
-  const searchPhraseChanged = useHasChangedForQueryState(searchPhrase);
-
-  const koeChanged = useHasChangedForQueryState(valittuKoe);
-
-  const osallistumisenTilaChanged =
-    useHasChangedForQueryState(osallistumisenTila);
-
-  const vainLaskentaanVaikuttavatChanged = useHasChangedForQueryState(
-    naytaVainLaskentaanVaikuttavat,
-  );
-
-  useEffect(() => {
-    if (
-      searchPhraseChanged ||
-      koeChanged ||
-      osallistumisenTilaChanged ||
-      vainLaskentaanVaikuttavatChanged
-    ) {
-      setPage(1);
-    }
-  }, [
-    searchPhraseChanged,
-    setPage,
-    koeChanged,
-    osallistumisenTilaChanged,
-    vainLaskentaanVaikuttavatChanged,
-  ]);
 
   return {
     searchPhrase,
     setSearchPhrase: setSearchDebounce,
     page,
-    setPage,
+    setPage: (value: number) => setSearchParams({ page: value }),
     pageSize,
-    setPageSize,
+    setPageSize: (value: number) => setSearchParams({ pageSize: value }),
     sort,
-    setSort,
+    setSort: (value: string) => setSearchParams({ sort: value }),
     osallistumisenTila,
-    setOsallistumisenTila,
+    setOsallistumisenTila: (value: string) =>
+      setSearchParams({ osallistumisenTila: value, page: 1 }),
     valittuKoe,
-    setValittukoe,
+    setValittukoe: (value: string) =>
+      setSearchParams({ valittuKoe: value, page: 1 }),
     naytaVainLaskentaanVaikuttavat,
-    setNaytaVainLaskentaanVaikuttavat,
+    setNaytaVainLaskentaanVaikuttavat: (value: boolean) =>
+      setSearchParams({ naytaVainLaskentaanVaikuttavat: value, page: 1 }),
   };
 };
 

@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import {
   Haku,
   HaunAlkaminen,
@@ -6,8 +6,7 @@ import {
   getHakuAlkamisKaudet,
 } from '../lib/kouta/kouta-types';
 import { useDebounce } from '@/hooks/useDebounce';
-import { parseAsInteger, useQueryState } from 'nuqs';
-import { useHasChangedForQueryState } from '@/hooks/useHasChanged';
+import { parseAsInteger, parseAsString, useQueryStates } from 'nuqs';
 import { byProp, getSortParts } from '../components/table/table-utils';
 import { getHaut } from '../lib/kouta/kouta-service';
 import { useSuspenseQuery } from '@tanstack/react-query';
@@ -68,91 +67,64 @@ export type HakuListItem = Haku & {
 };
 
 export const useHakuSearchParams = () => {
-  const [searchPhrase, setSearchPhrase] = useQueryState(
-    'search',
-    DEFAULT_NUQS_OPTIONS,
+  // Hakuehdot ja sivu samassa useQueryStatesissa, jotta hakuehdon muutos ja sivun nollaus päivittyvät
+  // URL:iin yhdellä päivityksellä
+  const [
+    {
+      searchPhrase,
+      tila,
+      selectedHakutapa,
+      selectedAlkamisKausi,
+      page,
+      pageSize,
+      sort,
+    },
+    setSearchParams,
+  ] = useQueryStates(
+    {
+      searchPhrase: parseAsString.withDefault(''),
+      // Oletusarvo asetetaan URL:iin etusivun clientLoaderissa. Jos käyttäjä tyhjentää tila-kentän,
+      // URL-parametriksi tulee "tila=", jolloin näytetään kaikki tilat.
+      tila: parseAsString.withOptions({ clearOnDefault: false }),
+      selectedHakutapa: parseAsString.withDefault(''),
+      selectedAlkamisKausi: parseAsString.withDefault(''),
+      page: parseAsInteger.withDefault(1),
+      pageSize: parseAsInteger.withDefault(DEFAULT_PAGE_SIZE),
+      sort: parseAsString.withDefault(''),
+    },
+    {
+      ...DEFAULT_NUQS_OPTIONS,
+      urlKeys: {
+        searchPhrase: 'search',
+        selectedHakutapa: 'hakutapa',
+        selectedAlkamisKausi: 'alkamiskausi',
+        pageSize: 'page_size',
+      },
+    },
   );
 
   const setSearchDebounce = useDebounce(
-    setSearchPhrase,
+    (value: string) => setSearchParams({ searchPhrase: value, page: 1 }),
     HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
   );
-
-  const [tila, setTila] = useQueryState('tila', {
-    history: 'push',
-    clearOnDefault: false,
-  });
-
-  // Näytetään oletuksena vain julkaistut. Huom! Jos käyttäjä tyhjentää tila-kentän itse, URL-parametriksi tulee "tila=",
-  // jolloin tämä ei aseta kentän arvoa tilaan "julkaistu"
-  useEffect(() => {
-    if (tila === null) {
-      setTila('julkaistu');
-    }
-  }, [tila, setTila]);
-
-  const [selectedHakutapa, setSelectedHakutapa] = useQueryState(
-    'hakutapa',
-    DEFAULT_NUQS_OPTIONS,
-  );
-
-  const [selectedAlkamisKausi, setSelectedAlkamisKausi] = useQueryState(
-    'alkamiskausi',
-    DEFAULT_NUQS_OPTIONS,
-  );
-
-  const [page, setPage] = useQueryState<number>(
-    'page',
-    parseAsInteger.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(1),
-  );
-
-  const [pageSize, setPageSize] = useQueryState(
-    'page_size',
-    parseAsInteger
-      .withOptions(DEFAULT_NUQS_OPTIONS)
-      .withDefault(DEFAULT_PAGE_SIZE),
-  );
-
-  const [sort, setSort] = useQueryState('sort', DEFAULT_NUQS_OPTIONS);
-
-  const tilachanged = useHasChangedForQueryState(tila);
-  const searchPhraseChanged = useHasChangedForQueryState(searchPhrase);
-  const selectedAlkamisKausiChanged =
-    useHasChangedForQueryState(selectedAlkamisKausi);
-  const selectedHakutapaChanged = useHasChangedForQueryState(selectedHakutapa);
-
-  useEffect(() => {
-    if (
-      searchPhraseChanged ||
-      tilachanged ||
-      selectedHakutapaChanged ||
-      selectedAlkamisKausiChanged
-    ) {
-      setPage(1);
-    }
-  }, [
-    searchPhraseChanged,
-    tilachanged,
-    selectedHakutapaChanged,
-    selectedAlkamisKausiChanged,
-    setPage,
-  ]);
 
   return {
     searchPhrase,
     setSearchPhrase: setSearchDebounce,
     tila,
-    setTila,
+    setTila: (value: string) => setSearchParams({ tila: value, page: 1 }),
     selectedHakutapa,
-    setSelectedHakutapa,
+    setSelectedHakutapa: (value: string) =>
+      setSearchParams({ selectedHakutapa: value, page: 1 }),
     selectedAlkamisKausi,
-    setSelectedAlkamisKausi,
+    setSelectedAlkamisKausi: (value: string) =>
+      setSearchParams({ selectedAlkamisKausi: value, page: 1 }),
     page,
-    setPage,
+    setPage: (value: number) => setSearchParams({ page: value }),
     pageSize,
-    setPageSize,
+    setPageSize: (value: number) => setSearchParams({ pageSize: value }),
     sort,
-    setSort,
+    setSort: (value: string) => setSearchParams({ sort: value }),
   };
 };
 

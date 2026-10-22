@@ -1,7 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
-import { parseAsInteger, useQueryState } from 'nuqs';
-import { useHasChangedForQueryState } from '@/hooks/useHasChanged';
+import { parseAsInteger, parseAsString, useQueryStates } from 'nuqs';
 import { byProp, getSortParts } from '@/components/table/table-utils';
 import {
   DEFAULT_NUQS_OPTIONS,
@@ -15,68 +14,52 @@ import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tul
 import { sortByValinnanTila } from '@/lib/sortByValinnanTila';
 
 export const useValinnanTuloksetSearchParams = () => {
-  const [searchPhrase, setSearchPhrase] = useQueryState(
-    'search',
-    DEFAULT_NUQS_OPTIONS,
-  );
-
-  const setSearchDebounce = useDebounce(
-    setSearchPhrase,
-    HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
-  );
-
-  const [valinnanTila, setValinnanTila] = useQueryState(
-    'valinnantila',
-    DEFAULT_NUQS_OPTIONS,
-  );
-
-  const [vastaanottoTila, setVastaanottoTila] = useQueryState(
-    'vastaanottotila',
-    DEFAULT_NUQS_OPTIONS,
-  );
-
-  const [page, setPage] = useQueryState<number>(
-    'page',
-    parseAsInteger.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(1),
-  );
-
-  const [pageSize, setPageSize] = useQueryState(
-    'page_size',
-    parseAsInteger
-      .withOptions(DEFAULT_NUQS_OPTIONS)
-      .withDefault(DEFAULT_PAGE_SIZE),
+  // Kaikki URL-parametrit samassa useQueryStatesissa, jotta hakuehdon muutos ja sivun nollaus päivittyvät
+  // URL:iin yhdellä päivityksellä
+  const [
+    { searchPhrase, valinnanTila, vastaanottoTila, page, pageSize },
+    setSearchParams,
+  ] = useQueryStates(
+    {
+      searchPhrase: parseAsString.withDefault(''),
+      valinnanTila: parseAsString.withDefault(''),
+      vastaanottoTila: parseAsString.withDefault(''),
+      page: parseAsInteger.withDefault(1),
+      pageSize: parseAsInteger.withDefault(DEFAULT_PAGE_SIZE),
+    },
+    {
+      ...DEFAULT_NUQS_OPTIONS,
+      urlKeys: {
+        searchPhrase: 'search',
+        valinnanTila: 'valinnantila',
+        vastaanottoTila: 'vastaanottotila',
+        pageSize: 'page_size',
+      },
+    },
   );
 
   const [sort, setSort] = useState<string>('');
 
-  const searchPhraseChanged = useHasChangedForQueryState(searchPhrase);
-  const valinnanTilaChanged = useHasChangedForQueryState(valinnanTila);
-  const vastaanottoTilaChanged = useHasChangedForQueryState(vastaanottoTila);
-
-  useEffect(() => {
-    if (searchPhraseChanged || valinnanTilaChanged || vastaanottoTilaChanged) {
-      setPage(1);
-    }
-  }, [
-    searchPhraseChanged,
-    setPage,
-    valinnanTilaChanged,
-    vastaanottoTilaChanged,
-  ]);
+  const setSearchDebounce = useDebounce(
+    (value: string) => setSearchParams({ searchPhrase: value, page: 1 }),
+    HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
+  );
 
   return {
     searchPhrase,
     setSearchPhrase: setSearchDebounce,
     page,
-    setPage,
+    setPage: (value: number) => setSearchParams({ page: value }),
     pageSize,
-    setPageSize,
+    setPageSize: (value: number) => setSearchParams({ pageSize: value }),
     sort,
     setSort,
     valinnanTila,
-    setValinnanTila,
+    setValinnanTila: (value: string) =>
+      setSearchParams({ valinnanTila: value, page: 1 }),
     vastaanottoTila,
-    setVastaanottoTila,
+    setVastaanottoTila: (value: string) =>
+      setSearchParams({ vastaanottoTila: value, page: 1 }),
   };
 };
 
