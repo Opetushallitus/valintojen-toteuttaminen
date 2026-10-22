@@ -1,7 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
-import { parseAsBoolean, parseAsInteger, useQueryState } from 'nuqs';
-import { useHasChangedForQueryState } from '@/hooks/useHasChanged';
+import {
+  parseAsBoolean,
+  parseAsInteger,
+  parseAsString,
+  useQueryStates,
+} from 'nuqs';
 import {
   byProp,
   getSortParts,
@@ -24,90 +28,66 @@ import { isHyvaksyttyHarkinnanvaraisesti } from '@/lib/sijoittelun-tulokset-util
 export const useSijoittelunTulosSearchParams = (
   valintatapajonoOid?: string,
 ) => {
-  const [searchPhrase, setSearchPhrase] = useQueryState(
-    `search`,
-    DEFAULT_NUQS_OPTIONS,
+  // Kaikki URL-parametrit samassa useQueryStatesissa, jotta hakuehdon muutos ja sivun nollaus päivittyvät
+  // URL:iin yhdellä päivityksellä
+  const [
+    {
+      searchPhrase,
+      sijoittelunTila,
+      showOnlyEhdolliset,
+      showOnlyMuuttuneetViimeSijoittelussa,
+      page,
+      pageSize,
+      sort,
+    },
+    setSearchParams,
+  ] = useQueryStates(
+    {
+      searchPhrase: parseAsString.withDefault(''),
+      sijoittelunTila: parseAsString.withDefault(''),
+      showOnlyEhdolliset: parseAsBoolean.withDefault(false),
+      showOnlyMuuttuneetViimeSijoittelussa: parseAsBoolean.withDefault(false),
+      page: parseAsInteger.withDefault(1),
+      pageSize: parseAsInteger.withDefault(DEFAULT_PAGE_SIZE),
+      sort: parseAsString.withDefault(''),
+    },
+    {
+      ...DEFAULT_NUQS_OPTIONS,
+      urlKeys: {
+        searchPhrase: 'search',
+        sijoittelunTila: 'tila',
+        showOnlyEhdolliset: 'ehdolliset',
+        showOnlyMuuttuneetViimeSijoittelussa: 'muuttuneetViimeSijoittelussa',
+        page: `page-${valintatapajonoOid}`,
+        pageSize: 'page_size',
+        sort: `sort-${valintatapajonoOid}`,
+      },
+    },
   );
 
   const setSearchDebounce = useDebounce(
-    setSearchPhrase,
+    (value: string) => setSearchParams({ searchPhrase: value, page: 1 }),
     HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
   );
-
-  const [sijoittelunTila, setSijoittelunTila] = useQueryState(
-    'tila',
-    DEFAULT_NUQS_OPTIONS,
-  );
-
-  const [showOnlyEhdolliset, setShowOnlyEhdolliset] = useQueryState<boolean>(
-    'ehdolliset',
-    parseAsBoolean.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(false),
-  );
-
-  const [
-    showOnlyMuuttuneetViimeSijoittelussa,
-    setShowOnlyMuuttuneetViimeSijoittelussa,
-  ] = useQueryState<boolean>(
-    'muuttuneetViimeSijoittelussa',
-    parseAsBoolean.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(false),
-  );
-
-  const [page, setPage] = useQueryState<number>(
-    `page-${valintatapajonoOid}`,
-    parseAsInteger.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(1),
-  );
-
-  const [pageSize, setPageSize] = useQueryState(
-    'page_size',
-    parseAsInteger
-      .withOptions(DEFAULT_NUQS_OPTIONS)
-      .withDefault(DEFAULT_PAGE_SIZE),
-  );
-
-  const [sort, setSort] = useState<string>('');
-
-  const searchPhraseChanged = useHasChangedForQueryState(searchPhrase);
-
-  const tilaChanged = useHasChangedForQueryState(sijoittelunTila);
-
-  const ehdollisetChanged = useHasChangedForQueryState(showOnlyEhdolliset);
-
-  const muuttuneetChanged = useHasChangedForQueryState(
-    showOnlyMuuttuneetViimeSijoittelussa,
-  );
-
-  useEffect(() => {
-    if (
-      searchPhraseChanged ||
-      tilaChanged ||
-      ehdollisetChanged ||
-      muuttuneetChanged
-    ) {
-      setPage(1);
-    }
-  }, [
-    searchPhraseChanged,
-    setPage,
-    tilaChanged,
-    ehdollisetChanged,
-    muuttuneetChanged,
-  ]);
 
   return {
     searchPhrase,
     setSearchPhrase: setSearchDebounce,
     page,
-    setPage,
+    setPage: (value: number) => setSearchParams({ page: value }),
     pageSize,
-    setPageSize,
+    setPageSize: (value: number) => setSearchParams({ pageSize: value }),
     sort,
-    setSort,
+    setSort: (value: string) => setSearchParams({ sort: value }),
     sijoittelunTila,
-    setSijoittelunTila,
+    setSijoittelunTila: (value: string) =>
+      setSearchParams({ sijoittelunTila: value, page: 1 }),
     showOnlyEhdolliset,
-    setShowOnlyEhdolliset,
+    setShowOnlyEhdolliset: (value: boolean) =>
+      setSearchParams({ showOnlyEhdolliset: value, page: 1 }),
     showOnlyMuuttuneetViimeSijoittelussa,
-    setShowOnlyMuuttuneetViimeSijoittelussa,
+    setShowOnlyMuuttuneetViimeSijoittelussa: (value: boolean) =>
+      setSearchParams({ showOnlyMuuttuneetViimeSijoittelussa: value, page: 1 }),
   };
 };
 

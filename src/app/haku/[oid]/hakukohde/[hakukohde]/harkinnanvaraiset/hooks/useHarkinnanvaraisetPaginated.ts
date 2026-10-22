@@ -1,43 +1,14 @@
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { useMemo } from 'react';
 import { byProp, getSortParts } from '@/components/table/table-utils';
-import { parseAsInteger, useQueryState } from 'nuqs';
-import { DEFAULT_NUQS_OPTIONS } from '@/lib/constants';
-import { DEFAULT_PAGE_SIZE } from '@/lib/constants';
 import { useHarkinnanvaraisetSearchParams } from './useHarkinnanvaraisetSearchParams';
 import { hakemusFilter } from '@/lib/filters';
 import { HakemuksenHarkinnanvaraisuus } from '@/lib/types/harkinnanvaraiset-types';
 
-const usePaginationQueryParams = (paginationId: string) => {
-  const [page, setPage] = useQueryState<number>(
-    `page-${paginationId}`,
-    parseAsInteger.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(1),
-  );
-
-  const [sort, setSort] = useQueryState(
-    `sort-${paginationId}`,
-    DEFAULT_NUQS_OPTIONS,
-  );
-
-  const [pageSize, setPageSize] = useQueryState(
-    `page_size-${paginationId}`,
-    parseAsInteger
-      .withOptions(DEFAULT_NUQS_OPTIONS)
-      .withDefault(DEFAULT_PAGE_SIZE),
-  );
-
-  return {
-    pageSize,
-    setPageSize,
-    page,
-    setPage,
-    sort,
-    setSort,
-  };
-};
-
 export const useHarkinnanvaraisetPaginationQueryParams = () => {
-  return usePaginationQueryParams('harkinnanvaraiset');
+  const { page, setPage, sort, setSort, pageSize, setPageSize } =
+    useHarkinnanvaraisetSearchParams();
+  return { page, setPage, sort, setSort, pageSize, setPageSize };
 };
 
 export const useHarkinanvaraisetPaginated = (
