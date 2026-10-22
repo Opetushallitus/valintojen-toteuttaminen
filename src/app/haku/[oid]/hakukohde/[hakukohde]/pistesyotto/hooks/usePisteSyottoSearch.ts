@@ -69,7 +69,7 @@ export const usePisteSyottoSearchParams = () => {
     setOsallistumisenTila: (value: string) =>
       setSearchParams({ osallistumisenTila: value, page: 1 }),
     valittuKoe,
-    setValittukoe: (value: string) =>
+    setValittuKoe: (value: string) =>
       setSearchParams({ valittuKoe: value, page: 1 }),
     naytaVainLaskentaanVaikuttavat,
     setNaytaVainLaskentaanVaikuttavat: (value: boolean) =>

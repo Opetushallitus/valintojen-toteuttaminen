@@ -11,7 +11,7 @@ import { HakukohdeWithLink } from '../components/valintaryhma-hakukohde-table';
 
 export const useHakukohdeSortAndPagingParams = () => {
   const [page, setPage] = useQueryState<number>(
-    `paget`,
+    'page',
     parseAsInteger.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(1),
   );
 

@@ -142,7 +142,7 @@ const HOOK_CASES: Array<HookCase> = [
     changes: [
       searchPhraseChange,
       {
-        setter: 'setValittukoe',
+        setter: 'setValittuKoe',
         key: 'valittuKoe',
         values: ['koe-1', 'koe-2'],
       },
