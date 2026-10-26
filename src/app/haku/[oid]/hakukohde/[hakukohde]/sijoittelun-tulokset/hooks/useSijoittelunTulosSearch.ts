@@ -1,7 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
-import { parseAsBoolean, parseAsInteger, useQueryState } from 'nuqs';
-import { useHasChangedForQueryState } from '@/hooks/useHasChanged';
+import { parseAsBoolean, parseAsString, useQueryStates } from 'nuqs';
 import {
   byProp,
   getSortParts,
@@ -9,7 +8,6 @@ import {
 } from '@/components/table/table-utils';
 import {
   DEFAULT_NUQS_OPTIONS,
-  DEFAULT_PAGE_SIZE,
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
 } from '@/lib/constants';
 import { useTranslations } from '@/lib/localization/useTranslations';
@@ -20,94 +18,74 @@ import {
 import { hakemusFilter } from '@/lib/filters';
 import { sortByValinnanTila } from '@/lib/sortByValinnanTila';
 import { isHyvaksyttyHarkinnanvaraisesti } from '@/lib/sijoittelun-tulokset-utils';
+import {
+  usePaginationParams,
+  useResetPages,
+} from '@/hooks/usePaginationParams';
 
-export const useSijoittelunTulosSearchParams = (
-  valintatapajonoOid?: string,
-) => {
-  const [searchPhrase, setSearchPhrase] = useQueryState(
-    `search`,
-    DEFAULT_NUQS_OPTIONS,
+/**
+ * Kaikille valintatapajonoille yhteiset hakuehdot ja sivukoko. Sivu ja järjestys ovat jonokohtaisia
+ * (ks. usePaginationParams). Hakuehdon muutos palauttaa kaikkien jonojen sivutuksen ensimmäiselle sivulle.
+ */
+export const useSijoittelunTulosSearchParams = () => {
+  const [
+    {
+      searchPhrase,
+      sijoittelunTila,
+      showOnlyEhdolliset,
+      showOnlyMuuttuneetViimeSijoittelussa,
+    },
+    setSearchParams,
+  ] = useQueryStates(
+    {
+      searchPhrase: parseAsString.withDefault(''),
+      sijoittelunTila: parseAsString.withDefault(''),
+      showOnlyEhdolliset: parseAsBoolean.withDefault(false),
+      showOnlyMuuttuneetViimeSijoittelussa: parseAsBoolean.withDefault(false),
+    },
+    {
+      ...DEFAULT_NUQS_OPTIONS,
+      urlKeys: {
+        searchPhrase: 'search',
+        sijoittelunTila: 'tila',
+        showOnlyEhdolliset: 'ehdolliset',
+        showOnlyMuuttuneetViimeSijoittelussa: 'muuttuneetViimeSijoittelussa',
+      },
+    },
   );
+
+  const { pageSize, setPageSize } = usePaginationParams();
+
+  const resetPages = useResetPages();
+
+  const setSearchParamsAndResetPages = (
+    values: Parameters<typeof setSearchParams>[0],
+  ) => {
+    setSearchParams(values);
+    resetPages();
+  };
 
   const setSearchDebounce = useDebounce(
-    setSearchPhrase,
+    (value: string) => setSearchParamsAndResetPages({ searchPhrase: value }),
     HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
   );
-
-  const [sijoittelunTila, setSijoittelunTila] = useQueryState(
-    'tila',
-    DEFAULT_NUQS_OPTIONS,
-  );
-
-  const [showOnlyEhdolliset, setShowOnlyEhdolliset] = useQueryState<boolean>(
-    'ehdolliset',
-    parseAsBoolean.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(false),
-  );
-
-  const [
-    showOnlyMuuttuneetViimeSijoittelussa,
-    setShowOnlyMuuttuneetViimeSijoittelussa,
-  ] = useQueryState<boolean>(
-    'muuttuneetViimeSijoittelussa',
-    parseAsBoolean.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(false),
-  );
-
-  const [page, setPage] = useQueryState<number>(
-    `page-${valintatapajonoOid}`,
-    parseAsInteger.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(1),
-  );
-
-  const [pageSize, setPageSize] = useQueryState(
-    'page_size',
-    parseAsInteger
-      .withOptions(DEFAULT_NUQS_OPTIONS)
-      .withDefault(DEFAULT_PAGE_SIZE),
-  );
-
-  const [sort, setSort] = useState<string>('');
-
-  const searchPhraseChanged = useHasChangedForQueryState(searchPhrase);
-
-  const tilaChanged = useHasChangedForQueryState(sijoittelunTila);
-
-  const ehdollisetChanged = useHasChangedForQueryState(showOnlyEhdolliset);
-
-  const muuttuneetChanged = useHasChangedForQueryState(
-    showOnlyMuuttuneetViimeSijoittelussa,
-  );
-
-  useEffect(() => {
-    if (
-      searchPhraseChanged ||
-      tilaChanged ||
-      ehdollisetChanged ||
-      muuttuneetChanged
-    ) {
-      setPage(1);
-    }
-  }, [
-    searchPhraseChanged,
-    setPage,
-    tilaChanged,
-    ehdollisetChanged,
-    muuttuneetChanged,
-  ]);
 
   return {
     searchPhrase,
     setSearchPhrase: setSearchDebounce,
-    page,
-    setPage,
     pageSize,
     setPageSize,
-    sort,
-    setSort,
     sijoittelunTila,
-    setSijoittelunTila,
+    setSijoittelunTila: (value: string) =>
+      setSearchParamsAndResetPages({ sijoittelunTila: value }),
     showOnlyEhdolliset,
-    setShowOnlyEhdolliset,
+    setShowOnlyEhdolliset: (value: boolean) =>
+      setSearchParamsAndResetPages({ showOnlyEhdolliset: value }),
     showOnlyMuuttuneetViimeSijoittelussa,
-    setShowOnlyMuuttuneetViimeSijoittelussa,
+    setShowOnlyMuuttuneetViimeSijoittelussa: (value: boolean) =>
+      setSearchParamsAndResetPages({
+        showOnlyMuuttuneetViimeSijoittelussa: value,
+      }),
   };
 };
 
@@ -133,16 +111,13 @@ export const useSijoittelunTulosSearch = (
 
   const {
     searchPhrase,
-    page,
-    setPage,
-    pageSize,
-    setPageSize,
-    sort,
-    setSort,
     sijoittelunTila,
     showOnlyEhdolliset,
     showOnlyMuuttuneetViimeSijoittelussa,
-  } = useSijoittelunTulosSearchParams(valintatapajonoOid);
+  } = useSijoittelunTulosSearchParams();
+
+  const { page, setPage, pageSize, setPageSize, sort, setSort } =
+    usePaginationParams({ tableId: valintatapajonoOid });
 
   const results = useMemo(() => {
     const filtered = hakemukset.filter(

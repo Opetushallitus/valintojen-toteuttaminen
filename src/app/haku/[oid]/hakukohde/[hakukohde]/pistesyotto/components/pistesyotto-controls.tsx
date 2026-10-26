@@ -19,7 +19,7 @@ export const PisteSyottoControls = ({
     searchPhrase,
     setSearchPhrase,
     valittuKoe,
-    setValittukoe,
+    setValittuKoe,
     osallistumisenTila,
     setOsallistumisenTila,
     naytaVainLaskentaanVaikuttavat,
@@ -28,7 +28,7 @@ export const PisteSyottoControls = ({
   const { t } = useTranslations();
 
   const changeKoe = (e: SelectChangeEvent) => {
-    setValittukoe(e.target.value);
+    setValittuKoe(e.target.value);
   };
 
   const changeOsallistumisenTila = (e: SelectChangeEvent) => {

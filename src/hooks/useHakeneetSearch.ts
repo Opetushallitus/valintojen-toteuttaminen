@@ -1,60 +1,36 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
-import { parseAsInteger, useQueryState } from 'nuqs';
-import { useHasChangedForQueryState } from '@/hooks/useHasChanged';
+import { parseAsString, useQueryStates } from 'nuqs';
 import { byProp, getSortParts } from '../components/table/table-utils';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import {
   DEFAULT_NUQS_OPTIONS,
-  DEFAULT_PAGE_SIZE,
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
 } from '@/lib/constants';
+import { usePaginationParams, useResetPages } from './usePaginationParams';
 import { useTranslations } from '../lib/localization/useTranslations';
 import { hakemusFilter } from '../lib/filters';
 import { queryOptionsGetHakemukset } from '@/lib/ataru/ataru-queries';
 
 export const useHakeneetSearchParams = () => {
-  const [searchPhrase, setSearchPhrase] = useQueryState(
-    'hakeneetSearch',
-    DEFAULT_NUQS_OPTIONS,
+  const [{ searchPhrase }, setSearchParams] = useQueryStates(
+    { searchPhrase: parseAsString.withDefault('') },
+    { ...DEFAULT_NUQS_OPTIONS, urlKeys: { searchPhrase: 'hakeneetSearch' } },
   );
 
-  const setSearchDebounce = useDebounce(
-    setSearchPhrase,
-    HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
-  );
+  const paginationParams = usePaginationParams();
 
-  const [page, setPage] = useQueryState<number>(
-    'page',
-    parseAsInteger.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(1),
-  );
+  const resetPages = useResetPages();
 
-  const [pageSize, setPageSize] = useQueryState(
-    'page_size',
-    parseAsInteger
-      .withOptions(DEFAULT_NUQS_OPTIONS)
-      .withDefault(DEFAULT_PAGE_SIZE),
-  );
-
-  const [sort, setSort] = useQueryState('sort', DEFAULT_NUQS_OPTIONS);
-
-  const searchPhraseChanged = useHasChangedForQueryState(searchPhrase);
-
-  useEffect(() => {
-    if (searchPhraseChanged) {
-      setPage(1);
-    }
-  }, [searchPhraseChanged, setPage]);
+  const setSearchDebounce = useDebounce((value: string) => {
+    setSearchParams({ searchPhrase: value });
+    resetPages();
+  }, HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY);
 
   return {
     searchPhrase,
     setSearchPhrase: setSearchDebounce,
-    page,
-    setPage,
-    pageSize,
-    setPageSize,
-    sort,
-    setSort,
+    ...paginationParams,
   };
 };
 
