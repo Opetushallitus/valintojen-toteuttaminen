@@ -6,14 +6,14 @@ import {
   getHakuAlkamisKaudet,
 } from '../lib/kouta/kouta-types';
 import { useDebounce } from '@/hooks/useDebounce';
-import { parseAsInteger, parseAsString, useQueryStates } from 'nuqs';
+import { parseAsString, useQueryStates } from 'nuqs';
+import { usePaginationParams, useResetPages } from './usePaginationParams';
 import { byProp, getSortParts } from '../components/table/table-utils';
 import { getHaut } from '../lib/kouta/kouta-service';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { useHakutavat } from '../lib/koodisto/useHakutavat';
 import {
   DEFAULT_NUQS_OPTIONS,
-  DEFAULT_PAGE_SIZE,
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
 } from '@/lib/constants';
 import { useTranslations } from '../lib/localization/useTranslations';
@@ -67,18 +67,8 @@ export type HakuListItem = Haku & {
 };
 
 export const useHakuSearchParams = () => {
-  // Hakuehdot ja sivu samassa useQueryStatesissa, jotta hakuehdon muutos ja sivun nollaus päivittyvät
-  // URL:iin yhdellä päivityksellä
   const [
-    {
-      searchPhrase,
-      tila,
-      selectedHakutapa,
-      selectedAlkamisKausi,
-      page,
-      pageSize,
-      sort,
-    },
+    { searchPhrase, tila, selectedHakutapa, selectedAlkamisKausi },
     setSearchParams,
   ] = useQueryStates(
     {
@@ -88,9 +78,6 @@ export const useHakuSearchParams = () => {
       tila: parseAsString.withOptions({ clearOnDefault: false }),
       selectedHakutapa: parseAsString.withDefault(''),
       selectedAlkamisKausi: parseAsString.withDefault(''),
-      page: parseAsInteger.withDefault(1),
-      pageSize: parseAsInteger.withDefault(DEFAULT_PAGE_SIZE),
-      sort: parseAsString.withDefault(''),
     },
     {
       ...DEFAULT_NUQS_OPTIONS,
@@ -98,13 +85,23 @@ export const useHakuSearchParams = () => {
         searchPhrase: 'search',
         selectedHakutapa: 'hakutapa',
         selectedAlkamisKausi: 'alkamiskausi',
-        pageSize: 'page_size',
       },
     },
   );
 
+  const paginationParams = usePaginationParams();
+
+  const resetPages = useResetPages();
+
+  const setSearchParamsAndResetPages = (
+    values: Parameters<typeof setSearchParams>[0],
+  ) => {
+    setSearchParams(values);
+    resetPages();
+  };
+
   const setSearchDebounce = useDebounce(
-    (value: string) => setSearchParams({ searchPhrase: value, page: 1 }),
+    (value: string) => setSearchParamsAndResetPages({ searchPhrase: value }),
     HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
   );
 
@@ -112,19 +109,14 @@ export const useHakuSearchParams = () => {
     searchPhrase,
     setSearchPhrase: setSearchDebounce,
     tila,
-    setTila: (value: string) => setSearchParams({ tila: value, page: 1 }),
+    setTila: (value: string) => setSearchParamsAndResetPages({ tila: value }),
     selectedHakutapa,
     setSelectedHakutapa: (value: string) =>
-      setSearchParams({ selectedHakutapa: value, page: 1 }),
+      setSearchParamsAndResetPages({ selectedHakutapa: value }),
     selectedAlkamisKausi,
     setSelectedAlkamisKausi: (value: string) =>
-      setSearchParams({ selectedAlkamisKausi: value, page: 1 }),
-    page,
-    setPage: (value: number) => setSearchParams({ page: value }),
-    pageSize,
-    setPageSize: (value: number) => setSearchParams({ pageSize: value }),
-    sort,
-    setSort: (value: string) => setSearchParams({ sort: value }),
+      setSearchParamsAndResetPages({ selectedAlkamisKausi: value }),
+    ...paginationParams,
   };
 };
 

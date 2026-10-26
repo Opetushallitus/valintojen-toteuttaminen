@@ -1,52 +1,40 @@
 import { useMemo } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
-import { parseAsInteger, parseAsString, useQueryStates } from 'nuqs';
+import { parseAsString, useQueryStates } from 'nuqs';
 import { byProp, getSortParts } from '../components/table/table-utils';
 import {
   DEFAULT_NUQS_OPTIONS,
-  DEFAULT_PAGE_SIZE,
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
 } from '@/lib/constants';
 import { useTranslations } from '../lib/localization/useTranslations';
 import { LaskennanJonosijaTulosWithHakijaInfo } from './useEditableValintalaskennanTulokset';
 import { hakemusFilter } from '../lib/filters';
+import { usePaginationParams, useResetPages } from './usePaginationParams';
 
-export const useJonoTuloksetSearchParams = (id?: string) => {
-  // Kaikki URL-parametrit samassa useQueryStatesissa, jotta hakutermin muutos ja sivun nollaus päivittyvät
-  // URL:iin yhdellä päivityksellä
-  const [{ searchPhrase, page, pageSize, sort }, setSearchParams] =
-    useQueryStates(
-      {
-        searchPhrase: parseAsString.withDefault(''),
-        page: parseAsInteger.withDefault(1),
-        pageSize: parseAsInteger.withDefault(DEFAULT_PAGE_SIZE),
-        sort: parseAsString.withDefault(''),
-      },
-      {
-        ...DEFAULT_NUQS_OPTIONS,
-        urlKeys: {
-          searchPhrase: 'search',
-          page: `page-${id}`,
-          pageSize: 'page_size',
-          sort: `sort-${id}`,
-        },
-      },
-    );
-
-  const setSearchDebounce = useDebounce(
-    (value: string) => setSearchParams({ searchPhrase: value, page: 1 }),
-    HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
+/**
+ * Kaikille valintatapajonoille yhteinen hakutermi ja sivukoko. Sivu ja järjestys ovat jonokohtaisia
+ * (ks. usePaginationParams). Hakutermin muutos palauttaa kaikkien jonojen sivutuksen ensimmäiselle sivulle.
+ */
+export const useJonoTuloksetSearchParams = () => {
+  const [{ searchPhrase }, setSearchParams] = useQueryStates(
+    { searchPhrase: parseAsString.withDefault('') },
+    { ...DEFAULT_NUQS_OPTIONS, urlKeys: { searchPhrase: 'search' } },
   );
+
+  const { pageSize, setPageSize } = usePaginationParams();
+
+  const resetPages = useResetPages();
+
+  const setSearchDebounce = useDebounce((value: string) => {
+    setSearchParams({ searchPhrase: value });
+    resetPages();
+  }, HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY);
 
   return {
     searchPhrase,
     setSearchPhrase: setSearchDebounce,
-    page,
-    setPage: (value: number) => setSearchParams({ page: value }),
     pageSize,
-    setPageSize: (value: number) => setSearchParams({ pageSize: value }),
-    sort,
-    setSort: (value: string) => setSearchParams({ sort: value }),
+    setPageSize,
   };
 };
 
@@ -56,8 +44,10 @@ export const useJonoTuloksetSearch = (
 ) => {
   const { translateEntity } = useTranslations();
 
-  const { searchPhrase, page, setPage, pageSize, setPageSize, sort, setSort } =
-    useJonoTuloksetSearchParams(jonoId);
+  const { searchPhrase } = useJonoTuloksetSearchParams();
+
+  const { page, setPage, pageSize, setPageSize, sort, setSort } =
+    usePaginationParams({ tableId: jonoId });
 
   const results = useMemo(() => {
     const { orderBy, direction } = getSortParts(sort);

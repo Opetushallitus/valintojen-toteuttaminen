@@ -14,6 +14,8 @@ import { useHakijaryhmatSearchParams } from '@/app/haku/[oid]/hakukohde/[hakukoh
 import { useValinnanTuloksetSearchParams } from '@/app/haku/[oid]/hakukohde/[hakukohde]/valinnan-tulokset/hooks/useValinnanTuloksetSearch';
 import { usePisteSyottoSearchParams } from '@/app/haku/[oid]/hakukohde/[hakukohde]/pistesyotto/hooks/usePisteSyottoSearch';
 import { useHarkinnanvaraisetSearchParams } from '@/app/haku/[oid]/hakukohde/[hakukohde]/harkinnanvaraiset/hooks/useHarkinnanvaraisetSearchParams';
+import { useValintakoekutsutGlobalSearchParams } from '@/app/haku/[oid]/hakukohde/[hakukohde]/valintakoekutsut/hooks/useValintakoekutsutPaginated';
+import { usePaginationParams } from './usePaginationParams';
 
 vi.mock('@/lib/constants', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/lib/constants')>()),
@@ -29,9 +31,12 @@ type Change = {
 type HookCase = {
   name: string;
   useHook: () => object;
-  pageParam: string;
+  pageParams: Array<string>;
   changes: Array<Change>;
 };
+
+// Näkymissä, joissa on useita taulukoita (esim. yksi per valintatapajono), hakuehdon muutos nollaa kaikkien taulukoiden sivut
+const TABLE_PAGE_PARAMS = ['page-taulukko-1', 'page-taulukko-2'];
 
 const searchPhraseChange: Change = {
   setter: 'setSearchPhrase',
@@ -43,7 +48,7 @@ const HOOK_CASES: Array<HookCase> = [
   {
     name: 'useHakuSearchParams',
     useHook: useHakuSearchParams,
-    pageParam: 'page',
+    pageParams: ['page'],
     changes: [
       searchPhraseChange,
       { setter: 'setTila', key: 'tila', values: ['arkistoitu', ''] },
@@ -62,19 +67,19 @@ const HOOK_CASES: Array<HookCase> = [
   {
     name: 'useHakeneetSearchParams',
     useHook: useHakeneetSearchParams,
-    pageParam: 'page',
+    pageParams: ['page'],
     changes: [searchPhraseChange],
   },
   {
     name: 'useJonoTuloksetSearchParams',
-    useHook: () => useJonoTuloksetSearchParams('jono-1'),
-    pageParam: 'page-jono-1',
+    useHook: useJonoTuloksetSearchParams,
+    pageParams: TABLE_PAGE_PARAMS,
     changes: [searchPhraseChange],
   },
   {
     name: 'useSijoittelunTulosSearchParams',
-    useHook: () => useSijoittelunTulosSearchParams('jono-1'),
-    pageParam: 'page-jono-1',
+    useHook: useSijoittelunTulosSearchParams,
+    pageParams: TABLE_PAGE_PARAMS,
     changes: [
       searchPhraseChange,
       {
@@ -96,8 +101,8 @@ const HOOK_CASES: Array<HookCase> = [
   },
   {
     name: 'useHakijaryhmatSearchParams',
-    useHook: () => useHakijaryhmatSearchParams('ryhma-1'),
-    pageParam: 'page-ryhma-1',
+    useHook: useHakijaryhmatSearchParams,
+    pageParams: TABLE_PAGE_PARAMS,
     changes: [
       searchPhraseChange,
       {
@@ -120,7 +125,7 @@ const HOOK_CASES: Array<HookCase> = [
   {
     name: 'useValinnanTuloksetSearchParams',
     useHook: useValinnanTuloksetSearchParams,
-    pageParam: 'page',
+    pageParams: ['page'],
     changes: [
       searchPhraseChange,
       {
@@ -138,7 +143,7 @@ const HOOK_CASES: Array<HookCase> = [
   {
     name: 'usePisteSyottoSearchParams',
     useHook: usePisteSyottoSearchParams,
-    pageParam: 'page',
+    pageParams: ['page'],
     changes: [
       searchPhraseChange,
       {
@@ -161,21 +166,46 @@ const HOOK_CASES: Array<HookCase> = [
   {
     name: 'useHarkinnanvaraisetSearchParams',
     useHook: useHarkinnanvaraisetSearchParams,
-    pageParam: 'page-harkinnanvaraiset',
+    pageParams: ['page-harkinnanvaraiset'],
     changes: [searchPhraseChange],
+  },
+  {
+    // Sivukoon muutos nollaa kaikkien taulukoiden sivut
+    name: 'usePaginationParams',
+    useHook: () => usePaginationParams({ tableId: 'taulukko-1' }),
+    pageParams: ['page', ...TABLE_PAGE_PARAMS],
+    changes: [{ setter: 'setPageSize', key: 'pageSize', values: [20, 30] }],
+  },
+  {
+    name: 'useValintakoekutsutGlobalSearchParams',
+    useHook: useValintakoekutsutGlobalSearchParams,
+    pageParams: TABLE_PAGE_PARAMS,
+    changes: [
+      {
+        setter: 'setVainKutsuttavat',
+        key: 'vainKutsuttavat',
+        values: [false, true],
+      },
+      {
+        setter: 'setRyhmittely',
+        key: 'ryhmittely',
+        values: ['hakijoittain', 'kokeittain'],
+      },
+    ],
   },
 ];
 
 // Hakuehdon muutos ja sivun nollaus pitää tehdä samalla nuqs-päivityksellä. Erillinen päivitys heti perään
 // (esim. sivun nollaus effectissä) saa nuqsin hetkellisesti palauttamaan hakuehdolle vanhan arvon, jolloin
 // hakukenttä ja listat välähtävät vanhalla arvolla.
-describe.each(HOOK_CASES)('$name', ({ useHook, pageParam, changes }) => {
+describe.each(HOOK_CASES)('$name', ({ useHook, pageParams, changes }) => {
   test.each(changes)(
     '$setter does not revert to stale value and resets page',
     async ({ setter, key, values }) => {
+      // page_size ei saa nollautua sivujen mukana
       const { renders, current } = renderSearchParamsHook(
         useHook,
-        `?${pageParam}=3`,
+        `?${[...pageParams.map((pageParam) => `${pageParam}=3`), 'page_size=10'].join('&')}`,
       );
 
       for (const value of values) {
@@ -193,7 +223,12 @@ describe.each(HOOK_CASES)('$name', ({ useHook, pageParam, changes }) => {
             .map((r) => (r as Record<string, unknown>)[key]),
           value,
         );
-        expect(getUrlParam(pageParam)).toBeNull();
+        for (const pageParam of pageParams) {
+          expect(getUrlParam(pageParam)).toBeNull();
+        }
+        expect(getUrlParam('page_size')).toBe(
+          key === 'pageSize' ? String(value) : '10',
+        );
       }
     },
   );

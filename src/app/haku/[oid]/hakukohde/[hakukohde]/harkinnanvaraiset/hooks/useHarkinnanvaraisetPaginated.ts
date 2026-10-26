@@ -1,15 +1,16 @@
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { useMemo } from 'react';
 import { byProp, getSortParts } from '@/components/table/table-utils';
-import { useHarkinnanvaraisetSearchParams } from './useHarkinnanvaraisetSearchParams';
+import {
+  HARKINNANVARAISET_TABLE_ID,
+  useHarkinnanvaraisetSearchParams,
+} from './useHarkinnanvaraisetSearchParams';
 import { hakemusFilter } from '@/lib/filters';
 import { HakemuksenHarkinnanvaraisuus } from '@/lib/types/harkinnanvaraiset-types';
+import { usePaginationParams } from '@/hooks/usePaginationParams';
 
-export const useHarkinnanvaraisetPaginationQueryParams = () => {
-  const { page, setPage, sort, setSort, pageSize, setPageSize } =
-    useHarkinnanvaraisetSearchParams();
-  return { page, setPage, sort, setSort, pageSize, setPageSize };
-};
+export const useHarkinnanvaraisetPaginationQueryParams = () =>
+  usePaginationParams({ tableId: HARKINNANVARAISET_TABLE_ID });
 
 export const useHarkinanvaraisetPaginated = (
   harkinnanvaraisetHakemukset: Array<HakemuksenHarkinnanvaraisuus>,

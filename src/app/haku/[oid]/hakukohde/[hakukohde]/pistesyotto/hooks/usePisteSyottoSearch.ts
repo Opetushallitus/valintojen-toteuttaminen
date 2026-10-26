@@ -1,33 +1,26 @@
 import { useMemo } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
-import {
-  parseAsBoolean,
-  parseAsInteger,
-  parseAsString,
-  useQueryStates,
-} from 'nuqs';
+import { parseAsBoolean, parseAsString, useQueryStates } from 'nuqs';
 import { byProp, getSortParts } from '@/components/table/table-utils';
 import {
-  DEFAULT_PAGE_SIZE,
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
   DEFAULT_NUQS_OPTIONS,
 } from '@/lib/constants';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { HakukohteenPistetiedot } from '@/lib/types/laskenta-types';
 import { hakemusFilter } from '@/lib/filters';
+import {
+  usePaginationParams,
+  useResetPages,
+} from '@/hooks/usePaginationParams';
 
 export const usePisteSyottoSearchParams = () => {
-  // Kaikki URL-parametrit samassa useQueryStatesissa, jotta hakuehdon muutos ja sivun nollaus päivittyvät
-  // URL:iin yhdellä päivityksellä
   const [
     {
       searchPhrase,
       valittuKoe,
       osallistumisenTila,
       naytaVainLaskentaanVaikuttavat,
-      page,
-      pageSize,
-      sort,
     },
     setSearchParams,
   ] = useQueryStates(
@@ -36,9 +29,6 @@ export const usePisteSyottoSearchParams = () => {
       valittuKoe: parseAsString.withDefault(''),
       osallistumisenTila: parseAsString.withDefault(''),
       naytaVainLaskentaanVaikuttavat: parseAsBoolean.withDefault(true),
-      page: parseAsInteger.withDefault(1),
-      pageSize: parseAsInteger.withDefault(DEFAULT_PAGE_SIZE),
-      sort: parseAsString.withDefault('hakijanNimi:asc'),
     },
     {
       ...DEFAULT_NUQS_OPTIONS,
@@ -46,34 +36,41 @@ export const usePisteSyottoSearchParams = () => {
         searchPhrase: 'pisteSyottoSearch',
         valittuKoe: 'koe',
         naytaVainLaskentaanVaikuttavat: 'vainLaskentaanVaikuttavat',
-        pageSize: 'page_size',
       },
     },
   );
 
+  const paginationParams = usePaginationParams({
+    defaultSort: 'hakijanNimi:asc',
+  });
+
+  const resetPages = useResetPages();
+
+  const setSearchParamsAndResetPages = (
+    values: Parameters<typeof setSearchParams>[0],
+  ) => {
+    setSearchParams(values);
+    resetPages();
+  };
+
   const setSearchDebounce = useDebounce(
-    (value: string) => setSearchParams({ searchPhrase: value, page: 1 }),
+    (value: string) => setSearchParamsAndResetPages({ searchPhrase: value }),
     HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
   );
 
   return {
     searchPhrase,
     setSearchPhrase: setSearchDebounce,
-    page,
-    setPage: (value: number) => setSearchParams({ page: value }),
-    pageSize,
-    setPageSize: (value: number) => setSearchParams({ pageSize: value }),
-    sort,
-    setSort: (value: string) => setSearchParams({ sort: value }),
+    ...paginationParams,
     osallistumisenTila,
     setOsallistumisenTila: (value: string) =>
-      setSearchParams({ osallistumisenTila: value, page: 1 }),
+      setSearchParamsAndResetPages({ osallistumisenTila: value }),
     valittuKoe,
     setValittuKoe: (value: string) =>
-      setSearchParams({ valittuKoe: value, page: 1 }),
+      setSearchParamsAndResetPages({ valittuKoe: value }),
     naytaVainLaskentaanVaikuttavat,
     setNaytaVainLaskentaanVaikuttavat: (value: boolean) =>
-      setSearchParams({ naytaVainLaskentaanVaikuttavat: value, page: 1 }),
+      setSearchParamsAndResetPages({ naytaVainLaskentaanVaikuttavat: value }),
   };
 };
 

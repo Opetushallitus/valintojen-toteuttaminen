@@ -1,16 +1,14 @@
 import { useMemo } from 'react';
-import {
-  parseAsBoolean,
-  parseAsInteger,
-  parseAsString,
-  parseAsStringLiteral,
-  useQueryStates,
-} from 'nuqs';
+import { parseAsBoolean, parseAsStringLiteral, useQueryStates } from 'nuqs';
 import { byProp, getSortParts } from '@/components/table/table-utils';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { ValintakoeKutsuItem } from '@/lib/types/valintakoekutsut-types';
 import { uncapitalize } from 'remeda';
-import { DEFAULT_NUQS_OPTIONS, DEFAULT_PAGE_SIZE } from '@/lib/constants';
+import { DEFAULT_NUQS_OPTIONS } from '@/lib/constants';
+import {
+  usePaginationParams,
+  useResetPages,
+} from '@/hooks/usePaginationParams';
 
 export const ryhmittelyParser = parseAsStringLiteral([
   'kokeittain',
@@ -20,54 +18,35 @@ export const ryhmittelyParser = parseAsStringLiteral([
 type Ryhmittely = 'kokeittain' | 'hakijoittain';
 
 export const useValintakoekutsutGlobalSearchParams = () => {
-  const [{ ryhmittely, vainKutsuttavat, pageSize }, setSearchParams] =
-    useQueryStates(
-      {
-        ryhmittely: ryhmittelyParser.withDefault('kokeittain'),
-        vainKutsuttavat: parseAsBoolean.withDefault(true),
-        pageSize: parseAsInteger.withDefault(DEFAULT_PAGE_SIZE),
-      },
-      {
-        ...DEFAULT_NUQS_OPTIONS,
-        urlKeys: {
-          vainKutsuttavat: 'vain-kutsuttavat',
-          pageSize: 'page_size',
-        },
-      },
-    );
-
-  return {
-    ryhmittely,
-    setRyhmittely: (value: Ryhmittely | null) =>
-      setSearchParams({ ryhmittely: value }),
-    vainKutsuttavat,
-    setVainKutsuttavat: (value: boolean) =>
-      setSearchParams({ vainKutsuttavat: value }),
-    pageSize,
-    setPageSize: (value: number) => setSearchParams({ pageSize: value }),
-  };
-};
-
-export const useValintakoekutsutSearchParams = (valintakoeTunniste: string) => {
-  const [{ page, sort }, setSearchParams] = useQueryStates(
+  const [{ ryhmittely, vainKutsuttavat }, setSearchParams] = useQueryStates(
     {
-      page: parseAsInteger.withDefault(1),
-      sort: parseAsString.withDefault(''),
+      ryhmittely: ryhmittelyParser.withDefault('kokeittain'),
+      vainKutsuttavat: parseAsBoolean.withDefault(true),
     },
     {
       ...DEFAULT_NUQS_OPTIONS,
-      urlKeys: {
-        page: `page-${valintakoeTunniste}`,
-        sort: `sort-${valintakoeTunniste}`,
-      },
+      urlKeys: { vainKutsuttavat: 'vain-kutsuttavat' },
     },
   );
 
+  const { pageSize, setPageSize } = usePaginationParams();
+
+  // Hakuehdon muutos palauttaa kaikkien valintakoekutsutaulukoiden sivutuksen ensimmäiselle sivulle
+  const resetPages = useResetPages();
+
   return {
-    page,
-    setPage: (value: number) => setSearchParams({ page: value }),
-    sort,
-    setSort: (value: string) => setSearchParams({ sort: value }),
+    ryhmittely,
+    setRyhmittely: (value: Ryhmittely | null) => {
+      setSearchParams({ ryhmittely: value });
+      resetPages();
+    },
+    vainKutsuttavat,
+    setVainKutsuttavat: (value: boolean) => {
+      setSearchParams({ vainKutsuttavat: value });
+      resetPages();
+    },
+    pageSize,
+    setPageSize,
   };
 };
 
@@ -92,18 +71,11 @@ export const useValintakoekutsutPaginated = <
 ) => {
   const { translateEntity } = useTranslations();
 
-  const { page, setPage, sort, setSort } = useValintakoekutsutSearchParams(
-    makePaginationId(paginationPrefix),
-  );
+  const { page, setPage, pageSize, setPageSize, sort, setSort } =
+    usePaginationParams({ tableId: makePaginationId(paginationPrefix) });
 
-  const {
-    vainKutsuttavat,
-    setVainKutsuttavat,
-    ryhmittely,
-    setRyhmittely,
-    pageSize,
-    setPageSize,
-  } = useValintakoekutsutGlobalSearchParams();
+  const { vainKutsuttavat, setVainKutsuttavat, ryhmittely, setRyhmittely } =
+    useValintakoekutsutGlobalSearchParams();
 
   const results = useMemo(() => {
     const { orderBy, direction } = getSortParts(sort);

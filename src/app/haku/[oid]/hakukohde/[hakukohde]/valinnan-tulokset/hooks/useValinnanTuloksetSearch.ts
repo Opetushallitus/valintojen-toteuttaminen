@@ -1,12 +1,15 @@
 import { useMemo } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
-import { parseAsInteger, parseAsString, useQueryStates } from 'nuqs';
+import { parseAsString, useQueryStates } from 'nuqs';
 import { byProp, getSortParts } from '@/components/table/table-utils';
 import {
   DEFAULT_NUQS_OPTIONS,
-  DEFAULT_PAGE_SIZE,
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
 } from '@/lib/constants';
+import {
+  usePaginationParams,
+  useResetPages,
+} from '@/hooks/usePaginationParams';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { hakemusFilter } from '@/lib/filters';
 import { isEmpty } from 'remeda';
@@ -14,51 +17,49 @@ import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tul
 import { sortByValinnanTila } from '@/lib/sortByValinnanTila';
 
 export const useValinnanTuloksetSearchParams = () => {
-  // Kaikki URL-parametrit samassa useQueryStatesissa, jotta hakuehdon muutos ja sivun nollaus päivittyvät
-  // URL:iin yhdellä päivityksellä
-  const [
-    { searchPhrase, valinnanTila, vastaanottoTila, page, pageSize, sort },
-    setSearchParams,
-  ] = useQueryStates(
-    {
-      searchPhrase: parseAsString.withDefault(''),
-      valinnanTila: parseAsString.withDefault(''),
-      vastaanottoTila: parseAsString.withDefault(''),
-      page: parseAsInteger.withDefault(1),
-      pageSize: parseAsInteger.withDefault(DEFAULT_PAGE_SIZE),
-      sort: parseAsString.withDefault(''),
-    },
-    {
-      ...DEFAULT_NUQS_OPTIONS,
-      urlKeys: {
-        searchPhrase: 'search',
-        valinnanTila: 'valinnantila',
-        vastaanottoTila: 'vastaanottotila',
-        pageSize: 'page_size',
+  const [{ searchPhrase, valinnanTila, vastaanottoTila }, setSearchParams] =
+    useQueryStates(
+      {
+        searchPhrase: parseAsString.withDefault(''),
+        valinnanTila: parseAsString.withDefault(''),
+        vastaanottoTila: parseAsString.withDefault(''),
       },
-    },
-  );
+      {
+        ...DEFAULT_NUQS_OPTIONS,
+        urlKeys: {
+          searchPhrase: 'search',
+          valinnanTila: 'valinnantila',
+          vastaanottoTila: 'vastaanottotila',
+        },
+      },
+    );
+
+  const paginationParams = usePaginationParams();
+
+  const resetPages = useResetPages();
+
+  const setSearchParamsAndResetPages = (
+    values: Parameters<typeof setSearchParams>[0],
+  ) => {
+    setSearchParams(values);
+    resetPages();
+  };
 
   const setSearchDebounce = useDebounce(
-    (value: string) => setSearchParams({ searchPhrase: value, page: 1 }),
+    (value: string) => setSearchParamsAndResetPages({ searchPhrase: value }),
     HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
   );
 
   return {
     searchPhrase,
     setSearchPhrase: setSearchDebounce,
-    page,
-    setPage: (value: number) => setSearchParams({ page: value }),
-    pageSize,
-    setPageSize: (value: number) => setSearchParams({ pageSize: value }),
-    sort,
-    setSort: (value: string) => setSearchParams({ sort: value }),
+    ...paginationParams,
     valinnanTila,
     setValinnanTila: (value: string) =>
-      setSearchParams({ valinnanTila: value, page: 1 }),
+      setSearchParamsAndResetPages({ valinnanTila: value }),
     vastaanottoTila,
     setVastaanottoTila: (value: string) =>
-      setSearchParams({ vastaanottoTila: value, page: 1 }),
+      setSearchParamsAndResetPages({ vastaanottoTila: value }),
   };
 };
 

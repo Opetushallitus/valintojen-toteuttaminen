@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
-import { parseAsInteger, parseAsString, useQueryStates } from 'nuqs';
+import { parseAsString, useQueryStates } from 'nuqs';
 import {
   byProp,
   getSortParts,
@@ -8,27 +8,24 @@ import {
 } from '@/components/table/table-utils';
 import {
   DEFAULT_NUQS_OPTIONS,
-  DEFAULT_PAGE_SIZE,
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
 } from '@/lib/constants';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { HakijaryhmanHakija } from '@/lib/types/laskenta-types';
 import { hakemusFilter } from '@/lib/filters';
 import { sortByValinnanTila } from '@/lib/sortByValinnanTila';
+import {
+  usePaginationParams,
+  useResetPages,
+} from '@/hooks/usePaginationParams';
 
-export const useHakijaryhmatSearchParams = (hakijaryhmaOid?: string) => {
-  // Kaikki URL-parametrit samassa useQueryStatesissa, jotta hakuehdon muutos ja sivun nollaus päivittyvät
-  // URL:iin yhdellä päivityksellä
+/**
+ * Kaikille hakijaryhmille yhteiset hakuehdot ja sivukoko. Sivu ja järjestys ovat hakijaryhmäkohtaisia
+ * (ks. usePaginationParams). Hakuehdon muutos palauttaa kaikkien hakijaryhmien sivutuksen ensimmäiselle sivulle.
+ */
+export const useHakijaryhmatSearchParams = () => {
   const [
-    {
-      searchPhrase,
-      kuuluuRyhmaan,
-      hyvaksyttyRyhmasta,
-      sijoittelunTila,
-      page,
-      pageSize,
-      sort,
-    },
+    { searchPhrase, kuuluuRyhmaan, hyvaksyttyRyhmasta, sijoittelunTila },
     setSearchParams,
   ] = useQueryStates(
     {
@@ -36,9 +33,6 @@ export const useHakijaryhmatSearchParams = (hakijaryhmaOid?: string) => {
       kuuluuRyhmaan: parseAsString.withDefault(''),
       hyvaksyttyRyhmasta: parseAsString.withDefault(''),
       sijoittelunTila: parseAsString.withDefault(''),
-      page: parseAsInteger.withDefault(1),
-      pageSize: parseAsInteger.withDefault(DEFAULT_PAGE_SIZE),
-      sort: parseAsString.withDefault(''),
     },
     {
       ...DEFAULT_NUQS_OPTIONS,
@@ -47,36 +41,40 @@ export const useHakijaryhmatSearchParams = (hakijaryhmaOid?: string) => {
         kuuluuRyhmaan: 'kuuluu',
         hyvaksyttyRyhmasta: 'hyvaksytty',
         sijoittelunTila: 'tila',
-        page: `page-${hakijaryhmaOid}`,
-        pageSize: 'page_size',
-        sort: `sort-${hakijaryhmaOid}`,
       },
     },
   );
 
+  const { pageSize, setPageSize } = usePaginationParams();
+
+  const resetPages = useResetPages();
+
+  const setSearchParamsAndResetPages = (
+    values: Parameters<typeof setSearchParams>[0],
+  ) => {
+    setSearchParams(values);
+    resetPages();
+  };
+
   const setSearchDebounce = useDebounce(
-    (value: string) => setSearchParams({ searchPhrase: value, page: 1 }),
+    (value: string) => setSearchParamsAndResetPages({ searchPhrase: value }),
     HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
   );
 
   return {
     searchPhrase,
     setSearchPhrase: setSearchDebounce,
-    page,
-    setPage: (value: number) => setSearchParams({ page: value }),
     pageSize,
-    setPageSize: (value: number) => setSearchParams({ pageSize: value }),
-    sort,
-    setSort: (value: string) => setSearchParams({ sort: value }),
+    setPageSize,
     kuuluuRyhmaan,
     setKuuluuRyhmaan: (value: string) =>
-      setSearchParams({ kuuluuRyhmaan: value, page: 1 }),
+      setSearchParamsAndResetPages({ kuuluuRyhmaan: value }),
     hyvaksyttyRyhmasta,
     setHyvaksyttyRyhmasta: (value: string) =>
-      setSearchParams({ hyvaksyttyRyhmasta: value, page: 1 }),
+      setSearchParamsAndResetPages({ hyvaksyttyRyhmasta: value }),
     sijoittelunTila,
     setSijoittelunTila: (value: string) =>
-      setSearchParams({ sijoittelunTila: value, page: 1 }),
+      setSearchParamsAndResetPages({ sijoittelunTila: value }),
   };
 };
 
@@ -86,18 +84,11 @@ export const useHakijaryhmatSearch = (
 ) => {
   const { translateEntity } = useTranslations();
 
-  const {
-    searchPhrase,
-    page,
-    setPage,
-    pageSize,
-    setPageSize,
-    sort,
-    setSort,
-    kuuluuRyhmaan,
-    hyvaksyttyRyhmasta,
-    sijoittelunTila,
-  } = useHakijaryhmatSearchParams(hakijaryhmaOid);
+  const { searchPhrase, kuuluuRyhmaan, hyvaksyttyRyhmasta, sijoittelunTila } =
+    useHakijaryhmatSearchParams();
+
+  const { page, setPage, pageSize, setPageSize, sort, setSort } =
+    usePaginationParams({ tableId: hakijaryhmaOid });
 
   const results = useMemo(() => {
     const parsedKuuluuRyhmaan: boolean | null =
