@@ -32,6 +32,9 @@ const StyledTableBody = styled(TableBody)(({ theme }) => ({
     whiteSpace: 'pre-wrap',
     height: 'auto',
     borderWidth: 0,
+    '&:last-child': {
+      paddingRight: theme.spacing(1),
+    },
   },
   '& .MuiTableRow-root': {
     '&:nth-of-type(even)': {
