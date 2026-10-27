@@ -1,13 +1,15 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
-import { parseAsInteger, useQueryState } from 'nuqs';
-import { useHasChangedForQueryState } from '@/hooks/useHasChanged';
+import { parseAsString, useQueryStates } from 'nuqs';
 import { byProp, getSortParts } from '@/components/table/table-utils';
 import {
   DEFAULT_NUQS_OPTIONS,
-  DEFAULT_PAGE_SIZE,
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
 } from '@/lib/constants';
+import {
+  usePaginationParams,
+  useResetPages,
+} from '@/hooks/usePaginationParams';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { hakemusFilter } from '@/lib/filters';
 import { isEmpty } from 'remeda';
@@ -15,68 +17,49 @@ import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tul
 import { sortByValinnanTila } from '@/lib/sortByValinnanTila';
 
 export const useValinnanTuloksetSearchParams = () => {
-  const [searchPhrase, setSearchPhrase] = useQueryState(
-    'search',
-    DEFAULT_NUQS_OPTIONS,
-  );
+  const [{ searchPhrase, valinnanTila, vastaanottoTila }, setSearchParams] =
+    useQueryStates(
+      {
+        searchPhrase: parseAsString.withDefault(''),
+        valinnanTila: parseAsString.withDefault(''),
+        vastaanottoTila: parseAsString.withDefault(''),
+      },
+      {
+        ...DEFAULT_NUQS_OPTIONS,
+        urlKeys: {
+          searchPhrase: 'search',
+          valinnanTila: 'valinnantila',
+          vastaanottoTila: 'vastaanottotila',
+        },
+      },
+    );
+
+  const paginationParams = usePaginationParams();
+
+  const resetPages = useResetPages();
+
+  const setSearchParamsAndResetPages = (
+    values: Parameters<typeof setSearchParams>[0],
+  ) => {
+    setSearchParams(values);
+    resetPages();
+  };
 
   const setSearchDebounce = useDebounce(
-    setSearchPhrase,
+    (value: string) => setSearchParamsAndResetPages({ searchPhrase: value }),
     HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
   );
-
-  const [valinnanTila, setValinnanTila] = useQueryState(
-    'valinnantila',
-    DEFAULT_NUQS_OPTIONS,
-  );
-
-  const [vastaanottoTila, setVastaanottoTila] = useQueryState(
-    'vastaanottotila',
-    DEFAULT_NUQS_OPTIONS,
-  );
-
-  const [page, setPage] = useQueryState<number>(
-    'page',
-    parseAsInteger.withOptions(DEFAULT_NUQS_OPTIONS).withDefault(1),
-  );
-
-  const [pageSize, setPageSize] = useQueryState(
-    'page_size',
-    parseAsInteger
-      .withOptions(DEFAULT_NUQS_OPTIONS)
-      .withDefault(DEFAULT_PAGE_SIZE),
-  );
-
-  const [sort, setSort] = useState<string>('');
-
-  const searchPhraseChanged = useHasChangedForQueryState(searchPhrase);
-  const valinnanTilaChanged = useHasChangedForQueryState(valinnanTila);
-  const vastaanottoTilaChanged = useHasChangedForQueryState(vastaanottoTila);
-
-  useEffect(() => {
-    if (searchPhraseChanged || valinnanTilaChanged || vastaanottoTilaChanged) {
-      setPage(1);
-    }
-  }, [
-    searchPhraseChanged,
-    setPage,
-    valinnanTilaChanged,
-    vastaanottoTilaChanged,
-  ]);
 
   return {
     searchPhrase,
     setSearchPhrase: setSearchDebounce,
-    page,
-    setPage,
-    pageSize,
-    setPageSize,
-    sort,
-    setSort,
+    ...paginationParams,
     valinnanTila,
-    setValinnanTila,
+    setValinnanTila: (value: string) =>
+      setSearchParamsAndResetPages({ valinnanTila: value }),
     vastaanottoTila,
-    setVastaanottoTila,
+    setVastaanottoTila: (value: string) =>
+      setSearchParamsAndResetPages({ vastaanottoTila: value }),
   };
 };
 
