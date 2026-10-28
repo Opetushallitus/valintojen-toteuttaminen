@@ -777,9 +777,11 @@
     "tulos": "Tulos",
     "lisatiedot": "Lisätiedot",
     "valintaperusteen-mallinnus": "Valintaperusteen mallinnus",
+    "valintaperusteet-link-tooltip-title": "Järjestyskriteerejä on muutettu valintalaskennan jälkeen, eikä järjestyskriteerin perusteen mallinnukseen voida linkittää luotettavasti. Linkki vie valintatapajonon mallinnukseen.",
+    "valintaperusteet-link-tooltip-label": "Miksi linkki vie valintatapajonoon?",
     "linkin-muodostus-epaonnistui": "Linkin haku epäonnistui",
     "hakemusta-ei-loytynyt": "Hakemusta ei löytynyt tunnisteella {oid}",
     "historiaa-ei-loytynyt": "Valintalaskentahistoriaa ei löytynyt valintatapajonolle {valintatapajonoOid}",
-    "ei-arvoa": "ei arvoa"
+    "ei-arvoa": "(ei arvoa)"
   }
 }

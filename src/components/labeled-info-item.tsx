@@ -8,15 +8,26 @@ const InfoLabel = styled('label')(({ theme }) => ({
 
 export const LabeledInfoItem = ({
   label,
+  labelInfo,
   value,
 }: {
   label: string;
+  // Otsikon perässä näytettävä lisäsisältö, esim. lisätietopainike
+  labelInfo?: React.ReactNode;
   value: React.ReactNode;
 }) => {
   const labelId = useId();
+  const infoLabel = <InfoLabel id={labelId}>{label}</InfoLabel>;
   return (
     <div>
-      <InfoLabel id={labelId}>{label}</InfoLabel>
+      {labelInfo ? (
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          {infoLabel}
+          {labelInfo}
+        </Box>
+      ) : (
+        infoLabel
+      )}
       <Box aria-labelledby={labelId}>{value}</Box>
     </div>
   );

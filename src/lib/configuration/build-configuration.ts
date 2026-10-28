@@ -48,6 +48,7 @@ export function buildConfiguration({
       valintaperusteetUi: {
         valintaryhmaLinkUrl: `${domain}/valintaperusteet-ui/app/index.html#/valintaryhma/{valintaryhmaOid}`,
         hakukohdeLinkUrl: `${domain}/valintaperusteet-ui/app/index.html#/hakukohde/{hakukohdeOid}`,
+        valintatapajonoLinkUrl: `${domain}/valintaperusteet-ui/app/index.html#/hakukohde/{hakukohdeOid}/valinnanvaihe/{valinnanvaiheOid}/valintatapajono/{valintatapajonoOid}`,
         jarjestyskriteeriLinkUrl: `${domain}/valintaperusteet-ui/app/index.html#/hakukohde/{hakukohdeOid}/valinnanvaihe/{valinnanvaiheOid}/valintatapajono/{valintatapajonoOid}/jarjestyskriteeri/{jarjestyskriteeriOid}`,
       },
       viestintapalveluUi: {

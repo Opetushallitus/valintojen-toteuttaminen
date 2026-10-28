@@ -46,6 +46,12 @@ export const buildLinkToValintaperusteetValintaryhma = (
 export const buildLinkToValintaperusteetHakukohde = (hakukohdeOid: string) =>
   getConfigUrl(routes().valintaperusteetUi.hakukohdeLinkUrl, { hakukohdeOid });
 
+export const buildLinkToValintatapajono = (params: {
+  hakukohdeOid: string;
+  valinnanvaiheOid: string;
+  valintatapajonoOid: string;
+}) => getConfigUrl(routes().valintaperusteetUi.valintatapajonoLinkUrl, params);
+
 export const buildLinkToJarjestyskriteeri = (params: {
   hakukohdeOid: string;
   valinnanvaiheOid: string;

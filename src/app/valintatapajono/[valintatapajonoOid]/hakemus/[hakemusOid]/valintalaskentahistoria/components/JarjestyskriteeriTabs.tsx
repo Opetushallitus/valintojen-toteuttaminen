@@ -1,12 +1,18 @@
 import { LabeledInfoItem } from '@/components/labeled-info-item';
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { Valintalaskentahistoria } from '@/lib/types/laskenta-types';
+import {
+  JarjestyskriteeriModel,
+  Valintalaskentahistoria,
+} from '@/lib/types/laskenta-types';
 import { Box, Stack } from '@mui/material';
 import { Tab, TabRow } from '@/components/Tabs';
 import { useRef, useState } from 'react';
 import { Funktiopuu } from './Funktiopuu';
 import { JarjestyskriteerinTila } from './JarjestyskriteerinTila';
-import { JarjestyskriteeriLink } from './JarjestyskriteeriLink';
+import {
+  ValintaperusteetLink,
+  ValintaperusteetLinkInfo,
+} from './ValintaperusteetLink';
 import { formatArvo, JononSijainti } from '../lib/valintalaskentahistoriaUtils';
 import { NDASH } from '@/lib/constants';
 
@@ -15,19 +21,27 @@ const tabpanelId = (index: number) => `jarjestyskriteeri-tabpanel-${index}`;
 
 // Välilehti kullekin järjestyskriteerille (historiat ovat prioriteettijärjestyksessä).
 // Jonon sijainnilla linkitetään valintaperusteisiin. Jos sitä ei löytynyt, linkkiä ei näytetä.
+// Järjestyskriteerien tulokset ovat samassa järjestyksessä kuin historiat.
 export const JarjestyskriteeriTabs = ({
   valintatapajonoOid,
   jononSijainti,
+  jarjestyskriteerienTulokset,
   historiat,
 }: {
   valintatapajonoOid: string;
   jononSijainti?: JononSijainti;
+  jarjestyskriteerienTulokset: Array<JarjestyskriteeriModel>;
   historiat: Array<Valintalaskentahistoria>;
 }) => {
   const { t } = useTranslations();
   const [valittuIndex, setValittuIndex] = useState(0);
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const historia = historiat[valittuIndex];
+  const linkProps = jononSijainti && {
+    valintatapajonoOid,
+    jononSijainti,
+    tulos: jarjestyskriteerienTulokset[valittuIndex],
+  };
 
   // Välilehtien välillä liikutaan nuolinäppäimillä (WAI-ARIA tabs -malli). Valinta seuraa
   // fokusta, koska kaikkien välilehtien tiedot on jo haettu eikä vaihto näytä latausta.
@@ -99,16 +113,11 @@ export const JarjestyskriteeriTabs = ({
             />
             <LabeledInfoItem
               label={t('valintalaskentahistoria.lisatiedot')}
+              labelInfo={
+                linkProps && <ValintaperusteetLinkInfo {...linkProps} />
+              }
               value={
-                jononSijainti ? (
-                  <JarjestyskriteeriLink
-                    valintatapajonoOid={valintatapajonoOid}
-                    jononSijainti={jononSijainti}
-                    index={valittuIndex}
-                  />
-                ) : (
-                  NDASH
-                )
+                linkProps ? <ValintaperusteetLink {...linkProps} /> : NDASH
               }
             />
           </Stack>

@@ -1,5 +1,7 @@
 import { isObject } from '@/lib/common';
+import { find, flatMap, pipe, prop, sortBy } from 'remeda';
 import {
+  JarjestyskriteeriModel,
   ValintalaskennanTulosValinnanvaiheModel,
   Valintalaskentahistoria,
   ValintalaskentahistoriaTila,
@@ -60,3 +62,20 @@ export const findJononHakukohdeJaValinnanvaihe = (
   }
   return undefined;
 };
+
+// Hakemuksen jonosijan järjestyskriteerien tulokset prioriteettijärjestyksessä. Historiat ovat
+// saman jonosijan järjestyskriteereistä samassa järjestyksessä, joten n:s tulos vastaa n:ttä historiaa.
+export const findHakemuksenJarjestyskriteerit = (
+  tulokset: Record<string, Array<ValintalaskennanTulosValinnanvaiheModel>>,
+  valintatapajonoOid: string,
+  hakemusOid: string,
+): Array<JarjestyskriteeriModel> =>
+  pipe(
+    Object.values(tulokset).flat(),
+    flatMap((vaihe) => vaihe.valintatapajonot ?? []),
+    find((jono) => jono.valintatapajonooid === valintatapajonoOid),
+    (jono) =>
+      jono?.jonosijat.find((jonosija) => jonosija.hakemusOid === hakemusOid)
+        ?.jarjestyskriteerit ?? [],
+    sortBy(prop('prioriteetti')),
+  );

@@ -16,7 +16,10 @@ import { useSuspenseQueries, useSuspenseQuery } from '@tanstack/react-query';
 import { TarjontaInfo } from './components/TarjontaInfo';
 import { HistorianAvaimetJaArvot } from './components/HistorianAvaimetJaArvot';
 import { JarjestyskriteeriTabs } from './components/JarjestyskriteeriTabs';
-import { findJononHakukohdeJaValinnanvaihe } from './lib/valintalaskentahistoriaUtils';
+import {
+  findHakemuksenJarjestyskriteerit,
+  findJononHakukohdeJaValinnanvaihe,
+} from './lib/valintalaskentahistoriaUtils';
 
 const ValintalaskentahistoriaContent = ({
   valintatapajonoOid,
@@ -93,6 +96,11 @@ const HakemuksenHistoria = ({
     valintalaskennanTulokset,
     valintatapajonoOid,
   );
+  const jarjestyskriteerienTulokset = findHakemuksenJarjestyskriteerit(
+    valintalaskennanTulokset,
+    valintatapajonoOid,
+    hakemusOid,
+  );
 
   return (
     <>
@@ -106,6 +114,7 @@ const HakemuksenHistoria = ({
           <JarjestyskriteeriTabs
             valintatapajonoOid={valintatapajonoOid}
             jononSijainti={jononSijainti}
+            jarjestyskriteerienTulokset={jarjestyskriteerienTulokset}
             historiat={historiat}
           />
         </>

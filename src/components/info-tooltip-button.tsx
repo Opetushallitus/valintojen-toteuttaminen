@@ -11,6 +11,8 @@ type Props = {
   title: React.JSX.Element | string;
   // Tooltipin enimmäisleveys, oletuksena (300px)
   maxWidth?: string;
+  // Painikkeen saavutettava nimi, oletuksena "Lisätietoja"
+  ariaLabel?: string;
 };
 
 // MUI:n oletusleveys tooltipille
@@ -46,7 +48,7 @@ const choosePlacement = (anchor: HTMLElement) => {
   };
 };
 
-export const InfoTooltipButton = ({ title, maxWidth }: Props) => {
+export const InfoTooltipButton = ({ title, maxWidth, ariaLabel }: Props) => {
   const { t } = useTranslations();
   const [open, setOpen] = useState(false);
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
@@ -116,7 +118,7 @@ export const InfoTooltipButton = ({ title, maxWidth }: Props) => {
         }
       >
         <Button
-          aria-label={t('yleinen.lisatietoja')}
+          aria-label={ariaLabel ?? t('yleinen.lisatietoja')}
           sx={{
             '&.MuiButton-root': {
               padding: 0,

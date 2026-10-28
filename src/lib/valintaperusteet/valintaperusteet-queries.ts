@@ -1,19 +1,22 @@
 import { queryOptions } from '@tanstack/react-query';
 import {
   getHakukohteenValinnanvaiheet,
-  getValintatapajononAktiivisetJarjestyskriteerit,
+  getLaskentakaava,
+  getValintatapajononJarjestyskriteerit,
 } from './valintaperusteet-service';
 
-export const queryOptionsGetValintatapajononAktiivisetJarjestyskriteerit = (
+export const queryOptionsGetLaskentakaava = (laskentakaavaId: number) =>
+  queryOptions({
+    queryKey: ['getLaskentakaava', laskentakaavaId],
+    queryFn: () => getLaskentakaava(laskentakaavaId),
+  });
+
+export const queryOptionsGetValintatapajononJarjestyskriteerit = (
   valintatapajonoOid: string,
 ) => {
   return queryOptions({
-    queryKey: [
-      'getValintatapajononAktiivisetJarjestyskriteerit',
-      valintatapajonoOid,
-    ],
-    queryFn: () =>
-      getValintatapajononAktiivisetJarjestyskriteerit(valintatapajonoOid),
+    queryKey: ['getValintatapajononJarjestyskriteerit', valintatapajonoOid],
+    queryFn: () => getValintatapajononJarjestyskriteerit(valintatapajonoOid),
   });
 };
 

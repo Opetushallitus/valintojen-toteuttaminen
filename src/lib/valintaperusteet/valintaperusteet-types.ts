@@ -67,5 +67,9 @@ export type ValintaperusteetJarjestyskriteeri = {
   oid: string;
   laskentakaavaId: number;
   aktiivinen: boolean;
-  metatiedot?: string;
+};
+
+export type Laskentakaava = {
+  id: number;
+  nimi: string;
 };

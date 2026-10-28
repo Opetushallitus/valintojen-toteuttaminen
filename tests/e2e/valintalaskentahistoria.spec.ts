@@ -5,8 +5,8 @@ import {
   expectPageAccessibilityOk,
 } from './playwright-utils';
 import HAKENEET from './fixtures/hakeneet.json' with { type: 'json' };
-import HAKEMUKSEN_VALINTALASKENTA_TULOKSET from './fixtures/hakemuksen-valintalaskenta-tulokset.json' with { type: 'json' };
 import {
+  HISTORIAN_VALINTALASKENNAN_TULOKSET,
   HISTORIA_HAKEMUSOID,
   HISTORIA_HAKUKOHDEOID,
   HISTORIA_HAKUOID,
@@ -14,6 +14,7 @@ import {
   HISTORIA_VALINTATAPAJONOOID,
   JARJESTYSKRITEERIT_RESPONSE,
   JONOSIJAHISTORIA_RESPONSE,
+  LASKENTAKAAVOJEN_NIMET,
   TYHJA_JONOSIJAHISTORIA_RESPONSE,
 } from './fixtures/valintalaskentahistoria';
 import { NDASH } from '@/lib/constants';
@@ -37,11 +38,23 @@ test.beforeEach(async ({ page }) => {
   );
   await page.route(
     `**/valintalaskenta-laskenta-service/resources/hakemus/${HISTORIA_HAKUOID}/${HISTORIA_HAKEMUSOID}`,
-    (route) => route.fulfill({ json: HAKEMUKSEN_VALINTALASKENTA_TULOKSET }),
+    (route) => route.fulfill({ json: HISTORIAN_VALINTALASKENNAN_TULOKSET }),
   );
   await page.route(
     `**/valintaperusteet-service/resources/valintatapajono/${HISTORIA_VALINTATAPAJONOOID}/jarjestyskriteeri`,
     (route) => route.fulfill({ json: JARJESTYSKRITEERIT_RESPONSE }),
+  );
+  await page.route(
+    (url) =>
+      /\/valintaperusteet-service\/resources\/laskentakaava\/\d+$/.test(
+        url.pathname,
+      ),
+    (route) => {
+      const id = Number(
+        new URL(route.request().url()).pathname.split('/').pop(),
+      );
+      return route.fulfill({ json: { id, nimi: LASKENTAKAAVOJEN_NIMET[id] } });
+    },
   );
   await mockJonosijahistoria(page, JONOSIJAHISTORIA_RESPONSE);
 });
@@ -241,8 +254,14 @@ test('Järjestyskriteerien välilehdet näyttävät järjestyskriteerin tiedot',
       `valintaperusteet-ui/app/index.html#/hakukohde/${HISTORIA_HAKUKOHDEOID}/valinnanvaihe/${HISTORIA_VALINNANVAIHEOID}/valintatapajono/${HISTORIA_VALINTATAPAJONOOID}/jarjestyskriteeri/jk-1$`,
     ),
   );
+  // Suora linkki järjestyskriteeriin ei tarvitse selitystä
+  await expect(
+    tabpanel.getByRole('button', {
+      name: 'Miksi linkki vie valintatapajonoon?',
+    }),
+  ).toHaveCount(0);
 
-  // 2. välilehti vastaa toista aktiivista järjestyskriteeriä (ei-aktiivinen ohitetaan)
+  // 2. välilehden tuloksen prioriteetti on 2, koska välissä on ei-aktiivinen järjestyskriteeri
   await tabs.nth(1).click();
   await expect(tabs.nth(1)).toHaveAttribute('aria-selected', 'true');
   // Näytettävä tila valitaan kuten laskennassa: hylkäys ohittaa hyväksyttävissä-tilan
@@ -253,6 +272,53 @@ test('Järjestyskriteerien välilehdet näyttävät järjestyskriteerin tiedot',
   await expect(
     tabpanel.getByRole('link', { name: 'Valintaperusteen mallinnus' }),
   ).toHaveAttribute('href', /\/jarjestyskriteeri\/jk-2$/);
+});
+
+test('Linkittää valintatapajonoon, jos järjestyskriteerit ovat muuttuneet laskennan jälkeen', async ({
+  page,
+}) => {
+  // Jonon alkuun on lisätty uusi järjestyskriteeri, joten prioriteetit eivät enää vastaa tuloksia
+  await page.route(
+    `**/valintaperusteet-service/resources/valintatapajono/${HISTORIA_VALINTATAPAJONOOID}/jarjestyskriteeri`,
+    (route) =>
+      route.fulfill({
+        json: [
+          { oid: 'jk-uusi', laskentakaavaId: 103, aktiivinen: true },
+          ...JARJESTYSKRITEERIT_RESPONSE,
+        ],
+      }),
+  );
+  await page.goto(HISTORIA_URL);
+  await expectAllSpinnersHidden(page);
+
+  const tabs = page
+    .getByRole('tablist', { name: 'Järjestyskriteerit' })
+    .getByRole('tab');
+  const tabpanel = page.getByRole('tabpanel');
+  const jononLinkki = new RegExp(
+    `valintaperusteet-ui/app/index.html#/hakukohde/${HISTORIA_HAKUKOHDEOID}/valinnanvaihe/${HISTORIA_VALINNANVAIHEOID}/valintatapajono/${HISTORIA_VALINTATAPAJONOOID}$`,
+  );
+
+  const linkki = tabpanel.getByRole('link', {
+    name: 'Valintaperusteen mallinnus',
+  });
+  const lisatietoja = tabpanel.getByRole('button', {
+    name: 'Miksi linkki vie valintatapajonoon?',
+  });
+
+  // Prioriteetin 0 järjestyskriteerin nimi ei vastaa tulosta
+  await expect(linkki).toHaveAttribute('href', jononLinkki);
+  // Lisätietopainikkeesta näytetään syy, miksi linkki vie valintatapajonoon
+  await lisatietoja.click();
+  await expect(page.getByRole('tooltip')).toContainText(
+    'Järjestyskriteerejä on muutettu valintalaskennan jälkeen',
+  );
+  await page.getByRole('button', { name: 'Sulje', exact: true }).click();
+
+  // Prioriteetin 2 järjestyskriteeri ei ole aktiivinen
+  await tabs.nth(1).click();
+  await expect(linkki).toHaveAttribute('href', jononLinkki);
+  await expect(lisatietoja).toBeVisible();
 });
 
 test('Näyttää järjestyskriteerin funktiopuun', async ({ page }) => {
@@ -277,7 +343,7 @@ test('Näyttää järjestyskriteerin funktiopuun', async ({ page }) => {
 
   // Yksi avain näytetään suoraan rivillä, puuttuva arvo tekstinä
   await expect(puu).toContainText(
-    `Hae lukuarvo (Tulos: 8) ${NDASH} oletusarvo: ei arvoa`,
+    `Hae lukuarvo (Tulos: 8) ${NDASH} oletusarvo: (ei arvoa)`,
   );
 
   // Useampi avain näytetään lisätietopainikkeen takana
