@@ -2,6 +2,10 @@ import { describe, expect, test } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { createHakijaColumn, HakijaColumnLinkType } from './table-columns';
+import { setConfiguration } from '@/lib/configuration/client-configuration';
+import { buildConfiguration } from '@/lib/configuration/build-configuration';
+
+setConfiguration(buildConfiguration());
 
 const HAKEMUS = {
   hakemusOid: '1.2.3',

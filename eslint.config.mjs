@@ -66,6 +66,21 @@ const config = defineConfig(
         },
       ],
       '@typescript-eslint/no-deprecated': 'warn',
+      // Fonttipainot tulevat teemasta, jotta ne ovat samat kaikkialla
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: String.raw`Property[key.name='fontWeight'][value.raw=/^\d+$/], Property[key.name='fontWeight'][value.value=/^(bolder|lighter)$/]`,
+          message:
+            "Käytä teeman fonttipainoa: sx-propissa 'regular', 'medium' tai 'bold', styled-funktiolla theme.typography.fontWeightMedium tms.",
+        },
+        {
+          selector:
+            "JSXAttribute[name.name='style'] Property[key.name='fontWeight']",
+          message:
+            "Tavallinen style-proppi ei tunne teeman painoja (esim. 'medium'). Käytä sx-proppia, esim. <Box component=\"span\" sx={{ fontWeight: 'medium' }}>.",
+        },
+      ],
     },
   },
   {

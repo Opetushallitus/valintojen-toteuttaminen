@@ -13,6 +13,7 @@ import {
   SeurantaTiedot,
   LaskettuHakukohde,
   SeurantaTiedotLaajennettu,
+  Valintalaskentahistoria,
 } from '../types/laskenta-types';
 import {
   HenkilonValintaTulos,
@@ -82,7 +83,7 @@ const createLaskentaURL = async ({
   const urlWhitelistPart = laskentaTyyppi === 'HAKU' ? '' : '/whitelist/true';
 
   const laskentaUrl = new URL(
-    `${configuration.routes.valintalaskentaLaskentaService.valintalaskentakerrallaUrl}/haku/${haku.oid}/tyyppi/${laskentaTyyppi}${urlWhitelistPart}`,
+    `${configuration.routes.valintalaskentaService.valintalaskentakerrallaUrl}/haku/${haku.oid}/tyyppi/${laskentaTyyppi}${urlWhitelistPart}`,
   );
   laskentaUrl.searchParams.set('erillishaku', '' + erillissijoittelu);
   laskentaUrl.searchParams.set('haunnimi', translateName(haku.nimi));
@@ -166,7 +167,7 @@ export const keskeytaLaskenta = async ({
 }): Promise<void> => {
   const configuration = getConfiguration();
   await client.delete<void>(
-    `${configuration.routes.valintalaskentaLaskentaService.valintalaskentakerrallaUrl}/haku/${laskentaUuid}`,
+    `${configuration.routes.valintalaskentaService.valintalaskentakerrallaUrl}/haku/${laskentaUuid}`,
   );
 };
 
@@ -175,7 +176,7 @@ export const getLaskennanYhteenveto = async (
 ): Promise<LaskentaSummary> => {
   const configuration = getConfiguration();
   const response = await client.get<LaskentaSummary>(
-    `${configuration.routes.valintalaskentaLaskentaService.valintalaskentakerrallaUrl}/status/${loadingUrl}/yhteenveto`,
+    `${configuration.routes.valintalaskentaService.valintalaskentakerrallaUrl}/status/${loadingUrl}/yhteenveto`,
   );
   return response.data;
 };
@@ -188,7 +189,7 @@ export const getHakukohteenValintalaskennanTulokset = async (
     Array<ValintalaskennanTulosValinnanvaiheModel>
   >(
     getConfigUrl(
-      configuration.routes.valintalaskentaLaskentaService
+      configuration.routes.valintalaskentaService
         .hakukohteenValintalaskennanTuloksetUrl,
       { hakukohdeOid },
     ),
@@ -222,7 +223,7 @@ export const getHakemuksenValintalaskennanTulokset = async ({
   const configuration = getConfiguration();
   const response = await client.get<HakemuksenValintalaskennanTuloksetModel>(
     getConfigUrl(
-      configuration.routes.valintalaskentaLaskentaService
+      configuration.routes.valintalaskentaService
         .hakemuksenValintalaskennanTuloksetUrl,
       {
         hakuOid,
@@ -240,7 +241,7 @@ export const getHakemuksenValintalaskennanTulokset = async ({
 export const getLaskennanSeurantaTiedot = async (loadingUrl: string) => {
   const configuration = getConfiguration();
   const response = await client.get<SeurantaTiedot>(
-    `${configuration.routes.valintalaskentaLaskentaService.seurantaUrl}${loadingUrl}`,
+    `${configuration.routes.valintalaskentaService.seurantaUrl}${loadingUrl}`,
   );
 
   return {
@@ -257,7 +258,7 @@ export const getLaskennanSeurantaTiedotKaikille = async (): Promise<
 > => {
   const configuration = getConfiguration();
   const response = await client.get<Array<SeurantaTiedotLaajennettu>>(
-    configuration.routes.valintalaskentaLaskentaService.seurantaKaikilleUrl,
+    configuration.routes.valintalaskentaService.seurantaKaikilleUrl,
   );
   return response.data.toSorted((a, b) => b.luotu - a.luotu);
 };
@@ -301,8 +302,7 @@ export const muutaSijoittelunStatus = async ({
 
   const { data } = await client.put<Array<MuutaSijoitteluaResponse>>(
     getConfigUrl(
-      configuration.routes.valintalaskentaLaskentaService
-        .valmisSijoiteltavaksiUrl,
+      configuration.routes.valintalaskentaService.valmisSijoiteltavaksiUrl,
       { valintatapajonoOid, status: jonoSijoitellaan },
     ),
     updatedJono,
@@ -353,8 +353,7 @@ export const getHakijaryhmat = async (
     }>
   >(
     getConfigUrl(
-      configuration.routes.valintalaskentaLaskentaService
-        .hakukohdeHakijaryhmatUrl,
+      configuration.routes.valintalaskentaService.hakukohdeHakijaryhmatUrl,
       { hakukohdeOid },
     ),
   );
@@ -486,8 +485,7 @@ export const getHarkinnanvaraisetTilat = async ({
   const configuration = getConfiguration();
   const { data } = await client.get<Array<HarkinnanvaraisestiHyvaksytty>>(
     getConfigUrl(
-      configuration.routes.valintalaskentaLaskentaService
-        .getHarkinnanvaraisetTilatUrl,
+      configuration.routes.valintalaskentaService.getHarkinnanvaraisetTilatUrl,
       { hakuOid, hakukohdeOid },
     ),
   );
@@ -503,8 +501,7 @@ export const saveHarkinnanvaraisetTilat = async (
 ) => {
   const configuration = getConfiguration();
   return client.post<unknown>(
-    configuration.routes.valintalaskentaLaskentaService
-      .setHarkinnanvaraisetTilatUrl,
+    configuration.routes.valintalaskentaService.setHarkinnanvaraisetTilatUrl,
     harkinnanvaraisetTilat,
   );
 };
@@ -550,8 +547,7 @@ export const saveJonosijanJarjestyskriteerit = ({
   }));
   return client.post<JarjestyskriteeriChangeResult>(
     getConfigUrl(
-      configuration.routes.valintalaskentaLaskentaService
-        .jarjestyskriteeritMuokkausUrl,
+      configuration.routes.valintalaskentaService.jarjestyskriteeritMuokkausUrl,
       {
         valintatapajonoOid,
         hakemusOid,
@@ -569,8 +565,7 @@ export const deleteJonosijanJarjestyskriteeri = ({
   const configuration = getConfiguration();
   return client.delete<JarjestyskriteeriChangeResult>(
     getConfigUrl(
-      configuration.routes.valintalaskentaLaskentaService
-        .jarjestyskriteeriPoistoUrl,
+      configuration.routes.valintalaskentaService.jarjestyskriteeriPoistoUrl,
       {
         valintatapajonoOid,
         hakemusOid,
@@ -578,6 +573,24 @@ export const deleteJonosijanJarjestyskriteeri = ({
       },
     ),
   );
+};
+
+// Palauttaa hakemuksen valintalaskentahistoriat valintatapajonossa järjestyskriteerien prioriteettijärjestyksessä
+export const getValintalaskentahistoria = async ({
+  valintatapajonoOid,
+  hakemusOid,
+}: {
+  valintatapajonoOid: string;
+  hakemusOid: string;
+}): Promise<Array<Valintalaskentahistoria>> => {
+  const configuration = getConfiguration();
+  const { data } = await client.get<Array<{ historia: string }>>(
+    getConfigUrl(
+      configuration.routes.valintalaskentaService.jonosijaHistoriaUrl,
+      { valintatapajonoOid, hakemusOid },
+    ),
+  );
+  return data.map((h) => JSON.parse(h.historia) as Valintalaskentahistoria);
 };
 
 export const saveValinnanvaiheTulokset = ({
@@ -590,7 +603,7 @@ export const saveValinnanvaiheTulokset = ({
   const configuration = getConfiguration();
   const url = new URL(
     getConfigUrl(
-      configuration.routes.valintalaskentaLaskentaService
+      configuration.routes.valintalaskentaService
         .hakukohteenValintalaskennanTuloksetUrl,
       {
         hakukohdeOid: hakukohde.oid,
@@ -613,7 +626,7 @@ export const getLasketutHakukohteet = async (
     Array<{ hakukohdeOid: string; lastModified: string }>
   >(
     getConfigUrl(
-      configuration.routes.valintalaskentaLaskentaService.lasketutHakukohteet,
+      configuration.routes.valintalaskentaService.lasketutHakukohteet,
       {
         hakuOid,
       },

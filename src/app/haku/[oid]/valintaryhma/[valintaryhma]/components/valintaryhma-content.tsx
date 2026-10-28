@@ -1,6 +1,7 @@
 import { useUserPermissions } from '@/hooks/useUserPermissions';
 import { getHakukohdeFullName } from '@/lib/kouta/kouta-service';
-import { getValintaryhmat } from '@/lib/valintaperusteet/valintaperusteet-service';
+import { buildLinkToHakukohde } from '@/lib/externalLinks';
+import { queryOptionsGetValintaryhmat } from '@/lib/valintaperusteet/valintaperusteet-queries';
 import { useSuspenseQueries, useSuspenseQuery } from '@tanstack/react-query';
 import {
   HakukohdeWithLink,
@@ -131,15 +132,11 @@ export const ValintaryhmaContent = ({
         queryKey: ['getLasketutHakukohteet', hakuOid],
         queryFn: () => getLasketutHakukohteet(hakuOid),
       },
-      {
-        queryKey: ['getValintaryhmat', hakuOid, userPermissions, hakukohteet],
-        queryFn: () =>
-          getValintaryhmat(
-            hakuOid,
-            userPermissions,
-            hakukohteet.map((hk) => hk.oid),
-          ),
-      },
+      queryOptionsGetValintaryhmat(
+        hakuOid,
+        userPermissions,
+        hakukohteet.map((hk) => hk.oid),
+      ),
     ],
   });
 
@@ -194,7 +191,7 @@ export const ValintaryhmaContent = ({
       mapHakukohteet(valittuRyhma).map((hakukohde) => ({
         oid: hakukohde.oid,
         name: getHakukohdeFullName(hakukohde, translateEntity, true),
-        link: `kouta/hakukohde/${hakukohde.oid}`,
+        link: buildLinkToHakukohde(hakukohde.oid),
         laskentaValmistunut: findLaskentaValmistunut(hakukohde),
       })),
       prop('name'),

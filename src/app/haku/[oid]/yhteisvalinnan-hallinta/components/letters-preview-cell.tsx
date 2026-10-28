@@ -6,11 +6,14 @@ import {
   templateNameOfLetterType,
 } from '../lib/letter-options';
 import { ExternalLink } from '@/components/external-link';
+import { buildLinkToKirjeenEsikatselu } from '@/lib/externalLinks';
 
-const buildLinkToPreview = (letter: Letter, hakuOid: string): string => {
-  const templateName = templateNameOfLetterType.get(letter.letterType);
-  return `valintalaskentakoostepalvelu/resources/viestintapalvelu/securelinkit/esikatselu?hakuOid=${hakuOid}&kirjeenTyyppi=${templateName}&asiointikieli=${letter.lang}`;
-};
+const buildLinkToPreview = (letter: Letter, hakuOid: string): string =>
+  buildLinkToKirjeenEsikatselu({
+    hakuOid,
+    kirjeenTyyppi: templateNameOfLetterType.get(letter.letterType) ?? '',
+    asiointikieli: letter.lang,
+  });
 
 export const LettersPreviewCell = ({
   haku,

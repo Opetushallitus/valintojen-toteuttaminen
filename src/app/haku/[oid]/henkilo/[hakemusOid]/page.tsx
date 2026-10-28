@@ -1,5 +1,5 @@
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { buildLinkToApplication } from '@/lib/ataru/ataru-service';
+import { buildLinkToApplication } from '@/lib/externalLinks';
 import { Stack, Typography } from '@mui/material';
 import { getHenkiloTitle } from '@/lib/henkilo-utils';
 import { LabeledInfoItem } from '@/components/labeled-info-item';

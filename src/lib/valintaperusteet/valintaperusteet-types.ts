@@ -62,3 +62,14 @@ export type ValintaryhmaHakukohteilla = {
   parentOid: string | null;
   userHasWriteAccess: boolean;
 };
+
+export type ValintaperusteetJarjestyskriteeri = {
+  oid: string;
+  laskentakaavaId: number;
+  aktiivinen: boolean;
+};
+
+export type Laskentakaava = {
+  id: number;
+  nimi: string;
+};

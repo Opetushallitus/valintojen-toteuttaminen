@@ -61,7 +61,7 @@ export const HallintaTableRow = ({
     <>
       <TableRow>
         <TableCell>
-          <Box sx={{ fontWeight: 600 }}>{vaihe.nimi}</Box>
+          <Box sx={{ fontWeight: 'medium' }}>{vaihe.nimi}</Box>
           {vaihe.jonot.map((jono) => (
             <Box key={'vtj-' + jono.oid}>{jono.nimi}</Box>
           ))}

@@ -9,6 +9,7 @@ import { sendLetters } from '@/lib/valintalaskentakoostepalvelu/valintalaskentak
 import useToaster from '@/hooks/useToaster';
 import { isNullish } from 'remeda';
 import { ExternalLink } from '@/components/external-link';
+import { buildLinkToViestilahetys } from '@/lib/externalLinks';
 
 export const LettersSendCell = ({
   haku,
@@ -71,7 +72,7 @@ export const LettersSendCell = ({
         <ExternalLink
           noIcon={true}
           name={'' + letterStats.groupEmailId}
-          href={`viestintapalvelu-ui/#/reportMessages/view/${letterStats.groupEmailId}`}
+          href={buildLinkToViestilahetys(letterStats.groupEmailId)}
         />
       )}
       {isNullish(letterStats.groupEmailId) && (

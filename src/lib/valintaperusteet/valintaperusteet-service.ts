@@ -8,6 +8,8 @@ import {
   Valintaryhma,
   Valintatapajono,
   ValintaryhmaHakukohteilla,
+  ValintaperusteetJarjestyskriteeri,
+  Laskentakaava,
 } from './valintaperusteet-types';
 import { isDefined, sort } from 'remeda';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
@@ -329,3 +331,26 @@ export async function siirraTaiPoistaValintatapajonoAutomaattisestaSijoittelusta
   );
   return updatedJono;
 }
+
+// Palauttaa valintatapajonon kaikki järjestyskriteerit (myös ei-aktiiviset) prioriteettijärjestyksessä.
+// Valintalaskennan tulokseen tallentuva prioriteetti on järjestyskriteerin indeksi tässä listassa.
+export const getValintatapajononJarjestyskriteerit = async (
+  valintatapajonoOid: string,
+): Promise<Array<ValintaperusteetJarjestyskriteeri>> => {
+  const configuration = getConfiguration();
+  const { data } = await client.get<Array<ValintaperusteetJarjestyskriteeri>>(
+    `${configuration.routes.valintaperusteetService.valintaperusteetUrl}valintatapajono/${valintatapajonoOid}/jarjestyskriteeri`,
+  );
+  return data;
+};
+
+// Hakee laskentakaavan perustiedot ilman funktiopuuta
+export const getLaskentakaava = async (
+  laskentakaavaId: number,
+): Promise<Laskentakaava> => {
+  const configuration = getConfiguration();
+  const { data } = await client.get<Laskentakaava>(
+    `${configuration.routes.valintaperusteetService.valintaperusteetUrl}laskentakaava/${laskentakaavaId}?funktiopuu=false`,
+  );
+  return data;
+};

@@ -6,13 +6,8 @@ import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
 import { Typography } from '@mui/material';
 import { styled } from '@/lib/theme';
 
-const Bolded = styled('span')(() => ({
-  fontWeight: 700,
-  display: 'inline',
-}));
-
-const Inline = styled('span')(() => ({
-  display: 'inline',
+const Bold = styled('span')(({ theme }) => ({
+  fontWeight: theme.typography.fontWeightBold,
 }));
 
 const TRANSLATIONS_PREFIX = 'sijoittelun-tulokset.taulukko.alaotsikko.';
@@ -34,25 +29,26 @@ export const SijoittelunTulosAccordionTitle = ({
     <Typography component="div" display="inline">
       (
       {isKorkeakouluHaku(haku) && (
-        <Inline>
-          <Bolded>{t(`${TRANSLATIONS_PREFIX}aloituspaikat`)}</Bolded>:{' '}
+        <span>
+          <Bold>{t(`${TRANSLATIONS_PREFIX}aloituspaikat`)}</Bold>:{' '}
           {valintatapajono.alkuperaisetAloituspaikat} |&nbsp;
-        </Inline>
+        </span>
       )}
-      <Inline>
-        <Bolded>{t(`${TRANSLATIONS_PREFIX}sijoittelun-aloituspaikat`)}</Bolded>:{' '}
+      <span>
+        <Bold>{t(`${TRANSLATIONS_PREFIX}sijoittelun-aloituspaikat`)}</Bold>:{' '}
         {valintatapajono.aloituspaikat} |&nbsp;
-      </Inline>
-      <Inline>
-        <Bolded>{t(`${TRANSLATIONS_PREFIX}tasasijasaanto`)}</Bolded>:{' '}
+      </span>
+      <span>
+        <Bold>{t(`${TRANSLATIONS_PREFIX}tasasijasaanto`)}</Bold>:{' '}
         {t(`sijoittelu.tasasijasaanto.${valintatapajono.tasasijasaanto}`)}{' '}
         |&nbsp;
-      </Inline>
-      <Bolded>{varasijataytto}</Bolded>
-      <Inline>
-        &nbsp;|&nbsp;<Bolded>{t(`${TRANSLATIONS_PREFIX}prioriteetti`)}</Bolded>:{' '}
+      </span>
+      <Bold>{varasijataytto}</Bold>
+      <span>
+        &nbsp;|&nbsp;
+        <Bold>{t(`${TRANSLATIONS_PREFIX}prioriteetti`)}</Bold>:{' '}
         {valintatapajono.prioriteetti}
-      </Inline>
+      </span>
       )
     </Typography>
   );

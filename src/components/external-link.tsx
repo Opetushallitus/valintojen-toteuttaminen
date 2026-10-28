@@ -1,12 +1,13 @@
-import { useConfiguration } from '@/hooks/useConfiguration';
 import { OphLink } from '@opetushallitus/oph-design-system';
-import { Link } from 'react-router';
 
 export type ExternalLinkProps = {
   name: string;
+  // Absoluuttinen osoite, ks. lib/externalLinks.ts
   href: string;
   noIcon?: boolean;
   title?: string;
+  // Tekstin sisällä oleva linkki pitää erottaa ympäröivästä tekstistä muutenkin kuin värillä
+  underline?: 'hover' | 'always';
 };
 
 export const ExternalLink = ({
@@ -14,15 +15,19 @@ export const ExternalLink = ({
   href,
   noIcon,
   title,
+  underline,
 }: ExternalLinkProps) => {
-  const { configuration } = useConfiguration();
+  if (!href.startsWith('http')) {
+    console.warn(`ExternalLink: osoite "${href}" ei ole absoluuttinen`);
+  }
+
   return (
     <OphLink
-      component={Link}
       target="_blank"
       iconVisible={noIcon == null ? true : !noIcon}
-      to={`${configuration?.domain}/${href}`}
+      href={href}
       title={title ?? ''}
+      underline={underline}
     >
       {name}
     </OphLink>

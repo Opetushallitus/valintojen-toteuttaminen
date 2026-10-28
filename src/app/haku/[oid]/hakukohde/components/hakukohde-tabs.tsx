@@ -1,5 +1,6 @@
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { DEFAULT_BOX_BORDER, ophColors, styled } from '@/lib/theme';
+import { styled } from '@/lib/theme';
+import { Tab, TabRow } from '@/components/Tabs';
 import { useHakukohde } from '@/lib/kouta/useHakukohde';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { HakukohdeTabLink } from '@/components/hakukohde-tab-link';
@@ -7,42 +8,24 @@ import { useHakukohdeTab } from '@/hooks/useHakukohdeTab';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 import { useVisibleHakukohdeTabs } from '@/hooks/useVisibleHakukohdeTabs';
 
+// Sivusuuntainen täyte on otsikossa ja välilehtirivillä eikä säiliössä, jotta välilehtirivin
+// alla oleva vaakaviiva ulottuu koko leveydelle.
 const StyledContainer = styled('div')(({ theme }) => ({
-  padding: theme.spacing(2, 3, 0),
-  borderBottom: DEFAULT_BOX_BORDER,
+  paddingTop: theme.spacing(2),
 }));
 
 const StyledHeader = styled('div')(({ theme }) => ({
   textAlign: 'left',
+  padding: theme.spacing(0, 3),
   marginBottom: theme.spacing(2),
   '& .hakukohdeLabel': {
     fontWeight: 'normal',
   },
 }));
 
-const StyledTabs = styled('nav')(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'row',
-  columnGap: theme.spacing(2),
-  rowGap: theme.spacing(1),
-  flexWrap: 'wrap',
+const StyledTabs = styled(TabRow)(({ theme }) => ({
+  padding: theme.spacing(0, 3),
 }));
-
-const StyledTab = styled(HakukohdeTabLink)<{ $active: boolean }>(
-  ({ $active }) => ({
-    color: ophColors.blue2,
-    cursor: 'pointer',
-    borderBottom: '3px solid',
-    borderColor: $active ? ophColors.blue2 : 'transparent',
-    textDecoration: 'none',
-    '&:hover': {
-      borderColor: ophColors.blue2,
-    },
-    '&:focus-visible': {
-      outlineOffset: '3px',
-    },
-  }),
-);
 
 export const HakukohdeTabs = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const activeTab = useHakukohdeTab();
@@ -65,17 +48,18 @@ export const HakukohdeTabs = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
           </span>
         </OphTypography>
       </StyledHeader>
-      <StyledTabs>
+      <StyledTabs as="nav">
         {visibleTabs.map((tab) => (
-          <StyledTab
+          <Tab
+            component={HakukohdeTabLink}
             key={'hakukohde-tab-' + tab.route}
             hakuOid={hakuOid}
             hakukohdeOid={hakukohdeOid}
             tabRoute={tab.route}
-            $active={tab.title === activeTab.title}
+            aria-current={tab.title === activeTab.title ? 'page' : undefined}
           >
             {t(tab.title)}
-          </StyledTab>
+          </Tab>
         ))}
       </StyledTabs>
     </StyledContainer>

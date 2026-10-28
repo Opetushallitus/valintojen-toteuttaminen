@@ -42,6 +42,8 @@
     "virhe": "Virhe",
     "hakijoita-valittu-maara": "{count, plural, =0 {Ei hakijoita valittu} one {1 hakija valittu} other {{count} hakijaa valittu}}",
     "haun-tunniste": "Haun tunniste",
+    "hakukohde": "Hakukohde",
+    "hakukohteen-tunniste": "Hakukohteen tunniste",
     "haun-asetukset": "Haun asetukset",
     "tarjonta": "Tarjonta",
     "kaynnistetaanko": "Käynnistetäänkö",
@@ -755,5 +757,31 @@
       "kaynnissa": "Käynnissä {total}",
       "jonossa": "Jonossa {total}"
     }
+  },
+  "valintalaskentahistoria": {
+    "otsikko": "Valintojen toteuttaminen \u2013 Valintalaskentahistoria",
+    "historia-otsikko": "Laskenta hakemukselle",
+    "nayta-avaimet": "Näytä avaimet",
+    "piilota-avaimet": "Piilota avaimet",
+    "nayta-arvot": "Näytä arvot",
+    "piilota-arvot": "Piilota arvot",
+    "ei-avaimia": "Ei avaimia",
+    "ei-arvoja": "Ei nimettyjä arvoja",
+    "jarjestyskriteerit": "Järjestyskriteerit",
+    "jarjestyskriteeri": "{numero}. järjestyskriteeri",
+    "avain": "Avain",
+    "arvo": "Arvo",
+    "nimi": "Nimi",
+    "tyyppi": "Tyyppi",
+    "tila": "Tila",
+    "tulos": "Tulos",
+    "lisatiedot": "Lisätiedot",
+    "valintaperusteen-mallinnus": "Valintaperusteen mallinnus",
+    "valintaperusteet-link-tooltip-title": "Järjestyskriteerejä on muutettu valintalaskennan jälkeen, eikä järjestyskriteerin perusteen mallinnukseen voida linkittää luotettavasti. Linkki vie valintatapajonon mallinnukseen.",
+    "valintaperusteet-link-tooltip-label": "Miksi linkki vie valintatapajonoon?",
+    "linkin-muodostus-epaonnistui": "Linkin haku epäonnistui",
+    "hakemusta-ei-loytynyt": "Hakemusta ei löytynyt tunnisteella {oid}",
+    "historiaa-ei-loytynyt": "Valintalaskentahistoriaa ei löytynyt valintatapajonolle {valintatapajonoOid}",
+    "ei-arvoa": "(ei arvoa)"
   }
 }
