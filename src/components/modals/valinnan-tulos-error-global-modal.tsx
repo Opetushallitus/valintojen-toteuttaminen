@@ -5,9 +5,11 @@ import {
   useOphModalProps,
 } from '@/components/modals/global-modal';
 import { OphModal } from '@/components/modals/oph-modal';
-import { buildLinkToPerson } from '@/components/table/table-columns';
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { buildLinkToApplication } from '@/lib/ataru/ataru-service';
+import {
+  buildLinkToApplication,
+  buildLinkToOppija,
+} from '@/lib/externalLinks';
 import {
   OphApiError,
   OphProcessError,
@@ -107,7 +109,7 @@ const ValinnanTulosTallennusError = ({
                       <ExternalLink
                         noIcon={true}
                         name={hakemus.hakijanNimi}
-                        href={buildLinkToPerson(hakemus.hakijaOid)}
+                        href={buildLinkToOppija(hakemus.hakijaOid)}
                       />
                     )}
                   </TableCell>

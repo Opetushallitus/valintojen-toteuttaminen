@@ -1,5 +1,6 @@
 import { Box } from '@mui/material';
 import { Link, LinkProps, useSearchParams } from 'react-router';
+import { buildLinkToValintaryhmaPage } from '@/lib/appLinks';
 
 export const ValintaryhmaLink = ({
   hakuOid,
@@ -30,7 +31,7 @@ export const ValintaryhmaLink = ({
       {...props}
       style={{ textDecoration: 'none', paddingLeft: '7px', width: '100%' }}
       to={{
-        pathname: `/haku/${hakuOid}/valintaryhma/${valintaryhmaOid}`,
+        pathname: buildLinkToValintaryhmaPage({ hakuOid, valintaryhmaOid }),
         search: vrSearchParam
           ? `?${new URLSearchParams({ vrsearch: vrSearchParam })}`
           : undefined,

@@ -1,6 +1,5 @@
 import { ListTable } from '@/components/table/list-table';
 import {
-  buildLinkToPerson,
   createHakijaColumn,
   HakijaColumnLinkType,
   makeColumnWithValueToTranslate,
@@ -8,7 +7,10 @@ import {
   makeGenericColumn,
 } from '@/components/table/table-columns';
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { buildLinkToApplication } from '@/lib/ataru/ataru-service';
+import {
+  buildLinkToApplication,
+  buildLinkToOppija,
+} from '@/lib/externalLinks';
 import { Hakemus } from '@/lib/ataru/ataru-types';
 
 export const HakeneetTable = ({
@@ -57,7 +59,7 @@ export const HakeneetTable = ({
   });
 
   const hakijaOidColumn = makeExternalLinkColumn<Hakemus>({
-    linkBuilder: buildLinkToPerson,
+    linkBuilder: buildLinkToOppija,
     title: 'hakeneet.taulukko.henkilooid',
     key: 'hakijaOid',
     linkProp: 'hakijaOid',

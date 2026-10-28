@@ -16,9 +16,7 @@ import {
 import { LettersPublishCell } from './letters-publish-cell';
 import { LettersSendCell } from './letters-send-cell';
 import { LettersPreviewCell } from './letters-preview-cell';
-
-const buildLinkToLetters = (letterBatchId: string) =>
-  `viestintapalvelu-ui/#/reportLetters/${letterBatchId}`;
+import { buildLinkToKirjelahetys } from '@/lib/externalLinks';
 
 export const LettersTable = ({
   haku,
@@ -43,7 +41,7 @@ export const LettersTable = ({
       renderFn: (props: LetterStats) => translateLetter(props.letter, t, true),
     }),
     makeExternalLinkColumn<LetterStats>({
-      linkBuilder: buildLinkToLetters,
+      linkBuilder: buildLinkToKirjelahetys,
       title: 'yhteisvalinnan-hallinta.kirjeet.lahetyksen-tunniste',
       key: 'letterBatchId',
       linkProp: 'letterBatchId',

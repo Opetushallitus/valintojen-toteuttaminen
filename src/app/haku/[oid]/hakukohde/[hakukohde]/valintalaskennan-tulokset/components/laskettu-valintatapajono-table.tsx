@@ -24,7 +24,7 @@ import { OphLink } from '@opetushallitus/oph-design-system';
 import { useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router';
-import { buildLinkToValintalaskentahistoria } from '@/lib/app-links';
+import { buildLinkToValintalaskentahistoria } from '@/lib/appLinks';
 import { refetchHakukohteenValintalaskennanTulokset } from '@/lib/valintalaskenta/valintalaskenta-queries';
 import { isNonNull } from 'remeda';
 import { useHasOnlyHakukohdeReadPermission } from '@/hooks/useHasOnlyHakukohdeReadPermission';

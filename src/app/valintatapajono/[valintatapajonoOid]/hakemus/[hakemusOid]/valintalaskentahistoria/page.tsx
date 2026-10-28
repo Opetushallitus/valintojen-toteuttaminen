@@ -3,7 +3,7 @@ import { ExternalLink } from '@/components/external-link';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { useRequiredParams } from '@/hooks/useRequiredParams';
 import { queryOptionsGetHakijat } from '@/lib/ataru/ataru-queries';
-import { buildLinkToApplication } from '@/lib/ataru/ataru-service';
+import { buildLinkToApplication } from '@/lib/externalLinks';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import {
   queryOptionsGetHakemuksenValintalaskennanTulokset,

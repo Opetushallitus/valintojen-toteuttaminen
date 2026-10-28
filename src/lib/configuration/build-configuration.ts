@@ -37,6 +37,23 @@ export function buildConfiguration({
         hakukohteetUrl: `${domain}/kouta-internal/hakukohde/search?all=false&haku={hakuOid}`,
         hakukohdeUrl: `${domain}/kouta-internal/hakukohde/{hakukohdeOid}`,
       },
+      kouta: {
+        hakuLinkUrl: `${domain}/kouta/haku/{hakuOid}`,
+        hakukohdeLinkUrl: `${domain}/kouta/hakukohde/{hakukohdeOid}`,
+      },
+      henkiloUi: {
+        oppijaLinkUrl: `${domain}/henkilo-ui/oppija/{hakijaOid}?permissionCheckService=ATARU`,
+        virkailijaLinkUrl: `${domain}/henkilo-ui/virkailija/{henkiloOid}`,
+      },
+      valintaperusteetUi: {
+        valintaryhmaLinkUrl: `${domain}/valintaperusteet-ui/app/index.html#/valintaryhma/{valintaryhmaOid}`,
+        hakukohdeLinkUrl: `${domain}/valintaperusteet-ui/app/index.html#/hakukohde/{hakukohdeOid}`,
+        jarjestyskriteeriLinkUrl: `${domain}/valintaperusteet-ui/app/index.html#/hakukohde/{hakukohdeOid}/valinnanvaihe/{valinnanvaiheOid}/valintatapajono/{valintatapajonoOid}/jarjestyskriteeri/{jarjestyskriteeriOid}`,
+      },
+      viestintapalveluUi: {
+        kirjelahetysLinkUrl: `${domain}/viestintapalvelu-ui/#/reportLetters/{letterBatchId}`,
+        viestilahetysLinkUrl: `${domain}/viestintapalvelu-ui/#/reportMessages/view/{groupEmailId}`,
+      },
       valintaperusteetService: {
         valintaperusteetUrl: `${domain}/valintaperusteet-service/resources/`,
         automaattinenSiirtoUrl: `${domain}/valintaperusteet-service/resources/V2valintaperusteet/{valintatapajonoOid}/automaattinenSiirto?status={status}`,
@@ -47,7 +64,7 @@ export function buildConfiguration({
       ataru: {
         ataruEditoriLogin: `${domain}/lomake-editori/auth/cas`,
         hakemuksetUrl: `${domain}/lomake-editori/api/external/valinta-ui`,
-        editoriHakemusLink: `${domain}/lomake-editori/applications/search?term={hakemusOid}`,
+        editoriHakemusLinkUrl: `${domain}/lomake-editori/applications/search?term={hakemusOid}`,
       },
       valintalaskentaService: {
         valintalaskentaServiceLogin: `${domain}/valintalaskenta-laskenta-service/auth/login`,
@@ -94,6 +111,7 @@ export function buildConfiguration({
         eihyvaksymiskirjeetUrl: `${domain}/valintalaskentakoostepalvelu/resources/viestintapalvelu/hakukohteessahylatyt/aktivoi`,
         jalkiohjauskirjeetUrl: `${domain}/valintalaskentakoostepalvelu/resources/viestintapalvelu/jalkiohjauskirjeet/aktivoi`,
         lahetaEPostiUrl: `${domain}/valintalaskentakoostepalvelu/resources/viestintapalvelu/securelinkit/aktivoi`,
+        kirjeenEsikatseluLinkUrl: `${domain}/valintalaskentakoostepalvelu/resources/viestintapalvelu/securelinkit/esikatselu?hakuOid={hakuOid}&kirjeenTyyppi={kirjeenTyyppi}&asiointikieli={asiointikieli}`,
         dokumentitUrl: `${domain}/valintalaskentakoostepalvelu/resources/dokumentit/{tyyppi}/{hakukohdeOid}`,
         dokumenttiProsessiUrl: `${domain}/valintalaskentakoostepalvelu/resources/dokumenttiprosessi/{id}`,
         lataaDokumenttiUrl: `${domain}/valintalaskentakoostepalvelu/resources/dokumentit/lataa/{dokumenttiId}`,

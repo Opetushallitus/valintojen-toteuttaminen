@@ -4,7 +4,10 @@ import { FullClientSpinner } from '@/components/client-spinner';
 import { ExternalLink } from '@/components/external-link';
 import { LabeledInfoItem } from '@/components/labeled-info-item';
 import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
-import { buildLinkToHaku } from '@/lib/ataru/ataru-service';
+import {
+  buildLinkToHaku,
+  buildLinkToHaunAsetukset,
+} from '@/lib/externalLinks';
 import { useHaku } from '@/lib/kouta/useHaku';
 import { useTranslations } from '@/lib/localization/useTranslations';
 
@@ -13,13 +16,10 @@ import { OphLink } from '@opetushallitus/oph-design-system';
 import { YhteisvalinnanValintalaskenta } from './components/yhteisvalinnan-valintalaskenta';
 import { SijoitteluContainer } from './components/sijoittelu-container';
 import { LettersContainer } from './components/letters-container';
-import { useConfiguration } from '@/hooks/useConfiguration';
 import { useRequiredParams } from '@/hooks/useRequiredParams';
 
 const YhteisvalinnanHallintaContent = ({ hakuOid }: { hakuOid: string }) => {
   const { data: haku } = useHaku({ hakuOid });
-
-  const { configuration, getConfigUrl } = useConfiguration();
 
   const { t, translateEntity } = useTranslations();
 
@@ -35,17 +35,9 @@ const YhteisvalinnanHallintaContent = ({ hakuOid }: { hakuOid: string }) => {
           label={t('yleinen.lisatiedot')}
           value={
             <Stack direction="row" spacing={3}>
-              {configuration && (
-                <OphLink
-                  href={getConfigUrl(
-                    configuration?.routes.hakukohderyhmapalvelu
-                      .haunAsetuksetLinkUrl,
-                    { hakuOid: haku.oid },
-                  )}
-                >
-                  {t('yleinen.haun-asetukset')}
-                </OphLink>
-              )}
+              <OphLink href={buildLinkToHaunAsetukset(haku.oid)}>
+                {t('yleinen.haun-asetukset')}
+              </OphLink>
               <ExternalLink
                 name={t('yleinen.tarjonta')}
                 href={buildLinkToHaku(haku.oid)}

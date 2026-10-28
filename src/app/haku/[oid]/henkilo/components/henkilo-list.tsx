@@ -5,6 +5,7 @@ import { FullClientSpinner } from '@/components/client-spinner';
 import { ErrorView } from '@/components/error-view';
 import { Link, LinkProps, useParams, useSearchParams } from 'react-router';
 import { getHenkiloTitle } from '@/lib/henkilo-utils';
+import { buildLinkToHenkiloPage } from '@/lib/appLinks';
 import {
   NAV_LIST_SELECTED_ITEM_CLASS,
   NavigationList,
@@ -29,7 +30,7 @@ export const HenkiloLink = ({
     <Link
       {...props}
       to={{
-        pathname: `/haku/${hakuOid}/henkilo/${hakemusOid}`,
+        pathname: buildLinkToHenkiloPage({ hakuOid, hakemusOid }),
         search: henkiloSearchParam
           ? `?${new URLSearchParams({ henkilosearch: henkiloSearchParam })}`
           : undefined,

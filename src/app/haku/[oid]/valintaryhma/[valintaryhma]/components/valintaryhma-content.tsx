@@ -1,5 +1,6 @@
 import { useUserPermissions } from '@/hooks/useUserPermissions';
 import { getHakukohdeFullName } from '@/lib/kouta/kouta-service';
+import { buildLinkToHakukohde } from '@/lib/externalLinks';
 import { getValintaryhmat } from '@/lib/valintaperusteet/valintaperusteet-service';
 import { useSuspenseQueries, useSuspenseQuery } from '@tanstack/react-query';
 import {
@@ -194,7 +195,7 @@ export const ValintaryhmaContent = ({
       mapHakukohteet(valittuRyhma).map((hakukohde) => ({
         oid: hakukohde.oid,
         name: getHakukohdeFullName(hakukohde, translateEntity, true),
-        link: `kouta/hakukohde/${hakukohde.oid}`,
+        link: buildLinkToHakukohde(hakukohde.oid),
         laskentaValmistunut: findLaskentaValmistunut(hakukohde),
       })),
       prop('name'),

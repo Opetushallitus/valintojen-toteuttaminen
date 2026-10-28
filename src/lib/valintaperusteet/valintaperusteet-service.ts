@@ -343,16 +343,3 @@ export const getValintatapajononAktiivisetJarjestyskriteerit = async (
   );
   return data.filter((jarjestyskriteeri) => jarjestyskriteeri.aktiivinen);
 };
-
-export const buildLinkToJarjestyskriteeri = ({
-  hakukohdeOid,
-  valinnanvaiheOid,
-  valintatapajonoOid,
-  jarjestyskriteeriOid,
-}: {
-  hakukohdeOid: string;
-  valinnanvaiheOid: string;
-  valintatapajonoOid: string;
-  jarjestyskriteeriOid: string;
-}) =>
-  `valintaperusteet-ui/app/index.html#/hakukohde/${hakukohdeOid}/valinnanvaihe/${valinnanvaiheOid}/valintatapajono/${valintatapajonoOid}/jarjestyskriteeri/${jarjestyskriteeriOid}`;

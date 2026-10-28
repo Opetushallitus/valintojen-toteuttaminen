@@ -1,9 +1,6 @@
 import { ExternalLink } from '@/components/external-link';
 import { LabeledInfoItem } from '@/components/labeled-info-item';
-import {
-  buildLinkToHaku,
-  buildLinkToHakukohde,
-} from '@/lib/ataru/ataru-service';
+import { buildLinkToHaku, buildLinkToHakukohde } from '@/lib/externalLinks';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { useHaku } from '@/lib/kouta/useHaku';
 import { useHakukohde } from '@/lib/kouta/useHakukohde';

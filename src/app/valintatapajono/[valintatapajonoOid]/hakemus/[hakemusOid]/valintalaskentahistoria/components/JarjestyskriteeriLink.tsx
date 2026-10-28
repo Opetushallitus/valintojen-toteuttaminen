@@ -4,7 +4,7 @@ import { QuerySuspenseBoundary } from '@/components/query-suspense-boundary';
 import { NDASH } from '@/lib/constants';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { queryOptionsGetValintatapajononAktiivisetJarjestyskriteerit } from '@/lib/valintaperusteet/valintaperusteet-queries';
-import { buildLinkToJarjestyskriteeri } from '@/lib/valintaperusteet/valintaperusteet-service';
+import { buildLinkToJarjestyskriteeri } from '@/lib/externalLinks';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { JononSijainti } from '../lib/valintalaskentahistoriaUtils';
 

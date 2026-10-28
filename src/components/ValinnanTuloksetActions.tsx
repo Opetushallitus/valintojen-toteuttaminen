@@ -23,7 +23,7 @@ import {
 } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
 import { showModal } from '@/components/modals/global-modal';
 import { ConfirmationGlobalModal } from '@/components/modals/confirmation-global-modal';
-import { buildLinkToApplication } from '@/lib/ataru/ataru-service';
+import { buildLinkToApplication } from '@/lib/externalLinks';
 import { ExternalLink } from '@/components/external-link';
 import { useSelector } from '@xstate/react';
 import { styled } from '@/lib/theme';

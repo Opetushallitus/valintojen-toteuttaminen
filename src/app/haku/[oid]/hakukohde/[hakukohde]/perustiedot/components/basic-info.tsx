@@ -4,6 +4,11 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { LabeledInfoItem } from '@/components/labeled-info-item';
 import { Stack } from '@mui/material';
+import {
+  buildLinkToHakukohde,
+  buildLinkToValintaperusteetHakukohde,
+  buildLinkToValintaperusteetValintaryhma,
+} from '@/lib/externalLinks';
 
 export const BasicInfo = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
   const { data: valintaryhma } = useSuspenseQuery({
@@ -24,7 +29,7 @@ export const BasicInfo = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
         value={
           <ExternalLink
             name={valintaryhma.nimi}
-            href={`valintaperusteet-ui/app/index.html#/valintaryhma/${valintaryhma.oid}`}
+            href={buildLinkToValintaperusteetValintaryhma(valintaryhma.oid)}
           />
         }
       />
@@ -34,11 +39,11 @@ export const BasicInfo = ({ hakukohdeOid }: { hakukohdeOid: string }) => {
           <Stack direction="row" spacing={3}>
             <ExternalLink
               name={t('perustiedot.valintaperusteet')}
-              href={`valintaperusteet-ui/app/index.html#/hakukohde/${hakukohdeOid}`}
+              href={buildLinkToValintaperusteetHakukohde(hakukohdeOid)}
             />
             <ExternalLink
               name={t('yleinen.tarjonta')}
-              href={`kouta/hakukohde/${hakukohdeOid}`}
+              href={buildLinkToHakukohde(hakukohdeOid)}
             />
           </Stack>
         }
