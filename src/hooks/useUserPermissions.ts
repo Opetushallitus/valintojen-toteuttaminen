@@ -11,7 +11,7 @@ import { PermissionError } from '@/lib/common';
 import { isEmpty, unique } from 'remeda';
 import { getConfiguration } from '../lib/configuration/client-configuration';
 import {
-  findBranchOidsFromOrganizationHierarchy,
+  getHierarchyUserPermissions,
   useOrganizationHierarchy,
 } from '@/lib/organisaatio-service';
 import { useMemo } from 'react';
@@ -70,23 +70,7 @@ export const useHierarchyUserPermissions = (
   );
 
   return useMemo(
-    () => ({
-      hasOphCRUD: userPermissions.hasOphCRUD,
-      crudOrganizations: findBranchOidsFromOrganizationHierarchy(
-        organizationHierarchy,
-        userPermissions.crudOrganizations,
-      ),
-      writeOrganizations: findBranchOidsFromOrganizationHierarchy(
-        organizationHierarchy,
-        userPermissions.writeOrganizations,
-      ),
-      readOrganizations: findBranchOidsFromOrganizationHierarchy(
-        organizationHierarchy,
-        userPermissions.readOrganizations,
-      ),
-      sijoitteluPeruuntuneidenHyvaksyntaAllowed:
-        userPermissions.sijoitteluPeruuntuneidenHyvaksyntaAllowed,
-    }),
+    () => getHierarchyUserPermissions(userPermissions, organizationHierarchy),
     [userPermissions, organizationHierarchy],
   );
 };

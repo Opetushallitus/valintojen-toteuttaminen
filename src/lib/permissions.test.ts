@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import {
   checkHasPermission,
+  checkHasHakukohdePermission,
   PermissionsResponseData,
   PERUUNTUNEIDEN_HYVAKSYNTA_PERMISSION_KEY,
   selectUserPermissions,
@@ -149,5 +150,39 @@ describe('checkHasPermission', () => {
     expect(checkHasPermission(undefined, EMPTY_PERMISSIONS, 'CRUD')).toBe(
       false,
     );
+  });
+});
+
+describe('checkHasHakukohdePermission', () => {
+  const hakukohde = {
+    tarjoajaOid: 'tarjoaja',
+    hakukohderyhmaOids: ['readwrite'],
+  };
+
+  test('ryhmän muokkausoikeus sallii muokkauksen mutta ei CRUD-toimintoja', () => {
+    expect(
+      checkHasHakukohdePermission(
+        hakukohde,
+        DEFAULT_USER_PERMISSIONS,
+        'READ_UPDATE',
+      ),
+    ).toBe(true);
+    expect(
+      checkHasHakukohdePermission(hakukohde, DEFAULT_USER_PERMISSIONS, 'CRUD'),
+    ).toBe(false);
+  });
+
+  test('pelkkä ryhmän lukuoikeus ei salli muokkausta', () => {
+    const kohde = { ...hakukohde, hakukohderyhmaOids: ['read'] };
+    expect(
+      checkHasHakukohdePermission(kohde, DEFAULT_USER_PERMISSIONS, 'READ'),
+    ).toBe(true);
+    expect(
+      checkHasHakukohdePermission(
+        kohde,
+        DEFAULT_USER_PERMISSIONS,
+        'READ_UPDATE',
+      ),
+    ).toBe(false);
   });
 });

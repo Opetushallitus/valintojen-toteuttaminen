@@ -1,4 +1,7 @@
-import { useUserPermissions } from '@/hooks/useUserPermissions';
+import {
+  useHierarchyUserPermissions,
+  useUserPermissions,
+} from '@/hooks/useUserPermissions';
 import { getHakukohdeFullName } from '@/lib/kouta/kouta-service';
 import { buildLinkToHakukohde } from '@/lib/externalLinks';
 import { queryOptionsGetValintaryhmat } from '@/lib/valintaperusteet/valintaperusteet-queries';
@@ -24,8 +27,8 @@ import { getLasketutHakukohteet } from '@/lib/valintalaskenta/valintalaskenta-se
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { useLaskentaState } from '@/lib/state/laskenta-state';
 import {
+  queryOptionsGetAllHakukohteet,
   queryOptionsGetHaku,
-  queryOptionsGetHakukohteet,
 } from '@/lib/kouta/kouta-queries';
 import { queryOptionsGetHaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-queries';
 
@@ -111,12 +114,12 @@ export const ValintaryhmaContent = ({
   hakuOid: string;
   valintaryhmaOid: string;
 }) => {
-  const userPermissions = useUserPermissions();
+  const userPermissions = useHierarchyUserPermissions(useUserPermissions());
 
   const { translateEntity } = useTranslations();
 
   const { data: hakukohteet } = useSuspenseQuery(
-    queryOptionsGetHakukohteet(hakuOid, userPermissions),
+    queryOptionsGetAllHakukohteet(hakuOid),
   );
 
   const [
