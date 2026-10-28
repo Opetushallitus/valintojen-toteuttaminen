@@ -3,6 +3,7 @@ import {
   getHakemuksenValintalaskennanTulokset,
   getHakukohteenValintalaskennanTulokset,
   getHarkinnanvaraisetTilat,
+  getValintalaskentahistoria,
 } from '@/lib/valintalaskenta/valintalaskenta-service';
 import { KoutaOidParams } from '../kouta/kouta-types';
 
@@ -56,6 +57,19 @@ export const refetchHakemuksenValintalaskennanTulokset = ({
   queryClient.resetQueries(options);
   queryClient.invalidateQueries(options);
 };
+
+export const queryOptionsGetValintalaskentahistoria = ({
+  valintatapajonoOid,
+  hakemusOid,
+}: {
+  valintatapajonoOid: string;
+  hakemusOid: string;
+}) =>
+  queryOptions({
+    queryKey: ['getValintalaskentahistoria', valintatapajonoOid, hakemusOid],
+    queryFn: () =>
+      getValintalaskentahistoria({ valintatapajonoOid, hakemusOid }),
+  });
 
 export const queryOptionsGetharkinnanvaraisetTilat = ({
   hakuOid,

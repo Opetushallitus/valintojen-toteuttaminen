@@ -17,7 +17,7 @@ export function getConfigUrl(
     },
   );
 
-  if (/\{[^}]+\}/.test(route)) {
+  if (/\{[^{}]+\}/.test(route)) {
     throw new Error(
       `Not all placeholders were replaced in route ${routeString}. Result: ${route}`,
     );

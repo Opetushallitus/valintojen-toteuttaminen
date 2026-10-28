@@ -29,7 +29,7 @@ import {
 import { hideModal, showModal } from '@/components/modals/global-modal';
 import { ConfirmationGlobalModal } from '@/components/modals/confirmation-global-modal';
 import { SpinnerGlobalModal } from '@/components/modals/spinner-global-modal';
-import { buildLinkToApplication } from '@/lib/ataru/ataru-service';
+import { buildLinkToApplication } from '@/lib/externalLinks';
 import { ExternalLink } from '@/components/external-link';
 import { useSelector } from '@xstate/react';
 import useToaster from '@/hooks/useToaster';
@@ -295,9 +295,7 @@ const EraantyneetInfoTable = ({
               <TableCell>
                 <ExternalLink
                   name={h.hakemusOid}
-                  href={
-                    h.hakemusOid ? buildLinkToApplication(h?.hakemusOid) : ''
-                  }
+                  href={buildLinkToApplication(h.hakemusOid)}
                 />
               </TableCell>
             </TableRow>

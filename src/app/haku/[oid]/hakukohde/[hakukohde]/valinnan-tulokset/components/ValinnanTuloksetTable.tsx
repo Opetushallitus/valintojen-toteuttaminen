@@ -173,7 +173,7 @@ export const ValinnanTuloksetTable = ({
   hakukohde: Hakukohde;
   actorRef: ValinnanTulosActorRef;
 }) => {
-  const { t } = useTranslations();
+  const { t, translateEntity } = useTranslations();
 
   const userHasOnlyReadPermission = useHasOnlyHakukohdeReadPermission();
 
@@ -238,7 +238,7 @@ export const ValinnanTuloksetTable = ({
           page,
           setPage,
           pageSize,
-          label: `${t('yleinen.sivutus')} ${hakukohde.nimi}`,
+          label: `${t('yleinen.sivutus')}: ${translateEntity(hakukohde.nimi)}`,
         }}
         getRowCheckboxLabel={getRowCheckboxLabel}
       />

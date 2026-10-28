@@ -15,6 +15,17 @@ export default [
   // Seuranta
   route('seuranta', 'seuranta/layout.tsx', [index('seuranta/page.tsx')]),
 
+  // Valintalaskentahistoria
+  route(
+    'valintatapajono/:valintatapajonoOid/hakemus/:hakemusOid/valintalaskentahistoria',
+    'valintatapajono/[valintatapajonoOid]/hakemus/[hakemusOid]/valintalaskentahistoria/layout.tsx',
+    [
+      index(
+        'valintatapajono/[valintatapajonoOid]/hakemus/[hakemusOid]/valintalaskentahistoria/page.tsx',
+      ),
+    ],
+  ),
+
   // Haku
   route('haku/:oid', 'haku/[oid]/layout.tsx', [
     index('haku/[oid]/redirect-to-hakukohde.tsx'),

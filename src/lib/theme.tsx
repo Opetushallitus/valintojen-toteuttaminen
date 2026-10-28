@@ -88,14 +88,10 @@ export const THEME_OVERRIDES: ThemeOptions = {
     },
     MuiTableCell: {
       styleOverrides: {
-        root: ({ theme }) => ({
-          '&.MuiTableCell-head': {
-            ...theme.typography.label,
-          },
-          '&.MuiTableCell-body': {
-            ...theme.typography.body1,
-          },
-        }),
+        // head- ja body-slotit tyylitetään samalla luokalla kuin root, joten
+        // komponentin sx-tyylit (esim. sarakkeen style) voivat ylikirjoittaa ne.
+        head: ({ theme }) => theme.typography.label,
+        body: ({ theme }) => theme.typography.body1,
       },
     },
   },

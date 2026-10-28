@@ -9,9 +9,7 @@ import { PersonDetails } from '@/lib/oppijanumerorekisteri/onr-types';
 import { getHenkiloInitials } from '@/lib/henkilo-utils';
 import { ExternalLink } from '@/components/external-link';
 import { styled } from '@/lib/theme';
-
-const buildLinkToPerson = (personDetails: PersonDetails): string =>
-  `henkilo-ui/virkailija/${personDetails.oidHenkilo}`;
+import { buildLinkToVirkailija } from '@/lib/externalLinks';
 
 const StyledStatusContainer = styled(Box)(({ theme }) => ({
   flexGrow: 2,
@@ -33,7 +31,7 @@ export const SeurantaItemStatus = ({
 
   return (
     <StyledStatusContainer>
-      <Typography variant="body1" sx={{ fontWeight: 'bolder' }}>
+      <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
         {t(`valintalaskenta.tila.${seurantaTiedot.tila}`)}{' '}
         {toFormattedDateTimeString(seurantaTiedot.luotu)}
       </Typography>
@@ -57,7 +55,7 @@ export const SeurantaItemStatus = ({
             noIcon={true}
             title={`${personDetails.etunimet} ${personDetails.sukunimi}`}
             name={getHenkiloInitials(personDetails)}
-            href={buildLinkToPerson(personDetails)}
+            href={buildLinkToVirkailija(personDetails.oidHenkilo)}
           />
         )}
       </Box>

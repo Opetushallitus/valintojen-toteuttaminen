@@ -1,7 +1,10 @@
 import { KeysMatching, ListTableColumn } from './table-types';
 import { ExternalLink } from '../external-link';
 import { ophColors } from '@opetushallitus/oph-design-system';
-import { buildLinkToApplication } from '@/lib/ataru/ataru-service';
+import {
+  buildLinkToApplication,
+  buildLinkToOppija,
+} from '@/lib/externalLinks';
 import { TFunction } from '@/lib/localization/useTranslations';
 import { isNullish } from 'remeda';
 
@@ -134,9 +137,6 @@ export const makeExternalLinkColumn = <T extends Record<string, unknown>>({
   style: { width: 'auto', ...style },
 });
 
-export const buildLinkToPerson = (personOid: string) =>
-  `henkilo-ui/oppija/${personOid}?permissionCheckService=ATARU`;
-
 type HakijaColumnType = {
   hakijanNimi: string;
   hakemusOid: string;
@@ -157,7 +157,7 @@ export const createHakijaColumn = ({
     linkBuilder:
       hakijaLinkType === HakijaColumnLinkType.HAKEMUS
         ? buildLinkToApplication
-        : buildLinkToPerson,
+        : buildLinkToOppija,
     title: 'hakeneet.taulukko.hakija',
     key: 'hakijanNimi',
     nameProp: 'hakijanNimi',

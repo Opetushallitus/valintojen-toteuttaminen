@@ -21,6 +21,7 @@ import {
   queryOptionsGetHaku,
 } from '@/lib/kouta/kouta-queries';
 import { Link } from 'react-router';
+import { buildLinkToHakuTab } from '@/lib/appLinks';
 import { queryOptionsGetHaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-queries';
 import { isValintojenToteuttaminenEstetty } from '@/lib/valintojen-toteuttaminen-access';
 
@@ -45,7 +46,7 @@ const TabButton = ({
     <OphButton
       component={Link}
       variant={activeTabName === tabName ? 'contained' : 'text'}
-      to={`/haku/${hakuOid}/${tabName}`}
+      to={buildLinkToHakuTab({ hakuOid, tabName })}
       sx={{
         borderRadius: 0,
         fontWeight: 'normal',

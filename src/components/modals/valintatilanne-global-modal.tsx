@@ -15,7 +15,7 @@ import { ExternalLink } from '@/components/external-link';
 import { LabeledInfoItem } from '@/components/labeled-info-item';
 import { ListTable } from '@/components/table/list-table';
 import { makeColumnWithCustomRender } from '@/components/table/table-columns';
-import { buildLinkToApplication } from '@/lib/ataru/ataru-service';
+import { buildLinkToApplication } from '@/lib/externalLinks';
 import { Language } from '@/lib/localization/localization-types';
 import { TFunction, useTranslations } from '@/lib/localization/useTranslations';
 import { ValinnanTila, VastaanottoTila } from '@/lib/types/sijoittelu-types';

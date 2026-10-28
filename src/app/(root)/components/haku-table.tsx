@@ -7,6 +7,7 @@ import { ListTable } from '@/components/table/list-table';
 import { OphLink } from '@opetushallitus/oph-design-system';
 import { isTranslatedName } from '@/lib/localization/translation-utils';
 import { Link } from 'react-router';
+import { buildLinkToHakuPage } from '@/lib/appLinks';
 
 export const HakuTable = ({
   haut,
@@ -27,7 +28,7 @@ export const HakuTable = ({
         render: (haku) => (
           <OphLink
             component={Link}
-            to={`/haku/${haku.oid}`}
+            to={buildLinkToHakuPage(haku.oid)}
             sx={{ textDecoration: 'none' }}
           >
             {isTranslatedName(haku.nimi)
