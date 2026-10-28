@@ -296,6 +296,7 @@ test.describe('Valintaryhmän laskenta', () => {
           hakukohteitaYhteensa: 1,
           hakukohteitaValmiina: 0,
           hakukohteitaKeskeytetty: 0,
+          tyyppi: 'VALINTARYHMA',
         },
       },
     });
@@ -318,6 +319,7 @@ test.describe('Valintaryhmän laskenta', () => {
           hakukohteitaYhteensa: 2,
           hakukohteitaValmiina: 2,
           hakukohteitaKeskeytetty: 0,
+          tyyppi: 'VALINTARYHMA',
         },
       },
       yhteenvetoResponse: {
@@ -355,6 +357,7 @@ test.describe('Valintaryhmän laskenta', () => {
           hakukohteitaYhteensa: 2,
           hakukohteitaValmiina: 0,
           hakukohteitaKeskeytetty: 2,
+          tyyppi: 'VALINTARYHMA',
         },
       },
       yhteenvetoResponse: {

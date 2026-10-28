@@ -71,6 +71,7 @@ test.describe('Valintalaskenta', () => {
           hakukohteitaYhteensa: 1,
           hakukohteitaValmiina: 1,
           hakukohteitaKeskeytetty: 0,
+          tyyppi: 'HAKU',
         },
       },
       yhteenvetoResponse: {
@@ -113,6 +114,7 @@ test.describe('Valintalaskenta', () => {
           hakukohteitaYhteensa: 1,
           hakukohteitaValmiina: 1,
           hakukohteitaKeskeytetty: 0,
+          tyyppi: 'HAKU',
         },
       },
       yhteenvetoResponse: {
@@ -164,6 +166,7 @@ test.describe('Valintalaskenta', () => {
           hakukohteitaYhteensa: 1,
           hakukohteitaValmiina: 0,
           hakukohteitaKeskeytetty: 0,
+          tyyppi: 'HAKU',
         },
       },
       yhteenvetoResponse: {
