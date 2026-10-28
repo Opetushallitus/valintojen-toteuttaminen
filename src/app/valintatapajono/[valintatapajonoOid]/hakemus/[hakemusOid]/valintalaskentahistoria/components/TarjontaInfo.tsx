@@ -66,7 +66,6 @@ export const TarjontaInfo = ({
         paddingTop: 1,
         flexWrap: 'wrap',
         justifyContent: 'space-between',
-        maxWidth: '1920px',
       }}
     >
       <HakuInfo hakuOid={hakuOid} />

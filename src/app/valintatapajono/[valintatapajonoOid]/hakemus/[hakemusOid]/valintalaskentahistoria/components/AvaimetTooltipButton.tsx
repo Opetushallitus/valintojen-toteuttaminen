@@ -1,20 +1,7 @@
-import { useTranslations } from '@/lib/localization/useTranslations';
 import { Box } from '@mui/material';
 import { InfoTooltipButton } from '@/components/info-tooltip-button';
-import {
-  formatArvo,
-  TOOLTIP_MAX_WIDTH,
-} from '../lib/valintalaskentahistoriaUtils';
-
-// Puuttuva arvo näytetään tekstinä eikä viivana, jottei se sekoitu rivin erotinviivaan
-export const AvaimenArvo = ({ arvo }: { arvo: unknown }) => {
-  const { t } = useTranslations();
-  return arvo == null ? (
-    <em>{t('valintalaskentahistoria.ei-arvoa')}</em>
-  ) : (
-    formatArvo(arvo)
-  );
-};
+import { TOOLTIP_MAX_WIDTH } from '../lib/valintalaskentahistoriaUtils';
+import { AvaimenArvo } from './AvaimenArvo';
 
 // Lisätietopainike, jonka tooltipissa näytetään avaimet arvoineen
 export const AvaimetTooltipButton = ({

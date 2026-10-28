@@ -34,33 +34,33 @@ export const JarjestyskriteeriTabs = ({
   historiat: Array<Valintalaskentahistoria>;
 }) => {
   const { t } = useTranslations();
-  const [valittuIndex, setValittuIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
-  const historia = historiat[valittuIndex];
+  const historia = historiat[selectedIndex];
   const linkProps = jononSijainti && {
     valintatapajonoOid,
     jononSijainti,
-    tulos: jarjestyskriteerienTulokset[valittuIndex],
+    tulos: jarjestyskriteerienTulokset[selectedIndex],
   };
 
   // Välilehtien välillä liikutaan nuolinäppäimillä (WAI-ARIA tabs -malli). Valinta seuraa
   // fokusta, koska kaikkien välilehtien tiedot on jo haettu eikä vaihto näytä latausta.
-  const valitseJaFokusoi = (index: number) => {
-    setValittuIndex(index);
+  const selectAndFocus = (index: number) => {
+    setSelectedIndex(index);
     tabRefs.current[index]?.focus();
   };
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
     const viimeinen = historiat.length - 1;
     const uusiIndex = {
-      ArrowRight: valittuIndex === viimeinen ? 0 : valittuIndex + 1,
-      ArrowLeft: valittuIndex === 0 ? viimeinen : valittuIndex - 1,
+      ArrowRight: selectedIndex === viimeinen ? 0 : selectedIndex + 1,
+      ArrowLeft: selectedIndex === 0 ? viimeinen : selectedIndex - 1,
       Home: 0,
       End: viimeinen,
     }[event.key];
     if (uusiIndex !== undefined) {
       event.preventDefault();
-      valitseJaFokusoi(uusiIndex);
+      selectAndFocus(uusiIndex);
     }
   };
 
@@ -82,11 +82,11 @@ export const JarjestyskriteeriTabs = ({
             type="button"
             role="tab"
             id={tabId(index)}
-            aria-selected={index === valittuIndex}
+            aria-selected={index === selectedIndex}
             aria-controls={tabpanelId(index)}
             // Vain valittu välilehti on sarkainjärjestyksessä, muihin siirrytään nuolinäppäimillä
-            tabIndex={index === valittuIndex ? 0 : -1}
-            onClick={() => setValittuIndex(index)}
+            tabIndex={index === selectedIndex ? 0 : -1}
+            onClick={() => setSelectedIndex(index)}
           >
             {t('valintalaskentahistoria.jarjestyskriteeri', {
               numero: index + 1,
@@ -97,8 +97,8 @@ export const JarjestyskriteeriTabs = ({
       {historia && (
         <Box
           role="tabpanel"
-          id={tabpanelId(valittuIndex)}
-          aria-labelledby={tabId(valittuIndex)}
+          id={tabpanelId(selectedIndex)}
+          aria-labelledby={tabId(selectedIndex)}
         >
           <Stack direction="row" spacing="4vw">
             <LabeledInfoItem

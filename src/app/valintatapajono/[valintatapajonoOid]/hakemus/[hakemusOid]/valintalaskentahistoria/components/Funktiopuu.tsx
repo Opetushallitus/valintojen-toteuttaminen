@@ -7,10 +7,12 @@ import {
   NIMETYT_ARVOFUNKTIOT,
 } from '../lib/valintalaskentahistoriaUtils';
 import { NDASH } from '@/lib/constants';
-import { AvaimenArvo, AvaimetTooltipButton } from './AvaimetTooltipButton';
+import { AvaimenArvo } from './AvaimenArvo';
+import { AvaimetTooltipButton } from './AvaimetTooltipButton';
 
 const FUNKTIOPUU_SOLMU_CLASS = 'funktiopuu-solmu';
 const FUNKTIOPUU_RIVI_CLASS = 'funktiopuu-rivi';
+
 // Rivin vasen sisennys (theme spacing -yksiköinä). Puu siirretään saman verran vasemmalle,
 // jotta rivien teksti on otsikon kanssa samassa linjassa.
 const FUNKTIOPUU_RIVIN_SISENNYS = 0.5;
@@ -114,8 +116,7 @@ const FunktiopuuSolmu = ({
           {solmu.tulos != null &&
             ` (${t('valintalaskentahistoria.tulos')}: ${formatArvo(solmu.tulos)})`}
         </span>
-        {/* Vanhassa käyttöliittymässä solmun avaimet näytettiin modaalissa. Yksi avain mahtuu
-            yhdelle riville, joten se näytetään suoraan rivillä eikä tooltipin takana. */}
+        {/* Yksi avain mahtuu yhdelle riville, joten se näytetään suoraan rivillä eikä tooltipin takana. */}
         {ainoaAvain && (
           <Box component="span" sx={{ color: ophColors.grey700 }}>
             {` ${NDASH} `}
