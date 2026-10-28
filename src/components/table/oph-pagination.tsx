@@ -5,6 +5,7 @@ import {
   PaginationItem,
   PaginationProps,
   PaginationRenderItemParams,
+  useTheme,
 } from '@mui/material';
 import { ophColors } from '@opetushallitus/oph-design-system';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
@@ -57,6 +58,8 @@ export const OphPagination = ({
   nextText,
   ...props
 }: OphPaginationProps) => {
+  const localeGetItemAriaLabel =
+    useTheme().components?.MuiPagination?.defaultProps?.getItemAriaLabel;
   return (
     <Pagination
       {...props}
@@ -64,6 +67,17 @@ export const OphPagination = ({
       page={pageNumber}
       onChange={(_e: unknown, value: number) => {
         setPageNumber(value);
+      }}
+      // Saavutettava nimi pitää sisältää näkyvä teksti (axe: label-content-name-mismatch)
+      getItemAriaLabel={(type, page, selected) => {
+        switch (type) {
+          case 'previous':
+            return previousText;
+          case 'next':
+            return nextText;
+          default:
+            return localeGetItemAriaLabel?.(type, page, selected) ?? `${page}`;
+        }
       }}
       renderItem={(item: PaginationRenderItemParams) => (
         <StyledPaginationItem
