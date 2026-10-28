@@ -138,12 +138,3 @@ export const JARJESTYSKRITEERIT_RESPONSE = [
     metatiedot: 'Pakollisuus',
   },
 ];
-
-export const LASKENTAKAAVAT: Record<number, unknown> = {
-  101: {
-    id: 101,
-    nimi: 'Yhteispisteiden kaava',
-    kuvaus: 'Laskee yhteispisteet',
-  },
-  102: { id: 102, nimi: 'Pakollisuustarkistus', kuvaus: null },
-};

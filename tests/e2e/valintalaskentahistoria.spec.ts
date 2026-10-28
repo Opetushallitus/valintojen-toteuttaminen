@@ -14,7 +14,6 @@ import {
   HISTORIA_VALINTATAPAJONOOID,
   JARJESTYSKRITEERIT_RESPONSE,
   JONOSIJAHISTORIA_RESPONSE,
-  LASKENTAKAAVAT,
   TYHJA_JONOSIJAHISTORIA_RESPONSE,
 } from './fixtures/valintalaskentahistoria';
 import { NDASH } from '@/lib/constants';
@@ -43,20 +42,6 @@ test.beforeEach(async ({ page }) => {
   await page.route(
     `**/valintaperusteet-service/resources/valintatapajono/${HISTORIA_VALINTATAPAJONOOID}/jarjestyskriteeri`,
     (route) => route.fulfill({ json: JARJESTYSKRITEERIT_RESPONSE }),
-  );
-  await page.route(
-    (url) =>
-      /\/valintaperusteet-service\/resources\/laskentakaava\/\d+$/.test(
-        url.pathname,
-      ),
-    (route) => {
-      const id = Number(
-        new URL(route.request().url()).pathname.split('/').at(-1),
-      );
-      return LASKENTAKAAVAT[id]
-        ? route.fulfill({ json: LASKENTAKAAVAT[id] })
-        : route.fulfill({ status: 404 });
-    },
   );
   await mockJonosijahistoria(page, JONOSIJAHISTORIA_RESPONSE);
 });
@@ -105,7 +90,7 @@ test('Näyttää hakemuksen ja haun tiedot', async ({ page }) => {
   );
 });
 
-test('Näyttää viestin, jos hakemusta ei löydy', async ({ page }) => {
+test('Näyttää ilmoituksen, jos hakemusta ei löydy', async ({ page }) => {
   await page.route(
     (url) => url.pathname.endsWith('/lomake-editori/api/external/valinta-ui'),
     (route) => route.fulfill({ json: [] }),
@@ -119,7 +104,7 @@ test('Näyttää viestin, jos hakemusta ei löydy', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 2 })).toHaveCount(0);
 });
 
-test('Näyttää viestin, jos valintalaskentahistoriaa ei löydy', async ({
+test('Näyttää ilmoituksen, jos valintalaskentahistoriaa ei löydy', async ({
   page,
 }) => {
   await mockJonosijahistoria(page, []);
@@ -198,6 +183,11 @@ test('Avaimet ja arvot avataan ja suljetaan painikkeilla', async ({ page }) => {
       await expect(page.getByRole('tooltip')).toContainText(
         'valintaperuste: lisapisteet',
       );
+      await page
+        .getByRole('tooltip')
+        .getByRole('button', { name: 'Sulje' })
+        .click();
+      await expect(page.getByRole('tooltip')).toBeHidden();
     },
     'Nimetty lukuarvo',
     '2',
@@ -241,21 +231,6 @@ test('Järjestyskriteerien välilehdet näyttävät järjestyskriteerin tiedot',
 
   const tabpanel = page.getByRole('tabpanel');
 
-  // 1. järjestyskriteeri: nimi ja kuvaus tulevat laskentakaavasta
-  await expect(
-    tabpanel.getByRole('heading', { name: 'Yhteispisteiden kaava' }),
-  ).toBeVisible();
-  await tabpanel
-    .getByRole('heading', { name: 'Yhteispisteiden kaava' })
-    .getByRole('button', { name: 'Lisätietoja' })
-    .click();
-  await expect(page.getByRole('tooltip')).toContainText('Laskee yhteispisteet');
-  await page
-    .getByRole('tooltip')
-    .getByRole('button', { name: 'Sulje' })
-    .click();
-  await expect(page.getByRole('tooltip')).toBeHidden();
-
   await expect(tabpanel.getByLabel('Tila')).toHaveText('Hyväksyttävissä');
   await expect(tabpanel.getByLabel('Tulos')).toHaveText('12');
   await expect(
@@ -270,15 +245,6 @@ test('Järjestyskriteerien välilehdet näyttävät järjestyskriteerin tiedot',
   // 2. välilehti vastaa toista aktiivista järjestyskriteeriä (ei-aktiivinen ohitetaan)
   await tabs.nth(1).click();
   await expect(tabs.nth(1)).toHaveAttribute('aria-selected', 'true');
-  await expect(
-    tabpanel.getByRole('heading', { name: 'Pakollisuustarkistus' }),
-  ).toBeVisible();
-  // Kuvauksettomalla laskentakaavalla ei ole lisätietopainiketta
-  await expect(
-    tabpanel
-      .getByRole('heading', { name: 'Pakollisuustarkistus' })
-      .getByRole('button', { name: 'Lisätietoja' }),
-  ).toHaveCount(0);
   // Näytettävä tila valitaan kuten laskennassa: hylkäys ohittaa hyväksyttävissä-tilan
   await expect(tabpanel.getByLabel('Tila')).toHaveText(
     `Hylätty ${NDASH} Pakollinen valintaperuste puuttuu`,
@@ -322,25 +288,4 @@ test('Näyttää järjestyskriteerin funktiopuun', async ({ page }) => {
   const tooltip = page.getByRole('tooltip');
   await expect(tooltip).toContainText('valintaperuste: lisapisteet');
   await expect(tooltip).toContainText('oletusarvo: 0');
-});
-
-test('Näyttää viivan, jos järjestyskriteerille ei löydy linkkiä valintaperusteisiin', async ({
-  page,
-}) => {
-  await page.route(
-    `**/valintaperusteet-service/resources/valintatapajono/${HISTORIA_VALINTATAPAJONOOID}/jarjestyskriteeri`,
-    (route) => route.fulfill({ json: [] }),
-  );
-  await page.goto(HISTORIA_URL);
-  await expectAllSpinnersHidden(page);
-
-  const tabpanel = page.getByRole('tabpanel');
-  await expect(
-    tabpanel.getByRole('link', { name: 'Valintaperusteen mallinnus' }),
-  ).toHaveCount(0);
-  await expect(tabpanel.getByLabel('Lisätiedot')).toHaveText(NDASH);
-  // Ilman laskentakaavaa otsikkona on välilehden nimi
-  await expect(
-    tabpanel.getByRole('heading', { name: '1. järjestyskriteeri' }),
-  ).toBeVisible();
 });

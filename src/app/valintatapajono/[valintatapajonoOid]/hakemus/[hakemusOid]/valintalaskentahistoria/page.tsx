@@ -59,6 +59,7 @@ const ValintalaskentahistoriaContent = ({
           name={hakemusOid}
           href={buildLinkToApplication(hakemusOid)}
           noIcon={true}
+          underline="always"
         />{' '}
         ({hakija.hakijanNimi})
       </Typography>

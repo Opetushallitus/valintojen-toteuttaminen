@@ -7,6 +7,8 @@ export type ExternalLinkProps = {
   href: string;
   noIcon?: boolean;
   title?: string;
+  // Tekstin sisällä oleva linkki pitää erottaa ympäröivästä tekstistä muutenkin kuin värillä
+  underline?: 'hover' | 'always';
 };
 
 export const ExternalLink = ({
@@ -14,6 +16,7 @@ export const ExternalLink = ({
   href,
   noIcon,
   title,
+  underline,
 }: ExternalLinkProps) => {
   const { configuration } = useConfiguration();
   const isAbsoluteLink = href.startsWith('http');
@@ -26,6 +29,7 @@ export const ExternalLink = ({
       iconVisible={noIcon == null ? true : !noIcon}
       to={to}
       title={title ?? ''}
+      underline={underline}
     >
       {name}
     </OphLink>
