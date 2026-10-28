@@ -63,6 +63,12 @@ export type ValintaryhmaHakukohteilla = {
   userHasWriteAccess: boolean;
 };
 
+export type Laskentakaava = {
+  id: number;
+  nimi: string;
+  kuvaus?: string | null;
+};
+
 export type ValintaperusteetJarjestyskriteeri = {
   oid: string;
   laskentakaavaId: number;

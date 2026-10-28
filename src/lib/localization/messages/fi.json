@@ -763,14 +763,19 @@
     "piilota-avaimet": "Piilota avaimet",
     "nayta-arvot": "Näytä arvot",
     "piilota-arvot": "Piilota arvot",
+    "ei-avaimia": "Ei avaimia",
+    "ei-arvoja": "Ei nimettyjä arvoja",
     "jarjestyskriteerit": "Järjestyskriteerit",
     "jarjestyskriteeri": "{numero}. järjestyskriteeri",
     "avain": "Avain",
     "arvo": "Arvo",
+    "numero": "Nro",
     "nimi": "Nimi",
+    "tyyppi": "Tyyppi",
     "tila": "Tila",
     "tulos": "Tulos",
     "lisatiedot": "Lisätiedot",
-    "valintaperusteen-mallinnus": "Valintaperusteen mallinnus"
+    "valintaperusteen-mallinnus": "Valintaperusteen mallinnus",
+    "ei-arvoa": "ei arvoa"
   }
 }
