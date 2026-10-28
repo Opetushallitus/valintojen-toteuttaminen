@@ -37,6 +37,37 @@ test('Sivukoon oletusarvo on 50', async ({ page }) => {
   await expectPageSizeSelectorValue(page, '50');
 });
 
+test.describe('Suuri näyttö', () => {
+  const viewportWidth = 2560;
+  test.use({ viewport: { width: viewportWidth, height: 1440 } });
+
+  test('Pistesyöttö hyödyntää näytön leveyden ilman sivun vaakaylivuotoa', async ({
+    page,
+  }) => {
+    const form = page.getByTestId('pistesyotto-form');
+    await expect(form.locator('tbody tr')).toHaveCount(4);
+
+    // Sallitaan sivun reunukset, mutta havaitaan 1920 px leveysrajan palaaminen.
+    await expect
+      .poll(() =>
+        page.locator('main').evaluate((el) => el.getBoundingClientRect().width),
+      )
+      .toBeGreaterThan(viewportWidth * 0.9);
+    await expect
+      .poll(() => form.evaluate((el) => el.getBoundingClientRect().right))
+      .toBeGreaterThan(viewportWidth * 0.95);
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () =>
+            document.documentElement.scrollWidth -
+            document.documentElement.clientWidth,
+        ),
+      )
+      .toBeLessThanOrEqual(1);
+  });
+});
+
 test('Näyttää pistesyotön', async ({ page }) => {
   const headrow = page.getByTestId('pistesyotto-form').locator('thead tr');
   await checkRow(
