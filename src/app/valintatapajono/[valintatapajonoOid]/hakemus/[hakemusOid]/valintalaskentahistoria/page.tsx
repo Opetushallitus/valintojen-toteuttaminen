@@ -11,7 +11,8 @@ import {
 } from '@/lib/valintalaskenta/valintalaskenta-queries';
 import { Valintalaskentahistoria } from '@/lib/types/laskenta-types';
 import { Stack, Typography } from '@mui/material';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { NoResults } from '@/components/no-results';
+import { useSuspenseQueries, useSuspenseQuery } from '@tanstack/react-query';
 import { TarjontaInfo } from './components/TarjontaInfo';
 import { HistorianAvaimetJaArvot } from './components/HistorianAvaimetJaArvot';
 import { JarjestyskriteeriTabs } from './components/JarjestyskriteeriTabs';
@@ -25,40 +26,51 @@ const ValintalaskentahistoriaContent = ({
   hakemusOid: string;
 }) => {
   const { t } = useTranslations();
-  const { data: hakijat } = useSuspenseQuery(
-    queryOptionsGetHakijat({
-      hakemusOids: [hakemusOid],
-    }),
-  );
-  const { data: historiat } = useSuspenseQuery(
-    queryOptionsGetValintalaskentahistoria({ valintatapajonoOid, hakemusOid }),
-  );
+  const [{ data: hakijat }, { data: historiat }] = useSuspenseQueries({
+    queries: [
+      queryOptionsGetHakijat({
+        hakemusOids: [hakemusOid],
+      }),
+      queryOptionsGetValintalaskentahistoria({
+        valintatapajonoOid,
+        hakemusOid,
+      }),
+    ],
+  });
 
   const hakija = hakijat?.[0];
   const hakuOid = hakija?.hakuOid;
 
+  if (!hakija) {
+    return (
+      <NoResults
+        text={t('valintalaskentahistoria.hakemusta-ei-loytynyt', {
+          oid: hakemusOid,
+        })}
+      />
+    );
+  }
+
   return (
-    hakija && (
-      <>
-        <Typography variant="h2">
-          {t('valintalaskentahistoria.historia-otsikko')}{' '}
-          <ExternalLink
-            name={hakemusOid}
-            href={buildLinkToApplication(hakemusOid)}
-            noIcon={true}
-          />{' '}
-          ({hakija.hakijanNimi})
-        </Typography>
-        {hakuOid && (
-          <HakemuksenHistoria
-            hakuOid={hakuOid}
-            hakemusOid={hakemusOid}
-            valintatapajonoOid={valintatapajonoOid}
-            historiat={historiat}
-          />
-        )}
-      </>
-    )
+    <>
+      <Typography variant="h2">
+        {t('valintalaskentahistoria.historia-otsikko')}{' '}
+        <ExternalLink
+          name={hakemusOid}
+          href={buildLinkToApplication(hakemusOid)}
+          noIcon={true}
+        />{' '}
+        ({hakija.hakijanNimi})
+      </Typography>
+      {hakuOid && (
+        <HakemuksenHistoria
+          hakuOid={hakuOid}
+          hakemusOid={hakemusOid}
+          valintatapajonoOid={valintatapajonoOid}
+          historiat={historiat}
+        />
+      )}
+    </>
   );
 };
 
@@ -73,6 +85,7 @@ const HakemuksenHistoria = ({
   valintatapajonoOid: string;
   historiat: Array<Valintalaskentahistoria>;
 }) => {
+  const { t } = useTranslations();
   // Sivun osoitteessa on vain valintatapajono, joten sen hakukohde ja valinnanvaihe etsitään
   // hakemuksen valintalaskennan tuloksista
   const { data: valintalaskennanTulokset } = useSuspenseQuery(
@@ -89,7 +102,7 @@ const HakemuksenHistoria = ({
         hakuOid={hakuOid}
         hakukohdeOid={jononSijainti?.hakukohdeOid}
       />
-      {historiat.length > 0 && (
+      {historiat.length > 0 ? (
         <>
           <HistorianAvaimetJaArvot historiat={historiat} />
           <JarjestyskriteeriTabs
@@ -98,6 +111,12 @@ const HakemuksenHistoria = ({
             historiat={historiat}
           />
         </>
+      ) : (
+        <NoResults
+          text={t('valintalaskentahistoria.historiaa-ei-loytynyt', {
+            valintatapajonoOid,
+          })}
+        />
       )}
     </>
   );

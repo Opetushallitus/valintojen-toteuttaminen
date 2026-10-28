@@ -6,7 +6,6 @@ import { ListTableColumn } from '@/components/table/table-types';
 import { Stack } from '@mui/material';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { useState } from 'react';
-import { DataObjectOutlined, KeyOffOutlined } from '@mui/icons-material';
 import { groupBy, prop, unique } from 'remeda';
 import { AvaimetTooltipButton } from './AvaimetTooltipButton';
 import {
@@ -144,7 +143,6 @@ export const HistorianAvaimetJaArvot = ({
           rows={avainRows}
           columns={AVAIMET_COLUMNS}
           emptyText={t('valintalaskentahistoria.ei-avaimia')}
-          emptyIcon={<KeyOffOutlined />}
         />
       )}
       <OphButton
@@ -163,7 +161,6 @@ export const HistorianAvaimetJaArvot = ({
           rows={arvoRows}
           columns={ARVOT_COLUMNS}
           emptyText={t('valintalaskentahistoria.ei-arvoja')}
-          emptyIcon={<DataObjectOutlined />}
         />
       )}
     </Stack>

@@ -38,17 +38,15 @@ export const AvainArvoTable = ({
   rows,
   columns,
   emptyText,
-  emptyIcon,
 }: {
   rows: Array<AvainArvoRow>;
   columns: Array<ListTableColumn<AvainArvoRow>>;
   emptyText: string;
-  emptyIcon: React.ReactNode;
 }) =>
   rows.length === 0 ? (
     // Täysleveä kääre, jotta placeholder rivittyy painikerivillä omalle rivilleen
     <Box sx={{ width: '100%' }}>
-      <NoResults text={emptyText} icon={emptyIcon} />
+      <NoResults text={emptyText} />
     </Box>
   ) : (
     <ListTable

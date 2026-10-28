@@ -105,6 +105,41 @@ test('Näyttää hakemuksen ja haun tiedot', async ({ page }) => {
   );
 });
 
+test('Näyttää viestin, jos hakemusta ei löydy', async ({ page }) => {
+  await page.route(
+    (url) => url.pathname.endsWith('/lomake-editori/api/external/valinta-ui'),
+    (route) => route.fulfill({ json: [] }),
+  );
+  await page.goto(HISTORIA_URL);
+  await expectAllSpinnersHidden(page);
+
+  await expect(
+    page.getByText(`Hakemusta ei löytynyt tunnisteella ${HISTORIA_HAKEMUSOID}`),
+  ).toBeVisible();
+  await expect(page.getByRole('heading', { level: 2 })).toHaveCount(0);
+});
+
+test('Näyttää viestin, jos valintalaskentahistoriaa ei löydy', async ({
+  page,
+}) => {
+  await mockJonosijahistoria(page, []);
+  await page.goto(HISTORIA_URL);
+  await expectAllSpinnersHidden(page);
+
+  // Hakemuksen ja haun tiedot näytetään, vaikka historiaa ei ole
+  await expect(page.getByRole('heading', { level: 2 })).toContainText(
+    `Laskenta hakemukselle ${HISTORIA_HAKEMUSOID}`,
+  );
+  await expect(page.getByLabel('Haun tunniste')).toHaveText(HISTORIA_HAKUOID);
+  await expect(
+    page.getByText('Valintalaskentahistoriaa ei löytynyt'),
+  ).toBeVisible();
+  await expect(page.getByRole('tablist')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Näytä arvot' })).toHaveCount(
+    0,
+  );
+});
+
 test('Avaimet ja arvot avataan ja suljetaan painikkeilla', async ({ page }) => {
   await page.goto(HISTORIA_URL);
   await expectAllSpinnersHidden(page);

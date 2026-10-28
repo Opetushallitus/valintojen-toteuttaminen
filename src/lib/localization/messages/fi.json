@@ -777,6 +777,8 @@
     "tulos": "Tulos",
     "lisatiedot": "Lisätiedot",
     "valintaperusteen-mallinnus": "Valintaperusteen mallinnus",
+    "hakemusta-ei-loytynyt": "Hakemusta ei löytynyt tunnisteella {oid}",
+    "historiaa-ei-loytynyt": "Valintalaskentahistoriaa ei löytynyt valintatapajonolle {valintatapajonoOid}",
     "ei-arvoa": "ei arvoa"
   }
 }
