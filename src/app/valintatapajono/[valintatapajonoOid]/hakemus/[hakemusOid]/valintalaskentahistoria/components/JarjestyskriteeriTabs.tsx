@@ -1,21 +1,17 @@
 import { ExternalLink } from '@/components/external-link';
 import { LabeledInfoItem } from '@/components/labeled-info-item';
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { queryOptionsGetHakemuksenValintalaskennanTulokset } from '@/lib/valintalaskenta/valintalaskenta-queries';
 import { queryOptionsGetValintatapajononAktiivisetJarjestyskriteerit } from '@/lib/valintaperusteet/valintaperusteet-queries';
 import { buildLinkToJarjestyskriteeri } from '@/lib/valintaperusteet/valintaperusteet-service';
 import { Valintalaskentahistoria } from '@/lib/types/laskenta-types';
 import { Box, Stack } from '@mui/material';
 import { DEFAULT_BOX_BORDER, styled } from '@/lib/theme';
 import { TAB_ITEM_STYLES, tabRowStyles } from '@/components/tabStyles';
-import { useSuspenseQueries } from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
 import { Funktiopuu } from './Funktiopuu';
 import { JarjestyskriteerinTila } from './JarjestyskriteerinTila';
-import {
-  findJononHakukohdeJaValinnanvaihe,
-  formatArvo,
-} from '../lib/valintalaskentahistoriaUtils';
+import { formatArvo, JononSijainti } from '../lib/valintalaskentahistoriaUtils';
 import { NDASH } from '@/lib/constants';
 
 // Välilehdet tyylitellään samoin kuin hakukohteen välilehdet (HakukohdeTabs),
@@ -39,16 +35,15 @@ const StyledTab = styled('button')(({ theme }) => ({
 const tabId = (index: number) => `jarjestyskriteeri-tab-${index}`;
 const tabpanelId = (index: number) => `jarjestyskriteeri-tabpanel-${index}`;
 
-// Välilehti kullekin järjestyskriteerille (historiat ovat prioriteettijärjestyksessä)
+// Välilehti kullekin järjestyskriteerille (historiat ovat prioriteettijärjestyksessä).
+// Jonon sijainnilla linkitetään valintaperusteisiin. Jos sitä ei löytynyt, linkkiä ei näytetä.
 export const JarjestyskriteeriTabs = ({
-  hakuOid,
-  hakemusOid,
   valintatapajonoOid,
+  jononSijainti,
   historiat,
 }: {
-  hakuOid: string;
-  hakemusOid: string;
   valintatapajonoOid: string;
+  jononSijainti?: JononSijainti;
   historiat: Array<Valintalaskentahistoria>;
 }) => {
   const { t } = useTranslations();
@@ -76,25 +71,14 @@ export const JarjestyskriteeriTabs = ({
       valitseJaFokusoi(uusiIndex);
     }
   };
-  const [{ data: jarjestyskriteerit }, { data: valintalaskennanTulokset }] =
-    useSuspenseQueries({
-      queries: [
-        queryOptionsGetValintatapajononAktiivisetJarjestyskriteerit(
-          valintatapajonoOid,
-        ),
-        queryOptionsGetHakemuksenValintalaskennanTulokset({
-          hakuOid,
-          hakemusOid,
-        }),
-      ],
-    });
+  const { data: jarjestyskriteerit } = useSuspenseQuery(
+    queryOptionsGetValintatapajononAktiivisetJarjestyskriteerit(
+      valintatapajonoOid,
+    ),
+  );
   // Historiat ja aktiiviset järjestyskriteerit ovat samassa prioriteettijärjestyksessä.
   // Huom: linkki vie valintaperusteiden nykyiseen järjestyskriteeriin, joka on voinut muuttua laskennan jälkeen.
   const jarjestyskriteeri = jarjestyskriteerit[valittuIndex];
-  const jononSijainti = findJononHakukohdeJaValinnanvaihe(
-    valintalaskennanTulokset,
-    valintatapajonoOid,
-  );
 
   return (
     <Stack spacing={2}>

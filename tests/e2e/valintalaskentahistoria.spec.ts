@@ -90,6 +90,19 @@ test('Näyttää hakemuksen ja haun tiedot', async ({ page }) => {
     }),
   ).toHaveAttribute('href', new RegExp(`kouta/haku/${HISTORIA_HAKUOID}$`));
   await expect(page.getByLabel('Haun tunniste')).toHaveText(HISTORIA_HAKUOID);
+
+  // Hakukohde on se, jonka valinnanvaiheeseen valintatapajono kuuluu
+  await expect(
+    page.getByRole('link', {
+      name: 'Finnish MAOL competition route, Technology, Sustainable Urban Development, Bachelor and Master of Science (Technology) (3 + 2 yrs)',
+    }),
+  ).toHaveAttribute(
+    'href',
+    new RegExp(`kouta/hakukohde/${HISTORIA_HAKUKOHDEOID}$`),
+  );
+  await expect(page.getByLabel('Hakukohteen tunniste')).toHaveText(
+    HISTORIA_HAKUKOHDEOID,
+  );
 });
 
 test('Avaimet ja arvot avataan ja suljetaan painikkeilla', async ({ page }) => {

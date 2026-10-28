@@ -37,12 +37,17 @@ export const palautettavaTila = (
     tilatyyppi: 'HYVAKSYTTAVISSA',
   };
 
+export type JononSijainti = {
+  hakukohdeOid: string;
+  valinnanvaiheOid: string;
+};
+
 // Etsitään hakemuksen valintalaskennan tuloksista hakukohde ja valinnanvaihe, joihin valintatapajono kuuluu.
 // Valintalaskenta tallentaa valintaperusteiden OIDit sellaisinaan, joten niillä voi linkittää valintaperusteisiin.
 export const findJononHakukohdeJaValinnanvaihe = (
   tulokset: Record<string, Array<ValintalaskennanTulosValinnanvaiheModel>>,
   valintatapajonoOid: string,
-) => {
+): JononSijainti | undefined => {
   for (const [hakukohdeOid, valinnanvaiheet] of Object.entries(tulokset)) {
     const valinnanvaihe = valinnanvaiheet.find((vaihe) =>
       vaihe.valintatapajonot?.some(

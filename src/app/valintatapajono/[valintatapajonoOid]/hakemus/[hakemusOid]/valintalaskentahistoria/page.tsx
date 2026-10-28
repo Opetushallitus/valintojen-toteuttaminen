@@ -5,12 +5,17 @@ import { useRequiredParams } from '@/hooks/useRequiredParams';
 import { queryOptionsGetHakijat } from '@/lib/ataru/ataru-queries';
 import { buildLinkToApplication } from '@/lib/ataru/ataru-service';
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { queryOptionsGetValintalaskentahistoria } from '@/lib/valintalaskenta/valintalaskenta-queries';
+import {
+  queryOptionsGetHakemuksenValintalaskennanTulokset,
+  queryOptionsGetValintalaskentahistoria,
+} from '@/lib/valintalaskenta/valintalaskenta-queries';
+import { Valintalaskentahistoria } from '@/lib/types/laskenta-types';
 import { Stack, Typography } from '@mui/material';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { HakuInfo } from './components/HakuInfo';
+import { TarjontaInfo } from './components/TarjontaInfo';
 import { HistorianAvaimetJaArvot } from './components/HistorianAvaimetJaArvot';
 import { JarjestyskriteeriTabs } from './components/JarjestyskriteeriTabs';
+import { findJononHakukohdeJaValinnanvaihe } from './lib/valintalaskentahistoriaUtils';
 
 const ValintalaskentahistoriaContent = ({
   valintatapajonoOid,
@@ -44,20 +49,57 @@ const ValintalaskentahistoriaContent = ({
           />{' '}
           ({hakija.hakijanNimi})
         </Typography>
-        {hakuOid && <HakuInfo hakuOid={hakija.hakuOid} />}
-        {historiat.length > 0 && (
-          <>
-            <HistorianAvaimetJaArvot historiat={historiat} />
-            <JarjestyskriteeriTabs
-              hakuOid={hakija.hakuOid}
-              hakemusOid={hakemusOid}
-              valintatapajonoOid={valintatapajonoOid}
-              historiat={historiat}
-            />
-          </>
+        {hakuOid && (
+          <HakemuksenHistoria
+            hakuOid={hakuOid}
+            hakemusOid={hakemusOid}
+            valintatapajonoOid={valintatapajonoOid}
+            historiat={historiat}
+          />
         )}
       </>
     )
+  );
+};
+
+const HakemuksenHistoria = ({
+  hakuOid,
+  hakemusOid,
+  valintatapajonoOid,
+  historiat,
+}: {
+  hakuOid: string;
+  hakemusOid: string;
+  valintatapajonoOid: string;
+  historiat: Array<Valintalaskentahistoria>;
+}) => {
+  // Sivun osoitteessa on vain valintatapajono, joten sen hakukohde ja valinnanvaihe etsitään
+  // hakemuksen valintalaskennan tuloksista
+  const { data: valintalaskennanTulokset } = useSuspenseQuery(
+    queryOptionsGetHakemuksenValintalaskennanTulokset({ hakuOid, hakemusOid }),
+  );
+  const jononSijainti = findJononHakukohdeJaValinnanvaihe(
+    valintalaskennanTulokset,
+    valintatapajonoOid,
+  );
+
+  return (
+    <>
+      <TarjontaInfo
+        hakuOid={hakuOid}
+        hakukohdeOid={jononSijainti?.hakukohdeOid}
+      />
+      {historiat.length > 0 && (
+        <>
+          <HistorianAvaimetJaArvot historiat={historiat} />
+          <JarjestyskriteeriTabs
+            valintatapajonoOid={valintatapajonoOid}
+            jononSijainti={jononSijainti}
+            historiat={historiat}
+          />
+        </>
+      )}
+    </>
   );
 };
 

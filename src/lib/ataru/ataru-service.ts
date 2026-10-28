@@ -195,6 +195,7 @@ export async function getHakemukset({
 }
 
 const LINK_TO_HAKU = 'kouta/haku/';
+const LINK_TO_HAKUKOHDE = 'kouta/hakukohde/';
 
 export const buildLinkToApplication = (hakemusOid: string) => {
   const config = getConfiguration();
@@ -202,3 +203,6 @@ export const buildLinkToApplication = (hakemusOid: string) => {
 };
 
 export const buildLinkToHaku = (hakuOid: string) => LINK_TO_HAKU + hakuOid;
+
+export const buildLinkToHakukohde = (hakukohdeOid: string) =>
+  LINK_TO_HAKUKOHDE + hakukohdeOid;
