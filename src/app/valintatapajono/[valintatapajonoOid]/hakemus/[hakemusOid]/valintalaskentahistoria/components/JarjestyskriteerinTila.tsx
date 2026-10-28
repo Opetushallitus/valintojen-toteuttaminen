@@ -1,24 +1,28 @@
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { ValintalaskentahistoriaTila } from '@/lib/types/laskenta-types';
+import { JarjestyskriteeriModel } from '@/lib/types/laskenta-types';
 import { mapKeys } from 'remeda';
-import { palautettavaTila } from '../lib/valintalaskentahistoriaUtils';
 import { NDASH } from '@/lib/constants';
 
+// Näytetään järjestyskriteerin tulokseen tallennettu tila. Historiasta tilaa ei voi päätellä, koska
+// valintalaskenta voi muuttaa laskimen tilaa (esim. edellisen valinnanvaiheen hylkäys) ja
+// virkailija voi muokata sitä käsin, eikä historia päivity.
 export const JarjestyskriteerinTila = ({
-  tilat,
+  tulos,
 }: {
-  tilat: Array<ValintalaskentahistoriaTila>;
+  tulos?: JarjestyskriteeriModel;
 }) => {
   const { t, translateEntity } = useTranslations();
-  const tila = palautettavaTila(tilat);
+  if (!tulos) {
+    return NDASH;
+  }
   // Kuvauksen kieliavaimet ovat isoilla kirjaimilla (FI, SV, EN)
   const kuvaus = translateEntity(
-    mapKeys(tila.kuvaus ?? {}, (kieli) => kieli.toLowerCase()),
+    mapKeys(tulos.kuvaus ?? {}, (kieli) => kieli.toLowerCase()),
   );
 
   return (
     <span>
-      {t(`tuloksenTila.${tila.tilatyyppi}`)}
+      {t(`tuloksenTila.${tulos.tila}`)}
       {kuvaus && ` ${NDASH} ${kuvaus}`}
     </span>
   );

@@ -37,10 +37,11 @@ export const JarjestyskriteeriTabs = ({
   const [selectedIndex, setSelectedIndex] = useState(0);
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const historia = historiat[selectedIndex];
+  const tulos = jarjestyskriteerienTulokset[selectedIndex];
   const linkProps = jononSijainti && {
     valintatapajonoOid,
     jononSijainti,
-    tulos: jarjestyskriteerienTulokset[selectedIndex],
+    tulos,
   };
 
   // Välilehtien välillä liikutaan nuolinäppäimillä (WAI-ARIA tabs -malli). Valinta seuraa
@@ -103,7 +104,7 @@ export const JarjestyskriteeriTabs = ({
           <Stack direction="row" spacing="4vw">
             <LabeledInfoItem
               label={t('valintalaskentahistoria.tila')}
-              value={<JarjestyskriteerinTila tilat={historia.tilat} />}
+              value={<JarjestyskriteerinTila tulos={tulos} />}
             />
             <LabeledInfoItem
               label={t('valintalaskentahistoria.tulos')}

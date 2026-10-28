@@ -264,9 +264,9 @@ test('Järjestyskriteerien välilehdet näyttävät järjestyskriteerin tiedot',
   // 2. välilehden tuloksen prioriteetti on 2, koska välissä on ei-aktiivinen järjestyskriteeri
   await tabs.nth(1).click();
   await expect(tabs.nth(1)).toHaveAttribute('aria-selected', 'true');
-  // Näytettävä tila valitaan kuten laskennassa: hylkäys ohittaa hyväksyttävissä-tilan
+  // Tila näytetään järjestyskriteerin tulokseen tallennetusta tilasta, ei historiasta
   await expect(tabpanel.getByLabel('Tila')).toHaveText(
-    `Hylätty ${NDASH} Pakollinen valintaperuste puuttuu`,
+    `Hylätty ${NDASH} Hylätty edellisessä valinnanvaiheessa`,
   );
   await expect(tabpanel.getByLabel('Tulos')).toHaveText(NDASH);
   await expect(

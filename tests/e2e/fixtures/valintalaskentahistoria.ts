@@ -135,7 +135,9 @@ export const LASKENTAKAAVOJEN_NIMET: Record<number, string> = {
 };
 
 // Hakemuksen valintalaskennan tulokset, joissa historian jonosijan järjestyskriteerien tulokset
-// vastaavat järjestyskriteerejä samoin kuin laskennan jälkeen (nimi ja prioriteetti)
+// vastaavat järjestyskriteerejä samoin kuin laskennan jälkeen (nimi ja prioriteetti).
+// 2. järjestyskriteerin tallennettu kuvaus poikkeaa historiasta, kuten silloin, kun valintalaskenta
+// on hylännyt hakemuksen edellisen valinnanvaiheen perusteella.
 export const HISTORIAN_VALINTALASKENNAN_TULOKSET = {
   ...HAKEMUKSEN_VALINTALASKENTA_TULOKSET,
   hakukohteet: HAKEMUKSEN_VALINTALASKENTA_TULOKSET.hakukohteet.map(
@@ -162,7 +164,9 @@ export const HISTORIAN_VALINTALASKENNAN_TULOKSET = {
                           {
                             arvo: null,
                             tila: 'HYLATTY',
-                            kuvaus: { FI: 'Pakollinen valintaperuste puuttuu' },
+                            kuvaus: {
+                              FI: 'Hylätty edellisessä valinnanvaiheessa',
+                            },
                             prioriteetti: 2,
                             nimi: 'Pakollisuus',
                           },

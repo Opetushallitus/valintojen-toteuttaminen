@@ -4,7 +4,6 @@ import {
   JarjestyskriteeriModel,
   ValintalaskennanTulosValinnanvaiheModel,
   Valintalaskentahistoria,
-  ValintalaskentahistoriaTila,
 } from '@/lib/types/laskenta-types';
 
 // Avainlistat ja kuvaukset ovat pidempiä kuin tooltipin oletusleveyteen (300px) mahtuu
@@ -27,17 +26,6 @@ export const collectNimetytArvot = (
     : []),
   ...(historia.historiat ?? []).flatMap(collectNimetytArvot),
 ];
-
-// Valitaan näytettävä tila samoin kuin laskenta (palautettavaTila valintaperusteet-laskennassa):
-// ensimmäinen virhe, muuten ensimmäinen hylkäys, muuten hyväksyttävissä.
-// Tilat eivät ole aikajärjestyksessä, vaan ne on kerätty alifunktioiden tuloksista.
-export const palautettavaTila = (
-  tilat: Array<ValintalaskentahistoriaTila>,
-): ValintalaskentahistoriaTila =>
-  tilat.find((tila) => tila.tilatyyppi === 'VIRHE') ??
-  tilat.find((tila) => tila.tilatyyppi === 'HYLATTY') ?? {
-    tilatyyppi: 'HYVAKSYTTAVISSA',
-  };
 
 export type JononSijainti = {
   hakukohdeOid: string;
