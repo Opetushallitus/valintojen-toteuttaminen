@@ -1,5 +1,6 @@
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { DEFAULT_BOX_BORDER, ophColors, styled } from '@/lib/theme';
+import { DEFAULT_BOX_BORDER, styled } from '@/lib/theme';
+import { TAB_ITEM_STYLES, tabRowStyles } from '@/components/tabStyles';
 import { useHakukohde } from '@/lib/kouta/useHakukohde';
 import { OphTypography } from '@opetushallitus/oph-design-system';
 import { HakukohdeTabLink } from '@/components/hakukohde-tab-link';
@@ -20,29 +21,9 @@ const StyledHeader = styled('div')(({ theme }) => ({
   },
 }));
 
-const StyledTabs = styled('nav')(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'row',
-  columnGap: theme.spacing(2),
-  rowGap: theme.spacing(1),
-  flexWrap: 'wrap',
-}));
+const StyledTabs = styled('nav')(({ theme }) => tabRowStyles(theme));
 
-const StyledTab = styled(HakukohdeTabLink)<{ $active: boolean }>(
-  ({ $active }) => ({
-    color: ophColors.blue2,
-    cursor: 'pointer',
-    borderBottom: '3px solid',
-    borderColor: $active ? ophColors.blue2 : 'transparent',
-    textDecoration: 'none',
-    '&:hover': {
-      borderColor: ophColors.blue2,
-    },
-    '&:focus-visible': {
-      outlineOffset: '3px',
-    },
-  }),
-);
+const StyledTab = styled(HakukohdeTabLink)(TAB_ITEM_STYLES);
 
 export const HakukohdeTabs = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
   const activeTab = useHakukohdeTab();
@@ -72,7 +53,7 @@ export const HakukohdeTabs = ({ hakuOid, hakukohdeOid }: KoutaOidParams) => {
             hakuOid={hakuOid}
             hakukohdeOid={hakukohdeOid}
             tabRoute={tab.route}
-            $active={tab.title === activeTab.title}
+            aria-current={tab.title === activeTab.title ? 'page' : undefined}
           >
             {t(tab.title)}
           </StyledTab>
