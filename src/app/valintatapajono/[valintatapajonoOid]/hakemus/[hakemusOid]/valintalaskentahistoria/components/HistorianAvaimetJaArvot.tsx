@@ -6,7 +6,7 @@ import { ListTableColumn } from '@/components/table/table-types';
 import { Stack } from '@mui/material';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { useState } from 'react';
-import { groupBy, prop, unique } from 'remeda';
+import { groupBy, prop, sortBy, unique } from 'remeda';
 import { AvaimetTooltipButton } from './AvaimetTooltipButton';
 import {
   AvainArvoRow,
@@ -68,15 +68,20 @@ const toNimettyArvoRow = (
 ): NimettyArvoRow => {
   // Funktio on aina "Nimetty lukuarvo"/"Nimetty totuusarvo", varsinainen nimi on avaimissa
   const { nimi, ...muutAvaimet } = solmu.avaimet ?? {};
-  const avain = nimi ? formatArvo(nimi) : solmu.funktio;
+  const avain = nimi == null ? solmu.funktio : formatArvo(nimi);
   const tyyppi = solmu.funktio;
   const arvo = formatArvo(solmu.tulos);
+  // Avaimet järjestetään, jotta samat avaimet eri järjestyksessä tuottavat saman tunnisteen
+  const jarjestetytAvaimet = sortBy(
+    Object.entries(muutAvaimet),
+    ([avaimenNimi]) => avaimenNimi,
+  );
   return {
-    id: JSON.stringify([avain, tyyppi, arvo, muutAvaimet]),
+    id: JSON.stringify([avain, tyyppi, arvo, jarjestetytAvaimet]),
     avain,
     tyyppi,
     arvo,
-    muutAvaimet: Object.entries(muutAvaimet),
+    muutAvaimet: jarjestetytAvaimet,
     jarjestyskriteeriNumero,
   };
 };
