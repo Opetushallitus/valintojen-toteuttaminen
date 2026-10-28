@@ -1,6 +1,17 @@
 import { queryOptions } from '@tanstack/react-query';
 import { UserPermissions } from '../permissions';
-import { getHaku, getHakukohde, getHakukohteet } from './kouta-service';
+import {
+  getAllHakukohteet,
+  getHaku,
+  getHakukohde,
+  getHakukohteet,
+} from './kouta-service';
+
+export const queryOptionsGetAllHakukohteet = (hakuOid: string) =>
+  queryOptions({
+    queryKey: ['getAllHakukohteet', hakuOid],
+    queryFn: () => getAllHakukohteet(hakuOid),
+  });
 
 export const queryOptionsGetHakukohteet = (
   hakuOid: string,

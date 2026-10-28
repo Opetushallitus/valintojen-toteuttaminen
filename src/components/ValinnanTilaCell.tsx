@@ -28,7 +28,7 @@ import {
 } from '@/lib/sijoittelun-tulokset-utils';
 import { entries, map, pipe } from 'remeda';
 import { styled } from '@/lib/theme';
-import { useCheckPermission } from '@/hooks/useUserPermissions';
+import { useCheckHakukohdePermission } from '@/hooks/useHakukohdePermissions';
 import { InfoTooltipButton } from '@/components/info-tooltip-button';
 import { InfoTooltipIcon } from '@/components/info-tooltip-icon';
 import { toFormattedDateTimeString } from '@/lib/localization/translation-utils';
@@ -87,14 +87,14 @@ export const EhdollisestiHyvaksyttavissaCheckbox = ({
     });
   };
 
-  const canUpdate = useCheckPermission('READ_UPDATE');
+  const canUpdate = useCheckHakukohdePermission(hakukohde, 'READ_UPDATE');
 
   return (
     <OphCheckbox
       checked={Boolean(ehdollisestiHyvaksyttavissa)}
       onChange={updateEhdollinen}
       label={t('sijoittelun-tulokset.ehdollinen')}
-      disabled={disabled || !canUpdate(hakukohde.tarjoajaOid)}
+      disabled={disabled || !canUpdate}
     />
   );
 };
