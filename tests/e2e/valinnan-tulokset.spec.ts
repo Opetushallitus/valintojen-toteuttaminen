@@ -8,6 +8,7 @@ import {
   findTableColumnIndexByTitle,
   mockDocumentProcess,
   selectOption,
+  startExcelImport,
   testMuodostaHakemusHyvaksymiskirje,
   testNaytaMuutoshistoria,
   TIMESTAMP_REGEX,
@@ -143,6 +144,7 @@ async function goToValinnanTulokset(page: Page) {
       route.fulfill({
         json: {
           sijoittelu: false,
+          synteettisetHakemukset: true,
         },
       }),
   );
@@ -1132,6 +1134,177 @@ test.describe('Tallennus', () => {
       });
       await expect(page.getByText('Valinnan tulokset poistettu')).toBeVisible();
     });
+  });
+
+  test('Tuo valinnan tulokset taulukkolaskennasta', async ({ page }) => {
+    const isTuontiUrl = (url: URL) =>
+      url.pathname.endsWith(
+        '/valintalaskentakoostepalvelu/resources/erillishaku/tuonti',
+      );
+    await mockDocumentProcess({ page, urlMatcher: isTuontiUrl });
+
+    const [uploadRequest] = await Promise.all([
+      waitForMethodRequest(page, 'POST', (url) => isTuontiUrl(new URL(url))),
+      waitForMethodRequest(page, 'GET', (url) =>
+        url.includes(
+          '/valintalaskentakoostepalvelu/resources/dokumenttiprosessi/proc_id',
+        ),
+      ),
+      // Tuonti voi luoda uusia hakemuksia, joten hakemukset ladataan uudelleen
+      waitForMethodRequest(page, 'GET', (url) =>
+        url.includes('/lomake-editori/api/external/valinta-ui'),
+      ),
+      startExcelImport(page),
+    ]);
+
+    const uploadUrl = new URL(uploadRequest.url());
+    expect(Object.fromEntries(uploadUrl.searchParams)).toEqual({
+      hakuOid: '1.2.246.562.29.00000000000000045102',
+      hakukohdeOid,
+      valintatapajonoOid,
+      hakutyyppi: 'KORKEAKOULU',
+    });
+    const ifUnmodifiedSince = await uploadRequest.headerValue(
+      'if-unmodified-since',
+    );
+    expect(Date.parse(ifUnmodifiedSince ?? '')).not.toBeNaN();
+    await expect(
+      page.getByText(
+        'Valinnan tulosten tuominen taulukkolaskennasta onnistui!',
+      ),
+    ).toBeVisible();
+  });
+
+  test('Tuonti taulukkolaskennasta näyttää rivikohtaiset virheet ja lataa tiedot uudelleen', async ({
+    page,
+  }) => {
+    await mockDocumentProcess({
+      page,
+      urlMatcher: (url) =>
+        url.pathname.endsWith(
+          '/valintalaskentakoostepalvelu/resources/erillishaku/tuonti',
+        ),
+      processResponse: {
+        json: {
+          dokumenttiId: 'doc_id',
+          kasittelyssa: false,
+          keskeytetty: true,
+          kokonaistyo: { valmis: true },
+          poikkeukset: [
+            {
+              tunnisteet: [{ tunniste: 'Rivi 3: testi-virhe', tyyppi: 'rivi' }],
+              palvelu: 'testi-palvelu',
+              viesti: 'testi-virheviesti',
+              palvelukutsu: 'testi-palvelukutsu',
+            },
+          ],
+          varoitukset: [],
+        },
+      },
+    });
+
+    await Promise.all([
+      waitForMethodRequest(page, 'GET', (url) =>
+        url.includes('/lomake-editori/api/external/valinta-ui'),
+      ),
+      startExcelImport(page),
+    ]);
+
+    const errorModal = page.getByRole('dialog', {
+      name: 'Valinnan tulosten tuominen taulukkolaskennasta epäonnistui',
+    });
+    await expect(errorModal).toBeVisible();
+    await expect(
+      errorModal.getByRole('cell', { name: 'Rivi 3: testi-virhe' }),
+    ).toBeVisible();
+  });
+
+  test('Tuonti taulukkolaskennasta varmistaa tallentamattomien muutosten menettämisen', async ({
+    page,
+  }) => {
+    const isTuontiUrl = (url: URL) =>
+      url.pathname.endsWith(
+        '/valintalaskentakoostepalvelu/resources/erillishaku/tuonti',
+      );
+    await mockDocumentProcess({ page, urlMatcher: isTuontiUrl });
+
+    await selectOption({
+      page,
+      locator: page
+        .locator('tbody tr')
+        .filter({ hasText: 'Nukettaja Ruhtinas' })
+        .getByRole('cell')
+        .nth(2),
+      option: 'HYVÄKSYTTY',
+    });
+    await startExcelImport(page);
+
+    const confirmModal = page.getByRole('dialog', {
+      name: 'Tallentamattomia muutoksia',
+    });
+    await expect(confirmModal).toBeVisible();
+    await Promise.all([
+      waitForMethodRequest(page, 'POST', (url) => isTuontiUrl(new URL(url))),
+      confirmModal.getByRole('button', { name: 'Jatka' }).click(),
+    ]);
+  });
+
+  test('Näyttää hakukohteelle ilman hakemuksia vain taulukkolaskennan toiminnot', async ({
+    page,
+  }) => {
+    await page.route(
+      (url) => url.href.includes('lomake-editori/api/external/valinta-ui?'),
+      async (route) => route.fulfill({ json: [] }),
+    );
+    await page.route(
+      (url) =>
+        url.href.includes('/valinta-tulos-service/auth/valinnan-tulos?') &&
+        url.searchParams.get('hakukohdeOid') === hakukohdeOid,
+      async (route) => route.fulfill({ json: [] }),
+    );
+    await page.reload();
+    await expectAllSpinnersHidden(page);
+
+    await expect(page.getByText('Ei hakemuksia')).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: 'Vie taulukkolaskentaan' }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: 'Tuo taulukkolaskennasta' }),
+    ).toBeVisible();
+    for (const name of [
+      'Tallenna',
+      'Merkitse myöhästyneeksi',
+      'Hyväksy ja tallenna valintaesitys',
+      'Lähetä vastaanottoposti hakukohteelle',
+    ]) {
+      await expect(
+        page.getByRole('button', { name, exact: true }),
+      ).toBeHidden();
+    }
+  });
+
+  test('Ei näytä tuontia taulukkolaskennasta, jos haulla ei ole synteettisiä hakemuksia', async ({
+    page,
+  }) => {
+    await page.route(
+      '*/**/ohjausparametrit-service/api/v1/rest/parametri/1.2.246.562.29.00000000000000045102',
+      async (route) =>
+        route.fulfill({
+          json: {
+            sijoittelu: false,
+            synteettisetHakemukset: false,
+          },
+        }),
+    );
+    await page.reload();
+    await expectAllSpinnersHidden(page);
+    await expect(
+      page.getByRole('button', { name: 'Vie taulukkolaskentaan' }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: 'Tuo taulukkolaskennasta' }),
+    ).toBeHidden();
   });
 
   test('Lähetä vastaanottoposti', async ({ page }) => {

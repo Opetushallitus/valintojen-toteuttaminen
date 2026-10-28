@@ -1155,6 +1155,27 @@ export async function sendLetters(
   );
 }
 
+const buildErillishakuUrl = (
+  baseUrl: string,
+  {
+    haku,
+    hakukohdeOid,
+    valintatapajonoOid,
+  }: { haku: Haku; hakukohdeOid: string; valintatapajonoOid?: string },
+) => {
+  const url = new URL(baseUrl);
+  url.searchParams.set('hakuOid', haku.oid);
+  url.searchParams.set('hakukohdeOid', hakukohdeOid);
+  if (valintatapajonoOid) {
+    url.searchParams.set('valintatapajonoOid', valintatapajonoOid);
+  }
+  url.searchParams.set(
+    'hakutyyppi',
+    isKorkeakouluHaku(haku) ? 'KORKEAKOULU' : 'TOISEN_ASTEEN_OPPILAITOS',
+  );
+  return url;
+};
+
 export async function saveValinnanTulokset({
   haku,
   hakukohdeOid,
@@ -1189,16 +1210,10 @@ export async function saveValinnanTulokset({
     poistetaankoRivi: hakemus.poistetaankoRivi,
   }));
 
-  const urlWithQuery = new URL(
+  const urlWithQuery = buildErillishakuUrl(
     configuration.routes.valintalaskentakoostepalvelu
       .startImportValinnanTulosUrl,
-  );
-
-  urlWithQuery.searchParams.set('hakuOid', haku.oid);
-  urlWithQuery.searchParams.set('hakukohdeOid', hakukohdeOid);
-  urlWithQuery.searchParams.set(
-    'hakutyyppi',
-    isKorkeakouluHaku(haku) ? 'KORKEAKOULU' : 'TOISEN_ASTEEN_OPPILAITOS',
+    { haku, hakukohdeOid },
   );
 
   const { data } = await client.post<{ id: string }>(
@@ -1228,18 +1243,10 @@ export async function getValinnanTulosExcel({
   valintatapajonoOid?: string;
 }) {
   const configuration = getConfiguration();
-  const urlWithQuery = new URL(
+  const urlWithQuery = buildErillishakuUrl(
     configuration.routes.valintalaskentakoostepalvelu
       .startExportValinnanTulosExcelUrl,
-  );
-  urlWithQuery.searchParams.set('hakuOid', haku.oid);
-  urlWithQuery.searchParams.set('hakukohdeOid', hakukohdeOid);
-  if (valintatapajonoOid) {
-    urlWithQuery.searchParams.set('valintatapajonoOid', valintatapajonoOid);
-  }
-  urlWithQuery.searchParams.set(
-    'hakutyyppi',
-    isKorkeakouluHaku(haku) ? 'KORKEAKOULU' : 'TOISEN_ASTEEN_OPPILAITOS',
+    { haku, hakukohdeOid, valintatapajonoOid },
   );
 
   const { data } = await client.post<{ id: string }>(urlWithQuery, '');
@@ -1247,6 +1254,45 @@ export async function getValinnanTulosExcel({
   const processId = data.id;
   return downloadProcessDocument(processId, true);
 }
+
+export const saveValinnanTulosExcel = async ({
+  haku,
+  hakukohdeOid,
+  valintatapajonoOid,
+  file,
+  lastModified,
+}: {
+  haku: Haku;
+  hakukohdeOid: string;
+  valintatapajonoOid?: string;
+  file: File;
+  lastModified?: string;
+}) => {
+  const configuration = getConfiguration();
+  const urlWithQuery = buildErillishakuUrl(
+    configuration.routes.valintalaskentakoostepalvelu
+      .startImportValinnanTulosExcelUrl,
+    { haku, hakukohdeOid, valintatapajonoOid },
+  );
+
+  const {
+    data: { id: processId },
+  } = await client.post<{ id: string }>(
+    urlWithQuery,
+    await file.arrayBuffer(),
+    {
+      headers: {
+        'content-type': 'application/octet-stream',
+        'If-Unmodified-Since': (lastModified
+          ? new Date(lastModified)
+          : new Date()
+        ).toUTCString(),
+      },
+    },
+  );
+
+  await processDocumentAndReturnDocumentId(processId, true);
+};
 
 export const hakijoidenVastaanottotilatValintatapajonolle = async (
   hakuOid: string,
