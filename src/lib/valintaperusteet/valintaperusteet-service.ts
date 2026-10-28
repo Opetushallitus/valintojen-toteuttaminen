@@ -9,7 +9,6 @@ import {
   Valintatapajono,
   ValintaryhmaHakukohteilla,
   ValintaperusteetJarjestyskriteeri,
-  Laskentakaava,
 } from './valintaperusteet-types';
 import { isDefined, sort } from 'remeda';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
@@ -343,18 +342,6 @@ export const getValintatapajononAktiivisetJarjestyskriteerit = async (
     `${configuration.routes.valintaperusteetService.valintaperusteetUrl}valintatapajono/${valintatapajonoOid}/jarjestyskriteeri`,
   );
   return data.filter((jarjestyskriteeri) => jarjestyskriteeri.aktiivinen);
-};
-
-// Haetaan laskentakaavan perustiedot (nimi ja kuvaus) ilman funktiopuuta.
-// Laskentakaavan nimeä käytetään laskennassa järjestyskriteerin nimenä.
-export const getLaskentakaava = async (
-  laskentakaavaId: number,
-): Promise<Laskentakaava> => {
-  const configuration = getConfiguration();
-  const { data } = await client.get<Laskentakaava>(
-    `${configuration.routes.valintaperusteetService.valintaperusteetUrl}laskentakaava/${laskentakaavaId}?funktiopuu=false`,
-  );
-  return { id: data.id, nimi: data.nimi, kuvaus: data.kuvaus };
 };
 
 export const buildLinkToJarjestyskriteeri = ({

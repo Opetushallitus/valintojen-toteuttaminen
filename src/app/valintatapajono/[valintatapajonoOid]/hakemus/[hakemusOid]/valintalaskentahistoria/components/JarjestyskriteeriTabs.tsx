@@ -1,15 +1,11 @@
 import { ExternalLink } from '@/components/external-link';
 import { LabeledInfoItem } from '@/components/labeled-info-item';
-import { InfoTooltipButton } from '@/components/info-tooltip-button';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { queryOptionsGetHakemuksenValintalaskennanTulokset } from '@/lib/valintalaskenta/valintalaskenta-queries';
-import {
-  queryOptionsGetLaskentakaava,
-  queryOptionsGetValintatapajononAktiivisetJarjestyskriteerit,
-} from '@/lib/valintaperusteet/valintaperusteet-queries';
+import { queryOptionsGetValintatapajononAktiivisetJarjestyskriteerit } from '@/lib/valintaperusteet/valintaperusteet-queries';
 import { buildLinkToJarjestyskriteeri } from '@/lib/valintaperusteet/valintaperusteet-service';
 import { Valintalaskentahistoria } from '@/lib/types/laskenta-types';
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, Stack } from '@mui/material';
 import { DEFAULT_BOX_BORDER, styled } from '@/lib/theme';
 import { TAB_ITEM_STYLES, tabRowStyles } from '@/components/tabStyles';
 import { useSuspenseQueries } from '@tanstack/react-query';
@@ -19,7 +15,6 @@ import { JarjestyskriteerinTila } from './JarjestyskriteerinTila';
 import {
   findJononHakukohdeJaValinnanvaihe,
   formatArvo,
-  TOOLTIP_MAX_WIDTH,
 } from '../lib/valintalaskentahistoriaUtils';
 import { NDASH } from '@/lib/constants';
 
@@ -100,21 +95,6 @@ export const JarjestyskriteeriTabs = ({
     valintalaskennanTulokset,
     valintatapajonoOid,
   );
-  // Haetaan kaikkien välilehtien laskentakaavat kerralla, jottei välilehden vaihto näytä latausta.
-  // Laskennassa järjestyskriteerin nimenä käytetään sen laskentakaavan nimeä.
-  const laskentakaavat = useSuspenseQueries({
-    queries: jarjestyskriteerit.map((kriteeri) =>
-      queryOptionsGetLaskentakaava(kriteeri.laskentakaavaId),
-    ),
-    combine: (results) => results.map((result) => result.data),
-  });
-  const laskentakaava = laskentakaavat[valittuIndex];
-  const jarjestyskriteerinNimi =
-    laskentakaava?.nimi ||
-    jarjestyskriteeri?.metatiedot ||
-    t('valintalaskentahistoria.jarjestyskriteeri', {
-      numero: valittuIndex + 1,
-    });
 
   return (
     <Stack spacing={2}>
@@ -182,19 +162,6 @@ export const JarjestyskriteeriTabs = ({
               }
             />
           </Stack>
-          <Typography
-            variant="h4"
-            component="h3"
-            sx={{ marginTop: 2, marginBottom: 1 }}
-          >
-            {jarjestyskriteerinNimi}
-            {laskentakaava?.kuvaus && (
-              <InfoTooltipButton
-                title={laskentakaava.kuvaus}
-                maxWidth={TOOLTIP_MAX_WIDTH}
-              />
-            )}
-          </Typography>
           {/* key nollaa avattujen ja suljettujen solmujen tilan välilehteä vaihdettaessa */}
           <Funktiopuu key={valittuIndex} historia={historia} />
         </Box>
