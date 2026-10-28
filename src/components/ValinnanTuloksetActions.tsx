@@ -175,9 +175,7 @@ const EraantyneetInfoTable = ({
               <TableCell>
                 <ExternalLink
                   name={h.hakemusOid}
-                  href={
-                    h.hakemusOid ? buildLinkToApplication(h?.hakemusOid) : ''
-                  }
+                  href={buildLinkToApplication(h.hakemusOid)}
                 />
               </TableCell>
             </TableRow>
