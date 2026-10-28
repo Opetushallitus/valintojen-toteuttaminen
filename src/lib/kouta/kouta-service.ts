@@ -4,7 +4,7 @@ import {
   Language,
   TranslatedName,
 } from '@/lib/localization/localization-types';
-import { UserPermissions } from '@/lib/permissions';
+import { isHakukohderyhmaOid, UserPermissions } from '@/lib/permissions';
 import { addProp, pick, pipe } from 'remeda';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
 import { getConfigUrl } from '@/lib/configuration/configuration-utils';
@@ -164,13 +164,28 @@ export async function getHakukohteet(
   hakuOid: string,
   userPermissions: UserPermissions,
 ): Promise<Array<Hakukohde>> {
+  if (
+    !userPermissions.hasOphCRUD &&
+    userPermissions.readOrganizations.length === 0
+  ) {
+    return [];
+  }
   const hakukohteetUrl = getConfigUrl(
     getConfiguration().routes.koutaInternal.hakukohteetUrl,
     { hakuOid },
   );
-  const tarjoajaOids = permissionsToTarjoajat(userPermissions);
+  const url = new URL(hakukohteetUrl);
+
+  if (!userPermissions.hasOphCRUD) {
+    for (const oid of userPermissions.readOrganizations) {
+      const parameter = isHakukohderyhmaOid(oid)
+        ? 'hakukohderyhmat'
+        : 'tarjoaja';
+      url.searchParams.append(parameter, oid);
+    }
+  }
   const response = await client.get<Array<HakukohdeResponseData>>(
-    `${hakukohteetUrl}${tarjoajaOids}`,
+    url.toString(),
   );
   return response.data.map(mapToHakukohde);
 }

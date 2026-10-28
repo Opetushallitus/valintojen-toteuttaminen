@@ -524,3 +524,66 @@ describe('getVisibleHakukohdeTabs', () => {
     ]);
   });
 });
+
+describe('hakukohderyhmäoikeudet', () => {
+  const ryhmaOid = '1.2.246.562.28.123';
+  const hakukohde = { ...HAKUKOHDE_BASE, hakukohderyhmaOids: [ryhmaOid] };
+  const props = {
+    haku: { ...HAKU_BASE, kohdejoukkoKoodiUri: 'haunkohdejoukko_12#1' },
+    hakukohde,
+    haunAsetukset: { sijoittelu: true },
+    usesValintalaskenta: true,
+  };
+
+  test('ryhmän lukuoikeus näyttää lukuvälilehdet mutta ei kirjoitusvälilehtiä', () => {
+    const routes = getVisibleHakukohdeTabs({
+      ...props,
+      hierarchyPermissions: {
+        ...READ_PERMISSIONS,
+        readOrganizations: [ryhmaOid],
+      },
+    }).map((tab) => tab.route);
+    expect(routes).toContain('perustiedot');
+    expect(routes).toContain('hakeneet');
+    expect(routes).not.toContain('pistesyotto');
+    expect(routes).not.toContain('valinnan-hallinta');
+  });
+
+  test('ryhmän kirjoitusoikeus näyttää pistesyötön mutta ei CRUD-välilehteä', () => {
+    const routes = getVisibleHakukohdeTabs({
+      ...props,
+      hierarchyPermissions: {
+        ...WRITE_PERMISSIONS,
+        readOrganizations: [ryhmaOid],
+        writeOrganizations: [ryhmaOid],
+      },
+    }).map((tab) => tab.route);
+    expect(routes).toContain('pistesyotto');
+    expect(routes).not.toContain('valinnan-hallinta');
+  });
+
+  test('ryhmän CRUD-oikeus näyttää myös valinnan hallinnan', () => {
+    const routes = getVisibleHakukohdeTabs({
+      ...props,
+      hierarchyPermissions: {
+        ...CRUD_PERMISSIONS,
+        readOrganizations: [ryhmaOid],
+        writeOrganizations: [ryhmaOid],
+        crudOrganizations: [ryhmaOid],
+      },
+    }).map((tab) => tab.route);
+    expect(routes).toContain('valinnan-hallinta');
+  });
+
+  test('toisen ryhmän oikeus ei anna pääsyä hakukohteeseen', () => {
+    expect(
+      getVisibleHakukohdeTabs({
+        ...props,
+        hierarchyPermissions: {
+          ...READ_PERMISSIONS,
+          readOrganizations: ['1.2.246.562.28.456'],
+        },
+      }),
+    ).toEqual([]);
+  });
+});
