@@ -1,11 +1,8 @@
 import { NoResults } from '@/components/no-results';
 import { useHakukohdeTab } from '@/hooks/useHakukohdeTab';
 import { HakukohdeUseHasReadOnlyContext } from '@/hooks/useHasOnlyHakukohdeReadPermission';
-import {
-  useUserPermissions,
-  useHierarchyUserPermissions,
-} from '@/hooks/useUserPermissions';
-import { checkHasPermission } from '@/lib/permissions';
+import { useHakukohdePermissions } from '@/hooks/useHakukohdePermissions';
+import { checkHasHakukohdePermission } from '@/lib/permissions';
 import { useVisibleHakukohdeTabs } from '@/hooks/useVisibleHakukohdeTabs';
 import { Haku, KoutaOidParams } from '@/lib/kouta/kouta-types';
 import { useHakukohde } from '@/lib/kouta/useHakukohde';
@@ -57,22 +54,22 @@ export const HakukohdeTabWrapper = ({
     visibleTabs.find((tab) => tab.route === activeTab.route),
   );
 
-  const { data: hakukohde } = useHakukohde({ hakukohdeOid });
+  const { data: rawHakukohde } = useHakukohde({ hakukohdeOid });
   const { data: haku } = useHaku({ hakuOid });
   const { data: valinnanvaiheet } = useSuspenseQuery(
     queryOptionsGetHakukohteenValinnanvaiheet(hakukohdeOid),
   );
-  const userPermissions = useUserPermissions();
-  const hierarchyPermissions = useHierarchyUserPermissions(userPermissions);
+  const { hakukohde, hierarchyPermissions } =
+    useHakukohdePermissions(rawHakukohde);
   const usesValintalaskenta = checkIsValintalaskentaUsed(valinnanvaiheet);
 
-  const hasCrud = checkHasPermission(
-    hakukohde.tarjoajaOid,
+  const hasCrud = checkHasHakukohdePermission(
+    hakukohde,
     hierarchyPermissions,
     'CRUD',
   );
-  const hasUpdate = checkHasPermission(
-    hakukohde.tarjoajaOid,
+  const hasUpdate = checkHasHakukohdePermission(
+    hakukohde,
     hierarchyPermissions,
     'READ_UPDATE',
   );
@@ -81,7 +78,7 @@ export const HakukohdeTabWrapper = ({
     activeTabRoute: activeTab.route,
     haku,
     hasOnlyRead,
-    hasOphCRUD: userPermissions.hasOphCRUD,
+    hasOphCRUD: hierarchyPermissions.hasOphCRUD,
     usesValintalaskenta,
   });
 
