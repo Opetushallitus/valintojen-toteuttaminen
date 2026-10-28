@@ -3,6 +3,8 @@ import { client } from './http-client';
 import { OPH_ORGANIZATION_OID } from './constants';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
 import { getConfigUrl } from './configuration/configuration-utils';
+import { isHakukohderyhmaOid, UserPermissions } from './permissions';
+import { unique } from 'remeda';
 
 type OrganizationTree = {
   oid: string;
@@ -12,7 +14,9 @@ type OrganizationTree = {
 const getOrganizationHierarchy = async (
   organizationOidsParam: Array<string> = [],
 ) => {
-  const organizationOids = new Set(organizationOidsParam);
+  const organizationOids = new Set(
+    organizationOidsParam.filter((oid) => !isHakukohderyhmaOid(oid)),
+  );
   const hasOphOid = organizationOids.has(OPH_ORGANIZATION_OID);
 
   // Ei haluta noutaa organisaatiopuuta OPH-organisaatiolle, koska se palauttaa koko organisaatiopuun
@@ -90,4 +94,21 @@ export const useOrganizationHierarchy = (organizationOids?: Array<string>) => {
     queryFn: () => getOrganizationHierarchy(organizationOids),
     staleTime: Infinity,
   });
+};
+
+export const getHierarchyUserPermissions = (
+  permissions: UserPermissions,
+  hierarchy: Array<OrganizationTree> = [],
+): UserPermissions => {
+  const expand = (oids: Array<string>) =>
+    unique([
+      ...oids,
+      ...findBranchOidsFromOrganizationHierarchy(hierarchy, oids),
+    ]);
+  return {
+    ...permissions,
+    readOrganizations: expand(permissions.readOrganizations),
+    writeOrganizations: expand(permissions.writeOrganizations),
+    crudOrganizations: expand(permissions.crudOrganizations),
+  };
 };

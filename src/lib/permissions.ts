@@ -1,4 +1,8 @@
 import { OPH_ORGANIZATION_OID } from './constants';
+import type { Hakukohde } from './kouta/kouta-types';
+
+export const isHakukohderyhmaOid = (oid: string) =>
+  /^1\.2\.246\.562\.28\.\d+$/.test(oid);
 
 export const VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY = 'VALINTOJENTOTEUTTAMINEN';
 
@@ -8,10 +12,7 @@ export const PERUUNTUNEIDEN_HYVAKSYNTA_PERMISSION_KEY =
   'PERUUNTUNEIDEN_HYVAKSYNTA';
 
 export type Permission =
-  | 'CRUD'
-  | 'READ'
-  | 'READ_UPDATE'
-  | 'PERUUNTUNEIDEN_HYVAKSYNTA';
+  'CRUD' | 'READ' | 'READ_UPDATE' | 'PERUUNTUNEIDEN_HYVAKSYNTA';
 
 export type OrganizationPermissions = {
   organizationOid: string;
@@ -160,3 +161,14 @@ export const EMPTY_USER_PERMISSIONS: UserPermissions = {
   hasOphCRUD: false,
   sijoitteluPeruuntuneidenHyvaksyntaAllowed: false,
 };
+
+export const checkHasHakukohdePermission = (
+  hakukohde: Pick<Hakukohde, 'tarjoajaOid' | 'hakukohderyhmaOids'>,
+  hierarchyPermissions: UserPermissions,
+  permission: Permission,
+) =>
+  checkHasPermission(
+    [hakukohde.tarjoajaOid, ...(hakukohde.hakukohderyhmaOids ?? [])],
+    hierarchyPermissions,
+    permission,
+  );

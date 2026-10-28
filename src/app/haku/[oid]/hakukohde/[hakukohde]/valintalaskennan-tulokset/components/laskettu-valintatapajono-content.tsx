@@ -20,7 +20,7 @@ const LaskettuVaiheActions = ({
 
   return (
     <SijoitteluStatusChangeButton
-      tarjoajaOid={hakukohde?.tarjoajaOid}
+      hakukohde={hakukohde}
       jono={jono}
       statusMutation={statusMutation}
     />

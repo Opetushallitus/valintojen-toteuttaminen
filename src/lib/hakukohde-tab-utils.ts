@@ -6,7 +6,7 @@ import {
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { isValintojenToteuttaminenEstetty } from '@/lib/valintojen-toteuttaminen-access';
 import {
-  checkHasPermission,
+  checkHasHakukohdePermission,
   Permission,
   UserPermissions,
 } from '@/lib/permissions';
@@ -48,8 +48,8 @@ const hasHakukohdePermission = (
   hierarchyPermissions: UserPermissions,
   permission: Permission,
 ) => {
-  return checkHasPermission(
-    hakukohde.tarjoajaOid,
+  return checkHasHakukohdePermission(
+    hakukohde,
     hierarchyPermissions,
     permission,
   );

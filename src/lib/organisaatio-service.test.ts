@@ -1,5 +1,9 @@
+import { EMPTY_USER_PERMISSIONS } from './permissions';
 import { describe, it, expect } from 'vitest';
-import { findBranchOidsFromOrganizationHierarchy } from './organisaatio-service';
+import {
+  findBranchOidsFromOrganizationHierarchy,
+  getHierarchyUserPermissions,
+} from './organisaatio-service';
 
 const hierarchy = [
   {
@@ -48,5 +52,40 @@ describe('findBranchOidsFromOrganizationHierarchy', () => {
     expect(
       findBranchOidsFromOrganizationHierarchy(hierarchy, ['non-existent']),
     ).toEqual([]);
+  });
+});
+
+describe('getHierarchyUserPermissions', () => {
+  it('periyttää oikeudet jälkeläisiin mutta ei sisarorganisaatioihin', () => {
+    const expanded = getHierarchyUserPermissions(
+      {
+        ...EMPTY_USER_PERMISSIONS,
+        readOrganizations: ['1'],
+        writeOrganizations: ['1.1'],
+        crudOrganizations: ['1.1.1'],
+      },
+      hierarchy,
+    );
+    expect(expanded.readOrganizations).toEqual([
+      '1',
+      '1.1',
+      '1.1.1',
+      '1.1.2',
+      '1.2',
+    ]);
+    expect(expanded.writeOrganizations).toEqual(['1.1', '1.1.1', '1.1.2']);
+    expect(expanded.crudOrganizations).toEqual(['1.1.1']);
+  });
+
+  it('säilyttää ryhmäoikeudet ja puusta puuttuvat suorat oikeudet', () => {
+    const permissions = {
+      ...EMPTY_USER_PERMISSIONS,
+      readOrganizations: ['1.2.246.562.28.123', 'puuttuva'],
+      writeOrganizations: ['1.2.246.562.28.123'],
+      crudOrganizations: ['1.2.246.562.28.123'],
+    };
+    expect(getHierarchyUserPermissions(permissions, hierarchy)).toEqual(
+      permissions,
+    );
   });
 });

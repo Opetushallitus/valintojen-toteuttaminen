@@ -9,8 +9,11 @@ import {
 import { isDefined, isEmpty, uniqueBy } from 'remeda';
 import { getValintaryhmat } from '@/lib/valintaperusteet/valintaperusteet-service';
 import { ValintaryhmaHakukohteilla } from '@/lib/valintaperusteet/valintaperusteet-types';
-import { queryOptionsGetHakukohteet } from '@/lib/kouta/kouta-queries';
-import { useUserPermissions } from '@/hooks/useUserPermissions';
+import { queryOptionsGetAllHakukohteet } from '@/lib/kouta/kouta-queries';
+import {
+  useHierarchyUserPermissions,
+  useUserPermissions,
+} from '@/hooks/useUserPermissions';
 import { hasPermissionToValintaryhmaOrAlaValintaryhma } from '../lib/valintaryhma-util';
 
 export const useValintaryhmaSearchParams = () => {
@@ -59,10 +62,10 @@ function filterRyhmatWithHakukohteet(
 }
 
 export const useValintaryhmaSearchResults = (hakuOid: string) => {
-  const userPermissions = useUserPermissions();
+  const userPermissions = useHierarchyUserPermissions(useUserPermissions());
 
   const { data: hakukohteet } = useSuspenseQuery(
-    queryOptionsGetHakukohteet(hakuOid, userPermissions),
+    queryOptionsGetAllHakukohteet(hakuOid),
   );
 
   const hakukohdeOids = hakukohteet.map((h) => h.oid);

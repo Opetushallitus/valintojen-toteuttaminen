@@ -1,3 +1,5 @@
+import { getHierarchyUserPermissions } from '../organisaatio-service';
+import { EMPTY_USER_PERMISSIONS } from '../permissions';
 import { expect, test, vi, describe, afterEach } from 'vitest';
 import {
   getHakukohteenValinnanvaiheet,
@@ -299,3 +301,66 @@ function buildDummyValinkoeResponse(
     data: dummyKokeet,
   });
 }
+
+test('valintaryhmän vastuuorganisaation kirjoitusoikeus periytyy ylemmästä organisaatiosta', async () => {
+  const response = {
+    headers: new Headers(),
+    data: [
+      {
+        hakuOid: null,
+        oid: 'ryhma',
+        nimi: 'Ryhmän nimi',
+        vastuuorganisaatio: { oid: 'lapsi' },
+        hakukohdeViitteet: [{ oid: 'toisen-tarjoajan-hakukohde' }],
+        alavalintaryhmat: [],
+      },
+    ],
+  };
+  const spy = vi.spyOn(client, 'get').mockResolvedValue(response);
+  try {
+    const hierarchy = [{ oid: 'emo', children: [{ oid: 'lapsi' }] }];
+    const permissions = getHierarchyUserPermissions(
+      {
+        ...EMPTY_USER_PERMISSIONS,
+        readOrganizations: ['emo'],
+        writeOrganizations: ['emo'],
+      },
+      hierarchy,
+    );
+    const result = await getValintaryhmat('haku', permissions, [
+      'toisen-tarjoajan-hakukohde',
+    ]);
+    expect(result.muutRyhmat).toHaveLength(1);
+    expect(result.muutRyhmat[0]?.userHasWriteAccess).toBe(true);
+    expect(result.muutRyhmat[0]?.hakukohteet).toEqual([
+      'toisen-tarjoajan-hakukohde',
+    ]);
+
+    const readOnly = getHierarchyUserPermissions(
+      {
+        ...EMPTY_USER_PERMISSIONS,
+        readOrganizations: ['emo'],
+      },
+      hierarchy,
+    );
+    expect(
+      (await getValintaryhmat('haku', readOnly, ['toisen-tarjoajan-hakukohde']))
+        .muutRyhmat,
+    ).toEqual([]);
+
+    const sibling = getHierarchyUserPermissions(
+      {
+        ...EMPTY_USER_PERMISSIONS,
+        readOrganizations: ['sisar'],
+        writeOrganizations: ['sisar'],
+      },
+      hierarchy,
+    );
+    expect(
+      (await getValintaryhmat('haku', sibling, ['toisen-tarjoajan-hakukohde']))
+        .muutRyhmat,
+    ).toEqual([]);
+  } finally {
+    spy.mockRestore();
+  }
+});
