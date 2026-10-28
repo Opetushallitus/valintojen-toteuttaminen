@@ -1,6 +1,6 @@
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { Valintalaskentahistoria } from '@/lib/types/laskenta-types';
-import { Box, Typography } from '@mui/material';
+import { Box } from '@mui/material';
 import { ophColors } from '@/lib/theme';
 import {
   formatArvo,
@@ -8,13 +8,6 @@ import {
 } from '../lib/valintalaskentahistoriaUtils';
 import { NDASH } from '@/lib/constants';
 import { AvaimenArvo, AvaimetTooltipButton } from './AvaimetTooltipButton';
-
-// Lihavoitu tekstinpätkä, joka perii ympäröivän tekstin typografian (esim. tooltipissa)
-const SemiboldSpan = ({ children }: { children: React.ReactNode }) => (
-  <Typography component="span" variant="inherit" sx={{ fontWeight: 600 }}>
-    {children}
-  </Typography>
-);
 
 const FUNKTIOPUU_SOLMU_CLASS = 'funktiopuu-solmu';
 const FUNKTIOPUU_RIVI_CLASS = 'funktiopuu-rivi';
@@ -42,7 +35,7 @@ const FunktioIkoni = () => (
       textAlign: 'left',
       width: FUNKTIO_IKONI_LEVEYS,
       flexShrink: 0,
-      fontWeight: 600,
+      fontWeight: 'medium',
     }}
   >
     f()
@@ -114,9 +107,9 @@ const FunktiopuuSolmu = ({
       >
         {onNimettyArvo ? '' : <FunktioIkoni />}
         <span>
-          <SemiboldSpan>
+          <Box component="span" sx={{ fontWeight: 'medium' }}>
             {nimi == null ? solmu.funktio : formatArvo(nimi)}
-          </SemiboldSpan>
+          </Box>
           {nimi != null && ` ${NDASH} ${solmu.funktio}`}
           {solmu.tulos != null &&
             ` (${t('valintalaskentahistoria.tulos')}: ${formatArvo(solmu.tulos)})`}

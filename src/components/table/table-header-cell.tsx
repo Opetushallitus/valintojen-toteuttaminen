@@ -2,7 +2,7 @@ import { ExpandLess, ExpandMore, UnfoldMore } from '@mui/icons-material';
 import { getSortParts } from './table-utils';
 import { ophColors } from '@opetushallitus/oph-design-system';
 import { styled } from '@/lib/theme';
-import { Button, TableCell } from '@mui/material';
+import { Box, Button, TableCell } from '@mui/material';
 import { memo } from 'react';
 
 const SortIcon = ({
@@ -78,7 +78,9 @@ export const TableHeaderCell = memo(function TableHeaderCell({
           {title}
         </Button>
       ) : (
-        <span style={{ fontWeight: 600 }}>{title}</span>
+        <Box component="span" sx={{ fontWeight: 'medium' }}>
+          {title}
+        </Box>
       )}
     </StyledHeaderCell>
   );

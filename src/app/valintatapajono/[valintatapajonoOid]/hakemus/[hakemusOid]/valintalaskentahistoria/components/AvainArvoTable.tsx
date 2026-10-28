@@ -23,7 +23,7 @@ export const makeAvainColumn = (title: string, width: string) =>
     title,
     key: 'avain',
     valueProp: 'avain',
-    style: { fontWeight: 600, width },
+    style: { fontWeight: 'medium', width },
   });
 
 export const makeArvoColumn = (title: string, width = 'auto') =>
