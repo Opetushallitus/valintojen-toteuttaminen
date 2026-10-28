@@ -175,7 +175,7 @@ export const Funktiopuu = ({
     solmut.length > 0 && (
       // Siirretään puuta vasemmalle rivien sisennyksen verran, jotta rivien teksti on samassa
       // linjassa otsikon kanssa. Korostuksen reunaviivat jatkuvat sisennyksen verran vasemmalle.
-      <Box sx={{ marginLeft: -FUNKTIOPUU_RIVIN_SISENNYS }}>
+      <Box sx={{ marginLeft: -FUNKTIOPUU_RIVIN_SISENNYS, paddingTop: 2 }}>
         <FunktiopuuLista solmut={solmut} syvyys={0} />
       </Box>
     )
