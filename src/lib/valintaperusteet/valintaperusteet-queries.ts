@@ -2,8 +2,10 @@ import { queryOptions } from '@tanstack/react-query';
 import {
   getHakukohteenValinnanvaiheet,
   getLaskentakaava,
+  getValintaryhmat,
   getValintatapajononJarjestyskriteerit,
 } from './valintaperusteet-service';
+import { UserPermissions } from '../permissions';
 
 export const queryOptionsGetLaskentakaava = (laskentakaavaId: number) =>
   queryOptions({
@@ -26,5 +28,16 @@ export const queryOptionsGetHakukohteenValinnanvaiheet = (
   return queryOptions({
     queryKey: ['getHakukohteenValinnanvaiheet', hakukohdeOid],
     queryFn: () => getHakukohteenValinnanvaiheet(hakukohdeOid),
+  });
+};
+
+export const queryOptionsGetValintaryhmat = (
+  hakuOid: string,
+  userPermissions: UserPermissions,
+  hakukohdeOids: Array<string>,
+) => {
+  return queryOptions({
+    queryKey: ['getValintaryhmat', hakuOid, userPermissions, hakukohdeOids],
+    queryFn: () => getValintaryhmat(hakuOid, userPermissions, hakukohdeOids),
   });
 };
