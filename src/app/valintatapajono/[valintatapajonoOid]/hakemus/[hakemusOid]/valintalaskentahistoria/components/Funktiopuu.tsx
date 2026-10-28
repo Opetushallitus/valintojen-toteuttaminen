@@ -2,13 +2,12 @@ import { useTranslations } from '@/lib/localization/useTranslations';
 import { Valintalaskentahistoria } from '@/lib/types/laskenta-types';
 import { Box, Typography } from '@mui/material';
 import { ophColors } from '@/lib/theme';
-import { InfoTooltipButton } from '@/components/info-tooltip-button';
 import {
   formatArvo,
   NIMETYT_ARVOFUNKTIOT,
-  TOOLTIP_MAX_WIDTH,
 } from '../lib/valintalaskentahistoriaUtils';
 import { NDASH } from '@/lib/constants';
+import { AvaimenArvo, AvaimetTooltipButton } from './AvaimetTooltipButton';
 
 // Lihavoitu tekstinpätkä, joka perii ympäröivän tekstin typografian (esim. tooltipissa)
 const SemiboldSpan = ({ children }: { children: React.ReactNode }) => (
@@ -27,16 +26,6 @@ const FUNKTIOPUU_RIVIN_SISENNYS = 0.5;
 // täytteenä eikä gapeilla, jotta rivien välissä hiiri on aina jonkin solmun päällä eikä korostus
 // hyppää yläsolmuun. Täyte on rivillä eikä li:llä, jottei sisäkkäisten ryhmien välit kasaannu.
 const FUNKTIOPUU_RIVIN_TAYTE = 0.5;
-
-// Puuttuva arvo näytetään tekstinä eikä viivana, jottei se sekoitu rivin erotinviivaan
-const AvaimenArvo = ({ arvo }: { arvo: unknown }) => {
-  const { t } = useTranslations();
-  return arvo == null ? (
-    <em>{t('valintalaskentahistoria.ei-arvoa')}</em>
-  ) : (
-    formatArvo(arvo)
-  );
-};
 
 // Ikonin levyinen tila rivin alussa, jotta kaikkien solmujen tekstit alkavat samasta kohdasta
 const FUNKTIO_IKONI_LEVEYS = '22px';
@@ -141,27 +130,7 @@ const FunktiopuuSolmu = ({
             {ainoaAvain[0]}: <AvaimenArvo arvo={ainoaAvain[1]} />
           </Box>
         )}
-        {avaimet.length > 1 && (
-          <InfoTooltipButton
-            maxWidth={TOOLTIP_MAX_WIDTH}
-            title={
-              <Box
-                component="ul"
-                sx={{ listStyle: 'none', margin: 0, padding: 0 }}
-              >
-                {avaimet.map(([avain, arvo]) => (
-                  <Box
-                    component="li"
-                    key={avain}
-                    sx={{ overflowWrap: 'anywhere' }}
-                  >
-                    {avain}: <AvaimenArvo arvo={arvo} />
-                  </Box>
-                ))}
-              </Box>
-            }
-          />
-        )}
+        {avaimet.length > 1 && <AvaimetTooltipButton avaimet={avaimet} />}
       </Box>
       {alisolmut.length > 0 && (
         <FunktiopuuLista solmut={alisolmut} syvyys={syvyys + 1} />

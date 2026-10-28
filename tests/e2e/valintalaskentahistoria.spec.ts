@@ -120,25 +120,45 @@ test('Avaimet ja arvot avataan ja suljetaan painikkeilla', async ({ page }) => {
   // Arvot ovat funktiopuun nimettyjä arvoja kaikista järjestyskriteereistä
   await page.getByRole('button', { name: 'Näytä arvot' }).click();
   const arvotTable = page.getByRole('table');
+  // ja järjestetään nimen mukaan
   await checkRow(
     arvotTable.locator('thead tr'),
-    ['Nro', 'Nimi', 'Tyyppi', 'Tulos'],
+    ['Nimi', 'Tyyppi', 'Järjestyskriteerit', 'Tulos'],
     'th',
   );
   const arvoRows = arvotTable.locator('tbody tr');
-  await expect(arvoRows).toHaveCount(2);
+  await expect(arvoRows).toHaveCount(3);
+  // Molemmissa järjestyskriteereissä täysin samana esiintyvä arvo näytetään yhdellä rivillä
   await checkRow(arvoRows.nth(0), [
-    '1',
-    'Yhteispisteet',
-    'Nimetty lukuarvo',
-    '8',
-  ]);
-  await checkRow(arvoRows.nth(1), [
-    '2',
     'Pohjakoulutus kunnossa',
     'Nimetty totuusarvo',
+    '1, 2',
     'true',
   ]);
+  // Samannimiset arvot, joiden avaimet eroavat, näytetään omilla riveillään
+  await checkRow(arvoRows.nth(1), [
+    'Yhteispisteet',
+    'Nimetty lukuarvo',
+    '1',
+    '8',
+  ]);
+  await checkRow(arvoRows.nth(2), [
+    async (cell) => {
+      await expect(cell).toHaveText('Yhteispisteet');
+      // Muut avaimet näytetään lisätietopainikkeen takana
+      await cell.getByRole('button', { name: 'Lisätietoja' }).click();
+      await expect(page.getByRole('tooltip')).toContainText(
+        'valintaperuste: lisapisteet',
+      );
+    },
+    'Nimetty lukuarvo',
+    '2',
+    '8',
+  ]);
+  // Avaimettomalla arvolla ei ole lisätietopainiketta
+  await expect(
+    arvoRows.nth(1).getByRole('button', { name: 'Lisätietoja' }),
+  ).toHaveCount(0);
 
   await page.getByRole('button', { name: 'Piilota arvot' }).click();
   await expect(page.getByRole('table')).toHaveCount(0);

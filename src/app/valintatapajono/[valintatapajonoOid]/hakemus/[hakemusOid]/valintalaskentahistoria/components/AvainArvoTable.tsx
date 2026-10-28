@@ -9,9 +9,11 @@ export type AvainArvoRow = {
   id: string;
   avain: string;
   arvo: string;
-  // Vain arvot-taulukossa: järjestysnumero ja nimetyn arvon funktio (Nimetty lukuarvo / Nimetty totuusarvo)
-  numero?: number;
+  // Vain arvot-taulukossa: nimetyn arvon funktio (Nimetty lukuarvo / Nimetty totuusarvo),
+  // järjestyskriteerit, joissa arvo esiintyy, ja nimetyn arvon muut avaimet
   tyyppi?: string;
+  jarjestyskriteerit?: string;
+  muutAvaimet?: Array<[string, unknown]>;
 };
 
 // Sarakkeiden otsikot ovat käännösavaimia. Leveys pitää antaa kaikille paitsi viimeiselle sarakkeelle,

@@ -2,10 +2,13 @@ import { useTranslations } from '@/lib/localization/useTranslations';
 import { byLocaleCompare } from '@/lib/localization/translation-utils';
 import { Valintalaskentahistoria } from '@/lib/types/laskenta-types';
 import { makeGenericColumn } from '@/components/table/table-columns';
+import { ListTableColumn } from '@/components/table/table-types';
 import { Stack } from '@mui/material';
 import { OphButton } from '@opetushallitus/oph-design-system';
 import { useState } from 'react';
 import { DataObjectOutlined, KeyOffOutlined } from '@mui/icons-material';
+import { groupBy, prop, unique } from 'remeda';
+import { AvaimetTooltipButton } from './AvaimetTooltipButton';
 import {
   AvainArvoRow,
   AvainArvoTable,
@@ -22,24 +25,62 @@ const AVAIMET_COLUMNS = [
   makeArvoColumn('valintalaskentahistoria.arvo'),
 ];
 
-// Arvojen nimet ovat pitkiä, tyypit ja tulokset lyhyitä. Tyypille ja tulokselle annetaan kiinteät
+// Arvojen nimet ovat pitkiä, muut sarakkeet lyhyitä. Muille sarakkeille annetaan kiinteät
 // leveydet, jolloin nimi-sarake (auto) saa kiinteässä asettelussa kaiken jäljelle jäävän tilan.
-const ARVOT_COLUMNS = [
-  makeGenericColumn<AvainArvoRow>({
-    title: 'valintalaskentahistoria.numero',
-    key: 'numero',
-    valueProp: 'numero',
-    style: { width: '60px' },
-  }),
-  makeAvainColumn('valintalaskentahistoria.nimi', 'auto'),
+const ARVOT_COLUMNS: Array<ListTableColumn<AvainArvoRow>> = [
+  {
+    ...makeAvainColumn('valintalaskentahistoria.nimi', 'auto'),
+    // Nimen perässä näytetään nimetyn arvon muut avaimet, joiden perusteella samannimiset
+    // arvot voi erottaa toisistaan
+    render: ({ avain, muutAvaimet = [] }) => (
+      <span>
+        {avain}
+        {muutAvaimet.length > 0 && (
+          <AvaimetTooltipButton avaimet={muutAvaimet} />
+        )}
+      </span>
+    ),
+  },
   makeGenericColumn<AvainArvoRow>({
     title: 'valintalaskentahistoria.tyyppi',
     key: 'tyyppi',
     valueProp: 'tyyppi',
     style: { width: '180px' },
   }),
+  makeGenericColumn<AvainArvoRow>({
+    title: 'valintalaskentahistoria.jarjestyskriteerit',
+    key: 'jarjestyskriteerit',
+    valueProp: 'jarjestyskriteerit',
+    style: { width: '160px' },
+  }),
   makeArvoColumn('valintalaskentahistoria.tulos', '100px'),
 ];
+
+type NimettyArvoRow = AvainArvoRow & { jarjestyskriteeriNumero: number };
+
+// Sama nimetty arvo voi esiintyä funktiopuussa useasti (esim. usean järjestyskriteerin
+// kaavoissa). Täysin samanlaiset solmut yhdistetään yhdeksi riviksi, ja rivillä näytetään
+// järjestyskriteerit, joissa arvo esiintyy. Nimen lisäksi avaimissa voi olla alifunktioiden
+// tallennettuja tuloksia, joten ne kuuluvat vertailuun, jottei eri tuloksista koostettuja
+// arvoja yhdistetä.
+const toNimettyArvoRow = (
+  solmu: Valintalaskentahistoria,
+  jarjestyskriteeriNumero: number,
+): NimettyArvoRow => {
+  // Funktio on aina "Nimetty lukuarvo"/"Nimetty totuusarvo", varsinainen nimi on avaimissa
+  const { nimi, ...muutAvaimet } = solmu.avaimet ?? {};
+  const avain = nimi ? formatArvo(nimi) : solmu.funktio;
+  const tyyppi = solmu.funktio;
+  const arvo = formatArvo(solmu.tulos);
+  return {
+    id: JSON.stringify([avain, tyyppi, arvo, muutAvaimet]),
+    avain,
+    tyyppi,
+    arvo,
+    muutAvaimet: Object.entries(muutAvaimet),
+    jarjestyskriteeriNumero,
+  };
+};
 
 export const HistorianAvaimetJaArvot = ({
   historiat,
@@ -63,17 +104,21 @@ export const HistorianAvaimetJaArvot = ({
     }))
     .sort(byLocaleCompare('avain'));
 
-  const nimetytArvot = historiat.flatMap(collectNimetytArvot);
+  const nimetytArvot = historiat.flatMap((historia, index) =>
+    collectNimetytArvot(historia).map((solmu) =>
+      toNimettyArvoRow(solmu, index + 1),
+    ),
+  );
 
-  const arvoRows = nimetytArvot.map((node, index) => ({
-    // Solmuilla ei ole omaa tunnistetta, ja lista lasketaan aina samassa järjestyksessä
-    id: String(index),
-    numero: index + 1,
-    // Funktio on aina "Nimetty lukuarvo"/"Nimetty totuusarvo", varsinainen nimi on avaimissa
-    avain: node.avaimet?.nimi ? formatArvo(node.avaimet.nimi) : node.funktio,
-    tyyppi: node.funktio,
-    arvo: formatArvo(node.tulos),
-  }));
+  const arvoRows = Object.values(groupBy(nimetytArvot, prop('id')))
+    .map(([{ jarjestyskriteeriNumero, ...row }, ...muut]) => ({
+      ...row,
+      jarjestyskriteerit: unique([
+        jarjestyskriteeriNumero,
+        ...muut.map(prop('jarjestyskriteeriNumero')),
+      ]).join(', '),
+    }))
+    .sort(byLocaleCompare('avain'));
 
   return (
     // Painikkeet ovat rinnakkain, ja täysleveä taulukko rivittyy oman painikkeensa perään

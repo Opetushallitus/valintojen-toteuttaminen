@@ -63,7 +63,8 @@ const ENSIMMAINEN_HISTORIA = juuri(
   { pohjakoulutus: '1', asiointikieli: 'fi', kieli: 'FI' },
 );
 
-// 2. järjestyskriteeri: hylätty, ei tulosta eikä nimettyjä arvoja
+// 2. järjestyskriteeri: hylätty, ei tulosta. "Pohjakoulutus kunnossa" on täysin sama kuin
+// 1. järjestyskriteerissä. "Yhteispisteillä" on sama nimi ja tulos, mutta eri avaimet.
 const TOINEN_HISTORIA = juuri(
   null,
   [
@@ -81,6 +82,20 @@ const TOINEN_HISTORIA = juuri(
         {
           tilatyyppi: 'HYLATTY',
           kuvaus: { FI: 'Pakollinen valintaperuste puuttuu' },
+        },
+      ],
+      historiat: [
+        {
+          funktio: 'Nimetty totuusarvo',
+          tulos: true,
+          tilat: [],
+          avaimet: { nimi: 'Pohjakoulutus kunnossa' },
+        },
+        {
+          funktio: 'Nimetty lukuarvo',
+          tulos: 8,
+          tilat: [],
+          avaimet: { nimi: 'Yhteispisteet', valintaperuste: 'lisapisteet' },
         },
       ],
     },
