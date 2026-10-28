@@ -27,7 +27,6 @@ const FUNKTIOPUU_RIVIN_SISENNYS = 0.5;
 // hyppää yläsolmuun. Täyte on rivillä eikä li:llä, jottei sisäkkäisten ryhmien välit kasaannu.
 const FUNKTIOPUU_RIVIN_TAYTE = 0.5;
 
-// Ikonin levyinen tila rivin alussa, jotta kaikkien solmujen tekstit alkavat samasta kohdasta
 const FUNKTIO_IKONI_LEVEYS = '22px';
 
 // Pieni "f()"-ikoni funktiosolmun rivin alkuun

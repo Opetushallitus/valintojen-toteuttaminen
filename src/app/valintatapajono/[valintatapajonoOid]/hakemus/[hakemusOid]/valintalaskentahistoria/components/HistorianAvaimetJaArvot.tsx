@@ -90,6 +90,9 @@ export const HistorianAvaimetJaArvot = ({
   const [avaimetVisible, setAvaimetVisible] = useState(false);
   const [arvotVisible, setArvotVisible] = useState(false);
 
+  // Juurisolmun avaimet ovat hakemuksen kenttiä ja metatietoja. Jonosijan kaikki järjestyskriteerit
+  // lasketaan samassa laskennassa samalle hakemukselle, joten avaimet ovat kaikissa samat eikä
+  // yhdistäminen hävitä arvoja.
   const avaimet = Object.assign(
     {},
     ...historiat.map((historia) => historia.avaimet ?? {}),

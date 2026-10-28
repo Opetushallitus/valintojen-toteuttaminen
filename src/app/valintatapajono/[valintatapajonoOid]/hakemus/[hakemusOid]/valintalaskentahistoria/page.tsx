@@ -39,7 +39,6 @@ const ValintalaskentahistoriaContent = ({
   });
 
   const hakija = hakijat?.[0];
-  const hakuOid = hakija?.hakuOid;
 
   if (!hakija) {
     return (
@@ -63,14 +62,12 @@ const ValintalaskentahistoriaContent = ({
         />{' '}
         ({hakija.hakijanNimi})
       </Typography>
-      {hakuOid && (
-        <HakemuksenHistoria
-          hakuOid={hakuOid}
-          hakemusOid={hakemusOid}
-          valintatapajonoOid={valintatapajonoOid}
-          historiat={historiat}
-        />
-      )}
+      <HakemuksenHistoria
+        hakuOid={hakija.hakuOid}
+        hakemusOid={hakemusOid}
+        valintatapajonoOid={valintatapajonoOid}
+        historiat={historiat}
+      />
     </>
   );
 };

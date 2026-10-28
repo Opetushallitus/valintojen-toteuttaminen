@@ -112,8 +112,7 @@ export const JarjestyskriteeriTabs = ({
               }
             />
           </Stack>
-          {/* key nollaa avattujen ja suljettujen solmujen tilan välilehteä vaihdettaessa */}
-          <Funktiopuu key={valittuIndex} historia={historia} />
+          <Funktiopuu historia={historia} />
         </Box>
       )}
     </Stack>

@@ -50,25 +50,16 @@ export const InfoTooltipButton = ({ title, maxWidth }: Props) => {
   const { t } = useTranslations();
   const [open, setOpen] = useState(false);
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
-  const [placement, setPlacement] = useState<Placement>('right');
-  const [availableWidth, setAvailableWidth] = useState<number>();
-
-  const updatePlacement = (element: HTMLElement) => {
-    const valinta = choosePlacement(element);
-    setPlacement(valinta.placement);
-    setAvailableWidth(valinta.availableWidth);
-  };
+  const [valinta, setValinta] = useState<ReturnType<typeof choosePlacement>>();
+  const placement = valinta?.placement ?? 'right';
+  const availableWidth = valinta?.availableWidth;
 
   // Valitaan puoli ja leveys uudelleen ikkunan koon muuttuessa, kun tooltip on auki
   useEffect(() => {
     if (!open || !anchor) {
       return;
     }
-    const handleResize = () => {
-      const valinta = choosePlacement(anchor);
-      setPlacement(valinta.placement);
-      setAvailableWidth(valinta.availableWidth);
-    };
+    const handleResize = () => setValinta(choosePlacement(anchor));
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, [open, anchor]);
@@ -146,7 +137,7 @@ export const InfoTooltipButton = ({ title, maxWidth }: Props) => {
             // Valitaan puoli ja mitataan tila avaushetkellä, jotta tooltip on heti oikealla puolella
             // ja oikean levyinen
             setAnchor(e.currentTarget);
-            updatePlacement(e.currentTarget);
+            setValinta(choosePlacement(e.currentTarget));
             setOpen((isOpen) => !isOpen);
           }}
           startIcon={<InfoOutlined />}
