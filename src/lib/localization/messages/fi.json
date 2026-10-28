@@ -761,7 +761,13 @@
     "historia-otsikko": "Laskenta hakemukselle",
     "nayta-avaimet": "Näytä avaimet",
     "piilota-avaimet": "Piilota avaimet",
+    "nayta-arvot": "Näytä arvot",
+    "piilota-arvot": "Piilota arvot",
+    "jarjestyskriteerit": "Järjestyskriteerit",
+    "jarjestyskriteeri": "{numero}. järjestyskriteeri",
     "avain": "Avain",
-    "arvo": "Arvo"
+    "arvo": "Arvo",
+    "nimi": "Nimi",
+    "tulos": "Tulos"
   }
 }
