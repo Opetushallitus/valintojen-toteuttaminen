@@ -15,11 +15,14 @@ import { FetchError } from '../common';
 import { setConfiguration } from '@/lib/configuration/client-configuration';
 import { buildConfiguration } from '@/lib/configuration/build-configuration';
 
+const HAKU_OID = '1.2.246.562.29.00000000000000045102';
+
 // Hakemukset järjestetään hakijan nimen mukaan
 const HAKEMUKSET = [
   {
     hakemusOid: '1.2.246.562.11.00000000000001793706',
     hakijaOid: '1.2.246.562.24.25732574711',
+    hakuOid: HAKU_OID,
     etunimet: 'Kreivi',
     sukunimi: 'Dacula',
     hakijanNimi: 'Dacula Kreivi',
@@ -31,6 +34,7 @@ const HAKEMUKSET = [
   {
     hakemusOid: '1.2.246.562.11.00000000000001543832',
     hakijaOid: '1.2.246.562.24.30476885816',
+    hakuOid: HAKU_OID,
     etunimet: 'Haamu',
     sukunimi: 'Hui',
     hakijanNimi: 'Hui Haamu',
@@ -42,6 +46,7 @@ const HAKEMUKSET = [
   {
     hakemusOid: '1.2.246.562.11.00000000000001796027',
     hakijaOid: '1.2.246.562.24.69259807406',
+    hakuOid: HAKU_OID,
     etunimet: 'Ruhtinas',
     sukunimi: 'Nukettaja',
     hakijanNimi: 'Nukettaja Ruhtinas',
@@ -53,6 +58,7 @@ const HAKEMUKSET = [
   {
     hakemusOid: '1.2.246.562.11.00000000000001790371',
     hakijaOid: '1.2.246.562.24.14598775927',
+    hakuOid: HAKU_OID,
     etunimet: 'Puru',
     sukunimi: 'Purukumi',
     hakijanNimi: 'Purukumi Puru',
@@ -66,6 +72,7 @@ const HAKEMUKSET = [
     etunimet: 'Päätön',
     hakemusOid: '1.2.246.562.11.00000000000001543857',
     hakijaOid: '1.2.246.562.24.30476885829',
+    hakuOid: HAKU_OID,
     hakijanNimi: 'Ratsu Päätön',
     henkilotunnus: '181213-441V',
     lahiosoite: 'Yläpääntie 875',
