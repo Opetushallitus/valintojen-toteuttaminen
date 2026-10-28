@@ -16,16 +16,23 @@ import {
   VastaanottoTila,
 } from '@/lib/types/sijoittelu-types';
 import { isEmpty, prop } from 'remeda';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import {
+  useQueryClient,
+  useSuspenseQuery,
+  useMutation,
+} from '@tanstack/react-query';
 import {
   getValinnanTulosExcel,
   getMyohastyneetHakemukset,
+  saveValinnanTulosExcel,
 } from '@/lib/valintalaskentakoostepalvelu/valintalaskentakoostepalvelu-service';
-import { showModal } from '@/components/modals/global-modal';
+import { hideModal, showModal } from '@/components/modals/global-modal';
 import { ConfirmationGlobalModal } from '@/components/modals/confirmation-global-modal';
+import { SpinnerGlobalModal } from '@/components/modals/spinner-global-modal';
 import { buildLinkToApplication } from '@/lib/ataru/ataru-service';
 import { ExternalLink } from '@/components/external-link';
 import { useSelector } from '@xstate/react';
+import useToaster from '@/hooks/useToaster';
 import { styled } from '@/lib/theme';
 import { useIsValintaesitysJulkaistavissa } from '@/hooks/useIsValintaesitysJulkaistavissa';
 import { ValinnanTulosActorRef } from '@/lib/state/createValinnanTuloksetMachine';
@@ -38,6 +45,13 @@ import {
   ValinnanTulosState,
 } from '@/lib/state/valinnanTuloksetMachineTypes';
 import { useHasOnlyHakukohdeReadPermission } from '@/hooks/useHasOnlyHakukohdeReadPermission';
+import { FileSelectButton } from '@/components/file-select-button';
+import { refetchHakukohteenValinnanTuloksetData } from '@/lib/valinta-tulos-service/valinta-tulos-queries';
+import { useHaunAsetukset } from '@/lib/ohjausparametrit/useHaunAsetukset';
+import { refetchHakemukset } from '@/lib/ataru/ataru-queries';
+import { OphProcessError } from '@/lib/common';
+import { ValinnanTulosErrorGlobalModal } from '@/components/modals/valinnan-tulos-error-global-modal';
+import { hasChangedHakemukset } from '@/lib/state/valinnanTuloksetMachineUtils';
 
 const ActionsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -98,7 +112,6 @@ export const ValinnanTuloksetExcelDownloadButton = ({
       defaultFileName={`valinnantulos-${hakukohdeOid}.xlsx`}
       errorKey="get-valinnan-tulos-excel"
       errorMessage="valinnan-tulokset.virhe-vie-taulukkolaskentaan"
-      disabled={!valintatapajonoOid}
       getFile={() =>
         getValinnanTulosExcel({
           haku,
@@ -109,6 +122,113 @@ export const ValinnanTuloksetExcelDownloadButton = ({
     >
       {t('yleinen.vie-taulukkolaskentaan')}
     </FileDownloadButton>
+  );
+};
+
+export const ValinnanTuloksetExcelUploadButton = ({
+  haku,
+  hakukohdeOid,
+  valintatapajonoOid,
+  lastModified,
+  hakemukset,
+  disabled,
+  isDirty,
+}: {
+  haku: Haku;
+  hakukohdeOid: string;
+  valintatapajonoOid?: string;
+  lastModified?: string;
+  hakemukset: Array<HakemuksenValinnanTulos>;
+  disabled: boolean;
+  isDirty: boolean;
+}) => {
+  const { t } = useTranslations();
+  const { addToast } = useToaster();
+
+  const queryClient = useQueryClient();
+
+  const refetchTuodutTiedot = () => {
+    refetchHakukohteenValinnanTuloksetData({
+      queryClient,
+      haku,
+      hakukohdeOid,
+    });
+    // Tuonti voi luoda uusia (synteettisiä) hakemuksia
+    refetchHakemukset({ queryClient, hakuOid: haku.oid, hakukohdeOid });
+  };
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: async ({ file }: { file: File }) => {
+      showModal(SpinnerGlobalModal, {
+        title: t('valinnan-tulokset.tuodaan-tuloksia-taulukkolaskennasta'),
+      });
+      await saveValinnanTulosExcel({
+        haku,
+        hakukohdeOid,
+        valintatapajonoOid,
+        file,
+        lastModified,
+      });
+    },
+    onError: (error) => {
+      hideModal(SpinnerGlobalModal);
+      if (error instanceof OphProcessError) {
+        // Tuonti on voinut onnistua osittain -> ladataan muuttuneet tiedot
+        refetchTuodutTiedot();
+        showModal(ValinnanTulosErrorGlobalModal, {
+          error: new OphProcessError(
+            error.processObject,
+            'valinnan-tulokset.virhe-tuo-taulukkolaskennasta',
+          ),
+          hakemukset,
+        });
+      } else {
+        addToast({
+          key: 'upload-valinnan-tulos-excel-error',
+          message:
+            t('valinnan-tulokset.virhe-tuo-taulukkolaskennasta') +
+            (isEmpty(error?.message) ? '.' : `: \n${error.message}`),
+          type: 'error',
+        });
+      }
+    },
+    onSuccess: () => {
+      hideModal(SpinnerGlobalModal);
+      refetchTuodutTiedot();
+      addToast({
+        key: 'upload-valinnan-tulos-excel-success',
+        message: 'valinnan-tulokset.tuo-taulukkolaskennasta-onnistui',
+        type: 'success',
+      });
+    },
+  });
+
+  // Tuonnin jälkeinen datan uudelleenlataus resetoi lomakkeen, joten varmistetaan ettei tallentamattomia muutoksia menetetä huomaamatta
+  const onFileSelect = (file: File) => {
+    if (isDirty) {
+      showModal(ConfirmationGlobalModal, {
+        title: t('lomake.tallentamattomia-muutoksia'),
+        content: t(
+          'valinnan-tulokset.tuo-taulukkolaskennasta-tallentamattomia-muutoksia',
+        ),
+        confirmLabel: t('lomake.jatka'),
+        cancelLabel: t('yleinen.peruuta'),
+        onConfirm: () => mutate({ file }),
+      });
+    } else {
+      mutate({ file });
+    }
+  };
+
+  return (
+    <FileSelectButton
+      variant="contained"
+      disabled={disabled}
+      loading={isPending}
+      onFileSelect={onFileSelect}
+    >
+      {t('yleinen.tuo-taulukkolaskennasta')}
+    </FileSelectButton>
   );
 };
 
@@ -258,14 +378,14 @@ export const ValinnanTuloksetActions = ({
 
   const { send } = valinnanTulosActorRef;
 
-  const { state, hakemukset, valintatapajonoOid } = useSelector(
-    valinnanTulosActorRef,
-    (s) => ({
+  const { state, hakemukset, valintatapajonoOid, lastModified, isDirty } =
+    useSelector(valinnanTulosActorRef, (s) => ({
       state: s,
       hakemukset: s.context.hakemukset,
       valintatapajonoOid: s.context.valintatapajonoOid,
-    }),
-  );
+      lastModified: s.context.lastModified,
+      isDirty: hasChangedHakemukset(s),
+    }));
 
   const isValintaesitysJulkaistavissa = useIsValintaesitysJulkaistavissa({
     haku,
@@ -273,21 +393,28 @@ export const ValinnanTuloksetActions = ({
 
   const userHasOnlyReadPermission = useHasOnlyHakukohdeReadPermission();
 
+  const { data: haunAsetukset } = useHaunAsetukset({ hakuOid: haku.oid });
+
+  // Ilman hakemuksia voi vain viedä ja tuoda tuloksia taulukkolaskennan kautta
+  const hasHakemukset = !isEmpty(hakemukset);
+
   return userHasOnlyReadPermission ? null : (
     <ActionsContainer>
-      <OphButton
-        onClick={() => {
-          send({ type: ValinnanTulosEventType.UPDATE });
-        }}
-        variant="contained"
-        loading={state.matches(ValinnanTulosState.UPDATING)}
-        disabled={
-          !state.matches(ValinnanTulosState.IDLE) ||
-          (mode === 'sijoittelu' && !isValintaesitysJulkaistavissa)
-        }
-      >
-        {t('yleinen.tallenna')}
-      </OphButton>
+      {hasHakemukset && (
+        <OphButton
+          onClick={() => {
+            send({ type: ValinnanTulosEventType.UPDATE });
+          }}
+          variant="contained"
+          loading={state.matches(ValinnanTulosState.UPDATING)}
+          disabled={
+            !state.matches(ValinnanTulosState.IDLE) ||
+            (mode === 'sijoittelu' && !isValintaesitysJulkaistavissa)
+          }
+        >
+          {t('yleinen.tallenna')}
+        </OphButton>
+      )}
       {mode === 'valinta' && (
         <ValinnanTuloksetExcelDownloadButton
           haku={haku}
@@ -295,49 +422,65 @@ export const ValinnanTuloksetActions = ({
           valintatapajonoOid={valintatapajonoOid}
         />
       )}
-      <MerkitseMyohastyneeksiButton
-        hakuOid={haku.oid}
-        hakukohdeOid={hakukohde.oid}
-        hakemukset={hakemukset}
-        disabled={
-          !isValintaesitysJulkaistavissa ||
-          !state.matches(ValinnanTulosState.IDLE)
-        }
-        massUpdateForm={(changeParams: ValinnanTulosMassChangeParams) => {
-          send({
-            type: ValinnanTulosEventType.MASS_UPDATE,
-            ...changeParams,
-          });
-        }}
-      />
-      <OphButton
-        variant="contained"
-        disabled={
-          mode !== 'valinta' &&
-          (!isValintaesitysJulkaistavissa ||
-            !state.matches(ValinnanTulosState.IDLE))
-        }
-        onClick={() =>
-          showModal(ConfirmationGlobalModal, {
-            title: t('sijoittelun-tulokset.hyvaksy-modal-title'),
-            content: t('sijoittelun-tulokset.hyvaksy-modal-text'),
-            confirmLabel: t('sijoittelun-tulokset.hyvaksy'),
-            cancelLabel: t('yleinen.peruuta'),
-            onConfirm: () => {
-              send({ type: ValinnanTulosEventType.PUBLISH });
-            },
-          })
-        }
-        loading={state.matches(ValinnanTulosState.PUBLISHING)}
-      >
-        {t('sijoittelun-tulokset.hyvaksy')}
-      </OphButton>
-      <SendVastaanottopostiButton
-        disabled={!state.matches(ValinnanTulosState.IDLE)}
-        hakukohdeOid={hakukohde.oid}
-        mode={mode}
-        valintatapajonoOid={valintatapajonoOid}
-      />
+      {/* Tuonti voi luoda synteettisiä hakemuksia, joten sallitaan se vain hauille, joissa ne ovat käytössä */}
+      {mode === 'valinta' && haunAsetukset.synteettisetHakemukset && (
+        <ValinnanTuloksetExcelUploadButton
+          haku={haku}
+          hakukohdeOid={hakukohde.oid}
+          valintatapajonoOid={valintatapajonoOid}
+          lastModified={lastModified}
+          hakemukset={hakemukset}
+          disabled={!state.matches(ValinnanTulosState.IDLE)}
+          isDirty={isDirty}
+        />
+      )}
+      {hasHakemukset && (
+        <>
+          <MerkitseMyohastyneeksiButton
+            hakuOid={haku.oid}
+            hakukohdeOid={hakukohde.oid}
+            hakemukset={hakemukset}
+            disabled={
+              !isValintaesitysJulkaistavissa ||
+              !state.matches(ValinnanTulosState.IDLE)
+            }
+            massUpdateForm={(changeParams: ValinnanTulosMassChangeParams) => {
+              send({
+                type: ValinnanTulosEventType.MASS_UPDATE,
+                ...changeParams,
+              });
+            }}
+          />
+          <OphButton
+            variant="contained"
+            disabled={
+              mode !== 'valinta' &&
+              (!isValintaesitysJulkaistavissa ||
+                !state.matches(ValinnanTulosState.IDLE))
+            }
+            onClick={() =>
+              showModal(ConfirmationGlobalModal, {
+                title: t('sijoittelun-tulokset.hyvaksy-modal-title'),
+                content: t('sijoittelun-tulokset.hyvaksy-modal-text'),
+                confirmLabel: t('sijoittelun-tulokset.hyvaksy'),
+                cancelLabel: t('yleinen.peruuta'),
+                onConfirm: () => {
+                  send({ type: ValinnanTulosEventType.PUBLISH });
+                },
+              })
+            }
+            loading={state.matches(ValinnanTulosState.PUBLISHING)}
+          >
+            {t('sijoittelun-tulokset.hyvaksy')}
+          </OphButton>
+          <SendVastaanottopostiButton
+            disabled={!state.matches(ValinnanTulosState.IDLE)}
+            hakukohdeOid={hakukohde.oid}
+            mode={mode}
+            valintatapajonoOid={valintatapajonoOid}
+          />
+        </>
+      )}
     </ActionsContainer>
   );
 };
