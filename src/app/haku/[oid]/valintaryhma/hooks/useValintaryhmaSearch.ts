@@ -7,7 +7,7 @@ import {
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
 } from '@/lib/constants';
 import { isDefined, isEmpty, uniqueBy } from 'remeda';
-import { getValintaryhmat } from '@/lib/valintaperusteet/valintaperusteet-service';
+import { queryOptionsGetValintaryhmat } from '@/lib/valintaperusteet/valintaperusteet-queries';
 import { ValintaryhmaHakukohteilla } from '@/lib/valintaperusteet/valintaperusteet-types';
 import { queryOptionsGetHakukohteet } from '@/lib/kouta/kouta-queries';
 import { useUserPermissions } from '@/hooks/useUserPermissions';
@@ -67,10 +67,9 @@ export const useValintaryhmaSearchResults = (hakuOid: string) => {
 
   const hakukohdeOids = hakukohteet.map((h) => h.oid);
 
-  const { data: ryhmat } = useSuspenseQuery({
-    queryKey: ['getValintaryhmat', hakuOid, userPermissions, hakukohdeOids],
-    queryFn: () => getValintaryhmat(hakuOid, userPermissions, hakukohdeOids),
-  });
+  const { data: ryhmat } = useSuspenseQuery(
+    queryOptionsGetValintaryhmat(hakuOid, userPermissions, hakukohdeOids),
+  );
 
   const flattenedRyhmat = useMemo(() => {
     const flattened = ryhmat.muutRyhmat
