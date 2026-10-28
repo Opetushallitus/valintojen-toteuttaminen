@@ -23,7 +23,11 @@ export const LabeledInfoItem = ({
       {labelInfo ? (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           {infoLabel}
-          {labelInfo}
+          {/* Lisäsisältö (esim. 24px korkea painike) on otsikkoa korkeampi. Nollakorkuinen kääre
+              keskittää sen otsikon kanssa ilman, että rivi ja siten koko kohta kasvaa. */}
+          <Box sx={{ display: 'flex', alignItems: 'center', height: 0 }}>
+            {labelInfo}
+          </Box>
         </Box>
       ) : (
         infoLabel

@@ -13,7 +13,10 @@ import {
   buildLinkToValintatapajono,
 } from '@/lib/externalLinks';
 import { useSuspenseQueries, useSuspenseQuery } from '@tanstack/react-query';
-import { JononSijainti } from '../lib/valintalaskentahistoriaUtils';
+import {
+  JononSijainti,
+  TOOLTIP_MAX_WIDTH,
+} from '../lib/valintalaskentahistoriaUtils';
 
 type ValintaperusteetLinkProps = {
   valintatapajonoOid: string;
@@ -81,7 +84,10 @@ const ValintaperusteetLinkInfoContent = (props: ValintaperusteetLinkProps) => {
   return tunnistettu ? null : (
     <InfoTooltipButton
       title={t('valintalaskentahistoria.valintaperusteet-link-tooltip-title')}
-      ariaLabel={t('valintalaskentahistoria.valintaperusteet-link-tooltip-label')}
+      ariaLabel={t(
+        'valintalaskentahistoria.valintaperusteet-link-tooltip-label',
+      )}
+      maxWidth={TOOLTIP_MAX_WIDTH}
     />
   );
 };
