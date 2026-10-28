@@ -2,32 +2,13 @@ import { LabeledInfoItem } from '@/components/labeled-info-item';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import { Valintalaskentahistoria } from '@/lib/types/laskenta-types';
 import { Box, Stack } from '@mui/material';
-import { DEFAULT_BOX_BORDER, styled } from '@/lib/theme';
-import { TAB_ITEM_STYLES, tabRowStyles } from '@/components/tabStyles';
+import { Tab, TabRow } from '@/components/Tabs';
 import { useRef, useState } from 'react';
 import { Funktiopuu } from './Funktiopuu';
 import { JarjestyskriteerinTila } from './JarjestyskriteerinTila';
 import { JarjestyskriteeriLink } from './JarjestyskriteeriLink';
 import { formatArvo, JononSijainti } from '../lib/valintalaskentahistoriaUtils';
 import { NDASH } from '@/lib/constants';
-
-// Välilehdet tyylitellään samoin kuin hakukohteen välilehdet (HakukohdeTabs),
-// ja välilehtirivin alla on vaakaviiva.
-const StyledTabs = styled('div')(({ theme }) => ({
-  ...tabRowStyles(theme),
-  borderBottom: DEFAULT_BOX_BORDER,
-}));
-
-const StyledTab = styled('button')(({ theme }) => ({
-  // Nollataan painikkeen oletustyylit
-  ...theme.typography.body1,
-  background: 'none',
-  border: 'none',
-  margin: 0,
-  padding: theme.spacing(1, 0, 0),
-  cursor: 'pointer',
-  ...TAB_ITEM_STYLES,
-}));
 
 const tabId = (index: number) => `jarjestyskriteeri-tab-${index}`;
 const tabpanelId = (index: number) => `jarjestyskriteeri-tabpanel-${index}`;
@@ -71,13 +52,14 @@ export const JarjestyskriteeriTabs = ({
 
   return (
     <Stack spacing={2}>
-      <StyledTabs
+      <TabRow
         role="tablist"
+        sx={{ paddingTop: 1 }}
         aria-label={t('valintalaskentahistoria.jarjestyskriteerit')}
         onKeyDown={handleKeyDown}
       >
         {historiat.map((_historia, index) => (
-          <StyledTab
+          <Tab
             // Historioilla ei ole omaa tunnistetta, ja niiden järjestys on kiinteä
             key={index}
             ref={(element) => {
@@ -95,9 +77,9 @@ export const JarjestyskriteeriTabs = ({
             {t('valintalaskentahistoria.jarjestyskriteeri', {
               numero: index + 1,
             })}
-          </StyledTab>
+          </Tab>
         ))}
-      </StyledTabs>
+      </TabRow>
       {historia && (
         <Box
           role="tabpanel"
