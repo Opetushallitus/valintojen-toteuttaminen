@@ -107,7 +107,18 @@ export const InfoTooltipButton = ({ title, maxWidth, ariaLabel }: Props) => {
         title={
           // Sulkemispainike omassa sarakkeessaan, jottei teksti rivity sen alle
           <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
-            <Box sx={{ padding: 1, flex: 1, minWidth: 0 }}>{title}</Box>
+            <Box
+              sx={{
+                padding: 1,
+                flex: 1,
+                minWidth: 0,
+                // Tooltipin teksti valitaan oletuksena kokonaan (userSelect: 'all'). Painikkeella
+                // avattavan tooltipin tekstistä voidaan valita myös osa.
+                userSelect: 'text',
+              }}
+            >
+              {title}
+            </Box>
             <OphButton
               sx={{ color: ophColors.black, flexShrink: 0 }}
               aria-label={t('yleinen.sulje')}
