@@ -1,16 +1,13 @@
-import { ExternalLink } from '@/components/external-link';
 import { LabeledInfoItem } from '@/components/labeled-info-item';
 import { useTranslations } from '@/lib/localization/useTranslations';
-import { queryOptionsGetValintatapajononAktiivisetJarjestyskriteerit } from '@/lib/valintaperusteet/valintaperusteet-queries';
-import { buildLinkToJarjestyskriteeri } from '@/lib/valintaperusteet/valintaperusteet-service';
 import { Valintalaskentahistoria } from '@/lib/types/laskenta-types';
 import { Box, Stack } from '@mui/material';
 import { DEFAULT_BOX_BORDER, styled } from '@/lib/theme';
 import { TAB_ITEM_STYLES, tabRowStyles } from '@/components/tabStyles';
-import { useSuspenseQuery } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
 import { Funktiopuu } from './Funktiopuu';
 import { JarjestyskriteerinTila } from './JarjestyskriteerinTila';
+import { JarjestyskriteeriLink } from './JarjestyskriteeriLink';
 import { formatArvo, JononSijainti } from '../lib/valintalaskentahistoriaUtils';
 import { NDASH } from '@/lib/constants';
 
@@ -71,14 +68,6 @@ export const JarjestyskriteeriTabs = ({
       valitseJaFokusoi(uusiIndex);
     }
   };
-  const { data: jarjestyskriteerit } = useSuspenseQuery(
-    queryOptionsGetValintatapajononAktiivisetJarjestyskriteerit(
-      valintatapajonoOid,
-    ),
-  );
-  // Historiat ja aktiiviset järjestyskriteerit ovat samassa prioriteettijärjestyksessä.
-  // Huom: linkki vie valintaperusteiden nykyiseen järjestyskriteeriin, joka on voinut muuttua laskennan jälkeen.
-  const jarjestyskriteeri = jarjestyskriteerit[valittuIndex];
 
   return (
     <Stack spacing={2}>
@@ -129,16 +118,11 @@ export const JarjestyskriteeriTabs = ({
             <LabeledInfoItem
               label={t('valintalaskentahistoria.lisatiedot')}
               value={
-                jarjestyskriteeri && jononSijainti ? (
-                  <ExternalLink
-                    name={t(
-                      'valintalaskentahistoria.valintaperusteen-mallinnus',
-                    )}
-                    href={buildLinkToJarjestyskriteeri({
-                      ...jononSijainti,
-                      valintatapajonoOid,
-                      jarjestyskriteeriOid: jarjestyskriteeri.oid,
-                    })}
+                jononSijainti ? (
+                  <JarjestyskriteeriLink
+                    valintatapajonoOid={valintatapajonoOid}
+                    jononSijainti={jononSijainti}
+                    index={valittuIndex}
                   />
                 ) : (
                   NDASH
