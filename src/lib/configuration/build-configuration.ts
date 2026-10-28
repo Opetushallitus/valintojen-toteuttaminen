@@ -47,6 +47,7 @@ export function buildConfiguration({
       ataru: {
         ataruEditoriLogin: `${domain}/lomake-editori/auth/cas`,
         hakemuksetUrl: `${domain}/lomake-editori/api/external/valinta-ui`,
+        editoriHakemusLink: `${domain}/lomake-editori/applications/search?term={hakemusOid}`,
       },
       valintalaskentaService: {
         valintalaskentaServiceLogin: `${domain}/valintalaskenta-laskenta-service/auth/login`,
@@ -125,9 +126,6 @@ export function buildConfiguration({
         updateAjastettuSijoittelu: `${domain}/sijoittelu-service/resources/koostesijoittelu/jatkuva/paivita`,
         deleteAjastettuSijoittelu: `${domain}/sijoittelu-service/resources/koostesijoittelu/jatkuva/poista?hakuOid={hakuOid}`,
       },
-      // valintalaskenta-ui (vanha käyttöliittymä)
-      // TODO: Poista kun korvattu uudella käyttöliittymällä
-      valintalaskentahistoriaLinkUrl: `${domain}/valintalaskenta-ui/app/index.html#/valintatapajono/{valintatapajonoOid}/hakemus/{hakemusOid}/valintalaskentahistoria`,
       hakukohderyhmapalvelu: {
         haunAsetuksetLinkUrl: `${domain}/hakukohderyhmapalvelu/haun-asetukset?hakuOid={hakuOid}`,
       },

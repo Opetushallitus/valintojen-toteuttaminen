@@ -16,12 +16,15 @@ export const ExternalLink = ({
   title,
 }: ExternalLinkProps) => {
   const { configuration } = useConfiguration();
+  const isAbsoluteLink = href.startsWith('http');
+  const to = isAbsoluteLink ? href : `${configuration?.domain}/${href}`;
+
   return (
     <OphLink
       component={Link}
       target="_blank"
       iconVisible={noIcon == null ? true : !noIcon}
-      to={`${configuration?.domain}/${href}`}
+      to={to}
       title={title ?? ''}
     >
       {name}

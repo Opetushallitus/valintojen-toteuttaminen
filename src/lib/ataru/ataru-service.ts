@@ -9,6 +9,7 @@ import { Language } from '../localization/localization-types';
 import { byLocaleCompare } from '../localization/translation-utils';
 import { KoutaOidParams } from '../kouta/kouta-types';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
+import { getConfigUrl } from '../configuration/configuration-utils';
 
 const getMaksuvelvollisuus = (toive?: {
   hakukohdeOid: string;
@@ -193,10 +194,11 @@ export async function getHakemukset({
     .sort(byLocaleCompare('hakijanNimi'));
 }
 
-const LINK_TO_APPLICATION = 'lomake-editori/applications/search?term=';
 const LINK_TO_HAKU = 'kouta/haku/';
 
-export const buildLinkToApplication = (hakemusOid: string) =>
-  LINK_TO_APPLICATION + hakemusOid;
+export const buildLinkToApplication = (hakemusOid: string) => {
+  const config = getConfiguration();
+  return getConfigUrl(config.routes.ataru.editoriHakemusLink, { hakemusOid });
+};
 
 export const buildLinkToHaku = (hakuOid: string) => LINK_TO_HAKU + hakuOid;
