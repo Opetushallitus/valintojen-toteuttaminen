@@ -11,6 +11,7 @@ import {
   testMuodostaHakemusHyvaksymiskirje,
   testNaytaMuutoshistoria,
   TIMESTAMP_REGEX,
+  testNaytaValintatilanne,
   waitForMethodRequest,
 } from './playwright-utils';
 import { buildConfiguration } from '@/lib/configuration/build-configuration';
@@ -1015,6 +1016,10 @@ test.describe('Tallennus', () => {
   test.describe('Hakemuksen muut toiminnot', () => {
     test('Näytä muutoshistoria', async ({ page }) => {
       await testNaytaMuutoshistoria(page);
+    });
+
+    test('Näytä valintatilanne', async ({ page }) => {
+      await testNaytaValintatilanne(page);
     });
 
     test('Muodosta hyväksymiskirje', async ({ page }) => {
