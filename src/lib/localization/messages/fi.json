@@ -758,6 +758,10 @@
   },
   "valintalaskentahistoria": {
     "otsikko": "Valintojen toteuttaminen \u2013 Valintalaskentahistoria",
-    "historia-otsikko": "Laskenta hakemukselle"
+    "historia-otsikko": "Laskenta hakemukselle",
+    "nayta-avaimet": "Näytä avaimet",
+    "piilota-avaimet": "Piilota avaimet",
+    "avain": "Avain",
+    "arvo": "Arvo"
   }
 }
