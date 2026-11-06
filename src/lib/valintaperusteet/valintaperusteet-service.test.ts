@@ -1,5 +1,4 @@
-import { getHierarchyUserPermissions } from '../organisaatio-service';
-import { EMPTY_USER_PERMISSIONS } from '../permissions';
+import { EMPTY_USER_PERMISSIONS, expandUserPermissions } from '../permissions';
 import { expect, test, vi, describe, afterEach } from 'vitest';
 import {
   getHakukohteenValinnanvaiheet,
@@ -253,6 +252,7 @@ test('Valintaperusteet: getValintaryhmat', async () => {
   } = await getValintaryhmat(
     'haku-1',
     {
+      organizationHierarchyIncluded: true,
       hasOphCRUD: true,
       readOrganizations: [],
       writeOrganizations: [],
@@ -319,7 +319,7 @@ test('valintaryhmän vastuuorganisaation kirjoitusoikeus periytyy ylemmästä or
   const spy = vi.spyOn(client, 'get').mockResolvedValue(response);
   try {
     const hierarchy = [{ oid: 'emo', children: [{ oid: 'lapsi' }] }];
-    const permissions = getHierarchyUserPermissions(
+    const permissions = expandUserPermissions(
       {
         ...EMPTY_USER_PERMISSIONS,
         readOrganizations: ['emo'],
@@ -336,7 +336,7 @@ test('valintaryhmän vastuuorganisaation kirjoitusoikeus periytyy ylemmästä or
       'toisen-tarjoajan-hakukohde',
     ]);
 
-    const readOnly = getHierarchyUserPermissions(
+    const readOnly = expandUserPermissions(
       {
         ...EMPTY_USER_PERMISSIONS,
         readOrganizations: ['emo'],
@@ -348,7 +348,7 @@ test('valintaryhmän vastuuorganisaation kirjoitusoikeus periytyy ylemmästä or
         .muutRyhmat,
     ).toEqual([]);
 
-    const sibling = getHierarchyUserPermissions(
+    const sibling = expandUserPermissions(
       {
         ...EMPTY_USER_PERMISSIONS,
         readOrganizations: ['sisar'],
