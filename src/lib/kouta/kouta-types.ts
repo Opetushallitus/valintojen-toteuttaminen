@@ -51,7 +51,6 @@ export type Hakukohde = {
   organisaatioNimi: TranslatedName;
   jarjestyspaikkaHierarkiaNimi: TranslatedName;
   tarjoajaOid: string;
-  hakukohderyhmaOids?: Array<string>;
   voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita: boolean;
   opetuskielet: Set<Language>;
   koulutustyyppikoodi?: string;

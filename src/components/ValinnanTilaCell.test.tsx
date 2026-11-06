@@ -39,8 +39,8 @@ const ORGS_WITH_UPDATE = [TARJOAJA_OID];
 
 const mockUpdateForm = vi.fn();
 
-vi.mock('@/hooks/useHakukohdePermissions', () => ({
-  useCheckHakukohdePermission: (hakukohde: Hakukohde) =>
+vi.mock('@/hooks/useHakuPermissions', () => ({
+  useCheckHakukohdePermission: () => (hakukohde: Hakukohde) =>
     ORGS_WITH_UPDATE.includes(hakukohde.tarjoajaOid),
 }));
 

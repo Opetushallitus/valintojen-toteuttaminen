@@ -2,7 +2,13 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { getVisibleHakukohdeTabs } from './hakukohde-tab-utils';
 import { Haku, Hakukohde, Tila } from '@/lib/kouta/kouta-types';
 import { toFinnishDate } from '@/lib/time-utils';
-import { UserPermissions } from '@/lib/permissions';
+import {
+  UserPermissions,
+  HakuPermissions,
+  expandUserPermissions,
+  EMPTY_HAKUKOHDERYHMA_PERMISSIONS,
+  EMPTY_USER_PERMISSIONS,
+} from '@/lib/permissions';
 import { OPH_ORGANIZATION_OID } from '@/lib/constants';
 
 const HAKU_BASE: Haku = {
@@ -69,6 +75,15 @@ const READ_PERMISSIONS: UserPermissions = {
   sijoitteluPeruuntuneidenHyvaksyntaAllowed: false,
 };
 
+const forHaku = (permissions: UserPermissions): HakuPermissions => ({
+  hakuOid: HAKU_BASE.oid,
+  userPermissions: expandUserPermissions(
+    permissions,
+    permissions.readOrganizations.map((oid) => ({ oid })),
+  ),
+  hakukohderyhmaPermissions: EMPTY_HAKUKOHDERYHMA_PERMISSIONS,
+});
+
 describe('getVisibleHakukohdeTabs', () => {
   beforeEach(() => {
     vi.useFakeTimers();
@@ -90,7 +105,7 @@ describe('getVisibleHakukohdeTabs', () => {
       hakukohde: HAKUKOHDE_BASE,
       haunAsetukset: { sijoittelu: true },
       usesValintalaskenta: true,
-      hierarchyPermissions: OPH_PERMISSIONS,
+      hakuPermissions: forHaku(OPH_PERMISSIONS),
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -117,7 +132,7 @@ describe('getVisibleHakukohdeTabs', () => {
       },
       haunAsetukset: { sijoittelu: true },
       usesValintalaskenta: true,
-      hierarchyPermissions: OPH_PERMISSIONS,
+      hakuPermissions: forHaku(OPH_PERMISSIONS),
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -144,7 +159,7 @@ describe('getVisibleHakukohdeTabs', () => {
       },
       haunAsetukset: { sijoittelu: true },
       usesValintalaskenta: true,
-      hierarchyPermissions: OPH_PERMISSIONS,
+      hakuPermissions: forHaku(OPH_PERMISSIONS),
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -166,7 +181,7 @@ describe('getVisibleHakukohdeTabs', () => {
       hakukohde: HAKUKOHDE_BASE,
       haunAsetukset: { sijoittelu: false },
       usesValintalaskenta: false,
-      hierarchyPermissions: OPH_PERMISSIONS,
+      hakuPermissions: forHaku(OPH_PERMISSIONS),
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -184,7 +199,7 @@ describe('getVisibleHakukohdeTabs', () => {
       hakukohde: HAKUKOHDE_BASE,
       haunAsetukset: { sijoittelu: false },
       usesValintalaskenta: true,
-      hierarchyPermissions: OPH_PERMISSIONS,
+      hakuPermissions: forHaku(OPH_PERMISSIONS),
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -210,7 +225,7 @@ describe('getVisibleHakukohdeTabs', () => {
         },
       },
       usesValintalaskenta: true,
-      hierarchyPermissions: OPH_PERMISSIONS,
+      hakuPermissions: forHaku(OPH_PERMISSIONS),
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -240,7 +255,7 @@ describe('getVisibleHakukohdeTabs', () => {
         },
       },
       usesValintalaskenta: true,
-      hierarchyPermissions: CRUD_PERMISSIONS,
+      hakuPermissions: forHaku(CRUD_PERMISSIONS),
     });
     expect(tabs.map((t) => t.route)).toEqual(['perustiedot']);
   });
@@ -262,7 +277,7 @@ describe('getVisibleHakukohdeTabs', () => {
         },
       },
       usesValintalaskenta: true,
-      hierarchyPermissions: CRUD_PERMISSIONS,
+      hakuPermissions: forHaku(CRUD_PERMISSIONS),
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -296,7 +311,7 @@ describe('getVisibleHakukohdeTabs', () => {
         },
       },
       usesValintalaskenta: true,
-      hierarchyPermissions: CRUD_PERMISSIONS,
+      hakuPermissions: forHaku(CRUD_PERMISSIONS),
     });
 
     expect(tabs).toEqual([]);
@@ -323,7 +338,7 @@ describe('getVisibleHakukohdeTabs', () => {
         },
       },
       usesValintalaskenta: true,
-      hierarchyPermissions: CRUD_PERMISSIONS,
+      hakuPermissions: forHaku(CRUD_PERMISSIONS),
     });
 
     expect(tabs).toEqual([]);
@@ -350,7 +365,7 @@ describe('getVisibleHakukohdeTabs', () => {
         },
       },
       usesValintalaskenta: true,
-      hierarchyPermissions: CRUD_PERMISSIONS,
+      hakuPermissions: forHaku(CRUD_PERMISSIONS),
     });
 
     expect(tabs).toEqual([]);
@@ -364,7 +379,7 @@ describe('getVisibleHakukohdeTabs', () => {
         sijoittelu: false,
       },
       usesValintalaskenta: false,
-      hierarchyPermissions: READ_PERMISSIONS,
+      hakuPermissions: forHaku(READ_PERMISSIONS),
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -381,7 +396,7 @@ describe('getVisibleHakukohdeTabs', () => {
         sijoittelu: true,
       },
       usesValintalaskenta: true,
-      hierarchyPermissions: READ_PERMISSIONS,
+      hakuPermissions: forHaku(READ_PERMISSIONS),
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -400,7 +415,7 @@ describe('getVisibleHakukohdeTabs', () => {
         sijoittelu: true,
       },
       usesValintalaskenta: true,
-      hierarchyPermissions: READ_PERMISSIONS,
+      hakuPermissions: forHaku(READ_PERMISSIONS),
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -419,7 +434,7 @@ describe('getVisibleHakukohdeTabs', () => {
         sijoittelu: true,
       },
       usesValintalaskenta: true,
-      hierarchyPermissions: READ_PERMISSIONS,
+      hakuPermissions: forHaku(READ_PERMISSIONS),
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -438,7 +453,7 @@ describe('getVisibleHakukohdeTabs', () => {
         sijoittelu: false,
       },
       usesValintalaskenta: false,
-      hierarchyPermissions: WRITE_PERMISSIONS,
+      hakuPermissions: forHaku(WRITE_PERMISSIONS),
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -457,7 +472,7 @@ describe('getVisibleHakukohdeTabs', () => {
       hakukohde: HAKUKOHDE_BASE,
       haunAsetukset: { sijoittelu: true },
       usesValintalaskenta: true,
-      hierarchyPermissions: CRUD_PERMISSIONS,
+      hakuPermissions: forHaku(CRUD_PERMISSIONS),
     });
     expect(tabs.map((t) => t.route)).toEqual([
       'perustiedot',
@@ -489,7 +504,7 @@ describe('getVisibleHakukohdeTabs', () => {
         },
       },
       usesValintalaskenta: true,
-      hierarchyPermissions: CRUD_PERMISSIONS,
+      hakuPermissions: forHaku(CRUD_PERMISSIONS),
     });
 
     expect(tabs).toEqual([]);
@@ -511,7 +526,7 @@ describe('getVisibleHakukohdeTabs', () => {
         },
       },
       usesValintalaskenta: true,
-      hierarchyPermissions: CRUD_PERMISSIONS,
+      hakuPermissions: forHaku(CRUD_PERMISSIONS),
     });
 
     expect(tabs.map((t) => t.route)).toEqual([
@@ -526,21 +541,23 @@ describe('getVisibleHakukohdeTabs', () => {
 });
 
 describe('hakukohderyhmäoikeudet', () => {
-  const ryhmaOid = '1.2.246.562.28.123';
-  const hakukohde = { ...HAKUKOHDE_BASE, hakukohderyhmaOids: [ryhmaOid] };
   const props = {
     haku: { ...HAKU_BASE, kohdejoukkoKoodiUri: 'haunkohdejoukko_12#1' },
-    hakukohde,
+    hakukohde: HAKUKOHDE_BASE,
     haunAsetukset: { sijoittelu: true },
     usesValintalaskenta: true,
   };
+  const base = forHaku(EMPTY_USER_PERMISSIONS);
 
   test('ryhmän lukuoikeus näyttää lukuvälilehdet mutta ei kirjoitusvälilehtiä', () => {
     const routes = getVisibleHakukohdeTabs({
       ...props,
-      hierarchyPermissions: {
-        ...READ_PERMISSIONS,
-        readOrganizations: [ryhmaOid],
+      hakuPermissions: {
+        ...base,
+        hakukohderyhmaPermissions: {
+          ...EMPTY_HAKUKOHDERYHMA_PERMISSIONS,
+          READ: [HAKUKOHDE_BASE.oid],
+        },
       },
     }).map((tab) => tab.route);
     expect(routes).toContain('perustiedot');
@@ -552,10 +569,13 @@ describe('hakukohderyhmäoikeudet', () => {
   test('ryhmän kirjoitusoikeus näyttää pistesyötön mutta ei CRUD-välilehteä', () => {
     const routes = getVisibleHakukohdeTabs({
       ...props,
-      hierarchyPermissions: {
-        ...WRITE_PERMISSIONS,
-        readOrganizations: [ryhmaOid],
-        writeOrganizations: [ryhmaOid],
+      hakuPermissions: {
+        ...base,
+        hakukohderyhmaPermissions: {
+          READ: [HAKUKOHDE_BASE.oid],
+          READ_UPDATE: [HAKUKOHDE_BASE.oid],
+          CRUD: [],
+        },
       },
     }).map((tab) => tab.route);
     expect(routes).toContain('pistesyotto');
@@ -565,23 +585,28 @@ describe('hakukohderyhmäoikeudet', () => {
   test('ryhmän CRUD-oikeus näyttää myös valinnan hallinnan', () => {
     const routes = getVisibleHakukohdeTabs({
       ...props,
-      hierarchyPermissions: {
-        ...CRUD_PERMISSIONS,
-        readOrganizations: [ryhmaOid],
-        writeOrganizations: [ryhmaOid],
-        crudOrganizations: [ryhmaOid],
+      hakuPermissions: {
+        ...base,
+        hakukohderyhmaPermissions: {
+          READ: [HAKUKOHDE_BASE.oid],
+          READ_UPDATE: [HAKUKOHDE_BASE.oid],
+          CRUD: [HAKUKOHDE_BASE.oid],
+        },
       },
     }).map((tab) => tab.route);
     expect(routes).toContain('valinnan-hallinta');
   });
 
-  test('toisen ryhmän oikeus ei anna pääsyä hakukohteeseen', () => {
+  test('toisen hakukohteen ryhmäoikeus ei anna pääsyä', () => {
     expect(
       getVisibleHakukohdeTabs({
         ...props,
-        hierarchyPermissions: {
-          ...READ_PERMISSIONS,
-          readOrganizations: ['1.2.246.562.28.456'],
+        hakuPermissions: {
+          ...base,
+          hakukohderyhmaPermissions: {
+            ...EMPTY_HAKUKOHDERYHMA_PERMISSIONS,
+            READ: ['toinen-kohde'],
+          },
         },
       }),
     ).toEqual([]);

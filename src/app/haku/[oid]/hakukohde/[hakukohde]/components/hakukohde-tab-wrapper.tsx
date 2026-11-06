@@ -1,7 +1,7 @@
 import { NoResults } from '@/components/no-results';
 import { useHakukohdeTab } from '@/hooks/useHakukohdeTab';
 import { HakukohdeUseHasReadOnlyContext } from '@/hooks/useHasOnlyHakukohdeReadPermission';
-import { useHakukohdePermissions } from '@/hooks/useHakukohdePermissions';
+import { useHakuPermissions } from '@/hooks/useHakuPermissions';
 import { checkHasHakukohdePermission } from '@/lib/permissions';
 import { useVisibleHakukohdeTabs } from '@/hooks/useVisibleHakukohdeTabs';
 import { Haku, KoutaOidParams } from '@/lib/kouta/kouta-types';
@@ -54,23 +54,22 @@ export const HakukohdeTabWrapper = ({
     visibleTabs.find((tab) => tab.route === activeTab.route),
   );
 
-  const { data: rawHakukohde } = useHakukohde({ hakukohdeOid });
+  const { data: hakukohde } = useHakukohde({ hakukohdeOid });
   const { data: haku } = useHaku({ hakuOid });
   const { data: valinnanvaiheet } = useSuspenseQuery(
     queryOptionsGetHakukohteenValinnanvaiheet(hakukohdeOid),
   );
-  const { hakukohde, hierarchyPermissions } =
-    useHakukohdePermissions(rawHakukohde);
+  const hakuPermissions = useHakuPermissions(hakuOid);
   const usesValintalaskenta = checkIsValintalaskentaUsed(valinnanvaiheet);
 
   const hasCrud = checkHasHakukohdePermission(
     hakukohde,
-    hierarchyPermissions,
+    hakuPermissions,
     'CRUD',
   );
   const hasUpdate = checkHasHakukohdePermission(
     hakukohde,
-    hierarchyPermissions,
+    hakuPermissions,
     'READ_UPDATE',
   );
   const hasOnlyRead = !hasCrud && !hasUpdate;
@@ -78,7 +77,7 @@ export const HakukohdeTabWrapper = ({
     activeTabRoute: activeTab.route,
     haku,
     hasOnlyRead,
-    hasOphCRUD: hierarchyPermissions.hasOphCRUD,
+    hasOphCRUD: hakuPermissions.userPermissions.hasOphCRUD,
     usesValintalaskenta,
   });
 

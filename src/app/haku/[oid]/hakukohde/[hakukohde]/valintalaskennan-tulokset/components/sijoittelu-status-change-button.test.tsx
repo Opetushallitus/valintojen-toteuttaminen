@@ -2,7 +2,12 @@ import { describe, expect, test, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { PureSijoitteluStatusChangeButton } from './sijoittelu-status-change-button';
 import { useSijoitteluStatusMutation } from '../hooks/useSijoitteluStatusMutation';
-import { UserPermissions } from '@/lib/permissions';
+import {
+  UserPermissions,
+  EMPTY_USER_PERMISSIONS,
+  EMPTY_HAKUKOHDERYHMA_PERMISSIONS,
+  expandUserPermissions,
+} from '@/lib/permissions';
 import { OPH_ORGANIZATION_OID } from '@/lib/constants';
 import { LaskennanValintatapajonoTulosWithHakijaInfo } from '@/hooks/useEditableValintalaskennanTulokset';
 import { GlobalModalProvider } from '@/components/modals/global-modal';
@@ -33,7 +38,11 @@ const renderSijoitteluButton = ({
   return render(
     <GlobalModalProvider>
       <PureSijoitteluStatusChangeButton
-        tarjoajaOid={tarjoajaOid ?? ORG_OID}
+        hakukohde={{
+          oid: 'kohde',
+          hakuOid: 'haku',
+          tarjoajaOid: tarjoajaOid ?? ORG_OID,
+        }}
         jono={
           {
             valmisSijoiteltavaksi: true,
@@ -42,13 +51,23 @@ const renderSijoitteluButton = ({
             ...jono,
           } as LaskennanValintatapajonoTulosWithHakijaInfo
         }
-        userPermissions={
-          {
-            writeOrganizations: [OPH_ORGANIZATION_OID],
-            crudOrganizations: [OPH_ORGANIZATION_OID],
-            ...permissions,
-          } as UserPermissions
-        }
+        hakuPermissions={{
+          hakuOid: 'haku',
+          userPermissions: expandUserPermissions(
+            {
+              ...EMPTY_USER_PERMISSIONS,
+              writeOrganizations: [OPH_ORGANIZATION_OID],
+              crudOrganizations: [OPH_ORGANIZATION_OID],
+              ...permissions,
+            },
+            [
+              { oid: OPH_ORGANIZATION_OID },
+              { oid: ORG_OID },
+              { oid: ORG_OID2 },
+            ],
+          ),
+          hakukohderyhmaPermissions: EMPTY_HAKUKOHDERYHMA_PERMISSIONS,
+        }}
         statusMutation={
           {
             mutate: vi.fn(),

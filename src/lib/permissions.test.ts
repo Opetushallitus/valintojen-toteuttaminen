@@ -1,6 +1,10 @@
-import { describe, expect, test } from 'vitest';
+import { describe, expect, it, test } from 'vitest';
 import {
   checkHasPermission,
+  expandUserPermissions,
+  HakuPermissions,
+  EMPTY_USER_PERMISSIONS,
+  EMPTY_HAKUKOHDERYHMA_PERMISSIONS,
   checkHasHakukohdePermission,
   PermissionsResponseData,
   PERUUNTUNEIDEN_HYVAKSYNTA_PERMISSION_KEY,
@@ -154,35 +158,105 @@ describe('checkHasPermission', () => {
 });
 
 describe('checkHasHakukohdePermission', () => {
-  const hakukohde = {
-    tarjoajaOid: 'tarjoaja',
-    hakukohderyhmaOids: ['readwrite'],
+  const hakukohde = { oid: 'kohde', hakuOid: 'haku', tarjoajaOid: 'tarjoaja' };
+  const hakuPermissions: HakuPermissions = {
+    hakuOid: 'haku',
+    userPermissions: expandUserPermissions(EMPTY_USER_PERMISSIONS),
+    hakukohderyhmaPermissions: {
+      READ: ['kohde'],
+      READ_UPDATE: ['kohde'],
+      CRUD: [],
+    },
   };
 
   test('ryhmän muokkausoikeus sallii muokkauksen mutta ei CRUD-toimintoja', () => {
     expect(
-      checkHasHakukohdePermission(
-        hakukohde,
-        DEFAULT_USER_PERMISSIONS,
-        'READ_UPDATE',
-      ),
+      checkHasHakukohdePermission(hakukohde, hakuPermissions, 'READ_UPDATE'),
     ).toBe(true);
     expect(
-      checkHasHakukohdePermission(hakukohde, DEFAULT_USER_PERMISSIONS, 'CRUD'),
+      checkHasHakukohdePermission(hakukohde, hakuPermissions, 'CRUD'),
     ).toBe(false);
   });
 
   test('pelkkä ryhmän lukuoikeus ei salli muokkausta', () => {
-    const kohde = { ...hakukohde, hakukohderyhmaOids: ['read'] };
+    const permissions = {
+      ...hakuPermissions,
+      hakukohderyhmaPermissions: {
+        ...EMPTY_HAKUKOHDERYHMA_PERMISSIONS,
+        READ: ['kohde'],
+      },
+    };
+    expect(checkHasHakukohdePermission(hakukohde, permissions, 'READ')).toBe(
+      true,
+    );
     expect(
-      checkHasHakukohdePermission(kohde, DEFAULT_USER_PERMISSIONS, 'READ'),
-    ).toBe(true);
+      checkHasHakukohdePermission(hakukohde, permissions, 'READ_UPDATE'),
+    ).toBe(false);
+  });
+
+  test('toisen haun oikeudet eivät anna pääsyä hakukohteeseen', () => {
     expect(
       checkHasHakukohdePermission(
-        kohde,
-        DEFAULT_USER_PERMISSIONS,
-        'READ_UPDATE',
+        { ...hakukohde, hakuOid: 'toinen-haku' },
+        hakuPermissions,
+        'READ',
       ),
     ).toBe(false);
+  });
+});
+
+describe('expandUserPermissions', () => {
+  const hierarchy = [
+    {
+      oid: '1',
+      children: [
+        {
+          oid: '1.1',
+          children: [{ oid: '1.1.1' }, { oid: '1.1.2' }],
+        },
+        {
+          oid: '1.2',
+          children: [],
+        },
+      ],
+    },
+    {
+      oid: '2',
+      children: [{ oid: '2.1' }],
+    },
+  ];
+  it('periyttää oikeudet jälkeläisiin mutta ei sisarorganisaatioihin', () => {
+    const expanded = expandUserPermissions(
+      {
+        ...EMPTY_USER_PERMISSIONS,
+        readOrganizations: ['1'],
+        writeOrganizations: ['1.1'],
+        crudOrganizations: ['1.1.1'],
+      },
+      hierarchy,
+    );
+    expect(expanded.readOrganizations).toEqual([
+      '1',
+      '1.1',
+      '1.1.1',
+      '1.1.2',
+      '1.2',
+    ]);
+    expect(expanded.writeOrganizations).toEqual(['1.1', '1.1.1', '1.1.2']);
+    expect(expanded.crudOrganizations).toEqual(['1.1.1']);
+  });
+
+  it('säilyttää ryhmäoikeudet mutta poistaa puusta puuttuvat organisaatiot', () => {
+    const permissions = {
+      ...EMPTY_USER_PERMISSIONS,
+      readOrganizations: ['1.2.246.562.28.123', 'puuttuva'],
+      writeOrganizations: ['1.2.246.562.28.123'],
+      crudOrganizations: ['1.2.246.562.28.123'],
+    };
+    expect(expandUserPermissions(permissions, hierarchy)).toEqual({
+      ...permissions,
+      organizationHierarchyIncluded: true,
+      readOrganizations: ['1.2.246.562.28.123'],
+    });
   });
 });
