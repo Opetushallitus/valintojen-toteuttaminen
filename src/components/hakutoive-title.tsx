@@ -3,7 +3,7 @@ import { Hakukohde } from '@/lib/kouta/kouta-types';
 import { HakukohdeTabLink } from '@/components/hakukohde-tab-link';
 import { Link } from '@mui/material';
 import { NDASH } from '@/lib/constants';
-import { useCheckHakukohdePermission } from '@/hooks/useHakukohdePermissions';
+import { useCheckHakukohdePermission } from '@/hooks/useHakuPermissions';
 
 export const HakutoiveTitle = ({
   hakutoiveNumero,
@@ -14,7 +14,10 @@ export const HakutoiveTitle = ({
 }) => {
   const { translateEntity } = useTranslations();
 
-  const linkEnabled = useCheckHakukohdePermission(hakukohde, 'READ_UPDATE');
+  const linkEnabled = useCheckHakukohdePermission(
+    hakukohde.hakuOid,
+    'READ_UPDATE',
+  );
 
   return (
     <>
@@ -24,7 +27,7 @@ export const HakutoiveTitle = ({
         {translateEntity(hakukohde.nimi)}
         {` ${NDASH} `}
       </span>
-      {linkEnabled ? (
+      {linkEnabled(hakukohde) ? (
         <Link
           component={HakukohdeTabLink}
           hakuOid={hakukohde.hakuOid}
