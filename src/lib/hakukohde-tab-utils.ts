@@ -6,9 +6,9 @@ import {
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { isValintojenToteuttaminenEstetty } from '@/lib/valintojen-toteuttaminen-access';
 import {
-  checkHasPermission,
-  Permission,
-  UserPermissions,
+  checkHasHakukohdePermission,
+  HakukohdePermission,
+  HakuPermissions,
 } from '@/lib/permissions';
 import { isInRange, toFinnishDate } from '@/lib/time-utils';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
@@ -18,7 +18,7 @@ type VisibleFnProps = {
   hakukohde: Hakukohde;
   haunAsetukset: HaunAsetukset;
   usesValintalaskenta: boolean;
-  hierarchyPermissions: UserPermissions;
+  hakuPermissions: HakuPermissions;
 };
 
 export type BasicTab = {
@@ -29,7 +29,7 @@ export type BasicTab = {
 
 const isValinnatAllowedForHaku = (
   haunAsetukset: HaunAsetukset,
-  hierarchyPermissions: UserPermissions,
+  hakuPermissions: HakuPermissions,
 ) => {
   const estoaika = haunAsetukset?.valinnatEstettyOppilaitosvirkailijoilta;
   const dateStart = estoaika?.dateStart ?? undefined;
@@ -40,34 +40,30 @@ const isValinnatAllowedForHaku = (
   const isEstetty =
     hasBlockedWindow &&
     isInRange(toFinnishDate(new Date()), dateStart, dateEnd);
-  return hierarchyPermissions.hasOphCRUD || !isEstetty;
+  return hakuPermissions.userPermissions.hasOphCRUD || !isEstetty;
 };
 
 const hasHakukohdePermission = (
   hakukohde: Hakukohde,
-  hierarchyPermissions: UserPermissions,
-  permission: Permission,
+  hakuPermissions: HakuPermissions,
+  permission: HakukohdePermission,
 ) => {
-  return checkHasPermission(
-    hakukohde.tarjoajaOid,
-    hierarchyPermissions,
-    permission,
-  );
+  return checkHasHakukohdePermission(hakukohde, hakuPermissions, permission);
 };
 
 export const HAKUKOHDE_TABS: ReadonlyArray<BasicTab> = [
   {
     title: 'perustiedot.otsikko',
     route: 'perustiedot',
-    visibleFn: ({ hakukohde, hierarchyPermissions }) =>
-      hasHakukohdePermission(hakukohde, hierarchyPermissions, 'READ'),
+    visibleFn: ({ hakukohde, hakuPermissions }) =>
+      hasHakukohdePermission(hakukohde, hakuPermissions, 'READ'),
   },
   {
     title: 'hakeneet.otsikko',
     route: 'hakeneet',
-    visibleFn: ({ hakukohde, haunAsetukset, hierarchyPermissions }) =>
-      hasHakukohdePermission(hakukohde, hierarchyPermissions, 'READ') &&
-      isValinnatAllowedForHaku(haunAsetukset, hierarchyPermissions),
+    visibleFn: ({ hakukohde, haunAsetukset, hakuPermissions }) =>
+      hasHakukohdePermission(hakukohde, hakuPermissions, 'READ') &&
+      isValinnatAllowedForHaku(haunAsetukset, hakuPermissions),
   },
   {
     title: 'valinnanhallinta.otsikko',
@@ -76,13 +72,14 @@ export const HAKUKOHDE_TABS: ReadonlyArray<BasicTab> = [
       haku,
       hakukohde,
       haunAsetukset,
-      hierarchyPermissions,
+      hakuPermissions,
       usesValintalaskenta,
     }) =>
-      hasHakukohdePermission(hakukohde, hierarchyPermissions, 'CRUD') &&
+      hasHakukohdePermission(hakukohde, hakuPermissions, 'CRUD') &&
       (haunAsetukset.sijoittelu || usesValintalaskenta) &&
-      isValinnatAllowedForHaku(haunAsetukset, hierarchyPermissions) &&
-      (hierarchyPermissions.hasOphCRUD || !isToisenAsteenYhteisHaku(haku)),
+      isValinnatAllowedForHaku(haunAsetukset, hakuPermissions) &&
+      (hakuPermissions.userPermissions.hasOphCRUD ||
+        !isToisenAsteenYhteisHaku(haku)),
   },
   {
     title: 'valintakoekutsut.otsikko',
@@ -90,12 +87,12 @@ export const HAKUKOHDE_TABS: ReadonlyArray<BasicTab> = [
     visibleFn: ({
       hakukohde,
       haunAsetukset,
-      hierarchyPermissions,
+      hakuPermissions,
       usesValintalaskenta,
     }) =>
-      hasHakukohdePermission(hakukohde, hierarchyPermissions, 'READ') &&
+      hasHakukohdePermission(hakukohde, hakuPermissions, 'READ') &&
       (haunAsetukset.sijoittelu || usesValintalaskenta) &&
-      isValinnatAllowedForHaku(haunAsetukset, hierarchyPermissions),
+      isValinnatAllowedForHaku(haunAsetukset, hakuPermissions),
   },
   {
     title: 'pistesyotto.otsikko',
@@ -103,12 +100,12 @@ export const HAKUKOHDE_TABS: ReadonlyArray<BasicTab> = [
     visibleFn: ({
       hakukohde,
       haunAsetukset,
-      hierarchyPermissions,
+      hakuPermissions,
       usesValintalaskenta,
     }) =>
-      hasHakukohdePermission(hakukohde, hierarchyPermissions, 'READ_UPDATE') &&
+      hasHakukohdePermission(hakukohde, hakuPermissions, 'READ_UPDATE') &&
       (haunAsetukset.sijoittelu || usesValintalaskenta) &&
-      isValinnatAllowedForHaku(haunAsetukset, hierarchyPermissions),
+      isValinnatAllowedForHaku(haunAsetukset, hakuPermissions),
   },
   {
     title: 'harkinnanvaraiset.otsikko',
@@ -117,14 +114,14 @@ export const HAKUKOHDE_TABS: ReadonlyArray<BasicTab> = [
       haku,
       hakukohde,
       haunAsetukset,
-      hierarchyPermissions,
+      hakuPermissions,
       usesValintalaskenta,
     }) =>
-      hasHakukohdePermission(hakukohde, hierarchyPermissions, 'READ') &&
+      hasHakukohdePermission(hakukohde, hakuPermissions, 'READ') &&
       !isKorkeakouluHaku(haku) &&
       isHarkinnanvarainenHakukohde(hakukohde) &&
       (haunAsetukset.sijoittelu || usesValintalaskenta) &&
-      isValinnatAllowedForHaku(haunAsetukset, hierarchyPermissions),
+      isValinnatAllowedForHaku(haunAsetukset, hakuPermissions),
   },
   {
     title: 'hakijaryhmat.otsikko',
@@ -134,12 +131,12 @@ export const HAKUKOHDE_TABS: ReadonlyArray<BasicTab> = [
       hakukohde,
       haunAsetukset,
       usesValintalaskenta,
-      hierarchyPermissions,
+      hakuPermissions,
     }) =>
-      hasHakukohdePermission(hakukohde, hierarchyPermissions, 'READ') &&
+      hasHakukohdePermission(hakukohde, hakuPermissions, 'READ') &&
       isKorkeakouluHaku(haku) &&
       (haunAsetukset.sijoittelu || usesValintalaskenta) &&
-      isValinnatAllowedForHaku(haunAsetukset, hierarchyPermissions),
+      isValinnatAllowedForHaku(haunAsetukset, hakuPermissions),
   },
   {
     title: 'valintalaskennan-tulokset.otsikko',
@@ -148,11 +145,11 @@ export const HAKUKOHDE_TABS: ReadonlyArray<BasicTab> = [
       hakukohde,
       haunAsetukset,
       usesValintalaskenta,
-      hierarchyPermissions,
+      hakuPermissions,
     }) =>
-      hasHakukohdePermission(hakukohde, hierarchyPermissions, 'READ') &&
+      hasHakukohdePermission(hakukohde, hakuPermissions, 'READ') &&
       (haunAsetukset.sijoittelu || usesValintalaskenta) &&
-      isValinnatAllowedForHaku(haunAsetukset, hierarchyPermissions),
+      isValinnatAllowedForHaku(haunAsetukset, hakuPermissions),
   },
   {
     title: 'sijoittelun-tulokset.otsikko',
@@ -161,11 +158,11 @@ export const HAKUKOHDE_TABS: ReadonlyArray<BasicTab> = [
       hakukohde,
       haunAsetukset,
       usesValintalaskenta,
-      hierarchyPermissions,
+      hakuPermissions,
     }) =>
-      hasHakukohdePermission(hakukohde, hierarchyPermissions, 'READ') &&
+      hasHakukohdePermission(hakukohde, hakuPermissions, 'READ') &&
       (haunAsetukset.sijoittelu || usesValintalaskenta) &&
-      isValinnatAllowedForHaku(haunAsetukset, hierarchyPermissions),
+      isValinnatAllowedForHaku(haunAsetukset, hakuPermissions),
   },
   {
     title: 'valinnan-tulokset.otsikko',
@@ -174,12 +171,12 @@ export const HAKUKOHDE_TABS: ReadonlyArray<BasicTab> = [
       hakukohde,
       haunAsetukset,
       usesValintalaskenta,
-      hierarchyPermissions,
+      hakuPermissions,
     }) =>
-      hasHakukohdePermission(hakukohde, hierarchyPermissions, 'READ') &&
+      hasHakukohdePermission(hakukohde, hakuPermissions, 'READ') &&
       !usesValintalaskenta &&
       !haunAsetukset.sijoittelu &&
-      isValinnatAllowedForHaku(haunAsetukset, hierarchyPermissions),
+      isValinnatAllowedForHaku(haunAsetukset, hakuPermissions),
   },
 ] as const;
 
@@ -195,7 +192,7 @@ export const getVisibleHakukohdeTabs = (visibleProps: VisibleFnProps) => {
     isValintojenToteuttaminenEstetty({
       haku: visibleProps.haku,
       haunAsetukset: visibleProps.haunAsetukset,
-      permissions: visibleProps.hierarchyPermissions,
+      permissions: visibleProps.hakuPermissions.userPermissions,
     })
   ) {
     return [];

@@ -1,10 +1,6 @@
+import { useHakuPermissions } from './useHakuPermissions';
 import { KoutaOidParams } from '@/lib/kouta/kouta-types';
 import { useSuspenseQueries } from '@tanstack/react-query';
-import {} from '@/lib/ohjausparametrit/useHaunAsetukset';
-import {
-  useHierarchyUserPermissions,
-  userPermissionsQueryOptions,
-} from './useUserPermissions';
 import { checkIsValintalaskentaUsed } from '@/lib/valintaperusteet/valintaperusteet-utils';
 import { getVisibleHakukohdeTabs } from '@/lib/hakukohde-tab-utils';
 import {
@@ -23,26 +19,24 @@ export const useVisibleHakukohdeTabs = ({
     { data: hakukohde },
     { data: haunAsetukset },
     { data: valinnanvaiheet },
-    { data: permissions },
   ] = useSuspenseQueries({
     queries: [
       queryOptionsGetHaku({ hakuOid }),
       queryOptionsGetHakukohde({ hakukohdeOid }),
       queryOptionsGetHaunAsetukset({ hakuOid }),
       queryOptionsGetHakukohteenValinnanvaiheet(hakukohdeOid),
-      userPermissionsQueryOptions,
     ],
   });
 
   const usesValintalaskenta = checkIsValintalaskentaUsed(valinnanvaiheet);
 
-  const hierarchyPermissions = useHierarchyUserPermissions(permissions);
+  const hakuPermissions = useHakuPermissions(hakuOid);
 
   return getVisibleHakukohdeTabs({
     haku,
     hakukohde,
     haunAsetukset,
     usesValintalaskenta,
-    hierarchyPermissions,
+    hakuPermissions,
   });
 };

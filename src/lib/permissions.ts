@@ -1,4 +1,11 @@
+import { isHakukohderyhmaOid } from './common';
+import {
+  OrganizationTree,
+  findBranchOidsFromOrganizationHierarchy,
+} from './organization-hierarchy';
+import { unique } from 'remeda';
 import { OPH_ORGANIZATION_OID } from './constants';
+import type { Hakukohde } from './kouta/kouta-types';
 
 export const VALINTOJEN_TOTEUTTAMINEN_SERVICE_KEY = 'VALINTOJENTOTEUTTAMINEN';
 
@@ -8,10 +15,7 @@ export const PERUUNTUNEIDEN_HYVAKSYNTA_PERMISSION_KEY =
   'PERUUNTUNEIDEN_HYVAKSYNTA';
 
 export type Permission =
-  | 'CRUD'
-  | 'READ'
-  | 'READ_UPDATE'
-  | 'PERUUNTUNEIDEN_HYVAKSYNTA';
+  'CRUD' | 'READ' | 'READ_UPDATE' | 'PERUUNTUNEIDEN_HYVAKSYNTA';
 
 export type OrganizationPermissions = {
   organizationOid: string;
@@ -25,6 +29,31 @@ export type UserPermissions = {
   crudOrganizations: Array<string>;
   hasOphCRUD: boolean;
   sijoitteluPeruuntuneidenHyvaksyntaAllowed: boolean;
+};
+
+/** Oikeudet on täydennetty aktiivisten organisaatioiden hierarkiasta. */
+export type HierarchyUserPermissions = UserPermissions & {
+  organizationHierarchyIncluded: true;
+};
+
+export type HakukohdePermission = 'READ' | 'READ_UPDATE' | 'CRUD';
+
+/** Hakukohde-OID:t, joihin käyttäjällä on ryhmien kautta kyseinen oikeustaso. */
+export type HakukohderyhmaPermissions = Record<
+  HakukohdePermission,
+  ReadonlyArray<string>
+>;
+
+export const EMPTY_HAKUKOHDERYHMA_PERMISSIONS: HakukohderyhmaPermissions = {
+  READ: [],
+  READ_UPDATE: [],
+  CRUD: [],
+};
+
+export type HakuPermissions = {
+  hakuOid: string;
+  userPermissions: HierarchyUserPermissions;
+  hakukohderyhmaPermissions: HakukohderyhmaPermissions;
 };
 
 export type PermissionsResponseData = {
@@ -159,4 +188,37 @@ export const EMPTY_USER_PERMISSIONS: UserPermissions = {
   crudOrganizations: [],
   hasOphCRUD: false,
   sijoitteluPeruuntuneidenHyvaksyntaAllowed: false,
+};
+
+export const checkHasHakukohdePermission = (
+  hakukohde: Pick<Hakukohde, 'oid' | 'hakuOid' | 'tarjoajaOid'>,
+  hakuPermissions: HakuPermissions,
+  permission: HakukohdePermission,
+) =>
+  hakukohde.hakuOid === hakuPermissions.hakuOid &&
+  (checkHasPermission(
+    hakukohde.tarjoajaOid,
+    hakuPermissions.userPermissions,
+    permission,
+  ) ||
+    hakuPermissions.hakukohderyhmaPermissions[permission].includes(
+      hakukohde.oid,
+    ));
+
+export const expandUserPermissions = (
+  permissions: UserPermissions,
+  hierarchy: Array<OrganizationTree> = [],
+): HierarchyUserPermissions => {
+  const expand = (oids: Array<string>) =>
+    unique([
+      ...oids.filter(isHakukohderyhmaOid),
+      ...findBranchOidsFromOrganizationHierarchy(hierarchy, oids),
+    ]);
+  return {
+    ...permissions,
+    organizationHierarchyIncluded: true,
+    readOrganizations: expand(permissions.readOrganizations),
+    writeOrganizations: expand(permissions.writeOrganizations),
+    crudOrganizations: expand(permissions.crudOrganizations),
+  };
 };

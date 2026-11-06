@@ -4,11 +4,13 @@ import { OphButton } from '@opetushallitus/oph-design-system';
 import { useSijoitteluStatusMutation } from '../hooks/useSijoitteluStatusMutation';
 import { TFunction, useTranslations } from '@/lib/localization/useTranslations';
 import { LaskennanValintatapajonoTulosWithHakijaInfo } from '@/hooks/useEditableValintalaskennanTulokset';
-import { checkHasPermission, UserPermissions } from '@/lib/permissions';
 import {
-  useHierarchyUserPermissions,
-  useUserPermissions,
-} from '@/hooks/useUserPermissions';
+  checkHasHakukohdePermission,
+  checkHasPermission,
+  HakuPermissions,
+} from '@/lib/permissions';
+import { useHakuPermissions } from '@/hooks/useHakuPermissions';
+import { Hakukohde } from '@/lib/kouta/kouta-types';
 import { useHasOnlyHakukohdeReadPermission } from '@/hooks/useHasOnlyHakukohdeReadPermission';
 import { ConfirmationGlobalModal } from '@/components/modals/confirmation-global-modal';
 import { showModal } from '@/components/modals/global-modal';
@@ -18,25 +20,29 @@ const SijoitteluButton = ({ ...props }: ButtonProps) => {
 };
 
 export const PureSijoitteluStatusChangeButton = ({
-  tarjoajaOid,
+  hakukohde,
   jono,
   statusMutation,
-  userPermissions,
+  hakuPermissions,
   t,
 }: {
-  tarjoajaOid: string;
+  hakukohde: Pick<Hakukohde, 'oid' | 'hakuOid' | 'tarjoajaOid'>;
   jono: LaskennanValintatapajonoTulosWithHakijaInfo;
   statusMutation: ReturnType<typeof useSijoitteluStatusMutation>;
-  userPermissions: UserPermissions;
+  hakuPermissions: HakuPermissions;
   t: TFunction;
 }) => {
   const hasOphUpdate = checkHasPermission(
     OPH_ORGANIZATION_OID,
-    userPermissions,
+    hakuPermissions.userPermissions,
     'READ_UPDATE',
   );
 
-  const hasOrgCrud = checkHasPermission(tarjoajaOid, userPermissions, 'CRUD');
+  const hasOrgCrud = checkHasHakukohdePermission(
+    hakukohde,
+    hakuPermissions,
+    'CRUD',
+  );
 
   const { hasTulos, siirretaanSijoitteluun, valmisSijoiteltavaksi } = jono;
 
@@ -98,25 +104,24 @@ export const PureSijoitteluStatusChangeButton = ({
 };
 
 export const SijoitteluStatusChangeButton = ({
-  tarjoajaOid,
+  hakukohde,
   jono,
   statusMutation,
 }: {
-  tarjoajaOid: string;
+  hakukohde: Hakukohde;
   jono: LaskennanValintatapajonoTulosWithHakijaInfo;
   statusMutation: ReturnType<typeof useSijoitteluStatusMutation>;
 }) => {
   const { t } = useTranslations();
-  const userPermissions = useUserPermissions();
-  const hierarchyUserPermissions = useHierarchyUserPermissions(userPermissions);
+  const hakuPermissions = useHakuPermissions(hakukohde.hakuOid);
   const userHasOnlyReadPermission = useHasOnlyHakukohdeReadPermission();
 
   return userHasOnlyReadPermission ? null : (
     <PureSijoitteluStatusChangeButton
-      tarjoajaOid={tarjoajaOid}
+      hakukohde={hakukohde}
       jono={jono}
       statusMutation={statusMutation}
-      userPermissions={hierarchyUserPermissions}
+      hakuPermissions={hakuPermissions}
       t={t}
     />
   );
