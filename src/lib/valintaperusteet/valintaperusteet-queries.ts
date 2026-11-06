@@ -1,3 +1,4 @@
+import { HierarchyUserPermissions } from '../permissions';
 import { queryOptions } from '@tanstack/react-query';
 import {
   getHakukohteenValinnanvaiheet,
@@ -5,7 +6,6 @@ import {
   getValintaryhmat,
   getValintatapajononJarjestyskriteerit,
 } from './valintaperusteet-service';
-import { UserPermissions } from '../permissions';
 
 export const queryOptionsGetLaskentakaava = (laskentakaavaId: number) =>
   queryOptions({
@@ -33,11 +33,10 @@ export const queryOptionsGetHakukohteenValinnanvaiheet = (
 
 export const queryOptionsGetValintaryhmat = (
   hakuOid: string,
-  userPermissions: UserPermissions,
+  userPermissions: HierarchyUserPermissions,
   hakukohdeOids: Array<string>,
-) => {
-  return queryOptions({
+) =>
+  queryOptions({
     queryKey: ['getValintaryhmat', hakuOid, userPermissions, hakukohdeOids],
     queryFn: () => getValintaryhmat(hakuOid, userPermissions, hakukohdeOids),
   });
-};

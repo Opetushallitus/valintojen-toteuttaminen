@@ -7,9 +7,9 @@ import { LaskennanValintatapajonoTulosWithHakijaInfo } from '@/hooks/useEditable
 import {
   checkHasHakukohdePermission,
   checkHasPermission,
-  UserPermissions,
+  HakuPermissions,
 } from '@/lib/permissions';
-import { useHakukohdePermissions } from '@/hooks/useHakukohdePermissions';
+import { useHakuPermissions } from '@/hooks/useHakuPermissions';
 import { Hakukohde } from '@/lib/kouta/kouta-types';
 import { useHasOnlyHakukohdeReadPermission } from '@/hooks/useHasOnlyHakukohdeReadPermission';
 import { ConfirmationGlobalModal } from '@/components/modals/confirmation-global-modal';
@@ -20,29 +20,27 @@ const SijoitteluButton = ({ ...props }: ButtonProps) => {
 };
 
 export const PureSijoitteluStatusChangeButton = ({
-  tarjoajaOid,
-  hakukohderyhmaOids,
+  hakukohde,
   jono,
   statusMutation,
-  userPermissions,
+  hakuPermissions,
   t,
 }: {
-  tarjoajaOid: string;
-  hakukohderyhmaOids?: Array<string>;
+  hakukohde: Pick<Hakukohde, 'oid' | 'hakuOid' | 'tarjoajaOid'>;
   jono: LaskennanValintatapajonoTulosWithHakijaInfo;
   statusMutation: ReturnType<typeof useSijoitteluStatusMutation>;
-  userPermissions: UserPermissions;
+  hakuPermissions: HakuPermissions;
   t: TFunction;
 }) => {
   const hasOphUpdate = checkHasPermission(
     OPH_ORGANIZATION_OID,
-    userPermissions,
+    hakuPermissions.userPermissions,
     'READ_UPDATE',
   );
 
   const hasOrgCrud = checkHasHakukohdePermission(
-    { tarjoajaOid, hakukohderyhmaOids },
-    userPermissions,
+    hakukohde,
+    hakuPermissions,
     'CRUD',
   );
 
@@ -106,7 +104,7 @@ export const PureSijoitteluStatusChangeButton = ({
 };
 
 export const SijoitteluStatusChangeButton = ({
-  hakukohde: rawHakukohde,
+  hakukohde,
   jono,
   statusMutation,
 }: {
@@ -115,17 +113,15 @@ export const SijoitteluStatusChangeButton = ({
   statusMutation: ReturnType<typeof useSijoitteluStatusMutation>;
 }) => {
   const { t } = useTranslations();
-  const { hakukohde, hierarchyPermissions } =
-    useHakukohdePermissions(rawHakukohde);
+  const hakuPermissions = useHakuPermissions(hakukohde.hakuOid);
   const userHasOnlyReadPermission = useHasOnlyHakukohdeReadPermission();
 
   return userHasOnlyReadPermission ? null : (
     <PureSijoitteluStatusChangeButton
-      tarjoajaOid={hakukohde.tarjoajaOid}
-      hakukohderyhmaOids={hakukohde.hakukohderyhmaOids}
+      hakukohde={hakukohde}
       jono={jono}
       statusMutation={statusMutation}
-      userPermissions={hierarchyPermissions}
+      hakuPermissions={hakuPermissions}
       t={t}
     />
   );

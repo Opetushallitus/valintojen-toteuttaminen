@@ -4,7 +4,8 @@ import {
   Language,
   TranslatedName,
 } from '@/lib/localization/localization-types';
-import { isHakukohderyhmaOid, UserPermissions } from '@/lib/permissions';
+import { UserPermissions } from '@/lib/permissions';
+import { isHakukohderyhmaOid } from '@/lib/common';
 import { addProp, pick, pipe } from 'remeda';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
 import { getConfigUrl } from '@/lib/configuration/configuration-utils';

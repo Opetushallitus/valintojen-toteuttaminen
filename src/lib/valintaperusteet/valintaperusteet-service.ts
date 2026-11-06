@@ -14,7 +14,7 @@ import {
 import { isDefined, sort } from 'remeda';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
 import { getConfigUrl } from '@/lib/configuration/configuration-utils';
-import { UserPermissions } from '@/lib/permissions';
+import { HierarchyUserPermissions } from '@/lib/permissions';
 import { byLocaleCompare } from '@/lib/localization/translation-utils';
 
 export const getValintaryhma = async (
@@ -200,7 +200,7 @@ function sortRyhmatByName(
 
 function mapValintaryhma(
   ryhma: ValintaryhmaHakukohteillaResponse,
-  userPermissions: UserPermissions,
+  userPermissions: HierarchyUserPermissions,
   parentOid: string | null = null,
 ): ValintaryhmaHakukohteilla {
   const sortedAlaryhmat = sortRyhmatByName(
@@ -251,7 +251,7 @@ function hasOrganizationPermissionToValintaryhma(
 
 export const getValintaryhmat = async (
   hakuOid: string,
-  userPermissions: UserPermissions,
+  userPermissions: HierarchyUserPermissions,
   hakukohteet: Array<string>,
 ): Promise<{
   muutRyhmat: Array<ValintaryhmaHakukohteilla>;
