@@ -5,6 +5,7 @@ import { getConfigUrl } from '../configuration/configuration-utils';
 
 type HaunAsetuksetResponse = {
   sijoittelu: boolean;
+  synteettisetHakemukset?: boolean;
   // Oppilaitosten virkailijoiden valintapalvelun käyttö estetty
   PH_OLVVPKE?: {
     dateStart: number | null;
@@ -45,6 +46,7 @@ export const getHaunAsetukset = async (
 
   return {
     sijoittelu: response.data.sijoittelu,
+    synteettisetHakemukset: response.data.synteettisetHakemukset,
     valinnatEstettyOppilaitosvirkailijoilta,
     valintaEsityksenHyvaksyminen,
     varasijatayttoPaattyy,

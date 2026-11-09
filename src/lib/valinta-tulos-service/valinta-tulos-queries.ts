@@ -84,7 +84,7 @@ export const queryOptionsGetHakukohteenKirjeLahetetty = ({
     queryFn: () => getHakukohteenHyvaksymiskirjeetLahetetty(hakukohdeOid),
   });
 
-export const refetchHakukohteenKirjeLahetetty = ({
+const refetchHakukohteenKirjeLahetetty = ({
   queryClient,
   hakukohdeOid,
 }: {
@@ -96,7 +96,7 @@ export const refetchHakukohteenKirjeLahetetty = ({
   queryClient.invalidateQueries(options);
 };
 
-export const refetchHakukohteenLukuvuosimaksut = ({
+const refetchHakukohteenLukuvuosimaksut = ({
   queryClient,
   hakukohdeOid,
   haku,
@@ -113,7 +113,7 @@ export const refetchHakukohteenLukuvuosimaksut = ({
   queryClient.invalidateQueries(options);
 };
 
-export const refetchHakukohteenValinnanTulokset = ({
+const refetchHakukohteenValinnanTulokset = ({
   queryClient,
   hakuOid,
   hakukohdeOid,
@@ -126,6 +126,31 @@ export const refetchHakukohteenValinnanTulokset = ({
   });
   queryClient.resetQueries(valintaQueryOptions);
   queryClient.invalidateQueries(valintaQueryOptions);
+};
+
+export const refetchHakukohteenValinnanTuloksetData = ({
+  queryClient,
+  haku,
+  hakukohdeOid,
+}: {
+  queryClient: QueryClient;
+  hakukohdeOid: string;
+  haku: Haku;
+}) => {
+  refetchHakukohteenValinnanTulokset({
+    queryClient,
+    hakuOid: haku.oid,
+    hakukohdeOid,
+  });
+  refetchHakukohteenLukuvuosimaksut({
+    queryClient,
+    hakukohdeOid,
+    haku,
+  });
+  refetchHakukohteenKirjeLahetetty({
+    queryClient,
+    hakukohdeOid,
+  });
 };
 
 export const queryOptionsGetLatestSijoitteluajonTuloksetWithValintaEsitys = ({
