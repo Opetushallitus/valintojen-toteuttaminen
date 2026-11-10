@@ -5,7 +5,10 @@ import {
 import { useSuspenseQueries, useSuspenseQuery } from '@tanstack/react-query';
 import { getPostitoimipaikka } from '@/lib/koodisto/koodisto-service';
 import { queryOptionsGetAllHakukohteet } from '@/lib/kouta/kouta-queries';
-import { useCheckHakukohdePermission } from '@/hooks/useHakuPermissions';
+import {
+  useCheckHakukohdePermission,
+  useHakuPermissions,
+} from '@/hooks/useHakuPermissions';
 import { filter, map, pipe, prop, sortBy } from 'remeda';
 import { selectEditableValintalaskennanTulokset } from '@/hooks/useEditableValintalaskennanTulokset';
 import { NotFoundError } from '@/lib/common';
@@ -76,8 +79,9 @@ export const useHenkiloPageData = ({
     [hakemus.hakutoiveet],
   );
 
+  const hakuPermissions = useHakuPermissions(hakuOid);
   const checkEditPermission = useCheckHakukohdePermission(
-    hakuOid,
+    hakuPermissions,
     'READ_UPDATE',
   );
 

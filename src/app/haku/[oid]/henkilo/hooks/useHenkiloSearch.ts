@@ -6,7 +6,7 @@ import {
   HAKU_SEARCH_PHRASE_DEBOUNCE_DELAY,
 } from '@/lib/constants';
 import { getHakijat } from '@/lib/ataru/ataru-service';
-import { EMPTY_ARRAY } from '@/lib/common';
+import { EMPTY_ARRAY, isHakemusOid } from '@/lib/common';
 
 export const useHenkiloSearchParams = () => {
   const [searchPhrase, setSearchPhrase] = useQueryState(
@@ -24,9 +24,6 @@ export const useHenkiloSearchParams = () => {
     setSearchPhrase: setSearchDebounce,
   };
 };
-
-const isHakemusOid = (value: string) =>
-  /^1\.2\.246\.562\.11\.\d{20}$/.test(value);
 
 const isHenkiloOid = (value: string) => /^1\.2\.246\.562\.24\.\d+$/.test(value);
 

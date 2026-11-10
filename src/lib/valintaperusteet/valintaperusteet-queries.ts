@@ -34,9 +34,8 @@ export const queryOptionsGetHakukohteenValinnanvaiheet = (
 export const queryOptionsGetValintaryhmat = (
   hakuOid: string,
   userPermissions: HierarchyUserPermissions,
-  hakukohdeOids: Array<string>,
 ) =>
   queryOptions({
-    queryKey: ['getValintaryhmat', hakuOid, userPermissions, hakukohdeOids],
-    queryFn: () => getValintaryhmat(hakuOid, userPermissions, hakukohdeOids),
+    queryKey: ['getValintaryhmat', hakuOid, userPermissions],
+    queryFn: () => getValintaryhmat(hakuOid, userPermissions),
   });
