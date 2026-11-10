@@ -5,7 +5,7 @@ import { Hakukohde } from '@/lib/kouta/kouta-types';
 import {
   checkHasHakukohdePermission,
   EMPTY_USER_PERMISSIONS,
-  HakukohdePermission,
+  HakukohdePermissionLevel,
   HakuPermissions,
   selectOrganizationsOidsByPermission,
 } from '@/lib/permissions';
@@ -67,10 +67,9 @@ export const useHakuPermissions = (hakuOid: string): HakuPermissions => {
 };
 
 export const useCheckHakukohdePermission = (
-  hakuOid: string,
-  permission: HakukohdePermission,
+  permissions: HakuPermissions,
+  permission: HakukohdePermissionLevel,
 ) => {
-  const permissions = useHakuPermissions(hakuOid);
   return useCallback(
     (hakukohde: Pick<Hakukohde, 'oid' | 'hakuOid' | 'tarjoajaOid'>) =>
       checkHasHakukohdePermission(hakukohde, permissions, permission),

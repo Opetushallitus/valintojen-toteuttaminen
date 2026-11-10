@@ -17,11 +17,9 @@ test('listauksen ja sisältönäkymän valintaryhmäkyselyt käyttävät samaa t
   const queryClient = new QueryClient({
     defaultOptions: { queries: { staleTime: Infinity } },
   });
+  await queryClient.query(queryOptionsGetValintaryhmat('haku', permissions));
   await queryClient.query(
-    queryOptionsGetValintaryhmat('haku', permissions, ['kohde']),
-  );
-  await queryClient.query(
-    queryOptionsGetValintaryhmat('haku', { ...permissions }, ['kohde']),
+    queryOptionsGetValintaryhmat('haku', { ...permissions }),
   );
   expect(spy).toHaveBeenCalledTimes(1);
   queryClient.clear();

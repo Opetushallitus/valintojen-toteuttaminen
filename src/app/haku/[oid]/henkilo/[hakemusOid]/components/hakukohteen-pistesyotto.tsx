@@ -34,6 +34,7 @@ export const HakukohteenPisteSyotto = ({
         sx={{ paddingLeft: 1, paddingY: 2 }}
       >
         <HakutoiveTitle
+          linkEnabled={!hakukohde.readOnly}
           hakutoiveNumero={hakukohde.hakutoiveNumero}
           hakukohde={hakukohde}
         />

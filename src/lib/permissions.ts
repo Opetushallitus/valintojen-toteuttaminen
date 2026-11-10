@@ -14,13 +14,13 @@ export const SIJOITTELU_SERVICE_KEY = 'SIJOITTELU';
 export const PERUUNTUNEIDEN_HYVAKSYNTA_PERMISSION_KEY =
   'PERUUNTUNEIDEN_HYVAKSYNTA';
 
-export type Permission =
+export type PermissionLevel =
   'CRUD' | 'READ' | 'READ_UPDATE' | 'PERUUNTUNEIDEN_HYVAKSYNTA';
 
 export type OrganizationPermissions = {
   organizationOid: string;
   serviceKey: string;
-  permissions: Array<Permission>;
+  permissions: Array<PermissionLevel>;
 };
 
 export type UserPermissions = {
@@ -36,11 +36,11 @@ export type HierarchyUserPermissions = UserPermissions & {
   organizationHierarchyIncluded: true;
 };
 
-export type HakukohdePermission = 'READ' | 'READ_UPDATE' | 'CRUD';
+export type HakukohdePermissionLevel = 'READ' | 'READ_UPDATE' | 'CRUD';
 
 /** Hakukohde-OID:t, joihin käyttäjällä on ryhmien kautta kyseinen oikeustaso. */
 export type HakukohderyhmaPermissions = Record<
-  HakukohdePermission,
+  HakukohdePermissionLevel,
   ReadonlyArray<string>
 >;
 
@@ -59,7 +59,7 @@ export type HakuPermissions = {
 export type PermissionsResponseData = {
   organisaatiot: Array<{
     organisaatioOid: string;
-    kayttooikeudet: Array<{ palvelu: string; oikeus: Permission }>;
+    kayttooikeudet: Array<{ palvelu: string; oikeus: PermissionLevel }>;
   }>;
 };
 
@@ -145,7 +145,7 @@ const checkHasSomeOrganizationPermission = (
 
 export const selectOrganizationsOidsByPermission = (
   userPermissions: UserPermissions,
-  permission: Permission,
+  permission: PermissionLevel,
 ) => {
   switch (permission) {
     case 'READ':
@@ -169,7 +169,7 @@ export const selectOrganizationsOidsByPermission = (
 export const checkHasPermission = (
   organizationOids: Array<string> | string | undefined,
   hierarchyPermissions: UserPermissions,
-  permission: Permission,
+  permission: PermissionLevel,
 ) => {
   const permissionOrganizationOids = selectOrganizationsOidsByPermission(
     hierarchyPermissions,
@@ -193,7 +193,7 @@ export const EMPTY_USER_PERMISSIONS: UserPermissions = {
 export const checkHasHakukohdePermission = (
   hakukohde: Pick<Hakukohde, 'oid' | 'hakuOid' | 'tarjoajaOid'>,
   hakuPermissions: HakuPermissions,
-  permission: HakukohdePermission,
+  permission: HakukohdePermissionLevel,
 ) =>
   hakukohde.hakuOid === hakuPermissions.hakuOid &&
   (checkHasPermission(

@@ -9,7 +9,6 @@ import {
 import { isDefined, isEmpty, uniqueBy } from 'remeda';
 import { queryOptionsGetValintaryhmat } from '@/lib/valintaperusteet/valintaperusteet-queries';
 import { ValintaryhmaHakukohteilla } from '@/lib/valintaperusteet/valintaperusteet-types';
-import { queryOptionsGetAllHakukohteet } from '@/lib/kouta/kouta-queries';
 import {
   useHierarchyUserPermissions,
   useUserPermissions,
@@ -64,14 +63,8 @@ function filterRyhmatWithHakukohteet(
 export const useValintaryhmaSearchResults = (hakuOid: string) => {
   const userPermissions = useHierarchyUserPermissions(useUserPermissions());
 
-  const { data: hakukohteet } = useSuspenseQuery(
-    queryOptionsGetAllHakukohteet(hakuOid),
-  );
-
-  const hakukohdeOids = hakukohteet.map((h) => h.oid);
-
   const { data: ryhmat } = useSuspenseQuery(
-    queryOptionsGetValintaryhmat(hakuOid, userPermissions, hakukohdeOids),
+    queryOptionsGetValintaryhmat(hakuOid, userPermissions),
   );
 
   const flattenedRyhmat = useMemo(() => {

@@ -1,3 +1,7 @@
+import {
+  useHakuPermissions,
+  useCheckHakukohdePermission,
+} from '@/hooks/useHakuPermissions';
 import { useTranslations } from '@/lib/localization/useTranslations';
 import {
   createStickyHakijaColumn,
@@ -88,6 +92,13 @@ const useColumns = ({
     [send],
   );
 
+  const hakuPermissions = useHakuPermissions(haku.oid);
+  const checkUpdatePermission = useCheckHakukohdePermission(
+    hakuPermissions,
+    'READ_UPDATE',
+  );
+  const canUpdate = checkUpdatePermission(hakukohde);
+
   return useMemo(() => {
     const stickyHakijaColumn = createStickyHakijaColumn(t);
     return [
@@ -116,7 +127,7 @@ const useColumns = ({
           <ValinnanTilaCell
             hakemus={hakemus}
             haku={haku}
-            hakukohde={hakukohde}
+            canUpdate={canUpdate}
             updateForm={updateForm}
             disabled={readonly || disabled}
             mode="sijoittelu"
@@ -185,6 +196,7 @@ const useColumns = ({
       }),
     ].filter(isNonNull);
   }, [
+    canUpdate,
     t,
     haku,
     updateForm,

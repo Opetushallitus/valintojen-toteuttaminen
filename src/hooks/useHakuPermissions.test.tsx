@@ -2,15 +2,20 @@ import { Suspense } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
 import { afterEach, expect, test, vi } from 'vitest';
-import { useCheckHakukohdePermission } from './useHakuPermissions';
+import {
+  useCheckHakukohdePermission,
+  useHakuPermissions,
+} from './useHakuPermissions';
 import {
   useHierarchyUserPermissions,
   useUserPermissions,
 } from './useUserPermissions';
 import {
   EMPTY_USER_PERMISSIONS,
+  EMPTY_HAKUKOHDERYHMA_PERMISSIONS,
   expandUserPermissions,
   UserPermissions,
+  HakuPermissions,
 } from '@/lib/permissions';
 import { Hakukohde } from '@/lib/kouta/kouta-types';
 import { client } from '@/lib/http-client';
@@ -64,9 +69,10 @@ const renderPermissions = () => {
   });
   return renderHook(
     () => {
-      const read = useCheckHakukohdePermission('haku', 'READ');
-      const update = useCheckHakukohdePermission('haku', 'READ_UPDATE');
-      const crud = useCheckHakukohdePermission('haku', 'CRUD');
+      const permissions = useHakuPermissions('haku');
+      const read = useCheckHakukohdePermission(permissions, 'READ');
+      const update = useCheckHakukohdePermission(permissions, 'READ_UPDATE');
+      const crud = useCheckHakukohdePermission(permissions, 'CRUD');
       return {
         read,
         update,
@@ -205,4 +211,31 @@ test('kolme erilaista oikeustasoa tekee enintään kolme pyyntöä ryhmien mää
   expect(result.current.crud({ ...hakukohde, oid: 'muokattava' })).toBe(false);
   expect(result.current.crud({ ...hakukohde, oid: 'crud-kohde' })).toBe(true);
   expect(spy).toHaveBeenCalledTimes(3);
+});
+
+test('tarkistusfunktio käyttää annettuja oikeuksia ilman kyselyitä tai QueryClientProvideria', () => {
+  const spy = vi.spyOn(client, 'get');
+  const permissions: HakuPermissions = {
+    hakuOid: 'haku',
+    userPermissions: expandUserPermissions(EMPTY_USER_PERMISSIONS),
+    hakukohderyhmaPermissions: {
+      ...EMPTY_HAKUKOHDERYHMA_PERMISSIONS,
+      READ_UPDATE: ['kohde'],
+    },
+  };
+  const { result, rerender } = renderHook(
+    ({ hakuPermissions }) =>
+      useCheckHakukohdePermission(hakuPermissions, 'READ_UPDATE'),
+    { initialProps: { hakuPermissions: permissions } },
+  );
+  expect(result.current(hakukohde)).toBe(true);
+  expect(result.current({ ...hakukohde, oid: 'ulkopuolinen' })).toBe(false);
+  rerender({
+    hakuPermissions: {
+      ...permissions,
+      hakukohderyhmaPermissions: EMPTY_HAKUKOHDERYHMA_PERMISSIONS,
+    },
+  });
+  expect(result.current(hakukohde)).toBe(false);
+  expect(spy).not.toHaveBeenCalled();
 });

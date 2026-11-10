@@ -47,6 +47,7 @@ export const ValinnanTulosCells = ({
       hakijanNimi: getHenkiloTitle(hakija),
       hakutoiveTitle: (
         <HakutoiveTitle
+          linkEnabled={!hakukohde.readOnly}
           hakutoiveNumero={hakutoiveNumero}
           hakukohde={hakukohde}
         />

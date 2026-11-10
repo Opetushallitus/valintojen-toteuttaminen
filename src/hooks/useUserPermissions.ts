@@ -1,7 +1,7 @@
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import { client } from '@/lib/http-client';
 import {
-  Permission,
+  PermissionLevel,
   selectUserPermissions,
   UserPermissions,
   HierarchyUserPermissions,
@@ -19,7 +19,7 @@ const getUserPermissions = async (): Promise<UserPermissions> => {
   const response = await client.get<{
     organisaatiot: Array<{
       organisaatioOid: string;
-      kayttooikeudet: [{ palvelu: string; oikeus: Permission }];
+      kayttooikeudet: [{ palvelu: string; oikeus: PermissionLevel }];
     }>;
   }>(configuration.routes.yleiset.kayttoikeusUrl);
 
