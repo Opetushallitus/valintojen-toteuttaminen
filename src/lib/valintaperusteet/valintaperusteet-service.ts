@@ -222,13 +222,12 @@ function mapValintaryhma(
   };
 }
 
-function hasHakukohde(
-  ryhma: ValintaryhmaHakukohteillaResponse,
-  hakukohteet: Array<string>,
-): boolean {
+// Backend rajaa hakukohdeviitteet valittuun hakuun. Ilman hakua olevat
+// ryhmäpuut voivat silti tulla vastauksessa tyhjinä.
+function hasHakukohteita(ryhma: ValintaryhmaHakukohteillaResponse): boolean {
   return (
-    ryhma.hakukohdeViitteet.some((hv) => hakukohteet.includes(hv.oid)) ||
-    ryhma.alavalintaryhmat.some((avr) => hasHakukohde(avr, hakukohteet))
+    ryhma.hakukohdeViitteet.length > 0 ||
+    ryhma.alavalintaryhmat.some(hasHakukohteita)
   );
 }
 
@@ -250,7 +249,6 @@ function hasOrganizationPermissionToValintaryhma(
 export const getValintaryhmat = async (
   hakuOid: string,
   userPermissions: HierarchyUserPermissions,
-  hakukohteet: Array<string>,
 ): Promise<{
   muutRyhmat: Array<ValintaryhmaHakukohteilla>;
   hakuRyhma: ValintaryhmaHakukohteilla | null;
@@ -282,7 +280,7 @@ export const getValintaryhmat = async (
               r,
               userPermissions.writeOrganizations,
             )) &&
-          hasHakukohde(r, hakukohteet),
+          hasHakukohteita(r),
       )
       .map((vr) => mapValintaryhma(vr, userPermissions)),
   );

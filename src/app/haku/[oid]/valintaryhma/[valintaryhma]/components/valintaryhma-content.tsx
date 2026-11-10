@@ -4,7 +4,7 @@ import {
 } from '@/hooks/useUserPermissions';
 import { getHakukohdeFullName } from '@/lib/kouta/kouta-service';
 import { queryOptionsGetValintaryhmat } from '@/lib/valintaperusteet/valintaperusteet-queries';
-import { useSuspenseQueries, useSuspenseQuery } from '@tanstack/react-query';
+import { useSuspenseQueries } from '@tanstack/react-query';
 import {
   HakukohdeWithLink,
   ValintaryhmaHakukohdeTable,
@@ -117,28 +117,22 @@ export const ValintaryhmaContent = ({
 
   const { translateEntity } = useTranslations();
 
-  const { data: hakukohteet } = useSuspenseQuery(
-    queryOptionsGetAllHakukohteet(hakuOid),
-  );
-
   const [
+    { data: hakukohteet },
     { data: haku },
     { data: haunAsetukset },
     { data: lasketutHakukohteet },
     { data: valintaryhmat },
   ] = useSuspenseQueries({
     queries: [
+      queryOptionsGetAllHakukohteet(hakuOid),
       queryOptionsGetHaku({ hakuOid }),
       queryOptionsGetHaunAsetukset({ hakuOid }),
       {
         queryKey: ['getLasketutHakukohteet', hakuOid],
         queryFn: () => getLasketutHakukohteet(hakuOid),
       },
-      queryOptionsGetValintaryhmat(
-        hakuOid,
-        userPermissions,
-        hakukohteet.map((hk) => hk.oid),
-      ),
+      queryOptionsGetValintaryhmat(hakuOid, userPermissions),
     ],
   });
 

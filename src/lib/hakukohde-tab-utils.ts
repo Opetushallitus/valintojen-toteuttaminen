@@ -7,7 +7,7 @@ import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { isValintojenToteuttaminenEstetty } from '@/lib/valintojen-toteuttaminen-access';
 import {
   checkHasHakukohdePermission,
-  HakukohdePermission,
+  HakukohdePermissionLevel,
   HakuPermissions,
 } from '@/lib/permissions';
 import { isInRange, toFinnishDate } from '@/lib/time-utils';
@@ -46,7 +46,7 @@ const isValinnatAllowedForHaku = (
 const hasHakukohdePermission = (
   hakukohde: Hakukohde,
   hakuPermissions: HakuPermissions,
-  permission: HakukohdePermission,
+  permission: HakukohdePermissionLevel,
 ) => {
   return checkHasHakukohdePermission(hakukohde, hakuPermissions, permission);
 };

@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { LocalizedSelect } from '@/components/localized-select';
 import { isKorkeakouluHaku } from '@/lib/kouta/kouta-service';
-import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
+import { Haku } from '@/lib/kouta/kouta-types';
 import {
   ophColors,
   OphCheckbox,
@@ -28,7 +28,6 @@ import {
 } from '@/lib/sijoittelun-tulokset-utils';
 import { entries, map, pipe } from 'remeda';
 import { styled } from '@/lib/theme';
-import { useCheckHakukohdePermission } from '@/hooks/useHakuPermissions';
 import { InfoTooltipButton } from '@/components/info-tooltip-button';
 import { InfoTooltipIcon } from '@/components/info-tooltip-icon';
 import { toFormattedDateTimeString } from '@/lib/localization/translation-utils';
@@ -63,13 +62,13 @@ const isHyvaksyttyVarasijaltaVisible = (hakemus: HakemuksenValinnanTulos) =>
     ].includes(hakemus?.valinnanTila as ValinnanTila));
 
 export const EhdollisestiHyvaksyttavissaCheckbox = ({
-  hakukohde,
+  canUpdate,
   hakemus,
   disabled,
   updateForm,
   t,
 }: {
-  hakukohde: Hakukohde;
+  canUpdate: boolean;
   hakemus: Pick<
     HakemuksenValinnanTulos,
     'hakemusOid' | 'ehdollisestiHyvaksyttavissa'
@@ -87,17 +86,12 @@ export const EhdollisestiHyvaksyttavissaCheckbox = ({
     });
   };
 
-  const canUpdate = useCheckHakukohdePermission(
-    hakukohde.hakuOid,
-    'READ_UPDATE',
-  );
-
   return (
     <OphCheckbox
       checked={Boolean(ehdollisestiHyvaksyttavissa)}
       onChange={updateEhdollinen}
       label={t('sijoittelun-tulokset.ehdollinen')}
-      disabled={disabled || !canUpdate(hakukohde)}
+      disabled={disabled || !canUpdate}
     />
   );
 };
@@ -170,14 +164,14 @@ const HylkayksenSyyFields = ({
 };
 
 const EhdollinenFields = ({
-  hakukohde,
+  canUpdate,
   hakemus,
   disabled,
   updateForm,
   t,
   translateEntity,
 }: {
-  hakukohde: Hakukohde;
+  canUpdate: boolean;
   hakemus: HakemuksenValinnanTulos;
   disabled: boolean;
   updateForm: (params: ValinnanTulosChangeParams) => void;
@@ -222,7 +216,7 @@ const EhdollinenFields = ({
   return (
     <>
       <EhdollisestiHyvaksyttavissaCheckbox
-        hakukohde={hakukohde}
+        canUpdate={canUpdate}
         hakemus={hakemus}
         updateForm={updateForm}
         disabled={disabled}
@@ -330,7 +324,7 @@ const ValinnanTilaKuvaus = ({
 export const ValinnanTilaCell = memo(function ValinnanTilaCell({
   hakemus,
   haku,
-  hakukohde,
+  canUpdate,
   disabled,
   updateForm,
   mode,
@@ -340,7 +334,7 @@ export const ValinnanTilaCell = memo(function ValinnanTilaCell({
 }: {
   hakemus: HakemuksenValinnanTulos;
   haku: Haku;
-  hakukohde: Hakukohde;
+  canUpdate: boolean;
   disabled: boolean;
   updateForm: (params: ValinnanTulosChangeParams) => void;
   mode: 'valinta' | 'sijoittelu';
@@ -462,7 +456,7 @@ export const ValinnanTilaCell = memo(function ValinnanTilaCell({
       )}
       {isKorkeakouluHaku(haku) && (
         <EhdollinenFields
-          hakukohde={hakukohde}
+          canUpdate={canUpdate}
           hakemus={hakemus}
           disabled={disabled}
           updateForm={updateForm}

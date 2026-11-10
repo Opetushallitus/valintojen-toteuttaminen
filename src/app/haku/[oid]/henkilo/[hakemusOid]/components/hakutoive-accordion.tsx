@@ -77,6 +77,7 @@ export const HakutoiveAccordion = ({
               />
               <Box id={headerId} sx={{ color: 'black' }}>
                 <HakutoiveTitle
+                  linkEnabled={!hakukohde.readOnly}
                   hakutoiveNumero={hakutoiveNumero}
                   hakukohde={hakukohde}
                 />
