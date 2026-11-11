@@ -497,6 +497,56 @@ export async function testNaytaMuutoshistoria(page: Page) {
   await expect(page.getByText('Muokkausajankohta')).toBeHidden();
 }
 
+export const mockValintatilanne = async (
+  page: Page,
+  fulfill: Parameters<Route['fulfill']>[0],
+) => {
+  await page.route(
+    '*/**/valintalaskentakoostepalvelu/resources/proxy/valintatulosservice/haku/1.2.246.562.29.00000000000000045102/hakemusOid/1.2.246.562.11.00000000000001796027',
+    async (route) => route.fulfill(fulfill),
+  );
+};
+
+export const openValintatilanne = async (page: Page) => {
+  await page
+    .getByRole('row', { name: 'Nukettaja Ruhtinas' })
+    .getByRole('button', { name: 'Muut toiminnot' })
+    .click();
+  await page.getByText('Valintatilanne', { exact: true }).click();
+};
+
+export async function testNaytaValintatilanne(page: Page) {
+  await mockValintatilanne(page, {
+    path: getFixturePath('valintatilanne.json'),
+  });
+  await openValintatilanne(page);
+  const modal = page.getByRole('dialog', { name: 'Valintatilanne (kesken)' });
+  await expect(modal).toBeVisible();
+  await expect(modal).toContainText('Nukettaja Ruhtinas');
+  await expect(
+    modal.getByRole('link', { name: '1.2.246.562.11.00000000000001796027' }),
+  ).toHaveAttribute('href', /1\.2\.246\.562\.11\.00000000000001796027$/);
+  await expect(modal).toContainText('1.2.246.562.24.69259807406');
+  await expectTableValues(modal.getByRole('table'), [
+    ['Hakutoive', 'Tila'],
+    [
+      '1. Tampereen yliopisto, Finnish MAOL Competition Route 2024',
+      '2. varasijalla. Varasijoja täytetään 31.7.2025 asti.',
+    ],
+    [
+      '2. Tampereen yliopisto, Tietojenkäsittelytiede',
+      'Hyväksytty (odottaa ylempien hakukohteiden tuloksia)',
+    ],
+    [
+      '3. Helsingin yliopisto, Kauppatieteet',
+      'Ei saanut opiskelupaikkaa. Et saavuttanut alinta hyväksyttyä pistemäärää.',
+    ],
+    ['4. Helsingin yliopisto, Matematiikka', 'Peruuntunut'],
+  ]);
+  await modal.getByText('Sulje', { exact: true }).click();
+  await expect(modal).toBeHidden();
+}
+
 export const waitForMethodRequest = (
   page: Page,
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',

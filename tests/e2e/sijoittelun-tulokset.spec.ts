@@ -6,10 +6,13 @@ import {
   expectPageSizeSelectorValue,
   findTableColumnIndexByTitle,
   mockDocumentProcess,
+  mockValintatilanne,
+  openValintatilanne,
   selectOption,
   testMuodostaHakemusHyvaksymiskirje,
   testNaytaMuutoshistoria,
   TIMESTAMP_REGEX,
+  testNaytaValintatilanne,
   waitForMethodRequest,
 } from './playwright-utils';
 import {
@@ -17,6 +20,7 @@ import {
   VastaanottoTila,
 } from '@/lib/types/sijoittelu-types';
 import SIJOITTELUN_TULOS from './fixtures/sijoittelun-tulos.json' with { type: 'json' };
+import VALINTATILANNE from './fixtures/valintatilanne.json' with { type: 'json' };
 
 const RUHTINAS_ROW = [
   '',
@@ -733,6 +737,114 @@ test.describe('Valintaesityksen hyväksyminen', () => {
 test.describe('Hakemuksen muut toiminnot', () => {
   test('Näytä muutoshistoria', async ({ page }) => {
     await testNaytaMuutoshistoria(page);
+  });
+
+  test.describe('Valintatilanne', () => {
+    const lopullinenValintatilanne = {
+      ...VALINTATILANNE,
+      hakutoiveet: VALINTATILANNE.hakutoiveet.map((hakutoive, index) =>
+        index === 0
+          ? {
+              ...hakutoive,
+              valintatila: 'HYVAKSYTTY',
+              vastaanotettavuustila: 'VASTAANOTETTAVISSA_SITOVASTI',
+              ehdollisestiHyvaksyttavissa: true,
+              ehdollisenHyvaksymisenEhtoFI: 'Toimita todistus',
+            }
+          : { ...hakutoive, valintatila: 'PERUUNTUNUT' },
+      ),
+    };
+
+    test('Näytä valintatilanne (kesken)', async ({ page }) => {
+      await testNaytaValintatilanne(page);
+    });
+
+    test('Näytä ehdollisesti hyväksytty lopullinen valintatilanne', async ({
+      page,
+    }) => {
+      await mockValintatilanne(page, { json: lopullinenValintatilanne });
+      await openValintatilanne(page);
+      const modal = page.getByRole('dialog', {
+        name: 'Valintatilanne (lopullinen)',
+      });
+      await expect(modal).toBeVisible();
+      const rows = modal.getByRole('row');
+      await checkRow(rows.nth(1), [
+        '1. Tampereen yliopisto, Finnish MAOL Competition Route 2024',
+        'Hyväksytty (Toimita todistus)',
+      ]);
+      await checkRow(rows.nth(2), [
+        '2. Tampereen yliopisto, Tietojenkäsittelytiede',
+        'Peruuntunut',
+      ]);
+    });
+
+    test('Näytä ehdollinen hyväksyntä ilman ehtoa', async ({ page }) => {
+      await mockValintatilanne(page, {
+        json: {
+          ...lopullinenValintatilanne,
+          hakutoiveet: lopullinenValintatilanne.hakutoiveet.map(
+            (hakutoive, index) =>
+              index === 0
+                ? { ...hakutoive, ehdollisenHyvaksymisenEhtoFI: undefined }
+                : hakutoive,
+          ),
+        },
+      });
+      await openValintatilanne(page);
+      const modal = page.getByRole('dialog', {
+        name: 'Valintatilanne (lopullinen)',
+      });
+      await checkRow(modal.getByRole('row').nth(1), [
+        '1. Tampereen yliopisto, Finnish MAOL Competition Route 2024',
+        'Hyväksytty (ehdollinen)',
+      ]);
+    });
+
+    test('Näytä vastaanottotila hyväksytylle hakutoiveelle', async ({
+      page,
+    }) => {
+      await mockValintatilanne(page, {
+        json: {
+          ...lopullinenValintatilanne,
+          hakutoiveet: lopullinenValintatilanne.hakutoiveet.map(
+            (hakutoive, index) =>
+              index === 0
+                ? {
+                    ...hakutoive,
+                    vastaanottotila: 'VASTAANOTTANUT_SITOVASTI',
+                  }
+                : hakutoive,
+          ),
+        },
+      });
+      await openValintatilanne(page);
+      const modal = page.getByRole('dialog', {
+        name: 'Valintatilanne (lopullinen)',
+      });
+      await checkRow(modal.getByRole('row').nth(1), [
+        '1. Tampereen yliopisto, Finnish MAOL Competition Route 2024',
+        'Opiskelupaikka vastaanotettu',
+      ]);
+    });
+
+    test('Näytä virhe ja yritä uudelleen', async ({ page }) => {
+      await mockValintatilanne(page, { status: 500, body: 'Räjähti' });
+      await openValintatilanne(page);
+      const modal = page.getByRole('dialog', { name: 'Valintatilanne' });
+      await expect(
+        modal.getByText('Valintatilanteen lataus epäonnistui'),
+      ).toBeVisible();
+
+      await mockValintatilanne(page, { json: VALINTATILANNE });
+      await modal.getByRole('button', { name: 'Yritä uudelleen' }).click();
+      await expect(
+        page.getByRole('dialog', { name: 'Valintatilanne (kesken)' }),
+      ).toBeVisible();
+      await expect(
+        modal.getByText('Valintatilanteen lataus epäonnistui'),
+      ).toBeHidden();
+    });
   });
 
   test('Muodosta hyväksymiskirje', async ({ page }) => {

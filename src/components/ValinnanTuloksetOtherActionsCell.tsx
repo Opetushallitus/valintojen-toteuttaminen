@@ -3,10 +3,12 @@ import {
   MailOutline,
   InsertDriveFileOutlined,
   DeleteOutline,
+  Segment,
 } from '@mui/icons-material';
 import { Haku, Hakukohde } from '@/lib/kouta/kouta-types';
 import { showModal } from '@/components/modals/global-modal';
 import { ChangeHistoryGlobalModal } from '@/components/modals/change-history-global-modal';
+import { ValintatilanneGlobalModal } from '@/components/modals/valintatilanne-global-modal';
 import { AcceptedLetterTemplateModal } from '../app/haku/[oid]/hakukohde/[hakukohde]/sijoittelun-tulokset/components/letter-template-modal';
 import { useUserPermissions } from '@/hooks/useUserPermissions';
 
@@ -85,6 +87,17 @@ export const ValinnanTuloksetOtherActionsCell = ({
       <SpinnerModal
         title={t('vastaanottoposti.lahetetaan')}
         open={isSendingVastaanottoPosti}
+      />
+      <Dropdown.MenuItem
+        label={t('sijoittelun-tulokset.toiminnot.valintatilanne')}
+        icon={<Segment />}
+        onClick={() => {
+          showModal(ValintatilanneGlobalModal, {
+            hakuOid: haku.oid,
+            hakemusOid: hakemus.hakemusOid,
+            hakijanNimi: hakemus.hakijanNimi,
+          });
+        }}
       />
       <Dropdown.MenuItem
         label={t('sijoittelun-tulokset.toiminnot.muutoshistoria')}

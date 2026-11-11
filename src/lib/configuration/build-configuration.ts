@@ -103,6 +103,7 @@ export function buildConfiguration({
         startExportValinnanTulosExcelUrl: `${domain}/valintalaskentakoostepalvelu/resources/erillishaku/vienti`,
         hakukohteidenSuodatustiedotUrl: `${domain}/valintalaskentakoostepalvelu/resources/valintojen-toteuttaminen/haku/{hakuOid}/valintatiedot-hakukohteittain`,
         haunParametrit: `${domain}/valintalaskentakoostepalvelu/resources/parametrit/{hakuOid}`,
+        sijoittelunVastaanottoTilatUrl: `${domain}/valintalaskentakoostepalvelu/resources/proxy/valintatulosservice/haku/{hakuOid}/hakemusOid/{hakemusOid}`,
       },
       valintaTulosService: {
         valintaTulosServiceLogin: `${domain}/valinta-tulos-service/auth/login`,
