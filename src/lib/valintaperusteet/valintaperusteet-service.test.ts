@@ -1,3 +1,4 @@
+import { EMPTY_USER_PERMISSIONS, expandUserPermissions } from '../permissions';
 import { expect, test, vi, describe, afterEach } from 'vitest';
 import {
   getHakukohteenValinnanvaiheet,
@@ -248,17 +249,14 @@ test('Valintaperusteet: getValintaryhmat', async () => {
   const ryhmat: {
     hakuRyhma: ValintaryhmaHakukohteilla | null;
     muutRyhmat: Array<ValintaryhmaHakukohteilla>;
-  } = await getValintaryhmat(
-    'haku-1',
-    {
-      hasOphCRUD: true,
-      readOrganizations: [],
-      writeOrganizations: [],
-      crudOrganizations: [],
-      sijoitteluPeruuntuneidenHyvaksyntaAllowed: false,
-    },
-    ['hk-1', 'hk-2', 'hk-3'],
-  );
+  } = await getValintaryhmat('haku-1', {
+    organizationHierarchyIncluded: true,
+    hasOphCRUD: true,
+    readOrganizations: [],
+    writeOrganizations: [],
+    crudOrganizations: [],
+    sijoitteluPeruuntuneidenHyvaksyntaAllowed: false,
+  });
   expect(ryhmat.hakuRyhma?.nimi).toEqual('Haun valintaryhmä');
   expect(ryhmat.muutRyhmat.map((r) => r.nimi)).toEqual([
     'Valintaryhmä 1',
@@ -299,3 +297,99 @@ function buildDummyValinkoeResponse(
     data: dummyKokeet,
   });
 }
+
+test('valintaryhmän vastuuorganisaation kirjoitusoikeus periytyy ylemmästä organisaatiosta', async () => {
+  const response = {
+    headers: new Headers(),
+    data: [
+      {
+        hakuOid: null,
+        oid: 'ryhma',
+        nimi: 'Ryhmän nimi',
+        vastuuorganisaatio: { oid: 'lapsi' },
+        hakukohdeViitteet: [{ oid: 'toisen-tarjoajan-hakukohde' }],
+        alavalintaryhmat: [],
+      },
+    ],
+  };
+  const spy = vi.spyOn(client, 'get').mockResolvedValue(response);
+  try {
+    const hierarchy = [{ oid: 'emo', children: [{ oid: 'lapsi' }] }];
+    const permissions = expandUserPermissions(
+      {
+        ...EMPTY_USER_PERMISSIONS,
+        readOrganizations: ['emo'],
+        writeOrganizations: ['emo'],
+      },
+      hierarchy,
+    );
+    const result = await getValintaryhmat('haku', permissions);
+    expect(result.muutRyhmat).toHaveLength(1);
+    expect(result.muutRyhmat[0]?.userHasWriteAccess).toBe(true);
+    expect(result.muutRyhmat[0]?.hakukohteet).toEqual([
+      'toisen-tarjoajan-hakukohde',
+    ]);
+
+    const readOnly = expandUserPermissions(
+      {
+        ...EMPTY_USER_PERMISSIONS,
+        readOrganizations: ['emo'],
+      },
+      hierarchy,
+    );
+    expect((await getValintaryhmat('haku', readOnly)).muutRyhmat).toEqual([]);
+
+    const sibling = expandUserPermissions(
+      {
+        ...EMPTY_USER_PERMISSIONS,
+        readOrganizations: ['sisar'],
+        writeOrganizations: ['sisar'],
+      },
+      hierarchy,
+    );
+    expect((await getValintaryhmat('haku', sibling)).muutRyhmat).toEqual([]);
+  } finally {
+    spy.mockRestore();
+  }
+});
+
+test('hakukohdeviitteet rajaavat ilman hakua olevat ryhmäpuut ilman Koutan hakukohdelistaa', async () => {
+  const ryhma = (oid: string) => ({
+    oid,
+    nimi: oid,
+    hakuOid: null,
+    hakukohdeViitteet: [],
+    alavalintaryhmat: [],
+  });
+  const spy = vi.spyOn(client, 'get').mockResolvedValue({
+    headers: new Headers(),
+    data: [
+      ryhma('tyhja'),
+      { ...ryhma('tyhja-puu'), alavalintaryhmat: [ryhma('tyhja-alaryhma')] },
+      { ...ryhma('suora'), hakukohdeViitteet: [{ oid: 'hakukohde-1' }] },
+      {
+        ...ryhma('ylaryhma'),
+        alavalintaryhmat: [
+          {
+            ...ryhma('alaryhma'),
+            hakukohdeViitteet: [{ oid: 'hakukohde-2' }],
+          },
+        ],
+      },
+    ],
+  });
+  try {
+    const permissions = expandUserPermissions({
+      ...EMPTY_USER_PERMISSIONS,
+      hasOphCRUD: true,
+    });
+    const result = await getValintaryhmat('haku', permissions);
+    expect(result.muutRyhmat.map((r) => r.oid)).toEqual(['suora', 'ylaryhma']);
+    expect(result.muutRyhmat[1]?.alaValintaryhmat[0]?.hakukohteet).toEqual([
+      'hakukohde-2',
+    ]);
+    expect(spy).toHaveBeenCalledTimes(1);
+  } finally {
+    spy.mockRestore();
+  }
+});

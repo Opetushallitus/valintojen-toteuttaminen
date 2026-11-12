@@ -4,8 +4,11 @@ import {
 } from '@/lib/ataru/ataru-service';
 import { useSuspenseQueries, useSuspenseQuery } from '@tanstack/react-query';
 import { getPostitoimipaikka } from '@/lib/koodisto/koodisto-service';
-import { getAllHakukohteet } from '@/lib/kouta/kouta-service';
-import { useCheckPermission } from '@/hooks/useUserPermissions';
+import { queryOptionsGetAllHakukohteet } from '@/lib/kouta/kouta-queries';
+import {
+  useCheckHakukohdePermission,
+  useHakuPermissions,
+} from '@/hooks/useHakuPermissions';
 import { filter, map, pipe, prop, sortBy } from 'remeda';
 import { selectEditableValintalaskennanTulokset } from '@/hooks/useEditableValintalaskennanTulokset';
 import { NotFoundError } from '@/lib/common';
@@ -76,7 +79,11 @@ export const useHenkiloPageData = ({
     [hakemus.hakutoiveet],
   );
 
-  const checkEditPermission = useCheckPermission('READ_UPDATE');
+  const hakuPermissions = useHakuPermissions(hakuOid);
+  const checkEditPermission = useCheckHakukohdePermission(
+    hakuPermissions,
+    'READ_UPDATE',
+  );
 
   const [
     { data: koutaHakukohteet },
@@ -85,15 +92,8 @@ export const useHenkiloPageData = ({
     { data: kokeetByHakukohde },
   ] = useSuspenseQueries({
     queries: [
-      {
-        /**
-         * Täytyy hakea tässä yhteydessä kaikki hakukohteet eikä normaalilla tavalla,
-         * jossa haetaan vain käyttäjälle näkyvät hakukohteet.
-         * Tämä siksi, että käyttäjällä voi olla lukuoikeus tiettyyn hakijan hakutoiveeseen,
-         * mutta ei kaikkiin hakijan hakutoiveisiin ja myös hakijan muut hakutoiveet pitää näyttää. */
-        queryKey: ['getAllHakukohteet', hakuOid],
-        queryFn: () => getAllHakukohteet(hakuOid),
-      },
+      // Myös hakijan hakutoiveet, joihin käyttäjällä ei ole muokkausoikeutta, näytetään.
+      queryOptionsGetAllHakukohteet(hakuOid),
       {
         queryKey: ['getPostitoimipaikka', hakemus.postinumero],
         queryFn: () => getPostitoimipaikka(hakemus.postinumero),
@@ -120,7 +120,7 @@ export const useHenkiloPageData = ({
         const sijoittelunTulos =
           sijoittelunTuloksetByHakukohde?.[hakukohde.oid];
 
-        const readOnly = !checkEditPermission(hakukohde.tarjoajaOid);
+        const readOnly = !checkEditPermission(hakukohde);
         const hakutoiveNumero = index + 1;
 
         return {

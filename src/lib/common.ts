@@ -109,7 +109,13 @@ export const isHakukohdeOid = (value: string) =>
   /^1\.2\.246\.562\.20\.\d{20}$/.test(value);
 
 export const isHakemusOid = (value: string) =>
-  value.startsWith('1.2.246.562.11.');
+  /^1\.2\.246\.562\.11\.\d+$/.test(value);
+
+export const isHakukohderyhmaOid = (value: string) =>
+  /^1\.2\.246\.562\.28\.\d+$/.test(value);
+
+export const isOphOid = (value?: string) =>
+  value !== undefined && /^1\.2\.246\.562\./.test(value);
 
 export type GenericEvent = {
   key: string;
@@ -131,8 +137,6 @@ export const nullWhen404 = async <T>(
     throw e;
   }
 };
-
-export const isOphOid = (x?: string) => x?.startsWith('1.2.246.562.');
 
 /**
  * Assertioiden tekemiseen xstate-tilakoneiden fromPromise-aktoreiden kanssa.

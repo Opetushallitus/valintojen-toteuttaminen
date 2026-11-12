@@ -1,4 +1,8 @@
 import {
+  useHakuPermissions,
+  useCheckHakukohdePermission,
+} from '@/hooks/useHakuPermissions';
+import {
   createModal,
   hideModal,
   useOphModalProps,
@@ -143,6 +147,11 @@ export const ValintalaskentaEditGlobalModal = createModal<{
     jonosija,
     onSuccess,
   }) => {
+    const hakuPermissions = useHakuPermissions(hakukohde.hakuOid);
+    const checkUpdatePermission = useCheckHakukohdePermission(
+      hakuPermissions,
+      'READ_UPDATE',
+    );
     const { open, slotProps, onClose } = useOphModalProps();
     const { t } = useTranslations();
 
@@ -209,6 +218,7 @@ export const ValintalaskentaEditGlobalModal = createModal<{
           renderInput={({ labelId }) => (
             <span aria-labelledby={labelId}>
               <HakutoiveTitle
+                linkEnabled={checkUpdatePermission(hakukohde)}
                 hakutoiveNumero={hakutoiveNumero}
                 hakukohde={hakukohde}
               />
