@@ -1,7 +1,10 @@
-import { useUserPermissions } from '@/hooks/useUserPermissions';
+import {
+  useHierarchyUserPermissions,
+  useUserPermissions,
+} from '@/hooks/useUserPermissions';
 import { getHakukohdeFullName } from '@/lib/kouta/kouta-service';
-import { getValintaryhmat } from '@/lib/valintaperusteet/valintaperusteet-service';
-import { useSuspenseQueries, useSuspenseQuery } from '@tanstack/react-query';
+import { queryOptionsGetValintaryhmat } from '@/lib/valintaperusteet/valintaperusteet-queries';
+import { useSuspenseQueries } from '@tanstack/react-query';
 import {
   HakukohdeWithLink,
   ValintaryhmaHakukohdeTable,
@@ -23,8 +26,8 @@ import { getLasketutHakukohteet } from '@/lib/valintalaskenta/valintalaskenta-se
 import { HaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-types';
 import { useLaskentaState } from '@/lib/state/laskenta-state';
 import {
+  queryOptionsGetAllHakukohteet,
   queryOptionsGetHaku,
-  queryOptionsGetHakukohteet,
 } from '@/lib/kouta/kouta-queries';
 import { queryOptionsGetHaunAsetukset } from '@/lib/ohjausparametrit/ohjausparametrit-queries';
 
@@ -110,36 +113,26 @@ export const ValintaryhmaContent = ({
   hakuOid: string;
   valintaryhmaOid: string;
 }) => {
-  const userPermissions = useUserPermissions();
+  const userPermissions = useHierarchyUserPermissions(useUserPermissions());
 
   const { translateEntity } = useTranslations();
 
-  const { data: hakukohteet } = useSuspenseQuery(
-    queryOptionsGetHakukohteet(hakuOid, userPermissions),
-  );
-
   const [
+    { data: hakukohteet },
     { data: haku },
     { data: haunAsetukset },
     { data: lasketutHakukohteet },
     { data: valintaryhmat },
   ] = useSuspenseQueries({
     queries: [
+      queryOptionsGetAllHakukohteet(hakuOid),
       queryOptionsGetHaku({ hakuOid }),
       queryOptionsGetHaunAsetukset({ hakuOid }),
       {
         queryKey: ['getLasketutHakukohteet', hakuOid],
         queryFn: () => getLasketutHakukohteet(hakuOid),
       },
-      {
-        queryKey: ['getValintaryhmat', hakuOid, userPermissions, hakukohteet],
-        queryFn: () =>
-          getValintaryhmat(
-            hakuOid,
-            userPermissions,
-            hakukohteet.map((hk) => hk.oid),
-          ),
-      },
+      queryOptionsGetValintaryhmat(hakuOid, userPermissions),
     ],
   });
 

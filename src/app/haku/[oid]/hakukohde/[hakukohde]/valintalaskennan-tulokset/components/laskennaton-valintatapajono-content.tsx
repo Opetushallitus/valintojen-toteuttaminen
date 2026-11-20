@@ -86,7 +86,7 @@ const LaskennatonVaiheActions = ({
       )}
       {!userHasOnlyReadPermission && (
         <SijoitteluStatusChangeButton
-          tarjoajaOid={hakukohde?.tarjoajaOid}
+          hakukohde={hakukohde}
           jono={jono}
           statusMutation={statusMutation}
         />

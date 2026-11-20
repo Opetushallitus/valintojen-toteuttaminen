@@ -1,7 +1,7 @@
 import { describe, expect, test, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { ValinnanTilaCell } from './ValinnanTilaCell';
-import { Haku, Hakukohde, Tila } from '@/lib/kouta/kouta-types';
+import { Haku, Tila } from '@/lib/kouta/kouta-types';
 import { TranslatedName } from '@/lib/localization/localization-types';
 import { ValinnanTila } from '@/lib/types/sijoittelu-types';
 import { HakemuksenValinnanTulos } from '@/lib/valinta-tulos-service/valinta-tulos-types';
@@ -23,27 +23,9 @@ const HAKU_BASE: Haku = {
   organisaatioOid: 'haku-org-oid',
 };
 
-const HAKUKOHDE_BASE: Hakukohde = {
-  oid: 'mock-hakukohde-oid',
-  hakuOid: HAKU_BASE.oid,
-  nimi: { fi: 'mock hakukohde' },
-  organisaatioOid: HAKUKOHDE_ORG_OID,
-  organisaatioNimi: { fi: 'mock organisaatio' },
-  jarjestyspaikkaHierarkiaNimi: { fi: 'mock jarjestyspaikka' },
-  tarjoajaOid: TARJOAJA_OID,
-  voikoHakukohteessaOllaHarkinnanvaraisestiHakeneita: false,
-  opetuskielet: new Set(['fi']),
-};
-
 const ORGS_WITH_UPDATE = [TARJOAJA_OID];
 
 const mockUpdateForm = vi.fn();
-
-vi.mock('@/hooks/useUserPermissions', () => ({
-  useCheckPermission: () => {
-    return (oid: string) => ORGS_WITH_UPDATE.includes(oid);
-  },
-}));
 
 vi.mock('@/lib/koodisto/useHyvaksynnanEhdot', () => ({
   useHyvaksynnanEhdot: () => {
@@ -86,10 +68,7 @@ const renderValinnanTilaCell = ({
         ...HAKU_BASE,
         kohdejoukkoKoodiUri: kohdejoukko,
       }}
-      hakukohde={{
-        ...HAKUKOHDE_BASE,
-        tarjoajaOid,
-      }}
+      canUpdate={ORGS_WITH_UPDATE.includes(tarjoajaOid)}
       hakemus={{
         hakijanNimi: 'Testi Hakija',
         hakijaOid: 'mock-hakija-oid',

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { findBranchOidsFromOrganizationHierarchy } from './organisaatio-service';
+import { findBranchOidsFromOrganizationHierarchy } from './organization-hierarchy';
 
 const hierarchy = [
   {

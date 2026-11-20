@@ -12,7 +12,7 @@ import {
 import { isDefined, sort } from 'remeda';
 import { getConfiguration } from '@/lib/configuration/client-configuration';
 import { getConfigUrl } from '@/lib/configuration/configuration-utils';
-import { UserPermissions } from '@/lib/permissions';
+import { HierarchyUserPermissions } from '@/lib/permissions';
 import { byLocaleCompare } from '@/lib/localization/translation-utils';
 
 export const getValintaryhma = async (
@@ -198,7 +198,7 @@ function sortRyhmatByName(
 
 function mapValintaryhma(
   ryhma: ValintaryhmaHakukohteillaResponse,
-  userPermissions: UserPermissions,
+  userPermissions: HierarchyUserPermissions,
   parentOid: string | null = null,
 ): ValintaryhmaHakukohteilla {
   const sortedAlaryhmat = sortRyhmatByName(
@@ -222,13 +222,12 @@ function mapValintaryhma(
   };
 }
 
-function hasHakukohde(
-  ryhma: ValintaryhmaHakukohteillaResponse,
-  hakukohteet: Array<string>,
-): boolean {
+// Backend rajaa hakukohdeviitteet valittuun hakuun. Ilman hakua olevat
+// ryhmäpuut voivat silti tulla vastauksessa tyhjinä.
+function hasHakukohteita(ryhma: ValintaryhmaHakukohteillaResponse): boolean {
   return (
-    ryhma.hakukohdeViitteet.some((hv) => hakukohteet.includes(hv.oid)) ||
-    ryhma.alavalintaryhmat.some((avr) => hasHakukohde(avr, hakukohteet))
+    ryhma.hakukohdeViitteet.length > 0 ||
+    ryhma.alavalintaryhmat.some(hasHakukohteita)
   );
 }
 
@@ -249,8 +248,7 @@ function hasOrganizationPermissionToValintaryhma(
 
 export const getValintaryhmat = async (
   hakuOid: string,
-  userPermissions: UserPermissions,
-  hakukohteet: Array<string>,
+  userPermissions: HierarchyUserPermissions,
 ): Promise<{
   muutRyhmat: Array<ValintaryhmaHakukohteilla>;
   hakuRyhma: ValintaryhmaHakukohteilla | null;
@@ -282,7 +280,7 @@ export const getValintaryhmat = async (
               r,
               userPermissions.writeOrganizations,
             )) &&
-          hasHakukohde(r, hakukohteet),
+          hasHakukohteita(r),
       )
       .map((vr) => mapValintaryhma(vr, userPermissions)),
   );
